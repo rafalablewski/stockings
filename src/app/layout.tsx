@@ -9,48 +9,38 @@ export const metadata: Metadata = {
 
 function Navigation() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl">📈</span>
-            <span className="text-xl font-bold gradient-text">ABISON</span>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14">
+          <Link
+            href="/"
+            className="text-[15px] font-semibold tracking-tight text-white hover:opacity-70 transition-opacity"
+          >
+            ABISON
           </Link>
-          <div className="flex items-center space-x-6">
-            <Link
-              href="/stocks"
-              className="text-gray-300 hover:text-white transition-colors"
-            >
-              Research
-            </Link>
-            <Link
-              href="/stocks"
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg text-white font-medium hover:opacity-90 transition-opacity"
-            >
-              View Analysis
-            </Link>
-          </div>
+          <Link
+            href="/stocks"
+            className="text-[13px] text-white/60 hover:text-white transition-colors"
+          >
+            Research
+          </Link>
         </div>
       </div>
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
     </nav>
   );
 }
 
 function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-black/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-2">
-            <span className="text-xl">📈</span>
-            <span className="font-semibold">ABISON</span>
-          </div>
-          <p className="text-gray-500 text-sm">
-            Investment research and analysis. Not financial advice.
-          </p>
-          <p className="text-gray-600 text-sm">
-            © {new Date().getFullYear()} ABISON Investment Research
-          </p>
+    <footer className="py-6 px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-center gap-2 text-[11px] text-white/30">
+          <span className="font-medium">ABISON</span>
+          <span className="text-white/10">·</span>
+          <span>Investment Research</span>
+          <span className="text-white/10">·</span>
+          <span>Not financial advice</span>
         </div>
       </div>
     </footer>
@@ -64,9 +54,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="antialiased min-h-screen flex flex-col font-sans">
+      <body className="antialiased min-h-screen flex flex-col bg-black text-white">
         <Navigation />
-        <main className="flex-1 pt-16">
+        <main className="flex-1 pt-14">
           {children}
         </main>
         <Footer />
