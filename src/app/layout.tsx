@@ -14,9 +14,9 @@ function Navigation() {
         <div className="flex items-center justify-between h-14">
           <Link
             href="/"
-            className="text-[15px] font-semibold tracking-tight text-white hover:opacity-70 transition-opacity"
+            className="text-[14px] font-normal tracking-[0.2em] text-white/90 hover:text-white transition-colors"
           >
-            ABISON
+            abison
           </Link>
           <Link
             href="/stocks"
@@ -36,7 +36,7 @@ function Footer() {
     <footer className="py-6 px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center gap-2 text-[11px] text-white/30">
-          <span className="font-medium">ABISON</span>
+          <span className="tracking-[0.15em]">abison</span>
           <span className="text-white/10">·</span>
           <span>Investment Research</span>
           <span className="text-white/10">·</span>
