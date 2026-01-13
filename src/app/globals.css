@@ -98,21 +98,28 @@ html {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
-/* ═══ STOCK ANALYSIS COMPONENT ISOLATION ═══ */
-/* Ensure stock analysis components have their own context */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   STOCK ANALYSIS COMPONENT STYLES
+   These override Tailwind's preflight within .stock-model-app scope
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 .stock-model-app {
-  font-family: 'Outfit', sans-serif;
-  background: var(--bg);
+  font-family: 'Outfit', sans-serif !important;
+  background: var(--bg) !important;
   min-height: 100vh;
-  color: var(--text);
+  color: var(--text) !important;
   overflow-x: hidden;
+  line-height: 1.5;
 }
 
-/* Reset Tailwind preflight for stock analysis components */
-.stock-model-app * {
+/* Reset ALL elements within stock-model-app to undo Tailwind preflight */
+.stock-model-app *,
+.stock-model-app *::before,
+.stock-model-app *::after {
   box-sizing: border-box;
 }
 
+/* Restore proper typography */
 .stock-model-app h1,
 .stock-model-app h2,
 .stock-model-app h3,
@@ -121,10 +128,420 @@ html {
 .stock-model-app h6 {
   font-size: inherit;
   font-weight: inherit;
+  margin: 0;
 }
 
+.stock-model-app p {
+  margin: 0;
+}
+
+/* Button base reset - remove Tailwind's transparent background */
 .stock-model-app button {
-  background: transparent;
-  border: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
   cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+/* Pills - key navigation component */
+.stock-model-app .pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  background: var(--surface2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 100px !important;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text2) !important;
+  font-family: 'Outfit', sans-serif !important;
+  white-space: nowrap;
+}
+
+.stock-model-app .pill:hover,
+.stock-model-app .pill.active {
+  background: var(--accent) !important;
+  color: var(--bg) !important;
+  border-color: var(--accent) !important;
+}
+
+.stock-model-app .pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+/* Tab bar navigation */
+.stock-model-app .tab-bar {
+  display: flex;
+  gap: 4px;
+  background: var(--surface);
+  padding: 6px;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+
+.stock-model-app .tab-btn {
+  padding: 12px 20px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text2) !important;
+  font-family: 'Outfit', sans-serif !important;
+  white-space: nowrap;
+}
+
+.stock-model-app .tab-btn:hover {
+  background: var(--surface2) !important;
+  color: var(--text) !important;
+}
+
+.stock-model-app .tab-btn.active {
+  background: var(--accent) !important;
+  color: var(--bg) !important;
+}
+
+/* Input range sliders */
+.stock-model-app input[type="range"] {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface3);
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  margin: 0;
+}
+
+.stock-model-app input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(167,139,250,0.5);
+  border: none;
+}
+
+.stock-model-app input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(167,139,250,0.5);
+  border: none;
+}
+
+/* Input number fields */
+.stock-model-app input[type="number"],
+.stock-model-app input[type="text"] {
+  font-family: 'Space Mono', monospace;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.stock-model-app input[type="number"]:focus,
+.stock-model-app input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Select dropdowns */
+.stock-model-app select {
+  font-family: 'Outfit', sans-serif;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.stock-model-app select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Tables */
+.stock-model-app table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stock-model-app th,
+.stock-model-app td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.stock-model-app th {
+  font-weight: 600;
+  color: var(--text2);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Links */
+.stock-model-app a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.stock-model-app a:hover {
+  text-decoration: underline;
+}
+
+/* Section headers */
+.stock-model-app .section-head {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+/* Highlight boxes */
+.stock-model-app .highlight {
+  background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 100%);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 24px;
+}
+
+.stock-model-app .highlight h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.stock-model-app .highlight p {
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Stat cards */
+.stock-model-app .stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stock-model-app .stat-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stock-model-app .stat-item .label {
+  font-size: 12px;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+.stock-model-app .stat-item .val {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+}
+
+.stock-model-app .stat-item .val.mint { color: var(--mint); }
+.stock-model-app .stat-item .val.coral { color: var(--coral); }
+.stock-model-app .stat-item .val.sky { color: var(--sky); }
+.stock-model-app .stat-item .val.violet { color: var(--violet); }
+.stock-model-app .stat-item .val.gold { color: var(--gold); }
+
+/* Card panels */
+.stock-model-app .card,
+.stock-model-app .panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+/* Monte Carlo bars */
+.stock-model-app .mc-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 280px;
+  padding: 20px 0;
+}
+
+.stock-model-app .mc-bar {
+  flex: 1;
+  background: var(--accent);
+  opacity: 0.6;
+  border-radius: 2px 2px 0 0;
+  transition: all 0.2s;
+  min-width: 4px;
+}
+
+.stock-model-app .mc-bar:hover { opacity: 1; }
+.stock-model-app .mc-bar.hl { background: var(--gold); opacity: 1; }
+
+/* Slider wrapper */
+.stock-model-app .slider-wrap {
+  margin-bottom: 24px;
+}
+
+.stock-model-app .slider-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.stock-model-app .slider-head span:first-child { color: var(--text2); }
+.stock-model-app .slider-head span:last-child {
+  font-family: 'Space Mono', monospace;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Disclaimer banner */
+.stock-model-app .disclaimer-banner {
+  background: linear-gradient(135deg, rgba(255,123,114,0.08) 0%, rgba(210,153,34,0.08) 100%);
+  border-bottom: 1px solid rgba(255,123,114,0.2);
+  padding: 12px 64px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* Hero header */
+.stock-model-app .hero {
+  position: relative;
+  padding: 48px 64px 40px;
+  background: linear-gradient(180deg, #0D1117 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* Thesis boxes */
+.stock-model-app .thesis {
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.stock-model-app .thesis.bull {
+  background: rgba(126,231,135,0.05);
+  border: 1px solid rgba(126,231,135,0.2);
+}
+
+.stock-model-app .thesis.bear {
+  background: rgba(255,123,114,0.05);
+  border: 1px solid rgba(255,123,114,0.2);
+}
+
+.stock-model-app .thesis.bull h4 { color: var(--mint); }
+.stock-model-app .thesis.bear h4 { color: var(--coral); }
+
+/* Price badge */
+.stock-model-app .price-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+}
+
+.stock-model-app .price-badge.up {
+  background: var(--mint-dim);
+  color: var(--mint);
+}
+
+.stock-model-app .price-badge.down {
+  background: var(--coral-dim);
+  color: var(--coral);
+}
+
+/* Table styles */
+.stock-model-app .tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.stock-model-app .tbl th {
+  text-align: left;
+  padding: 12px;
+  background: var(--surface2);
+  color: var(--text3);
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stock-model-app .tbl td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.stock-model-app .tbl .mint { color: var(--mint); }
+.stock-model-app .tbl .coral { color: var(--coral); }
+.stock-model-app .tbl .sky { color: var(--sky); }
+.stock-model-app .tbl .violet { color: var(--violet); }
+.stock-model-app .tbl .gold { color: var(--gold); }
+
+/* Responsive adjustments for stock analysis */
+@media (max-width: 768px) {
+  .stock-model-app .hero {
+    padding: 24px 16px;
+  }
+
+  .stock-model-app .disclaimer-banner {
+    padding: 12px 16px;
+  }
+
+  .stock-model-app .tab-bar {
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .stock-model-app .tab-btn {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+  }
+
+  .stock-model-app .pill {
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+  }
 }
