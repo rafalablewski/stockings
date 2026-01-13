@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
-@import "tailwindcss";
+
+/* Import Tailwind WITHOUT preflight for stock analysis compatibility */
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
 
 :root {
   /* ═══ NEXT.JS APP VARIABLES ═══ */
@@ -36,17 +39,17 @@
   --accent-dim: var(--mint-dim);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Base styles (replacing preflight selectively) */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
 }
 
 html {
@@ -71,18 +74,4 @@ html {
 .card-hover:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-}
-
-/* ═══ STOCK ANALYSIS: Undo Tailwind preflight ONLY ═══ */
-.stock-model-app {
-  all: initial;
-  display: block;
-  font-family: 'Outfit', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
-
-.stock-model-app * {
-  box-sizing: border-box;
 }
