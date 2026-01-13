@@ -12,7 +12,7 @@ export default function HomePage() {
 
         <div className="relative max-w-5xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            <span className="gradient-text">Professional</span>
+            <span className="gradient-text">ABISON</span>
             <br />
             <span className="text-white">Investment Research</span>
           </h1>

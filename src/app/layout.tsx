@@ -3,8 +3,8 @@ import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Stockings | Investment Research",
-  description: "Professional stock analysis and investment research platform",
+  title: "ABISON | Investment Research",
+  description: "ABISON investment research - comprehensive stock analysis platform",
 };
 
 function Navigation() {
@@ -14,7 +14,7 @@ function Navigation() {
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center space-x-2">
             <span className="text-2xl">📈</span>
-            <span className="text-xl font-bold gradient-text">Stockings</span>
+            <span className="text-xl font-bold gradient-text">ABISON</span>
           </Link>
           <div className="flex items-center space-x-6">
             <Link
@@ -43,13 +43,13 @@ function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-2">
             <span className="text-xl">📈</span>
-            <span className="font-semibold">Stockings</span>
+            <span className="font-semibold">ABISON</span>
           </div>
           <p className="text-gray-500 text-sm">
             Investment research and analysis. Not financial advice.
           </p>
           <p className="text-gray-600 text-sm">
-            © {new Date().getFullYear()} Stockings Research
+            © {new Date().getFullYear()} ABISON Investment Research
           </p>
         </div>
       </div>
