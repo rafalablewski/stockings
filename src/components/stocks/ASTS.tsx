@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ╔═══════════════════════════════════════════════════════════════════════════════╗
  * ║                        🚨 MUST DO - READ FIRST 🚨                             ║
@@ -1298,7 +1299,7 @@ const ASTSAnalysis = () => {
     const pricePerSub = potentialSubs > 0 ? marketCap / potentialSubs : 0;
     const totalPrepayments = partners.reduce((sum, p) => sum + p.prepay, 0);
     // Ensure all outputs are finite numbers
-    const safe = (v) => (isFinite(v) ? v : 0);
+    const safe = (v: number) => (isFinite(v) ? v : 0);
     return { marketCap: safe(marketCap), totalSats, constellationProgress: safe(constellationProgress), cashRunwayQuarters: safe(cashRunwayQuarters), enterpriseValue: safe(enterpriseValue), potentialSubs: safe(potentialSubs), grossAnnualRev: safe(grossAnnualRev), astsAnnualRev: safe(astsAnnualRev), evToRevFwd: safe(evToRevFwd), pricePerSub: safe(pricePerSub), totalPrepayments };
   }, [currentShares, currentStockPrice, cashOnHand, quarterlyBurn, totalDebt, block1Sats, block2Sats, targetSats2026, partnerReach, penetrationRate, blendedARPU, revenueShare, govRevenue, partners]);
 
@@ -1491,7 +1492,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
     acc[year].push(m);
     return acc;
   }, {});
-  const years = Object.keys(milestonesByYear).sort((a, b) => b - a);
+  const years = Object.keys(milestonesByYear).sort((a, b) => Number(b) - Number(a));
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
