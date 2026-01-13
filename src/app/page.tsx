@@ -12,50 +12,58 @@ export default function HomePage() {
           </h1>
           <p className="text-lg text-white/50 mb-10 leading-relaxed">
             Deep-dive analysis on high-conviction opportunities.
-            Financial models, valuations, and expert perspectives.
           </p>
           <Link
             href="/stocks"
-            className="inline-block text-[13px] text-white/60 hover:text-white border-b border-white/20 hover:border-white/60 pb-1 transition-colors"
+            className="inline-block text-[13px] text-white/50 hover:text-white transition-colors"
           >
-            View Research
+            View all research →
           </Link>
         </div>
       </section>
 
       {/* Coverage */}
-      <section className="py-20 px-6 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-16">
-            <h2 className="text-xs uppercase tracking-widest text-white/30 mb-3">Coverage</h2>
-            <p className="text-white/50 text-sm max-w-md">
-              Each analysis includes financial models, DCF valuations, Monte Carlo simulations, and multiple expert viewpoints.
-            </p>
-          </div>
+      <section className="py-20 px-6">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
+            Coverage
+          </h2>
 
-          <div className="space-y-px">
-            {stockList.map((stock, index) => (
+          <div className="grid gap-4">
+            {stockList.map((stock) => (
               <Link
                 key={stock.ticker}
                 href={`/stocks/${stock.ticker}`}
-                className="group block py-6 border-b border-white/5 hover:bg-white/[0.02] -mx-4 px-4 transition-colors"
+                className="group relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
               >
-                <div className="flex items-baseline justify-between gap-8">
-                  <div className="flex items-baseline gap-6 min-w-0">
-                    <span className="text-white/20 text-sm tabular-nums w-4">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <div className="min-w-0">
-                      <div className="flex items-baseline gap-3 mb-1">
-                        <span className="text-white font-medium">{stock.ticker}</span>
-                        <span className="text-white/30 text-sm truncate">{stock.name}</span>
-                      </div>
-                      <p className="text-white/40 text-sm">{stock.description}</p>
+                {/* Glow effect on hover */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                <div className="relative flex items-start justify-between gap-6">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-[13px] font-mono font-medium text-white tracking-wide">
+                        {stock.ticker}
+                      </span>
+                      <span className="text-[11px] uppercase tracking-wider text-white/20">
+                        {stock.sector}
+                      </span>
                     </div>
+                    <p className="text-[13px] text-white/40 leading-relaxed">
+                      {stock.name}
+                    </p>
                   </div>
-                  <span className="text-white/20 text-xs uppercase tracking-wider shrink-0 group-hover:text-white/40 transition-colors">
-                    {stock.sector}
-                  </span>
+
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.03] group-hover:bg-white/[0.08] transition-colors">
+                    <svg
+                      className="w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-colors"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </div>
               </Link>
             ))}
@@ -64,29 +72,23 @@ export default function HomePage() {
       </section>
 
       {/* Methodology */}
-      <section className="py-20 px-6 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-xs uppercase tracking-widest text-white/30 mb-12">Methodology</h2>
+      <section className="py-20 px-6">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
+            Methodology
+          </h2>
 
-          <div className="grid md:grid-cols-3 gap-12">
-            <div>
-              <h3 className="text-sm text-white mb-2">Financial Models</h3>
-              <p className="text-sm text-white/40 leading-relaxed">
-                Quarterly metrics, balance sheets, cash flow projections with adjustable assumptions.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-sm text-white mb-2">Valuation</h3>
-              <p className="text-sm text-white/40 leading-relaxed">
-                DCF analysis, Monte Carlo simulations, comparable company multiples.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-sm text-white mb-2">Perspectives</h3>
-              <p className="text-sm text-white/40 leading-relaxed">
-                CFA fundamental, hedge fund catalyst-driven, and CIO portfolio views.
-              </p>
-            </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { title: "Financial Models", desc: "Quarterly metrics, balance sheets, cash flow projections" },
+              { title: "Valuation", desc: "DCF analysis, Monte Carlo simulations, comparable multiples" },
+              { title: "Perspectives", desc: "CFA fundamental, hedge fund catalyst, CIO portfolio views" },
+            ].map((item) => (
+              <div key={item.title} className="space-y-2">
+                <h3 className="text-[13px] text-white/70">{item.title}</h3>
+                <p className="text-[12px] text-white/30 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
