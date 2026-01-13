@@ -5,33 +5,27 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { stocks, tickers } from "@/lib/stocks";
 
-// Dynamically import stock analysis components (they use client-side hooks)
 const stockComponents: Record<string, React.ComponentType> = {
   ASTS: dynamic(() => import("@/components/stocks/ASTS"), {
-    loading: () => <LoadingState ticker="ASTS" />,
+    loading: () => <LoadingState />,
     ssr: false,
   }),
   BMNR: dynamic(() => import("@/components/stocks/BMNR"), {
-    loading: () => <LoadingState ticker="BMNR" />,
+    loading: () => <LoadingState />,
     ssr: false,
   }),
   CRCL: dynamic(() => import("@/components/stocks/CRCL"), {
-    loading: () => <LoadingState ticker="CRCL" />,
+    loading: () => <LoadingState />,
     ssr: false,
   }),
 };
 
-function LoadingState({ ticker }: { ticker: string }) {
-  const stock = stocks[ticker];
+function LoadingState() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="text-6xl mb-4 animate-pulse">{stock?.icon || "📊"}</div>
-        <h2 className="text-2xl font-bold mb-2">Loading {ticker} Analysis</h2>
-        <p className="text-gray-400">Preparing financial models...</p>
-        <div className="mt-6 flex justify-center">
-          <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-        </div>
+        <div className="w-5 h-5 border border-white/20 border-t-white/60 rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-sm text-white/40">Loading analysis</p>
       </div>
     </div>
   );
@@ -39,30 +33,26 @@ function LoadingState({ ticker }: { ticker: string }) {
 
 function NotFoundState({ ticker }: { ticker: string }) {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="text-center max-w-md">
-        <div className="text-6xl mb-4">🔍</div>
-        <h1 className="text-3xl font-bold mb-4">Stock Not Found</h1>
-        <p className="text-gray-400 mb-6">
-          We don&apos;t have analysis for <span className="font-mono text-white">{ticker}</span> yet.
+    <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="text-center max-w-sm">
+        <h1 className="text-xl font-medium text-white mb-3">Not Found</h1>
+        <p className="text-sm text-white/40 mb-8">
+          No analysis available for {ticker}.
         </p>
-        <div className="mb-8">
-          <p className="text-sm text-gray-500 mb-3">Currently covered stocks:</p>
-          <div className="flex flex-wrap justify-center gap-2">
-            {tickers.map((t) => (
-              <Link
-                key={t}
-                href={`/stocks/${t}`}
-                className="px-3 py-1 bg-white/10 rounded-full text-sm hover:bg-white/20 transition-colors"
-              >
-                {t}
-              </Link>
-            ))}
-          </div>
+        <div className="flex items-center justify-center gap-4 mb-8">
+          {tickers.map((t) => (
+            <Link
+              key={t}
+              href={`/stocks/${t}`}
+              className="text-sm text-white/40 hover:text-white transition-colors"
+            >
+              {t}
+            </Link>
+          ))}
         </div>
         <Link
           href="/stocks"
-          className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg text-white font-medium hover:opacity-90 transition-opacity"
+          className="text-sm text-white/40 hover:text-white border-b border-white/20 hover:border-white/40 pb-0.5 transition-colors"
         >
           Back to Research
         </Link>
@@ -75,7 +65,6 @@ export default function StockPage() {
   const params = useParams();
   const ticker = (params.ticker as string)?.toUpperCase();
 
-  // Check if we have this stock
   if (!ticker || !tickers.includes(ticker)) {
     return <NotFoundState ticker={ticker || "Unknown"} />;
   }
@@ -88,27 +77,24 @@ export default function StockPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Back navigation */}
-      <div className="sticky top-16 z-40 bg-black/80 backdrop-blur-md border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      {/* Minimal nav */}
+      <div className="sticky top-14 z-40 bg-black/90 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <Link
             href="/stocks"
-            className="flex items-center text-gray-400 hover:text-white transition-colors"
+            className="text-[13px] text-white/40 hover:text-white transition-colors"
           >
-            <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Research
+            Research
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             {tickers.map((t) => (
               <Link
                 key={t}
                 href={`/stocks/${t}`}
-                className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                className={`text-[13px] transition-colors ${
                   t === ticker
-                    ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
-                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                    ? "text-white"
+                    : "text-white/30 hover:text-white/60"
                 }`}
               >
                 {t}
@@ -116,9 +102,9 @@ export default function StockPage() {
             ))}
           </div>
         </div>
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
-      {/* Stock Analysis Component */}
       <StockComponent />
     </div>
   );
