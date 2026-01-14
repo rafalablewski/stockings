@@ -1233,20 +1233,40 @@ const ASTSAnalysis = () => {
   ];
 
   const upcomingCatalysts = [
-    { event: 'BB7 Launch', timeline: 'Q1 2026', impact: 'High' },
-    { event: 'BB8-BB10 Launch', timeline: 'Q1 2026', impact: 'High' },
-    { event: 'BB11-BB13 Launch', timeline: 'Q1-Q2 2026', impact: 'High' },
-    { event: '$175M stc prepayment', timeline: '2025 YE', impact: 'Medium' },
-    { event: 'FCC Full Approval', timeline: 'Q1 2026', impact: 'Critical' },
-    { event: 'US Service Launch', timeline: 'Early 2026', impact: 'Critical' },
-    { event: 'UK Activation', timeline: 'Early 2026', impact: 'High' },
-    { event: 'Canada/Japan/Saudi Activation', timeline: 'Early 2026', impact: 'High' },
-    { event: 'ASIC 10 GHz Integration', timeline: 'Q1 2026', impact: 'High' },
-    { event: '40 Satellite Microns Complete', timeline: 'Early 2026', impact: 'High' },
+    // === LAUNCHES & CONSTELLATION ===
+    { event: 'BB6 Unfolding Phased Array', timeline: 'Q1 2026', impact: 'High' },
+    { event: 'BB7 Launch (Blue Origin New Glenn or SpaceX F9)', timeline: 'Q1 2026', impact: 'High' },
+    { event: 'BB8-BB10 Delivery & Launch (Falcon 9)', timeline: 'Q1 2026', impact: 'High' },
+    { event: 'BB11-BB13 Delivery & Launch (Falcon 9)', timeline: 'Q1-Q2 2026', impact: 'High' },
+    { event: 'Block-2 Launches (3x, 4x or 8x batches every 1-2 mo)', timeline: '2026', impact: 'High' },
+    { event: 'Production Ramp to 6x Satellites/Month', timeline: '2026', impact: 'Medium' },
+    { event: 'Progress on 8-25x Block-2 BlueBirds in Production', timeline: '2026', impact: 'Medium' },
+    { event: 'New Midland TX Manufacturing (Micron-focused)', timeline: '2026', impact: 'Medium' },
+    // === REGULATORY & SPECTRUM ===
+    { event: 'FCC Full US SCS Commercial Service Approval', timeline: 'Q1 2026', impact: 'Critical' },
+    { event: 'FCC 5G Fund Grant', timeline: '2026', impact: 'High' },
+    { event: 'FCC PNT Service Proposal (GPS Alternative)', timeline: '2026', impact: 'Medium' },
+    { event: 'EU 2GHz MSS Spectrum Allocation (SatCo JV)', timeline: '2026', impact: 'High' },
+    { event: 'L-Band & S-Band Spectrum Licenses (Global)', timeline: '2026+', impact: 'Medium' },
+    // === COMMERCIAL & MNO PARTNERSHIPS ===
+    { event: 'FirstNet Investment & Definitive Agreement', timeline: '2026', impact: 'Critical' },
+    { event: 'Bell Canada, Telefonica, Etisalat + 50 MNO Deals', timeline: '2026', impact: 'High' },
+    { event: 'AT&T/FirstNet Beta Testing', timeline: '1H 2026', impact: 'High' },
+    { event: 'Google Services Partnership Update', timeline: '2026', impact: 'Medium' },
+    { event: 'Unlock $20M/$25M/$65M Prepayments (AT&T/VZ/VOD)', timeline: '2026', impact: 'Medium' },
+    // === SERVICE LAUNCH & REVENUE ===
+    { event: 'Initial Intermittent Service (US/Canada/Japan/UK/Saudi)', timeline: '2026', impact: 'Critical' },
+    { event: 'Initial Commercial Service (AT&T/Rakuten/VZ/VOD)', timeline: 'Late 2026', impact: 'Critical' },
+    { event: '$50-75M Revenue Delivery', timeline: '2H 2025', impact: 'High' },
+    // === GOVERNMENT & DEFENSE ===
     { event: 'Golden Dome Award(s)', timeline: '2026', impact: 'High' },
-    { event: 'FirstNet Commercial Deal', timeline: '2026', impact: 'High' },
-    { event: '$500M+ EXIM/IFC', timeline: '2026', impact: 'High' },
-    { event: 'Commercial Service', timeline: '2026', impact: 'Critical' },
+    { event: 'DoD/SDA/DIU Contract Expansion (9x+)', timeline: '2026', impact: 'High' },
+    // === FINANCING & COVERAGE ===
+    { event: '$500M+ EXIM/IFC Non-Dilutive Funding', timeline: '2026', impact: 'High' },
+    { event: 'GS/MS/Stifel Research Coverage Initiation', timeline: '2026', impact: 'Medium' },
+    // === STRATEGIC ===
+    { event: 'AI Data Center Strategic Partnerships', timeline: '2026+', impact: 'Medium' },
+    { event: 'Catalysts SpaceMob Has Yet to Contemplate', timeline: '???', impact: 'Unknown' },
   ];
 
   const completedMilestones = [
