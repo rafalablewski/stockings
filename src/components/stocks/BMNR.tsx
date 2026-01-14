@@ -847,8 +847,8 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 @media (max-width: 768px) {
-  .disclaimer-banner { 
-    padding: 10px 16px; 
+  .disclaimer-banner {
+    padding: 10px 16px;
     font-size: 10px;
   }
   .disclaimer-banner .disclaimer-divider {
@@ -857,21 +857,124 @@ input[type="range"]::-webkit-slider-thumb {
   }
 }
 
-/* Responsive */
+/* Mobile-First Table Wrapper */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface3) transparent;
+}
+.table-scroll::-webkit-scrollbar { height: 6px; }
+.table-scroll::-webkit-scrollbar-track { background: transparent; }
+.table-scroll::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+.table-scroll table { min-width: 600px; }
+
+/* Auto-scroll tables in cards on mobile */
+.card, .highlight {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.card table, .highlight table {
+  min-width: max-content;
+}
+
+/* Touch-friendly inputs */
+@media (pointer: coarse) {
+  input[type="range"] { height: 44px; }
+  input[type="range"]::-webkit-slider-thumb { width: 28px; height: 28px; }
+  .nav-btn { min-height: 44px; }
+  button, .btn { min-height: 44px; }
+}
+
+/* Responsive - Desktop */
 @media (max-width: 1200px) {
   .hero, .stats-row, .nav, .main { padding-left: 32px; padding-right: 32px; }
   .g4 { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* Responsive - Tablet */
+@media (max-width: 900px) {
+  .hero, .stats-row, .nav, .main { padding-left: 24px; padding-right: 24px; }
+  .g3 { grid-template-columns: repeat(2, 1fr); }
+  .g4 { grid-template-columns: repeat(2, 1fr); }
+  .card { padding: 20px; }
+  .highlight { padding: 20px; }
+}
+
+/* Responsive - Mobile */
 @media (max-width: 768px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 24px; }
+  .hero { padding: 24px 16px 20px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 16px; }
   .price-block { text-align: left; }
-  .price-big { font-size: 40px; }
-  .brand-block h1 { font-size: 32px; }
-  .g2, .g3 { grid-template-columns: 1fr; }
-  .stats-row { gap: 24px; }
-  .nav { padding: 12px 16px; gap: 6px; }
-  .nav-btn { padding: 10px 16px; font-size: 13px; }
+  .price-big { font-size: 36px; letter-spacing: -1px; }
+  .brand-block h1 { font-size: 28px; letter-spacing: -0.5px; }
+  .brand-block .desc { font-size: 14px; }
+  .brand-block .ticker { font-size: 12px; padding: 4px 10px; margin-bottom: 16px; }
+
+  .g2, .g3, .g4 { grid-template-columns: 1fr; gap: 16px; }
+
+  .stats-row {
+    padding: 20px 16px;
+    gap: 20px;
+    flex-wrap: nowrap;
+  }
+  .stat-item .val { font-size: 18px; }
+  .stat-item .label { font-size: 10px; }
+
+  .nav { padding: 10px 12px; gap: 4px; }
+  .nav-btn { padding: 8px 12px; font-size: 12px; }
+
+  .main { padding: 20px 16px; }
+  .card { padding: 16px; border-radius: 12px; }
+  .card-title { font-size: 14px; margin-bottom: 16px; }
+  .highlight { padding: 16px; border-radius: 12px; }
+  .highlight h3 { font-size: 15px; }
+
+  .section-head { font-size: 20px; margin-bottom: 16px; }
+  .section-head::after { height: 3px; }
+
+  /* Mobile tables */
+  .table-scroll table { min-width: 500px; }
+  table th, table td { padding: 8px 10px; font-size: 12px; }
+
+  /* Mobile cards in grids */
+  .thesis { padding: 16px; }
+  .thesis h4 { font-size: 14px; }
+
+  /* Input controls */
+  input[type="range"] { height: 40px; }
+  input[type="number"], select {
+    font-size: 16px; /* Prevents iOS zoom */
+    padding: 10px 12px;
+  }
+
+  /* Slider labels */
+  .input-row { flex-direction: column; gap: 8px; }
+  .input-row label { font-size: 12px; }
+}
+
+/* Responsive - Small Mobile */
+@media (max-width: 480px) {
+  .hero { padding: 20px 12px 16px; }
+  .price-big { font-size: 32px; }
+  .brand-block h1 { font-size: 24px; }
+  .brand-block .desc { font-size: 13px; line-height: 1.5; }
+
+  .stats-row { padding: 16px 12px; gap: 16px; }
+  .stat-item .val { font-size: 16px; }
+
+  .nav { padding: 8px 10px; }
+  .nav-btn { padding: 6px 10px; font-size: 11px; gap: 4px; }
+
+  .main { padding: 16px 12px; }
+  .card, .highlight { padding: 14px; }
+  .section-head { font-size: 18px; }
+
+  .table-scroll table { min-width: 400px; }
+  table th, table td { padding: 6px 8px; font-size: 11px; }
+
+  .g2, .g3, .g4 { gap: 12px; }
 }
 
 /* Timeline - CRCL Unified Style */
