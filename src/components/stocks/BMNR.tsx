@@ -1346,7 +1346,7 @@ const BMNRDilutionAnalysis = () => {
                 marginBottom: 16
               }}>
                 <span>📅</span>
-                <span>Data as of: Jan 2, 2026</span>
+                <span>Data as of: Jan 12, 2026</span>
                 <span style={{ color: 'rgba(167,139,250,0.5)' }}>|</span>
                 <span>Update prices regularly</span>
               </div>
