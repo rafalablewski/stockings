@@ -6693,11 +6693,11 @@ const TimelineTab = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>5% ETH Supply Target</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.43% (~6.02M ETH needed)</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.45% (~6.04M ETH needed)</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>TBD</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~1.9M ETH to go</div>
+                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>70%</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~1.87M ETH to go</div>
               </div>
             </div>
           </div>
@@ -6706,6 +6706,13 @@ const TimelineTab = () => {
         <div className="card">
           <div className="card-title">Recent Press Releases</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 12, 2026</span>
+                <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,167,768 — 3.45% of Total Supply, $14.0B</div>
+            </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 9, 2026</span>
@@ -6733,13 +6740,6 @@ const TimelineTab = () => {
                 <span style={{ fontSize: 11, color: 'var(--violet)' }}>SEC Filing</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>10-K Annual Report: $805M Unrealized Gain, $349M Net Income</div>
-            </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Nov 24, 2025</span>
-                <span style={{ fontSize: 11, color: 'var(--gold)' }}>Dividend</span>
-              </div>
-              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>First Quarterly Dividend Announced — $0.01/share</div>
             </div>
           </div>
         </div>
@@ -6899,21 +6899,21 @@ const TimelineTab = () => {
             <h4 className="font-semibold text-violet-400 mb-3 text-sm uppercase tracking-wider">Alchemy of 5% Progress</h4>
             <div className="mb-3">
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-slate-400">Current: <span className="text-white font-medium">3.41%</span></span>
+                <span className="text-slate-400">Current: <span className="text-white font-medium">3.45%</span></span>
                 <span className="text-slate-400">Target: <span className="text-violet-400 font-medium">5.00%</span></span>
               </div>
               <div className="h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700/40">
-                <div className="h-full bg-gradient-to-r from-violet-600 to-violet-400 rounded-full transition-all" style={{ width: '68.2%' }} />
+                <div className="h-full bg-gradient-to-r from-violet-600 to-violet-400 rounded-full transition-all" style={{ width: '69%' }} />
               </div>
-              <div className="text-xs text-slate-500 mt-2">68.2% achieved • 1.59% of supply remaining to reach 5%</div>
+              <div className="text-xs text-slate-500 mt-2">69% achieved (70% per PR) • 1.55% of supply remaining to reach 5%</div>
             </div>
           </div>
           <div className="bg-slate-900/60 border border-slate-700/40 rounded-xl p-4 backdrop-blur-sm">
             <h4 className="font-semibold text-violet-400 mb-3 text-sm uppercase tracking-wider">ETH Accumulation Rate</h4>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between py-1"><span className="text-slate-400">Latest increase:</span><span className="text-green-400 font-medium tabular-nums">+44,463 ETH</span></div>
+              <div className="flex justify-between py-1"><span className="text-slate-400">Latest increase:</span><span className="text-green-400 font-medium tabular-nums">+24,266 ETH</span></div>
               <div className="flex justify-between py-1"><span className="text-slate-400">Period:</span><span className="text-white tabular-nums">~1 week</span></div>
-              <div className="flex justify-between py-1"><span className="text-slate-400">Run rate:</span><span className="text-white tabular-nums">~6,350 ETH/day</span></div>
+              <div className="flex justify-between py-1"><span className="text-slate-400">Run rate:</span><span className="text-white tabular-nums">~3,467 ETH/day</span></div>
             </div>
           </div>
         </div>
