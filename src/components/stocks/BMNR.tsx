@@ -2850,7 +2850,7 @@ const SECFilingTracker = () => {
     // Latest filings by type
     filings: {
       '10-K': { date: 'Nov 21, 2025', description: 'FY 2025', color: 'blue' },
-      '10-Q': { date: 'Jul 3, 2025', description: 'Q3 FY2025', color: 'purple' },
+      '10-Q': { date: 'Jan 13, 2026', description: 'Q1 FY2026', color: 'purple' },
       '8-K': { date: 'Jan 12, 2026', description: '4.17M ETH Holdings', color: 'yellow' },
       'S-3ASR': { date: 'Jul 9, 2025', description: '$2B ATM Shelf', color: 'green' },
       '424B5': { date: 'Sep 22, 2025', description: '$365M @ $70 + Warrants', color: 'orange' },
@@ -3796,7 +3796,7 @@ const SECFilingsTab = () => {
       lastPR: { date: 'December 29, 2025', title: 'Weekly ETH Holdings Update' },
       filings: {
         '10-K': { date: 'Nov 21, 2025', description: 'FY 2025', color: 'blue' },
-        '10-Q': { date: 'Jul 3, 2025', description: 'Q3 FY2025', color: 'purple' },
+        '10-Q': { date: 'Jan 13, 2026', description: 'Q1 FY2026', color: 'purple' },
         '8-K': { date: 'Dec 29, 2025', description: '4.11M ETH', color: 'yellow' },
         'S-3ASR': { date: 'Jul 9, 2025', description: '$2B ATM Shelf', color: 'green' },
         '424B5': { date: 'Sep 22, 2025', description: '$365M @ $70', color: 'orange' },
@@ -3814,6 +3814,7 @@ const SECFilingsTab = () => {
       { date: 'Nov 21, 2025', event: 'FY25 10-K: $349M NI' },
       { date: 'Dec 21, 2025', event: '4M ETH Milestone' },
       { date: 'Dec 29, 2025', event: 'Staking: 409K ETH' },
+      { date: 'Jan 13, 2026', event: 'Q1 FY26 10-Q: First Staking Rev' },
     ],
     cfaNotes: [
       { term: '10-K (Annual Report)', def: 'Comprehensive annual filing with audited financials, MD&A, risk factors. Most detailed disclosure. Filed within 60-90 days of fiscal year end.' },
@@ -3831,6 +3832,7 @@ const SECFilingsTab = () => {
     { quarter: 'Q2 FY25', cash: 0.5, crypto: 0.25, cryptoType: 'BTC', assets: 7.50, liabilities: 4.82, equity: 2.68, revenue: 1.5, netIncome: -1.15, shares: 39.7, era: '⛏️ BTC' },
     { quarter: 'Q3 FY25', cash: 1.5, crypto: 0.17, cryptoType: 'BTC', assets: 8.27, liabilities: 5.39, equity: 2.88, revenue: 2.1, netIncome: -0.62, shares: 6.2, era: '⛏️ BTC' },
     { quarter: 'FY25 10-K', cash: 512, crypto: 8260, cryptoType: 'ETH', assets: 8800, liabilities: 102, equity: 8690, revenue: 5.8, netIncome: 349, shares: 384, era: '💎 ETH' },
+    { quarter: 'Q1 FY26', cash: 888, crypto: 10562, cryptoType: 'ETH', assets: 11487, liabilities: 236, equity: 11252, revenue: 2.3, netIncome: -5204, shares: 409, era: '💎 ETH' },
   ];
   
   const colorClasses = {
@@ -5511,6 +5513,7 @@ const TimelineTab = () => {
   
   // SEC Filings data - update when new filings are processed
   const secFilings = [
+    { date: 'Jan 13, 2026', type: '10-Q', description: 'Quarterly Report (Q1 FY2026) - First Staking Revenue', period: 'Q1 FY26', color: 'purple' },
     { date: 'Jan 2, 2026', type: 'DEFA14A', description: 'Proxy Solicitation - Chairman\'s Message', period: '—', color: 'cyan' },
     { date: 'Jan 2, 2026', type: '8-K', description: 'Vote YES on Auth Shares (500M→50B)', period: '—', color: 'yellow' },
     { date: 'Nov 21, 2025', type: '10-K', description: 'Annual Report (First Post-Pivot)', period: 'FY 2025', color: 'blue' },
@@ -5587,6 +5590,26 @@ const TimelineTab = () => {
   // Audit log of BMNR company updates - chronological record of official filings and announcements
   // NEWEST ENTRIES AT TOP - maintain descending chronological order
   const timelineEvents = [
+    // === JANUARY 13, 2026 - Q1 FY26 10-Q FILING ===
+    {
+      date: '2026-01-13',
+      source: 'SEC Filing (10-Q)',
+      category: 'SEC Filing',
+      title: '📋 Q1 FY26 10-Q: $10.6B Digital Assets, First Staking Revenue',
+      changes: [
+        { metric: 'Period Covered', previous: '—', new: 'Nov 30, 2025', change: 'Q1 FY26' },
+        { metric: 'Digital Assets', previous: '$8.26B (FY25)', new: '$10.56B', change: '+$2.3B (+28%)' },
+        { metric: 'ETH Holdings', previous: '2.38M (FY25)', new: '3,737,140', change: '+1.36M (+57%)' },
+        { metric: 'Cash', previous: '$512M', new: '$888M', change: '+$376M (+73%)' },
+        { metric: 'Total Assets', previous: '$8.8B', new: '$11.5B', change: '+$2.7B (+31%)' },
+        { metric: 'Stockholders Equity', previous: '$8.69B', new: '$11.25B', change: '+$2.56B (+29%)' },
+        { metric: 'Staking Revenue', previous: '$0', new: '$980K', change: 'First ever!' },
+        { metric: 'Net Loss', previous: '$349M NI (FY25)', new: '$(5.2B)', change: 'Unrealized ETH loss' },
+        { metric: 'Shares Outstanding', previous: '384M', new: '409M (Nov 30)', change: '+25M' },
+      ],
+      notes: 'First quarterly filing post-ETH pivot. Key highlights: (1) Digital assets grew to $10.56B (3.74M ETH @ $2,821 avg); (2) First staking revenue recognized: $980K; (3) Net loss of $5.2B driven almost entirely by $5.25B unrealized loss on ETH holdings due to price decline; (4) Cash position strengthened to $888M; (5) Eightco investment valued at $35.9M (up from $20M cost); (6) Material weakness in internal controls still being remediated. Chi Tsang confirmed as CEO (Nov 20), Young Kim as CFO/COO (Jan 7). Shares outstanding: 409M (Nov 30) → 455M (Jan 12).',
+      impact: 'neutral'
+    },
     // === JANUARY 12, 2026 - ETH HOLDINGS UPDATE ===
     {
       date: '2026-01-12',
