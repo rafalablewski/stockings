@@ -6708,6 +6708,13 @@ const TimelineTab = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 12, 2026</span>
+                <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,167,768 — 3.45% of Total Supply, $14.0B</div>
+            </div>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 9, 2026</span>
                 <span style={{ fontSize: 11, color: 'var(--mint)' }}>Leadership</span>
               </div>
@@ -6733,13 +6740,6 @@ const TimelineTab = () => {
                 <span style={{ fontSize: 11, color: 'var(--violet)' }}>SEC Filing</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>10-K Annual Report: $805M Unrealized Gain, $349M Net Income</div>
-            </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Nov 24, 2025</span>
-                <span style={{ fontSize: 11, color: 'var(--gold)' }}>Dividend</span>
-              </div>
-              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>First Quarterly Dividend Announced — $0.01/share</div>
             </div>
           </div>
         </div>
