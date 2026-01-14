@@ -272,6 +272,8 @@ interface CompetitorNewsEntry {
   astsComparison?: string;  // How this compares to ASTS capability/position
   source?: string;
   sourceUrl?: string;
+  storyId?: string;         // Groups related news entries (e.g., 'qatar-starlink-aviation')
+  storyTitle?: string;      // Display title for the story group
 }
 
 /** Competitor profile with capabilities */
@@ -8563,7 +8565,7 @@ const TimelineTab = () => {
 
 const CompsTab = ({ calc, currentStockPrice }) => {
   const [competitorFilter, setCompetitorFilter] = useState<CompetitorId | 'all'>('all');
-  const [expandedNews, setExpandedNews] = useState<number | null>(null);
+  const [expandedNews, setExpandedNews] = useState<string | null>(null);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // VALUATION COMPARABLES - Market metrics comparison
@@ -8658,7 +8660,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // },
     // ═══════════════════════════════════════════════════════════════════════════
 
-    // === Jan 14, 2026 - Lufthansa Group Starlink Aviation Deal ===
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LUFTHANSA GROUP - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
     {
       date: '2026-01-14',
       competitor: 'starlink-tmobile',
@@ -8675,7 +8679,73 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'Different market: Starlink aviation = in-flight WiFi with dedicated equipment. ASTS = direct-to-phone cellular on ground. No overlap.',
       source: 'Lufthansa Group Newsroom',
-      sourceUrl: 'https://newsroom.lufthansagroup.com/en/new-lufthansa-group-collaboration-with-starlink-high-speed-internet-on-all-fleets-across-all-airlines/'
+      sourceUrl: 'https://newsroom.lufthansagroup.com/en/new-lufthansa-group-collaboration-with-starlink-high-speed-internet-on-all-fleets-across-all-airlines/',
+      storyId: 'lufthansa-starlink-aviation',
+      storyTitle: 'Lufthansa Group Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // QATAR AIRWAYS - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-08',
+      competitor: 'starlink-tmobile',
+      category: 'Technology',
+      headline: 'World\'s first Starlink-equipped Boeing 787-8, A350 fleet complete',
+      details: [
+        'First airline globally to enable Starlink on Boeing 787-8 Dreamliner',
+        'Entire Airbus A350 fleet now Starlink-equipped (completed in record 8 months)',
+        'Nearly 120 widebody aircraft with Starlink (58% of widebody fleet)',
+        'Three Starlink-enabled 787 Dreamliners now operational',
+        '10M+ passengers used Qatar Starlink - nearly half of all 21M global Starlink airline passengers',
+        '500 Mbps speeds, free gate-to-gate WiFi',
+        'Operational benefits: real-time crew updates, IFE monitoring, faster turnarounds'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones on ground.',
+      source: 'Aviation A2Z',
+      sourceUrl: 'https://aviationa2z.com/index.php/2026/01/08/qatar-airways-first-starlink-equipped-boeing-787/',
+      storyId: 'qatar-starlink-aviation',
+      storyTitle: 'Qatar Airways Starlink Aviation'
+    },
+    {
+      date: '2025-11-16',
+      competitor: 'starlink-tmobile',
+      category: 'Coverage',
+      headline: '100+ Starlink-equipped widebody aircraft milestone',
+      details: [
+        'Over 100 widebody aircraft now equipped with Starlink',
+        'More than 50% of widebody fleet Starlink-connected',
+        'Over 30,000 flights operated with Starlink connectivity',
+        'Only carrier in MENA region offering Starlink',
+        'Boeing 777 rollout complete, A350 rollout in progress',
+        'Up to 200 daily Starlink-connected flights',
+        'Speeds faster than many home Wi-Fi services'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi market expansion. No overlap with ASTS D2D phone service.',
+      source: 'Qatar News Agency',
+      sourceUrl: 'https://qna.org.qa/en/news/news-details?id=qatar-airways-sets-new-benchmark-with-over-100-starlink-enabled-widebody-aircraft&date=16/11/2025',
+      storyId: 'qatar-starlink-aviation',
+      storyTitle: 'Qatar Airways Starlink Aviation'
+    },
+    {
+      date: '2024-10-01',
+      competitor: 'starlink-tmobile',
+      category: 'Launch',
+      headline: 'Qatar Airways launches first Starlink-equipped flights',
+      details: [
+        'First airline to offer Starlink on widebody aircraft',
+        'Service launched with free gate-to-gate high-speed WiFi',
+        'Initial rollout on Boeing 777 fleet',
+        'Global launch customer for Starlink aviation on widebodies'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation WiFi launch - different market from ASTS ground-based D2D cellular.',
+      source: 'Future Travel Experience',
+      sourceUrl: 'https://www.futuretravelexperience.com/2026/01/qatar-airways-launches-worlds-first-starlink-equipped-boeing-787-and-completes-airbus-a350-starlink-rollout/',
+      storyId: 'qatar-starlink-aviation',
+      storyTitle: 'Qatar Airways Starlink Aviation'
     }
   ];
 
@@ -8683,6 +8753,37 @@ const CompsTab = ({ calc, currentStockPrice }) => {
   const filteredNews = competitorFilter === 'all'
     ? COMPETITOR_NEWS
     : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter);
+
+  // Group news by storyId, with ungrouped items in their own "group"
+  const groupedNews = React.useMemo(() => {
+    const groups: Record<string, { title: string; entries: (CompetitorNewsEntry & { originalIdx: number })[] }> = {};
+
+    filteredNews.forEach((news, idx) => {
+      const storyKey = news.storyId || `ungrouped-${idx}`;
+      if (!groups[storyKey]) {
+        groups[storyKey] = {
+          title: news.storyTitle || news.headline,
+          entries: []
+        };
+      }
+      groups[storyKey].entries.push({ ...news, originalIdx: idx });
+    });
+
+    // Sort entries within each group chronologically (oldest first for timeline progression)
+    Object.values(groups).forEach(group => {
+      group.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    });
+
+    // Convert to array and sort groups by most recent entry (newest story first)
+    return Object.entries(groups)
+      .map(([storyId, group]) => ({
+        storyId,
+        title: group.title,
+        entries: group.entries,
+        latestDate: group.entries[group.entries.length - 1]?.date || ''
+      }))
+      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
+  }, [filteredNews]);
 
   // Get competitor display name
   const getCompetitorName = (id: CompetitorId): string => {
@@ -8858,121 +8959,174 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
       </div>
 
-      {/* News Timeline */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {filteredNews.length === 0 ? (
+      {/* News Timeline - Grouped by Story */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        {groupedNews.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: 40 }}>
             <p className="text-slate-400">No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
           </div>
         ) : (
-          filteredNews.map((news, idx) => {
-            const implStyle = getImplicationStyle(news.implication);
-            const catStyle = getCategoryStyle(news.category);
-            const isExpanded = expandedNews === idx;
-
-            return (
-              <div
-                key={idx}
-                className={`timeline-item ${isExpanded ? 'expanded' : ''}`}
-                style={{ cursor: 'pointer' }}
-              >
-                <div
-                  className="timeline-header"
-                  onClick={() => setExpandedNews(isExpanded ? null : idx)}
-                  style={{ gridTemplateColumns: '90px 100px 120px 1fr auto auto' }}
-                >
-                  {/* Date */}
-                  <span className="t-date">{news.date}</span>
-
-                  {/* Competitor Badge */}
-                  <span
-                    style={{
-                      fontSize: '10px',
-                      padding: '4px 8px',
-                      borderRadius: '4px',
-                      background: 'var(--surface3)',
-                      color: 'var(--text2)',
-                      fontWeight: 600,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}
-                  >
-                    {getCompetitorName(news.competitor).split('/')[0].trim()}
-                  </span>
-
-                  {/* Category */}
-                  <span
-                    className="t-cat"
-                    style={{ background: catStyle.bg, color: catStyle.color }}
-                  >
-                    {news.category}
-                  </span>
-
-                  {/* Headline */}
-                  <span className="t-event">{news.headline}</span>
-
-                  {/* Implication Badge */}
-                  <span
-                    className="t-verdict"
-                    style={{ background: implStyle.bg, color: implStyle.color }}
-                  >
-                    {implStyle.label}
-                  </span>
-
-                  {/* Toggle */}
-                  <span className="t-toggle">{isExpanded ? '−' : '+'}</span>
-                </div>
-
-                {/* Expanded Details */}
-                {isExpanded && (
-                  <div className="timeline-details" style={{ maxHeight: '400px', padding: '20px' }}>
-                    <div className="t-details-content">
-                      <div className="t-details-text">
-                        <ul>
-                          {news.details.map((d, i) => (
-                            <li key={i}>{d}</li>
-                          ))}
-                        </ul>
-                        {news.astsComparison && (
-                          <div style={{ marginTop: 16, padding: '12px 16px', background: 'var(--cyan-dim)', borderRadius: 8, borderLeft: '3px solid var(--cyan)' }}>
-                            <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--cyan)', marginBottom: 4 }}>
-                              ASTS Comparison
-                            </div>
-                            <div style={{ fontSize: 14, color: 'var(--text)' }}>{news.astsComparison}</div>
-                          </div>
-                        )}
-                      </div>
-                      <div className="t-details-meta">
-                        <div className="t-meta-item">
-                          <div className="t-meta-label">Competitor</div>
-                          <div className="t-meta-value">{getCompetitorName(news.competitor)}</div>
-                        </div>
-                        <div className="t-meta-item">
-                          <div className="t-meta-label">Impact on ASTS</div>
-                          <div className="t-meta-value" style={{ color: implStyle.color }}>
-                            {news.implication === 'positive' ? 'Favorable' : news.implication === 'negative' ? 'Competitive Threat' : 'Neutral'}
-                          </div>
-                        </div>
-                        {news.source && (
-                          <div className="t-meta-item">
-                            <div className="t-meta-label">Source</div>
-                            <div className="t-meta-value">
-                              {news.sourceUrl ? (
-                                <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--cyan)' }}>
-                                  {news.source} ↗
-                                </a>
-                              ) : news.source}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+          groupedNews.map((story) => (
+            <div key={story.storyId} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+              {/* Story Header */}
+              <div style={{
+                padding: '16px 20px',
+                background: 'var(--surface2)',
+                borderBottom: '1px solid var(--border)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{story.title}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[0]?.date} → {story.entries[story.entries.length - 1]?.date}
                   </div>
-                )}
+                </div>
+                <span style={{
+                  fontSize: '10px',
+                  padding: '4px 10px',
+                  borderRadius: '4px',
+                  background: 'var(--surface3)',
+                  color: 'var(--text2)',
+                  fontWeight: 600
+                }}>
+                  {getCompetitorName(story.entries[0]?.competitor).split('/')[0].trim()}
+                </span>
               </div>
-            );
-          })
+
+              {/* Story Entries - Chronological */}
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {story.entries.map((news, entryIdx) => {
+                  const implStyle = getImplicationStyle(news.implication);
+                  const catStyle = getCategoryStyle(news.category);
+                  const expandKey = `${story.storyId}-${entryIdx}`;
+                  const isExpanded = expandedNews === expandKey;
+
+                  return (
+                    <div
+                      key={entryIdx}
+                      style={{
+                        borderBottom: entryIdx < story.entries.length - 1 ? '1px solid var(--border)' : 'none',
+                        background: isExpanded ? 'var(--surface2)' : 'transparent',
+                        transition: 'background 0.2s'
+                      }}
+                    >
+                      <div
+                        onClick={() => setExpandedNews(isExpanded ? null : expandKey)}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '90px 100px 1fr auto auto',
+                          gap: 12,
+                          padding: '14px 20px',
+                          cursor: 'pointer',
+                          alignItems: 'center'
+                        }}
+                      >
+                        {/* Date */}
+                        <span className="t-date" style={{ fontSize: 12 }}>{news.date}</span>
+
+                        {/* Category */}
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            background: catStyle.bg,
+                            color: catStyle.color,
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}
+                        >
+                          {news.category}
+                        </span>
+
+                        {/* Headline */}
+                        <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{news.headline}</span>
+
+                        {/* Implication Badge */}
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            background: implStyle.bg,
+                            color: implStyle.color,
+                            fontWeight: 600
+                          }}
+                        >
+                          {news.implication === 'positive' ? '✓' : news.implication === 'negative' ? '⚠' : '○'}
+                        </span>
+
+                        {/* Toggle */}
+                        <span style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: 6,
+                          background: isExpanded ? 'var(--cyan)' : 'var(--surface3)',
+                          color: isExpanded ? 'var(--bg)' : 'var(--text3)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 14,
+                          transition: 'all 0.2s'
+                        }}>
+                          {isExpanded ? '−' : '+'}
+                        </span>
+                      </div>
+
+                      {/* Expanded Details */}
+                      {isExpanded && (
+                        <div style={{ padding: '0 20px 16px 20px' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 20 }}>
+                            <div>
+                              <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
+                                {news.details.map((d, i) => (
+                                  <li key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, fontSize: 13, color: 'var(--text2)' }}>
+                                    <span style={{ color: 'var(--cyan)' }}>•</span>
+                                    {d}
+                                  </li>
+                                ))}
+                              </ul>
+                              {news.astsComparison && (
+                                <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--cyan-dim)', borderRadius: 6, borderLeft: '3px solid var(--cyan)' }}>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--cyan)', marginBottom: 4 }}>
+                                    ASTS Comparison
+                                  </div>
+                                  <div style={{ fontSize: 13, color: 'var(--text)' }}>{news.astsComparison}</div>
+                                </div>
+                              )}
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 140 }}>
+                              <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
+                                <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Impact</div>
+                                <div style={{ fontSize: 12, fontWeight: 600, color: implStyle.color }}>
+                                  {news.implication === 'positive' ? 'Favorable' : news.implication === 'negative' ? 'Threat' : 'Neutral'}
+                                </div>
+                              </div>
+                              {news.source && (
+                                <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Source</div>
+                                  <div style={{ fontSize: 11 }}>
+                                    {news.sourceUrl ? (
+                                      <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--cyan)' }}>
+                                        {news.source} ↗
+                                      </a>
+                                    ) : news.source}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))
         )}
       </div>
 
