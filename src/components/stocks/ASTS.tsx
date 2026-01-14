@@ -8658,20 +8658,24 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // },
     // ═══════════════════════════════════════════════════════════════════════════
 
-    // Example entry - remove or update with real news
+    // === Jan 14, 2026 - Lufthansa Group Starlink Aviation Deal ===
     {
       date: '2026-01-14',
       competitor: 'starlink-tmobile',
-      category: 'Coverage',
-      headline: 'Placeholder: Add competitor news here',
+      category: 'Partnership',
+      headline: 'Lufthansa Group selects Starlink for 850-aircraft fleet',
       details: [
-        'This is a placeholder entry showing the data structure',
-        'Add real competitor news entries above this one',
-        'Newest entries go at the top of the array'
+        'Largest European airline group to adopt Starlink for in-flight WiFi',
+        'All 850 aircraft to be equipped by 2029, rollout starts H2 2026',
+        'Covers Lufthansa, SWISS, Austrian, Brussels Airlines, ITA Airways, Eurowings, Air Dolomiti, Edelweiss',
+        'Free for Miles & More Travel ID users (free to register)',
+        'Enables streaming, cloud-based work, high-speed applications in-flight',
+        'Joins United, Qatar, Air France, Emirates, Virgin Atlantic, IAG on Starlink aviation'
       ],
       implication: 'neutral',
-      astsComparison: 'ASTS offers full broadband vs text-only from competitors',
-      source: 'Example',
+      astsComparison: 'Different market: Starlink aviation = in-flight WiFi with dedicated equipment. ASTS = direct-to-phone cellular on ground. No overlap.',
+      source: 'Lufthansa Group Newsroom',
+      sourceUrl: 'https://newsroom.lufthansagroup.com/en/new-lufthansa-group-collaboration-with-starlink-high-speed-internet-on-all-fleets-across-all-airlines/'
     }
   ];
 
