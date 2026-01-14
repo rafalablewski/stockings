@@ -248,6 +248,55 @@ interface AnalystCoverage {
   reports: AnalystReportEntry[];
 }
 
+// ============================================================================
+// COMPETITOR NEWS TRACKING INTERFACES
+// ============================================================================
+
+/** Competitor identifiers for D2D/satellite space */
+type CompetitorId = 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-kuiper' | 'other';
+
+/** News category types */
+type CompetitorNewsCategory = 'Launch' | 'Partnership' | 'Technology' | 'Regulatory' | 'Financial' | 'Coverage' | 'Product';
+
+/** Implication for ASTS competitive position */
+type ASTSImplication = 'positive' | 'neutral' | 'negative';
+
+/** Individual competitor news entry */
+interface CompetitorNewsEntry {
+  date: string;
+  competitor: CompetitorId;
+  category: CompetitorNewsCategory;
+  headline: string;
+  details: string[];
+  implication: ASTSImplication;
+  astsComparison?: string;  // How this compares to ASTS capability/position
+  source?: string;
+  sourceUrl?: string;
+}
+
+/** Competitor profile with capabilities */
+interface CompetitorProfile {
+  id: CompetitorId;
+  name: string;
+  description: string;
+  technology: string;
+  currentStatus: string;
+  capabilities: {
+    voice: boolean;
+    text: boolean;
+    data: boolean;
+    video: boolean;
+    unmodifiedPhones: boolean;
+    globalCoverage: boolean;
+  };
+  keyMetrics?: {
+    satellites?: number;
+    coverage?: string;
+    subscribers?: string;
+    funding?: string;
+  };
+}
+
 /** Rating normalization map */
 const RATING_NORMALIZATION: Record<string, 'bullish' | 'neutral' | 'bearish'> = {
   // Bullish ratings
@@ -8513,24 +8562,462 @@ const TimelineTab = () => {
 };
 
 const CompsTab = ({ calc, currentStockPrice }) => {
-  const comps = [{ name: 'ASTS', mc: calc.marketCap, evRev: calc.evToRevFwd, pSub: calc.pricePerSub, subs: calc.potentialSubs }, { name: 'Starlink', mc: 175000, evRev: 17, pSub: 43750, subs: 4 }, { name: 'Verizon', mc: 175000, evRev: 1.3, pSub: 1520, subs: 115 }, { name: 'T-Mobile', mc: 280000, evRev: 3.4, pSub: 2240, subs: 125 }, { name: 'AT&T', mc: 165000, evRev: 1.3, pSub: 1500, subs: 110 }];
+  const [competitorFilter, setCompetitorFilter] = useState<CompetitorId | 'all'>('all');
+  const [expandedNews, setExpandedNews] = useState<number | null>(null);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // VALUATION COMPARABLES - Market metrics comparison
+  // ═══════════════════════════════════════════════════════════════════════════
+  const comps = [
+    { name: 'ASTS', mc: calc.marketCap, evRev: calc.evToRevFwd, pSub: calc.pricePerSub, subs: calc.potentialSubs },
+    { name: 'Starlink', mc: 175000, evRev: 17, pSub: 43750, subs: 4 },
+    { name: 'Verizon', mc: 175000, evRev: 1.3, pSub: 1520, subs: 115 },
+    { name: 'T-Mobile', mc: 280000, evRev: 3.4, pSub: 2240, subs: 125 },
+    { name: 'AT&T', mc: 165000, evRev: 1.3, pSub: 1500, subs: 110 }
+  ];
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPETITOR PROFILES - D2D/Satellite competitors to track
+  // Update capabilities and status as new information emerges
+  // ═══════════════════════════════════════════════════════════════════════════
+  const COMPETITOR_PROFILES: CompetitorProfile[] = [
+    {
+      id: 'starlink-tmobile',
+      name: 'Starlink / T-Mobile',
+      description: 'SpaceX satellite constellation partnered with T-Mobile for direct-to-cell service',
+      technology: 'Modified Starlink V2 satellites with cellular capability',
+      currentStatus: 'Live with text messaging in beta, voice/data roadmap unclear',
+      capabilities: { voice: false, text: true, data: false, video: false, unmodifiedPhones: true, globalCoverage: false },
+      keyMetrics: { satellites: 7000, coverage: 'Continental US (partial)', subscribers: 'Beta testing', funding: 'SpaceX backed' }
+    },
+    {
+      id: 'lynk',
+      name: 'Lynk Global',
+      description: 'Direct-to-standard-phone satellite service, similar B2B model to ASTS',
+      technology: 'Small satellites, limited bandwidth per satellite',
+      currentStatus: 'Commercial agreements signed, limited coverage',
+      capabilities: { voice: false, text: true, data: false, video: false, unmodifiedPhones: true, globalCoverage: false },
+      keyMetrics: { satellites: 10, coverage: 'Equatorial regions', subscribers: '<100K', funding: '$150M raised' }
+    },
+    {
+      id: 'apple-globalstar',
+      name: 'Apple / Globalstar',
+      description: 'Emergency SOS service on iPhone 14+, expanding to messaging',
+      technology: 'Globalstar constellation with Apple-designed modem',
+      currentStatus: 'Emergency SOS live, expanding features',
+      capabilities: { voice: false, text: true, data: false, video: false, unmodifiedPhones: false, globalCoverage: true },
+      keyMetrics: { satellites: 24, coverage: 'Global (emergency)', subscribers: 'All iPhone 14+ users', funding: '$450M from Apple' }
+    },
+    {
+      id: 'skylo',
+      name: 'Skylo Technologies',
+      description: 'NB-IoT satellite connectivity using existing GEO satellites',
+      technology: 'Software-based, uses existing satellite infrastructure',
+      currentStatus: 'Commercial, focused on IoT not consumer phones',
+      capabilities: { voice: false, text: false, data: true, video: false, unmodifiedPhones: false, globalCoverage: true },
+      keyMetrics: { satellites: 0, coverage: 'Global via partners', subscribers: 'IoT focused', funding: '$116M raised' }
+    },
+    {
+      id: 'iridium',
+      name: 'Iridium',
+      description: 'Legacy satellite phone provider, potential D2D pivot',
+      technology: 'LEO constellation, proprietary spectrum',
+      currentStatus: 'Satellite phones only, D2D partnership discussions',
+      capabilities: { voice: true, text: true, data: true, video: false, unmodifiedPhones: false, globalCoverage: true },
+      keyMetrics: { satellites: 66, coverage: 'Global', subscribers: '2.1M', funding: 'Public (IRDM)' }
+    },
+    {
+      id: 'amazon-kuiper',
+      name: 'Amazon Kuiper',
+      description: 'Amazon\'s satellite internet constellation, potential D2D threat',
+      technology: 'LEO broadband constellation under development',
+      currentStatus: 'First satellites launched 2023, D2D not announced',
+      capabilities: { voice: false, text: false, data: false, video: false, unmodifiedPhones: false, globalCoverage: false },
+      keyMetrics: { satellites: 2, coverage: 'Testing', subscribers: 'N/A', funding: '$10B committed' }
+    }
+  ];
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPETITOR NEWS - Add new entries at TOP (newest first)
+  // NEVER delete old entries - this is an audit trail
+  // ═══════════════════════════════════════════════════════════════════════════
+  const COMPETITOR_NEWS: CompetitorNewsEntry[] = [
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ADD NEW COMPETITOR NEWS ENTRIES HERE (newest first)
+    // Format:
+    // {
+    //   date: 'YYYY-MM-DD',
+    //   competitor: 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-kuiper' | 'other',
+    //   category: 'Launch' | 'Partnership' | 'Technology' | 'Regulatory' | 'Financial' | 'Coverage' | 'Product',
+    //   headline: 'Brief headline',
+    //   details: ['Bullet point 1', 'Bullet point 2'],
+    //   implication: 'positive' | 'neutral' | 'negative',  // for ASTS
+    //   astsComparison: 'How this compares to ASTS',
+    //   source: 'Source name',
+    //   sourceUrl: 'https://...'
+    // },
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // Example entry - remove or update with real news
+    {
+      date: '2026-01-14',
+      competitor: 'starlink-tmobile',
+      category: 'Coverage',
+      headline: 'Placeholder: Add competitor news here',
+      details: [
+        'This is a placeholder entry showing the data structure',
+        'Add real competitor news entries above this one',
+        'Newest entries go at the top of the array'
+      ],
+      implication: 'neutral',
+      astsComparison: 'ASTS offers full broadband vs text-only from competitors',
+      source: 'Example',
+    }
+  ];
+
+  // Filter news by competitor
+  const filteredNews = competitorFilter === 'all'
+    ? COMPETITOR_NEWS
+    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter);
+
+  // Get competitor display name
+  const getCompetitorName = (id: CompetitorId): string => {
+    const profile = COMPETITOR_PROFILES.find(p => p.id === id);
+    return profile?.name || id;
+  };
+
+  // Implication styling
+  const getImplicationStyle = (impl: ASTSImplication) => {
+    switch (impl) {
+      case 'positive': return { bg: 'rgba(126,231,135,0.15)', color: '#7EE787', label: '✓ Good for ASTS' };
+      case 'negative': return { bg: 'rgba(255,123,114,0.15)', color: '#FF7B72', label: '⚠ Threat to ASTS' };
+      default: return { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8', label: '○ Neutral' };
+    }
+  };
+
+  // Category styling
+  const getCategoryStyle = (cat: CompetitorNewsCategory) => {
+    const styles: Record<CompetitorNewsCategory, { bg: string; color: string }> = {
+      'Launch': { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
+      'Partnership': { bg: 'rgba(59,130,246,0.15)', color: '#60a5fa' },
+      'Technology': { bg: 'rgba(168,85,247,0.15)', color: '#c084fc' },
+      'Regulatory': { bg: 'rgba(234,179,8,0.15)', color: '#facc15' },
+      'Financial': { bg: 'rgba(34,211,238,0.15)', color: '#22d3ee' },
+      'Coverage': { bg: 'rgba(249,115,22,0.15)', color: '#fb923c' },
+      'Product': { bg: 'rgba(236,72,153,0.15)', color: '#f472b6' },
+    };
+    return styles[cat] || { bg: 'var(--surface3)', color: 'var(--text3)' };
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <h2 className="section-head">Comparables</h2>
-      <div className="highlight"><h3>Comparable Companies</h3><p className="text-sm">No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
-      <div className="card"><div className="card-title">Comparison</div><table className="w-full text-sm"><thead><tr className="text-slate-400 text-xs border-b border-slate-700"><th className="text-left py-2">Company</th><th className="text-right">Mkt Cap</th><th className="text-right">EV/Rev</th><th className="text-right">$/Sub</th><th className="text-right">Subs</th></tr></thead><tbody>{comps.map(c => (<tr key={c.name} className={`border-t border-slate-800 ${c.name === 'ASTS' ? 'bg-cyan-900/20' : ''}`}><td className="py-2">{c.name}</td><td className="py-2 text-right">${(c.mc / 1000).toFixed(0)}B</td><td className="py-2 text-right">{c.evRev.toFixed(1)}x</td><td className="py-2 text-right">${c.pSub.toLocaleString()}</td><td className="py-2 text-right">{c.subs.toFixed(0)}M</td></tr>))}</tbody></table></div>
-      <div className="g2">
-        <div className="card"><div className="card-title">EV/Rev</div><ResponsiveContainer width="100%" height={150}><BarChart data={comps} layout="vertical"><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis type="number" stroke="var(--text3)" /><YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} /><Bar dataKey="evRev" fill="var(--cyan)">{comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? '#06b6d4' : '#475569'} />))}</Bar></BarChart></ResponsiveContainer></div>
-        <div className="card"><div className="card-title">$/Sub</div><ResponsiveContainer width="100%" height={150}><BarChart data={comps} layout="vertical"><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis type="number" stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(0)}k`} /><YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} /><Bar dataKey="pSub" fill="var(--violet)">{comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? '#8b5cf6' : '#475569'} />))}</Bar></BarChart></ResponsiveContainer></div>
+      <h2 className="section-head">Comparables & Competitor Intelligence</h2>
+
+      {/* Valuation Comparables Section */}
+      <div className="highlight"><h3>📊 Valuation Comparables</h3><p className="text-sm text-slate-400">No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
+
+      <div className="card">
+        <div className="card-title">Market Comparison</div>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-slate-400 text-xs border-b border-slate-700">
+              <th className="text-left py-2">Company</th>
+              <th className="text-right">Mkt Cap</th>
+              <th className="text-right">EV/Rev</th>
+              <th className="text-right">$/Sub</th>
+              <th className="text-right">Subs</th>
+            </tr>
+          </thead>
+          <tbody>
+            {comps.map(c => (
+              <tr key={c.name} className={`border-t border-slate-800 ${c.name === 'ASTS' ? 'bg-cyan-900/20' : ''}`}>
+                <td className="py-2">{c.name}</td>
+                <td className="py-2 text-right">${(c.mc / 1000).toFixed(0)}B</td>
+                <td className="py-2 text-right">{c.evRev.toFixed(1)}x</td>
+                <td className="py-2 text-right">${c.pSub.toLocaleString()}</td>
+                <td className="py-2 text-right">{c.subs.toFixed(0)}M</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      
-      <CFANotes title="CFA Level III — Comparable Analysis" items={[
+
+      <div className="g2">
+        <div className="card">
+          <div className="card-title">EV/Rev Comparison</div>
+          <ResponsiveContainer width="100%" height={150}>
+            <BarChart data={comps} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis type="number" stroke="var(--text3)" />
+              <YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} />
+              <Bar dataKey="evRev" fill="var(--cyan)">
+                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? '#06b6d4' : '#475569'} />))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="card">
+          <div className="card-title">$/Subscriber Comparison</div>
+          <ResponsiveContainer width="100%" height={150}>
+            <BarChart data={comps} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis type="number" stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+              <YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} />
+              <Bar dataKey="pSub" fill="var(--violet)">
+                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? '#8b5cf6' : '#475569'} />))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* D2D Competitor Capability Matrix */}
+      <div className="highlight"><h3>🛰️ D2D Competitor Capabilities</h3><p className="text-sm text-slate-400">Direct-to-device competitors and their current capabilities vs ASTS</p></div>
+
+      <div className="card">
+        <div className="card-title">Capability Comparison</div>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-slate-400 text-xs border-b border-slate-700">
+              <th className="text-left py-2">Competitor</th>
+              <th className="text-center">Voice</th>
+              <th className="text-center">Text</th>
+              <th className="text-center">Data</th>
+              <th className="text-center">Video</th>
+              <th className="text-center">Unmod. Phones</th>
+              <th className="text-center">Global</th>
+              <th className="text-right">Satellites</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* ASTS Row - highlighted */}
+            <tr className="border-t border-slate-800 bg-cyan-900/20">
+              <td className="py-2 font-semibold text-cyan-400">ASTS SpaceMobile</td>
+              <td className="py-2 text-center text-green-400">✓</td>
+              <td className="py-2 text-center text-green-400">✓</td>
+              <td className="py-2 text-center text-green-400">✓</td>
+              <td className="py-2 text-center text-green-400">✓</td>
+              <td className="py-2 text-center text-green-400">✓</td>
+              <td className="py-2 text-center text-yellow-400">Building</td>
+              <td className="py-2 text-right text-cyan-400">6+</td>
+            </tr>
+            {/* Competitor Rows */}
+            {COMPETITOR_PROFILES.map(comp => (
+              <tr key={comp.id} className="border-t border-slate-800">
+                <td className="py-2">{comp.name}</td>
+                <td className="py-2 text-center">{comp.capabilities.voice ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
+                <td className="py-2 text-center">{comp.capabilities.text ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
+                <td className="py-2 text-center">{comp.capabilities.data ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
+                <td className="py-2 text-center">{comp.capabilities.video ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
+                <td className="py-2 text-center">{comp.capabilities.unmodifiedPhones ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
+                <td className="py-2 text-center">{comp.capabilities.globalCoverage ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
+                <td className="py-2 text-right text-slate-400">{comp.keyMetrics?.satellites || 'N/A'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Competitor News Intelligence Section */}
+      <div className="highlight">
+        <h3>📰 Competitor News Intelligence</h3>
+        <p className="text-sm text-slate-400">Track competitor developments to assess ASTS competitive position</p>
+      </div>
+
+      {/* Filter Bar */}
+      <div className="card" style={{ padding: '12px 16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <span className="text-xs text-slate-400 uppercase tracking-wider">Filter:</span>
+          <button
+            onClick={() => setCompetitorFilter('all')}
+            className={`nav-btn ${competitorFilter === 'all' ? 'active' : ''}`}
+            style={{ padding: '6px 12px', fontSize: '12px' }}
+          >
+            All ({COMPETITOR_NEWS.length})
+          </button>
+          {COMPETITOR_PROFILES.map(comp => {
+            const count = COMPETITOR_NEWS.filter(n => n.competitor === comp.id).length;
+            if (count === 0) return null;
+            return (
+              <button
+                key={comp.id}
+                onClick={() => setCompetitorFilter(comp.id)}
+                className={`nav-btn ${competitorFilter === comp.id ? 'active' : ''}`}
+                style={{ padding: '6px 12px', fontSize: '12px' }}
+              >
+                {comp.name.split('/')[0].trim()} ({count})
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* News Timeline */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {filteredNews.length === 0 ? (
+          <div className="card" style={{ textAlign: 'center', padding: 40 }}>
+            <p className="text-slate-400">No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
+          </div>
+        ) : (
+          filteredNews.map((news, idx) => {
+            const implStyle = getImplicationStyle(news.implication);
+            const catStyle = getCategoryStyle(news.category);
+            const isExpanded = expandedNews === idx;
+
+            return (
+              <div
+                key={idx}
+                className={`timeline-item ${isExpanded ? 'expanded' : ''}`}
+                style={{ cursor: 'pointer' }}
+              >
+                <div
+                  className="timeline-header"
+                  onClick={() => setExpandedNews(isExpanded ? null : idx)}
+                  style={{ gridTemplateColumns: '90px 100px 120px 1fr auto auto' }}
+                >
+                  {/* Date */}
+                  <span className="t-date">{news.date}</span>
+
+                  {/* Competitor Badge */}
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      background: 'var(--surface3)',
+                      color: 'var(--text2)',
+                      fontWeight: 600,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}
+                  >
+                    {getCompetitorName(news.competitor).split('/')[0].trim()}
+                  </span>
+
+                  {/* Category */}
+                  <span
+                    className="t-cat"
+                    style={{ background: catStyle.bg, color: catStyle.color }}
+                  >
+                    {news.category}
+                  </span>
+
+                  {/* Headline */}
+                  <span className="t-event">{news.headline}</span>
+
+                  {/* Implication Badge */}
+                  <span
+                    className="t-verdict"
+                    style={{ background: implStyle.bg, color: implStyle.color }}
+                  >
+                    {implStyle.label}
+                  </span>
+
+                  {/* Toggle */}
+                  <span className="t-toggle">{isExpanded ? '−' : '+'}</span>
+                </div>
+
+                {/* Expanded Details */}
+                {isExpanded && (
+                  <div className="timeline-details" style={{ maxHeight: '400px', padding: '20px' }}>
+                    <div className="t-details-content">
+                      <div className="t-details-text">
+                        <ul>
+                          {news.details.map((d, i) => (
+                            <li key={i}>{d}</li>
+                          ))}
+                        </ul>
+                        {news.astsComparison && (
+                          <div style={{ marginTop: 16, padding: '12px 16px', background: 'var(--cyan-dim)', borderRadius: 8, borderLeft: '3px solid var(--cyan)' }}>
+                            <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--cyan)', marginBottom: 4 }}>
+                              ASTS Comparison
+                            </div>
+                            <div style={{ fontSize: 14, color: 'var(--text)' }}>{news.astsComparison}</div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="t-details-meta">
+                        <div className="t-meta-item">
+                          <div className="t-meta-label">Competitor</div>
+                          <div className="t-meta-value">{getCompetitorName(news.competitor)}</div>
+                        </div>
+                        <div className="t-meta-item">
+                          <div className="t-meta-label">Impact on ASTS</div>
+                          <div className="t-meta-value" style={{ color: implStyle.color }}>
+                            {news.implication === 'positive' ? 'Favorable' : news.implication === 'negative' ? 'Competitive Threat' : 'Neutral'}
+                          </div>
+                        </div>
+                        {news.source && (
+                          <div className="t-meta-item">
+                            <div className="t-meta-label">Source</div>
+                            <div className="t-meta-value">
+                              {news.sourceUrl ? (
+                                <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--cyan)' }}>
+                                  {news.source} ↗
+                                </a>
+                              ) : news.source}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Competitor Profiles (Collapsible) */}
+      <div className="card">
+        <div className="card-title">📋 Competitor Profiles</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {COMPETITOR_PROFILES.map(comp => (
+            <div key={comp.id} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--text)' }}>{comp.name}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text2)', marginTop: 4 }}>{comp.description}</div>
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginTop: 12 }}>
+                <div>
+                  <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Technology</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.technology}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Status</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.currentStatus}</div>
+                </div>
+                {comp.keyMetrics?.coverage && (
+                  <div>
+                    <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Coverage</div>
+                    <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.keyMetrics.coverage}</div>
+                  </div>
+                )}
+                {comp.keyMetrics?.funding && (
+                  <div>
+                    <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Funding</div>
+                    <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.keyMetrics.funding}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <CFANotes title="CFA Level III — Competitive Analysis" items={[
         { term: 'No Direct Comps', def: 'ASTS is unique — space-based D2C cellular. Starlink (D2C satellite) and telcos (terrestrial) are imperfect proxies.' },
-        { term: 'EV/Revenue Multiple', def: 'Enterprise value relative to sales. Pre-profit companies valued on revenue. Higher growth = higher multiple.' },
-        { term: 'Price per Subscriber', def: 'Market cap divided by potential subscribers. Compare to telco acquisition multiples (~$300-500/sub for mature).' },
-        { term: 'Starlink Reference', def: '$175B private valuation, 4M+ subs, D2C model. But different: dedicated terminals, no MNO partnerships.' },
-        { term: 'Telco Multiples', def: 'Mature telcos trade 1-3x revenue. ASTS deserves premium for growth but discount for execution risk.' },
-        { term: 'Sum-of-Parts Option', def: 'Value each geography/partner separately. Diversification may warrant premium vs single-market telcos.' },
+        { term: 'Competitive Moat', def: 'Track competitor progress to assess durability of ASTS technology lead. 4+ year head start but competitors catching up.' },
+        { term: 'Capability Gap', def: 'ASTS offers voice/text/data/video. Competitors mostly text-only. Gap may narrow over time.' },
+        { term: 'News Sentiment', def: 'Positive = validates market, neutral = expected progress, negative = direct competitive threat.' },
+        { term: 'Market Expansion', def: 'Competitor activity can grow the overall D2D market, benefiting all players including ASTS.' },
+        { term: 'Partnership Watch', def: 'Monitor competitor MNO deals. Exclusive deals can lock out markets; non-exclusive validates demand.' },
       ]} />
     </div>
   );
