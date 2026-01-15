@@ -3230,16 +3230,22 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
 
       {/* STEP 1: YEAR SELECTOR */}
       <div className="card"><div className="card-title">Step 1: Select Target Year</div>
-        <div className="flex flex-wrap gap-2 mb-3">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
           {years.map(y => (
             <button
               key={y}
               onClick={() => setTargetYear(y)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                y === targetYear 
-                  ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30' 
-                  : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
-              }`}
+              style={{
+                padding: '12px 20px',
+                borderRadius: 8,
+                border: y === targetYear ? '2px solid var(--mint)' : '1px solid var(--border)',
+                background: y === targetYear ? 'rgba(0,212,170,0.15)' : 'var(--surface2)',
+                color: y === targetYear ? 'var(--mint)' : 'var(--text2)',
+                cursor: 'pointer',
+                fontWeight: y === targetYear ? 700 : 400,
+                fontFamily: 'Space Mono',
+                fontSize: 16,
+              }}
             >
               {y}
             </button>
@@ -3260,23 +3266,23 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
 
       {/* STEP 2: SCENARIO SELECTOR */}
       <div className="card"><div className="card-title">Step 2: Select Scenario</div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {scenarios.map(s => (
             <button
               key={s.key}
               onClick={() => setSelectedScenario(s.key)}
-              className={`p-3 rounded-lg border transition-all text-left ${
-                s.key === selectedScenario 
-                  ? 'border-cyan-500 bg-cyan-900/30 shadow-lg shadow-cyan-500/20' 
-                  : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
-              }`}
+              style={{
+                padding: '12px 16px',
+                borderRadius: 8,
+                border: s.key === selectedScenario ? `2px solid ${s.color}` : '1px solid var(--border)',
+                background: s.key === selectedScenario ? `${s.color}22` : 'var(--surface2)',
+                color: s.key === selectedScenario ? s.color : 'var(--text2)',
+                cursor: 'pointer',
+                fontWeight: s.key === selectedScenario ? 700 : 400,
+                fontSize: 14,
+              }}
             >
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg">{s.label}</span>
-                <span className="font-medium">{s.name}</span>
-              </div>
-              <div className="text-xs text-slate-400">{s.desc}</div>
-              <div className="text-xs text-slate-500 mt-1">{s.prob}% probability</div>
+              {s.name} ({s.prob}%)
             </button>
           ))}
         </div>
