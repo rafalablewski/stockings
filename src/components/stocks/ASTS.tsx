@@ -1658,13 +1658,15 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     { label: 'Q4\'25', value: block1Sats + block2Sats, display: `${block1Sats + block2Sats}` },
   ];
 
+  // Cash data from 10-Q/10-K filings (cashAndEquiv)
   const cashData = [
-    { label: 'Q1\'24', value: 280, display: '$280M' },
-    { label: 'Q2\'24', value: 412, display: '$412M' },
-    { label: 'Q3\'24', value: 518, display: '$518M' },
-    { label: 'Q4\'24', value: 765, display: '$765M' },
-    { label: 'Q1\'25', value: 1100, display: '$1.1B' },
-    { label: 'Q2\'25', value: 3200, display: '$3.2B' },
+    { label: 'Q1\'24', value: 212, display: '$212M' },
+    { label: 'Q2\'24', value: 288, display: '$288M' },
+    { label: 'Q3\'24', value: 519, display: '$519M' },
+    { label: 'Q4\'24', value: 568, display: '$568M' },
+    { label: 'Q1\'25', value: 875, display: '$875M' },
+    { label: 'Q2\'25', value: 939, display: '$939M' },
+    { label: 'Q3\'25', value: 1220, display: '$1.2B' },
   ];
 
   const marketCapData = [
