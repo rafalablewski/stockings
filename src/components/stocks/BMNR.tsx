@@ -3881,7 +3881,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       fullAnalysis: {
         context: 'The 10-K filing confirmed what we suspected: BMNR has pulled off one of the most remarkable corporate pivots in recent memory. From a distressed BTC miner with going concern warnings to an $8.8B ETH treasury powerhouse — in less than 6 months.',
         keyHighlights: [
-          'First profitable fiscal year: $349M net income vs ($3.3M) loss prior year',
+          'First profitable fiscal year: $328M net income vs ($3.3M) loss prior year',
           'Going concern language ELIMINATED — balance sheet is now fortress-like',
           '$8.36B raised through capital markets, all deployed into ETH',
           'Retained earnings turned positive ($337M) for first time in company history',
@@ -4516,7 +4516,7 @@ const SECFilingsTab = () => {
     { quarter: 'Q1 FY25', cash: 0.8, crypto: 0.15, cryptoType: 'BTC', assets: 7.93, liabilities: 4.47, equity: 3.47, revenue: 1.2, netIncome: -0.975, shares: 39.7, era: '⛏️ BTC' },
     { quarter: 'Q2 FY25', cash: 0.5, crypto: 0.25, cryptoType: 'BTC', assets: 7.50, liabilities: 4.82, equity: 2.68, revenue: 1.5, netIncome: -1.15, shares: 39.7, era: '⛏️ BTC' },
     { quarter: 'Q3 FY25', cash: 1.5, crypto: 0.17, cryptoType: 'BTC', assets: 8.27, liabilities: 5.39, equity: 2.88, revenue: 2.1, netIncome: -0.62, shares: 6.2, era: '⛏️ BTC' },
-    { quarter: 'FY25 10-K', cash: 512, crypto: 8260, cryptoType: 'ETH', assets: 8800, liabilities: 102, equity: 8690, revenue: 5.8, netIncome: 349, shares: 384, era: '💎 ETH' },
+    { quarter: 'FY25 10-K', cash: 512, crypto: 8260, cryptoType: 'ETH', assets: 8800, liabilities: 102, equity: 8690, revenue: 5.8, netIncome: 328, shares: 384, era: '💎 ETH' },
     { quarter: 'Q1 FY26', cash: 888, crypto: 10562, cryptoType: 'ETH', assets: 11487, liabilities: 236, equity: 11252, revenue: 2.3, netIncome: -5204, shares: 409, era: '💎 ETH' },
   ];
   
