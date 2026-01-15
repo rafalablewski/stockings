@@ -1566,8 +1566,6 @@ const BMNRDilutionAnalysis = () => {
 
 // OVERVIEW TAB with CFA Guide
 const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend }) => {
-  const [chartType, setChartType] = useState('holdings');
-
   // Chart data - HISTORICAL ONLY
   // BMNR pivoted to ETH treasury in July 2025 (was BTC mining before)
   const holdingsData = [
@@ -1578,27 +1576,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     { label: 'Dec\'25', value: 4000000, display: '4M' },
     { label: 'Jan\'26', value: currentETH, display: `${(currentETH / 1000000).toFixed(2)}M` },
   ];
-
-  // NAV per share (only meaningful after ETH treasury pivot)
-  const navData = [
-    { label: 'Jul\'25', value: 5, display: '$5' },
-    { label: 'Aug\'25', value: 12, display: '$12' },
-    { label: 'Sep\'25', value: 18, display: '$18' },
-    { label: 'Oct\'25', value: 22, display: '$22' },
-    { label: 'Dec\'25', value: 28, display: '$28' },
-    { label: 'Jan\'26', value: calc.currentNAV, display: `$${calc.currentNAV.toFixed(0)}` },
-  ];
-
-  // Dividend data - HISTORICAL ONLY (first dividend announced Nov 2025)
-  const dividendData = [
-    { label: 'Pre-Nov\'25', value: 0, display: '$0' },
-    { label: 'Nov\'25', value: 0.01, display: '$0.01' },
-    { label: 'Dec\'25', value: 0.01, display: '$0.01' },
-    { label: 'Jan\'26', value: quarterlyDividend, display: `$${quarterlyDividend.toFixed(2)}` },
-  ];
-
-  const chartData = chartType === 'holdings' ? holdingsData : chartType === 'nav' ? navData : dividendData;
-  const maxValue = Math.max(...chartData.map(d => d.value));
+  const maxValue = Math.max(...holdingsData.map(d => d.value));
 
   return (
   <>
@@ -1633,36 +1611,9 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div className="card" style={{ marginTop: 32 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div className="card-title" style={{ marginBottom: 0 }}>
-          {chartType === 'holdings' ? 'ETH Holdings Growth' : chartType === 'nav' ? 'NAV/Share Progression' : 'Dividend History'}
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          {[
-            { id: 'holdings', label: 'ETH Holdings' },
-            { id: 'nav', label: 'NAV/Share' },
-            { id: 'dividend', label: 'Dividend' },
-          ].map(btn => (
-            <button
-              key={btn.id}
-              onClick={() => setChartType(btn.id)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: 6,
-                border: chartType === btn.id ? '1px solid var(--violet)' : '1px solid var(--border)',
-                background: chartType === btn.id ? 'rgba(139,92,246,0.1)' : 'transparent',
-                color: chartType === btn.id ? 'var(--violet)' : 'var(--text2)',
-                fontSize: 12,
-                cursor: 'pointer',
-              }}
-            >
-              {btn.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <div className="card-title">ETH Holdings Growth</div>
       <div className="bars">
-        {chartData.map((d, i) => (
+        {holdingsData.map((d, i) => (
           <div key={i} className="bar-col">
             <div className="bar-val">{d.display}</div>
             <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--violet)' }} />
