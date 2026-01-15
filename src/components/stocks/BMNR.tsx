@@ -2535,26 +2535,29 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <Card label="FD Mkt Cap" value={`$${((totalFD * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Fully diluted" color="yellow" />
       </div>
 
-      {/* View Toggle */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 24 }}>
+      {/* Navigation Cards */}
+      <div className="g5" style={{ marginTop: 24 }}>
         {[
-          { id: 'structure', label: '📊 Share Structure' },
-          { id: 'shareholders', label: '👥 Major Holders' },
-          { id: 'offerings', label: '💰 Offerings' },
-          { id: 'plans', label: '🎁 Plans' },
-          { id: 'dilution', label: '📈 Dilution' },
-        ].map(btn => (
-          <button
-            key={btn.id}
-            onClick={() => setCapitalView(btn.id)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              capitalView === btn.id
-                ? 'bg-violet-600 text-white'
-                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-            }`}
+          { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Common + converted preferred' },
+          { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Bill Miller + institutions' },
+          { id: 'offerings', value: `${equityOfferings.length}`, label: 'ATM Programs', sub: '$24.5B shelf active' },
+          { id: 'plans', value: `${warrants.length}`, label: 'Warrant Types', sub: 'Pre-funded + advisor' },
+          { id: 'dilution', value: `${dilutionPct.toFixed(0)}%`, label: 'Total Dilution', sub: `${(totalFD / 1e6).toFixed(1)}M FD shares` },
+        ].map(nav => (
+          <div
+            key={nav.id}
+            onClick={() => setCapitalView(nav.id)}
+            className="card"
+            style={{
+              cursor: 'pointer',
+              borderLeft: capitalView === nav.id ? '4px solid var(--violet)' : '4px solid transparent',
+              transition: 'border-color 0.2s',
+            }}
           >
-            {btn.label}
-          </button>
+            <div style={{ fontSize: 24, fontWeight: 600, color: capitalView === nav.id ? 'var(--violet)' : 'var(--text)' }}>{nav.value}</div>
+            <div style={{ fontSize: 14, fontWeight: 500, marginTop: 4 }}>{nav.label}</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>{nav.sub}</div>
+          </div>
         ))}
       </div>
 

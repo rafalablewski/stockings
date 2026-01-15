@@ -2817,13 +2817,30 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
       </div>
       
-      {/* View Toggle */}
-      <div className="flex flex-wrap gap-2">
-        <button onClick={() => setSelectedView('structure')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedView === 'structure' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>📊 Share Structure</button>
-        <button onClick={() => setSelectedView('shareholders')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedView === 'shareholders' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>👥 Major Holders</button>
-        <button onClick={() => setSelectedView('offerings')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedView === 'offerings' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>💰 Offerings</button>
-        <button onClick={() => setSelectedView('incentives')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedView === 'incentives' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>🎁 SBC</button>
-        <button onClick={() => setSelectedView('dilution')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedView === 'dilution' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>📈 Dilution</button>
+      {/* Navigation Cards */}
+      <div className="g5">
+        {[
+          { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
+          { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Strategic + founder' },
+          { id: 'offerings', value: `${equityOfferings.length}`, label: 'Capital Events', sub: 'IPO to converts' },
+          { id: 'incentives', value: `${sbcHistory.length}`, label: 'SBC Quarters', sub: 'Compensation data' },
+          { id: 'dilution', value: `${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(0)}%`, label: 'Total Dilution', sub: `${fullyDiluted}M FD shares` },
+        ].map(nav => (
+          <div
+            key={nav.id}
+            onClick={() => setSelectedView(nav.id)}
+            className="card"
+            style={{
+              cursor: 'pointer',
+              borderLeft: selectedView === nav.id ? '4px solid var(--sky)' : '4px solid transparent',
+              transition: 'border-color 0.2s',
+            }}
+          >
+            <div style={{ fontSize: 24, fontWeight: 600, color: selectedView === nav.id ? 'var(--sky)' : 'var(--text)' }}>{nav.value}</div>
+            <div style={{ fontSize: 14, fontWeight: 500, marginTop: 4 }}>{nav.label}</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>{nav.sub}</div>
+          </div>
+        ))}
       </div>
       
       {/* Summary Cards */}
