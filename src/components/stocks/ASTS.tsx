@@ -2662,11 +2662,11 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
 const CapitalTab = ({ currentShares, currentStockPrice }) => {
   const [capitalView, setCapitalView] = useState('structure');
   
-  // Current share class structure (Q3 2025)
+  // Current share class structure (Nov 2025 per 13D/A filing)
   const shareClasses = [
-    { 
-      classType: 'Class A', 
-      shares: 272.0, 
+    {
+      classType: 'Class A',
+      shares: 278.8,
       description: 'Public trading shares (NASDAQ: ASTS)',
       votingRights: '1 vote per share',
       conversion: 'N/A',
@@ -2698,7 +2698,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       shares: 78.2, 
       shareClass: 'Class C',
       pct: (78.2 / totalBasic * 100).toFixed(1),
-      votingPct: ((78.2 * 10) / (272.0 + 11.2 + 78.2 * 10) * 100).toFixed(1),
+      votingPct: ((78.2 * 10) / (278.8 + 11.2 + 78.2 * 10) * 100).toFixed(1),
       notes: '10x voting power via Class C'
     },
     { 
@@ -2707,7 +2707,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       shares: 6.5, 
       shareClass: 'Class A',
       pct: (6.5 / totalBasic * 100).toFixed(1),
-      votingPct: (6.5 / (272.0 + 11.2 + 78.2 * 10) * 100).toFixed(1),
+      votingPct: (6.5 / (278.8 + 11.2 + 78.2 * 10) * 100).toFixed(1),
       notes: 'From 2034 convert + PIPE. First VoLTE partner.'
     },
     { 
@@ -2716,7 +2716,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       shares: 6.5, 
       shareClass: 'Class A',
       pct: (6.5 / totalBasic * 100).toFixed(1),
-      votingPct: (6.5 / (272.0 + 11.2 + 78.2 * 10) * 100).toFixed(1),
+      votingPct: (6.5 / (278.8 + 11.2 + 78.2 * 10) * 100).toFixed(1),
       notes: 'From 2034 convert + PIPE. SatCo JV partner.'
     },
     { 
@@ -2725,7 +2725,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       shares: 6.4, 
       shareClass: 'Class A',
       pct: (6.4 / totalBasic * 100).toFixed(1),
-      votingPct: (6.4 / (272.0 + 11.2 + 78.2 * 10) * 100).toFixed(1),
+      votingPct: (6.4 / (278.8 + 11.2 + 78.2 * 10) * 100).toFixed(1),
       notes: 'From 2034 convert (Jan 2025 conversion)'
     },
     { 
@@ -2734,7 +2734,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       shares: 6.4, 
       shareClass: 'Class A',
       pct: (6.4 / totalBasic * 100).toFixed(1),
-      votingPct: (6.4 / (272.0 + 11.2 + 78.2 * 10) * 100).toFixed(1),
+      votingPct: (6.4 / (278.8 + 11.2 + 78.2 * 10) * 100).toFixed(1),
       notes: 'From 2034 convert. $100M+ committed.'
     },
     { 
@@ -2807,7 +2807,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
   ];
   
   const marketCap = currentShares * currentStockPrice;
-  const totalVotingShares = 272.0 + 11.2 + 78.2 * 10; // Class C has 10x voting
+  const totalVotingShares = 278.8 + 11.2 + 78.2 * 10; // Class C has 10x voting
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -2815,9 +2815,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <div className="highlight">
         <h3>Share Classes, Offerings & Dilution</h3>
         <p className="text-sm">
-          Three-class structure with Abel Avellan controlling ~75% of voting power via Class C (10x votes).
+          Three-class structure with Abel Avellan controlling ~73% of voting power via Class C (10x votes).
           ~$3.6B total raised since SPAC (equity + converts). Fully funded for 100+ satellites.
-          Class A shares grew from 5.75M (SPAC) to 272M (Q3 2025).
+          Class A shares grew from 5.75M (SPAC) to 279M (Nov 2025).
         </p>
       </div>
 
