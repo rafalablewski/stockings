@@ -3093,12 +3093,36 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
   };
 
   const scenarioMeta = {
-    worst: { name: 'Worst', label: '🔴', color: '#ef4444', desc: 'Catastrophic failure' },
-    bear:  { name: 'Bear', label: '🟠', color: '#f97316', desc: 'Delays & competition' },
-    base:  { name: 'Base', label: '🟡', color: '#eab308', desc: 'Plan execution' },
-    mgmt:  { name: 'Mgmt', label: '🟢', color: '#22c55e', desc: 'Mgmt targets hit' },
-    bull:  { name: 'Bull', label: '🔵', color: '#3b82f6', desc: 'Outperformance' },
-    moon:  { name: 'Moon', label: '🟣', color: '#8b5cf6', desc: 'Category winner' },
+    worst: { name: 'Worst', label: '🔴', color: '#ef4444', desc: 'Catastrophic failure',
+      assumptions: ['Satellite constellation fails to achieve coverage targets', 'Technology proves uncompetitive vs terrestrial 5G expansion', 'MNO partners terminate agreements', 'Regulatory barriers block commercial service'],
+      catalysts: [],
+      risks: ['Complete technology failure requiring write-off', 'Bankruptcy or distressed restructuring', 'Competition from Starlink Direct-to-Cell']
+    },
+    bear:  { name: 'Bear', label: '🟠', color: '#f97316', desc: 'Delays & competition',
+      assumptions: ['Significant launch delays push revenue to 2028+', 'Only 2-3 MNO partners generate meaningful revenue', 'ARPU lower than expected due to pricing pressure', 'Margins compressed by higher operating costs'],
+      catalysts: ['Successful Block 2 satellite deployment', 'First commercial revenue milestone'],
+      risks: ['Continued execution delays', 'MNO partner churn', 'Dilutive capital raises']
+    },
+    base:  { name: 'Base', label: '🟡', color: '#eab308', desc: 'Plan execution',
+      assumptions: ['Constellation deployment on revised timeline', 'AT&T partnership scales as planned', 'International expansion with 2-3 new MNOs', 'Gradual margin improvement with scale'],
+      catalysts: ['Commercial service launch with AT&T', 'New MNO partnership announcements', 'Positive ARPU data from early subscribers'],
+      risks: ['Execution delays', 'Competitive pressure on pricing']
+    },
+    mgmt:  { name: 'Mgmt', label: '🟢', color: '#22c55e', desc: 'Mgmt targets hit',
+      assumptions: ['Management guidance achieved on timeline', '5+ MNO partners generating revenue', 'Premium ARPU maintained through differentiation', 'Operating leverage drives margin expansion'],
+      catalysts: ['Beat-and-raise earnings reports', 'Expansion into new geographies', 'Government/enterprise contract wins'],
+      risks: ['Satellite replacement costs', 'Currency headwinds in emerging markets']
+    },
+    bull:  { name: 'Bull', label: '🔵', color: '#3b82f6', desc: 'Outperformance',
+      assumptions: ['Faster than expected subscriber growth', 'Premium pricing power maintained', 'Minimal competition from alternatives', 'Strong operating leverage drives 50%+ margins'],
+      catalysts: ['Accelerated MNO partnership signings', 'Higher than expected ARPU', 'Strategic investment or partnership'],
+      risks: ['Execution risk on rapid scaling', 'Regulatory changes']
+    },
+    moon:  { name: 'Moon', label: '🟣', color: '#8b5cf6', desc: 'Category winner',
+      assumptions: ['Dominant market position in satellite-to-phone', 'Global MNO adoption across all major markets', 'Pricing power and 60%+ EBITDA margins', 'Platform expansion beyond voice/text'],
+      catalysts: ['Acquisition interest from major telecom/tech', 'Exclusive partnerships with tier-1 carriers', 'New spectrum allocations'],
+      risks: ['Antitrust scrutiny', 'Key person risk']
+    },
   };
 
   // ============================================================================
@@ -3385,6 +3409,36 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         )}
       </div>
 
+      {/* KEY ASSUMPTIONS & CATALYSTS */}
+      <div className="g2" style={{ marginTop: 24 }}>
+        <div className="card">
+          <div className="card-title">Key Assumptions</div>
+          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+            {scenarioMeta[selectedScenario].assumptions.map((a, i) => (
+              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{a}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="card">
+          <div className="card-title">{scenarioMeta[selectedScenario].catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</div>
+          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+            {(scenarioMeta[selectedScenario].catalysts.length > 0 ? scenarioMeta[selectedScenario].catalysts : scenarioMeta[selectedScenario].risks).map((item, i) => (
+              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{item}</li>
+            ))}
+          </ul>
+          {scenarioMeta[selectedScenario].catalysts.length > 0 && scenarioMeta[selectedScenario].risks.length > 0 && (
+            <>
+              <div className="card-title" style={{ marginTop: 16 }}>Risks</div>
+              <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+                {scenarioMeta[selectedScenario].risks.map((r, i) => (
+                  <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{r}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      </div>
+
       {/* ALL SCENARIOS COMPARISON TABLE */}
       <div className="card"><div className="card-title">All Scenarios Comparison</div>
         <div className="overflow-x-auto">
@@ -3482,51 +3536,43 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         </div>
       </div>
 
-      {/* METHODOLOGY - Dynamic based on selected scenario */}
-      <div className="card"><div className="card-title">Methodology & Assumptions — {scenarioMeta[selectedScenario].name} Case</div>
-        <div className="grid md:grid-cols-3 gap-4 text-sm">
+      {/* METHODOLOGY & ASSUMPTIONS */}
+      <div className="card" style={{ marginTop: 24 }}>
+        <div className="card-title">Methodology & Assumptions</div>
+        <div className="g2">
           <div>
-            <h4 className="text-cyan-400 font-medium mb-2">Selected Scenario Inputs</h4>
-            <ul className="space-y-1 text-slate-300 text-xs">
-              <li>• <strong>Penetration:</strong> {scenarios.find(s => s.key === selectedScenario)?.pen.toFixed(2)}% of 3B subs</li>
-              <li>• <strong>Revenue:</strong> ${scenarios.find(s => s.key === selectedScenario)?.rev.toFixed(2)}B in {targetYear}</li>
-              <li>• <strong>EBITDA Margin:</strong> {scenarios.find(s => s.key === selectedScenario)?.margin.toFixed(0)}%</li>
-              <li>• <strong>EV Multiple:</strong> {scenarios.find(s => s.key === selectedScenario)?.mult}x EBITDA</li>
-              <li>• <strong>Dilution:</strong> {scenarios.find(s => s.key === selectedScenario)?.dil}%</li>
-              <li>• <strong>Probability:</strong> {scenarios.find(s => s.key === selectedScenario)?.prob}%</li>
+            <h4 style={{ color: 'var(--mint)', marginBottom: 12 }}>Valuation Framework</h4>
+            <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
+              <li><strong>Revenue Model:</strong> Addressable Subscribers (3B) × Penetration Rate × ARPU = Revenue</li>
+              <li><strong>EBITDA:</strong> Revenue × EBITDA Margin (varies by scenario maturity)</li>
+              <li><strong>Enterprise Value:</strong> EBITDA × EV/EBITDA Multiple (or Revenue × 2x if distressed)</li>
+              <li><strong>Equity Value:</strong> Enterprise Value + Net Cash Position</li>
+              <li><strong>Share Price:</strong> Equity Value ÷ Diluted Shares Outstanding</li>
+              <li><strong>Present Value:</strong> Future Price ÷ (1 + 15%)^Years (pre-revenue discount rate)</li>
             </ul>
           </div>
           <div>
-            <h4 className="text-cyan-400 font-medium mb-2">Current Financial Position</h4>
-            <ul className="space-y-1 text-slate-300 text-xs">
-              <li>• <strong>Stock Price:</strong> ${currentStockPrice}</li>
-              <li>• <strong>Shares Outstanding:</strong> {currentShares}M</li>
-              <li>• <strong>Net Cash:</strong> ${(netCash/1000).toFixed(2)}B</li>
-              <li>• <strong>Diluted Shares:</strong> {scenarios.find(s => s.key === selectedScenario)?.dilutedShares.toFixed(0)}M</li>
-              <li>• <strong>Discount Rate:</strong> 15% (pre-revenue risk)</li>
-              <li>• <strong>Years to Target:</strong> {yearsFromNow}</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-cyan-400 font-medium mb-2">Valuation Output</h4>
-            <ul className="space-y-1 text-slate-300 text-xs">
-              <li>• <strong>EBITDA:</strong> ${scenarios.find(s => s.key === selectedScenario)?.ebitda.toFixed(2)}B</li>
-              <li>• <strong>Enterprise Value:</strong> ${scenarios.find(s => s.key === selectedScenario)?.ev.toFixed(1)}B</li>
-              <li>• <strong>Equity Value:</strong> ${(scenarios.find(s => s.key === selectedScenario)?.equityValue / 1000).toFixed(2)}B</li>
-              <li>• <strong>{targetYear} Price:</strong> ${scenarios.find(s => s.key === selectedScenario)?.priceInTargetYear.toFixed(0)}</li>
-              <li>• <strong>Present Value:</strong> ${scenarios.find(s => s.key === selectedScenario)?.presentValue.toFixed(0)}</li>
-              <li>• <strong>Upside:</strong> {scenarios.find(s => s.key === selectedScenario)?.upside >= 0 ? '+' : ''}{scenarios.find(s => s.key === selectedScenario)?.upside.toFixed(0)}%</li>
+            <h4 style={{ color: 'var(--sky)', marginBottom: 12 }}>Key Model Inputs</h4>
+            <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
+              <li><strong>Addressable Market:</strong> 3 billion MNO subscribers across partner networks</li>
+              <li><strong>Penetration Range:</strong> 0.1% (Worst) to 8.0% (Moon) by {targetYear}</li>
+              <li><strong>Revenue Range:</strong> $0.3B (Worst) to $18B (Moon) by {targetYear}</li>
+              <li><strong>EBITDA Margins:</strong> -50% (Worst) to 62% (Moon) at scale</li>
+              <li><strong>EV/EBITDA Multiples:</strong> 0x (distressed) to 16x (category winner)</li>
+              <li><strong>Dilution:</strong> 0-50% depending on capital needs</li>
             </ul>
           </div>
         </div>
-        <div className="mt-4 p-3 bg-slate-800/30 rounded-lg">
-          <h4 className="text-yellow-400 font-medium mb-2 text-sm">Valuation Logic</h4>
-          <p className="text-xs text-slate-400">
-            EV = {scenarios.find(s => s.key === selectedScenario)?.margin > 0 ? 'EBITDA × Multiple' : 'Revenue × 2x (distressed)'} → 
-            Equity = EV + Net Cash → 
-            Price = Equity ÷ Diluted Shares → 
-            PV = Future Price ÷ (1 + 15%)^{yearsFromNow}
-          </p>
+        <div style={{ marginTop: 24, padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
+          <h4 style={{ color: 'var(--gold)', marginBottom: 12 }}>Important Caveats</h4>
+          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text3)', lineHeight: 1.8, fontSize: 13 }}>
+            <li>Projections are illustrative scenarios, not forecasts. Actual results may differ materially.</li>
+            <li>Probabilities are subjective estimates based on management guidance and competitive analysis.</li>
+            <li>Pre-revenue company with unproven technology at commercial scale; high execution risk.</li>
+            <li>Satellite constellation economics and MNO revenue share terms are subject to change.</li>
+            <li>Competition from Starlink Direct-to-Cell and terrestrial 5G expansion not fully modeled.</li>
+            <li>Regulatory approval timelines and spectrum availability vary by jurisdiction.</li>
+          </ul>
         </div>
       </div>
       
