@@ -3271,10 +3271,10 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
   }, [selectedScenario, currentShares, netCash]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <>
       <h2 className="section-head">Scenario Simulation</h2>
 
-      <div className="highlight">
+      <div className="highlight" style={{ marginTop: 24 }}>
         <h3>Multi-Year Projections</h3>
         <p className="text-sm">
           Model stock price under different scenarios based on subscriber growth, satellite deployment, and MNO partnerships.
@@ -3284,7 +3284,7 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
       </div>
 
       {/* Controls - Target Year and Scenario Selector */}
-      <div className="g2" style={{ marginBottom: 24 }}>
+      <div className="g2" style={{ marginTop: 24, marginBottom: 24 }}>
         <div className="card">
           <div className="card-title">Target Year</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -3745,7 +3745,7 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         { term: 'Present Value Discount', def: '15% discount rate for pre-revenue tech. Higher than mature companies. Reflects execution and technology risk.' },
         { term: 'Probability Weighting', def: 'Assign probabilities to scenarios. Expected Value = Σ(probability × outcome). Bull 20%, Base 50%, Bear 30% is typical.' },
       ]} />
-    </div>
+    </>
   );
 };
 

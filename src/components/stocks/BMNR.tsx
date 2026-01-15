@@ -1759,10 +1759,10 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
   }, [currentETH, currentShares, currentStockPrice, ethPrice, calc.currentNAV, baseStakingAPY, stakingRatio, targetYear, timeHorizon, quarterlyDividend, dividendGrowthRate]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <>
       <h2 className="section-head">Scenario Simulation</h2>
 
-      <div className="highlight">
+      <div className="highlight" style={{ marginTop: 24 }}>
         <h3>Multi-Year Projections</h3>
         <p className="text-sm">
           Model stock price under different ETH price trajectories and market conditions.
@@ -1772,7 +1772,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* Controls - Target Year and Scenario Selector */}
-      <div className="g2" style={{ marginBottom: 24 }}>
+      <div className="g2" style={{ marginTop: 24, marginBottom: 24 }}>
         <div className="card">
           <div className="card-title">Target Year</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -2230,7 +2230,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         { term: 'IRR (Internal Rate of Return)', def: 'Annualized return accounting for time value of money. Compare stock IRR to ETH IRR — leverage amplifies gains/losses. NAV per share shows fundamental value creation.' },
         { term: 'Total Return', def: 'Combines price appreciation + cumulative dividends. Dividend reinvestment would compound returns further.' },
       ]} />
-    </div>
+    </>
   );
 };
 
