@@ -1591,6 +1591,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
 // SCENARIOS TAB - Comprehensive scenario analysis
 const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethPrice, baseStakingAPY, stakingRatio, quarterlyDividend, dividendGrowthRate }) => {
   const [timeHorizon, setTimeHorizon] = useState(3);
+  const [selectedScenario, setSelectedScenario] = useState('base');
   
   const scenarios = useMemo(() => {
     const totalShares = currentShares * 1e6;
@@ -1611,59 +1612,53 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
     
     // Scenario definitions with ANNUALIZED growth rates - time horizon affects final price
     const defs = [
-      { 
+      {
         id: 'worst', name: 'Worst Case', color: 'red', emoji: '💀',
-        ethCAGR: -25, // -25% per year
-        navMultiple: 0.5,
-        dilutionPerYear: 400, // shares per year
-        stakingAPY: 2.0,
-        divGrowth: -50, // Dividend cut
-        description: 'Crypto winter: -25%/yr ETH, forced dilution, dividend cut'
+        ethCAGR: -25, navMultiple: 0.5, dilutionPerYear: 400, stakingAPY: 2.0, divGrowth: -50, prob: 5,
+        description: 'Crypto winter: -25%/yr ETH, forced dilution, dividend cut',
+        assumptions: ['Extended crypto winter with regulatory crackdowns', 'ETH loses market share to competing L1s', 'Forced share issuance at deep discount to NAV', 'Dividend suspended or significantly cut'],
+        catalysts: [],
+        risks: ['Liquidation of ETH holdings at depressed prices', 'NAV discount widens to 50%+', 'Potential delisting or restructuring']
       },
-      { 
+      {
         id: 'bear', name: 'Bear Case', color: 'orange', emoji: '🐻',
-        ethCAGR: -10, // -10% per year
-        navMultiple: 0.75,
-        dilutionPerYear: 250,
-        stakingAPY: 3.0,
-        divGrowth: 0, // Dividend frozen
-        description: 'Prolonged downturn: -10%/yr ETH, dividend frozen'
+        ethCAGR: -10, navMultiple: 0.75, dilutionPerYear: 250, stakingAPY: 3.0, divGrowth: 0, prob: 15,
+        description: 'Prolonged downturn: -10%/yr ETH, dividend frozen',
+        assumptions: ['Multi-year crypto bear market', 'Staking yields compressed due to validator oversupply', 'Limited institutional adoption', 'Dividend frozen at current level'],
+        catalysts: ['ETH price stabilization', 'Staking yield recovery'],
+        risks: ['Continued NAV discount', 'Opportunity cost vs direct ETH', 'Management fee drag']
       },
-      { 
+      {
         id: 'base', name: 'Base Case', color: 'blue', emoji: '📊',
-        ethCAGR: 15, // +15% per year
-        navMultiple: 1.0,
-        dilutionPerYear: 150,
-        stakingAPY: baseStakingAPY,
-        divGrowth: dividendGrowthRate, // User-set growth
-        description: 'Steady growth: +15%/yr ETH, dividend grows with staking'
+        ethCAGR: 15, navMultiple: 1.0, dilutionPerYear: 150, stakingAPY: baseStakingAPY, divGrowth: dividendGrowthRate, prob: 35,
+        description: 'Steady growth: +15%/yr ETH, dividend grows with staking',
+        assumptions: ['Gradual ETH adoption and price appreciation', 'Staking yields remain stable at 3-4%', 'Moderate dilution for strategic acquisitions', 'Dividend grows in line with ETH yield'],
+        catalysts: ['Continued ETH ecosystem growth', 'Institutional allocation to crypto', 'Staking yield optimization'],
+        risks: ['Competition from ETH ETFs', 'Regulatory uncertainty']
       },
-      { 
+      {
         id: 'mgmt', name: 'Management Case', color: 'purple', emoji: '🎯',
-        ethCAGR: 35, // +35% per year (Alchemy of 5% thesis)
-        navMultiple: 1.25,
-        dilutionPerYear: 400,
-        stakingAPY: baseStakingAPY + 0.5,
-        divGrowth: dividendGrowthRate + 10, // Faster growth
-        description: 'Alchemy of 5%: +35%/yr ETH, accelerating dividends'
+        ethCAGR: 35, navMultiple: 1.25, dilutionPerYear: 400, stakingAPY: baseStakingAPY + 0.5, divGrowth: dividendGrowthRate + 10, prob: 25,
+        description: 'Alchemy of 5%: +35%/yr ETH, accelerating dividends',
+        assumptions: ['Management achieves "5% of ETH supply" target', 'Accretive dilution at NAV premium', 'Enhanced staking yields through restaking', 'Dividend growth accelerates with scale'],
+        catalysts: ['ETH supply shock narrative gains traction', 'Successful capital raises above NAV', 'Restaking protocol partnerships'],
+        risks: ['Execution risk on aggressive accumulation', 'NAV premium compression']
       },
-      { 
+      {
         id: 'bull', name: 'Bull Case', color: 'green', emoji: '🐂',
-        ethCAGR: 50, // +50% per year
-        navMultiple: 1.5,
-        dilutionPerYear: 500,
-        stakingAPY: baseStakingAPY + 1.0,
-        divGrowth: dividendGrowthRate + 20,
-        description: 'Bull market: +50%/yr ETH, strong dividend growth'
+        ethCAGR: 50, navMultiple: 1.5, dilutionPerYear: 500, stakingAPY: baseStakingAPY + 1.0, divGrowth: dividendGrowthRate + 20, prob: 15,
+        description: 'Bull market: +50%/yr ETH, strong dividend growth',
+        assumptions: ['Crypto bull market with ETH outperformance', 'Institutional FOMO drives NAV premium', 'Staking yields enhanced by MEV and restaking', 'Aggressive dividend increases'],
+        catalysts: ['ETH ETF approval and inflows', 'DeFi summer 2.0', 'Enterprise blockchain adoption'],
+        risks: ['Volatility and drawdown risk', 'Overextended valuations']
       },
-      { 
+      {
         id: 'superbull', name: 'Super Bull', color: 'emerald', emoji: '🚀',
-        ethCAGR: 75, // +75% per year
-        navMultiple: 2.0,
-        dilutionPerYear: 700,
-        stakingAPY: baseStakingAPY + 1.5,
-        divGrowth: dividendGrowthRate + 30,
-        description: 'Euphoria: +75%/yr ETH, aggressive dividend increases'
+        ethCAGR: 75, navMultiple: 2.0, dilutionPerYear: 700, stakingAPY: baseStakingAPY + 1.5, divGrowth: dividendGrowthRate + 30, prob: 5,
+        description: 'Euphoria: +75%/yr ETH, aggressive dividend increases',
+        assumptions: ['Parabolic ETH price appreciation', 'BMNR becomes premier ETH accumulation vehicle', 'Massive NAV premium as scarcity narrative dominates', 'Dividend yield attracts income investors'],
+        catalysts: ['Global crypto adoption inflection', 'ETH flippening narrative', 'BMNR inclusion in major indices'],
+        risks: ['Bubble dynamics and crash risk', 'Regulatory backlash at scale']
       },
     ];
     
@@ -1768,6 +1763,31 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         </div>
       </div>
 
+      {/* Scenario Selector */}
+      <div className="card"><div className="card-title">Select Scenario</div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {scenarios.map(s => (
+            <button
+              key={s.id}
+              onClick={() => setSelectedScenario(s.id)}
+              style={{
+                padding: '12px 16px',
+                borderRadius: 8,
+                border: selectedScenario === s.id ? `2px solid ${s.color === 'red' ? '#ef4444' : s.color === 'orange' ? '#f97316' : s.color === 'blue' ? '#3b82f6' : s.color === 'purple' ? '#a855f7' : s.color === 'green' ? '#22c55e' : '#10b981'}` : '1px solid var(--border)',
+                background: selectedScenario === s.id ? `${s.color === 'red' ? '#ef4444' : s.color === 'orange' ? '#f97316' : s.color === 'blue' ? '#3b82f6' : s.color === 'purple' ? '#a855f7' : s.color === 'green' ? '#22c55e' : '#10b981'}22` : 'var(--surface2)',
+                color: selectedScenario === s.id ? (s.color === 'red' ? '#ef4444' : s.color === 'orange' ? '#f97316' : s.color === 'blue' ? '#3b82f6' : s.color === 'purple' ? '#a855f7' : s.color === 'green' ? '#22c55e' : '#10b981') : 'var(--text2)',
+                cursor: 'pointer',
+                fontWeight: selectedScenario === s.id ? 700 : 400,
+                fontSize: 14,
+                fontFamily: 'inherit',
+              }}
+            >
+              {s.name} ({s.prob}%)
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Scenario Cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {scenarios.map(s => (
@@ -1852,7 +1872,154 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
           </div>
         </div>
       </div>
-      
+
+      {/* KEY ASSUMPTIONS & CATALYSTS */}
+      <div className="g2" style={{ marginTop: 24 }}>
+        <div className="card">
+          <div className="card-title">Key Assumptions</div>
+          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+            {scenarios.find(s => s.id === selectedScenario)?.assumptions.map((a, i) => (
+              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{a}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="card">
+          <div className="card-title">{scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</div>
+          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+            {(scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 ? scenarios.find(s => s.id === selectedScenario)?.catalysts : scenarios.find(s => s.id === selectedScenario)?.risks)?.map((item, i) => (
+              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{item}</li>
+            ))}
+          </ul>
+          {scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 && scenarios.find(s => s.id === selectedScenario)?.risks.length > 0 && (
+            <>
+              <div className="card-title" style={{ marginTop: 16 }}>Risks</div>
+              <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+                {scenarios.find(s => s.id === selectedScenario)?.risks.map((r, i) => (
+                  <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{r}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* PROBABILITY-WEIGHTED EXPECTED VALUE */}
+      <div className="highlight" style={{ marginTop: 32 }}>
+        <h3>Probability-Weighted Expected Value — {timeHorizon}Y</h3>
+        <p style={{ marginBottom: 20, color: 'var(--text2)' }}>
+          Weighted average across all scenarios based on assigned probabilities
+        </p>
+        {(() => {
+          const pwev = scenarios.reduce((acc, s) => {
+            acc.stockPrice += s.finalStockPrice * (s.prob / 100);
+            acc.totalReturn += s.totalReturn * (s.prob / 100);
+            acc.irr += s.totalIRR * (s.prob / 100);
+            return acc;
+          }, { stockPrice: 0, totalReturn: 0, irr: 0 });
+          const expectedReturn = ((pwev.stockPrice / currentStockPrice) - 1) * 100;
+
+          return (
+            <>
+              <div className="g4">
+                <div className="big-stat">
+                  <div className="big-stat-value mint">${pwev.stockPrice.toFixed(2)}</div>
+                  <div className="big-stat-label">Expected Stock Price</div>
+                </div>
+                <div className="big-stat">
+                  <div className={`big-stat-value ${expectedReturn >= 0 ? 'mint' : 'coral'}`}>{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</div>
+                  <div className="big-stat-label">Expected Return</div>
+                </div>
+                <div className="big-stat">
+                  <div className={`big-stat-value ${pwev.irr >= 0 ? 'sky' : 'coral'}`}>{pwev.irr >= 0 ? '+' : ''}{pwev.irr.toFixed(1)}%</div>
+                  <div className="big-stat-label">Expected IRR</div>
+                </div>
+                <div className="big-stat">
+                  <div className="big-stat-value">${currentStockPrice.toFixed(2)}</div>
+                  <div className="big-stat-label">Current Price</div>
+                </div>
+              </div>
+              <table className="tbl" style={{ marginTop: 24 }}>
+                <thead>
+                  <tr>
+                    <th>Scenario</th>
+                    <th className="r">Probability</th>
+                    <th className="r">Stock Price</th>
+                    <th className="r">Return</th>
+                    <th className="r">Weighted Contribution</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scenarios.map(s => {
+                    const contribution = s.finalStockPrice * (s.prob / 100);
+                    return (
+                      <tr key={s.id} style={{ background: selectedScenario === s.id ? `${s.color === 'red' ? '#ef4444' : s.color === 'orange' ? '#f97316' : s.color === 'blue' ? '#3b82f6' : s.color === 'purple' ? '#a855f7' : s.color === 'green' ? '#22c55e' : '#10b981'}11` : 'transparent' }}>
+                        <td>
+                          <span style={{ marginRight: 8 }}>{s.emoji}</span>
+                          {s.name}
+                        </td>
+                        <td className="r">{s.prob}%</td>
+                        <td className="r" style={{ fontFamily: 'Space Mono' }}>${s.finalStockPrice.toFixed(2)}</td>
+                        <td className="r" style={{ color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                          {s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%
+                        </td>
+                        <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>${contribution.toFixed(2)}</td>
+                      </tr>
+                    );
+                  })}
+                  <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
+                    <td>Expected Value</td>
+                    <td className="r">100%</td>
+                    <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.stockPrice.toFixed(2)}</td>
+                    <td className="r mint">{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</td>
+                    <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.stockPrice.toFixed(2)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </>
+          );
+        })()}
+      </div>
+
+      {/* METHODOLOGY & ASSUMPTIONS */}
+      <div className="card" style={{ marginTop: 24 }}>
+        <div className="card-title">Methodology & Assumptions</div>
+        <div className="g2">
+          <div>
+            <h4 style={{ color: 'var(--mint)', marginBottom: 12 }}>Valuation Framework</h4>
+            <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
+              <li><strong>ETH Price:</strong> Future ETH = Current ETH × (1 + CAGR)^Years</li>
+              <li><strong>Staking Yield:</strong> ETH Holdings compound at scenario-specific APY</li>
+              <li><strong>Dilution:</strong> New shares issued annually, accretive if above NAV</li>
+              <li><strong>NAV Calculation:</strong> (ETH Holdings × ETH Price) ÷ Total Shares</li>
+              <li><strong>Stock Price:</strong> NAV × NAV Multiple (premium/discount)</li>
+              <li><strong>Total Return:</strong> Price Return + Cumulative Dividends</li>
+            </ul>
+          </div>
+          <div>
+            <h4 style={{ color: 'var(--sky)', marginBottom: 12 }}>Key Model Inputs</h4>
+            <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
+              <li><strong>Current ETH Holdings:</strong> {(currentETH / 1e6).toFixed(2)}M ETH</li>
+              <li><strong>ETH Price Range:</strong> ${scenarios[0].ethPrice.toLocaleString()} to ${scenarios[5].ethPrice.toLocaleString()} ({timeHorizon}Y)</li>
+              <li><strong>NAV Multiples:</strong> 0.5x (Worst) to 2.0x (Super Bull)</li>
+              <li><strong>Staking APY:</strong> {scenarios[0].stakingAPY.toFixed(1)}% to {scenarios[5].stakingAPY.toFixed(1)}%</li>
+              <li><strong>Annual Dilution:</strong> {scenarios[0].dilutionPerYear}M to {scenarios[5].dilutionPerYear}M shares/year</li>
+              <li><strong>Time Horizon:</strong> {timeHorizon} years</li>
+            </ul>
+          </div>
+        </div>
+        <div style={{ marginTop: 24, padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
+          <h4 style={{ color: 'var(--gold)', marginBottom: 12 }}>Important Caveats</h4>
+          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text3)', lineHeight: 1.8, fontSize: 13 }}>
+            <li>Projections are illustrative scenarios, not forecasts. Actual results may differ materially.</li>
+            <li>ETH price assumptions are highly speculative; cryptocurrency markets are extremely volatile.</li>
+            <li>NAV multiples can diverge significantly from historical ranges during market stress.</li>
+            <li>Dilution is modeled as linear; actual capital raises depend on market conditions.</li>
+            <li>Staking yields may decrease as more ETH is staked network-wide.</li>
+            <li>Management strategy execution (Alchemy of 5%) is uncertain and may not be achieved.</li>
+          </ul>
+        </div>
+      </div>
+
       <CFANotes title="CFA Level III — Scenario Analysis" items={[
         { term: 'Purpose', def: 'Compare outcomes across market conditions. Each scenario combines ETH price trajectory, NAV multiple (market sentiment), dilution strategy, and staking yield to project future stock price and returns.' },
         { term: 'Key Assumptions', def: 'Dilution is assumed accretive when issued above NAV. Staking yields compound over the time horizon. NAV multiples reflect market sentiment (discount in bear, premium in bull).' },
