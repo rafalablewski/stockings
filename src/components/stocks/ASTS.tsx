@@ -682,6 +682,7 @@ const css = `
 .g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.g5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
 
 /* Highlight Boxes */
 .highlight {
@@ -1002,6 +1003,7 @@ input[type="range"]::-webkit-slider-thumb {
 @media (max-width: 1200px) {
   .hero, .stats-row, .nav, .main { padding-left: 32px; padding-right: 32px; }
   .g4 { grid-template-columns: repeat(2, 1fr); }
+  .g5 { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* Responsive - Tablet */
@@ -1009,6 +1011,7 @@ input[type="range"]::-webkit-slider-thumb {
   .hero, .stats-row, .nav, .main { padding-left: 24px; padding-right: 24px; }
   .g3 { grid-template-columns: repeat(2, 1fr); }
   .g4 { grid-template-columns: repeat(2, 1fr); }
+  .g5 { grid-template-columns: repeat(2, 1fr); }
   .card { padding: 20px; }
   .highlight { padding: 20px; }
 }
@@ -1023,7 +1026,7 @@ input[type="range"]::-webkit-slider-thumb {
   .brand-block .desc { font-size: 14px; }
   .brand-block .ticker { font-size: 12px; padding: 4px 10px; margin-bottom: 16px; }
 
-  .g2, .g3, .g4 { grid-template-columns: 1fr; gap: 16px; }
+  .g2, .g3, .g4, .g5 { grid-template-columns: 1fr; gap: 16px; }
 
   .stats-row {
     padding: 20px 16px;

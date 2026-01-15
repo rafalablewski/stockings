@@ -1080,6 +1080,7 @@ const css = `
 .g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.g5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
 
 /* Highlight Boxes */
 .highlight {
@@ -1668,6 +1669,7 @@ input[type="range"]::-webkit-slider-thumb {
 @media (max-width: 1200px) {
   .hero, .stats-row, .nav, .main { padding-left: 32px; padding-right: 32px; }
   .g4 { grid-template-columns: repeat(2, 1fr); }
+  .g5 { grid-template-columns: repeat(3, 1fr); }
   .timeline-header { grid-template-columns: 90px 1fr auto auto; }
   .timeline-header .t-cat { display: none; }
   .t-details-content { grid-template-columns: 1fr; }
@@ -1685,7 +1687,7 @@ input[type="range"]::-webkit-slider-thumb {
   .price-block { text-align: left; }
   .price-big { font-size: 40px; }
   .brand-block h1 { font-size: 32px; }
-  .g2, .g3 { grid-template-columns: 1fr; }
+  .g2, .g3, .g4, .g5 { grid-template-columns: 1fr; }
   .stats-row { gap: 24px; }
   .comp-row { grid-template-columns: 1fr 1fr; }
   .timeline-header { grid-template-columns: 1fr auto; gap: 12px; padding: 14px 16px; }
