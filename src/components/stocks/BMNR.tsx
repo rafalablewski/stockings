@@ -1823,13 +1823,72 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         </div>
       </div>
 
-      {/* Financial Projections — Selected Scenario */}
+      {/* Selected Scenario Header + Key Metrics + Financial Projections */}
       {(() => {
         const selected = scenarios.find(s => s.id === selectedScenario);
         if (!selected) return null;
+        const targetProjection = selected.projections.find(p => p.year === targetYear);
+        if (!targetProjection) return null;
+        const priceReturn = ((targetProjection.stockPrice / currentStockPrice) - 1) * 100;
+        const ethReturn = ((targetProjection.ethPrice / ethPrice) - 1) * 100;
+
         return (
-          <div className="card">
-            <div className="card-title">Financial Projections — {selected.name} Scenario</div>
+          <>
+            {/* Scenario Header */}
+            <div className="card" style={{ borderLeft: `4px solid ${selected.color}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+                <div>
+                  <h3 style={{ color: selected.color, marginBottom: 8 }}>
+                    {selected.name} — {targetYear}
+                  </h3>
+                  <p style={{ color: 'var(--text2)', maxWidth: 600 }}>{selected.description}</p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 12, color: 'var(--text3)' }}>Probability Weight</div>
+                  <div style={{ fontFamily: 'Space Mono', fontSize: 32, fontWeight: 700, color: selected.color }}>
+                    {selected.prob}%
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Key Metrics */}
+            <div className="g4" style={{ marginTop: 24 }}>
+              <div className="big-stat">
+                <div className="num" style={{ color: selected.color }}>${targetProjection.stockPrice.toFixed(0)}</div>
+                <div className="lbl">Stock Price</div>
+                <div style={{ fontSize: 12, color: priceReturn >= 0 ? 'var(--mint)' : 'var(--coral)', marginTop: 4 }}>
+                  {priceReturn >= 0 ? '+' : ''}{priceReturn.toFixed(0)}% from ${currentStockPrice.toFixed(0)}
+                </div>
+              </div>
+              <div className="big-stat">
+                <div className="num">${targetProjection.ethPrice.toLocaleString()}</div>
+                <div className="lbl">ETH Price</div>
+                <div style={{ fontSize: 12, color: ethReturn >= 0 ? 'var(--mint)' : 'var(--coral)', marginTop: 4 }}>
+                  {ethReturn >= 0 ? '+' : ''}{ethReturn.toFixed(0)}% from ${ethPrice.toLocaleString()}
+                </div>
+              </div>
+              <div className="big-stat">
+                <div className="num">${targetProjection.nav.toFixed(2)}</div>
+                <div className="lbl">NAV/Share</div>
+                <div style={{ fontSize: 12, color: 'var(--sky)', marginTop: 4 }}>
+                  {selected.navMultiple.toFixed(2)}x mNAV
+                </div>
+              </div>
+              <div className="big-stat">
+                <div className="num" style={{ color: targetProjection.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  {targetProjection.totalReturn >= 0 ? '+' : ''}{targetProjection.totalReturn.toFixed(0)}%
+                </div>
+                <div className="lbl">Total Return</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+                  incl. ${targetProjection.cumDividends.toFixed(2)} dividends
+                </div>
+              </div>
+            </div>
+
+            {/* Financial Projections Table */}
+            <div className="card" style={{ marginTop: 24 }}>
+              <div className="card-title">Financial Projections — {selected.name} Scenario</div>
             <div style={{ overflowX: 'auto' }}>
               <table className="tbl">
                 <thead>
@@ -1920,6 +1979,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
               </table>
             </div>
           </div>
+          </>
         );
       })()}
 

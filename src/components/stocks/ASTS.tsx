@@ -3297,61 +3297,59 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         </div>
       </div>
 
-      {/* Selected Scenario Results */}
-      <div className="card"><div className="card-title">Financial Projections — {selected.name} Scenario</div>
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
-          <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700 text-center">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Current Price</div>
-            <div className="text-2xl font-bold text-slate-300">${currentStockPrice}</div>
-            <div className="text-xs text-slate-500">Today</div>
+      {/* Selected Scenario Header */}
+      <div className="card" style={{ borderLeft: `4px solid ${selected.color}` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+          <div>
+            <h3 style={{ color: selected.color, marginBottom: 8 }}>
+              {selected.name} Case — {targetYear}
+            </h3>
+            <p style={{ color: 'var(--text2)', maxWidth: 600 }}>{scenarioMeta[selectedScenario].desc}</p>
           </div>
-          <div className="p-4 bg-purple-900/30 rounded-xl border border-purple-700 text-center">
-            <div className="text-xs text-purple-400 uppercase tracking-wide mb-1">{targetYear} Price</div>
-            <div className="text-2xl font-bold text-purple-400">${selected.priceInTargetYear.toFixed(0)}</div>
-            <div className="text-xs text-slate-400">{selected.name} case</div>
-          </div>
-          <div className="p-4 bg-cyan-900/30 rounded-xl border border-cyan-700 text-center">
-            <div className="text-xs text-cyan-400 uppercase tracking-wide mb-1">PV Today</div>
-            <div className="text-2xl font-bold text-cyan-400">${selected.presentValue.toFixed(0)}</div>
-            <div className="text-xs text-slate-400">Discounted @ 15%</div>
-          </div>
-          <div className={`p-4 rounded-xl border text-center ${selected.upside >= 0 ? 'bg-green-900/30 border-green-700' : 'bg-red-900/30 border-red-700'}`}>
-            <div className={`text-xs uppercase tracking-wide mb-1 ${selected.upside >= 0 ? 'text-green-400' : 'text-red-400'}`}>Upside</div>
-            <div className={`text-2xl font-bold ${selected.upside >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {selected.upside >= 0 ? '+' : ''}{selected.upside.toFixed(0)}%
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 12, color: 'var(--text3)' }}>Probability Weight</div>
+            <div style={{ fontFamily: 'Space Mono', fontSize: 32, fontWeight: 700, color: selected.color }}>
+              {selected.prob}%
             </div>
-            <div className="text-xs text-slate-400">vs ${currentStockPrice}</div>
-          </div>
-          <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700 text-center">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Probability</div>
-            <div className="text-2xl font-bold text-yellow-400">{selected.prob}%</div>
-            <div className="text-xs text-slate-400">Assigned weight</div>
           </div>
         </div>
+      </div>
 
-        {/* Key Metrics for Selected Scenario */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-          <div className="p-3 bg-slate-800/30 rounded-lg">
-            <div className="text-xs text-slate-500">Subscribers</div>
-            <div className="text-lg font-bold text-cyan-400">{selected.subs.toFixed(0)}M</div>
-            <div className="text-xs text-slate-500">{selected.pen.toFixed(2)}% penetration</div>
-          </div>
-          <div className="p-3 bg-slate-800/30 rounded-lg">
-            <div className="text-xs text-slate-500">{targetYear} Revenue</div>
-            <div className="text-lg font-bold text-yellow-400">${selected.rev.toFixed(2)}B</div>
-          </div>
-          <div className="p-3 bg-slate-800/30 rounded-lg">
-            <div className="text-xs text-slate-500">EBITDA</div>
-            <div className="text-lg font-bold text-green-400">${selected.ebitda.toFixed(2)}B</div>
-            <div className="text-xs text-slate-500">{selected.margin.toFixed(0)}% margin</div>
-          </div>
-          <div className="p-3 bg-slate-800/30 rounded-lg">
-            <div className="text-xs text-slate-500">Enterprise Value</div>
-            <div className="text-lg font-bold text-purple-400">${selected.ev.toFixed(1)}B</div>
-            <div className="text-xs text-slate-500">{selected.mult}x multiple</div>
+      {/* Key Metrics */}
+      <div className="g4" style={{ marginTop: 24 }}>
+        <div className="big-stat">
+          <div className="num" style={{ color: selected.color }}>${selected.priceInTargetYear.toFixed(0)}</div>
+          <div className="lbl">{targetYear} Price</div>
+          <div style={{ fontSize: 12, color: selected.upside >= 0 ? 'var(--mint)' : 'var(--coral)', marginTop: 4 }}>
+            {selected.upside >= 0 ? '+' : ''}{selected.upside.toFixed(0)}% from ${currentStockPrice}
           </div>
         </div>
+        <div className="big-stat">
+          <div className="num" style={{ color: 'var(--sky)' }}>${selected.presentValue.toFixed(0)}</div>
+          <div className="lbl">PV Today</div>
+          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+            Discounted @ 15%/yr
+          </div>
+        </div>
+        <div className="big-stat">
+          <div className="num">{selected.subs.toFixed(1)}M</div>
+          <div className="lbl">Subscribers</div>
+          <div style={{ fontSize: 12, color: 'var(--sky)', marginTop: 4 }}>
+            {selected.pen.toFixed(2)}% penetration
+          </div>
+        </div>
+        <div className="big-stat">
+          <div className="num">${selected.rev.toFixed(2)}B</div>
+          <div className="lbl">{targetYear} Revenue</div>
+          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+            {selected.margin.toFixed(0)}% EBITDA margin
+          </div>
+        </div>
+      </div>
 
+      {/* Calculation Details */}
+      <div className="card" style={{ marginTop: 24 }}>
+        <div className="card-title">Calculation Details</div>
         {/* Calculation Steps Toggle */}
         <button
           onClick={() => setShowMath(!showMath)}
