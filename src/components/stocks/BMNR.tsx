@@ -1516,7 +1516,41 @@ const BMNRDilutionAnalysis = () => {
 };
 
 // OVERVIEW TAB with CFA Guide
-const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend }) => (
+const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend }) => {
+  const [chartType, setChartType] = useState('holdings');
+
+  // Chart data
+  const holdingsData = [
+    { label: 'Q1\'24', value: 350000, display: '350K' },
+    { label: 'Q2\'24', value: 400000, display: '400K' },
+    { label: 'Q3\'24', value: 450000, display: '450K' },
+    { label: 'Q4\'24', value: 500000, display: '500K' },
+    { label: 'Q1\'25', value: 550000, display: '550K' },
+    { label: 'Q2\'25', value: currentETH, display: `${(currentETH / 1000).toFixed(0)}K` },
+  ];
+
+  const navData = [
+    { label: 'Q1\'24', value: 15, display: '$15' },
+    { label: 'Q2\'24', value: 18, display: '$18' },
+    { label: 'Q3\'24', value: 22, display: '$22' },
+    { label: 'Q4\'24', value: 28, display: '$28' },
+    { label: 'Q1\'25', value: 35, display: '$35' },
+    { label: 'Q2\'25', value: calc.currentNAV, display: `$${calc.currentNAV.toFixed(0)}` },
+  ];
+
+  const dividendData = [
+    { label: 'Q4\'24', value: 0, display: '$0' },
+    { label: 'Q1\'25', value: 0.01, display: '$0.01' },
+    { label: 'Q2\'25', value: 0.01, display: '$0.01' },
+    { label: 'Q3\'25E', value: 0.02, display: '$0.02' },
+    { label: 'Q4\'25E', value: 0.02, display: '$0.02' },
+    { label: '2026E', value: 0.03, display: '$0.03' },
+  ];
+
+  const chartData = chartType === 'holdings' ? holdingsData : chartType === 'nav' ? navData : dividendData;
+  const maxValue = Math.max(...chartData.map(d => d.value));
+
+  return (
   <>
     <h2 className="section-head">Investment Thesis</h2>
     <div className="highlight"><h3>The Opportunity</h3>
@@ -1548,6 +1582,46 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       </div>
     </div>
 
+    <div className="card" style={{ marginTop: 32 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div className="card-title" style={{ marginBottom: 0 }}>
+          {chartType === 'holdings' ? 'ETH Holdings Growth' : chartType === 'nav' ? 'NAV/Share Progression' : 'Dividend History'}
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {[
+            { id: 'holdings', label: 'ETH Holdings' },
+            { id: 'nav', label: 'NAV/Share' },
+            { id: 'dividend', label: 'Dividend' },
+          ].map(btn => (
+            <button
+              key={btn.id}
+              onClick={() => setChartType(btn.id)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 6,
+                border: chartType === btn.id ? '1px solid var(--violet)' : '1px solid var(--border)',
+                background: chartType === btn.id ? 'rgba(139,92,246,0.1)' : 'transparent',
+                color: chartType === btn.id ? 'var(--violet)' : 'var(--text2)',
+                fontSize: 12,
+                cursor: 'pointer',
+              }}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="bars">
+        {chartData.map((d, i) => (
+          <div key={i} className="bar-col">
+            <div className="bar-val">{d.display}</div>
+            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--violet)' }} />
+            <div className="bar-label">{d.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
     <div className="g4" style={{ marginTop: 32 }}>
       <Card label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value per share" color="blue" />
       <Card label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} sub="Market price" color="green" />
@@ -1576,7 +1650,8 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       { term: 'Market Cap vs NAV', def: 'Market Cap = Shares × Stock Price. Compare to total ETH value to understand market sentiment. Premium indicates growth expectations; discount indicates skepticism.' },
     ]} />
   </>
-);
+  );
+};
 
 // SCENARIOS TAB - Comprehensive scenario analysis
 const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethPrice, baseStakingAPY, stakingRatio, quarterlyDividend, dividendGrowthRate }) => {

@@ -1599,7 +1599,41 @@ const ASTSAnalysis = () => {
   );
 };
 
-const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterlyBurn, totalDebt, setTotalDebt, block1Sats, block2Sats, targetSats2026, contractedRevenue, partnerReach, penetrationRate }) => (
+const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterlyBurn, totalDebt, setTotalDebt, block1Sats, block2Sats, targetSats2026, contractedRevenue, partnerReach, penetrationRate }) => {
+  const [chartType, setChartType] = useState('constellation');
+
+  // Chart data
+  const constellationData = [
+    { label: '2024', value: 6, display: '6' },
+    { label: 'Q1\'25', value: 6, display: '6' },
+    { label: 'Q2\'25', value: 29, display: '29' },
+    { label: 'Q3\'25', value: 29, display: '29' },
+    { label: 'Q4\'25', value: 60, display: '60' },
+    { label: '2026E', value: 168, display: '168' },
+  ];
+
+  const revenueData = [
+    { label: '2024', value: 0, display: '$0M' },
+    { label: '2025E', value: 50, display: '$50M' },
+    { label: '2026E', value: 300, display: '$300M' },
+    { label: '2027E', value: 800, display: '$800M' },
+    { label: '2028E', value: 1500, display: '$1.5B' },
+    { label: '2029E', value: 2500, display: '$2.5B' },
+  ];
+
+  const subscriberData = [
+    { label: '2024', value: 0, display: '0M' },
+    { label: '2025E', value: 1, display: '1M' },
+    { label: '2026E', value: 5, display: '5M' },
+    { label: '2027E', value: 15, display: '15M' },
+    { label: '2028E', value: 35, display: '35M' },
+    { label: '2029E', value: 60, display: '60M' },
+  ];
+
+  const chartData = chartType === 'constellation' ? constellationData : chartType === 'revenue' ? revenueData : subscriberData;
+  const maxValue = Math.max(...chartData.map(d => d.value));
+
+  return (
   <>
     <h2 className="section-head">Investment Thesis</h2>
     <div className="highlight"><h3>The Opportunity (Dec 2025)</h3>
@@ -1628,6 +1662,46 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           <li>Slow subscriber adoption by MNO partners</li>
           <li>MNO partnership revenue share negotiations</li>
         </ul>
+      </div>
+    </div>
+
+    <div className="card" style={{ marginTop: 32 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div className="card-title" style={{ marginBottom: 0 }}>
+          {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'revenue' ? 'Revenue Ramp' : 'Subscriber Growth'}
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {[
+            { id: 'constellation', label: 'Satellites' },
+            { id: 'revenue', label: 'Revenue' },
+            { id: 'subscribers', label: 'Subscribers' },
+          ].map(btn => (
+            <button
+              key={btn.id}
+              onClick={() => setChartType(btn.id)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 6,
+                border: chartType === btn.id ? '1px solid var(--cyan)' : '1px solid var(--border)',
+                background: chartType === btn.id ? 'rgba(34,211,238,0.1)' : 'transparent',
+                color: chartType === btn.id ? 'var(--cyan)' : 'var(--text2)',
+                fontSize: 12,
+                cursor: 'pointer',
+              }}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="bars">
+        {chartData.map((d, i) => (
+          <div key={i} className="bar-col">
+            <div className="bar-val">{d.display}</div>
+            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--cyan)' }} />
+            <div className="bar-label">{d.label}</div>
+          </div>
+        ))}
       </div>
     </div>
 
@@ -1681,7 +1755,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       { term: 'MNO Partnerships', def: 'Mobile Network Operator agreements. 53+ partners with 3.2B combined subscribers. Revenue share model (typically 50/50).' },
     ]} />
   </>
-);
+  );
+};
 
 const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
   // Group milestones by year
