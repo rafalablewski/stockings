@@ -3266,23 +3266,26 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
 
       {/* STEP 2: SCENARIO SELECTOR */}
       <div className="card"><div className="card-title">Step 2: Select Scenario</div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
           {scenarios.map(s => (
             <button
               key={s.key}
               onClick={() => setSelectedScenario(s.key)}
               style={{
-                padding: '12px 16px',
+                padding: 12,
                 borderRadius: 8,
                 border: s.key === selectedScenario ? `2px solid ${s.color}` : '1px solid var(--border)',
                 background: s.key === selectedScenario ? `${s.color}22` : 'var(--surface2)',
-                color: s.key === selectedScenario ? s.color : 'var(--text2)',
                 cursor: 'pointer',
-                fontWeight: s.key === selectedScenario ? 700 : 400,
-                fontSize: 14,
+                textAlign: 'left',
               }}
             >
-              {s.name} ({s.prob}%)
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <span style={{ fontSize: 18 }}>{s.label}</span>
+                <span style={{ fontWeight: 600, color: s.key === selectedScenario ? s.color : 'var(--text1)' }}>{s.name}</span>
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 4 }}>{s.desc}</div>
+              <div style={{ fontSize: 12, color: 'var(--text4)' }}>{s.prob}% probability</div>
             </button>
           ))}
         </div>
