@@ -1793,6 +1793,7 @@ function CRCLModel() {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [secFilter, setSecFilter] = useState('All');
   const [showAllFilings, setShowAllFilings] = useState(false);
+  const [capitalView, setCapitalView] = useState('structure');
   
   // SEC Filings data - update when new filings are processed
   const secFilings = [
@@ -3808,7 +3809,31 @@ function CRCLModel() {
                 <Card label="Convertible Debt" value="$206M" sub="Fair value" color="yellow" />
               </div>
 
+              {/* View Toggle */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 24 }}>
+                {[
+                  { id: 'structure', label: '📊 Share Structure' },
+                  { id: 'shareholders', label: '👥 Major Holders' },
+                  { id: 'offerings', label: '💰 Offerings' },
+                  { id: 'plans', label: '🎁 Plans' },
+                  { id: 'dilution', label: '📈 Dilution' },
+                ].map(btn => (
+                  <button
+                    key={btn.id}
+                    onClick={() => setCapitalView(btn.id)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      capitalView === btn.id
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                    }`}
+                  >
+                    {btn.label}
+                  </button>
+                ))}
+              </div>
+
               {/* Share Class Structure */}
+              {capitalView === 'structure' && (
               <div className="card" style={{ marginTop: 32 }}>
                 <div className="card-title">Share Class Structure</div>
                 <table className="tbl">
@@ -3834,9 +3859,11 @@ function CRCLModel() {
                   </tbody>
                 </table>
               </div>
+              )}
 
               {/* Major Shareholders */}
-              <div className="card" style={{ marginTop: 24 }}>
+              {capitalView === 'shareholders' && (
+              <div className="card" style={{ marginTop: 32 }}>
                 <div className="card-title">Major Shareholders (from Aug 2025 S-1)</div>
                 <table className="tbl">
                   <thead>
@@ -3864,8 +3891,12 @@ function CRCLModel() {
                   Note: Class B voting capped at 30% aggregate. Founder shares sunset June 2030 or upon Allaire departure from CEO/Chair.
                 </div>
               </div>
+              )}
 
-              <div className="g2" style={{ marginTop: 24 }}>
+              {/* Offerings View: Equity Offerings + Equity Awards + Warrants */}
+              {capitalView === 'offerings' && (
+              <>
+              <div className="g2" style={{ marginTop: 32 }}>
                 {/* Equity Offerings */}
                 <div className="card">
                   <div className="card-title">Equity Offerings</div>
@@ -3977,9 +4008,13 @@ function CRCLModel() {
                   </tbody>
                 </table>
               </div>
+              </>
+              )}
 
-              {/* Equity Incentive Plans */}
-              <div className="card" style={{ marginTop: 24 }}>
+              {/* Plans View: Equity Incentive Plans + Pre-IPO Preferred */}
+              {capitalView === 'plans' && (
+              <>
+              <div className="card" style={{ marginTop: 32 }}>
                 <div className="card-title">Equity Incentive Plans (Reserved Shares)</div>
                 <div className="g3">
                   {EQUITY_PLANS.map((p, i) => (
@@ -4028,9 +4063,12 @@ function CRCLModel() {
                   </tbody>
                 </table>
               </div>
+              </>
+              )}
 
-              {/* Dilution Analysis */}
-              <div className="card" style={{ marginTop: 24 }}>
+              {/* Dilution View */}
+              {capitalView === 'dilution' && (
+              <div className="card" style={{ marginTop: 32 }}>
                 <div className="card-title">Fully Diluted Share Count</div>
                 <table className="tbl">
                   <thead>
@@ -4082,7 +4120,8 @@ function CRCLModel() {
                   Note: Excludes 33.9M shares reserved under Omnibus/ESPP plans not yet granted. Lock-up: ~198M shares restricted until Q3'25 earnings or 180 days post-IPO.
                 </div>
               </div>
-              
+              )}
+
               <CFANotes title="CFA Level III — Capital Structure" items={[
                 { term: 'Share Classes', def: 'Class A (1 vote), Class B (5 votes). Dual-class structure gives founders control. Class B converts to A on transfer.' },
                 { term: 'Convertible Notes', def: 'Debt that converts to equity at holder option. Creates potential dilution. Track conversion price vs stock price.' },
