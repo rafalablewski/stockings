@@ -1517,7 +1517,7 @@ const BMNRDilutionAnalysis = () => {
 
 // OVERVIEW TAB with CFA Guide
 const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+  <>
     <h2 className="section-head">Overview</h2>
     <div className="highlight"><h3>ETH Treasury Investment Vehicle</h3>
       <p style={{ fontSize: '14px' }}>BMNR operates as an ETH treasury company, accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
@@ -1585,7 +1585,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       { term: 'Dividend Yield', def: 'Annual Dividend ÷ Stock Price. BMNR announced its first dividend ($0.01/share quarterly) in Nov 2025, becoming the first large-cap crypto treasury to pay dividends. Funded by staking income.' },
       { term: 'Market Cap vs NAV', def: 'Market Cap = Shares × Stock Price. Compare to total ETH value to understand market sentiment. Premium indicates growth expectations; discount indicates skepticism.' },
     ]} />
-  </div>
+  </>
 );
 
 // SCENARIOS TAB - Comprehensive scenario analysis
