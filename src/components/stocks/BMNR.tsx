@@ -1492,7 +1492,7 @@ const BMNRDilutionAnalysis = () => {
         </nav>
         
         {/* Main Content */}
-        <main className="main" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <main className="main">
         {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} />}
         {activeTab === 'scenarios' && <ScenariosTab calc={calc} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} quarterlyDividend={quarterlyDividend} dividendGrowthRate={dividendGrowthRate} />}
         {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
