@@ -133,6 +133,22 @@
 import React, { useState, useMemo, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart } from 'recharts';
 
+// Data imports - All hardcoded data extracted to separate files for easy AI updates
+import {
+  DEFAULTS,
+  ETH_HOLDINGS,
+  STAKING_PARAMS,
+  DIVIDEND_DATA,
+  DATA_FRESHNESS,
+  SHARE_CLASSES,
+  WARRANTS,
+  EQUITY_OFFERINGS,
+  MAJOR_SHAREHOLDERS,
+  HISTORICAL_ETH,
+  COMPARABLES,
+  DEFAULT_TRANCHES,
+} from '@/data/bmnr';
+
 // ============================================================================
 // BMNR - BitMine Immersion Technologies Financial Model
 // 2025 Creative Professional Design (CRCL-Style UI/UX)
@@ -1400,19 +1416,14 @@ const BMNRDilutionAnalysis = () => {
   const [quarterlyDividend, setQuarterlyDividend] = useState(0.01);
   const [dividendGrowthRate, setDividendGrowthRate] = useState(10); // % annual growth
 
-  const historicalETH = {
-    2020: [134, 230, 288, 171, 207, 228, 244, 391, 367, 396, 387, 478, 586],
-    2021: [738, 1316, 1393, 1789, 1938, 2814, 2707, 2280, 3198, 3920, 4636, 4644, 3682],
-    2022: [3682, 3117, 2619, 2994, 3049, 1784, 1962, 1073, 1251, 1595, 1316, 1273, 1194],
-    2023: [1194, 1561, 1657, 1545, 1817, 1899, 1844, 1917, 1852, 1627, 1597, 2050, 2268],
-    2024: [2268, 2305, 2408, 3084, 3516, 3095, 3704, 3499, 3329, 2582, 2606, 3289, 3430],
-  };
-  const comparables = [
-    { name: 'BMNR', crypto: 'ETH', holdings: currentETH, shares: currentShares * 1e6, price: currentStockPrice, yield: baseStakingAPY },
-    { name: 'MSTR', crypto: 'BTC', holdings: 671268, shares: 226e6, price: 390, yield: 0 },
-    // COIN Q3 2025 10-Q: 14,548 BTC, 148,715 ETH
-    { name: 'COIN', crypto: 'BTC+ETH', holdings: '14,548 BTC / 148,715 ETH', shares: 196e6, price: 265, yield: 0 },
-  ];
+  // Use imported data from @/data/bmnr
+  const historicalETH = HISTORICAL_ETH;
+  // Build comparables dynamically with current user values for BMNR
+  const comparables = COMPARABLES.map(c =>
+    c.name === 'BMNR'
+      ? { ...c, holdings: currentETH, shares: currentShares * 1e6, price: currentStockPrice, yield: baseStakingAPY }
+      : c
+  );
 
   const calc = useMemo(() => {
     const totalShares = currentShares * 1e6;
@@ -1501,9 +1512,9 @@ const BMNRDilutionAnalysis = () => {
                 marginBottom: 16
               }}>
                 <span>📅</span>
-                <span>Data as of: Jan 12, 2026</span>
+                <span>Data as of: {DATA_FRESHNESS.dataAsOf}</span>
                 <span style={{ color: 'rgba(167,139,250,0.5)' }}>|</span>
-                <span>Update prices regularly</span>
+                <span>{DATA_FRESHNESS.priceNote}</span>
               </div>
               <p className="desc">
                 Institutional-grade ETH exposure through a publicly traded vehicle. 
@@ -2471,40 +2482,20 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
 const CapitalTab = ({ currentShares, currentStockPrice }) => {
   const [capitalView, setCapitalView] = useState('structure');
 
-  // Share class structure data
-  const shareClasses = [
-    { class: 'Common Stock', authorized: 500000000, outstanding: currentShares * 1e6, parValue: 0.0001, voting: '1 vote/share', status: 'active' },
-    { class: 'Series A Preferred', authorized: 10000000, outstanding: 0, parValue: 0.0001, voting: 'As-converted', status: 'converted' },
-    { class: 'Series B Preferred', authorized: 10000000, outstanding: 0, parValue: 0.0001, voting: 'As-converted', status: 'converted' },
-  ];
+  // Use imported data from @/data/bmnr
+  // Update outstanding shares dynamically from currentShares prop
+  const shareClasses = SHARE_CLASSES.map(sc =>
+    sc.class === 'Common Stock' ? { ...sc, outstanding: currentShares * 1e6 } : sc
+  );
+  const majorShareholders = MAJOR_SHAREHOLDERS;
+  const equityOfferings = EQUITY_OFFERINGS;
+  const warrants = WARRANTS;
 
-  // Major shareholders
-  const majorShareholders = [
-    { name: 'Bill Miller III', shares: null, percent: null, type: 'Individual', source: 'Jul 2025 PR' },
-    { name: 'Institutional Holder 1', shares: null, percent: null, type: 'Institution', source: '13F TBD' },
-    { name: 'Institutional Holder 2', shares: null, percent: null, type: 'Institution', source: '13F TBD' },
-    { name: 'Insider Holdings', shares: null, percent: null, type: 'Insiders', source: 'DEF 14A TBD' },
-  ];
-
-  // Equity offerings
-  const equityOfferings = [
-    { date: 'Jul 2025', type: 'ATM', amount: 2.0, status: 'exhausted' },
-    { date: 'Jul 28', type: 'ATM+', amount: 4.5, status: 'exhausted' },
-    { date: 'Aug 12', type: 'ATM+', amount: 24.5, status: 'active' },
-    { date: 'Sep 22', type: '424B5', amount: 0.365, status: 'completed' },
-  ];
-
-  // Warrants
-  const warrants = [
-    { type: 'Pre-Funded', shares: 11000000, strike: 0.0001, source: 'Jul 2025 PIPE' },
-    { type: 'Advisor', shares: 3190000, strike: 5.40, source: 'Jul 2025 S-3' },
-  ];
-
-  // Fully diluted calculation
+  // Fully diluted calculation using current shares
   const fdShares = {
     common: currentShares * 1e6,
-    prefunded: 11000000,
-    advisor: 3190000,
+    prefunded: WARRANTS.find(w => w.type === 'Pre-Funded')?.shares || 0,
+    advisor: WARRANTS.find(w => w.type === 'Advisor')?.shares || 0,
     options: 0,
     rsus: 0,
   };
