@@ -3276,6 +3276,7 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
                 borderRadius: 8,
                 border: s.key === selectedScenario ? `2px solid ${s.color}` : '1px solid var(--border)',
                 background: s.key === selectedScenario ? `${s.color}22` : 'var(--surface2)',
+                color: 'var(--text1)',
                 cursor: 'pointer',
                 textAlign: 'left',
                 fontFamily: 'inherit',
@@ -3348,9 +3349,20 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         </div>
 
         {/* Calculation Steps Toggle */}
-        <button 
+        <button
           onClick={() => setShowMath(!showMath)}
-          className="w-full p-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm text-slate-300 transition-colors mb-3"
+          style={{
+            width: '100%',
+            padding: '12px 16px',
+            borderRadius: 8,
+            border: '1px solid var(--border)',
+            background: 'var(--surface2)',
+            color: 'var(--text2)',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            fontSize: 14,
+            marginBottom: 12,
+          }}
         >
           {showMath ? '➖ Hide Calculation' : '➕ Show Full Calculation'}
         </button>
