@@ -8890,6 +8890,32 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // ═══════════════════════════════════════════════════════════════════════════
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // FLYDUBAI - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-18',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'flydubai selects Starlink for 100 Boeing 737 aircraft',
+      details: [
+        'Dubai-based carrier selects Starlink for entire fleet',
+        'Announced at Dubai Airshow 2025 (same event as Emirates)',
+        '100 Boeing 737 aircraft to be equipped in 2026',
+        'Free high-speed internet for customers',
+        '100+ destinations coverage',
+        'Installation times measured in hours, not days',
+        'Real-time data for crew plus passenger connectivity',
+        'Joins Emirates in Dubai carriers adopting Starlink'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi. Middle East LCC market - different from ASTS D2D cellular to unmodified phones.',
+      source: 'flydubai',
+      sourceUrl: 'https://news.flydubai.com/flydubai-announces-starlink-inflight-connectivity-partner',
+      storyId: 'flydubai-starlink-aviation',
+      storyTitle: 'flydubai Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // IAG (INTERNATIONAL AIRLINES GROUP) - STARLINK AVIATION
     // ═══════════════════════════════════════════════════════════════════════════
     {
