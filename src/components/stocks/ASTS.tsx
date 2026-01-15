@@ -3278,14 +3278,15 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
                 background: s.key === selectedScenario ? `${s.color}22` : 'var(--surface2)',
                 cursor: 'pointer',
                 textAlign: 'left',
+                fontFamily: 'inherit',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <span style={{ fontSize: 18 }}>{s.label}</span>
-                <span style={{ fontWeight: 600, color: s.key === selectedScenario ? s.color : 'var(--text1)' }}>{s.name}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <span style={{ fontSize: 24 }}>{s.label}</span>
+                <span style={{ fontWeight: 700, fontSize: 18, color: s.key === selectedScenario ? s.color : 'var(--text1)' }}>{s.name}</span>
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 4 }}>{s.desc}</div>
-              <div style={{ fontSize: 12, color: 'var(--text4)' }}>{s.prob}% probability</div>
+              <div style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{s.desc}</div>
+              <div style={{ fontSize: 12, color: '#64748b' }}>{s.prob}% probability</div>
             </button>
           ))}
         </div>
