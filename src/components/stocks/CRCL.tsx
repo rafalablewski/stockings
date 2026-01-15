@@ -4809,6 +4809,28 @@ function CRCLModel() {
                 </div>
               </div>
 
+              {/* Key Insights */}
+              <div className="card" style={{ marginTop: 24 }}><div className="card-title">Key Insights</div>
+                <div className="grid md:grid-cols-2 gap-4 text-sm">
+                  <div className="bg-slate-900/50 rounded-lg p-4">
+                    <h4 className="font-semibold text-violet-400 mb-2">Interest Rate Sensitivity</h4>
+                    <p className="text-slate-300">Reserve income is directly tied to Fed rates. Each 100bp rate cut reduces gross revenue by ~$737M annually at current circulation. Rate cuts are the primary bear case risk.</p>
+                  </div>
+                  <div className="bg-slate-900/50 rounded-lg p-4">
+                    <h4 className="font-semibold text-violet-400 mb-2">Coinbase Dependency</h4>
+                    <p className="text-slate-300">~54% of gross revenue goes to Coinbase as distribution cost. Renegotiating this agreement or diversifying distribution (CPN, direct bank partnerships) is key to margin expansion.</p>
+                  </div>
+                  <div className="bg-slate-900/50 rounded-lg p-4">
+                    <h4 className="font-semibold text-violet-400 mb-2">Regulatory Moat</h4>
+                    <p className="text-slate-300">Circle's regulatory-first approach (state licenses, MiCA compliance, OCC charter) creates barriers to entry. GENIUS Act could cement USDC as the preferred regulated stablecoin for TradFi.</p>
+                  </div>
+                  <div className="bg-slate-900/50 rounded-lg p-4">
+                    <h4 className="font-semibold text-violet-400 mb-2">Risk/Reward</h4>
+                    <p className="text-slate-300">Bear case scenarios model rate cuts + market share loss. Bull cases require continued USDC growth + multiple expansion to payment network peers. Asymmetric if stablecoin adoption accelerates.</p>
+                  </div>
+                </div>
+              </div>
+
               {/* Methodology & Assumptions */}
               <div className="card" style={{ marginTop: 24 }}>
                 <div className="card-title">Methodology & Assumptions</div>
