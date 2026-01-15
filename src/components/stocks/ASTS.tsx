@@ -1648,13 +1648,14 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
   const [chartType, setChartType] = useState('constellation');
 
   // Chart data - HISTORICAL ONLY
+  // BW3 launched Sep'22, BB1-5 launched Sep'24, BB6 launched Dec'25
   const constellationData = [
-    { label: 'Sep\'24', value: 5, display: '5' },
-    { label: 'Dec\'24', value: 6, display: '6' },
+    { label: 'Q3\'22', value: 1, display: '1' },
+    { label: 'Q3\'24', value: 6, display: '6' },
+    { label: 'Q4\'24', value: 6, display: '6' },
     { label: 'Q1\'25', value: 6, display: '6' },
-    { label: 'Q2\'25', value: 29, display: '29' },
-    { label: 'Q3\'25', value: 29, display: '29' },
-    { label: 'Q4\'25', value: 60, display: '60' },
+    { label: 'Q2\'25', value: 6, display: '6' },
+    { label: 'Q4\'25', value: block1Sats + block2Sats, display: `${block1Sats + block2Sats}` },
   ];
 
   const cashData = [
