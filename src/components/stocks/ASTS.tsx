@@ -2660,7 +2660,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
 
 // CAPITAL TAB - Share structure, offerings, dilution
 const CapitalTab = ({ currentShares, currentStockPrice }) => {
-  const [selectedView, setSelectedView] = useState('structure');
+  const [capitalView, setCapitalView] = useState('structure');
   
   // Current share class structure (Q3 2025)
   const shareClasses = [
@@ -2812,16 +2812,25 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Capital Structure</h2>
-      <div className="highlight"><h3>Share Classes, Offerings & Dilution</h3>
-        <div className="space-y-2 text-sm">
-          <p><strong className="text-cyan-400">Share Structure:</strong> Three-class structure with Abel Avellan controlling ~73% of voting power via Class C (10x votes).</p>
-          <p><strong className="text-cyan-400">Capital Raised:</strong> ~$3.6B total since SPAC (equity + converts). Fully funded for 100+ satellites.</p>
-          <p><strong className="text-cyan-400">Dilution:</strong> Class A shares grew from 5.75M (SPAC) to 272M (Q3 2025). Additional dilution possible from $1.625B converts.</p>
-        </div>
+      <div className="highlight">
+        <h3>Share Classes, Offerings & Dilution</h3>
+        <p className="text-sm">
+          Three-class structure with Abel Avellan controlling ~73% of voting power via Class C (10x votes).
+          ~$3.6B total raised since SPAC (equity + converts). Fully funded for 100+ satellites.
+          Class A shares grew from 5.75M (SPAC) to 272M (Q3 2025).
+        </p>
       </div>
-      
+
+      {/* Summary Cards */}
+      <div className="g4">
+        <Card label="Class A Shares" value={`${shareClasses[0].shares}M`} sub="Public float" color="sky" />
+        <Card label="Fully Diluted" value={`${fullyDiluted}M`} sub={`+${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}% dilution`} color="violet" />
+        <Card label="Basic Mkt Cap" value={`$${(marketCap / 1000).toFixed(1)}B`} sub={`@ $${currentStockPrice}`} color="green" />
+        <Card label="FD Mkt Cap" value={`$${(fullyDiluted * currentStockPrice / 1000).toFixed(1)}B`} sub="All securities" color="gold" />
+      </div>
+
       {/* Navigation Cards */}
-      <div className="g5">
+      <div className="g5" style={{ marginTop: 24 }}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Strategic + founder' },
@@ -2831,380 +2840,343 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         ].map(nav => (
           <div
             key={nav.id}
-            onClick={() => setSelectedView(nav.id)}
+            onClick={() => setCapitalView(nav.id)}
             className="card"
             style={{
               cursor: 'pointer',
-              borderLeft: selectedView === nav.id ? '4px solid var(--sky)' : '4px solid transparent',
+              borderLeft: capitalView === nav.id ? '4px solid var(--sky)' : '4px solid transparent',
               transition: 'border-color 0.2s',
             }}
           >
-            <div style={{ fontSize: 24, fontWeight: 600, color: selectedView === nav.id ? 'var(--sky)' : 'var(--text)' }}>{nav.value}</div>
+            <div style={{ fontSize: 24, fontWeight: 600, color: capitalView === nav.id ? 'var(--sky)' : 'var(--text)' }}>{nav.value}</div>
             <div style={{ fontSize: 14, fontWeight: 500, marginTop: 4 }}>{nav.label}</div>
             <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>{nav.sub}</div>
           </div>
         ))}
       </div>
       
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card label="Class A Shares" value={`${shareClasses[0].shares}M`} sub="Public float" color="cyan" />
-        <Card label="Implied Shares" value={`${totalBasic.toFixed(1)}M`} sub="A + B + C" color="purple" />
-        <Card label="Fully Diluted" value={`${fullyDiluted}M`} sub="All securities" color="orange" />
-        <Card label="Market Cap" value={`$${(marketCap / 1000).toFixed(1)}B`} sub={`@ $${currentStockPrice}`} color="green" />
-        <Card label="FD Market Cap" value={`$${(fullyDiluted * currentStockPrice / 1000).toFixed(1)}B`} sub="All securities" color="yellow" />
-      </div>
-      
       {/* Share Structure View */}
-      {selectedView === 'structure' && (
-        <div className="card"><div className="card-title">Share Class Structure (Q3 2025)</div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-3 px-3 text-slate-400">Class</th>
-                  <th className="text-right py-3 px-3 text-slate-400">Shares (M)</th>
-                  <th className="text-right py-3 px-3 text-slate-400">% of Basic</th>
-                  <th className="text-left py-3 px-3 text-slate-400">Voting Rights</th>
-                  <th className="text-left py-3 px-3 text-slate-400">Conversion</th>
-                  <th className="text-left py-3 px-3 text-slate-400">Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-t border-slate-800 hover:bg-slate-800/50">
-                  <td className="py-3 px-3 font-medium text-cyan-400">Class A</td>
-                  <td className="py-3 px-3 text-right tabular-nums">272.0M</td>
-                  <td className="py-3 px-3 text-right tabular-nums text-slate-400">{(272.0 / totalBasic * 100).toFixed(1)}%</td>
-                  <td className="py-3 px-3 text-slate-300">1 vote per share</td>
-                  <td className="py-3 px-3 text-slate-400 text-xs">N/A</td>
-                  <td className="py-3 px-3 text-slate-400 text-xs">Public trading shares (NASDAQ: ASTS)</td>
-                </tr>
-                <tr className="border-t border-slate-800 hover:bg-slate-800/50">
-                  <td className="py-3 px-3 font-medium text-purple-400">Class B</td>
-                  <td className="py-3 px-3 text-right tabular-nums">11.2M</td>
-                  <td className="py-3 px-3 text-right tabular-nums text-slate-400">{(11.2 / totalBasic * 100).toFixed(1)}%</td>
-                  <td className="py-3 px-3 text-slate-300">1 vote per share</td>
-                  <td className="py-3 px-3 text-slate-400 text-xs">Convert 1:1 to Class A</td>
-                  <td className="py-3 px-3 text-slate-400 text-xs">Founder/insider shares</td>
-                </tr>
-                <tr className="border-t border-slate-800 hover:bg-slate-800/50">
-                  <td className="py-3 px-3 font-medium text-orange-400">Class C</td>
-                  <td className="py-3 px-3 text-right tabular-nums">78.2M</td>
-                  <td className="py-3 px-3 text-right tabular-nums text-slate-400">{(78.2 / totalBasic * 100).toFixed(1)}%</td>
-                  <td className="py-3 px-3 text-slate-300">10 votes per share</td>
-                  <td className="py-3 px-3 text-slate-400 text-xs">Convert 1:1 to Class A upon transfer</td>
-                  <td className="py-3 px-3 text-slate-400 text-xs">Abel Avellan (Founder/CEO) shares</td>
-                </tr>
-                <tr className="border-t-2 border-slate-600 bg-slate-800/30">
-                  <td className="py-3 px-3 font-bold text-white">Total Basic</td>
-                  <td className="py-3 px-3 text-right font-bold tabular-nums text-white">{totalBasic.toFixed(1)}M</td>
-                  <td className="py-3 px-3 text-right tabular-nums text-white">100%</td>
-                  <td colSpan={3}></td>
-                </tr>
-                <tr className="border-t border-slate-700">
-                  <td className="py-3 px-3 font-medium text-yellow-400">+ Options/RSUs/Converts</td>
-                  <td className="py-3 px-3 text-right tabular-nums text-yellow-400">{(fullyDiluted - totalBasic).toFixed(1)}M</td>
-                  <td className="py-3 px-3 text-right tabular-nums text-slate-400">+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</td>
-                  <td colSpan={3} className="py-3 px-3 text-xs text-slate-500">Remaining Jan converts ($50M), employee options, RSUs</td>
-                </tr>
-                <tr className="border-t border-slate-600 bg-cyan-900/20">
-                  <td className="py-3 px-3 font-bold text-cyan-400">Fully Diluted</td>
-                  <td className="py-3 px-3 text-right font-bold tabular-nums text-cyan-400">{fullyDiluted.toFixed(1)}M</td>
-                  <td className="py-3 px-3 text-right tabular-nums text-cyan-400">{(fullyDiluted / totalBasic * 100).toFixed(1)}%</td>
-                  <td colSpan={3}></td>
-                </tr>
-              </tbody>
-            </table>
+      {capitalView === 'structure' && (
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title">Share Class Structure (Q3 2025)</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Class</th>
+              <th className="r">Shares (M)</th>
+              <th className="r">% of Basic</th>
+              <th>Voting Rights</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style={{ fontWeight: 600, color: 'var(--sky)' }}>Class A</td>
+              <td className="r">272.0</td>
+              <td className="r">{(272.0 / totalBasic * 100).toFixed(1)}%</td>
+              <td style={{ color: 'var(--text2)' }}>1 vote/share</td>
+              <td style={{ color: 'var(--text3)', fontSize: 13 }}>Public trading (NASDAQ: ASTS)</td>
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 600, color: 'var(--violet)' }}>Class B</td>
+              <td className="r">11.2</td>
+              <td className="r">{(11.2 / totalBasic * 100).toFixed(1)}%</td>
+              <td style={{ color: 'var(--text2)' }}>1 vote/share</td>
+              <td style={{ color: 'var(--text3)', fontSize: 13 }}>Founder/insider shares</td>
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 600, color: 'var(--gold)' }}>Class C</td>
+              <td className="r">78.2</td>
+              <td className="r">{(78.2 / totalBasic * 100).toFixed(1)}%</td>
+              <td style={{ color: 'var(--text2)' }}>10 votes/share</td>
+              <td style={{ color: 'var(--text3)', fontSize: 13 }}>Abel Avellan (CEO)</td>
+            </tr>
+            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+              <td>Total Basic</td>
+              <td className="r">{totalBasic.toFixed(1)}</td>
+              <td className="r">100%</td>
+              <td colSpan={2}></td>
+            </tr>
+            <tr>
+              <td style={{ color: 'var(--gold)' }}>+ Options/RSUs/Converts</td>
+              <td className="r" style={{ color: 'var(--gold)' }}>{(fullyDiluted - totalBasic).toFixed(1)}</td>
+              <td className="r">+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</td>
+              <td colSpan={2} style={{ color: 'var(--text3)', fontSize: 13 }}>Remaining converts, options, RSUs</td>
+            </tr>
+            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+              <td style={{ color: 'var(--sky)' }}>Fully Diluted</td>
+              <td className="r sky">{fullyDiluted.toFixed(1)}</td>
+              <td className="r sky">{(fullyDiluted / totalBasic * 100).toFixed(1)}%</td>
+              <td colSpan={2}></td>
+            </tr>
+          </tbody>
+        </table>
+
+        {/* Voting Power Analysis */}
+        <div style={{ marginTop: 16, padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)', marginBottom: 12 }}>Voting Power Analysis</div>
+          <div className="g2">
+            <div>
+              <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 8 }}>ECONOMIC OWNERSHIP</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
+                <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
+                <span style={{ color: 'var(--sky)' }}>{(272.0 / totalBasic * 100).toFixed(1)}%</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
+                <span style={{ color: 'var(--text2)' }}>Class B (Insiders)</span>
+                <span style={{ color: 'var(--violet)' }}>{(11.2 / totalBasic * 100).toFixed(1)}%</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                <span style={{ color: 'var(--text2)' }}>Class C (Abel Avellan)</span>
+                <span style={{ color: 'var(--gold)' }}>{(78.2 / totalBasic * 100).toFixed(1)}%</span>
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 8 }}>VOTING POWER (C = 10x)</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
+                <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
+                <span style={{ color: 'var(--sky)' }}>{(272.0 / totalVotingShares * 100).toFixed(1)}%</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
+                <span style={{ color: 'var(--text2)' }}>Class B (Insiders)</span>
+                <span style={{ color: 'var(--violet)' }}>{(11.2 / totalVotingShares * 100).toFixed(1)}%</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 600 }}>
+                <span style={{ color: 'var(--text)' }}>Class C (Abel Avellan)</span>
+                <span style={{ color: 'var(--gold)' }}>{(78.2 * 10 / totalVotingShares * 100).toFixed(1)}%</span>
+              </div>
+            </div>
           </div>
-          
-          {/* Voting Power Analysis */}
-          <div className="mt-4 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
-            <h4 className="text-sm font-medium text-orange-400 mb-3">⚡ Voting Power Analysis</h4>
-            <div className="g2">
-              <div>
-                <div className="text-xs text-slate-500 uppercase mb-2">Economic Ownership</div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Class A (Public)</span>
-                    <span className="text-cyan-400">{(272.0 / totalBasic * 100).toFixed(1)}%</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Class B (Insiders)</span>
-                    <span className="text-purple-400">{(11.2 / totalBasic * 100).toFixed(1)}%</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Class C (Abel Avellan)</span>
-                    <span className="text-orange-400">{(78.2 / totalBasic * 100).toFixed(1)}%</span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="text-xs text-slate-500 uppercase mb-2">Voting Power (Class C = 10x)</div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Class A (Public)</span>
-                    <span className="text-cyan-400">{(272.0 / totalVotingShares * 100).toFixed(1)}%</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Class B (Insiders)</span>
-                    <span className="text-purple-400">{(11.2 / totalVotingShares * 100).toFixed(1)}%</span>
-                  </div>
-                  <div className="flex justify-between text-sm font-medium">
-                    <span className="text-slate-300">Class C (Abel Avellan)</span>
-                    <span className="text-orange-400">{(78.2 * 10 / totalVotingShares * 100).toFixed(1)}%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-3 pt-3 border-t border-slate-700/50 text-xs text-slate-500">
-              <strong className="text-orange-400">Note:</strong> Abel Avellan maintains majority voting control (~73%) despite only ~22% economic ownership through Class C super-voting shares.
-            </div>
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)', fontSize: 13, color: 'var(--text3)' }}>
+            <strong style={{ color: 'var(--gold)' }}>Note:</strong> Abel Avellan maintains ~73% voting control despite ~22% economic ownership via Class C super-voting shares.
           </div>
         </div>
+      </div>
       )}
       
       {/* Major Shareholders View */}
-      {selectedView === 'shareholders' && (
-        <div className="card"><div className="card-title">Major Shareholders (Known from SEC Filings)</div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-3 px-3 text-slate-400">Shareholder</th>
-                  <th className="text-left py-3 px-3 text-slate-400">Role</th>
-                  <th className="text-right py-3 px-3 text-slate-400">Shares (M)</th>
-                  <th className="text-center py-3 px-3 text-slate-400">Class</th>
-                  <th className="text-right py-3 px-3 text-slate-400">% Own</th>
-                  <th className="text-right py-3 px-3 text-slate-400">% Vote</th>
-                  <th className="text-left py-3 px-3 text-slate-400">Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {majorShareholders.map((sh, i) => (
-                  <tr key={i} className="border-t border-slate-800 hover:bg-slate-800/50">
-                    <td className="py-3 px-3 font-medium text-white">{sh.name}</td>
-                    <td className="py-3 px-3 text-slate-400 text-xs">{sh.role}</td>
-                    <td className="py-3 px-3 text-right tabular-nums">{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</td>
-                    <td className="py-3 px-3 text-center">
-                      <span className={`px-2 py-0.5 rounded text-xs ${sh.shareClass === 'Class C' ? 'bg-orange-900/30 text-orange-400' : 'bg-cyan-900/30 text-cyan-400'}`}>
-                        {sh.shareClass}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 text-right tabular-nums text-slate-300">{sh.pct}%</td>
-                    <td className="py-3 px-3 text-right tabular-nums text-slate-300">{sh.votingPct}%</td>
-                    <td className="py-3 px-3 text-slate-500 text-xs">{sh.notes}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          
-          <div className="mt-4 p-3 bg-yellow-900/20 border border-yellow-700/30 rounded-lg">
-            <div className="flex items-start gap-2">
-              <span className="text-yellow-400">⚠️</span>
-              <div className="text-xs text-slate-300">
-                <strong className="text-yellow-400">Data Limitations:</strong> Full institutional ownership requires 13F filings analysis. 
-                Strategic investor shares are estimates based on convertible note conversions and PIPE disclosures. 
-                Actual holdings may differ.
-              </div>
-            </div>
-          </div>
+      {capitalView === 'shareholders' && (
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title">Major Shareholders (Known from SEC Filings)</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Shareholder</th>
+              <th>Role</th>
+              <th className="r">Shares (M)</th>
+              <th>Class</th>
+              <th className="r">% Own</th>
+              <th className="r">% Vote</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {majorShareholders.map((sh, i) => (
+              <tr key={i}>
+                <td style={{ fontWeight: 500 }}>{sh.name}</td>
+                <td style={{ color: 'var(--text2)', fontSize: 13 }}>{sh.role}</td>
+                <td className="r">{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</td>
+                <td><span style={{ color: sh.shareClass === 'Class C' ? 'var(--gold)' : 'var(--sky)' }}>{sh.shareClass}</span></td>
+                <td className="r sky">{sh.pct}%</td>
+                <td className="r sky">{sh.votingPct}%</td>
+                <td style={{ color: 'var(--text3)', fontSize: 13 }}>{sh.notes}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+          Data from 13F (institutional) and DEF 14A (insiders). Strategic shares based on converts and PIPE disclosures.
         </div>
+      </div>
       )}
       
       {/* Equity Offerings View */}
-      {selectedView === 'offerings' && (
-        <div className="card"><div className="card-title">Equity Offerings Timeline</div>
-          <div className="space-y-3">
+      {capitalView === 'offerings' && (
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title">Equity Offerings Timeline</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Event</th>
+              <th>Type</th>
+              <th className="r">Amount</th>
+              <th className="r">Price</th>
+              <th className="r">Shares (M)</th>
+            </tr>
+          </thead>
+          <tbody>
             {equityOfferings.map((offering, i) => (
-              <div key={i} className="p-4 rounded-lg border bg-slate-900/50 border-slate-700/50">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-slate-700 text-slate-300">{offering.type}</span>
-                      <span className="text-slate-500 text-xs">{offering.date}</span>
-                    </div>
-                    <div className="font-medium text-white mt-1">{offering.event}</div>
-                    <div className="text-sm text-slate-400 mt-1">{offering.notes}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-green-400">${offering.amount}M</div>
-                    {offering.price && (
-                      <div className="text-xs text-slate-500">@ ${offering.price.toFixed(2)}/share</div>
-                    )}
-                    {offering.shares && (
-                      <div className="text-xs text-slate-500">{offering.shares.toFixed(1)}M shares</div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <tr key={i}>
+                <td style={{ color: 'var(--text3)', fontSize: 13 }}>{offering.date}</td>
+                <td style={{ fontWeight: 500 }}>{offering.event}</td>
+                <td><span style={{ color: 'var(--gold)' }}>{offering.type}</span></td>
+                <td className="r mint">${offering.amount}M</td>
+                <td className="r">{offering.price ? `$${offering.price.toFixed(2)}` : '—'}</td>
+                <td className="r">{offering.shares ? offering.shares.toFixed(1) : '—'}</td>
+              </tr>
             ))}
-          </div>
-          
-          {/* Total Raised */}
-          <div className="mt-4 p-4 bg-green-900/20 border border-green-700/30 rounded-lg">
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="text-sm text-slate-400">Total Capital Raised (2019-2025)</div>
-                <div className="text-xs text-slate-500">Equity + Convertibles + ATM</div>
-              </div>
-              <div className="text-2xl font-bold text-green-400">~$3.6B</div>
-            </div>
-          </div>
+            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+              <td colSpan={3}>Total Capital Raised (2019-2025)</td>
+              <td className="r mint">~$3.6B</td>
+              <td colSpan={2}></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+          Equity + Convertibles + ATM programs. Fully funded for 100+ satellite constellation.
         </div>
+      </div>
       )}
       
       {/* SBC View */}
-      {selectedView === 'incentives' && (
-        <div className="card"><div className="card-title">Stock-Based Compensation (SBC)</div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-2 px-3 text-slate-400">Quarter</th>
-                  <th className="text-right py-2 px-3 text-slate-400">Total SBC</th>
-                  <th className="text-right py-2 px-3 text-slate-400">Engineering</th>
-                  <th className="text-right py-2 px-3 text-slate-400">G&A</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sbcHistory.map((row, i) => (
-                  <tr key={i} className="border-t border-slate-800 hover:bg-slate-800/50">
-                    <td className="py-2 px-3 text-slate-300">{row.quarter}</td>
-                    <td className="py-2 px-3 text-right font-medium text-purple-400">${row.sbc.toFixed(1)}M</td>
-                    <td className="py-2 px-3 text-right text-slate-400">${row.engineering.toFixed(1)}M</td>
-                    <td className="py-2 px-3 text-right text-slate-400">${row.gAndA.toFixed(1)}M</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {capitalView === 'incentives' && (
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title">Stock-Based Compensation (SBC)</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Quarter</th>
+              <th className="r">Total SBC</th>
+              <th className="r">Engineering</th>
+              <th className="r">G&A</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sbcHistory.map((row, i) => (
+              <tr key={i}>
+                <td>{row.quarter}</td>
+                <td className="r violet">${row.sbc.toFixed(1)}M</td>
+                <td className="r">${row.engineering.toFixed(1)}M</td>
+                <td className="r">${row.gAndA.toFixed(1)}M</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* SBC Chart */}
+        <div style={{ marginTop: 16, height: 192 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={sbcHistory}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
+              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v) => [`$${v.toFixed(1)}M`]} />
+              <Bar dataKey="engineering" stackId="a" fill="var(--violet)" name="Engineering" />
+              <Bar dataKey="gAndA" stackId="a" fill="var(--sky)" name="G&A" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="g2" style={{ marginTop: 16 }}>
+          <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
+            <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 4 }}>2025 YTD SBC</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>$32.3M</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)' }}>Q1-Q3 2025</div>
           </div>
-          
-          {/* SBC Chart */}
-          <div className="mt-4 h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={sbcHistory}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
-                <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
-                <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v) => [`$${v.toFixed(1)}M`]} />
-                <Bar dataKey="engineering" stackId="a" fill="#a855f7" name="Engineering" />
-                <Bar dataKey="gAndA" stackId="a" fill="#6366f1" name="G&A" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          
-          <div className="mt-4 grid md:grid-cols-2 gap-4">
-            <div className="p-3 bg-slate-900/50 rounded-lg">
-              <div className="text-xs text-slate-500 uppercase mb-1">2025 YTD SBC</div>
-              <div className="text-xl font-bold text-purple-400">$32.3M</div>
-              <div className="text-xs text-slate-500">Q1-Q3 2025</div>
-            </div>
-            <div className="p-3 bg-slate-900/50 rounded-lg">
-              <div className="text-xs text-slate-500 uppercase mb-1">FY2024 Total SBC</div>
-              <div className="text-xl font-bold text-purple-400">$31.9M</div>
-              <div className="text-xs text-slate-500">Full year</div>
-            </div>
-          </div>
-          
-          <div className="mt-4 text-xs text-slate-500">
-            <strong className="text-slate-400">Note:</strong> SBC primarily consists of RSUs and stock options granted to employees. 
-            Included in GAAP OpEx but excluded from Adjusted OpEx metrics. Specific plan details (authorized shares, vesting schedules) 
-            available in DEF 14A proxy filings.
+          <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
+            <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 4 }}>FY2024 Total SBC</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>$31.9M</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full year</div>
           </div>
         </div>
+
+        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+          SBC consists of RSUs and stock options. Included in GAAP OpEx but excluded from Adjusted OpEx.
+        </div>
+      </div>
       )}
       
       {/* Dilution History View */}
-      {selectedView === 'dilution' && (
-        <div className="card"><div className="card-title">Share Count Evolution</div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-2 px-3 text-slate-400">Quarter</th>
-                  <th className="text-right py-2 px-3 text-slate-400">Class A</th>
-                  <th className="text-right py-2 px-3 text-slate-400">Implied</th>
-                  <th className="text-right py-2 px-3 text-slate-400">Fully Diluted</th>
-                  <th className="text-left py-2 px-3 text-slate-400">Key Event</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dilutionHistory.map((row, i) => (
-                  <tr key={i} className="border-t border-slate-800 hover:bg-slate-800/50">
-                    <td className="py-2 px-3 text-slate-300">{row.quarter}</td>
-                    <td className="py-2 px-3 text-right tabular-nums text-cyan-400">{row.classA.toFixed(1)}M</td>
-                    <td className="py-2 px-3 text-right tabular-nums text-purple-400">{row.implied.toFixed(1)}M</td>
-                    <td className="py-2 px-3 text-right tabular-nums text-orange-400">{row.fullyDiluted.toFixed(1)}M</td>
-                    <td className="py-2 px-3 text-slate-500 text-xs">{row.event}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {capitalView === 'dilution' && (
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title">Share Count Evolution</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Quarter</th>
+              <th className="r">Class A (M)</th>
+              <th className="r">Implied (M)</th>
+              <th className="r">Fully Diluted (M)</th>
+              <th>Key Event</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dilutionHistory.map((row, i) => (
+              <tr key={i}>
+                <td>{row.quarter}</td>
+                <td className="r sky">{row.classA.toFixed(1)}</td>
+                <td className="r violet">{row.implied.toFixed(1)}</td>
+                <td className="r gold">{row.fullyDiluted.toFixed(1)}</td>
+                <td style={{ color: 'var(--text3)', fontSize: 13 }}>{row.event}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Dilution Chart */}
+        <div style={{ marginTop: 16, height: 256 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={dilutionHistory}>
+              <defs>
+                <linearGradient id="classAGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--sky)" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="var(--sky)" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="fdGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--gold)" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="var(--gold)" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
+              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `${v}M`} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v) => [`${v.toFixed(1)}M shares`]} />
+              <Area type="monotone" dataKey="fullyDiluted" stroke="var(--gold)" fill="url(#fdGrad)" name="Fully Diluted" />
+              <Area type="monotone" dataKey="classA" stroke="var(--sky)" fill="url(#classAGrad)" name="Class A" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div style={{ marginTop: 16, display: 'flex', gap: 16, fontSize: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 4 }}></div>
+            <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
           </div>
-          
-          {/* Dilution Chart */}
-          <div className="mt-4 h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={dilutionHistory}>
-                <defs>
-                  <linearGradient id="classAGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="fdGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
-                <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `${v}M`} />
-                <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v) => [`${v.toFixed(1)}M shares`]} />
-                <Area type="monotone" dataKey="fullyDiluted" stroke="#f97316" fill="url(#fdGrad)" name="Fully Diluted" />
-                <Area type="monotone" dataKey="classA" stroke="var(--cyan)" fill="url(#classAGrad)" name="Class A" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-          
-          <div className="mt-4 flex gap-4 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-cyan-500 rounded"></div>
-              <span className="text-slate-400">Class A (Public)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-orange-500 rounded"></div>
-              <span className="text-slate-400">Fully Diluted</span>
-            </div>
-          </div>
-          
-          {/* Potential Future Dilution */}
-          <div className="mt-4 p-4 bg-red-900/20 border border-red-700/30 rounded-lg">
-            <h4 className="text-sm font-medium text-red-400 mb-2">⚠️ Potential Future Dilution</h4>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-400">Jan 2025 Converts (remaining $50M @ $26.58)</span>
-                <span className="text-red-400">+1.9M shares</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Jul 2025 Converts ($575M @ $120.12)</span>
-                <span className="text-red-400">+4.8M shares</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Oct 2025 Converts ($1,150M @ $96.30)</span>
-                <span className="text-red-400">+11.9M shares</span>
-              </div>
-              <div className="flex justify-between border-t border-red-700/30 pt-2 font-medium">
-                <span className="text-slate-300">Maximum Additional Dilution</span>
-                <span className="text-red-400">+18.6M shares (~5%)</span>
-              </div>
-            </div>
-            <div className="mt-2 text-xs text-slate-500">
-              Converts only dilute if stock price exceeds strike prices at conversion/maturity. 
-              Company may also repurchase converts for cash instead of issuing shares.
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 12, height: 12, background: 'var(--gold)', borderRadius: 4 }}></div>
+            <span style={{ color: 'var(--text2)' }}>Fully Diluted</span>
           </div>
         </div>
+
+        {/* Potential Future Dilution */}
+        <div style={{ marginTop: 16, padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)', marginBottom: 12 }}>Potential Future Dilution</div>
+          <table className="tbl">
+            <tbody>
+              <tr>
+                <td>Jan 2025 Converts (remaining $50M @ $26.58)</td>
+                <td className="r gold">+1.9M</td>
+              </tr>
+              <tr>
+                <td>Jul 2025 Converts ($575M @ $120.12)</td>
+                <td className="r gold">+4.8M</td>
+              </tr>
+              <tr>
+                <td>Oct 2025 Converts ($1,150M @ $96.30)</td>
+                <td className="r gold">+11.9M</td>
+              </tr>
+              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                <td>Maximum Additional Dilution</td>
+                <td className="r gold">+18.6M (~5%)</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+            Converts only dilute if stock price exceeds strike prices. Company may repurchase for cash.
+          </div>
+        </div>
+      </div>
       )}
       
       <CFANotes title="CFA Level III — Capital Structure" items={[
