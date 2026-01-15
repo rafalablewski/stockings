@@ -743,6 +743,51 @@ const css = `
   color: var(--text3);
 }
 
+/* Bar Charts */
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 220px;
+  padding: 20px 0;
+}
+
+.bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bar-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.bar {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(180deg, var(--cyan) 0%, #06B6D4 100%);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.bar:hover {
+  filter: brightness(1.15);
+  transform: scaleY(1.02);
+  transform-origin: bottom;
+}
+
+.bar-label {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 10px;
+  font-weight: 500;
+}
+
 /* Big Stats */
 .big-stat {
   background: var(--surface2);
