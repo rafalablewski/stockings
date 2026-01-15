@@ -3252,73 +3252,60 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         </div>
       </div>
 
-      {/* STEP 1: YEAR SELECTOR */}
-      <div className="card"><div className="card-title">Step 1: Select Target Year</div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-          {years.map(y => (
-            <button
-              key={y}
-              onClick={() => setTargetYear(y)}
-              style={{
-                padding: '12px 20px',
-                borderRadius: 8,
-                border: y === targetYear ? '2px solid var(--mint)' : '1px solid var(--border)',
-                background: y === targetYear ? 'rgba(0,212,170,0.15)' : 'var(--surface2)',
-                color: y === targetYear ? 'var(--mint)' : 'var(--text2)',
-                cursor: 'pointer',
-                fontWeight: y === targetYear ? 700 : 400,
-                fontFamily: 'Space Mono',
-                fontSize: 16,
-              }}
-            >
-              {y}
-            </button>
-          ))}
-        </div>
-        <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
-          <div>
-            <span className="text-cyan-400 font-medium">{yc.phase}</span>
-            <span className="text-slate-500 mx-2">•</span>
-            <span className="text-slate-400">{yc.sats} satellites</span>
+      {/* Controls - Target Year and Scenario Selector */}
+      <div className="g2" style={{ marginBottom: 24 }}>
+        <div className="card">
+          <div className="card-title">Target Year</div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {years.map(y => (
+              <button
+                key={y}
+                onClick={() => setTargetYear(y)}
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: 8,
+                  border: y === targetYear ? '2px solid var(--mint)' : '1px solid var(--border)',
+                  background: y === targetYear ? 'rgba(0,212,170,0.15)' : 'var(--surface2)',
+                  color: y === targetYear ? 'var(--mint)' : 'var(--text2)',
+                  cursor: 'pointer',
+                  fontWeight: y === targetYear ? 700 : 400,
+                  fontFamily: 'Space Mono',
+                  fontSize: 16,
+                }}
+              >
+                {y}
+              </button>
+            ))}
           </div>
-          <div className="text-right text-sm">
-            <div className="text-slate-400">{yearsFromNow} years out</div>
-            <div className="text-xs text-slate-500">Discount: ÷{discountFactor.toFixed(2)}</div>
+        </div>
+
+        <div className="card">
+          <div className="card-title">Scenario</div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {scenarios.map(s => (
+              <button
+                key={s.key}
+                onClick={() => setSelectedScenario(s.key)}
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: 8,
+                  border: s.key === selectedScenario ? `2px solid ${s.color}` : '1px solid var(--border)',
+                  background: s.key === selectedScenario ? `${s.color}22` : 'var(--surface2)',
+                  color: s.key === selectedScenario ? s.color : 'var(--text2)',
+                  cursor: 'pointer',
+                  fontWeight: s.key === selectedScenario ? 700 : 400,
+                  fontSize: 14,
+                }}
+              >
+                {s.name} ({s.prob}%)
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* STEP 2: SCENARIO SELECTOR */}
-      <div className="card"><div className="card-title">Step 2: Select Scenario</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
-          {scenarios.map(s => (
-            <button
-              key={s.key}
-              onClick={() => setSelectedScenario(s.key)}
-              style={{
-                padding: 12,
-                borderRadius: 8,
-                border: s.key === selectedScenario ? `2px solid ${s.color}` : '1px solid var(--border)',
-                background: s.key === selectedScenario ? `${s.color}22` : 'var(--surface2)',
-                color: 'var(--text1)',
-                cursor: 'pointer',
-                textAlign: 'left',
-                fontFamily: 'inherit',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontSize: 24 }}>{s.label}</span>
-                <span style={{ fontWeight: 700, fontSize: 18, color: s.key === selectedScenario ? s.color : 'var(--text1)' }}>{s.name}</span>
-              </div>
-              <div style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{s.desc}</div>
-              <div style={{ fontSize: 12, color: '#64748b' }}>{s.prob}% probability</div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* STEP 3: RESULTS FOR SELECTED SCENARIO */}
-      <div className="card"><div className="card-title">Step 3: {selected.label} {selected.name} Case — YE{targetYear} Results</div>
+      {/* Selected Scenario Results */}
+      <div className="card"><div className="card-title">Financial Projections — {selected.name} Scenario</div>
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
           <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700 text-center">
             <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Current Price</div>
@@ -3440,44 +3427,40 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
       </div>
 
       {/* ALL SCENARIOS COMPARISON TABLE */}
-      <div className="card"><div className="card-title">All Scenarios Comparison</div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 24 }}>
+        <div className="card-title">All Scenarios — {targetYear} Comparison</div>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
             <thead>
-              <tr className="border-b border-slate-700">
-                <th className="text-left py-3 px-2 text-slate-400">Scenario</th>
-                <th className="text-center py-3 px-2 text-slate-400">Prob</th>
-                <th className="text-right py-3 px-2 text-slate-400">{targetYear} Rev</th>
-                <th className="text-right py-3 px-2 text-slate-400">EBITDA%</th>
-                <th className="text-right py-3 px-2 text-slate-400">Multiple</th>
-                <th className="text-right py-3 px-2 text-purple-400">{targetYear} Price</th>
-                <th className="text-right py-3 px-2 text-cyan-400">PV Today</th>
-                <th className="text-right py-3 px-2 text-slate-400">Upside</th>
+              <tr>
+                <th>Scenario</th>
+                <th className="r">Prob</th>
+                <th className="r">{targetYear} Rev</th>
+                <th className="r">EBITDA%</th>
+                <th className="r">Multiple</th>
+                <th className="r" style={{ color: 'var(--violet)' }}>{targetYear} Price</th>
+                <th className="r" style={{ color: 'var(--mint)' }}>PV Today</th>
+                <th className="r">Upside</th>
               </tr>
             </thead>
             <tbody>
               {scenarios.map(s => (
-                <tr 
-                  key={s.key} 
-                  className={`border-t border-slate-800 cursor-pointer transition-colors ${
-                    s.key === selectedScenario ? 'bg-cyan-900/30 font-medium' : 'hover:bg-slate-800/50'
-                  }`}
+                <tr
+                  key={s.key}
+                  style={{ background: s.key === selectedScenario ? `${s.color}11` : 'transparent', cursor: 'pointer' }}
                   onClick={() => setSelectedScenario(s.key)}
                 >
-                  <td className="py-3 px-2">
-                    <span className="mr-2">{s.label}</span>
-                    <span>{s.name}</span>
-                    {s.key === selectedScenario && <span className="ml-2 text-cyan-400">◀</span>}
+                  <td>
+                    <span style={{ marginRight: 8 }}>{s.label}</span>
+                    {s.name}
                   </td>
-                  <td className="py-3 px-2 text-center">
-                    <span className="px-2 py-1 bg-slate-700 rounded text-xs">{s.prob}%</span>
-                  </td>
-                  <td className="py-3 px-2 text-right">${s.rev.toFixed(2)}B</td>
-                  <td className="py-3 px-2 text-right">{s.margin.toFixed(0)}%</td>
-                  <td className="py-3 px-2 text-right">{s.mult}x</td>
-                  <td className="py-3 px-2 text-right text-purple-400">${s.priceInTargetYear.toFixed(0)}</td>
-                  <td className="py-3 px-2 text-right font-bold text-cyan-400">${s.presentValue.toFixed(0)}</td>
-                  <td className={`py-3 px-2 text-right ${s.upside >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  <td className="r">{s.prob}%</td>
+                  <td className="r">${s.rev.toFixed(2)}B</td>
+                  <td className="r">{s.margin.toFixed(0)}%</td>
+                  <td className="r">{s.mult}x</td>
+                  <td className="r" style={{ color: s.color }}>${s.priceInTargetYear.toFixed(0)}</td>
+                  <td className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${s.presentValue.toFixed(0)}</td>
+                  <td className="r" style={{ color: s.upside >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                     {s.upside >= 0 ? '+' : ''}{s.upside.toFixed(0)}%
                   </td>
                 </tr>
@@ -3485,7 +3468,6 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
             </tbody>
           </table>
         </div>
-        <div className="mt-2 text-xs text-slate-500">Click any row to select that scenario</div>
       </div>
 
       {/* VISUAL CHART */}
