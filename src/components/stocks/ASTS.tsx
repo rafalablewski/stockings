@@ -8890,6 +8890,110 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // ═══════════════════════════════════════════════════════════════════════════
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // IAG (INTERNATIONAL AIRLINES GROUP) - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-06',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'IAG announces Starlink for 500+ aircraft across 5 airlines',
+      details: [
+        '500+ aircraft across 5 airlines: Aer Lingus, British Airways, Iberia, LEVEL, Vueling',
+        'First aircraft live early 2026',
+        'More aircraft with high-speed WiFi than any other European airline group',
+        'Fleet of 601 aircraft total (all non-retiring aircraft included)',
+        'Covers short-haul Europe + long-haul transatlantic/global routes',
+        '150-450 Mbps download, 20-70 Mbps upload',
+        '122 million customers/year to 260 destinations across 91 countries',
+        'One of world\'s largest airline groups'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi. Major European airline group - different market from ASTS D2D cellular.',
+      source: 'IAG',
+      sourceUrl: 'https://www.iairgroup.com/newsroom/iag-starlink-announcement/',
+      storyId: 'iag-starlink-aviation',
+      storyTitle: 'IAG (British Airways, Iberia, Aer Lingus) Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VIRGIN ATLANTIC - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-07-08',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Virgin Atlantic becomes first UK airline to announce free fleet-wide Starlink',
+      details: [
+        'First UK airline to announce Starlink fleet-wide',
+        'Free streaming-quality WiFi for Flying Club members',
+        'Installation: Q3 2026 start, complete by end of 2027',
+        'Fleet: Boeing 787s, Airbus A350s, A330neos (45 aircraft by 2028)',
+        'Gate-to-gate connectivity',
+        'Joint venture partner with Delta Air Lines',
+        'SkyTeam member (first UK airline in alliance)',
+        'Young fleet with average age under 7 years'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi. UK market - different from ASTS D2D cellular to unmodified phones.',
+      source: 'Virgin Atlantic',
+      sourceUrl: 'https://corporate.virginatlantic.com/gb/en/media/press-releases/virgin-atlantic-starlink.html',
+      storyId: 'virgin-atlantic-starlink-aviation',
+      storyTitle: 'Virgin Atlantic Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SAS (SCANDINAVIAN AIRLINES) - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-01-27',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'SAS introduces free Starlink WiFi across entire fleet',
+      details: [
+        'Free Starlink WiFi across entire SAS fleet',
+        'Phased rollout starting end of 2025',
+        'Free for EuroBonus members in all travel classes',
+        'Gate-to-gate connectivity (board to disembark)',
+        'Coverage over North Pole, Atlantic Ocean, North Sea - challenging regions for traditional satellites',
+        'Sustainability: reduced aerodynamic drag and fuel consumption',
+        'Multi-device support',
+        'Ends frustrating interruptions from conventional satellite services'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi. Nordic/European carrier - different market from ASTS D2D cellular.',
+      source: 'SAS',
+      sourceUrl: 'https://www.sasgroup.net/newsroom/press-releases/2025/sas-introduces-free-starlink-wifi/',
+      storyId: 'sas-starlink-aviation',
+      storyTitle: 'SAS Scandinavian Airlines Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SES CRUISE - STARLINK MARITIME (MEO-LEO Integration)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2023-09-13',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'SES launches cruise industry\'s first integrated MEO-LEO service with Starlink',
+      details: [
+        'Industry first: Integrated MEO-LEO managed service for cruise',
+        'SES (satellite company) partnering with SpaceX Starlink',
+        '"SES Cruise mPOWERED + Starlink" product',
+        'Premium tier: up to 3 Gbps/ship, Pro tier: 1.5 Gbps/ship',
+        'Combines Starlink LEO + SES MEO constellation for 24/7 global coverage',
+        'Managed end-to-end service sold by SES',
+        'Available Q4 2023',
+        'Targets guest experience, smart ship operations, crew connectivity'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Maritime satellite service ecosystem. B2B offering for cruise operators - different from ASTS D2D cellular.',
+      source: 'SES',
+      sourceUrl: 'https://www.ses.com/press-release/ses-introduces-cruise-industrys-first-integrated-meo-leo-service-starlink',
+      storyId: 'ses-starlink-maritime',
+      storyTitle: 'SES Cruise MEO-LEO + Starlink Maritime'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // OCEANIA CRUISES - STARLINK MARITIME (NCLH subsidiary)
     // ═══════════════════════════════════════════════════════════════════════════
     {
