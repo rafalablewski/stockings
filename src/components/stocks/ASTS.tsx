@@ -8890,6 +8890,78 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // ═══════════════════════════════════════════════════════════════════════════
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // KOREAN AIR / HANJIN GROUP - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-11',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Korean Air, Hanjin Group Airlines select Starlink for fleetwide in-flight Wi-Fi',
+      details: [
+        'All five Hanjin Group airlines to deploy Starlink: Korean Air, Asiana Airlines, Jin Air, Air Busan, Air Seoul',
+        'Installation and testing begins late 2025, passenger service expected Q3 2026',
+        'Korean Air and Asiana prioritizing long-haul Boeing 777-300ER and Airbus A350-900 first',
+        'Complete Starlink installation across combined mainline fleet by end of 2027',
+        'Jin Air starting with Boeing 737-8 fleet',
+        'Connectivity positioned as "core infrastructure" rather than afterthought',
+        'Part of broader industry shift toward LEO satellite connectivity'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi market. Different from ASTS D2D cellular to unmodified phones on ground.',
+      source: 'Paxex.Aero',
+      sourceUrl: 'https://paxex.aero/2025/12/korean-air-hanjin-group-starlink/',
+      storyId: 'korean-air-starlink-aviation',
+      storyTitle: 'Korean Air / Hanjin Group Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // EMIRATES - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-18',
+      competitor: 'starlink-tmobile',
+      category: 'Technology',
+      headline: 'Emirates retrofit programme: 111 aircraft with Starlink and next-gen cabin',
+      details: [
+        'Next phase: 60 A380s and 51 Boeing 777s set for retrofit starting August 2026',
+        'Starlink connectivity installed concurrently with cabin retrofit programme',
+        'Partners: Airbus, Safran, Recaro, Panasonic, Starlink, UUDS',
+        'Panasonic Astrova IFE with 4K OLED HDR10+ displays and Spatial Audio',
+        'Total retrofit programme expanded to 219 aircraft',
+        '76 aircraft already refurbished, two completed per month',
+        'Fleet-wide product consistency strategy across all routes'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi integrated with cabin modernization. Different market from ASTS D2D phone service.',
+      source: 'Emirates Media Centre',
+      sourceUrl: 'https://www.emirates.com/media-centre/emirates-to-roll-out-next-phase-of-fleet-retrofit-programme/',
+      storyId: 'emirates-starlink-aviation',
+      storyTitle: 'Emirates Starlink Aviation'
+    },
+    {
+      date: '2025-11-17',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Emirates to operate world\'s largest Starlink-enabled international widebody fleet',
+      details: [
+        '232 aircraft (Boeing 777 and A380 fleet) to be equipped with Starlink',
+        'World\'s largest Starlink-enabled international wide-body fleet',
+        'Free service for all customers across all cabin classes',
+        'First commercial flight: November 23, 2025 on Boeing 777-300ER',
+        'World\'s first Starlink-equipped A380 starting February 2026',
+        'Complete rollout by mid-2027, installation rate ~14 aircraft per month',
+        'Two antennae per 777, three per A380 (industry first)',
+        'Live TV over Starlink from late December 2025'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones.',
+      source: 'Emirates Media Centre',
+      sourceUrl: 'https://www.emirates.com/media-centre/emirates-starlink-announcement/',
+      storyId: 'emirates-starlink-aviation',
+      storyTitle: 'Emirates Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // LUFTHANSA GROUP - STARLINK AVIATION
     // ═══════════════════════════════════════════════════════════════════════════
     {
@@ -8975,6 +9047,130 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://www.futuretravelexperience.com/2026/01/qatar-airways-launches-worlds-first-starlink-equipped-boeing-787-and-completes-airbus-a350-starlink-rollout/',
       storyId: 'qatar-starlink-aviation',
       storyTitle: 'Qatar Airways Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // AIR NEW ZEALAND - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-06-10',
+      competitor: 'starlink-tmobile',
+      category: 'Launch',
+      headline: 'Air New Zealand begins Starlink Wi-Fi trial on domestic aircraft',
+      details: [
+        'Trial launched June 10, 2025 on Airbus A320 (ZK-OXE)',
+        'Global first: First airline to trial Wi-Fi on a turboprop aircraft (ATR)',
+        'ATR turboprop joining trial later in June 2025',
+        'Free Wi-Fi during trial period',
+        'Currently in test phase, gathering customer feedback',
+        'Results will guide decision on domestic fleet rollout',
+        'Passengers can stream, work on live documents, browse social media'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi trial on regional/domestic aircraft. Different market from ASTS D2D phone service.',
+      source: 'Air New Zealand',
+      sourceUrl: 'https://www.airnewzealand.co.nz/press-release-2025-onboard-starlink-wifi-trial',
+      storyId: 'airnz-starlink-aviation',
+      storyTitle: 'Air New Zealand Starlink Aviation'
+    },
+    {
+      date: '2023-12-13',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Air New Zealand partners with Starlink to redefine domestic travel connectivity',
+      details: [
+        'Partnership announced for free internet on domestic aircraft',
+        'First Starlink install on a domestic jet planned for 2025',
+        'World first: Starlink installation on ATR turboprop aircraft',
+        'Latency as low as 30ms for streaming and real-time applications',
+        'Initial 4-6 month trial period planned',
+        'Already offers free Wi-Fi on international flights',
+        'Focus on New Zealand domestic market ("Aotearoa")'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi targeting regional/domestic aircraft. Different market from ASTS ground-based D2D.',
+      source: 'Air New Zealand',
+      sourceUrl: 'https://www.airnewzealand.co.nz/press-release-2023-starlink-connectivity',
+      storyId: 'airnz-starlink-aviation',
+      storyTitle: 'Air New Zealand Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // UNITED AIRLINES - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2024-09-13',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'United signs industry\'s largest Starlink deal: 1,000+ aircraft, free Wi-Fi',
+      details: [
+        'Industry\'s largest agreement: 1,000+ mainline and regional aircraft',
+        'Service will be free for all passengers',
+        'Gate-to-gate connectivity with high-speed, low-latency internet',
+        'Testing begins early 2025, passenger flights expected later that year',
+        'Coverage over oceans, polar regions, and remote areas',
+        'Largest airline across both Atlantic and Pacific to adopt Starlink',
+        'First carrier to commit to offering Starlink at this scale',
+        'Enables streaming, gaming, video calls, and real-time productivity'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones on ground.',
+      source: 'United Airlines PR',
+      sourceUrl: 'https://www.prnewswire.com/news-releases/the-inflight-wi-fi-revolution-now-arriving-united-signs-starlink-deal-302247925.html',
+      storyId: 'united-starlink-aviation',
+      storyTitle: 'United Airlines Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // HAWAIIAN AIRLINES - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2024-09-24',
+      competitor: 'starlink-tmobile',
+      category: 'Coverage',
+      headline: 'Hawaiian Airlines completes Starlink installation across entire Airbus fleet',
+      details: [
+        'First major U.S. carrier to debut Starlink (February 2024 on A321neo)',
+        'Completed installation across all 24-plane A330 fleet',
+        'Free high-speed, low-latency Wi-Fi for all guests',
+        'Will also install on Boeing 787-9 flagship fleet',
+        'Not deploying on Boeing 717 (short inter-island flights)',
+        'Now part of Alaska Air Group (ALK)',
+        'Starlink performing well across remote Pacific Ocean routes',
+        'Internet speeds suitable for working, streaming, and gaming'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi. Different market from ASTS D2D phone service - Pacific routes benefit from Starlink ocean coverage.',
+      source: 'Hawaiian Airlines',
+      sourceUrl: 'https://newsroom.hawaiianairlines.com/releases/hawaiian-airlines-now-offering-fast-and-free-starlink-wi-fi',
+      storyId: 'hawaiian-starlink-aviation',
+      storyTitle: 'Hawaiian Airlines Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // AIRBALTIC - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2023-01-10',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'airBaltic becomes first European airline to implement Starlink fleetwide',
+      details: [
+        'First European airline to implement Starlink fleet-wide',
+        'Entire Airbus A220-300 fleet (39 aircraft) to be equipped',
+        'Free, high-speed internet for all passengers',
+        'No login pages - internet works from moment passengers board',
+        'Up to 350 Mbps speeds, latency as low as 20ms',
+        'Latvian state-owned airline (97.96% government stake)',
+        'Installation began in 2023',
+        'Setting new standard for European in-flight connectivity'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi. Early European Starlink aviation adopter - different market from ASTS D2D cellular.',
+      source: 'airBaltic',
+      sourceUrl: 'https://www.airbaltic.com/en/airbaltic-starlink-announcement',
+      storyId: 'airbaltic-starlink-aviation',
+      storyTitle: 'airBaltic Starlink Aviation'
     }
   ];
 
