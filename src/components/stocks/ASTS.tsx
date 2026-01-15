@@ -1600,7 +1600,7 @@ const ASTSAnalysis = () => {
 };
 
 const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterlyBurn, totalDebt, setTotalDebt, block1Sats, block2Sats, targetSats2026, contractedRevenue, partnerReach, penetrationRate }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+  <>
     <h2 className="section-head">Overview</h2>
     <div className="highlight"><h3>Investment Thesis (Dec 2025)</h3>
       <p style={{ fontSize: '14px' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
@@ -1654,7 +1654,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       { term: 'Price per Subscriber', def: 'Market Cap ÷ Potential Subscribers. Valuation metric for telecom. Lower = more attractive if execution succeeds.' },
       { term: 'MNO Partnerships', def: 'Mobile Network Operator agreements. 53+ partners with 3.2B combined subscribers. Revenue share model (typically 50/50).' },
     ]} />
-  </div>
+  </>
 );
 
 const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
