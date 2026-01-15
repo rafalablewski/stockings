@@ -3234,22 +3234,15 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <h2 className="section-head">Scenarios</h2>
-      {/* HEADER */}
-      <div className="highlight"><h3>Scenario Analysis — Multi-Year Price Targets</h3>
-        <div className="space-y-2 text-sm">
-          <p className="text-slate-300">Model stock price under different scenarios and time horizons. Select a target year and scenario to see detailed valuation.</p>
-          <div className="grid grid-cols-2 gap-3 mt-3">
-            <div className="p-2 bg-purple-900/20 rounded border border-purple-800/30">
-              <span className="text-purple-400 font-medium">YE Price</span>
-              <span className="text-xs text-slate-400 ml-2">Stock price in target year</span>
-            </div>
-            <div className="p-2 bg-cyan-900/20 rounded border border-cyan-800/30">
-              <span className="text-cyan-400 font-medium">PV Today</span>
-              <span className="text-xs text-slate-400 ml-2">Discounted to today @ 15%/yr</span>
-            </div>
-          </div>
-        </div>
+      <h2 className="section-head">Scenario Simulation</h2>
+
+      <div className="highlight">
+        <h3>Multi-Year Projections</h3>
+        <p className="text-sm">
+          Model stock price under different scenarios based on subscriber growth, satellite deployment, and MNO partnerships.
+          Bear case assumes delays and competition. Bull case models category dominance with premium ARPU.
+          Probability-weight for expected value.
+        </p>
       </div>
 
       {/* Controls - Target Year and Scenario Selector */}
