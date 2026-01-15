@@ -909,14 +909,15 @@ const css = `
 }
 
 /* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
+/* Consistent across all stocks: mint=tracking (actual data), violet=projection (user models) */
 .nav-btn.tab-tracking {
-  border-left: 3px solid var(--cyan);
+  border-left: 3px solid var(--mint);
 }
 .nav-btn.tab-projection {
   border-left: 3px solid var(--violet);
 }
 .nav-btn.tab-tracking.active {
-  border-left-color: var(--cyan);
+  border-left-color: var(--mint);
 }
 .nav-btn.tab-projection.active {
   border-left-color: var(--violet);
@@ -1133,6 +1134,9 @@ const css = `
 .tbl .mint { color: var(--mint); }
 .tbl .coral { color: var(--coral); }
 .tbl .sky { color: var(--sky); }
+.tbl .cyan { color: var(--cyan); }
+.tbl .violet { color: var(--violet); }
+.tbl .gold { color: var(--gold); }
 
 /* Timeline */
 .timeline-item {
@@ -1573,7 +1577,7 @@ input[type="range"]::-webkit-slider-thumb {
 @media (max-width: 768px) {
   .hero-grid { grid-template-columns: 1fr; gap: 24px; }
   .price-block { text-align: left; }
-  .price-big { font-size: 40px; }
+  .price-big { font-size: 36px; letter-spacing: -1px; }
   .brand-block h1 { font-size: 32px; }
   .g2, .g3, .g4, .g5 { grid-template-columns: 1fr; }
   .stats-row { gap: 24px; }
@@ -1593,6 +1597,29 @@ input[type="range"]::-webkit-slider-thumb {
   .t-toggle { width: 28px; height: 28px; font-size: 14px; }
   .t-details-content { grid-template-columns: 1fr; }
   .t-details-meta { flex-direction: row; flex-wrap: wrap; min-width: auto; }
+}
+
+/* Extra small mobile - consistent with ASTS/BMNR */
+@media (max-width: 480px) {
+  .hero { padding: 20px 12px 16px; }
+  .price-big { font-size: 32px; }
+  .brand-block h1 { font-size: 24px; }
+  .brand-block .desc { font-size: 13px; line-height: 1.5; }
+
+  .stats-row { padding: 16px 12px; gap: 16px; }
+  .stat-item .val { font-size: 16px; }
+
+  .nav { padding: 8px 10px; }
+  .nav-btn { padding: 6px 10px; font-size: 11px; gap: 4px; }
+
+  .main { padding: 16px 12px; }
+  .card, .highlight { padding: 14px; }
+  .section-head { font-size: 18px; }
+
+  .table-scroll table { min-width: 400px; }
+  table th, table td { padding: 6px 8px; font-size: 11px; }
+
+  .g2, .g3, .g4 { gap: 12px; }
 }
 `;
 

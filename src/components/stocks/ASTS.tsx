@@ -655,6 +655,7 @@ const css = `
 }
 
 /* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
+/* Consistent across all stocks: mint=tracking (actual data), violet=projection (user models) */
 .nav-btn.tab-tracking {
   border-left: 3px solid var(--mint);
 }
