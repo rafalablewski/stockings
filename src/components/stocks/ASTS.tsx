@@ -2872,8 +2872,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <tbody>
             <tr>
               <td style={{ fontWeight: 600, color: 'var(--sky)' }}>Class A</td>
-              <td className="r">272.0</td>
-              <td className="r">{(272.0 / totalBasic * 100).toFixed(1)}%</td>
+              <td className="r">{shareClasses[0].shares}</td>
+              <td className="r">{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</td>
               <td style={{ color: 'var(--text2)' }}>1 vote/share</td>
               <td style={{ color: 'var(--text3)', fontSize: 13 }}>Public trading (NASDAQ: ASTS)</td>
             </tr>
@@ -2920,7 +2920,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 8 }}>ECONOMIC OWNERSHIP</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
                 <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
-                <span style={{ color: 'var(--sky)' }}>{(272.0 / totalBasic * 100).toFixed(1)}%</span>
+                <span style={{ color: 'var(--sky)' }}>{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
                 <span style={{ color: 'var(--text2)' }}>Class B (Insiders)</span>
@@ -2935,7 +2935,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 8 }}>VOTING POWER (C = 10x)</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
                 <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
-                <span style={{ color: 'var(--sky)' }}>{(272.0 / totalVotingShares * 100).toFixed(1)}%</span>
+                <span style={{ color: 'var(--sky)' }}>{(shareClasses[0].shares / totalVotingShares * 100).toFixed(1)}%</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
                 <span style={{ color: 'var(--text2)' }}>Class B (Insiders)</span>
