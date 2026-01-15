@@ -3536,6 +3536,74 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         </div>
       </div>
 
+      {/* Probability-Weighted Expected Value */}
+      <div className="highlight" style={{ marginTop: 32 }}>
+        <h3>Probability-Weighted Expected Value — {targetYear}</h3>
+        <p style={{ marginBottom: 20, color: 'var(--text2)' }}>
+          Weighted average across all scenarios based on assigned probabilities
+        </p>
+
+        <div className="g4">
+          <div className="big-stat">
+            <div className="num" style={{ color: 'var(--violet)' }}>${expectedValue.futureValue.toFixed(0)}</div>
+            <div className="lbl">Expected {targetYear} Price</div>
+          </div>
+          <div className="big-stat">
+            <div className="num mint">${expectedValue.presentValue.toFixed(0)}</div>
+            <div className="lbl">Expected PV Today</div>
+          </div>
+          <div className="big-stat">
+            <div className="num" style={{ color: expectedValue.upside >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+              {expectedValue.upside >= 0 ? '+' : ''}{expectedValue.upside.toFixed(0)}%
+            </div>
+            <div className="lbl">Expected Upside</div>
+          </div>
+          <div className="big-stat">
+            <div className="num">${currentStockPrice}</div>
+            <div className="lbl">Current Price</div>
+          </div>
+        </div>
+
+        {/* Scenario Breakdown Table */}
+        <div style={{ marginTop: 24 }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th className="r">Probability</th>
+                <th className="r">{targetYear} Price</th>
+                <th className="r">PV Today</th>
+                <th className="r">Weighted Contribution</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scenarios.map(s => {
+                const contribution = s.presentValue * (s.prob / 100);
+                return (
+                  <tr key={s.key} style={{ background: selectedScenario === s.key ? `${s.color}11` : 'transparent' }}>
+                    <td>
+                      <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
+                      {s.name}
+                    </td>
+                    <td className="r">{s.prob}%</td>
+                    <td className="r" style={{ fontFamily: 'Space Mono' }}>${s.priceInTargetYear.toFixed(0)}</td>
+                    <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>${s.presentValue.toFixed(0)}</td>
+                    <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--mint)' }}>${contribution.toFixed(0)}</td>
+                  </tr>
+                );
+              })}
+              <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
+                <td>Expected Value</td>
+                <td className="r">100%</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--violet)' }}>${expectedValue.futureValue.toFixed(0)}</td>
+                <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${expectedValue.presentValue.toFixed(0)}</td>
+                <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${expectedValue.presentValue.toFixed(0)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* ALL SCENARIOS COMPARISON TABLE */}
       <div className="card" style={{ marginTop: 24 }}>
         <div className="card-title">All Scenarios — {targetYear} Comparison</div>
@@ -3607,90 +3675,25 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         </div>
       </div>
 
-      {/* VISUAL CHART */}
-      <div className="card"><div className="card-title">Price Distribution — YE{targetYear}</div>
-        <ResponsiveContainer width="100%" height={220}>
-          <ComposedChart data={scenarios} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis type="number" stroke="var(--text3)" tickFormatter={v => `$${v}`} />
-            <YAxis dataKey="name" type="category" stroke="var(--text3)" width={50} />
-            <Tooltip 
-              contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} 
-              formatter={(v, name) => [`$${Number(v).toFixed(0)}`, name === 'presentValue' ? 'PV Today' : `${targetYear} Price`]}
-            />
-            <Legend />
-            <Bar dataKey="priceInTargetYear" name={`${targetYear} Price`} fill="var(--violet)" fillOpacity={0.5} radius={[0, 2, 2, 0]} />
-            <Bar dataKey="presentValue" name="PV Today" fill="var(--cyan)" radius={[0, 2, 2, 0]} />
-            <ReferenceLine x={currentStockPrice} stroke="#fff" strokeDasharray="5 5" label={{ value: `Current $${currentStockPrice}`, fill: '#fff', fontSize: 10 }} />
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Probability-Weighted Expected Value */}
-      <div className="highlight" style={{ marginTop: 32 }}>
-        <h3>Probability-Weighted Expected Value — {targetYear}</h3>
-        <p style={{ marginBottom: 20, color: 'var(--text2)' }}>
-          Weighted average across all scenarios based on assigned probabilities
-        </p>
-
-        <div className="g4">
-          <div className="big-stat">
-            <div className="num" style={{ color: 'var(--violet)' }}>${expectedValue.futureValue.toFixed(0)}</div>
-            <div className="lbl">Expected {targetYear} Price</div>
+      {/* Key Insights */}
+      <div className="card" style={{ marginTop: 24 }}><div className="card-title">Key Insights</div>
+        <div className="grid md:grid-cols-2 gap-4 text-sm">
+          <div className="bg-slate-900/50 rounded-lg p-4">
+            <h4 className="font-semibold text-violet-400 mb-2">Operating Leverage</h4>
+            <p className="text-slate-300">Once constellation is deployed, incremental subscribers add revenue with minimal marginal cost. EBITDA margins can expand rapidly from negative to 50%+ as fixed satellite costs are spread across growing subscriber base.</p>
           </div>
-          <div className="big-stat">
-            <div className="num mint">${expectedValue.presentValue.toFixed(0)}</div>
-            <div className="lbl">Expected PV Today</div>
+          <div className="bg-slate-900/50 rounded-lg p-4">
+            <h4 className="font-semibold text-violet-400 mb-2">MNO Partnership Value</h4>
+            <p className="text-slate-300">Each major MNO partnership (AT&T, Vodafone, etc.) represents access to hundreds of millions of potential subscribers. The revenue share model means ASTS captures recurring value without customer acquisition costs.</p>
           </div>
-          <div className="big-stat">
-            <div className="num" style={{ color: expectedValue.upside >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-              {expectedValue.upside >= 0 ? '+' : ''}{expectedValue.upside.toFixed(0)}%
-            </div>
-            <div className="lbl">Expected Upside</div>
+          <div className="bg-slate-900/50 rounded-lg p-4">
+            <h4 className="font-semibold text-violet-400 mb-2">Dilution Risk</h4>
+            <p className="text-slate-300">Pre-revenue companies often require capital raises. Worst/Bear cases model 15-40% dilution. Bull cases assume profitability eliminates dilution need. Watch cash runway and partnership milestones.</p>
           </div>
-          <div className="big-stat">
-            <div className="num">${currentStockPrice}</div>
-            <div className="lbl">Current Price</div>
+          <div className="bg-slate-900/50 rounded-lg p-4">
+            <h4 className="font-semibold text-violet-400 mb-2">Risk/Reward</h4>
+            <p className="text-slate-300">Worst case: {scenarios[0].upside.toFixed(0)}%. Moon case: +{scenarios[5].upside.toFixed(0)}%. Asymmetric upside if technology works and MNO partnerships scale as planned.</p>
           </div>
-        </div>
-
-        {/* Scenario Breakdown Table */}
-        <div style={{ marginTop: 24 }}>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Scenario</th>
-                <th className="r">Probability</th>
-                <th className="r">{targetYear} Price</th>
-                <th className="r">PV Today</th>
-                <th className="r">Weighted Contribution</th>
-              </tr>
-            </thead>
-            <tbody>
-              {scenarios.map(s => {
-                const contribution = s.presentValue * (s.prob / 100);
-                return (
-                  <tr key={s.key} style={{ background: selectedScenario === s.key ? `${s.color}11` : 'transparent' }}>
-                    <td>
-                      <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
-                      {s.name}
-                    </td>
-                    <td className="r">{s.prob}%</td>
-                    <td className="r" style={{ fontFamily: 'Space Mono' }}>${s.priceInTargetYear.toFixed(0)}</td>
-                    <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>${s.presentValue.toFixed(0)}</td>
-                    <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--mint)' }}>${contribution.toFixed(0)}</td>
-                  </tr>
-                );
-              })}
-              <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
-                <td>Expected Value</td>
-                <td className="r">100%</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--violet)' }}>${expectedValue.futureValue.toFixed(0)}</td>
-                <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${expectedValue.presentValue.toFixed(0)}</td>
-                <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${expectedValue.presentValue.toFixed(0)}</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
 

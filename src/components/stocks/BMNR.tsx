@@ -1983,31 +1983,111 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         );
       })()}
 
-      {/* Scenario Cards */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {scenarios.map(s => (
-          <div key={s.id} style={{ background: `${s.color}15`, border: `1px solid ${s.color}40`, borderRadius: 12, padding: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <span style={{ fontSize: 24 }}>{s.emoji}</span>
-              <h3 style={{ fontWeight: 700, fontSize: 18, color: s.color }}>{s.name}</h3>
-            </div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 16 }}>{s.description}</p>
+      {/* KEY ASSUMPTIONS & CATALYSTS */}
+      <div className="g2" style={{ marginTop: 24 }}>
+        <div className="card">
+          <div className="card-title">Key Assumptions</div>
+          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+            {scenarios.find(s => s.id === selectedScenario)?.assumptions.map((a, i) => (
+              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{a}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="card">
+          <div className="card-title">{scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</div>
+          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+            {(scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 ? scenarios.find(s => s.id === selectedScenario)?.catalysts : scenarios.find(s => s.id === selectedScenario)?.risks)?.map((item, i) => (
+              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{item}</li>
+            ))}
+          </ul>
+          {scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 && scenarios.find(s => s.id === selectedScenario)?.risks.length > 0 && (
+            <>
+              <div className="card-title" style={{ marginTop: 16 }}>Risks</div>
+              <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+                {scenarios.find(s => s.id === selectedScenario)?.risks.map((r, i) => (
+                  <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{r}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 14 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>ETH Price</span><span style={{ fontWeight: 500 }}>${s.ethPrice.toLocaleString()} <span style={{ color: s.ethReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>({s.ethReturn >= 0 ? '+' : ''}{s.ethReturn.toFixed(0)}%)</span></span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>NAV Multiple</span><span style={{ fontWeight: 500 }}>{s.navMultiple.toFixed(2)}x</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Dilution</span><span style={{ fontWeight: 500 }}>+{s.dilutionShares.toLocaleString()}M shares</span></div>
-              <div style={{ borderTop: '1px solid var(--border)', margin: '8px 0' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Final NAV</span><span style={{ fontWeight: 700 }}>${s.finalNAV.toFixed(2)}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Stock Price</span><span style={{ fontWeight: 700, color: s.color }}>${s.finalStockPrice.toFixed(2)}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Cum. Dividends</span><span style={{ fontWeight: 500, color: 'var(--mint)' }}>${s.totalDividends.toFixed(2)}</span></div>
-              <div style={{ borderTop: '1px solid var(--border)', margin: '8px 0' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Price Return</span><span style={{ fontWeight: 500, color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Total Return</span><span style={{ fontWeight: 700, color: s.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalReturn >= 0 ? '+' : ''}{s.totalReturn.toFixed(0)}%</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Total IRR</span><span style={{ fontWeight: 700, color: s.totalIRR >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalIRR >= 0 ? '+' : ''}{s.totalIRR.toFixed(1)}%</span></div>
-            </div>
-          </div>
-        ))}
+      {/* PROBABILITY-WEIGHTED EXPECTED VALUE */}
+      <div className="highlight" style={{ marginTop: 32 }}>
+        <h3>Probability-Weighted Expected Value — {targetYear}</h3>
+        <p style={{ marginBottom: 20, color: 'var(--text2)' }}>
+          Weighted average across all scenarios based on assigned probabilities
+        </p>
+        {(() => {
+          const pwev = scenarios.reduce((acc, s) => {
+            acc.stockPrice += s.finalStockPrice * (s.prob / 100);
+            acc.totalReturn += s.totalReturn * (s.prob / 100);
+            acc.irr += s.totalIRR * (s.prob / 100);
+            return acc;
+          }, { stockPrice: 0, totalReturn: 0, irr: 0 });
+          const expectedReturn = ((pwev.stockPrice / currentStockPrice) - 1) * 100;
+
+          return (
+            <>
+              <div className="g4">
+                <div className="big-stat">
+                  <div className="num mint">${pwev.stockPrice.toFixed(2)}</div>
+                  <div className="lbl">Expected Stock Price</div>
+                </div>
+                <div className="big-stat">
+                  <div className={`num ${expectedReturn >= 0 ? 'mint' : 'coral'}`}>{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</div>
+                  <div className="lbl">Expected Return</div>
+                </div>
+                <div className="big-stat">
+                  <div className={`num ${pwev.irr >= 0 ? 'sky' : 'coral'}`}>{pwev.irr >= 0 ? '+' : ''}{pwev.irr.toFixed(1)}%</div>
+                  <div className="lbl">Expected IRR</div>
+                </div>
+                <div className="big-stat">
+                  <div className="num">${currentStockPrice.toFixed(2)}</div>
+                  <div className="lbl">Current Price</div>
+                </div>
+              </div>
+              <table className="tbl" style={{ marginTop: 24 }}>
+                <thead>
+                  <tr>
+                    <th>Scenario</th>
+                    <th className="r">Probability</th>
+                    <th className="r">Stock Price</th>
+                    <th className="r">Return</th>
+                    <th className="r">Weighted Contribution</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scenarios.map(s => {
+                    const contribution = s.finalStockPrice * (s.prob / 100);
+                    return (
+                      <tr key={s.id} style={{ background: selectedScenario === s.id ? `${s.color}11` : 'transparent' }}>
+                        <td>
+                          <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
+                          {s.name}
+                        </td>
+                        <td className="r">{s.prob}%</td>
+                        <td className="r" style={{ fontFamily: 'Space Mono' }}>${s.finalStockPrice.toFixed(2)}</td>
+                        <td className="r" style={{ color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                          {s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%
+                        </td>
+                        <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>${contribution.toFixed(2)}</td>
+                      </tr>
+                    );
+                  })}
+                  <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
+                    <td>Expected Value</td>
+                    <td className="r">100%</td>
+                    <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.stockPrice.toFixed(2)}</td>
+                    <td className="r mint">{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</td>
+                    <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.stockPrice.toFixed(2)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </>
+          );
+        })()}
       </div>
 
       {/* Comparison Table */}
@@ -2082,7 +2162,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* Key Insights */}
-      <div className="card"><div className="card-title">Key Insights</div>
+      <div className="card" style={{ marginTop: 24 }}><div className="card-title">Key Insights</div>
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div className="bg-slate-900/50 rounded-lg p-4">
             <h4 className="font-semibold text-violet-400 mb-2">Leverage Effect</h4>
@@ -2101,113 +2181,6 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             <p className="text-slate-300">Worst case: -{Math.abs(scenarios[0].stockReturn).toFixed(0)}%. Super bull: +{scenarios[5].stockReturn.toFixed(0)}%. Asymmetric if you believe in long-term ETH appreciation.</p>
           </div>
         </div>
-      </div>
-
-      {/* KEY ASSUMPTIONS & CATALYSTS */}
-      <div className="g2" style={{ marginTop: 24 }}>
-        <div className="card">
-          <div className="card-title">Key Assumptions</div>
-          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
-            {scenarios.find(s => s.id === selectedScenario)?.assumptions.map((a, i) => (
-              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{a}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="card">
-          <div className="card-title">{scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</div>
-          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
-            {(scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 ? scenarios.find(s => s.id === selectedScenario)?.catalysts : scenarios.find(s => s.id === selectedScenario)?.risks)?.map((item, i) => (
-              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{item}</li>
-            ))}
-          </ul>
-          {scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 && scenarios.find(s => s.id === selectedScenario)?.risks.length > 0 && (
-            <>
-              <div className="card-title" style={{ marginTop: 16 }}>Risks</div>
-              <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
-                {scenarios.find(s => s.id === selectedScenario)?.risks.map((r, i) => (
-                  <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{r}</li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* PROBABILITY-WEIGHTED EXPECTED VALUE */}
-      <div className="highlight" style={{ marginTop: 32 }}>
-        <h3>Probability-Weighted Expected Value — {targetYear}</h3>
-        <p style={{ marginBottom: 20, color: 'var(--text2)' }}>
-          Weighted average across all scenarios based on assigned probabilities
-        </p>
-        {(() => {
-          const pwev = scenarios.reduce((acc, s) => {
-            acc.stockPrice += s.finalStockPrice * (s.prob / 100);
-            acc.totalReturn += s.totalReturn * (s.prob / 100);
-            acc.irr += s.totalIRR * (s.prob / 100);
-            return acc;
-          }, { stockPrice: 0, totalReturn: 0, irr: 0 });
-          const expectedReturn = ((pwev.stockPrice / currentStockPrice) - 1) * 100;
-
-          return (
-            <>
-              <div className="g4">
-                <div className="big-stat">
-                  <div className="big-stat-value mint">${pwev.stockPrice.toFixed(2)}</div>
-                  <div className="big-stat-label">Expected Stock Price</div>
-                </div>
-                <div className="big-stat">
-                  <div className={`big-stat-value ${expectedReturn >= 0 ? 'mint' : 'coral'}`}>{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</div>
-                  <div className="big-stat-label">Expected Return</div>
-                </div>
-                <div className="big-stat">
-                  <div className={`big-stat-value ${pwev.irr >= 0 ? 'sky' : 'coral'}`}>{pwev.irr >= 0 ? '+' : ''}{pwev.irr.toFixed(1)}%</div>
-                  <div className="big-stat-label">Expected IRR</div>
-                </div>
-                <div className="big-stat">
-                  <div className="big-stat-value">${currentStockPrice.toFixed(2)}</div>
-                  <div className="big-stat-label">Current Price</div>
-                </div>
-              </div>
-              <table className="tbl" style={{ marginTop: 24 }}>
-                <thead>
-                  <tr>
-                    <th>Scenario</th>
-                    <th className="r">Probability</th>
-                    <th className="r">Stock Price</th>
-                    <th className="r">Return</th>
-                    <th className="r">Weighted Contribution</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scenarios.map(s => {
-                    const contribution = s.finalStockPrice * (s.prob / 100);
-                    return (
-                      <tr key={s.id} style={{ background: selectedScenario === s.id ? `${s.color}11` : 'transparent' }}>
-                        <td>
-                          <span style={{ marginRight: 8 }}>{s.emoji}</span>
-                          {s.name}
-                        </td>
-                        <td className="r">{s.prob}%</td>
-                        <td className="r" style={{ fontFamily: 'Space Mono' }}>${s.finalStockPrice.toFixed(2)}</td>
-                        <td className="r" style={{ color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                          {s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%
-                        </td>
-                        <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>${contribution.toFixed(2)}</td>
-                      </tr>
-                    );
-                  })}
-                  <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
-                    <td>Expected Value</td>
-                    <td className="r">100%</td>
-                    <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.stockPrice.toFixed(2)}</td>
-                    <td className="r mint">{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</td>
-                    <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.stockPrice.toFixed(2)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </>
-          );
-        })()}
       </div>
 
       {/* METHODOLOGY & ASSUMPTIONS */}
