@@ -6073,10 +6073,10 @@ const TimelineTab = () => {
       date: '2025-07-30',
       category: 'Capital',
       title: 'July 2025 Convertible Notes Closed',
-      summary: '$575M 4.25% converts with capped call to $120.12',
+      summary: '$575M 2.375% converts with capped call to $120.12',
       details: [
         'Principal: $575M (including $75M option)',
-        'Coupon: 4.25%',
+        'Coupon: 2.375%',
         'Maturity: 2032',
         'Initial conversion price: ~$60',
         'Effective conversion price: $120.12 (100% premium via capped call)',
