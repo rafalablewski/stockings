@@ -589,6 +589,20 @@ const css = `
   border-color: var(--violet);
 }
 
+/* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
+.nav-btn.tab-tracking {
+  border-left: 3px solid var(--mint);
+}
+.nav-btn.tab-projection {
+  border-left: 3px solid var(--cyan);
+}
+.nav-btn.tab-tracking.active {
+  border-left-color: var(--mint);
+}
+.nav-btn.tab-projection.active {
+  border-left-color: var(--cyan);
+}
+
 /* Main Content */
 .main {
   padding: 48px 64px;
@@ -1455,23 +1469,24 @@ const BMNRDilutionAnalysis = () => {
     return { currentNAV: safe(currentNAV), ethPerShare: safe(ethPerShare), marketCap: safe(marketCap), navPremium: safe(navPremium), impliedStockPrice: safe(impliedStockPrice), effectiveAPY, stakedETH, annualYieldETH: safe(annualYieldETH), annualYieldUSD: safe(annualYieldUSD), debtUSD, leverageRatio: safe(leverageRatio), ltv: safe(ltv), conversionPrice: safe(conversionPrice), deathSpiralETHPrice: safe(deathSpiralETHPrice), totalShares, annualDividend, dividendYield: safe(dividendYield), totalAnnualDividendPayout: safe(totalAnnualDividendPayout), dividendPayoutRatio: safe(dividendPayoutRatio) };
   }, [currentETH, currentShares, currentStockPrice, ethPrice, navMultiple, stakingType, baseStakingAPY, restakingBonus, stakingRatio, useDebt, debtAmount, conversionPremium, debtCovenantLTV, quarterlyDividend]);
 
+  // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
   const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'scenarios', label: 'Scenarios' },
-    { id: 'ethereum', label: 'Ethereum' },
-    { id: 'staking', label: 'Staking' },
-    { id: 'dilution', label: 'Dilution' },
-    { id: 'debt', label: 'Debt' },
-    { id: 'capital', label: 'Capital' },
-    { id: 'sensitivity', label: 'Sensitivity' },
-    { id: 'backtest', label: 'Backtest' },
-    { id: 'dcf', label: 'DCF' },
-    { id: 'monte-carlo', label: 'Monte Carlo' },
-    { id: 'comps', label: 'Comps' },
-    { id: 'financials', label: 'Financials' },
-    { id: 'timeline', label: 'Timeline' },
-    { id: 'investment', label: 'Investment' },
-    { id: 'wall-street', label: 'Wall Street' },
+    { id: 'overview', label: 'Overview', type: 'tracking' },
+    { id: 'scenarios', label: 'Scenarios', type: 'projection' },
+    { id: 'ethereum', label: 'Ethereum', type: 'projection' },
+    { id: 'staking', label: 'Staking', type: 'projection' },
+    { id: 'dilution', label: 'Dilution', type: 'projection' },
+    { id: 'debt', label: 'Debt', type: 'projection' },
+    { id: 'capital', label: 'Capital', type: 'tracking' },
+    { id: 'sensitivity', label: 'Sensitivity', type: 'projection' },
+    { id: 'backtest', label: 'Backtest', type: 'projection' },
+    { id: 'dcf', label: 'DCF', type: 'projection' },
+    { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
+    { id: 'comps', label: 'Comps', type: 'projection' },
+    { id: 'financials', label: 'Financials', type: 'tracking' },
+    { id: 'timeline', label: 'Timeline', type: 'tracking' },
+    { id: 'investment', label: 'Investment', type: 'projection' },
+    { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
   ];
 
   return (
@@ -1544,9 +1559,9 @@ const BMNRDilutionAnalysis = () => {
         {/* Navigation */}
         <nav className="nav">
           {tabs.map(t => (
-            <button 
-              key={t.id} 
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''}`}
+            <button
+              key={t.id}
+              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
               onClick={() => setActiveTab(t.id)}
             >
               {t.label}

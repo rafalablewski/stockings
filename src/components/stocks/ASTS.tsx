@@ -654,6 +654,20 @@ const css = `
   border-color: var(--cyan);
 }
 
+/* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
+.nav-btn.tab-tracking {
+  border-left: 3px solid var(--mint);
+}
+.nav-btn.tab-projection {
+  border-left: 3px solid var(--violet);
+}
+.nav-btn.tab-tracking.active {
+  border-left-color: var(--mint);
+}
+.nav-btn.tab-projection.active {
+  border-left-color: var(--violet);
+}
+
 /* Main Content */
 .main {
   padding: 48px 64px;
@@ -1455,23 +1469,24 @@ const ASTSAnalysis = () => {
     return { marketCap: safe(marketCap), totalSats, constellationProgress: safe(constellationProgress), cashRunwayQuarters: safe(cashRunwayQuarters), enterpriseValue: safe(enterpriseValue), potentialSubs: safe(potentialSubs), grossAnnualRev: safe(grossAnnualRev), astsAnnualRev: safe(astsAnnualRev), evToRevFwd: safe(evToRevFwd), pricePerSub: safe(pricePerSub), totalPrepayments };
   }, [currentShares, currentStockPrice, cashOnHand, quarterlyBurn, totalDebt, block1Sats, block2Sats, targetSats2026, partnerReach, penetrationRate, blendedARPU, revenueShare, govRevenue, partners]);
 
+  // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
   const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'scenarios', label: 'Scenarios' },
-    { id: 'catalysts', label: 'Catalysts' },
-    { id: 'constellation', label: 'Constellation' },
-    { id: 'subscribers', label: 'Subscribers' },
-    { id: 'revenue', label: 'Revenue' },
-    { id: 'partners', label: 'Partners' },
-    { id: 'runway', label: 'Cash Runway' },
-    { id: 'capital', label: 'Capital' },
-    { id: 'dcf', label: 'DCF' },
-    { id: 'monte-carlo', label: 'Monte Carlo' },
-    { id: 'comps', label: 'Comps' },
-    { id: 'financials', label: 'Financials' },
-    { id: 'timeline', label: 'Timeline' },
-    { id: 'investment', label: 'Investment' },
-    { id: 'wall-street', label: 'Wall Street' },
+    { id: 'overview', label: 'Overview', type: 'tracking' },
+    { id: 'scenarios', label: 'Scenarios', type: 'projection' },
+    { id: 'catalysts', label: 'Catalysts', type: 'tracking' },
+    { id: 'constellation', label: 'Constellation', type: 'projection' },
+    { id: 'subscribers', label: 'Subscribers', type: 'projection' },
+    { id: 'revenue', label: 'Revenue', type: 'projection' },
+    { id: 'partners', label: 'Partners', type: 'tracking' },
+    { id: 'runway', label: 'Cash Runway', type: 'projection' },
+    { id: 'capital', label: 'Capital', type: 'tracking' },
+    { id: 'dcf', label: 'DCF', type: 'projection' },
+    { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
+    { id: 'comps', label: 'Comps', type: 'projection' },
+    { id: 'financials', label: 'Financials', type: 'tracking' },
+    { id: 'timeline', label: 'Timeline', type: 'tracking' },
+    { id: 'investment', label: 'Investment', type: 'projection' },
+    { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
   ];
 
   return (
@@ -1544,9 +1559,9 @@ const ASTSAnalysis = () => {
         {/* Navigation */}
         <nav className="nav">
           {tabs.map(t => (
-            <button 
-              key={t.id} 
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''}`}
+            <button
+              key={t.id}
+              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
               onClick={() => setActiveTab(t.id)}
             >
               {t.label}

@@ -684,18 +684,19 @@ const MAJOR_SHAREHOLDERS = [
   { name: 'Intersection Fintech', classA: 6529, classB: 0, pctVoting: 2.2, type: 'Institution' },
 ];
 
+// Tab types: 'tracking' = actual company data, 'projection' = user model inputs
 const tabs = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'scenarios', label: 'Scenarios' },
-  { id: 'usdc', label: 'USDC' },
-  { id: 'capital', label: 'Capital' },
-  { id: 'dcf', label: 'DCF' },
-  { id: 'monte-carlo', label: 'Monte Carlo' },
-  { id: 'comps', label: 'Comps' },
-  { id: 'financials', label: 'Financials' },
-  { id: 'timeline', label: 'Timeline' },
-  { id: 'investment', label: 'Investment' },
-  { id: 'wall-street', label: 'Wall Street' },
+  { id: 'overview', label: 'Overview', type: 'tracking' },
+  { id: 'scenarios', label: 'Scenarios', type: 'projection' },
+  { id: 'usdc', label: 'USDC', type: 'tracking' },
+  { id: 'capital', label: 'Capital', type: 'tracking' },
+  { id: 'dcf', label: 'DCF', type: 'projection' },
+  { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
+  { id: 'comps', label: 'Comps', type: 'projection' },
+  { id: 'financials', label: 'Financials', type: 'tracking' },
+  { id: 'timeline', label: 'Timeline', type: 'tracking' },
+  { id: 'investment', label: 'Investment', type: 'projection' },
+  { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
 ];
 
 const css = `
@@ -905,6 +906,20 @@ const css = `
   color: var(--bg);
   background: var(--mint);
   border-color: var(--mint);
+}
+
+/* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
+.nav-btn.tab-tracking {
+  border-left: 3px solid var(--cyan);
+}
+.nav-btn.tab-projection {
+  border-left: 3px solid var(--violet);
+}
+.nav-btn.tab-tracking.active {
+  border-left-color: var(--cyan);
+}
+.nav-btn.tab-projection.active {
+  border-left-color: var(--violet);
 }
 
 /* Main Content */
@@ -2144,7 +2159,11 @@ function CRCLModel() {
         {/* Nav */}
         <nav className="nav">
           {tabs.map(t => (
-            <button key={t.id} className={`nav-btn ${activeTab === t.id ? 'active' : ''}`} onClick={() => setActiveTab(t.id)}>
+            <button
+              key={t.id}
+              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+              onClick={() => setActiveTab(t.id)}
+            >
               {t.label}
             </button>
           ))}
