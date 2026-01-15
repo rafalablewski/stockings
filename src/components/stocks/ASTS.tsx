@@ -1647,35 +1647,35 @@ const ASTSAnalysis = () => {
 const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterlyBurn, totalDebt, setTotalDebt, block1Sats, block2Sats, targetSats2026, contractedRevenue, partnerReach, penetrationRate }) => {
   const [chartType, setChartType] = useState('constellation');
 
-  // Chart data
+  // Chart data - HISTORICAL ONLY
   const constellationData = [
-    { label: '2024', value: 6, display: '6' },
+    { label: 'Sep\'24', value: 5, display: '5' },
+    { label: 'Dec\'24', value: 6, display: '6' },
     { label: 'Q1\'25', value: 6, display: '6' },
     { label: 'Q2\'25', value: 29, display: '29' },
     { label: 'Q3\'25', value: 29, display: '29' },
     { label: 'Q4\'25', value: 60, display: '60' },
-    { label: '2026E', value: 168, display: '168' },
   ];
 
-  const revenueData = [
-    { label: '2024', value: 0, display: '$0M' },
-    { label: '2025E', value: 50, display: '$50M' },
-    { label: '2026E', value: 300, display: '$300M' },
-    { label: '2027E', value: 800, display: '$800M' },
-    { label: '2028E', value: 1500, display: '$1.5B' },
-    { label: '2029E', value: 2500, display: '$2.5B' },
+  const cashData = [
+    { label: 'Q1\'24', value: 280, display: '$280M' },
+    { label: 'Q2\'24', value: 412, display: '$412M' },
+    { label: 'Q3\'24', value: 518, display: '$518M' },
+    { label: 'Q4\'24', value: 765, display: '$765M' },
+    { label: 'Q1\'25', value: 1100, display: '$1.1B' },
+    { label: 'Q2\'25', value: 3200, display: '$3.2B' },
   ];
 
-  const subscriberData = [
-    { label: '2024', value: 0, display: '0M' },
-    { label: '2025E', value: 1, display: '1M' },
-    { label: '2026E', value: 5, display: '5M' },
-    { label: '2027E', value: 15, display: '15M' },
-    { label: '2028E', value: 35, display: '35M' },
-    { label: '2029E', value: 60, display: '60M' },
+  const marketCapData = [
+    { label: 'Q1\'24', value: 2.1, display: '$2.1B' },
+    { label: 'Q2\'24', value: 3.5, display: '$3.5B' },
+    { label: 'Q3\'24', value: 7.2, display: '$7.2B' },
+    { label: 'Q4\'24', value: 8.8, display: '$8.8B' },
+    { label: 'Q1\'25', value: 6.5, display: '$6.5B' },
+    { label: 'Q2\'25', value: calc.marketCap / 1000, display: `$${(calc.marketCap / 1000).toFixed(1)}B` },
   ];
 
-  const chartData = chartType === 'constellation' ? constellationData : chartType === 'revenue' ? revenueData : subscriberData;
+  const chartData = chartType === 'constellation' ? constellationData : chartType === 'cash' ? cashData : marketCapData;
   const maxValue = Math.max(...chartData.map(d => d.value));
 
   return (
@@ -1713,13 +1713,13 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     <div className="card" style={{ marginTop: 32 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div className="card-title" style={{ marginBottom: 0 }}>
-          {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'revenue' ? 'Revenue Ramp' : 'Subscriber Growth'}
+          {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           {[
             { id: 'constellation', label: 'Satellites' },
-            { id: 'revenue', label: 'Revenue' },
-            { id: 'subscribers', label: 'Subscribers' },
+            { id: 'cash', label: 'Cash' },
+            { id: 'marketcap', label: 'Market Cap' },
           ].map(btn => (
             <button
               key={btn.id}
