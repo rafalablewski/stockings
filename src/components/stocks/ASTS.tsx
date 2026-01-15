@@ -3543,38 +3543,65 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
           <table className="tbl">
             <thead>
               <tr>
-                <th>Scenario</th>
-                <th className="r">Prob</th>
-                <th className="r">{targetYear} Rev</th>
-                <th className="r">EBITDA%</th>
-                <th className="r">Multiple</th>
-                <th className="r" style={{ color: 'var(--violet)' }}>{targetYear} Price</th>
-                <th className="r" style={{ color: 'var(--mint)' }}>PV Today</th>
-                <th className="r">Upside</th>
+                <th>Metric</th>
+                {scenarios.map(s => (
+                  <th key={s.key} className="r" style={{ color: s.color }}>{s.name}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {scenarios.map(s => (
-                <tr
-                  key={s.key}
-                  style={{ background: s.key === selectedScenario ? `${s.color}11` : 'transparent', cursor: 'pointer' }}
-                  onClick={() => setSelectedScenario(s.key)}
-                >
-                  <td>
-                    <span style={{ marginRight: 8 }}>{s.label}</span>
-                    {s.name}
+              <tr>
+                <td>Subscribers (M)</td>
+                {scenarios.map(s => <td key={s.key} className="r">{s.subs.toFixed(1)}</td>)}
+              </tr>
+              <tr>
+                <td>Revenue ($B)</td>
+                {scenarios.map(s => <td key={s.key} className="r">${s.rev.toFixed(2)}</td>)}
+              </tr>
+              <tr>
+                <td>EBITDA ($B)</td>
+                {scenarios.map(s => (
+                  <td key={s.key} className="r" style={{ color: s.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                    {s.ebitda >= 0 ? '$' : '($'}{Math.abs(s.ebitda).toFixed(2)}{s.ebitda < 0 ? ')' : ''}
                   </td>
-                  <td className="r">{s.prob}%</td>
-                  <td className="r">${s.rev.toFixed(2)}B</td>
-                  <td className="r">{s.margin.toFixed(0)}%</td>
-                  <td className="r">{s.mult}x</td>
-                  <td className="r" style={{ color: s.color }}>${s.priceInTargetYear.toFixed(0)}</td>
-                  <td className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${s.presentValue.toFixed(0)}</td>
-                  <td className="r" style={{ color: s.upside >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                ))}
+              </tr>
+              <tr>
+                <td>EBITDA Margin (%)</td>
+                {scenarios.map(s => (
+                  <td key={s.key} className="r" style={{ color: s.margin >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                    {s.margin.toFixed(0)}%
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td>EV/EBITDA Multiple</td>
+                {scenarios.map(s => <td key={s.key} className="r">{s.mult}x</td>)}
+              </tr>
+              <tr style={{ fontWeight: 700 }}>
+                <td>{targetYear} Price</td>
+                {scenarios.map(s => (
+                  <td key={s.key} className="r" style={{ color: s.color }}>
+                    ${s.priceInTargetYear.toFixed(0)}
+                  </td>
+                ))}
+              </tr>
+              <tr style={{ fontWeight: 600 }}>
+                <td>PV Today</td>
+                {scenarios.map(s => (
+                  <td key={s.key} className="r" style={{ color: 'var(--sky)' }}>
+                    ${s.presentValue.toFixed(0)}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td>Return vs Today</td>
+                {scenarios.map(s => (
+                  <td key={s.key} className="r" style={{ color: s.upside >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                     {s.upside >= 0 ? '+' : ''}{s.upside.toFixed(0)}%
                   </td>
-                </tr>
-              ))}
+                ))}
+              </tr>
             </tbody>
           </table>
         </div>

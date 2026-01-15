@@ -2017,31 +2017,65 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
           <table className="tbl">
             <thead>
               <tr>
-                <th>Scenario</th>
-                <th className="r">ETH Price</th>
-                <th className="r">Final ETH</th>
-                <th className="r">NAV</th>
-                <th className="r">Stock</th>
-                <th className="r">Dividends</th>
-                <th className="r">Price Ret</th>
-                <th className="r">Total Ret</th>
-                <th className="r">Total IRR</th>
+                <th>Metric</th>
+                {scenarios.map(s => (
+                  <th key={s.id} className="r" style={{ color: s.color }}>{s.name}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {scenarios.map(s => (
-                <tr key={s.id} style={{ background: selectedScenario === s.id ? `${s.color}11` : 'transparent' }}>
-                  <td><span style={{ marginRight: 8 }}>{s.emoji}</span>{s.name}</td>
-                  <td className="r">${s.ethPrice.toLocaleString()}</td>
-                  <td className="r">{(s.futureETH / 1e6).toFixed(2)}M</td>
-                  <td className="r">${s.finalNAV.toFixed(2)}</td>
-                  <td className="r" style={{ fontWeight: 700, color: s.color }}>${s.finalStockPrice.toFixed(2)}</td>
-                  <td className="r" style={{ color: 'var(--mint)' }}>${s.totalDividends.toFixed(2)}</td>
-                  <td className="r" style={{ color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%</td>
-                  <td className="r" style={{ fontWeight: 700, color: s.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalReturn >= 0 ? '+' : ''}{s.totalReturn.toFixed(0)}%</td>
-                  <td className="r" style={{ color: s.totalIRR >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalIRR >= 0 ? '+' : ''}{s.totalIRR.toFixed(1)}%</td>
-                </tr>
-              ))}
+              <tr>
+                <td>ETH Price ($)</td>
+                {scenarios.map(s => <td key={s.id} className="r">${s.ethPrice.toLocaleString()}</td>)}
+              </tr>
+              <tr>
+                <td>ETH Holdings (M)</td>
+                {scenarios.map(s => <td key={s.id} className="r">{(s.futureETH / 1e6).toFixed(2)}</td>)}
+              </tr>
+              <tr>
+                <td>NAV/Share ($)</td>
+                {scenarios.map(s => <td key={s.id} className="r">${s.finalNAV.toFixed(2)}</td>)}
+              </tr>
+              <tr style={{ fontWeight: 700 }}>
+                <td>Stock Price ($)</td>
+                {scenarios.map(s => (
+                  <td key={s.id} className="r" style={{ color: s.color }}>
+                    ${s.finalStockPrice.toFixed(2)}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td>Cum. Dividends ($)</td>
+                {scenarios.map(s => (
+                  <td key={s.id} className="r" style={{ color: 'var(--mint)' }}>
+                    ${s.totalDividends.toFixed(2)}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td>Price Return (%)</td>
+                {scenarios.map(s => (
+                  <td key={s.id} className="r" style={{ color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                    {s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%
+                  </td>
+                ))}
+              </tr>
+              <tr style={{ fontWeight: 700 }}>
+                <td>Total Return (%)</td>
+                {scenarios.map(s => (
+                  <td key={s.id} className="r" style={{ color: s.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                    {s.totalReturn >= 0 ? '+' : ''}{s.totalReturn.toFixed(0)}%
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td>Total IRR (%)</td>
+                {scenarios.map(s => (
+                  <td key={s.id} className="r" style={{ color: s.totalIRR >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                    {s.totalIRR >= 0 ? '+' : ''}{s.totalIRR.toFixed(1)}%
+                  </td>
+                ))}
+              </tr>
             </tbody>
           </table>
         </div>
