@@ -1762,7 +1762,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
     <>
       <h2 className="section-head">Scenario Simulation</h2>
 
-      <div className="highlight" style={{ marginTop: 24 }}>
+      <div className="highlight">
         <h3>Multi-Year Projections</h3>
         <p className="text-sm">
           Model stock price under different ETH price trajectories and market conditions.
@@ -1772,7 +1772,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* Controls - Target Year and Scenario Selector */}
-      <div className="g2" style={{ marginTop: 24, marginBottom: 24 }}>
+      <div className="g2" style={{ marginBottom: 24 }}>
         <div className="card">
           <div className="card-title">Target Year</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
