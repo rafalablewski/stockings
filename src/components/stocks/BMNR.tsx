@@ -2466,13 +2466,15 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
 
 // CAPITAL TAB - Share Class Structure, Shareholders, Offerings, Incentive Plans, Fully Diluted Count
 const CapitalTab = ({ currentShares, currentStockPrice }) => {
+  const [capitalView, setCapitalView] = useState('structure');
+
   // Share class structure data
   const shareClasses = [
     { class: 'Common Stock', authorized: 500000000, outstanding: currentShares * 1e6, parValue: 0.0001, voting: '1 vote/share', status: 'active' },
     { class: 'Series A Preferred', authorized: 10000000, outstanding: 0, parValue: 0.0001, voting: 'As-converted', status: 'converted' },
     { class: 'Series B Preferred', authorized: 10000000, outstanding: 0, parValue: 0.0001, voting: 'As-converted', status: 'converted' },
   ];
-  
+
   // Major shareholders
   const majorShareholders = [
     { name: 'Bill Miller III', shares: null, percent: null, type: 'Individual', source: 'Jul 2025 PR' },
@@ -2480,7 +2482,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
     { name: 'Institutional Holder 2', shares: null, percent: null, type: 'Institution', source: '13F TBD' },
     { name: 'Insider Holdings', shares: null, percent: null, type: 'Insiders', source: 'DEF 14A TBD' },
   ];
-  
+
   // Equity offerings
   const equityOfferings = [
     { date: 'Jul 2025', type: 'ATM', amount: 2.0, status: 'exhausted' },
@@ -2488,13 +2490,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
     { date: 'Aug 12', type: 'ATM+', amount: 24.5, status: 'active' },
     { date: 'Sep 22', type: '424B5', amount: 0.365, status: 'completed' },
   ];
-  
+
   // Warrants
   const warrants = [
     { type: 'Pre-Funded', shares: 11000000, strike: 0.0001, source: 'Jul 2025 PIPE' },
     { type: 'Advisor', shares: 3190000, strike: 5.40, source: 'Jul 2025 S-3' },
   ];
-  
+
   // Fully diluted calculation
   const fdShares = {
     common: currentShares * 1e6,
@@ -2505,171 +2507,267 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
   };
   const totalFD = Object.values(fdShares).reduce((a, b) => a + b, 0);
   const dilutionPct = ((totalFD / fdShares.common) - 1) * 100;
-  
-  const StatusBadge = ({ status }) => {
-    const styles = {
-      active: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-      exhausted: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-      completed: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-      converted: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
-    };
-    return <span className={`px-2 py-0.5 text-xs font-medium rounded border ${styles[status]}`}>{status}</span>;
+
+  const statusColor = (status) => {
+    const colors = { active: 'var(--mint)', exhausted: 'var(--gold)', completed: 'var(--sky)', converted: 'var(--text3)' };
+    return colors[status] || 'var(--text2)';
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Capital Structure</h2>
+
+      {/* Highlight Box */}
+      <div className="highlight">
+        <h3>ETH Treasury Capital Strategy</h3>
+        <p className="text-sm">
+          BMNR funds ETH accumulation through ATM programs. $24.5B shelf active with $988M cash.
+          Pre-funded warrants ($0.0001 strike) represent committed capital. Single-class common stock
+          with simple capital structure supports rapid execution.
+        </p>
+      </div>
+
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="blue" />
-        <Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="violet" />
+      <div className="g4">
+        <Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="violet" />
+        <Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="blue" />
         <Card label="Basic Mkt Cap" value={`$${((currentShares * 1e6 * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Outstanding × Price" color="green" />
-        <Card label="FD Mkt Cap" value={`$${((totalFD * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Fully diluted" color="purple" />
+        <Card label="FD Mkt Cap" value={`$${((totalFD * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Fully diluted" color="yellow" />
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* 1. SHARE CLASS STRUCTURE */}
-        <div className="card"><div className="card-title">Share Class Structure</div>
-          <div className="space-y-3">
+      {/* View Toggle */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 24 }}>
+        {[
+          { id: 'structure', label: '📊 Share Structure' },
+          { id: 'shareholders', label: '👥 Major Holders' },
+          { id: 'offerings', label: '💰 Offerings' },
+          { id: 'plans', label: '🎁 Plans' },
+          { id: 'dilution', label: '📈 Dilution' },
+        ].map(btn => (
+          <button
+            key={btn.id}
+            onClick={() => setCapitalView(btn.id)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              capitalView === btn.id
+                ? 'bg-violet-600 text-white'
+                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+            }`}
+          >
+            {btn.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Share Class Structure View */}
+      {capitalView === 'structure' && (
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title">Share Class Structure</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Class</th>
+              <th className="r">Authorized</th>
+              <th className="r">Outstanding</th>
+              <th>Voting</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
             {shareClasses.map((sc, i) => (
-              <div key={i} className={`flex items-center justify-between p-3 rounded-lg ${sc.status === 'active' ? 'bg-slate-800/80' : 'bg-slate-800/40'}`}>
-                <div>
-                  <div className="font-medium text-white">{sc.class}</div>
-                  <div className="text-xs text-slate-500">{sc.voting} · ${sc.parValue} par</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-mono text-sm">{(sc.outstanding / 1e6).toFixed(1)}M <span className="text-slate-500">/ {(sc.authorized / 1e6).toFixed(0)}M</span></div>
-                  <StatusBadge status={sc.status} />
-                </div>
-              </div>
+              <tr key={i}>
+                <td style={{ fontWeight: 600 }}>{sc.class}</td>
+                <td className="r">{(sc.authorized / 1e6).toFixed(0)}M</td>
+                <td className="r violet">{(sc.outstanding / 1e6).toFixed(1)}M</td>
+                <td style={{ color: 'var(--text2)', fontSize: 13 }}>{sc.voting}</td>
+                <td><span style={{ color: statusColor(sc.status) }}>{sc.status}</span></td>
+              </tr>
             ))}
-          </div>
+          </tbody>
+        </table>
+        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+          Par value: $0.0001. Preferred shares converted to common. NYSE American: BMNR.
         </div>
+      </div>
+      )}
 
-        {/* 2. MAJOR SHAREHOLDERS */}
-        <div className="card"><div className="card-title">Major Shareholders</div>
-          <div className="space-y-2">
+      {/* Major Shareholders View */}
+      {capitalView === 'shareholders' && (
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title">Major Shareholders</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Shareholder</th>
+              <th className="r">Shares (M)</th>
+              <th className="r">%</th>
+              <th>Type</th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody>
             {majorShareholders.map((sh, i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-slate-800 last:border-0">
-                <div>
-                  <div className="font-medium text-white">{sh.name}</div>
-                  <div className="text-xs text-slate-500">{sh.type}</div>
-                </div>
-                <div className="text-right">
-                  {sh.shares ? (
-                    <>
-                      <div className="font-mono text-sm">{(sh.shares / 1e6).toFixed(2)}M</div>
-                      <div className="text-xs text-slate-400">{sh.percent?.toFixed(2)}%</div>
-                    </>
-                  ) : (
-                    <span className="text-xs text-yellow-500/80 bg-yellow-500/10 px-2 py-1 rounded">{sh.source}</span>
-                  )}
-                </div>
-              </div>
+              <tr key={i}>
+                <td style={{ fontWeight: 500 }}>{sh.name}</td>
+                <td className="r">{sh.shares ? (sh.shares / 1e6).toFixed(2) : '—'}</td>
+                <td className="r violet">{sh.percent ? `${sh.percent.toFixed(2)}%` : '—'}</td>
+                <td style={{ color: 'var(--text2)' }}>{sh.type}</td>
+                <td><span style={{ color: 'var(--gold)' }}>{sh.source}</span></td>
+              </tr>
             ))}
-          </div>
-          <div className="mt-3 text-xs text-slate-500 italic">Update from 13F (institutional) and DEF 14A (insiders)</div>
+          </tbody>
+        </table>
+        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+          Update from 13F (institutional) and DEF 14A (insiders) when available.
         </div>
       </div>
+      )}
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* 3. EQUITY OFFERINGS */}
-        <div className="card"><div className="card-title">Equity Offerings</div>
-          <div className="space-y-2">
+      {/* Offerings View */}
+      {capitalView === 'offerings' && (
+      <>
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title">Equity Offerings</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th className="r">Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
             {equityOfferings.map((off, i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-slate-800 last:border-0">
-                <div className="flex items-center gap-3">
-                  <div className="text-xs font-mono text-slate-500 w-16">{off.date}</div>
-                  <div className="font-medium">{off.type}</div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="font-mono text-green-400">${off.amount}B</div>
-                  <StatusBadge status={off.status} />
-                </div>
-              </div>
+              <tr key={i}>
+                <td>{off.date}</td>
+                <td style={{ fontWeight: 600 }}>{off.type}</td>
+                <td className="r mint">${off.amount}B</td>
+                <td><span style={{ color: statusColor(off.status) }}>{off.status}</span></td>
+              </tr>
             ))}
-          </div>
-          <div className="mt-4 pt-3 border-t border-slate-700">
-            <div className="text-xs text-slate-400 mb-2">Warrants Outstanding</div>
+            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+              <td colSpan={2}>Total Shelf Capacity</td>
+              <td className="r mint">$31.4B</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div className="card" style={{ marginTop: 24 }}>
+        <div className="card-title">Warrants Outstanding</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th className="r">Shares</th>
+              <th className="r">Strike</th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody>
             {warrants.map((w, i) => (
-              <div key={i} className="flex items-center justify-between py-1.5 text-sm">
-                <span className="text-slate-300">{w.type}</span>
-                <span className="font-mono">{(w.shares / 1e6).toFixed(2)}M @ ${w.strike < 1 ? w.strike.toFixed(4) : w.strike.toFixed(2)}</span>
-              </div>
+              <tr key={i}>
+                <td style={{ fontWeight: 500 }}>{w.type}</td>
+                <td className="r">{(w.shares / 1e6).toFixed(2)}M</td>
+                <td className="r violet">${w.strike < 1 ? w.strike.toFixed(4) : w.strike.toFixed(2)}</td>
+                <td style={{ color: 'var(--text2)' }}>{w.source}</td>
+              </tr>
             ))}
-          </div>
-        </div>
+            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+              <td>Total</td>
+              <td className="r">{((warrants[0].shares + warrants[1].shares) / 1e6).toFixed(2)}M</td>
+              <td colSpan={2}></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </>
+      )}
 
-        {/* 4. EQUITY INCENTIVE PLANS */}
-        <div className="card"><div className="card-title">Equity Incentive Plans</div>
-          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 text-center">
-            <div className="text-yellow-500 text-2xl mb-2">📋</div>
-            <div className="text-sm text-yellow-500/90 font-medium">Data Pending</div>
-            <div className="text-xs text-slate-500 mt-1">Update from 10-K or DEF 14A proxy</div>
-          </div>
-          <div className="mt-4 space-y-2 text-sm text-slate-500">
-            <div className="flex justify-between py-1 border-b border-slate-800">
-              <span>2024 Equity Incentive Plan</span>
-              <span className="text-yellow-500/80">TBD</span>
-            </div>
-            <div className="flex justify-between py-1">
-              <span>Employee Stock Purchase</span>
-              <span className="text-yellow-500/80">TBD</span>
-            </div>
-          </div>
+      {/* Plans View */}
+      {capitalView === 'plans' && (
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title">Equity Incentive Plans</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Plan</th>
+              <th className="r">Reserved</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2024 Equity Incentive Plan</td>
+              <td className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
+              <td><span style={{ color: 'var(--gold)' }}>Pending 10-K</span></td>
+            </tr>
+            <tr>
+              <td>Employee Stock Purchase Plan</td>
+              <td className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
+              <td><span style={{ color: 'var(--gold)' }}>Pending 10-K</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+          Data pending from 10-K or DEF 14A proxy filing.
         </div>
       </div>
+      )}
 
-      {/* 5. FULLY DILUTED BREAKDOWN */}
-      <div className="card"><div className="card-title">Fully Diluted Share Count</div>
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <div className="bg-slate-900/50 rounded-lg p-4">
-              <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                <div className="flex justify-between py-1.5 border-b border-slate-800">
-                  <span className="text-slate-400">Common Outstanding</span>
-                  <span className="font-mono text-white">{(fdShares.common / 1e6).toFixed(1)}M</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-800">
-                  <span className="text-slate-400">Pre-Funded Warrants</span>
-                  <span className="font-mono text-slate-300">+{(fdShares.prefunded / 1e6).toFixed(1)}M</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-800">
-                  <span className="text-slate-400">Advisor Warrants</span>
-                  <span className="font-mono text-slate-300">+{(fdShares.advisor / 1e6).toFixed(1)}M</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-800">
-                  <span className="text-slate-400">Stock Options</span>
-                  <span className="font-mono text-yellow-500/80">{fdShares.options > 0 ? `+${(fdShares.options / 1e6).toFixed(1)}M` : 'TBD'}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-800">
-                  <span className="text-slate-400">RSUs</span>
-                  <span className="font-mono text-yellow-500/80">{fdShares.rsus > 0 ? `+${(fdShares.rsus / 1e6).toFixed(1)}M` : 'TBD'}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-800">
-                  <span className="text-slate-400">Convertible Debt</span>
-                  <span className="font-mono text-yellow-500/80">TBD</span>
-                </div>
-              </div>
-              <div className="flex justify-between mt-3 pt-3 border-t-2 border-violet-600">
-                <span className="font-semibold text-violet-300">FULLY DILUTED TOTAL</span>
-                <span className="font-mono font-bold text-violet-300 text-lg">{(totalFD / 1e6).toFixed(1)}M</span>
-              </div>
-            </div>
-          </div>
-          <div className="space-y-3">
-            <div className="bg-gradient-to-br from-violet-900/40 to-violet-800/20 border border-violet-600/30 rounded-lg p-4 text-center">
-              <div className="text-xs text-violet-400 uppercase tracking-wider mb-1">Dilution Impact</div>
-              <div className="text-3xl font-bold text-violet-300">+{dilutionPct.toFixed(1)}%</div>
-              <div className="text-xs text-slate-500 mt-1">if all exercised</div>
-            </div>
-            <div className="bg-slate-800/50 rounded-lg p-3 text-xs text-slate-500">
-              <strong className="text-slate-400">Note:</strong> Jul 29, 2025 PR reported 121.7M fully diluted. Current calc uses known warrants only.
-            </div>
-          </div>
+      {/* Dilution View */}
+      {capitalView === 'dilution' && (
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title">Fully Diluted Share Count</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th className="r">Shares (M)</th>
+              <th className="r">% of Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Common Outstanding</td>
+              <td className="r">{(fdShares.common / 1e6).toFixed(1)}</td>
+              <td className="r">{((fdShares.common / totalFD) * 100).toFixed(1)}%</td>
+            </tr>
+            <tr>
+              <td>Pre-Funded Warrants</td>
+              <td className="r">{(fdShares.prefunded / 1e6).toFixed(1)}</td>
+              <td className="r">{((fdShares.prefunded / totalFD) * 100).toFixed(1)}%</td>
+            </tr>
+            <tr>
+              <td>Advisor Warrants</td>
+              <td className="r">{(fdShares.advisor / 1e6).toFixed(1)}</td>
+              <td className="r">{((fdShares.advisor / totalFD) * 100).toFixed(1)}%</td>
+            </tr>
+            <tr>
+              <td>Stock Options</td>
+              <td className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
+              <td className="r">—</td>
+            </tr>
+            <tr>
+              <td>RSUs</td>
+              <td className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
+              <td className="r">—</td>
+            </tr>
+            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+              <td>Fully Diluted Total</td>
+              <td className="r violet">{(totalFD / 1e6).toFixed(1)}</td>
+              <td className="r">100%</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style={{ marginTop: 16, fontSize: 13, color: 'var(--text3)' }}>
+          Note: Jul 29, 2025 PR reported 121.7M fully diluted. Current calc uses known warrants only.
+          Dilution impact: +{dilutionPct.toFixed(1)}% if all securities exercised.
         </div>
       </div>
-      
+      )}
+
       <CFANotes title="CFA Level III — Capital Structure" items={[
         { term: 'Share Classes', def: 'Common stock trades on NYSE American. Preferred shares (Series A/B) have been converted. Authorized shares cap total issuance capacity.' },
         { term: 'Fully Diluted Shares', def: 'Includes all potential shares: common + warrants + options + RSUs. Used for calculating true per-share ownership.' },
