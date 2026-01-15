@@ -14,9 +14,12 @@
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
  * ║  BMNR (BitMine Immersion Technologies) Financial Analysis Model               ║
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
- * ║  Version: 2.4.6                                                               ║
- * ║  Last Updated: January 12, 2026                                               ║
+ * ║  Version: 2.4.7                                                               ║
+ * ║  Last Updated: January 15, 2026                                               ║
  * ║  Maintainer: Rafal (via Claude AI)                                            ║
+ * ║                                                                               ║
+ * ║  CHANGELOG v2.4.7:                                                            ║
+ * ║  - Added $200M Beast Industries investment PR (Jan 15, 2026)                   ║
  * ║                                                                               ║
  * ║  CHANGELOG v2.4.6:                                                            ║
  * ║  - Unified tab IDs: valuation→dcf, sec-filings→financials                     ║
@@ -1335,7 +1338,7 @@ const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
 CFANotes.displayName = 'CFANotes';
 
 /*
- * DEFAULT PARAMETERS - Based on latest official data (Jan 12, 2026 PR)
+ * DEFAULT PARAMETERS - Based on latest official data (Jan 15, 2026 PR)
  * Update these when new weekly holdings PRs are released
  *
  * Current defaults reflect:
@@ -1345,10 +1348,11 @@ CFANotes.displayName = 'CFANotes';
  * - ETH Price: $3,119 (Jan 11, 2026 Coinbase)
  * - Staking Ratio: 30.14% (1,256,083 ETH staked via 3 providers, Jan 11)
  * - Base Staking APY: 2.81% (CESR rate)
- * - Total Cash: $988M
+ * - Total Cash: $988M → ~$788M after Beast Industries deal
  * - BTC Holdings: 193 BTC
  * - Moonshots: $23M (Eightco ORBS stake)
- * - Total Holdings: $14.0B (crypto + cash + moonshots)
+ * - Strategic Investments: $200M (Beast Industries - MrBeast, closing Jan 19)
+ * - Total Holdings: $14.0B (crypto + cash + moonshots + strategic investments)
  * 
  * COMPANY INFO (SEC EDGAR):
  * - CIK: 0001829311
@@ -3548,22 +3552,22 @@ const InvestmentTab = () => {
   
   // Current Investment Summary
   const current = {
-    date: '2026-01-12',
-    source: 'January 12, 2026 — PR: ETH Holdings Reach 4.168M, $14.0B Total',
-    verdict: 'BUY',
+    date: '2026-01-15',
+    source: 'January 15, 2026 — PR: $200M Beast Industries Investment + Annual Meeting',
+    verdict: 'STRONG BUY',
     verdictColor: 'green',
     tagline: 'The ETH Supercycle Play',
 
     // Investment Scorecard (letter grades like CRCL)
     scorecard: [
       { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Flawless pivot: #1 ETH treasury, $14.0B total holdings, 4.17M ETH' },
-      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Fortress: $13.0B ETH + $988M cash + $23M moonshots' },
+      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Fortress: $13.0B ETH + $788M cash + $200M Beast Industries + $23M moonshots' },
       { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Leadership: Young Kim (MIT/HBS, Columbia Threadneedle) as CFO+COO' },
+      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: '$200M Beast Industries: GenZ/Millennial reach + DeFi platform integration' },
       { category: 'Corporate', rating: 'A', color: 'var(--mint)', detail: '3.45% ETH supply — 70% of the way to "Alchemy of 5%" target' },
       { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Staking surged: 1.26M ETH staked (30%), MAVAN Q1 2026' },
       { category: 'Corporate', rating: 'A-', color: 'var(--mint)', detail: 'Dividend + buyback + accretive raises = shareholder alignment' },
       { category: 'Corporate', rating: 'B+', color: 'var(--sky)', detail: 'NAV floor limits downside; ETH upside is leveraged' },
-      { category: 'Corporate', rating: 'B', color: 'var(--sky)', detail: 'Single-asset concentration; ETH beta ~1.0' },
     ],
     
     // Ecosystem Health Rating (summarizes Ethereum tab metrics)
@@ -3577,7 +3581,7 @@ const InvestmentTab = () => {
         { metric: 'Supply Growth', value: '-0.2%', signal: 'Deflationary', weight: '15%', color: 'var(--mint)' },
         { metric: 'Protocol Progress', value: 'Fusaka Live', signal: 'Upgraded', weight: '20%', color: 'var(--mint)' },
       ],
-      summary: 'Strong ecosystem tailwinds. Tom Lee cites: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication demand, and younger generation adoption. Metals correlation bullish for 2026.',
+      summary: 'Strong ecosystem tailwinds. Beast Industries ($200M investment) expands reach to GenZ/Millennials via MrBeast (450M+ subscribers). Tom Lee cites: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication demand, younger generation adoption. Metals correlation bullish for 2026.',
     },
     
     // Executive Summary - Bold and Direct
@@ -3617,7 +3621,8 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
     
     // Catalysts (renamed from predictions)
     catalysts: [
-      { event: 'Annual Meeting', timing: 'Jan 15, 2026 (3 days)', impact: 'Share authorization vote (500M→50B) — VOTE YES on Proposal #2', color: 'var(--mint)' },
+      { event: 'Annual Meeting', timing: 'Jan 15, 2026 (TODAY)', impact: 'Share authorization vote (500M→50B) @ Wynn Las Vegas — VOTE YES on Proposal #2', color: 'var(--mint)' },
+      { event: 'Beast Industries Deal Close', timing: 'Jan 19, 2026', impact: '$200M equity investment in MrBeast\'s company — GenZ/Millennial reach + DeFi integration', color: 'var(--mint)' },
       { event: 'MAVAN Launch', timing: 'Q1 2026', impact: 'Proprietary staking = margin expansion to $374M/yr', color: 'var(--mint)' },
       { event: 'Dividend Increase', timing: 'Q1 2026', impact: 'Likely 2-3x current rate as staking scales', color: 'var(--sky)' },
       { event: 'Index Inclusion', timing: 'Jun 2026', impact: 'Russell 2000 inclusion forces passive buying', color: 'var(--sky)' },
@@ -3639,7 +3644,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         title: 'CFA Analyst',
         assessment: 'FAVORABLE',
         color: 'var(--mint)',
-        summary: 'Single-asset concentration with embedded leverage through NAV premium mechanism. Best positioned as 2-5% satellite allocation within alternatives bucket. Execution risk materially reduced — Young Kim (CFO/COO) brings 20yr institutional PM experience to complement Tom Lee\'s strategic vision. $988M cash fortress, staking surged to 1.26M ETH (30%).',
+        summary: 'Single-asset concentration with embedded leverage through NAV premium mechanism. Best positioned as 2-5% satellite allocation within alternatives bucket. Execution risk materially reduced — Young Kim (CFO/COO) brings 20yr institutional PM experience. $200M Beast Industries investment expands demographic reach beyond institutional allocators. Staking surged to 1.26M ETH (30%).',
         ecosystemView: 'Ethereum network fundamentals support the thesis. Deflationary supply (-0.2% annually), healthy staking participation (28%), and growing institutional adoption via ETFs ($12B AUM) create structural demand. $374M annual staking income at full deployment is a game-changer for valuation.',
         recommendation: 'Allocate 2-5% of alternatives sleeve. Rebalance quarterly.',
       },
@@ -3647,16 +3652,16 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         title: 'Hedge Fund PM',
         assessment: 'HIGH CONVICTION LONG',
         color: 'var(--mint)',
-        summary: 'Cleanest asymmetric setup in crypto equities. Market treating BMNR like simple ETH proxy — it\'s not. Staking yield + dividend + accretive issuance creates compounding machine. Leadership depth strengthened: Young Kim (Columbia Threadneedle, Axiom) as CFO/COO. Event calendar stacked: Annual Meeting Jan 15 (3 days!), MAVAN launch Q1, dividend increase.',
-        ecosystemView: 'ETF flow momentum is the key near-term catalyst. $988M cash war chest + $24.5B ATM = unlimited firepower. Staking exploded: +597K ETH staked in one week to 1.26M total (30%). Tom Lee\'s 2026 thesis: government support, stablecoin adoption, tokenization, AI authentication demand, metals correlation.',
+        summary: 'Cleanest asymmetric setup in crypto equities. Market treating BMNR like simple ETH proxy — it\'s not. Staking yield + dividend + accretive issuance creates compounding machine. $200M Beast Industries deal (MrBeast, 450M subs) = GenZ/Millennial reach + DeFi platform integration. Event calendar stacked: Annual Meeting TODAY, Beast deal close Jan 19, MAVAN Q1.',
+        ecosystemView: 'ETF flow momentum is the key near-term catalyst. ~$788M cash + $24.5B ATM = still unlimited firepower post-Beast deal. Staking exploded: 1.26M ETH total (30%). Tom Lee\'s 2026 thesis: government support, stablecoin adoption, tokenization, AI authentication demand, younger generation adoption (now via Beast Industries!).',
         recommendation: 'Size up to 8-10% of book. Stop loss at 0.6x NAV.',
       },
       cio: {
         title: 'Family Office CIO',
         assessment: 'CORE POSITION',
         color: 'var(--violet)',
-        summary: '$14.0B total holdings. $988M cash. 4.17M ETH. This is how you get institutional ETH exposure without custody complexity — and it\'s a generational wealth preservation vehicle. Management bench deepened with Young Kim (MIT/HBS, 20yr institutional PM) as CFO/COO. Backed by ARK, Founders Fund, Pantera, Galaxy Digital, Bill Miller III, and Tom Lee personally.',
-        ecosystemView: 'Ecosystem maturation reduces tail risk. Tom Lee\'s 2026 thesis: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication/provenance demand, younger generation adoption, and precious metals correlation. The GENIUS Act and SEC Project Crypto are transformational — compared to Aug 15, 1971 (end of Bretton Woods).',
+        summary: '$14.0B total holdings. 4.17M ETH. $200M Beast Industries equity stake. This is how you get institutional ETH exposure without custody complexity — and now with creator economy upside. Management bench: Tom Lee (Chairman), Young Kim (CFO/COO). Backed by ARK, Founders Fund, Pantera, Galaxy Digital, Bill Miller III, and Tom Lee personally.',
+        ecosystemView: 'Ecosystem maturation reduces tail risk. Beast Industries investment ($200M) expands reach to 450M+ YouTube subscribers (GenZ/Millennials) with DeFi platform integration planned. Tom Lee\'s 2026 thesis: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication/provenance demand, younger generation adoption. The GENIUS Act is transformational.',
         recommendation: '5-10% of crypto allocation. Multi-year hold.',
       },
     },
@@ -3681,6 +3686,34 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   
   // Archive - Full historical investment summaries (generous detail for each period)
   const archive = [
+    {
+      date: '2026-01-15',
+      source: 'PR: $200M Beast Industries Investment + Annual Meeting',
+      verdict: 'STRONG BUY',
+      verdictColor: 'green',
+      summary: '$200M strategic equity investment into Beast Industries (MrBeast). GenZ/Millennial demographic expansion. DeFi integration planned. Annual Meeting TODAY @ Wynn Las Vegas.',
+      fullAnalysis: {
+        context: 'January 15, 2026 marks a pivotal day for BMNR: the Annual Meeting at Wynn Las Vegas coincides with the announcement of a $200M equity investment into Beast Industries — MrBeast\'s entertainment and CPG empire. This represents BMNR\'s first major strategic investment outside pure crypto, positioning the company at the intersection of digital assets and the creator economy.',
+        keyHighlights: [
+          '$200M equity investment into Beast Industries (MrBeast)',
+          'Beast Industries: 450M+ YouTube subscribers, 5B monthly views across all channels',
+          'Target audience expansion: GenZ, GenAlpha, Millennials (previously institutional-focused)',
+          'DeFi integration: Beast Industries exploring incorporation into upcoming financial services platform',
+          'Deal expected to close on or about January 19, 2026',
+          'Tom Lee: "Beast Industries is the leading content creator of our generation"',
+          'Jeff Housenbold (Beast CEO): "Strong validation of our vision, strategy, and growth trajectory"',
+          'Beast Industries brands: Feastables, #TeamTrees, #TeamSeas, #TeamWater, Beast Philanthropy',
+          'Annual Meeting held same day @ Wynn Las Vegas — share authorization vote (500M→50B)',
+          'Premier institutional investors reaffirmed: ARK (Cathie Wood), MOZAYYX, Founders Fund, Bill Miller III, Pantera, Kraken, DCG, Galaxy Digital, Tom Lee',
+          'Company goal: acquiring 5% of ETH supply',
+          'MAVAN (Made-in America Validator Network) launching Q1 2026',
+        ],
+        verdict: 'Bold strategic move. Beast Industries investment expands BMNR\'s reach to younger demographics while exploring DeFi integration. This positions BMNR as more than just an ETH treasury — it\'s becoming a bridge between crypto and mainstream audiences.',
+        scorecard: 9.5,
+        risks: 'Investment concentration in single creator (MrBeast). $200M reduces cash position from $988M to ~$788M (still ample). Deal must close Jan 19.',
+        strategy: 'STRONG BUY. Annual Meeting today is the key catalyst for share authorization. Beast Industries deal expands TAM beyond institutional crypto allocators.'
+      }
+    },
     {
       date: '2026-01-12',
       source: 'PR: ETH Holdings Reach 4.168M, $14.0B Total',
@@ -6179,7 +6212,7 @@ const TimelineTab = () => {
    * ║  This ensures we maintain a complete audit trail of all official             ║
    * ║  communications, including any corrections or restatements.                   ║
    * ║                                                                               ║
-   * ║  Last verified: December 29, 2025                                             ║
+   * ║  Last verified: January 15, 2026                                              ║
    * ║  Data sources: PRNewswire, SEC EDGAR, StockTitan                              ║
    * ╚═══════════════════════════════════════════════════════════════════════════════╝
    */
@@ -6187,6 +6220,22 @@ const TimelineTab = () => {
   // Audit log of BMNR company updates - chronological record of official filings and announcements
   // NEWEST ENTRIES AT TOP - maintain descending chronological order
   const timelineEvents = [
+    // === JANUARY 15, 2026 - $200M BEAST INDUSTRIES INVESTMENT ===
+    {
+      date: '2026-01-15',
+      source: 'PRNewswire',
+      category: 'Corporate',
+      title: '🦁 $200M Strategic Investment in Beast Industries (MrBeast)',
+      changes: [
+        { metric: 'Investment', previous: '$0', new: '$200M equity', change: 'Beast Industries' },
+        { metric: 'Investor Base', previous: 'Institutions', new: '+ MrBeast/Beast Industries', change: 'Strategic partnership' },
+        { metric: 'Target Audience', previous: 'Institutions', new: '+ GenZ/GenAlpha/Millennials', change: 'Demographic expansion' },
+        { metric: 'Deal Close', previous: '—', new: 'Jan 19, 2026', change: 'Expected' },
+        { metric: 'Annual Meeting', previous: '—', new: 'Jan 15, 2026', change: 'Wynn Las Vegas (today)' },
+      ],
+      notes: '$200M equity investment into Beast Industries (MrBeast - 450M+ YouTube subscribers, 5B monthly views). CEO Jeff Housenbold: "Their support is a strong validation of our vision." Tom Lee: "Beast Industries is the leading content creator of our generation with reach and engagement unmatched with GenZ, GenAlpha and Millennials." Exploring DeFi integration into Beast\'s upcoming financial services platform. Premier institutional investors reaffirmed: ARK (Cathie Wood), MOZAYYX, Founders Fund, Bill Miller III, Pantera, Kraken, DCG, Galaxy Digital, and Tom Lee. Annual Meeting livestreamed on X @bitmnr. Goal: acquiring 5% of ETH.',
+      impact: 'positive'
+    },
     // === JANUARY 13, 2026 - Q1 FY26 10-Q FILING ===
     {
       date: '2026-01-13',
