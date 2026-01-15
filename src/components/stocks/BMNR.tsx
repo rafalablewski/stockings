@@ -2247,7 +2247,7 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
   }), [currentETH, ethPrice, stakingRatio, calc.effectiveAPY, calc.totalShares]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Staking</h2>
       <div className="highlight"><h3>ETH Staking Yield</h3>
         <p className="text-sm">BMNR generates yield by staking ETH through validators. Compare staking strategies and model compounding returns over time.</p>
@@ -2322,7 +2322,7 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
   const updateTranche = (id, field, value) => setTranches(tranches.map(t => t.id === id ? { ...t, [field]: value } : t));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Dilution</h2>
       <div className="highlight"><h3>Equity Dilution Analysis</h3>
         <p className="text-sm">Model the impact of share issuance on NAV per share. Accretive when issued above NAV; dilutive when below.</p>
@@ -2368,7 +2368,7 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
   const drawdown = useMemo(() => !useDebt ? [] : [0, -20, -40, -60, -80].map(dd => ({ drawdown: dd, ethPrice: ethPrice * (1 + dd / 100), ltv: (debtAmount * 1e6) / (currentETH * ethPrice * (1 + dd / 100)) * 100, breach: (debtAmount * 1e6) / (currentETH * ethPrice * (1 + dd / 100)) * 100 > debtCovenantLTV })), [useDebt, ethPrice, currentETH, debtAmount, debtCovenantLTV]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Debt</h2>
       <div className="highlight"><h3>Leverage & Convertible Debt</h3>
         <p className="text-sm">Model convertible debt financing and analyze LTV covenant risks. Track death spiral trigger prices.</p>
@@ -2451,7 +2451,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Capital Structure</h2>
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -2620,7 +2620,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
   const btcPrice = 100000;
   const compsData = comparables.map(c => { const cryptoPrice = c.crypto === 'BTC' ? btcPrice : ethPrice; const navPerShare = (c.holdings * cryptoPrice) / c.shares; return { ...c, navPerShare, premium: ((c.price / navPerShare) - 1) * 100, marketCap: c.price * c.shares }; });
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Comparables</h2>
       <div className="highlight"><h3>Peer Comparison</h3>
         <p className="text-sm">Compare BMNR to other crypto treasury companies. Key differentiator: ETH staking yield vs BTC's 0%.</p>
@@ -2646,7 +2646,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
 const SensitivityTab = ({ calc, currentETH, currentShares, ethPrice }) => {
   const matrix = useMemo(() => [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0].map(em => ({ ethMult: em, ethPrice: ethPrice * em, scenarios: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(nm => ({ navMult: nm, price: ((currentETH * ethPrice * em) / (currentShares * 1e6)) * nm })) })), [currentETH, currentShares, ethPrice]);
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Sensitivity</h2>
       <div className="highlight"><h3>Price Matrix & Tornado</h3>
         <p className="text-sm">Two-variable sensitivity showing stock price at different ETH prices and NAV multiples. Tornado chart shows parameter impact ranking.</p>
@@ -2687,7 +2687,7 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
   const stats = useMemo(() => { if (data.data.length === 0) return null; const navs = data.data.map(d => d.nav); const prices = data.data.map(d => d.stockPrice); return { currentNav: navs[navs.length - 1], currentPrice: prices[prices.length - 1], totalReturn: ((navs[navs.length - 1] / data.startNav) - 1) * 100, maxNav: Math.max(...navs), minNav: Math.min(...navs), maxDD: ((Math.min(...navs) - Math.max(...navs)) / Math.max(...navs)) * 100, maxPrice: Math.max(...prices), minPrice: Math.min(...prices) }; }, [data]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Backtest</h2>
       <div className="highlight"><h3>Historical NAV Simulation</h3>
         <p className="text-sm">What would NAV have been at historical ETH prices? Toggle staking yield to see compounding effect. Caveat: illustrative only.</p>
@@ -2782,7 +2782,7 @@ const ValuationTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAP
   const irr = (Math.pow(dcf.impliedValue / calc.currentNAV, 1 / years) - 1) * 100;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Valuation</h2>
       <div className="highlight"><h3>Intrinsic Value Model</h3>
         <p className="text-sm">DCF valuation with three methods: terminal NAV only, with staking cash flows, or with declared dividends. Adjust growth and discount rate.</p>
@@ -3127,7 +3127,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
   const fanData = sim.percentiles.map((p, i) => ({ year: ((i / 20) * years).toFixed(1), ...p }));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Monte Carlo</h2>
       
       {/* Highlight Box */}
@@ -5697,7 +5697,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   
   // Version 1: Comprehensive Dashboard (Best)
   const V1 = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Hero: BMNR-ETH Correlation */}
       <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(59,130,246,0.15))', borderRadius: 16, padding: 24, border: '1px solid rgba(139,92,246,0.3)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
@@ -5982,7 +5982,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   );
   
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Ethereum Ecosystem</h2>
       <V1 />
     </div>
@@ -7036,7 +7036,7 @@ const TimelineTab = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Timeline</h2>
 
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
@@ -7658,7 +7658,7 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Wall Street Coverage</h2>
       
       {/* Consensus Snapshot */}

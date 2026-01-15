@@ -1668,7 +1668,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
   const years = Object.keys(milestonesByYear).sort((a, b) => Number(b) - Number(a));
   
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Catalysts</h2>
       <div className="highlight"><h3>Catalyst Tracker</h3><p className="text-sm">Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
       <div className="card"><div className="card-title">Upcoming</div>
@@ -1718,7 +1718,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
   ];
   const coverage = [{ r: 'US Intermittent', n: 6 }, { r: 'US Continuous', n: 20 }, { r: 'US+Canada+Japan', n: 25 }, { r: 'Global (45-60)', n: 60 }].map(c => ({ ...c, pct: Math.min(100, (calc.totalSats / c.n) * 100) }));
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Constellation</h2>
       <div className="highlight"><h3>Constellation Status</h3>
         <div className="space-y-2 text-sm">
@@ -1786,7 +1786,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
 const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, setPenetrationRate, blendedARPU, setBlendedARPU, partners }) => {
   const scenarios = [0.5, 1, 2, 3, 5, 7, 10].map(p => ({ p, subs: partnerReach * (p / 100), rev: partnerReach * (p / 100) * blendedARPU * 12 * 0.5 / 1000 }));
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Subscribers</h2>
       <div className="highlight"><h3>Subscriber Analysis</h3><p className="text-sm">3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
       <div className="g4">
@@ -1818,7 +1818,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
 const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRevenue, revenueSources, contractedRevenue }) => {
   const ramp = [{ year: '2025', commercial: 0, gov: 0.05, gateway: 0.015 }, { year: '2026', commercial: 0.3, gov: 0.15, gateway: 0.05 }, { year: '2027', commercial: 1.5, gov: 0.25, gateway: 0.08 }, { year: '2028', commercial: 4.0, gov: 0.35, gateway: 0.1 }, { year: '2029', commercial: 7.0, gov: 0.45, gateway: 0.1 }, { year: '2030', commercial: 11.0, gov: 0.5, gateway: 0.1 }];
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Revenue</h2>
       <div className="highlight"><h3>Revenue Analysis</h3><p className="text-sm">Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+), Prepayments, Spectrum. $1B+ contracted.</p></div>
       <div className="card"><div className="card-title">Sources</div>{revenueSources.map((r, i) => (<div key={i} className="flex items-center justify-between p-2 border-b border-slate-800"><div><span className="font-medium text-cyan-400">{r.source}</span><span className="text-slate-400 text-sm ml-2">{r.description}</span></div><span className={`text-xs px-2 py-1 rounded ${r.status.includes('Active') ? 'bg-green-900/50 text-green-400' : 'bg-slate-700'}`}>{r.status}</span></div>))}</div>
@@ -1980,7 +1980,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
   const totalOtherSubs = otherPartners.reduce((s, p) => s + p.subs, 0);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Partners</h2>
       <div className="highlight"><h3>Partner & Spectrum Intelligence</h3>
         <div className="space-y-2 text-sm">
@@ -2218,7 +2218,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Runway</h2>
       <div className="highlight"><h3>Cash Runway — Q3 2025 Actuals</h3>
         <div className="space-y-2 text-sm">
@@ -2658,7 +2658,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
   const totalVotingShares = 272.0 + 11.2 + 78.2 * 10; // Class C has 10x voting
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Capital Structure</h2>
       <div className="highlight"><h3>Share Classes, Offerings & Dilution</h3>
         <div className="space-y-2 text-sm">
@@ -3805,7 +3805,7 @@ const DCFTab = ({ calc, currentShares, currentStockPrice, cashOnHand, totalDebt,
   }, [discount, termGrowth, evMultiple, regulatoryRisk, techRisk, competitionRisk, currentShares, currentStockPrice, cashOnHand, totalDebt]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">DCF</h2>
       <div className="highlight"><h3>DCF Valuation</h3>
         <div className="space-y-2 text-sm">
@@ -4208,7 +4208,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Monte Carlo</h2>
       
       {/* Highlight Box */}
@@ -8398,7 +8398,7 @@ const TimelineTab = () => {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Newest first
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Timeline</h2>
       
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
@@ -9044,7 +9044,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Comparables & Competitor Intelligence</h2>
 
       {/* Valuation Comparables Section */}
@@ -9189,7 +9189,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* News Timeline - Grouped by Story */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         {groupedNews.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: 40 }}>
             <p className="text-slate-400">No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
@@ -12404,7 +12404,7 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Wall Street Coverage</h2>
       
       {/* Consensus Snapshot */}
