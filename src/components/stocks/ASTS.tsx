@@ -1601,17 +1601,43 @@ const ASTSAnalysis = () => {
 
 const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterlyBurn, totalDebt, setTotalDebt, block1Sats, block2Sats, targetSats2026, contractedRevenue, partnerReach, penetrationRate }) => (
   <>
-    <h2 className="section-head">Overview</h2>
-    <div className="highlight"><h3>Investment Thesis (Dec 2025)</h3>
+    <h2 className="section-head">Investment Thesis</h2>
+    <div className="highlight"><h3>The Opportunity (Dec 2025)</h3>
       <p style={{ fontSize: '14px' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
-    <div className="g4">
+
+    <div className="g2">
+      <div className="thesis bull">
+        <h4>↑ Bull Case</h4>
+        <ul>
+          <li>BB6 proving D2D technology works at scale</li>
+          <li>53+ MNO partners with 3.2B addressable subscribers</li>
+          <li>$1B+ contracted revenue locked in</li>
+          <li>First-mover advantage in direct-to-phone satellite</li>
+          <li>Government/defense contracts (secure comms)</li>
+          <li>Regulatory moat — licensed spectrum agreements</li>
+        </ul>
+      </div>
+      <div className="thesis bear">
+        <h4>↓ Bear Case</h4>
+        <ul>
+          <li>Pre-revenue company, high execution risk</li>
+          <li>Dilution risk — $3.2B raised, may need more</li>
+          <li>Competition: Starlink/T-Mobile D2D partnership</li>
+          <li>Satellite launch/technology failure risk</li>
+          <li>Slow subscriber adoption by MNO partners</li>
+          <li>MNO partnership revenue share negotiations</li>
+        </ul>
+      </div>
+    </div>
+
+    <div className="g4" style={{ marginTop: 32 }}>
       <Card label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} sub="Equity value" color="blue" />
       <Card label="EV" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} sub="MC + Debt - Cash" color="purple" />
       <Card label="Constellation" value={`${calc.totalSats}/${targetSats2026}`} sub={`${calc.constellationProgress.toFixed(0)}%`} color="cyan" />
       <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub="~1 year runway" color="green" />
     </div>
-    <div className="g3">
+    <div className="g3" style={{ marginTop: 32 }}>
       <div className="card"><div className="card-title">Equity (Q3 2025)</div>
         <Row label="Shares" value={`${currentShares}M`} />
         <Row label="Price" value={`$${currentStockPrice}`} />
@@ -1634,7 +1660,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         <Row label="Next" value="BB7-13 Q1'26" />
       </div>
     </div>
-    <div className="card"><div className="card-title">Parameters</div>
+    <div className="card" style={{ marginTop: 32 }}><div className="card-title">Parameters</div>
       <div className="g4" style={{ marginTop: '16px' }}>
         <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
         <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
