@@ -3599,32 +3599,71 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         </ResponsiveContainer>
       </div>
 
-      {/* EXPECTED VALUE (Probability-Weighted) - Secondary */}
-      <div className="card"><div className="card-title">Probability-Weighted Expected Value</div>
-        <div className="p-4 bg-slate-800/30 rounded-lg mb-4">
-          <p className="text-sm text-slate-400 mb-3">
-            The <strong className="text-cyan-400">Expected Value</strong> is the probability-weighted average across ALL scenarios. 
-            This represents the "fair value" if you weight each outcome by its likelihood.
-          </p>
-          <div className="g3">
-            <div className="text-center">
-              <div className="text-xs text-slate-500 uppercase">Expected {targetYear} Price</div>
-              <div className="text-2xl font-bold text-purple-400">${expectedValue.futureValue.toFixed(0)}</div>
+      {/* Probability-Weighted Expected Value */}
+      <div className="highlight" style={{ marginTop: 32 }}>
+        <h3>Probability-Weighted Expected Value — {targetYear}</h3>
+        <p style={{ marginBottom: 20, color: 'var(--text2)' }}>
+          Weighted average across all scenarios based on assigned probabilities
+        </p>
+
+        <div className="g4">
+          <div className="big-stat">
+            <div className="num" style={{ color: 'var(--violet)' }}>${expectedValue.futureValue.toFixed(0)}</div>
+            <div className="lbl">Expected {targetYear} Price</div>
+          </div>
+          <div className="big-stat">
+            <div className="num mint">${expectedValue.presentValue.toFixed(0)}</div>
+            <div className="lbl">Expected PV Today</div>
+          </div>
+          <div className="big-stat">
+            <div className="num" style={{ color: expectedValue.upside >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+              {expectedValue.upside >= 0 ? '+' : ''}{expectedValue.upside.toFixed(0)}%
             </div>
-            <div className="text-center">
-              <div className="text-xs text-slate-500 uppercase">Expected PV Today</div>
-              <div className="text-2xl font-bold text-cyan-400">${expectedValue.presentValue.toFixed(0)}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-xs text-slate-500 uppercase">Expected Upside</div>
-              <div className={`text-2xl font-bold ${expectedValue.upside >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {expectedValue.upside >= 0 ? '+' : ''}{expectedValue.upside.toFixed(0)}%
-              </div>
-            </div>
+            <div className="lbl">Expected Upside</div>
+          </div>
+          <div className="big-stat">
+            <div className="num">${currentStockPrice}</div>
+            <div className="lbl">Current Price</div>
           </div>
         </div>
-        <div className="text-xs text-slate-500 font-mono">
-          = {scenarios.map(s => `(${s.prob}% × $${s.presentValue.toFixed(0)})`).join(' + ')} = ${expectedValue.presentValue.toFixed(0)}
+
+        {/* Scenario Breakdown Table */}
+        <div style={{ marginTop: 24 }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th className="r">Probability</th>
+                <th className="r">{targetYear} Price</th>
+                <th className="r">PV Today</th>
+                <th className="r">Weighted Contribution</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scenarios.map(s => {
+                const contribution = s.presentValue * (s.prob / 100);
+                return (
+                  <tr key={s.key} style={{ background: selectedScenario === s.key ? `${s.color}11` : 'transparent' }}>
+                    <td>
+                      <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
+                      {s.name}
+                    </td>
+                    <td className="r">{s.prob}%</td>
+                    <td className="r" style={{ fontFamily: 'Space Mono' }}>${s.priceInTargetYear.toFixed(0)}</td>
+                    <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>${s.presentValue.toFixed(0)}</td>
+                    <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--mint)' }}>${contribution.toFixed(0)}</td>
+                  </tr>
+                );
+              })}
+              <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
+                <td>Expected Value</td>
+                <td className="r">100%</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--violet)' }}>${expectedValue.futureValue.toFixed(0)}</td>
+                <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${expectedValue.presentValue.toFixed(0)}</td>
+                <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${expectedValue.presentValue.toFixed(0)}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
