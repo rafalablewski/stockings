@@ -8890,6 +8890,200 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // ═══════════════════════════════════════════════════════════════════════════
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // OCEANIA CRUISES - STARLINK MARITIME (NCLH subsidiary)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2024-12-04',
+      competitor: 'starlink-tmobile',
+      category: 'Coverage',
+      headline: 'Oceania Cruises completes Starlink installation across entire fleet',
+      details: [
+        'All 8 Oceania Cruises ships now Starlink-equipped',
+        'Subsidiary of Norwegian Cruise Line Holdings (NCLH)',
+        'Unlimited WiFi included in cruise fare ("Your World Included" promise)',
+        'Two complimentary logins per stateroom',
+        'Additional ships on order for 2027-2029',
+        'World\'s leading culinary- and destination-focused cruise line'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Maritime connectivity market. Different from ASTS D2D cellular - cruise ships use dedicated Starlink terminals.',
+      source: 'PR Newswire',
+      sourceUrl: 'https://www.prnewswire.com/news-releases/oceania-cruises-completes-installation-of-starlink-internet-across-entire-fleet-302322123.html',
+      storyId: 'nclh-starlink-maritime',
+      storyTitle: 'Norwegian Cruise Line Holdings Starlink Maritime'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // WESTJET - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-01',
+      competitor: 'starlink-tmobile',
+      category: 'Coverage',
+      headline: 'WestJet reaches 100th Starlink aircraft - world\'s largest 737 Starlink fleet',
+      details: [
+        'World\'s largest fleet of Boeing 737 Starlink-equipped aircraft',
+        '100 Boeing 737s now equipped with Starlink',
+        'Free for WestJet Rewards members ("WestJet Wi-Fi presented by TELUS")',
+        'Partnership with TELUS (Canadian telecom)',
+        'Rollout began February 2025',
+        'Completing all 737-800 and 737-8 MAX by end of 2025',
+        'Only airline in Canada offering Starlink on mainline fleet',
+        'Also covers Sunwing (WestJet subsidiary)'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi. Different market from ASTS D2D cellular to unmodified phones.',
+      source: 'WestJet',
+      sourceUrl: 'https://www.westjet.com/en-ca/news/2025/westjet-wifi-100th-aircraft',
+      storyId: 'westjet-starlink-aviation',
+      storyTitle: 'WestJet Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ALASKA AIRLINES - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-08-20',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Alaska Airlines selects Starlink for entire fleet - free for loyal guests',
+      details: [
+        'Entire Alaska Airlines fleet to get Starlink (regional, narrowbody, widebody)',
+        'Starting 2026, complete by 2027',
+        'Building on Hawaiian Airlines\' lead (both part of Alaska Air Group)',
+        'First U.S. airline with Starlink long-haul flights from Seattle',
+        'Free for most loyal guests via exclusive partnership',
+        'Latency <99ms, speeds up to 500 Mbps (7x faster than GEO satellite WiFi)',
+        '8,000+ Starlink satellites in orbit',
+        'Sustainability: lightest equipment, saves 800,000+ gallons fuel/year'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular.',
+      source: 'Alaska Airlines',
+      sourceUrl: 'https://newsroom.alaskaair.com/alaska-airlines-selects-starlink',
+      storyId: 'alaska-starlink-aviation',
+      storyTitle: 'Alaska Airlines Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ROYAL CARIBBEAN - STARLINK MARITIME
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2024-08-29',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Royal Caribbean extends Starlink to Juneau community - ship-to-shore pilot',
+      details: [
+        'Innovative ship-to-shore Starlink extension pilot program',
+        'Free WiFi for locals, cruise guests, and businesses in downtown Juneau',
+        'Partnership with Goldbelt Inc. (Alaska Native corporation)',
+        'Addresses internet congestion during busy cruise days',
+        'Installation at Goldbelt Tram Lower Terminal and Franklin Street businesses',
+        'Peplink access points for seamless coverage between locations',
+        'Pilot may expand to other cruise destinations'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Maritime/community connectivity. Different from ASTS D2D cellular service.',
+      source: 'Royal Caribbean Group',
+      sourceUrl: 'https://www.royalcaribbeangroup.com/news/royal-caribbean-group-debuts-free-starlink-juneau/',
+      storyId: 'royal-caribbean-starlink-maritime',
+      storyTitle: 'Royal Caribbean Starlink Maritime'
+    },
+    {
+      date: '2022-08-30',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Royal Caribbean becomes first cruise line to adopt Starlink fleet-wide',
+      details: [
+        'First in cruise industry to adopt Starlink fleet-wide',
+        'Covers 3 brands: Royal Caribbean International, Celebrity Cruises, Silversea Cruises',
+        'Plus all new vessels for each brand',
+        'Trial on Freedom of the Seas with positive feedback',
+        '"Biggest public deployment of Starlink in travel industry" at the time',
+        'Installation completed by Q1 2023',
+        '68 ships across portfolio'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Maritime connectivity market - cruise industry pioneer. Different from ASTS D2D cellular.',
+      source: 'Royal Caribbean Group',
+      sourceUrl: 'https://www.royalcaribbeangroup.com/news/royal-caribbean-group-spacex-starlink/',
+      storyId: 'royal-caribbean-starlink-maritime',
+      storyTitle: 'Royal Caribbean Starlink Maritime'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CARNIVAL CORPORATION - STARLINK MARITIME
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2024-05-14',
+      competitor: 'starlink-tmobile',
+      category: 'Coverage',
+      headline: 'Carnival Corporation completes Starlink rollout across 90+ ship global fleet',
+      details: [
+        'World\'s largest cruise company - 100% of 90+ ships now Starlink-equipped',
+        'Rollout began December 2022',
+        'Covers 9 cruise brands: Carnival Cruise Line, Princess Cruises, Holland America Line, Costa Cruises, Cunard, P&O Cruises (UK & Australia), AIDA Cruises, Seabourn',
+        'Part of multi-provider strategy - quadrupled fleetwide bandwidth since 2019',
+        '800+ ports worldwide coverage',
+        'Benefits guests, crew connectivity, and operational systems'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Maritime connectivity market. Different from ASTS D2D cellular to unmodified phones.',
+      source: 'PR Newswire',
+      sourceUrl: 'https://www.prnewswire.com/news-releases/carnival-corporation-rolls-out-spacexs-innovative-starlink-across-entire-global-fleet-302144123.html',
+      storyId: 'carnival-starlink-maritime',
+      storyTitle: 'Carnival Corporation Starlink Maritime'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // NORWEGIAN CRUISE LINE HOLDINGS - STARLINK MARITIME
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2023-04-06',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Norwegian Cruise Line Holdings to offer Starlink across fleet',
+      details: [
+        'NCLH covers 3 brands: Norwegian Cruise Line, Oceania Cruises, Regent Seven Seas Cruises',
+        'Testing began on Norwegian Breakaway',
+        'Phased rollout across entire fleet',
+        'Target: 7 additional vessels by end of 2023',
+        'Including new ships: Oceania\'s Vista, Norwegian Viva, Regent\'s Seven Seas Grandeur',
+        'Benefits guests, crew, and ship-to-shore operations'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Maritime connectivity market. Different from ASTS D2D cellular service.',
+      source: 'Norwegian Cruise Line Holdings',
+      sourceUrl: 'https://www.nclhltd.com/news-releases/norwegian-cruise-line-holdings-starlink',
+      storyId: 'nclh-starlink-maritime',
+      storyTitle: 'Norwegian Cruise Line Holdings Starlink Maritime'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ZIPAIR - STARLINK AVIATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2023-01-31',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'ZIPAIR becomes first airline in Asia to select Starlink',
+      details: [
+        'First airline in Asia to work with SpaceX Starlink',
+        'Japan Airlines subsidiary (100% JAL-owned)',
+        'Japan\'s first international LCC (low-cost carrier)',
+        'Routes: Narita → Seoul, Bangkok, Singapore, Honolulu, Los Angeles, San Jose',
+        'At time of announcement: engineering review and regulatory certification in progress',
+        'Seamless high-speed, low-latency connectivity for all passengers'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi. Asian pioneer - different market from ASTS D2D cellular.',
+      source: 'ZIPAIR Tokyo',
+      sourceUrl: 'https://www.zip-air.net/en/news/2023/starlink.html',
+      storyId: 'zipair-starlink-aviation',
+      storyTitle: 'ZIPAIR Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // KOREAN AIR / HANJIN GROUP - STARLINK AVIATION
     // ═══════════════════════════════════════════════════════════════════════════
     {
