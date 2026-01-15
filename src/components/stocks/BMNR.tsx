@@ -1760,9 +1760,15 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <h2 className="section-head">Scenarios</h2>
-      <div className="highlight"><h3>Multi-Scenario Projection</h3>
-        <p className="text-sm">Model stock price under different ETH price trajectories and market conditions. Adjust time horizon to see how outcomes compound.</p>
+      <h2 className="section-head">Scenario Simulation</h2>
+
+      <div className="highlight">
+        <h3>Multi-Year Projections</h3>
+        <p className="text-sm">
+          Model stock price under different ETH price trajectories and market conditions.
+          Bear case assumes crypto winter and NAV discount. Bull case models ETH appreciation with NAV premium.
+          Adjust time horizon to see how outcomes compound.
+        </p>
       </div>
 
       {/* Controls - Target Year and Scenario Selector */}
