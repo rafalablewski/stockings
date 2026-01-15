@@ -1569,32 +1569,32 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
   const [chartType, setChartType] = useState('holdings');
 
   // Chart data - HISTORICAL ONLY
+  // BMNR pivoted to ETH treasury in July 2025 (was BTC mining before)
   const holdingsData = [
-    { label: 'Q1\'24', value: 350000, display: '350K' },
-    { label: 'Q2\'24', value: 400000, display: '400K' },
-    { label: 'Q3\'24', value: 450000, display: '450K' },
-    { label: 'Q4\'24', value: 500000, display: '500K' },
-    { label: 'Q1\'25', value: 550000, display: '550K' },
-    { label: 'Q2\'25', value: currentETH, display: `${(currentETH / 1000).toFixed(0)}K` },
+    { label: 'Jul\'25', value: 163000, display: '163K' },
+    { label: 'Aug\'25', value: 1000000, display: '1M' },
+    { label: 'Sep\'25', value: 2000000, display: '2M' },
+    { label: 'Oct\'25', value: 3000000, display: '3M' },
+    { label: 'Dec\'25', value: 4000000, display: '4M' },
+    { label: 'Jan\'26', value: currentETH, display: `${(currentETH / 1000000).toFixed(2)}M` },
   ];
 
+  // NAV per share (only meaningful after ETH treasury pivot)
   const navData = [
-    { label: 'Q1\'24', value: 15, display: '$15' },
-    { label: 'Q2\'24', value: 18, display: '$18' },
-    { label: 'Q3\'24', value: 22, display: '$22' },
-    { label: 'Q4\'24', value: 28, display: '$28' },
-    { label: 'Q1\'25', value: 35, display: '$35' },
-    { label: 'Q2\'25', value: calc.currentNAV, display: `$${calc.currentNAV.toFixed(0)}` },
+    { label: 'Jul\'25', value: 5, display: '$5' },
+    { label: 'Aug\'25', value: 12, display: '$12' },
+    { label: 'Sep\'25', value: 18, display: '$18' },
+    { label: 'Oct\'25', value: 22, display: '$22' },
+    { label: 'Dec\'25', value: 28, display: '$28' },
+    { label: 'Jan\'26', value: calc.currentNAV, display: `$${calc.currentNAV.toFixed(0)}` },
   ];
 
-  // Dividend data - HISTORICAL ONLY
+  // Dividend data - HISTORICAL ONLY (first dividend announced Nov 2025)
   const dividendData = [
-    { label: 'Q1\'24', value: 0, display: '$0' },
-    { label: 'Q2\'24', value: 0, display: '$0' },
-    { label: 'Q3\'24', value: 0, display: '$0' },
-    { label: 'Q4\'24', value: 0, display: '$0' },
-    { label: 'Q1\'25', value: 0.01, display: '$0.01' },
-    { label: 'Q2\'25', value: 0.01, display: '$0.01' },
+    { label: 'Pre-Nov\'25', value: 0, display: '$0' },
+    { label: 'Nov\'25', value: 0.01, display: '$0.01' },
+    { label: 'Dec\'25', value: 0.01, display: '$0.01' },
+    { label: 'Jan\'26', value: quarterlyDividend, display: `$${quarterlyDividend.toFixed(2)}` },
   ];
 
   const chartData = chartType === 'holdings' ? holdingsData : chartType === 'nav' ? navData : dividendData;
