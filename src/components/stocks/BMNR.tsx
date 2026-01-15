@@ -1592,7 +1592,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
 const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethPrice, baseStakingAPY, stakingRatio, quarterlyDividend, dividendGrowthRate }) => {
   const [targetYear, setTargetYear] = useState(2028);
   const [selectedScenario, setSelectedScenario] = useState('base');
-  const TARGET_YEARS = [2026, 2027, 2028, 2029, 2030];
+  const TARGET_YEARS = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
   const timeHorizon = targetYear - 2025; // Years from now for calculations
   
   const scenarios = useMemo(() => {
