@@ -1701,6 +1701,38 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       const irr = (Math.pow(finalStockPrice / currentStockPrice, 1 / timeHorizon) - 1) * 100;
       const totalIRR = (Math.pow(totalReturnValue / currentStockPrice, 1 / timeHorizon) - 1) * 100;
       
+      // Generate year-by-year projections for this scenario
+      const projections = TARGET_YEARS.map(year => {
+        const years = year - 2025;
+        const yearEthPrice = ethPrice * Math.pow(1 + s.ethCAGR / 100, years);
+        const yearETHFromStaking = compoundETH(years, s.stakingAPY);
+        const yearDilutionShares = s.dilutionPerYear * years;
+        const yearPreNAV = (yearETHFromStaking * yearEthPrice) / totalShares;
+        const yearSalePrice = yearPreNAV * s.navMultiple * 0.95;
+        const yearProceeds = yearDilutionShares * 1e6 * yearSalePrice;
+        const yearEthBought = yearProceeds / yearEthPrice;
+        const yearFinalETH = yearETHFromStaking + yearEthBought;
+        const yearFinalShares = currentShares + yearDilutionShares;
+        const yearFinalNAV = (yearFinalETH * yearEthPrice) / (yearFinalShares * 1e6);
+        const yearStockPrice = yearFinalNAV * s.navMultiple;
+        const yearCumDividends = cumulativeDividends(years, s.divGrowth);
+        const yearTotalReturnValue = yearStockPrice + yearCumDividends;
+        const yearReturn = ((yearStockPrice / currentStockPrice) - 1) * 100;
+        const yearTotalReturn = ((yearTotalReturnValue / currentStockPrice) - 1) * 100;
+
+        return {
+          year,
+          ethPrice: yearEthPrice,
+          ethHoldings: yearFinalETH,
+          shares: yearFinalShares,
+          nav: yearFinalNAV,
+          stockPrice: yearStockPrice,
+          cumDividends: yearCumDividends,
+          priceReturn: yearReturn,
+          totalReturn: yearTotalReturn,
+        };
+      });
+
       return {
         ...s,
         ethPrice: futureEthPrice,
@@ -1721,6 +1753,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         totalIRR,
         ethPerShare: finalETH / (finalShares * 1e6),
         yieldETH: futureETHFromStaking - currentETH,
+        projections,
       };
     });
   }, [currentETH, currentShares, currentStockPrice, ethPrice, calc.currentNAV, baseStakingAPY, stakingRatio, targetYear, timeHorizon, quarterlyDividend, dividendGrowthRate]);
@@ -1783,6 +1816,106 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
           </div>
         </div>
       </div>
+
+      {/* Financial Projections — Selected Scenario */}
+      {(() => {
+        const selected = scenarios.find(s => s.id === selectedScenario);
+        if (!selected) return null;
+        return (
+          <div className="card">
+            <div className="card-title">Financial Projections — {selected.name} Scenario</div>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="tbl">
+                <thead>
+                  <tr>
+                    <th>Metric</th>
+                    <th className="r">Today</th>
+                    {selected.projections.map(p => (
+                      <th key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        {p.year}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>ETH Price</td>
+                    <td className="r">${ethPrice.toLocaleString()}</td>
+                    {selected.projections.map(p => (
+                      <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        ${p.ethPrice.toLocaleString()}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td>ETH Holdings (M)</td>
+                    <td className="r">{(currentETH / 1e6).toFixed(3)}</td>
+                    {selected.projections.map(p => (
+                      <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        {(p.ethHoldings / 1e6).toFixed(3)}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td>Shares (M)</td>
+                    <td className="r">{currentShares.toFixed(0)}</td>
+                    {selected.projections.map(p => (
+                      <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        {p.shares.toFixed(0)}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr style={{ borderTop: '1px solid var(--border)' }}>
+                    <td>NAV/Share</td>
+                    <td className="r">${calc.currentNAV.toFixed(2)}</td>
+                    {selected.projections.map(p => (
+                      <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        ${p.nav.toFixed(2)}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td>Stock Price</td>
+                    <td className="r">${currentStockPrice.toFixed(2)}</td>
+                    {selected.projections.map(p => (
+                      <td key={p.year} className="r" style={{ fontWeight: 700, color: selected.color, background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        ${p.stockPrice.toFixed(2)}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td>Cum. Dividends</td>
+                    <td className="r">$0.00</td>
+                    {selected.projections.map(p => (
+                      <td key={p.year} className="r" style={{ color: 'var(--mint)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        ${p.cumDividends.toFixed(2)}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr style={{ borderTop: '1px solid var(--border)' }}>
+                    <td>Price Return</td>
+                    <td className="r">—</td>
+                    {selected.projections.map(p => (
+                      <td key={p.year} className="r" style={{ color: p.priceReturn >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        {p.priceReturn >= 0 ? '+' : ''}{p.priceReturn.toFixed(0)}%
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td>Total Return</td>
+                    <td className="r">—</td>
+                    {selected.projections.map(p => (
+                      <td key={p.year} className="r" style={{ fontWeight: 700, color: p.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        {p.totalReturn >= 0 ? '+' : ''}{p.totalReturn.toFixed(0)}%
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Scenario Cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
