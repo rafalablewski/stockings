@@ -534,7 +534,7 @@ const SCENARIOS = [
 ];
 
 // ===== COMPREHENSIVE SCENARIO SIMULATION =====
-const TARGET_YEARS = [2025, 2026, 2027, 2028, 2029, 2030];
+const TARGET_YEARS = [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
 
 interface ScenarioProjection {
   year: number;
@@ -592,6 +592,11 @@ const SCENARIO_SIMULATIONS: Record<string, ScenarioDetail> = {
       { year: 2028, usdc: 25, marketShare: 12, reserveRate: 1.5, grossRevenue: 0.4, distributionCost: 0.28, netRevenue: 0.12, rldcMargin: 15, ebitda: -0.10, netIncome: -0.20, fcf: -0.18, exitMultiple: 1, evImplied: 0.4, equityValue: 0.2, sharePrice: 1 },
       { year: 2029, usdc: 20, marketShare: 10, reserveRate: 1.5, grossRevenue: 0.3, distributionCost: 0.21, netRevenue: 0.09, rldcMargin: 12, ebitda: -0.12, netIncome: -0.22, fcf: -0.20, exitMultiple: 0.8, evImplied: 0.24, equityValue: 0.1, sharePrice: 0.5 },
       { year: 2030, usdc: 15, marketShare: 8, reserveRate: 1.5, grossRevenue: 0.23, distributionCost: 0.16, netRevenue: 0.07, rldcMargin: 10, ebitda: -0.15, netIncome: -0.25, fcf: -0.22, exitMultiple: 0.5, evImplied: 0.12, equityValue: 0.05, sharePrice: 0.2 },
+      { year: 2031, usdc: 12, marketShare: 6, reserveRate: 1.5, grossRevenue: 0.18, distributionCost: 0.13, netRevenue: 0.05, rldcMargin: 8, ebitda: -0.18, netIncome: -0.28, fcf: -0.25, exitMultiple: 0.5, evImplied: 0.09, equityValue: 0.02, sharePrice: 0.1 },
+      { year: 2032, usdc: 10, marketShare: 5, reserveRate: 1.5, grossRevenue: 0.15, distributionCost: 0.11, netRevenue: 0.04, rldcMargin: 6, ebitda: -0.20, netIncome: -0.30, fcf: -0.27, exitMultiple: 0.5, evImplied: 0.08, equityValue: 0.01, sharePrice: 0.05 },
+      { year: 2033, usdc: 8, marketShare: 4, reserveRate: 1.5, grossRevenue: 0.12, distributionCost: 0.09, netRevenue: 0.03, rldcMargin: 5, ebitda: -0.22, netIncome: -0.32, fcf: -0.29, exitMultiple: 0.5, evImplied: 0.06, equityValue: 0.01, sharePrice: 0.03 },
+      { year: 2034, usdc: 6, marketShare: 3, reserveRate: 1.5, grossRevenue: 0.09, distributionCost: 0.07, netRevenue: 0.02, rldcMargin: 4, ebitda: -0.24, netIncome: -0.34, fcf: -0.31, exitMultiple: 0.5, evImplied: 0.05, equityValue: 0.01, sharePrice: 0.02 },
+      { year: 2035, usdc: 5, marketShare: 2, reserveRate: 1.5, grossRevenue: 0.08, distributionCost: 0.06, netRevenue: 0.02, rldcMargin: 3, ebitda: -0.25, netIncome: -0.35, fcf: -0.32, exitMultiple: 0.5, evImplied: 0.04, equityValue: 0.01, sharePrice: 0.01 },
     ]
   },
   bear: {
@@ -619,6 +624,11 @@ const SCENARIO_SIMULATIONS: Record<string, ScenarioDetail> = {
       { year: 2028, usdc: 105, marketShare: 22, reserveRate: 2.5, grossRevenue: 2.6, distributionCost: 1.4, netRevenue: 1.2, rldcMargin: 33, ebitda: 0.30, netIncome: 0.16, fcf: 0.14, exitMultiple: 5, evImplied: 13, equityValue: 12, sharePrice: 52 },
       { year: 2029, usdc: 115, marketShare: 21, reserveRate: 2.5, grossRevenue: 2.9, distributionCost: 1.6, netRevenue: 1.3, rldcMargin: 32, ebitda: 0.32, netIncome: 0.17, fcf: 0.15, exitMultiple: 5, evImplied: 14.5, equityValue: 13.5, sharePrice: 59 },
       { year: 2030, usdc: 125, marketShare: 20, reserveRate: 2.5, grossRevenue: 3.1, distributionCost: 1.7, netRevenue: 1.4, rldcMargin: 31, ebitda: 0.35, netIncome: 0.19, fcf: 0.17, exitMultiple: 5, evImplied: 15.5, equityValue: 14.5, sharePrice: 63 },
+      { year: 2031, usdc: 135, marketShare: 19, reserveRate: 2.5, grossRevenue: 3.4, distributionCost: 1.9, netRevenue: 1.5, rldcMargin: 30, ebitda: 0.38, netIncome: 0.21, fcf: 0.19, exitMultiple: 5, evImplied: 17, equityValue: 16, sharePrice: 70 },
+      { year: 2032, usdc: 145, marketShare: 18, reserveRate: 2.5, grossRevenue: 3.6, distributionCost: 2.0, netRevenue: 1.6, rldcMargin: 30, ebitda: 0.41, netIncome: 0.23, fcf: 0.21, exitMultiple: 5, evImplied: 18, equityValue: 17, sharePrice: 74 },
+      { year: 2033, usdc: 155, marketShare: 17, reserveRate: 2.5, grossRevenue: 3.9, distributionCost: 2.2, netRevenue: 1.7, rldcMargin: 29, ebitda: 0.44, netIncome: 0.25, fcf: 0.23, exitMultiple: 5, evImplied: 19.5, equityValue: 18.5, sharePrice: 81 },
+      { year: 2034, usdc: 165, marketShare: 16, reserveRate: 2.5, grossRevenue: 4.1, distributionCost: 2.3, netRevenue: 1.8, rldcMargin: 29, ebitda: 0.47, netIncome: 0.27, fcf: 0.24, exitMultiple: 5, evImplied: 20.5, equityValue: 19.5, sharePrice: 85 },
+      { year: 2035, usdc: 175, marketShare: 15, reserveRate: 2.5, grossRevenue: 4.4, distributionCost: 2.5, netRevenue: 1.9, rldcMargin: 28, ebitda: 0.50, netIncome: 0.29, fcf: 0.26, exitMultiple: 5, evImplied: 22, equityValue: 21, sharePrice: 92 },
     ]
   },
   base: {
@@ -650,6 +660,11 @@ const SCENARIO_SIMULATIONS: Record<string, ScenarioDetail> = {
       { year: 2028, usdc: 185, marketShare: 29, reserveRate: 3.0, grossRevenue: 5.55, distributionCost: 2.5, netRevenue: 3.05, rldcMargin: 42, ebitda: 0.95, netIncome: 0.62, fcf: 0.56, exitMultiple: 9, evImplied: 50, equityValue: 48, sharePrice: 210 },
       { year: 2029, usdc: 230, marketShare: 28, reserveRate: 3.0, grossRevenue: 6.9, distributionCost: 3.1, netRevenue: 3.8, rldcMargin: 43, ebitda: 1.25, netIncome: 0.82, fcf: 0.74, exitMultiple: 9, evImplied: 62.1, equityValue: 60, sharePrice: 262 },
       { year: 2030, usdc: 280, marketShare: 28, reserveRate: 3.0, grossRevenue: 8.4, distributionCost: 3.8, netRevenue: 4.6, rldcMargin: 44, ebitda: 1.55, netIncome: 1.02, fcf: 0.92, exitMultiple: 10, evImplied: 84, equityValue: 82, sharePrice: 358 },
+      { year: 2031, usdc: 340, marketShare: 28, reserveRate: 3.0, grossRevenue: 10.2, distributionCost: 4.6, netRevenue: 5.6, rldcMargin: 45, ebitda: 1.95, netIncome: 1.30, fcf: 1.17, exitMultiple: 10, evImplied: 102, equityValue: 100, sharePrice: 437 },
+      { year: 2032, usdc: 410, marketShare: 28, reserveRate: 3.0, grossRevenue: 12.3, distributionCost: 5.5, netRevenue: 6.8, rldcMargin: 46, ebitda: 2.40, netIncome: 1.62, fcf: 1.46, exitMultiple: 10, evImplied: 123, equityValue: 121, sharePrice: 528 },
+      { year: 2033, usdc: 490, marketShare: 28, reserveRate: 3.0, grossRevenue: 14.7, distributionCost: 6.6, netRevenue: 8.1, rldcMargin: 47, ebitda: 2.92, netIncome: 1.98, fcf: 1.78, exitMultiple: 10, evImplied: 147, equityValue: 145, sharePrice: 633 },
+      { year: 2034, usdc: 580, marketShare: 28, reserveRate: 3.0, grossRevenue: 17.4, distributionCost: 7.8, netRevenue: 9.6, rldcMargin: 48, ebitda: 3.52, netIncome: 2.40, fcf: 2.16, exitMultiple: 10, evImplied: 174, equityValue: 172, sharePrice: 751 },
+      { year: 2035, usdc: 680, marketShare: 28, reserveRate: 3.0, grossRevenue: 20.4, distributionCost: 9.2, netRevenue: 11.2, rldcMargin: 49, ebitda: 4.20, netIncome: 2.88, fcf: 2.59, exitMultiple: 10, evImplied: 204, equityValue: 202, sharePrice: 882 },
     ]
   },
   bull: {
@@ -683,6 +698,11 @@ const SCENARIO_SIMULATIONS: Record<string, ScenarioDetail> = {
       { year: 2028, usdc: 280, marketShare: 36, reserveRate: 3.5, grossRevenue: 9.8, distributionCost: 3.4, netRevenue: 6.4, rldcMargin: 48, ebitda: 2.10, netIncome: 1.40, fcf: 1.26, exitMultiple: 14, evImplied: 137.2, equityValue: 135, sharePrice: 590 },
       { year: 2029, usdc: 380, marketShare: 37, reserveRate: 3.5, grossRevenue: 13.3, distributionCost: 4.7, netRevenue: 8.6, rldcMargin: 49, ebitda: 2.90, netIncome: 1.95, fcf: 1.76, exitMultiple: 14, evImplied: 186.2, equityValue: 184, sharePrice: 804 },
       { year: 2030, usdc: 500, marketShare: 38, reserveRate: 3.5, grossRevenue: 17.5, distributionCost: 6.1, netRevenue: 11.4, rldcMargin: 50, ebitda: 4.00, netIncome: 2.70, fcf: 2.43, exitMultiple: 15, evImplied: 262.5, equityValue: 260, sharePrice: 1136 },
+      { year: 2031, usdc: 640, marketShare: 39, reserveRate: 3.5, grossRevenue: 22.4, distributionCost: 7.8, netRevenue: 14.6, rldcMargin: 51, ebitda: 5.30, netIncome: 3.60, fcf: 3.24, exitMultiple: 15, evImplied: 336, equityValue: 334, sharePrice: 1459 },
+      { year: 2032, usdc: 800, marketShare: 40, reserveRate: 3.5, grossRevenue: 28.0, distributionCost: 9.5, netRevenue: 18.5, rldcMargin: 52, ebitda: 6.90, netIncome: 4.70, fcf: 4.23, exitMultiple: 15, evImplied: 420, equityValue: 418, sharePrice: 1826 },
+      { year: 2033, usdc: 980, marketShare: 41, reserveRate: 3.5, grossRevenue: 34.3, distributionCost: 11.3, netRevenue: 23.0, rldcMargin: 53, ebitda: 8.80, netIncome: 6.00, fcf: 5.40, exitMultiple: 15, evImplied: 515, equityValue: 513, sharePrice: 2240 },
+      { year: 2034, usdc: 1180, marketShare: 42, reserveRate: 3.5, grossRevenue: 41.3, distributionCost: 13.2, netRevenue: 28.1, rldcMargin: 54, ebitda: 11.00, netIncome: 7.50, fcf: 6.75, exitMultiple: 15, evImplied: 620, equityValue: 618, sharePrice: 2699 },
+      { year: 2035, usdc: 1400, marketShare: 43, reserveRate: 3.5, grossRevenue: 49.0, distributionCost: 15.2, netRevenue: 33.8, rldcMargin: 55, ebitda: 13.50, netIncome: 9.20, fcf: 8.28, exitMultiple: 15, evImplied: 735, equityValue: 733, sharePrice: 3201 },
     ]
   },
   moon: {
@@ -718,6 +738,11 @@ const SCENARIO_SIMULATIONS: Record<string, ScenarioDetail> = {
       { year: 2028, usdc: 500, marketShare: 45, reserveRate: 3.75, grossRevenue: 18.75, distributionCost: 5.6, netRevenue: 13.15, rldcMargin: 55, ebitda: 5.20, netIncome: 3.55, fcf: 3.20, exitMultiple: 17, evImplied: 318.8, equityValue: 316, sharePrice: 1381 },
       { year: 2029, usdc: 750, marketShare: 47, reserveRate: 3.5, grossRevenue: 26.25, distributionCost: 7.0, netRevenue: 19.25, rldcMargin: 57, ebitda: 8.00, netIncome: 5.50, fcf: 4.95, exitMultiple: 18, evImplied: 472.5, equityValue: 470, sharePrice: 2054 },
       { year: 2030, usdc: 1000, marketShare: 48, reserveRate: 3.5, grossRevenue: 35.0, distributionCost: 8.8, netRevenue: 26.2, rldcMargin: 58, ebitda: 11.5, netIncome: 7.9, fcf: 7.1, exitMultiple: 18, evImplied: 630, equityValue: 628, sharePrice: 2744 },
+      { year: 2031, usdc: 1300, marketShare: 49, reserveRate: 3.5, grossRevenue: 45.5, distributionCost: 10.9, netRevenue: 34.6, rldcMargin: 59, ebitda: 15.5, netIncome: 10.7, fcf: 9.6, exitMultiple: 18, evImplied: 819, equityValue: 817, sharePrice: 3568 },
+      { year: 2032, usdc: 1650, marketShare: 50, reserveRate: 3.5, grossRevenue: 57.8, distributionCost: 13.3, netRevenue: 44.5, rldcMargin: 60, ebitda: 20.3, netIncome: 14.0, fcf: 12.6, exitMultiple: 18, evImplied: 1040, equityValue: 1038, sharePrice: 4533 },
+      { year: 2033, usdc: 2000, marketShare: 51, reserveRate: 3.5, grossRevenue: 70.0, distributionCost: 15.4, netRevenue: 54.6, rldcMargin: 61, ebitda: 25.5, netIncome: 17.6, fcf: 15.8, exitMultiple: 18, evImplied: 1260, equityValue: 1258, sharePrice: 5493 },
+      { year: 2034, usdc: 2400, marketShare: 52, reserveRate: 3.5, grossRevenue: 84.0, distributionCost: 17.6, netRevenue: 66.4, rldcMargin: 62, ebitda: 31.5, netIncome: 21.8, fcf: 19.6, exitMultiple: 18, evImplied: 1512, equityValue: 1510, sharePrice: 6593 },
+      { year: 2035, usdc: 2850, marketShare: 53, reserveRate: 3.5, grossRevenue: 99.8, distributionCost: 20.0, netRevenue: 79.8, rldcMargin: 63, ebitda: 38.5, netIncome: 26.6, fcf: 23.9, exitMultiple: 18, evImplied: 1796, equityValue: 1794, sharePrice: 7834 },
     ]
   }
 };
