@@ -2767,7 +2767,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
     { date: '2024-01-19', event: 'Equity Raise', type: 'Private', amount: 100, price: 3.10, shares: 32.3, notes: 'Block 1 satellite funding' },
     { date: '2024-01-18', event: '2034 Strategic Converts', type: 'Convertible', amount: 148.5, price: 5.76, shares: 25.8, notes: 'AT&T, Google, Vodafone, Verizon. Force-converted Jan 2025.' },
     { date: '2025-01-08', event: 'Jan 2025 Convertible', type: 'Convertible', amount: 460, price: 26.58, shares: 17.3, notes: '4.25% due 2032. $410M repurchased for equity, $50M remains.' },
-    { date: '2025-07-07', event: 'Jul 2025 Convertible', type: 'Convertible', amount: 575, price: 120.12, shares: 4.8, notes: '4.25% due 2032. Outstanding as debt.' },
+    { date: '2025-07-07', event: 'Jul 2025 Convertible', type: 'Convertible', amount: 575, price: 120.12, shares: 4.8, notes: '2.375% due 2032. Outstanding as debt.' },
     { date: '2025-10-14', event: 'Oct 2025 Convertible', type: 'Convertible', amount: 1150, price: 96.30, shares: 11.9, notes: '2.0% due 2036. Best terms in years. Outstanding as debt.' },
     { date: '2025-09-30', event: 'Q3 2025 ATM Program', type: 'ATM', amount: 287, price: null, shares: null, notes: 'At-the-market sales. Facility terminated.' },
   ];
@@ -2815,7 +2815,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <div className="highlight">
         <h3>Share Classes, Offerings & Dilution</h3>
         <p className="text-sm">
-          Three-class structure with Abel Avellan controlling ~73% of voting power via Class C (10x votes).
+          Three-class structure with Abel Avellan controlling ~75% of voting power via Class C (10x votes).
           ~$3.6B total raised since SPAC (equity + converts). Fully funded for 100+ satellites.
           Class A shares grew from 5.75M (SPAC) to 272M (Q3 2025).
         </p>
