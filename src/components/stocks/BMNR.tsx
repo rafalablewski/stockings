@@ -1564,7 +1564,7 @@ const BMNRDilutionAnalysis = () => {
 const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend }) => {
   const [chartType, setChartType] = useState('holdings');
 
-  // Chart data
+  // Chart data - HISTORICAL ONLY
   const holdingsData = [
     { label: 'Q1\'24', value: 350000, display: '350K' },
     { label: 'Q2\'24', value: 400000, display: '400K' },
@@ -1583,13 +1583,14 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     { label: 'Q2\'25', value: calc.currentNAV, display: `$${calc.currentNAV.toFixed(0)}` },
   ];
 
+  // Dividend data - HISTORICAL ONLY
   const dividendData = [
+    { label: 'Q1\'24', value: 0, display: '$0' },
+    { label: 'Q2\'24', value: 0, display: '$0' },
+    { label: 'Q3\'24', value: 0, display: '$0' },
     { label: 'Q4\'24', value: 0, display: '$0' },
     { label: 'Q1\'25', value: 0.01, display: '$0.01' },
     { label: 'Q2\'25', value: 0.01, display: '$0.01' },
-    { label: 'Q3\'25E', value: 0.02, display: '$0.02' },
-    { label: 'Q4\'25E', value: 0.02, display: '$0.02' },
-    { label: '2026E', value: 0.03, display: '$0.03' },
   ];
 
   const chartData = chartType === 'holdings' ? holdingsData : chartType === 'nav' ? navData : dividendData;
