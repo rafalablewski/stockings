@@ -1590,8 +1590,10 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
 
 // SCENARIOS TAB - Comprehensive scenario analysis
 const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethPrice, baseStakingAPY, stakingRatio, quarterlyDividend, dividendGrowthRate }) => {
-  const [timeHorizon, setTimeHorizon] = useState(3);
+  const [targetYear, setTargetYear] = useState(2028);
   const [selectedScenario, setSelectedScenario] = useState('base');
+  const TARGET_YEARS = [2026, 2027, 2028, 2029, 2030];
+  const timeHorizon = targetYear - 2025; // Years from now for calculations
   
   const scenarios = useMemo(() => {
     const totalShares = currentShares * 1e6;
@@ -1613,7 +1615,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
     // Scenario definitions with ANNUALIZED growth rates - time horizon affects final price
     const defs = [
       {
-        id: 'worst', name: 'Worst Case', color: 'red', emoji: '💀',
+        id: 'worst', name: 'Worst Case', color: '#ef4444', emoji: '💀',
         ethCAGR: -25, navMultiple: 0.5, dilutionPerYear: 400, stakingAPY: 2.0, divGrowth: -50, prob: 5,
         description: 'Crypto winter: -25%/yr ETH, forced dilution, dividend cut',
         assumptions: ['Extended crypto winter with regulatory crackdowns', 'ETH loses market share to competing L1s', 'Forced share issuance at deep discount to NAV', 'Dividend suspended or significantly cut'],
@@ -1621,7 +1623,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         risks: ['Liquidation of ETH holdings at depressed prices', 'NAV discount widens to 50%+', 'Potential delisting or restructuring']
       },
       {
-        id: 'bear', name: 'Bear Case', color: 'orange', emoji: '🐻',
+        id: 'bear', name: 'Bear Case', color: '#f97316', emoji: '🐻',
         ethCAGR: -10, navMultiple: 0.75, dilutionPerYear: 250, stakingAPY: 3.0, divGrowth: 0, prob: 15,
         description: 'Prolonged downturn: -10%/yr ETH, dividend frozen',
         assumptions: ['Multi-year crypto bear market', 'Staking yields compressed due to validator oversupply', 'Limited institutional adoption', 'Dividend frozen at current level'],
@@ -1629,7 +1631,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         risks: ['Continued NAV discount', 'Opportunity cost vs direct ETH', 'Management fee drag']
       },
       {
-        id: 'base', name: 'Base Case', color: 'blue', emoji: '📊',
+        id: 'base', name: 'Base Case', color: '#3b82f6', emoji: '📊',
         ethCAGR: 15, navMultiple: 1.0, dilutionPerYear: 150, stakingAPY: baseStakingAPY, divGrowth: dividendGrowthRate, prob: 35,
         description: 'Steady growth: +15%/yr ETH, dividend grows with staking',
         assumptions: ['Gradual ETH adoption and price appreciation', 'Staking yields remain stable at 3-4%', 'Moderate dilution for strategic acquisitions', 'Dividend grows in line with ETH yield'],
@@ -1637,7 +1639,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         risks: ['Competition from ETH ETFs', 'Regulatory uncertainty']
       },
       {
-        id: 'mgmt', name: 'Management Case', color: 'purple', emoji: '🎯',
+        id: 'mgmt', name: 'Management Case', color: '#a855f7', emoji: '🎯',
         ethCAGR: 35, navMultiple: 1.25, dilutionPerYear: 400, stakingAPY: baseStakingAPY + 0.5, divGrowth: dividendGrowthRate + 10, prob: 25,
         description: 'Alchemy of 5%: +35%/yr ETH, accelerating dividends',
         assumptions: ['Management achieves "5% of ETH supply" target', 'Accretive dilution at NAV premium', 'Enhanced staking yields through restaking', 'Dividend growth accelerates with scale'],
@@ -1645,7 +1647,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         risks: ['Execution risk on aggressive accumulation', 'NAV premium compression']
       },
       {
-        id: 'bull', name: 'Bull Case', color: 'green', emoji: '🐂',
+        id: 'bull', name: 'Bull Case', color: '#22c55e', emoji: '🐂',
         ethCAGR: 50, navMultiple: 1.5, dilutionPerYear: 500, stakingAPY: baseStakingAPY + 1.0, divGrowth: dividendGrowthRate + 20, prob: 15,
         description: 'Bull market: +50%/yr ETH, strong dividend growth',
         assumptions: ['Crypto bull market with ETH outperformance', 'Institutional FOMO drives NAV premium', 'Staking yields enhanced by MEV and restaking', 'Aggressive dividend increases'],
@@ -1653,7 +1655,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         risks: ['Volatility and drawdown risk', 'Overextended valuations']
       },
       {
-        id: 'superbull', name: 'Super Bull', color: 'emerald', emoji: '🚀',
+        id: 'superbull', name: 'Super Bull', color: '#10b981', emoji: '🚀',
         ethCAGR: 75, navMultiple: 2.0, dilutionPerYear: 700, stakingAPY: baseStakingAPY + 1.5, divGrowth: dividendGrowthRate + 30, prob: 5,
         description: 'Euphoria: +75%/yr ETH, aggressive dividend increases',
         assumptions: ['Parabolic ETH price appreciation', 'BMNR becomes premier ETH accumulation vehicle', 'Massive NAV premium as scarcity narrative dominates', 'Dividend yield attracts income investors'],
@@ -1721,16 +1723,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         yieldETH: futureETHFromStaking - currentETH,
       };
     });
-  }, [currentETH, currentShares, currentStockPrice, ethPrice, calc.currentNAV, baseStakingAPY, stakingRatio, timeHorizon, quarterlyDividend, dividendGrowthRate]);
-
-  const colorClasses = {
-    red: 'bg-red-900/30 border-red-700/50 text-red-400',
-    orange: 'bg-orange-900/30 border-orange-700/50 text-orange-400',
-    blue: 'bg-blue-900/30 border-blue-700/50 text-blue-400',
-    purple: 'bg-purple-900/30 border-purple-700/50 text-purple-400',
-    green: 'bg-green-900/30 border-green-700/50 text-green-400',
-    emerald: 'bg-emerald-900/30 border-emerald-700/50 text-emerald-400',
-  };
+  }, [currentETH, currentShares, currentStockPrice, ethPrice, calc.currentNAV, baseStakingAPY, stakingRatio, targetYear, timeHorizon, quarterlyDividend, dividendGrowthRate]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -1739,111 +1732,115 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         <p className="text-sm">Model stock price under different ETH price trajectories and market conditions. Adjust time horizon to see how outcomes compound.</p>
       </div>
 
-      <div className="card"><div className="card-title">Time Horizon</div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {[1, 2, 3, 5, 10].map(y => (
-            <button
-              key={y}
-              onClick={() => setTimeHorizon(y)}
-              style={{
-                padding: '12px 20px',
-                borderRadius: 8,
-                border: timeHorizon === y ? '2px solid var(--mint)' : '1px solid var(--border)',
-                background: timeHorizon === y ? 'rgba(0,212,170,0.15)' : 'var(--surface2)',
-                color: timeHorizon === y ? 'var(--mint)' : 'var(--text2)',
-                cursor: 'pointer',
-                fontWeight: timeHorizon === y ? 700 : 400,
-                fontFamily: 'Space Mono',
-                fontSize: 16,
-              }}
-            >
-              {y}Y
-            </button>
-          ))}
+      {/* Controls - Target Year and Scenario Selector */}
+      <div className="g2" style={{ marginBottom: 24 }}>
+        <div className="card">
+          <div className="card-title">Target Year</div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {TARGET_YEARS.map(year => (
+              <button
+                key={year}
+                onClick={() => setTargetYear(year)}
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: 8,
+                  border: targetYear === year ? '2px solid var(--mint)' : '1px solid var(--border)',
+                  background: targetYear === year ? 'rgba(0,212,170,0.15)' : 'var(--surface2)',
+                  color: targetYear === year ? 'var(--mint)' : 'var(--text2)',
+                  cursor: 'pointer',
+                  fontWeight: targetYear === year ? 700 : 400,
+                  fontFamily: 'Space Mono',
+                  fontSize: 16,
+                }}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Scenario Selector */}
-      <div className="card"><div className="card-title">Select Scenario</div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {scenarios.map(s => (
-            <button
-              key={s.id}
-              onClick={() => setSelectedScenario(s.id)}
-              style={{
-                padding: '12px 16px',
-                borderRadius: 8,
-                border: selectedScenario === s.id ? `2px solid ${s.color === 'red' ? '#ef4444' : s.color === 'orange' ? '#f97316' : s.color === 'blue' ? '#3b82f6' : s.color === 'purple' ? '#a855f7' : s.color === 'green' ? '#22c55e' : '#10b981'}` : '1px solid var(--border)',
-                background: selectedScenario === s.id ? `${s.color === 'red' ? '#ef4444' : s.color === 'orange' ? '#f97316' : s.color === 'blue' ? '#3b82f6' : s.color === 'purple' ? '#a855f7' : s.color === 'green' ? '#22c55e' : '#10b981'}22` : 'var(--surface2)',
-                color: selectedScenario === s.id ? (s.color === 'red' ? '#ef4444' : s.color === 'orange' ? '#f97316' : s.color === 'blue' ? '#3b82f6' : s.color === 'purple' ? '#a855f7' : s.color === 'green' ? '#22c55e' : '#10b981') : 'var(--text2)',
-                cursor: 'pointer',
-                fontWeight: selectedScenario === s.id ? 700 : 400,
-                fontSize: 14,
-                fontFamily: 'inherit',
-              }}
-            >
-              {s.name} ({s.prob}%)
-            </button>
-          ))}
+        <div className="card">
+          <div className="card-title">Scenario</div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {scenarios.map(s => (
+              <button
+                key={s.id}
+                onClick={() => setSelectedScenario(s.id)}
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: 8,
+                  border: selectedScenario === s.id ? `2px solid ${s.color}` : '1px solid var(--border)',
+                  background: selectedScenario === s.id ? `${s.color}22` : 'var(--surface2)',
+                  color: selectedScenario === s.id ? s.color : 'var(--text2)',
+                  cursor: 'pointer',
+                  fontWeight: selectedScenario === s.id ? 700 : 400,
+                  fontSize: 14,
+                }}
+              >
+                {s.name} ({s.prob}%)
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Scenario Cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {scenarios.map(s => (
-          <div key={s.id} className={`${colorClasses[s.color].split(' ').slice(0, 2).join(' ')} border rounded-xl p-4`}>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">{s.emoji}</span>
-              <h3 className={`font-bold text-lg ${colorClasses[s.color].split(' ')[2]}`}>{s.name}</h3>
+          <div key={s.id} style={{ background: `${s.color}15`, border: `1px solid ${s.color}40`, borderRadius: 12, padding: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <span style={{ fontSize: 24 }}>{s.emoji}</span>
+              <h3 style={{ fontWeight: 700, fontSize: 18, color: s.color }}>{s.name}</h3>
             </div>
-            <p className="text-xs text-slate-400 mb-4">{s.description}</p>
-            
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-slate-400">ETH Price</span><span className="font-medium">${s.ethPrice.toLocaleString()} <span className={s.ethReturn >= 0 ? 'text-green-400' : 'text-red-400'}>({s.ethReturn >= 0 ? '+' : ''}{s.ethReturn.toFixed(0)}%)</span></span></div>
-              <div className="flex justify-between"><span className="text-slate-400">NAV Multiple</span><span className="font-medium">{s.navMultiple.toFixed(2)}x</span></div>
-              <div className="flex justify-between"><span className="text-slate-400">Dilution</span><span className="font-medium">+{s.dilutionShares.toLocaleString()}M shares</span></div>
-              <div className="border-t border-slate-700 my-2" />
-              <div className="flex justify-between"><span className="text-slate-400">Final NAV</span><span className="font-bold">${s.finalNAV.toFixed(2)}</span></div>
-              <div className="flex justify-between"><span className="text-slate-400">Stock Price</span><span className={`font-bold ${colorClasses[s.color].split(' ')[2]}`}>${s.finalStockPrice.toFixed(2)}</span></div>
-              <div className="flex justify-between"><span className="text-slate-400">Cum. Dividends</span><span className="font-medium text-emerald-400">${s.totalDividends.toFixed(2)}</span></div>
-              <div className="border-t border-slate-700 my-2" />
-              <div className="flex justify-between"><span className="text-slate-400">Price Return</span><span className={`font-medium ${s.stockReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>{s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%</span></div>
-              <div className="flex justify-between"><span className="text-slate-400">Total Return</span><span className={`font-bold ${s.totalReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>{s.totalReturn >= 0 ? '+' : ''}{s.totalReturn.toFixed(0)}%</span></div>
-              <div className="flex justify-between"><span className="text-slate-400">Total IRR</span><span className={`font-bold ${s.totalIRR >= 0 ? 'text-green-400' : 'text-red-400'}`}>{s.totalIRR >= 0 ? '+' : ''}{s.totalIRR.toFixed(1)}%</span></div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 16 }}>{s.description}</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>ETH Price</span><span style={{ fontWeight: 500 }}>${s.ethPrice.toLocaleString()} <span style={{ color: s.ethReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>({s.ethReturn >= 0 ? '+' : ''}{s.ethReturn.toFixed(0)}%)</span></span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>NAV Multiple</span><span style={{ fontWeight: 500 }}>{s.navMultiple.toFixed(2)}x</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Dilution</span><span style={{ fontWeight: 500 }}>+{s.dilutionShares.toLocaleString()}M shares</span></div>
+              <div style={{ borderTop: '1px solid var(--border)', margin: '8px 0' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Final NAV</span><span style={{ fontWeight: 700 }}>${s.finalNAV.toFixed(2)}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Stock Price</span><span style={{ fontWeight: 700, color: s.color }}>${s.finalStockPrice.toFixed(2)}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Cum. Dividends</span><span style={{ fontWeight: 500, color: 'var(--mint)' }}>${s.totalDividends.toFixed(2)}</span></div>
+              <div style={{ borderTop: '1px solid var(--border)', margin: '8px 0' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Price Return</span><span style={{ fontWeight: 500, color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Total Return</span><span style={{ fontWeight: 700, color: s.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalReturn >= 0 ? '+' : ''}{s.totalReturn.toFixed(0)}%</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Total IRR</span><span style={{ fontWeight: 700, color: s.totalIRR >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalIRR >= 0 ? '+' : ''}{s.totalIRR.toFixed(1)}%</span></div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Comparison Table */}
-      <div className="card"><div className="card-title">Scenario Comparison</div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 24 }}>
+        <div className="card-title">All Scenarios — {targetYear} Comparison</div>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
             <thead>
-              <tr className="text-slate-400 text-xs border-b border-slate-700">
-                <th className="text-left py-3">Scenario</th>
-                <th className="text-right py-3">ETH Price</th>
-                <th className="text-right py-3">Final ETH</th>
-                <th className="text-right py-3">NAV</th>
-                <th className="text-right py-3">Stock</th>
-                <th className="text-right py-3">Dividends</th>
-                <th className="text-right py-3">Price Ret</th>
-                <th className="text-right py-3">Total Ret</th>
-                <th className="text-right py-3">Total IRR</th>
+              <tr>
+                <th>Scenario</th>
+                <th className="r">ETH Price</th>
+                <th className="r">Final ETH</th>
+                <th className="r">NAV</th>
+                <th className="r">Stock</th>
+                <th className="r">Dividends</th>
+                <th className="r">Price Ret</th>
+                <th className="r">Total Ret</th>
+                <th className="r">Total IRR</th>
               </tr>
             </thead>
             <tbody>
               {scenarios.map(s => (
-                <tr key={s.id} className="border-t border-slate-800">
-                  <td className="py-3"><span className="mr-2">{s.emoji}</span>{s.name}</td>
-                  <td className="py-3 text-right">${s.ethPrice.toLocaleString()}</td>
-                  <td className="py-3 text-right">{(s.futureETH / 1e6).toFixed(2)}M</td>
-                  <td className="py-3 text-right">${s.finalNAV.toFixed(2)}</td>
-                  <td className={`py-3 text-right font-bold ${colorClasses[s.color].split(' ')[2]}`}>${s.finalStockPrice.toFixed(2)}</td>
-                  <td className="py-3 text-right text-emerald-400">${s.totalDividends.toFixed(2)}</td>
-                  <td className={`py-3 text-right font-medium ${s.stockReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>{s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%</td>
-                  <td className={`py-3 text-right font-bold ${s.totalReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>{s.totalReturn >= 0 ? '+' : ''}{s.totalReturn.toFixed(0)}%</td>
-                  <td className={`py-3 text-right font-medium ${s.totalIRR >= 0 ? 'text-green-400' : 'text-red-400'}`}>{s.totalIRR >= 0 ? '+' : ''}{s.totalIRR.toFixed(1)}%</td>
+                <tr key={s.id} style={{ background: selectedScenario === s.id ? `${s.color}11` : 'transparent' }}>
+                  <td><span style={{ marginRight: 8 }}>{s.emoji}</span>{s.name}</td>
+                  <td className="r">${s.ethPrice.toLocaleString()}</td>
+                  <td className="r">{(s.futureETH / 1e6).toFixed(2)}M</td>
+                  <td className="r">${s.finalNAV.toFixed(2)}</td>
+                  <td className="r" style={{ fontWeight: 700, color: s.color }}>${s.finalStockPrice.toFixed(2)}</td>
+                  <td className="r" style={{ color: 'var(--mint)' }}>${s.totalDividends.toFixed(2)}</td>
+                  <td className="r" style={{ color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%</td>
+                  <td className="r" style={{ fontWeight: 700, color: s.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalReturn >= 0 ? '+' : ''}{s.totalReturn.toFixed(0)}%</td>
+                  <td className="r" style={{ color: s.totalIRR >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalIRR >= 0 ? '+' : ''}{s.totalIRR.toFixed(1)}%</td>
                 </tr>
               ))}
             </tbody>
@@ -1905,7 +1902,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
 
       {/* PROBABILITY-WEIGHTED EXPECTED VALUE */}
       <div className="highlight" style={{ marginTop: 32 }}>
-        <h3>Probability-Weighted Expected Value — {timeHorizon}Y</h3>
+        <h3>Probability-Weighted Expected Value — {targetYear}</h3>
         <p style={{ marginBottom: 20, color: 'var(--text2)' }}>
           Weighted average across all scenarios based on assigned probabilities
         </p>
@@ -1952,7 +1949,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                   {scenarios.map(s => {
                     const contribution = s.finalStockPrice * (s.prob / 100);
                     return (
-                      <tr key={s.id} style={{ background: selectedScenario === s.id ? `${s.color === 'red' ? '#ef4444' : s.color === 'orange' ? '#f97316' : s.color === 'blue' ? '#3b82f6' : s.color === 'purple' ? '#a855f7' : s.color === 'green' ? '#22c55e' : '#10b981'}11` : 'transparent' }}>
+                      <tr key={s.id} style={{ background: selectedScenario === s.id ? `${s.color}11` : 'transparent' }}>
                         <td>
                           <span style={{ marginRight: 8 }}>{s.emoji}</span>
                           {s.name}
