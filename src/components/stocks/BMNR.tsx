@@ -1745,10 +1745,23 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       <div className="card"><div className="card-title">Time Horizon</div>
-        <div className="flex gap-2">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {[1, 2, 3, 5, 10].map(y => (
-            <button key={y} onClick={() => setTimeHorizon(y)}
-              className={`px-4 py-2 rounded-lg font-medium ${timeHorizon === y ? 'bg-violet-600' : 'bg-slate-800 hover:bg-slate-700'}`}>
+            <button
+              key={y}
+              onClick={() => setTimeHorizon(y)}
+              style={{
+                padding: '12px 20px',
+                borderRadius: 8,
+                border: timeHorizon === y ? '2px solid var(--mint)' : '1px solid var(--border)',
+                background: timeHorizon === y ? 'rgba(0,212,170,0.15)' : 'var(--surface2)',
+                color: timeHorizon === y ? 'var(--mint)' : 'var(--text2)',
+                cursor: 'pointer',
+                fontWeight: timeHorizon === y ? 700 : 400,
+                fontFamily: 'Space Mono',
+                fontSize: 16,
+              }}
+            >
               {y}Y
             </button>
           ))}
