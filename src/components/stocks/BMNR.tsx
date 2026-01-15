@@ -1516,31 +1516,47 @@ const BMNRDilutionAnalysis = () => {
 };
 
 // OVERVIEW TAB with CFA Guide
-const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend }) => (
+const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend }) => {
+  const [chartType, setChartType] = useState('holdings');
+
+  // Chart data
+  const holdingsData = [
+    { label: 'Q1\'24', value: 350000, display: '350K' },
+    { label: 'Q2\'24', value: 400000, display: '400K' },
+    { label: 'Q3\'24', value: 450000, display: '450K' },
+    { label: 'Q4\'24', value: 500000, display: '500K' },
+    { label: 'Q1\'25', value: 550000, display: '550K' },
+    { label: 'Q2\'25', value: currentETH, display: `${(currentETH / 1000).toFixed(0)}K` },
+  ];
+
+  const navData = [
+    { label: 'Q1\'24', value: 15, display: '$15' },
+    { label: 'Q2\'24', value: 18, display: '$18' },
+    { label: 'Q3\'24', value: 22, display: '$22' },
+    { label: 'Q4\'24', value: 28, display: '$28' },
+    { label: 'Q1\'25', value: 35, display: '$35' },
+    { label: 'Q2\'25', value: calc.currentNAV, display: `$${calc.currentNAV.toFixed(0)}` },
+  ];
+
+  const dividendData = [
+    { label: 'Q4\'24', value: 0, display: '$0' },
+    { label: 'Q1\'25', value: 0.01, display: '$0.01' },
+    { label: 'Q2\'25', value: 0.01, display: '$0.01' },
+    { label: 'Q3\'25E', value: 0.02, display: '$0.02' },
+    { label: 'Q4\'25E', value: 0.02, display: '$0.02' },
+    { label: '2026E', value: 0.03, display: '$0.03' },
+  ];
+
+  const chartData = chartType === 'holdings' ? holdingsData : chartType === 'nav' ? navData : dividendData;
+  const maxValue = Math.max(...chartData.map(d => d.value));
+
+  return (
   <>
-    <h2 className="section-head">Overview</h2>
-    <div className="highlight"><h3>ETH Treasury Investment Vehicle</h3>
+    <h2 className="section-head">Investment Thesis</h2>
+    <div className="highlight"><h3>The Opportunity</h3>
       <p style={{ fontSize: '14px' }}>BMNR operates as an ETH treasury company, accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
     </div>
-    <div className="g4">
-      <Card label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value per share" color="blue" />
-      <Card label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} sub="Market price" color="green" />
-      <Card label="Premium/Discount" value={`${calc.navPremium >= 0 ? '+' : ''}${calc.navPremium.toFixed(1)}%`} sub={calc.navPremium >= 0 ? 'Above NAV' : 'Below NAV'} color={calc.navPremium >= 0 ? 'green' : 'red'} />
-      <Card label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} sub={`$${calc.annualDividend.toFixed(2)}/yr`} color="emerald" />
-    </div>
-    <div className="g3">
-      <div className="card"><div className="card-title">ETH Holdings</div><Row label="Total ETH" value={currentETH.toLocaleString()} /><Row label="ETH Price" value={`$${ethPrice.toLocaleString()}`} /><Row label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`} highlight /><Row label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} /></div>
-      <div className="card"><div className="card-title">Share Structure</div><Row label="Shares Outstanding" value={`${currentShares}M`} /><Row label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(2)}B`} /><Row label="NAV Multiple" value={`${(currentStockPrice / calc.currentNAV).toFixed(2)}x`} highlight /><Row label="ETH/Share" value={calc.ethPerShare.toFixed(6)} /></div>
-      <div className="card"><div className="card-title">Dividend</div>
-        <Row label="Quarterly Dividend" value={`$${quarterlyDividend.toFixed(2)}`} />
-        <Row label="Annual Dividend" value={`$${calc.annualDividend.toFixed(2)}`} />
-        <Row label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} highlight />
-        <Row label="Annual Payout" value={`$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`} />
-        <Row label="Payout Ratio" value={`${calc.dividendPayoutRatio.toFixed(1)}% of staking`} />
-      </div>
-    </div>
-    
-    {/* Investment Thesis - CRCL Style */}
+
     <div className="g2">
       <div className="thesis bull">
         <h4>↑ Bull Case</h4>
@@ -1565,18 +1581,66 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         </ul>
       </div>
     </div>
-    
-    <div className="highlight">
-      <h3>💎 The Opportunity</h3>
-      <p>
-        BMNR offers a unique asymmetric bet: leveraged ETH upside with yield generation. Unlike holding spot ETH, 
-        shareholders benefit from accretive capital raises — every ATM at premium grows your ETH/share even if price stays flat.
-        The "Alchemy of 5%" thesis is bold: control enough ETH to influence market dynamics. With staking income funding 
-        dividends and buybacks, this becomes a self-reinforcing flywheel. This is the MSTR playbook applied to a yield-bearing asset.
-      </p>
+
+    <div className="card" style={{ marginTop: 32 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div className="card-title" style={{ marginBottom: 0 }}>
+          {chartType === 'holdings' ? 'ETH Holdings Growth' : chartType === 'nav' ? 'NAV/Share Progression' : 'Dividend History'}
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {[
+            { id: 'holdings', label: 'ETH Holdings' },
+            { id: 'nav', label: 'NAV/Share' },
+            { id: 'dividend', label: 'Dividend' },
+          ].map(btn => (
+            <button
+              key={btn.id}
+              onClick={() => setChartType(btn.id)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 6,
+                border: chartType === btn.id ? '1px solid var(--violet)' : '1px solid var(--border)',
+                background: chartType === btn.id ? 'rgba(139,92,246,0.1)' : 'transparent',
+                color: chartType === btn.id ? 'var(--violet)' : 'var(--text2)',
+                fontSize: 12,
+                cursor: 'pointer',
+              }}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="bars">
+        {chartData.map((d, i) => (
+          <div key={i} className="bar-col">
+            <div className="bar-val">{d.display}</div>
+            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--violet)' }} />
+            <div className="bar-label">{d.label}</div>
+          </div>
+        ))}
+      </div>
     </div>
-    
-    <div className="card"><div className="card-title">Edit Parameters</div><div className="g4" style={{ marginTop: '16px' }}><Input label="ETH Holdings" value={currentETH} onChange={setCurrentETH} /><Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} /><Input label="Stock Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} /><Input label="ETH Price ($)" value={ethPrice} onChange={setEthPrice} /></div><div style={{ marginTop: '16px' }}><Input label="Qtr Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} /></div></div>
+
+    <div className="g4" style={{ marginTop: 32 }}>
+      <Card label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value per share" color="blue" />
+      <Card label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} sub="Market price" color="green" />
+      <Card label="Premium/Discount" value={`${calc.navPremium >= 0 ? '+' : ''}${calc.navPremium.toFixed(1)}%`} sub={calc.navPremium >= 0 ? 'Above NAV' : 'Below NAV'} color={calc.navPremium >= 0 ? 'green' : 'red'} />
+      <Card label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} sub={`$${calc.annualDividend.toFixed(2)}/yr`} color="emerald" />
+    </div>
+    <div className="g3" style={{ marginTop: 32 }}>
+      <div className="card"><div className="card-title">ETH Holdings</div><Row label="Total ETH" value={currentETH.toLocaleString()} /><Row label="ETH Price" value={`$${ethPrice.toLocaleString()}`} /><Row label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`} highlight /><Row label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} /></div>
+      <div className="card"><div className="card-title">Share Structure</div><Row label="Shares Outstanding" value={`${currentShares}M`} /><Row label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(2)}B`} /><Row label="NAV Multiple" value={`${(currentStockPrice / calc.currentNAV).toFixed(2)}x`} highlight /><Row label="ETH/Share" value={calc.ethPerShare.toFixed(6)} /></div>
+      <div className="card"><div className="card-title">Dividend</div>
+        <Row label="Quarterly Dividend" value={`$${quarterlyDividend.toFixed(2)}`} />
+        <Row label="Annual Dividend" value={`$${calc.annualDividend.toFixed(2)}`} />
+        <Row label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} highlight />
+        <Row label="Annual Payout" value={`$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`} />
+        <Row label="Payout Ratio" value={`${calc.dividendPayoutRatio.toFixed(1)}% of staking`} />
+      </div>
+    </div>
+
+    <div className="card" style={{ marginTop: 32 }}><div className="card-title">Edit Parameters</div><div className="g4" style={{ marginTop: '16px' }}><Input label="ETH Holdings" value={currentETH} onChange={setCurrentETH} /><Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} /><Input label="Stock Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} /><Input label="ETH Price ($)" value={ethPrice} onChange={setEthPrice} /></div><div style={{ marginTop: '16px' }}><Input label="Qtr Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} /></div></div>
     
     <CFANotes title="CFA Level III — ETH Treasury Fundamentals" items={[
       { term: 'Net Asset Value (NAV)', def: 'The per-share intrinsic value = (Total ETH Holdings × ETH Price) ÷ Shares Outstanding. Represents liquidation value — what each share would be worth if all ETH were sold today. This is the fundamental anchor for valuation.' },
@@ -1586,7 +1650,8 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       { term: 'Market Cap vs NAV', def: 'Market Cap = Shares × Stock Price. Compare to total ETH value to understand market sentiment. Premium indicates growth expectations; discount indicates skepticism.' },
     ]} />
   </>
-);
+  );
+};
 
 // SCENARIOS TAB - Comprehensive scenario analysis
 const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethPrice, baseStakingAPY, stakingRatio, quarterlyDividend, dividendGrowthRate }) => {
