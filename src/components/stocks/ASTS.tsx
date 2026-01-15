@@ -3232,6 +3232,44 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
 
   const years = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
 
+  // Generate year-by-year projections for the selected scenario (SAME formulas as scenarios calculation)
+  const projections = useMemo(() => {
+    const s2030 = scenarios2030[selectedScenario];
+    if (!s2030) return [];
+
+    return years.map(year => {
+      const yc = yearConfigs[year];
+      const yearsFromNow = year - 2025;
+      const df = Math.pow(1 + discountRate, yearsFromNow);
+
+      // SAME FORMULAS as scenarios calculation (steps 1-11)
+      const pen = s2030.pen * yc.penMult;
+      const rev = s2030.rev * yc.revMult;
+      const subs = 3000 * pen / 100;
+
+      let margin = s2030.margin + yc.marginAdj;
+      if (selectedScenario === 'worst') margin = Math.min(margin, -10);
+      if (selectedScenario !== 'worst' && year <= 2027) margin = Math.max(margin, -15);
+
+      let mult = s2030.mult + yc.multAdj;
+      if (year <= 2027) mult = Math.min(mult + 2, 16);
+      if (year >= 2033) mult = Math.max(mult, 5);
+
+      let dil = s2030.dil;
+      if (year <= 2027) dil = Math.min(dil + 10, 60);
+      if (year >= 2029) dil = Math.max(0, dil - 5);
+
+      const ebitda = rev * (margin / 100);
+      const ev = margin > 0 ? ebitda * mult : rev * 2;
+      const equityValue = ev * 1000 + netCash;
+      const dilutedShares = currentShares * (1 + dil / 100);
+      const priceInYear = Math.max(0, equityValue / dilutedShares);
+      const presentValue = priceInYear / df;
+
+      return { year, pen, rev, subs, margin, mult, dil, ebitda, ev, dilutedShares, priceInYear, presentValue };
+    });
+  }, [selectedScenario, currentShares, netCash]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <h2 className="section-head">Scenario Simulation</h2>
@@ -3347,44 +3385,125 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         </div>
       </div>
 
-      {/* Calculation Details */}
+      {/* Financial Projections Table */}
       <div className="card" style={{ marginTop: 24 }}>
-        <div className="card-title">Calculation Details</div>
-        {/* Calculation Steps Toggle */}
-        <button
-          onClick={() => setShowMath(!showMath)}
-          style={{
-            width: '100%',
-            padding: '12px 16px',
-            borderRadius: 8,
-            border: '1px solid var(--border)',
-            background: 'var(--surface2)',
-            color: 'var(--text2)',
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            fontSize: 14,
-            marginBottom: 12,
-          }}
-        >
-          {showMath ? '➖ Hide Calculation' : '➕ Show Full Calculation'}
-        </button>
-
-        {showMath && (
-          <div className="p-4 bg-slate-900 rounded-lg border border-slate-700 font-mono text-xs space-y-1">
-            <div className="text-cyan-400 font-bold mb-2">VALUATION CALCULATION:</div>
-            {Object.entries(selected.audit).map(([step, calc]) => (
-              <div key={step} className="flex">
-                <span className="text-slate-500 w-20">{step.toUpperCase()}:</span>
-                <span className="text-slate-300">{calc}</span>
-              </div>
-            ))}
-            <div className="border-t border-slate-700 pt-2 mt-2">
-              <div className="text-green-400">
-                RESULT: PV = ${selected.presentValue.toFixed(2)} ({selected.upside >= 0 ? '+' : ''}{selected.upside.toFixed(0)}% vs ${currentStockPrice})
-              </div>
-            </div>
-          </div>
-        )}
+        <div className="card-title">Financial Projections — {selected.name} Scenario</div>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th className="r">Today</th>
+                {projections.map(p => (
+                  <th key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.year}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Subscribers (M)</td>
+                <td className="r">—</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.subs.toFixed(1)}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td>Penetration (%)</td>
+                <td className="r">—</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.pen.toFixed(2)}%
+                  </td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '1px solid var(--border)' }}>
+                <td>Revenue ($B)</td>
+                <td className="r">—</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    ${p.rev.toFixed(2)}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td>EBITDA ($B)</td>
+                <td className="r">—</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ color: p.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.ebitda >= 0 ? '$' : '($'}{Math.abs(p.ebitda).toFixed(2)}{p.ebitda < 0 ? ')' : ''}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td>EBITDA Margin (%)</td>
+                <td className="r">—</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ color: p.margin >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.margin.toFixed(0)}%
+                  </td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '1px solid var(--border)' }}>
+                <td>EV/EBITDA Multiple</td>
+                <td className="r">—</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.mult}x
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td>Enterprise Value ($B)</td>
+                <td className="r">—</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    ${p.ev.toFixed(1)}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td>Dilution (%)</td>
+                <td className="r">—</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ color: 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    +{p.dil.toFixed(0)}%
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td>Diluted Shares (M)</td>
+                <td className="r">{currentShares.toFixed(0)}</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.dilutedShares.toFixed(0)}
+                  </td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '2px solid var(--border)', fontWeight: 700 }}>
+                <td>Stock Price ($)</td>
+                <td className="r">${currentStockPrice}</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ color: selected.color, background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    ${p.priceInYear.toFixed(0)}
+                  </td>
+                ))}
+              </tr>
+              <tr style={{ fontWeight: 600 }}>
+                <td>PV Today ($)</td>
+                <td className="r">—</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ color: 'var(--sky)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    ${p.presentValue.toFixed(0)}
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* KEY ASSUMPTIONS & CATALYSTS */}
