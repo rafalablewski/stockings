@@ -4462,12 +4462,12 @@ const SECFilingTracker = () => {
     // Key dates
     firstFiling: 'April 6, 2021',
     firstFilingNote: 'SPAC Close / 8-K',
-    latestEvent: 'BB6 Launch',
-    latestEventDate: 'Dec 24, 2025',
-    
+    latestEvent: 'MDA SHIELD Contract',
+    latestEventDate: 'Jan 16, 2026',
+
     // Last press release processed (for tracking)
-    lastPressRelease: 'December 24, 2025',
-    lastPressReleaseTitle: 'BB6 Successful Orbital Launch',
+    lastPressRelease: 'January 16, 2026',
+    lastPressReleaseTitle: 'MDA SHIELD Prime Contract Award',
     
     // Latest filings by type
     filings: {
@@ -5583,6 +5583,24 @@ const TimelineTab = () => {
   // Timeline log - chronological record of ACTUAL COMPANY changes (not model creation notes)
   // Categories: GUIDANCE (mgmt projections), DATA (SEC filings, actuals), EVENT (catalysts/news), LAUNCH (orbital launches)
   const timelineEvents = [
+    {
+      date: '2026-01-16',
+      category: 'News',
+      title: 'MDA SHIELD Prime Contract Award',
+      summary: 'AST SpaceMobile selected as prime contractor on Missile Defense Agency SHIELD IDIQ program',
+      details: [
+        'Awarded prime contract position on MDA Scalable Homeland Innovative Enterprise Layered Defense (SHIELD) IDIQ',
+        'Part of broader Golden Dome strategy for resilient, layered defense against air/missile/space/cyber threats',
+        'Enables ASTS to bid directly on future task orders across R&D, engineering, prototyping, and operations',
+        'Validates dual-use technology for both communications and non-communications (defense) applications',
+        'Growing government interest in resilient LEO constellations for command/control, battle management, and sensing',
+        '95% vertically integrated, ~500,000 sq ft facilities, ~1,800 employees, 3,800+ patents',
+      ],
+      sources: ['Press release Jan 16, 2026'],
+      prevValue: 'No major defense prime contracts',
+      newValue: 'MDA SHIELD prime contractor',
+      impact: 'Positive',
+    },
     {
       date: '2025-12-24',
       category: 'Product',
