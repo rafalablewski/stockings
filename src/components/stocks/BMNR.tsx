@@ -1471,22 +1471,26 @@ const BMNRDilutionAnalysis = () => {
   }, [currentETH, currentShares, currentStockPrice, ethPrice, navMultiple, stakingType, baseStakingAPY, restakingBonus, stakingRatio, useDebt, debtAmount, conversionPremium, debtCovenantLTV, quarterlyDividend]);
 
   // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
+  // Order: Overview first, then stock-specific projections, common projections, then tracking
   const tabs = [
     { id: 'overview', label: 'Overview', type: 'tracking' },
-    { id: 'scenarios', label: 'Scenarios', type: 'projection' },
+    // Stock-specific projections
     { id: 'ethereum', label: 'Ethereum', type: 'projection' },
     { id: 'staking', label: 'Staking', type: 'projection' },
     { id: 'dilution', label: 'Dilution', type: 'projection' },
     { id: 'debt', label: 'Debt', type: 'projection' },
-    { id: 'capital', label: 'Capital', type: 'tracking' },
     { id: 'sensitivity', label: 'Sensitivity', type: 'projection' },
     { id: 'backtest', label: 'Backtest', type: 'projection' },
+    // Common projections
+    { id: 'scenarios', label: 'Scenarios', type: 'projection' },
     { id: 'dcf', label: 'DCF', type: 'projection' },
     { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
     { id: 'comps', label: 'Comps', type: 'projection' },
+    // Tracking
+    { id: 'capital', label: 'Capital', type: 'tracking' },
     { id: 'financials', label: 'Financials', type: 'tracking' },
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
-    { id: 'investment', label: 'Investment', type: 'projection' },
+    { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
   ];
 

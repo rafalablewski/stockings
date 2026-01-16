@@ -685,17 +685,21 @@ const MAJOR_SHAREHOLDERS = [
 ];
 
 // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
+// Order: Overview first, then stock-specific projections, common projections, then tracking
 const tabs = [
   { id: 'overview', label: 'Overview', type: 'tracking' },
+  // Stock-specific projections
+  { id: 'usdc', label: 'USDC', type: 'projection' },
+  // Common projections
   { id: 'scenarios', label: 'Scenarios', type: 'projection' },
-  { id: 'usdc', label: 'USDC', type: 'tracking' },
-  { id: 'capital', label: 'Capital', type: 'tracking' },
   { id: 'dcf', label: 'DCF', type: 'projection' },
   { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
   { id: 'comps', label: 'Comps', type: 'projection' },
+  // Tracking
+  { id: 'capital', label: 'Capital', type: 'tracking' },
   { id: 'financials', label: 'Financials', type: 'tracking' },
   { id: 'timeline', label: 'Timeline', type: 'tracking' },
-  { id: 'investment', label: 'Investment', type: 'projection' },
+  { id: 'investment', label: 'Investment', type: 'tracking' },
   { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
 ];
 
