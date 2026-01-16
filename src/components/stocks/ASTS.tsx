@@ -113,8 +113,26 @@
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  */
 
-import React, { useState, useMemo, Component, ErrorInfo, ReactNode } from 'react';
+import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ComposedChart, Cell, PieChart, Pie, Legend, ReferenceLine } from 'recharts';
+
+// Data imports - All hardcoded data extracted to separate files for easy AI updates
+import {
+  DEFAULTS,
+  PARTNERS,
+  REVENUE_SOURCES,
+  UPCOMING_CATALYSTS,
+  COMPLETED_MILESTONES,
+  SHARE_CLASSES,
+  TOTAL_BASIC_SHARES,
+  TOTAL_VOTING_SHARES,
+  FULLY_DILUTED_SHARES,
+  MAJOR_SHAREHOLDERS,
+  EQUITY_OFFERINGS,
+  DILUTION_HISTORY,
+  SBC_HISTORY,
+  DATA_FRESHNESS,
+} from '@/data/asts';
 
 // ============================================================================
 // ASTS SPACEMOBILE FINANCIAL MODEL
@@ -592,6 +610,7 @@ const css = `
 /* Navigation */
 .nav {
   display: flex;
+  align-items: center;
   gap: 8px;
   padding: 16px 64px;
   background: var(--bg);
@@ -634,6 +653,75 @@ const css = `
   color: var(--bg);
   background: var(--cyan);
   border-color: var(--cyan);
+}
+
+/* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
+/* mint=tracking (actual data), signature color=projection (user models) */
+.nav-btn.tab-tracking {
+  border-left: 3px solid var(--mint);
+}
+.nav-btn.tab-projection {
+  border-left: 3px solid var(--cyan);
+}
+.nav-btn.tab-tracking.active {
+  border-left-color: var(--mint);
+  background: var(--mint);
+  border-color: var(--mint);
+}
+.nav-btn.tab-projection.active {
+  border-left-color: var(--cyan);
+  background: var(--cyan);
+  border-color: var(--cyan);
+}
+
+/* Dropdown Navigation - Stock-specific tabs in expandable menu */
+.nav-dropdown {
+  display: inline-flex;
+}
+.nav-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-left: 3px solid var(--violet);
+}
+.nav-dropdown-trigger.active {
+  background: var(--violet);
+  color: var(--bg);
+  border-color: var(--violet);
+  border-left: 3px solid var(--violet);
+}
+
+/* Reserved space below nav for dropdown content - always present */
+.nav-dropdown-space {
+  height: 52px;
+  padding: 0 64px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-dropdown-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-dropdown-item {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+.nav-dropdown-item:hover {
+  color: var(--text);
+}
+.nav-dropdown-item.active {
+  color: var(--cyan);
 }
 
 /* Main Content */
@@ -1001,14 +1089,14 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* Responsive - Desktop */
 @media (max-width: 1200px) {
-  .hero, .stats-row, .nav, .main { padding-left: 32px; padding-right: 32px; }
+  .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 32px; padding-right: 32px; }
   .g4 { grid-template-columns: repeat(2, 1fr); }
   .g5 { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* Responsive - Tablet */
 @media (max-width: 900px) {
-  .hero, .stats-row, .nav, .main { padding-left: 24px; padding-right: 24px; }
+  .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 24px; padding-right: 24px; }
   .g3 { grid-template-columns: repeat(2, 1fr); }
   .g4 { grid-template-columns: repeat(2, 1fr); }
   .g5 { grid-template-columns: repeat(2, 1fr); }
@@ -1038,6 +1126,7 @@ input[type="range"]::-webkit-slider-thumb {
 
   .nav { padding: 10px 12px; gap: 4px; }
   .nav-btn { padding: 8px 12px; font-size: 12px; }
+  .nav-dropdown-space { padding: 0 12px; height: 44px; }
 
   .main { padding: 20px 16px; }
   .card { padding: 16px; border-radius: 12px; }
@@ -1080,6 +1169,7 @@ input[type="range"]::-webkit-slider-thumb {
 
   .nav { padding: 8px 10px; }
   .nav-btn { padding: 6px 10px; font-size: 11px; gap: 4px; }
+  .nav-dropdown-space { padding: 0 10px; height: 40px; }
 
   .main { padding: 16px 12px; }
   .card, .highlight { padding: 14px; }
@@ -1413,99 +1503,13 @@ const ASTSAnalysis = () => {
   const [techRisk, setTechRisk] = useState(8);
   const [competitionRisk, setCompetitionRisk] = useState(10);
   const [activeTab, setActiveTab] = useState('overview');
+  const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
 
-  const partners = [
-    { name: 'AT&T', region: 'US', subs: 200, status: 'Definitive', prepay: 20, spectrum: '850 MHz', notes: 'First VoLTE call' },
-    { name: 'Verizon', region: 'US', subs: 145, status: 'Definitive (Oct 2025)', prepay: 100, spectrum: '850 MHz', notes: '$100M+ commitment' },
-    { name: 'Vodafone', region: 'EU/AF', subs: 500, status: 'Definitive (2034)', prepay: 25, spectrum: '2GHz MSS', notes: 'SatCo JV' },
-    { name: 'Vodafone Idea', region: 'India', subs: 250, status: 'Definitive', prepay: 0, spectrum: 'TBD', notes: 'June 2025' },
-    { name: 'Rakuten', region: 'Japan', subs: 5, status: 'Definitive', prepay: 0, spectrum: 'LTE', notes: 'Video calls' },
-    { name: 'stc Group', region: 'Saudi/MENA', subs: 80, status: '10-year', prepay: 175, spectrum: 'TBD', notes: '$175M prepay' },
-    { name: 'Bell Canada', region: 'Canada', subs: 23, status: 'Definitive', prepay: 0, spectrum: 'TBD', notes: 'Testing' },
-    { name: 'Others (45+ MNOs)', region: 'Global', subs: 1997, status: 'MOU/LOI', prepay: 0, spectrum: 'Various', notes: 'Orange, etc.' },
-  ];
-
-  const revenueSources = [
-    { source: 'MNO Commercial (50/50)', description: 'Wholesale revenue share', status: 'Post-2026' },
-    { source: 'Gateway Hardware', description: 'Ground station sales', status: 'Active - Q3 $14.7M' },
-    { source: 'Government Contracts', description: 'DoD, SDA, DIU ($63M+)', status: 'Active' },
-    { source: 'Partner Prepayments', description: 'stc $175M, Verizon, AT&T', status: 'Active' },
-    { source: 'Spectrum Rights', description: 'L-band, S-band monetization', status: 'Future' },
-  ];
-
-  const upcomingCatalysts = [
-    // === LAUNCHES & CONSTELLATION ===
-    { event: 'BB6 Unfolding Phased Array', timeline: 'Q1 2026', impact: 'High' },
-    { event: 'BB7 Launch (Blue Origin New Glenn or SpaceX F9)', timeline: 'Q1 2026', impact: 'High' },
-    { event: 'BB8-BB10 Delivery & Launch (Falcon 9)', timeline: 'Q1 2026', impact: 'High' },
-    { event: 'BB11-BB13 Delivery & Launch (Falcon 9)', timeline: 'Q1-Q2 2026', impact: 'High' },
-    { event: 'Block-2 Launches (3x, 4x or 8x batches every 1-2 mo)', timeline: '2026', impact: 'High' },
-    { event: 'Production Ramp to 6x Satellites/Month', timeline: '2026', impact: 'Medium' },
-    { event: 'Progress on 8-25x Block-2 BlueBirds in Production', timeline: '2026', impact: 'Medium' },
-    { event: 'New Midland TX Manufacturing (Micron-focused)', timeline: '2026', impact: 'Medium' },
-    // === REGULATORY & SPECTRUM ===
-    { event: 'FCC Full US SCS Commercial Service Approval', timeline: 'Q1 2026', impact: 'Critical' },
-    { event: 'FCC 5G Fund Grant', timeline: '2026', impact: 'High' },
-    { event: 'FCC PNT Service Proposal (GPS Alternative)', timeline: '2026', impact: 'Medium' },
-    { event: 'EU 2GHz MSS Spectrum Allocation (SatCo JV)', timeline: '2026', impact: 'High' },
-    { event: 'L-Band & S-Band Spectrum Licenses (Global)', timeline: '2026+', impact: 'Medium' },
-    // === COMMERCIAL & MNO PARTNERSHIPS ===
-    { event: 'FirstNet Investment & Definitive Agreement', timeline: '2026', impact: 'Critical' },
-    { event: 'Bell Canada, Telefonica, Etisalat + 50 MNO Deals', timeline: '2026', impact: 'High' },
-    { event: 'AT&T/FirstNet Beta Testing', timeline: '1H 2026', impact: 'High' },
-    { event: 'Google Services Partnership Update', timeline: '2026', impact: 'Medium' },
-    { event: 'Unlock $20M/$25M/$65M Prepayments (AT&T/VZ/VOD)', timeline: '2026', impact: 'Medium' },
-    // === SERVICE LAUNCH & REVENUE ===
-    { event: 'Initial Intermittent Service (US/Canada/Japan/UK/Saudi)', timeline: '2026', impact: 'Critical' },
-    { event: 'Initial Commercial Service (AT&T/Rakuten/VZ/VOD)', timeline: 'Late 2026', impact: 'Critical' },
-    { event: '$50-75M Revenue Delivery', timeline: '2H 2025', impact: 'High' },
-    // === GOVERNMENT & DEFENSE ===
-    { event: 'Golden Dome Award(s)', timeline: '2026', impact: 'High' },
-    { event: 'DoD/SDA/DIU Contract Expansion (9x+)', timeline: '2026', impact: 'High' },
-    // === FINANCING & COVERAGE ===
-    { event: '$500M+ EXIM/IFC Non-Dilutive Funding', timeline: '2026', impact: 'High' },
-    { event: 'GS/MS/Stifel Research Coverage Initiation', timeline: '2026', impact: 'Medium' },
-    // === STRATEGIC ===
-    { event: 'AI Data Center Strategic Partnerships', timeline: '2026+', impact: 'Medium' },
-    { event: 'Catalysts SpaceMob Has Yet to Contemplate', timeline: '???', impact: 'Unknown' },
-  ];
-
-  const completedMilestones = [
-    // 2025
-    { event: 'BB6 Launched (ISRO)', date: 'Dec 24, 2025' },
-    { event: '$1B+ Contracted Revenue', date: 'Q3 2025' },
-    { event: 'Verizon Definitive Agreement', date: 'Oct 2025' },
-    { event: 'stc $1.8B Agreement', date: 'Q3 2025' },
-    { event: '$1.15B Convertible Notes', date: 'Oct 2025' },
-    { event: 'Russell 1000 Inclusion', date: 'Jun 2025' },
-    { event: 'SatCo JV (Vodafone EU)', date: '2025' },
-    { event: 'FirstNet Trial FCC Approval', date: 'Apr 2025' },
-    { event: 'First VoLTE Call', date: '2025' },
-    // 2024
-    { event: 'Vodafone Extension to 2034', date: 'Dec 2024' },
-    { event: 'BB1-5 Launched (SpaceX)', date: 'Sep 12, 2024' },
-    { event: 'FCC BB1-5 License Granted', date: 'Aug 5, 2024' },
-    { event: 'Verizon $100M Commitment', date: 'May 29, 2024' },
-    { event: 'AT&T Definitive Agreement', date: 'May 15, 2024' },
-    { event: 'ASIC Tape-out Complete (TSMC)', date: 'Q2 2024' },
-    { event: 'Google Cloud Partnership', date: 'Jan 2024' },
-    // 2023
-    { event: 'First 5G Connection (14 Mbps)', date: 'Sep 2023' },
-    { event: 'First D2C Voice Call', date: 'Apr 25, 2023' },
-    { event: 'BW3 4G/LTE Demo (10+ Mbps)', date: 'Q1 2023' },
-    { event: 'Rakuten MOU', date: '2023' },
-    // 2022
-    { event: 'BW3 Antenna Deployed (693 sq ft)', date: 'Nov 2022' },
-    { event: 'BW3 Launched (SpaceX)', date: 'Sep 10, 2022' },
-    { event: 'NanoAvionics Sale ($26.6M)', date: 'Sep 2022' },
-    { event: 'SPAC Merger Complete (NPA)', date: 'Apr 2022' },
-    // 2021
-    { event: 'Vodafone Partnership', date: '2021' },
-    { event: 'AT&T MOU', date: '2021' },
-    // 2019-2020
-    { event: 'BlueWalker 1 Launched', date: 'Apr 2019' },
-    { event: 'AST SpaceMobile Founded', date: '2017' },
-  ];
+  // Use imported data from @/data/asts
+  const partners = PARTNERS;
+  const revenueSources = REVENUE_SOURCES;
+  const upcomingCatalysts = UPCOMING_CATALYSTS;
+  const completedMilestones = COMPLETED_MILESTONES;
 
   const calc = useMemo(() => {
     const marketCap = currentStockPrice * currentShares;
@@ -1524,23 +1528,29 @@ const ASTSAnalysis = () => {
     return { marketCap: safe(marketCap), totalSats, constellationProgress: safe(constellationProgress), cashRunwayQuarters: safe(cashRunwayQuarters), enterpriseValue: safe(enterpriseValue), potentialSubs: safe(potentialSubs), grossAnnualRev: safe(grossAnnualRev), astsAnnualRev: safe(astsAnnualRev), evToRevFwd: safe(evToRevFwd), pricePerSub: safe(pricePerSub), totalPrepayments };
   }, [currentShares, currentStockPrice, cashOnHand, quarterlyBurn, totalDebt, block1Sats, block2Sats, targetSats2026, partnerReach, penetrationRate, blendedARPU, revenueShare, govRevenue, partners]);
 
-  const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'scenarios', label: 'Scenarios' },
-    { id: 'catalysts', label: 'Catalysts' },
-    { id: 'constellation', label: 'Constellation' },
-    { id: 'subscribers', label: 'Subscribers' },
-    { id: 'revenue', label: 'Revenue' },
-    { id: 'partners', label: 'Partners' },
-    { id: 'runway', label: 'Cash Runway' },
-    { id: 'capital', label: 'Capital' },
-    { id: 'dcf', label: 'DCF' },
-    { id: 'monte-carlo', label: 'Monte Carlo' },
-    { id: 'comps', label: 'Comps' },
-    { id: 'financials', label: 'Financials' },
-    { id: 'timeline', label: 'Timeline' },
-    { id: 'investment', label: 'Investment' },
-    { id: 'wall-street', label: 'Wall Street' },
+  // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
+  // Order: Overview first, then stock-specific projections, common projections, then tracking
+  // group: optional grouping for nested display (stock-specific tabs)
+  const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
+    { id: 'overview', label: 'Overview', type: 'tracking' },
+    // Stock-specific projections (grouped under "ASTS Analysis")
+    { id: 'catalysts', label: 'Catalysts', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'constellation', label: 'Constellation', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'subscribers', label: 'Subscribers', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'revenue', label: 'Revenue', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'partners', label: 'Partners', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'runway', label: 'Cash Runway', type: 'projection', group: 'ASTS Analysis' },
+    // Common projections
+    { id: 'scenarios', label: 'Scenarios', type: 'projection' },
+    { id: 'dcf', label: 'DCF', type: 'projection' },
+    { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
+    { id: 'comps', label: 'Comps', type: 'projection' },
+    // Tracking
+    { id: 'capital', label: 'Capital', type: 'tracking' },
+    { id: 'financials', label: 'Financials', type: 'tracking' },
+    { id: 'timeline', label: 'Timeline', type: 'tracking' },
+    { id: 'investment', label: 'Investment', type: 'tracking' },
+    { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
   ];
 
   return (
@@ -1581,9 +1591,9 @@ const ASTSAnalysis = () => {
                 marginBottom: 16
               }}>
                 <span>📅</span>
-                <span>Data as of: Dec 31, 2025</span>
+                <span>Data as of: {DATA_FRESHNESS.dataAsOf}</span>
                 <span style={{ color: 'rgba(34,211,238,0.5)' }}>|</span>
-                <span>Update prices regularly</span>
+                <span>{DATA_FRESHNESS.priceNote}</span>
               </div>
               <p className="desc">
                 First space-based cellular broadband for standard smartphones. 
@@ -1612,16 +1622,53 @@ const ASTSAnalysis = () => {
 
         {/* Navigation */}
         <nav className="nav">
-          {tabs.map(t => (
-            <button 
-              key={t.id} 
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''}`}
+          {/* Tabs before dropdown */}
+          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) > tabs.indexOf(t)).map(t => (
+            <button
+              key={t.id}
+              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+              onClick={() => setActiveTab(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+
+          {/* Stock-specific dropdown trigger */}
+          <button
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+          >
+            ASTS Analysis ↕
+          </button>
+
+          {/* Tabs after dropdown */}
+          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) < tabs.indexOf(t)).map(t => (
+            <button
+              key={t.id}
+              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
               onClick={() => setActiveTab(t.id)}
             >
               {t.label}
             </button>
           ))}
         </nav>
+
+        {/* Reserved space for dropdown menu - always present to prevent layout shift */}
+        <div className="nav-dropdown-space">
+          {analysisDropdownOpen && (
+            <div className="nav-dropdown-menu">
+              {tabs.filter(t => t.group).map(t => (
+                <button
+                  key={t.id}
+                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+                  onClick={() => setActiveTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         
         {/* Main Content */}
         <main className="main">
@@ -2661,153 +2708,18 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
 // CAPITAL TAB - Share structure, offerings, dilution
 const CapitalTab = ({ currentShares, currentStockPrice }) => {
   const [capitalView, setCapitalView] = useState('structure');
-  
-  // Current share class structure (Nov 2025 per 13D/A filing)
-  const shareClasses = [
-    {
-      classType: 'Class A',
-      shares: 278.8,
-      description: 'Public trading shares (NASDAQ: ASTS)',
-      votingRights: '1 vote per share',
-      conversion: 'N/A',
-    },
-    { 
-      classType: 'Class B', 
-      shares: 11.2, 
-      description: 'Founder/insider shares',
-      votingRights: '1 vote per share',
-      conversion: 'Convert 1:1 to Class A',
-    },
-    { 
-      classType: 'Class C', 
-      shares: 78.2, 
-      description: 'Abel Avellan (Founder/CEO) shares',
-      votingRights: '10 votes per share',
-      conversion: 'Convert 1:1 to Class A upon transfer',
-    },
-  ];
-  
-  const totalBasic = shareClasses.reduce((sum, s) => sum + s.shares, 0);
-  const fullyDiluted = 395.0; // Including options, RSUs, remaining converts
-  
-  // Major shareholders (known from filings)
-  const majorShareholders = [
-    { 
-      name: 'Abel Avellan', 
-      role: 'Founder, Chairman & CEO',
-      shares: 78.2, 
-      shareClass: 'Class C',
-      pct: (78.2 / totalBasic * 100).toFixed(1),
-      votingPct: ((78.2 * 10) / (278.8 + 11.2 + 78.2 * 10) * 100).toFixed(1),
-      notes: '10x voting power via Class C'
-    },
-    { 
-      name: 'AT&T', 
-      role: 'Strategic Partner',
-      shares: 6.5, 
-      shareClass: 'Class A',
-      pct: (6.5 / totalBasic * 100).toFixed(1),
-      votingPct: (6.5 / (278.8 + 11.2 + 78.2 * 10) * 100).toFixed(1),
-      notes: 'From 2034 convert + PIPE. First VoLTE partner.'
-    },
-    { 
-      name: 'Vodafone Group', 
-      role: 'Strategic Partner',
-      shares: 6.5, 
-      shareClass: 'Class A',
-      pct: (6.5 / totalBasic * 100).toFixed(1),
-      votingPct: (6.5 / (278.8 + 11.2 + 78.2 * 10) * 100).toFixed(1),
-      notes: 'From 2034 convert + PIPE. SatCo JV partner.'
-    },
-    { 
-      name: 'Google', 
-      role: 'Strategic Investor',
-      shares: 6.4, 
-      shareClass: 'Class A',
-      pct: (6.4 / totalBasic * 100).toFixed(1),
-      votingPct: (6.4 / (278.8 + 11.2 + 78.2 * 10) * 100).toFixed(1),
-      notes: 'From 2034 convert (Jan 2025 conversion)'
-    },
-    { 
-      name: 'Verizon', 
-      role: 'Strategic Partner',
-      shares: 6.4, 
-      shareClass: 'Class A',
-      pct: (6.4 / totalBasic * 100).toFixed(1),
-      votingPct: (6.4 / (278.8 + 11.2 + 78.2 * 10) * 100).toFixed(1),
-      notes: 'From 2034 convert. $100M+ committed.'
-    },
-    { 
-      name: 'Rakuten', 
-      role: 'Strategic Partner',
-      shares: 2.5, 
-      shareClass: 'Class A',
-      pct: '~0.7',
-      votingPct: '~0.3',
-      notes: 'PIPE investor. Japan market partner.'
-    },
-    { 
-      name: 'American Tower', 
-      role: 'Infrastructure Partner',
-      shares: 2.5, 
-      shareClass: 'Class A',
-      pct: '~0.7',
-      votingPct: '~0.3',
-      notes: 'PIPE investor. Tower infrastructure.'
-    },
-  ];
-  
-  // Equity offerings timeline
-  const equityOfferings = [
-    { date: '2019-09-11', event: 'NPA SPAC IPO', type: 'IPO', amount: 230, price: 10.00, shares: 23.0, notes: 'New Providence Acquisition Corp. Units at $10' },
-    { date: '2021-04-06', event: 'SPAC Merger + PIPE', type: 'SPAC + PIPE', amount: 692, price: 10.00, shares: 69.2, notes: 'AST & Science merger. PIPE: Vodafone, Rakuten, American Tower' },
-    { date: '2022-03-01', event: 'B. Riley ATM Facility', type: 'ATM', amount: 75, price: null, shares: null, notes: '24-month committed equity facility' },
-    { date: '2022-12-02', event: 'Public Offering', type: 'Follow-on', amount: 75, price: 5.50, shares: 13.6, notes: 'BW3 funding' },
-    { date: '2023-06-28', event: 'Public Offering', type: 'Follow-on', amount: 59.4, price: 5.00, shares: 11.9, notes: 'Working capital' },
-    { date: '2024-01-19', event: 'Equity Raise', type: 'Private', amount: 100, price: 3.10, shares: 32.3, notes: 'Block 1 satellite funding' },
-    { date: '2024-01-18', event: '2034 Strategic Converts', type: 'Convertible', amount: 148.5, price: 5.76, shares: 25.8, notes: 'AT&T, Google, Vodafone, Verizon. Force-converted Jan 2025.' },
-    { date: '2025-01-08', event: 'Jan 2025 Convertible', type: 'Convertible', amount: 460, price: 26.58, shares: 17.3, notes: '4.25% due 2032. $410M repurchased for equity, $50M remains.' },
-    { date: '2025-07-07', event: 'Jul 2025 Convertible', type: 'Convertible', amount: 575, price: 120.12, shares: 4.8, notes: '2.375% due 2032. Outstanding as debt.' },
-    { date: '2025-10-14', event: 'Oct 2025 Convertible', type: 'Convertible', amount: 1150, price: 96.30, shares: 11.9, notes: '2.0% due 2036. Best terms in years. Outstanding as debt.' },
-    { date: '2025-09-30', event: 'Q3 2025 ATM Program', type: 'ATM', amount: 287, price: null, shares: null, notes: 'At-the-market sales. Facility terminated.' },
-  ];
-  
-  // Fully diluted share count evolution
-  const dilutionHistory = [
-    { quarter: 'Q3 2019', classA: 5.75, implied: 5.75, fullyDiluted: 5.75, event: 'NPA SPAC pre-IPO (founder shares)' },
-    { quarter: 'Q4 2019', classA: 23.0, implied: 28.75, fullyDiluted: 42.0, event: 'SPAC IPO completed' },
-    { quarter: 'Q4 2020', classA: 23.0, implied: 28.75, fullyDiluted: 42.0, event: 'Pre-merger SPAC' },
-    { quarter: 'Q1 2021', classA: 50.0, implied: 86.0, fullyDiluted: 118.0, event: 'SPAC merger Apr 6' },
-    { quarter: 'Q4 2021', classA: 54.0, implied: 90.0, fullyDiluted: 118.0, event: 'Post-merger stabilization' },
-    { quarter: 'Q4 2022', classA: 71.9, implied: 200.0, fullyDiluted: 215.0, event: '$75M offering @ $5.50' },
-    { quarter: 'Q2 2023', classA: 72.0, implied: 200.0, fullyDiluted: 215.0, event: '$59.4M offering' },
-    { quarter: 'Q4 2023', classA: 90.2, implied: 120.0, fullyDiluted: 145.0, event: 'Year-end 10-K' },
-    { quarter: 'Q1 2024', classA: 100.0, implied: 218.0, fullyDiluted: 280.0, event: '$100M @ $3.10' },
-    { quarter: 'Q2 2024', classA: 148.8, implied: 266.7, fullyDiluted: 320.0, event: 'Warrant exercise begins' },
-    { quarter: 'Q3 2024', classA: 140.0, implied: 175.0, fullyDiluted: 245.0, event: 'Warrant redemption Sept' },
-    { quarter: 'Q4 2024', classA: 208.2, implied: 255.0, fullyDiluted: 280.0, event: '2034 converts + Jan converts' },
-    { quarter: 'Q1 2025', classA: 220.0, implied: 309.4, fullyDiluted: 350.0, event: 'Jan convert repurchase' },
-    { quarter: 'Q2 2025', classA: 245.0, implied: 334.4, fullyDiluted: 380.0, event: 'Jul converts issued' },
-    { quarter: 'Q3 2025', classA: 272.0, implied: 361.4, fullyDiluted: 395.0, event: 'Oct converts + ATM' },
-  ];
-  
-  // Stock-based compensation history
-  const sbcHistory = [
-    { quarter: 'Q1 2023', sbc: 2.5, engineering: 1.4, gAndA: 1.1 },
-    { quarter: 'Q2 2023', sbc: 5.5, engineering: 4.5, gAndA: 1.0 },
-    { quarter: 'Q3 2023', sbc: 2.6, engineering: 1.5, gAndA: 1.1 },
-    { quarter: 'Q4 2023', sbc: 2.7, engineering: 1.5, gAndA: 1.2 },
-    { quarter: 'Q1 2024', sbc: 4.9, engineering: 1.6, gAndA: 3.3 },
-    { quarter: 'Q2 2024', sbc: 8.8, engineering: 2.0, gAndA: 6.8 },
-    { quarter: 'Q3 2024', sbc: 6.8, engineering: 3.4, gAndA: 3.4 },
-    { quarter: 'Q4 2024', sbc: 11.4, engineering: 8.3, gAndA: 3.1 },
-    { quarter: 'Q1 2025', sbc: 7.8, engineering: 4.0, gAndA: 3.8 },
-    { quarter: 'Q2 2025', sbc: 10.5, engineering: 3.3, gAndA: 7.2 },
-    { quarter: 'Q3 2025', sbc: 14.0, engineering: 8.0, gAndA: 6.0 },
-  ];
-  
+
+  // Use imported data from @/data/asts
+  const shareClasses = SHARE_CLASSES;
+  const totalBasic = TOTAL_BASIC_SHARES;
+  const fullyDiluted = FULLY_DILUTED_SHARES;
+  const majorShareholders = MAJOR_SHAREHOLDERS;
+  const equityOfferings = EQUITY_OFFERINGS;
+  const dilutionHistory = DILUTION_HISTORY;
+  const sbcHistory = SBC_HISTORY;
+
   const marketCap = currentShares * currentStockPrice;
-  const totalVotingShares = 278.8 + 11.2 + 78.2 * 10; // Class C has 10x voting
+  const totalVotingShares = TOTAL_VOTING_SHARES;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>

@@ -130,8 +130,24 @@
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  */
 
-import React, { useState, useMemo, useEffect, Component, ErrorInfo, ReactNode } from 'react';
+import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart } from 'recharts';
+
+// Data imports - All hardcoded data extracted to separate files for easy AI updates
+import {
+  DEFAULTS,
+  ETH_HOLDINGS,
+  STAKING_PARAMS,
+  DIVIDEND_DATA,
+  DATA_FRESHNESS,
+  SHARE_CLASSES,
+  WARRANTS,
+  EQUITY_OFFERINGS,
+  MAJOR_SHAREHOLDERS,
+  HISTORICAL_ETH,
+  COMPARABLES,
+  DEFAULT_TRANCHES,
+} from '@/data/bmnr';
 
 // ============================================================================
 // BMNR - BitMine Immersion Technologies Financial Model
@@ -529,6 +545,7 @@ const css = `
 /* Navigation */
 .nav {
   display: flex;
+  align-items: center;
   gap: 8px;
   padding: 16px 64px;
   background: var(--bg);
@@ -571,6 +588,75 @@ const css = `
   color: var(--bg);
   background: var(--violet);
   border-color: var(--violet);
+}
+
+/* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
+/* mint=tracking (actual data), signature color=projection (user models) */
+.nav-btn.tab-tracking {
+  border-left: 3px solid var(--mint);
+}
+.nav-btn.tab-projection {
+  border-left: 3px solid var(--violet);
+}
+.nav-btn.tab-tracking.active {
+  border-left-color: var(--mint);
+  background: var(--mint);
+  border-color: var(--mint);
+}
+.nav-btn.tab-projection.active {
+  border-left-color: var(--violet);
+  background: var(--violet);
+  border-color: var(--violet);
+}
+
+/* Dropdown Navigation - Stock-specific tabs in expandable menu */
+.nav-dropdown {
+  display: inline-flex;
+}
+.nav-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-left: 3px solid var(--violet);
+}
+.nav-dropdown-trigger.active {
+  background: var(--violet);
+  color: var(--bg);
+  border-color: var(--violet);
+  border-left: 3px solid var(--violet);
+}
+
+/* Reserved space below nav for dropdown content - always present */
+.nav-dropdown-space {
+  height: 52px;
+  padding: 0 64px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-dropdown-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-dropdown-item {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+.nav-dropdown-item:hover {
+  color: var(--text);
+}
+.nav-dropdown-item.active {
+  color: var(--violet);
 }
 
 /* Main Content */
@@ -938,14 +1024,14 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* Responsive - Desktop */
 @media (max-width: 1200px) {
-  .hero, .stats-row, .nav, .main { padding-left: 32px; padding-right: 32px; }
+  .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 32px; padding-right: 32px; }
   .g4 { grid-template-columns: repeat(2, 1fr); }
   .g5 { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* Responsive - Tablet */
 @media (max-width: 900px) {
-  .hero, .stats-row, .nav, .main { padding-left: 24px; padding-right: 24px; }
+  .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 24px; padding-right: 24px; }
   .g3 { grid-template-columns: repeat(2, 1fr); }
   .g4 { grid-template-columns: repeat(2, 1fr); }
   .g5 { grid-template-columns: repeat(2, 1fr); }
@@ -975,6 +1061,7 @@ input[type="range"]::-webkit-slider-thumb {
 
   .nav { padding: 10px 12px; gap: 4px; }
   .nav-btn { padding: 8px 12px; font-size: 12px; }
+  .nav-dropdown-space { padding: 0 12px; height: 44px; }
 
   .main { padding: 20px 16px; }
   .card { padding: 16px; border-radius: 12px; }
@@ -1017,6 +1104,7 @@ input[type="range"]::-webkit-slider-thumb {
 
   .nav { padding: 8px 10px; }
   .nav-btn { padding: 6px 10px; font-size: 11px; gap: 4px; }
+  .nav-dropdown-space { padding: 0 10px; height: 40px; }
 
   .main { padding: 16px 12px; }
   .card, .highlight { padding: 14px; }
@@ -1372,6 +1460,7 @@ const BMNRDilutionAnalysis = () => {
   const [currentStockPrice, setCurrentStockPrice] = useState(27.15);  // ⚠️ UPDATE REGULARLY - Last: Jan 12, 2026
   const [ethPrice, setEthPrice] = useState(3119);  // ⚠️ UPDATE REGULARLY - Last: Jan 11, 2026 (Coinbase)
   const [activeTab, setActiveTab] = useState('overview');
+  const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
   const [dilutionPercent, setDilutionPercent] = useState(5);
   const [saleDiscount, setSaleDiscount] = useState(5);
   const [navMultiple, setNavMultiple] = useState(1.00); // NAV multiple (stock price = NAV × mNAV)
@@ -1400,19 +1489,14 @@ const BMNRDilutionAnalysis = () => {
   const [quarterlyDividend, setQuarterlyDividend] = useState(0.01);
   const [dividendGrowthRate, setDividendGrowthRate] = useState(10); // % annual growth
 
-  const historicalETH = {
-    2020: [134, 230, 288, 171, 207, 228, 244, 391, 367, 396, 387, 478, 586],
-    2021: [738, 1316, 1393, 1789, 1938, 2814, 2707, 2280, 3198, 3920, 4636, 4644, 3682],
-    2022: [3682, 3117, 2619, 2994, 3049, 1784, 1962, 1073, 1251, 1595, 1316, 1273, 1194],
-    2023: [1194, 1561, 1657, 1545, 1817, 1899, 1844, 1917, 1852, 1627, 1597, 2050, 2268],
-    2024: [2268, 2305, 2408, 3084, 3516, 3095, 3704, 3499, 3329, 2582, 2606, 3289, 3430],
-  };
-  const comparables = [
-    { name: 'BMNR', crypto: 'ETH', holdings: currentETH, shares: currentShares * 1e6, price: currentStockPrice, yield: baseStakingAPY },
-    { name: 'MSTR', crypto: 'BTC', holdings: 671268, shares: 226e6, price: 390, yield: 0 },
-    // COIN Q3 2025 10-Q: 14,548 BTC, 148,715 ETH
-    { name: 'COIN', crypto: 'BTC+ETH', holdings: '14,548 BTC / 148,715 ETH', shares: 196e6, price: 265, yield: 0 },
-  ];
+  // Use imported data from @/data/bmnr
+  const historicalETH = HISTORICAL_ETH;
+  // Build comparables dynamically with current user values for BMNR
+  const comparables = COMPARABLES.map(c =>
+    c.name === 'BMNR'
+      ? { ...c, holdings: currentETH, shares: currentShares * 1e6, price: currentStockPrice, yield: baseStakingAPY }
+      : c
+  );
 
   const calc = useMemo(() => {
     const totalShares = currentShares * 1e6;
@@ -1444,23 +1528,29 @@ const BMNRDilutionAnalysis = () => {
     return { currentNAV: safe(currentNAV), ethPerShare: safe(ethPerShare), marketCap: safe(marketCap), navPremium: safe(navPremium), impliedStockPrice: safe(impliedStockPrice), effectiveAPY, stakedETH, annualYieldETH: safe(annualYieldETH), annualYieldUSD: safe(annualYieldUSD), debtUSD, leverageRatio: safe(leverageRatio), ltv: safe(ltv), conversionPrice: safe(conversionPrice), deathSpiralETHPrice: safe(deathSpiralETHPrice), totalShares, annualDividend, dividendYield: safe(dividendYield), totalAnnualDividendPayout: safe(totalAnnualDividendPayout), dividendPayoutRatio: safe(dividendPayoutRatio) };
   }, [currentETH, currentShares, currentStockPrice, ethPrice, navMultiple, stakingType, baseStakingAPY, restakingBonus, stakingRatio, useDebt, debtAmount, conversionPremium, debtCovenantLTV, quarterlyDividend]);
 
-  const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'scenarios', label: 'Scenarios' },
-    { id: 'ethereum', label: 'Ethereum' },
-    { id: 'staking', label: 'Staking' },
-    { id: 'dilution', label: 'Dilution' },
-    { id: 'debt', label: 'Debt' },
-    { id: 'capital', label: 'Capital' },
-    { id: 'sensitivity', label: 'Sensitivity' },
-    { id: 'backtest', label: 'Backtest' },
-    { id: 'dcf', label: 'DCF' },
-    { id: 'monte-carlo', label: 'Monte Carlo' },
-    { id: 'comps', label: 'Comps' },
-    { id: 'financials', label: 'Financials' },
-    { id: 'timeline', label: 'Timeline' },
-    { id: 'investment', label: 'Investment' },
-    { id: 'wall-street', label: 'Wall Street' },
+  // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
+  // Order: Overview first, then stock-specific projections, common projections, then tracking
+  // group: optional grouping for nested display (stock-specific tabs)
+  const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
+    { id: 'overview', label: 'Overview', type: 'tracking' },
+    // Stock-specific projections (grouped under "BMNR Analysis")
+    { id: 'ethereum', label: 'Ethereum', type: 'projection', group: 'BMNR Analysis' },
+    { id: 'staking', label: 'Staking', type: 'projection', group: 'BMNR Analysis' },
+    { id: 'dilution', label: 'Dilution', type: 'projection', group: 'BMNR Analysis' },
+    { id: 'debt', label: 'Debt', type: 'projection', group: 'BMNR Analysis' },
+    { id: 'sensitivity', label: 'Sensitivity', type: 'projection', group: 'BMNR Analysis' },
+    { id: 'backtest', label: 'Backtest', type: 'projection', group: 'BMNR Analysis' },
+    // Common projections
+    { id: 'scenarios', label: 'Scenarios', type: 'projection' },
+    { id: 'dcf', label: 'DCF', type: 'projection' },
+    { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
+    { id: 'comps', label: 'Comps', type: 'projection' },
+    // Tracking
+    { id: 'capital', label: 'Capital', type: 'tracking' },
+    { id: 'financials', label: 'Financials', type: 'tracking' },
+    { id: 'timeline', label: 'Timeline', type: 'tracking' },
+    { id: 'investment', label: 'Investment', type: 'tracking' },
+    { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
   ];
 
   return (
@@ -1501,9 +1591,9 @@ const BMNRDilutionAnalysis = () => {
                 marginBottom: 16
               }}>
                 <span>📅</span>
-                <span>Data as of: Jan 12, 2026</span>
+                <span>Data as of: {DATA_FRESHNESS.dataAsOf}</span>
                 <span style={{ color: 'rgba(167,139,250,0.5)' }}>|</span>
-                <span>Update prices regularly</span>
+                <span>{DATA_FRESHNESS.priceNote}</span>
               </div>
               <p className="desc">
                 Institutional-grade ETH exposure through a publicly traded vehicle. 
@@ -1532,17 +1622,54 @@ const BMNRDilutionAnalysis = () => {
 
         {/* Navigation */}
         <nav className="nav">
-          {tabs.map(t => (
-            <button 
-              key={t.id} 
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''}`}
+          {/* Tabs before dropdown */}
+          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) > tabs.indexOf(t)).map(t => (
+            <button
+              key={t.id}
+              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+              onClick={() => setActiveTab(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+
+          {/* Stock-specific dropdown trigger */}
+          <button
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+          >
+            BMNR Analysis ↕
+          </button>
+
+          {/* Tabs after dropdown */}
+          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) < tabs.indexOf(t)).map(t => (
+            <button
+              key={t.id}
+              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
               onClick={() => setActiveTab(t.id)}
             >
               {t.label}
             </button>
           ))}
         </nav>
-        
+
+        {/* Reserved space for dropdown menu - always present to prevent layout shift */}
+        <div className="nav-dropdown-space">
+          {analysisDropdownOpen && (
+            <div className="nav-dropdown-menu">
+              {tabs.filter(t => t.group).map(t => (
+                <button
+                  key={t.id}
+                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+                  onClick={() => setActiveTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Main Content */}
         <main className="main">
         {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} />}
@@ -2471,40 +2598,20 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
 const CapitalTab = ({ currentShares, currentStockPrice }) => {
   const [capitalView, setCapitalView] = useState('structure');
 
-  // Share class structure data
-  const shareClasses = [
-    { class: 'Common Stock', authorized: 500000000, outstanding: currentShares * 1e6, parValue: 0.0001, voting: '1 vote/share', status: 'active' },
-    { class: 'Series A Preferred', authorized: 10000000, outstanding: 0, parValue: 0.0001, voting: 'As-converted', status: 'converted' },
-    { class: 'Series B Preferred', authorized: 10000000, outstanding: 0, parValue: 0.0001, voting: 'As-converted', status: 'converted' },
-  ];
+  // Use imported data from @/data/bmnr
+  // Update outstanding shares dynamically from currentShares prop
+  const shareClasses = SHARE_CLASSES.map(sc =>
+    sc.class === 'Common Stock' ? { ...sc, outstanding: currentShares * 1e6 } : sc
+  );
+  const majorShareholders = MAJOR_SHAREHOLDERS;
+  const equityOfferings = EQUITY_OFFERINGS;
+  const warrants = WARRANTS;
 
-  // Major shareholders
-  const majorShareholders = [
-    { name: 'Bill Miller III', shares: null, percent: null, type: 'Individual', source: 'Jul 2025 PR' },
-    { name: 'Institutional Holder 1', shares: null, percent: null, type: 'Institution', source: '13F TBD' },
-    { name: 'Institutional Holder 2', shares: null, percent: null, type: 'Institution', source: '13F TBD' },
-    { name: 'Insider Holdings', shares: null, percent: null, type: 'Insiders', source: 'DEF 14A TBD' },
-  ];
-
-  // Equity offerings
-  const equityOfferings = [
-    { date: 'Jul 2025', type: 'ATM', amount: 2.0, status: 'exhausted' },
-    { date: 'Jul 28', type: 'ATM+', amount: 4.5, status: 'exhausted' },
-    { date: 'Aug 12', type: 'ATM+', amount: 24.5, status: 'active' },
-    { date: 'Sep 22', type: '424B5', amount: 0.365, status: 'completed' },
-  ];
-
-  // Warrants
-  const warrants = [
-    { type: 'Pre-Funded', shares: 11000000, strike: 0.0001, source: 'Jul 2025 PIPE' },
-    { type: 'Advisor', shares: 3190000, strike: 5.40, source: 'Jul 2025 S-3' },
-  ];
-
-  // Fully diluted calculation
+  // Fully diluted calculation using current shares
   const fdShares = {
     common: currentShares * 1e6,
-    prefunded: 11000000,
-    advisor: 3190000,
+    prefunded: WARRANTS.find(w => w.type === 'Pre-Funded')?.shares || 0,
+    advisor: WARRANTS.find(w => w.type === 'Advisor')?.shares || 0,
     options: 0,
     rsus: 0,
   };
