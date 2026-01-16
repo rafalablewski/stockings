@@ -8,7 +8,7 @@
  * - Upcoming: Press releases, earnings calls, investor presentations
  * - Completed: Historical press releases, SEC filings
  *
- * LAST UPDATED: 2025-12-30
+ * LAST UPDATED: 2026-01-16
  * NEXT UPDATE: After each milestone completion or new catalyst announcement
  *
  * AI AGENT INSTRUCTIONS:
@@ -30,10 +30,10 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2025-12-30',
+  lastUpdated: '2026-01-16',
   source: 'Q3 2025 earnings call and press releases',
   nextExpectedUpdate: 'After Q4 2025 earnings (~March 2026)',
-  notes: 'BB6 launched Dec 23, 2025 - moved to completed',
+  notes: 'MDA SHIELD prime contract awarded Jan 16, 2026',
 };
 
 // ============================================================================
@@ -190,7 +190,7 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
 
   // === GOVERNMENT & DEFENSE ===
   {
-    event: 'Golden Dome Award(s)',
+    event: 'Additional Golden Dome / MDA Task Orders',
     timeline: '2026',
     impact: 'High',
     category: 'Government',
@@ -244,6 +244,9 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
  * - Move from UPCOMING_CATALYSTS when completed
  */
 export const COMPLETED_MILESTONES: CompletedMilestone[] = [
+  // === 2026 ===
+  { event: 'MDA SHIELD Prime Contract Award', date: 'Jan 16, 2026', category: 'Government' },
+
   // === 2025 ===
   { event: 'BB6 Launched (ISRO)', date: 'Dec 24, 2025', category: 'Constellation' },
   { event: '$1B+ Contracted Revenue', date: 'Q3 2025', category: 'Commercial' },
