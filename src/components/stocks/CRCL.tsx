@@ -946,6 +946,8 @@ const css = `
 .nav-dropdown-trigger.active {
   background: var(--violet);
   color: var(--bg);
+  border-color: var(--violet);
+  border-left: 3px solid var(--violet);
 }
 
 /* Reserved space below nav for dropdown content - always present */
