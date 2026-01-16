@@ -609,6 +609,15 @@ const css = `
 }
 .nav-dropdown-trigger {
   border-left: 3px solid var(--violet);
+  height: 44px;
+  box-sizing: border-box;
+}
+.nav-dropdown-trigger .arrow {
+  display: inline-block;
+  width: 12px;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1;
 }
 .nav-dropdown-trigger.active {
   background: var(--violet);
@@ -1658,7 +1667,7 @@ const BMNRDilutionAnalysis = () => {
               className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
               onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
             >
-              BMNR Analysis {analysisDropdownOpen ? '▲' : '▼'}
+              BMNR Analysis <span className="arrow">{analysisDropdownOpen ? '▲' : '▼'}</span>
             </button>
             {analysisDropdownOpen && (
               <div className="nav-dropdown-menu">
