@@ -1645,7 +1645,7 @@ const ASTSAnalysis = () => {
             className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
             onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
           >
-            ASTS Analysis <span className="arrow">{analysisDropdownOpen ? '▲' : '▼'}</span>
+            ASTS Analysis ↕
           </button>
 
           {/* Tabs after dropdown */}

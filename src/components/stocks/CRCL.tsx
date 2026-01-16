@@ -2272,7 +2272,7 @@ function CRCLModel() {
             className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
             onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
           >
-            CRCL Analysis <span className="arrow">{analysisDropdownOpen ? '▲' : '▼'}</span>
+            CRCL Analysis ↕
           </button>
 
           {/* Tabs after dropdown */}

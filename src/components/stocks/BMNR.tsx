@@ -1645,7 +1645,7 @@ const BMNRDilutionAnalysis = () => {
             className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
             onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
           >
-            BMNR Analysis <span className="arrow">{analysisDropdownOpen ? '▲' : '▼'}</span>
+            BMNR Analysis ↕
           </button>
 
           {/* Tabs after dropdown */}
