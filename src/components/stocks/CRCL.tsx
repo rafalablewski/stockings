@@ -869,8 +869,6 @@ const css = `
 /* Navigation */
 .nav {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
   gap: 8px;
   padding: 16px 64px;
   background: var(--bg);
@@ -879,7 +877,12 @@ const css = `
   top: 0;
   z-index: 100;
   backdrop-filter: blur(12px);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+.nav::-webkit-scrollbar { display: none; }
 
 .nav-btn {
   padding: 12px 24px;
@@ -928,20 +931,12 @@ const css = `
 /* Dropdown Navigation - Stock-specific tabs in expandable menu */
 .nav-dropdown {
   position: relative;
-  display: inline-flex;
-  align-items: flex-start;
 }
 .nav-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   border-left: 3px solid var(--violet);
-  height: 44px;
-  box-sizing: border-box;
-}
-.nav-dropdown-trigger .arrow {
-  display: inline-block;
-  width: 12px;
-  text-align: center;
-  font-size: 10px;
-  line-height: 1;
 }
 .nav-dropdown-trigger.active {
   background: var(--violet);
