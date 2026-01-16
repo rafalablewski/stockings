@@ -130,7 +130,7 @@
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  */
 
-import React, { useState, useMemo, useEffect, Component, ErrorInfo, ReactNode } from 'react';
+import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -1459,6 +1459,8 @@ const BMNRDilutionAnalysis = () => {
   const [ethPrice, setEthPrice] = useState(3119);  // ⚠️ UPDATE REGULARLY - Last: Jan 11, 2026 (Coinbase)
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [dilutionPercent, setDilutionPercent] = useState(5);
   const [saleDiscount, setSaleDiscount] = useState(5);
   const [navMultiple, setNavMultiple] = useState(1.00); // NAV multiple (stock price = NAV × mNAV)
@@ -1495,6 +1497,28 @@ const BMNRDilutionAnalysis = () => {
       ? { ...c, holdings: currentETH, shares: currentShares * 1e6, price: currentStockPrice, yield: baseStakingAPY }
       : c
   );
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setAnalysisDropdownOpen(false);
+      }
+    };
+    if (analysisDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [analysisDropdownOpen]);
+
+  // Calculate dropdown position
+  const handleDropdownToggle = () => {
+    if (!analysisDropdownOpen && dropdownRef.current) {
+      const rect = dropdownRef.current.getBoundingClientRect();
+      setDropdownPosition({ top: rect.bottom + 4, left: rect.left });
+    }
+    setAnalysisDropdownOpen(!analysisDropdownOpen);
+  };
 
   const calc = useMemo(() => {
     const totalShares = currentShares * 1e6;
@@ -1632,15 +1656,18 @@ const BMNRDilutionAnalysis = () => {
           ))}
 
           {/* Stock-specific dropdown */}
-          <div className="nav-dropdown">
+          <div className="nav-dropdown" ref={dropdownRef}>
             <button
               className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
-              onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+              onClick={handleDropdownToggle}
             >
               BMNR Analysis {analysisDropdownOpen ? '▲' : '▼'}
             </button>
             {analysisDropdownOpen && (
-              <div className="nav-dropdown-menu">
+              <div
+                className="nav-dropdown-menu"
+                style={{ position: 'fixed', top: dropdownPosition.top, left: dropdownPosition.left }}
+              >
                 {tabs.filter(t => t.group).map(t => (
                   <button
                     key={t.id}

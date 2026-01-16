@@ -109,7 +109,7 @@
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  */
 
-import React, { useState, useMemo, Component, ErrorInfo, ReactNode } from 'react';
+import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, ScatterChart, Scatter, Cell, ReferenceLine,
@@ -1761,6 +1761,8 @@ CFANotes.displayName = 'CFANotes';
 function CRCLModel() {
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [discount, setDiscount] = useState(12);
   const [scenario, setScenario] = useState('Base');
   const [timelineCat, setTimelineCat] = useState('All');
@@ -1772,7 +1774,29 @@ function CRCLModel() {
   const [secFilter, setSecFilter] = useState('All');
   const [showAllFilings, setShowAllFilings] = useState(false);
   const [capitalView, setCapitalView] = useState('structure');
-  
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setAnalysisDropdownOpen(false);
+      }
+    };
+    if (analysisDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [analysisDropdownOpen]);
+
+  // Calculate dropdown position
+  const handleDropdownToggle = () => {
+    if (!analysisDropdownOpen && dropdownRef.current) {
+      const rect = dropdownRef.current.getBoundingClientRect();
+      setDropdownPosition({ top: rect.bottom + 4, left: rect.left });
+    }
+    setAnalysisDropdownOpen(!analysisDropdownOpen);
+  };
+
   // Use imported SEC filings from @/data/crcl
   const secFilings = SEC_FILINGS;
   
@@ -2258,15 +2282,18 @@ function CRCLModel() {
           ))}
 
           {/* Stock-specific dropdown */}
-          <div className="nav-dropdown">
+          <div className="nav-dropdown" ref={dropdownRef}>
             <button
               className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
-              onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+              onClick={handleDropdownToggle}
             >
               CRCL Analysis {analysisDropdownOpen ? '▲' : '▼'}
             </button>
             {analysisDropdownOpen && (
-              <div className="nav-dropdown-menu">
+              <div
+                className="nav-dropdown-menu"
+                style={{ position: 'fixed', top: dropdownPosition.top, left: dropdownPosition.left }}
+              >
                 {tabs.filter(t => t.group).map(t => (
                   <button
                     key={t.id}
