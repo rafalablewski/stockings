@@ -186,7 +186,7 @@ interface CardProps {
   label: string;
   value: string | number;
   sub?: string;
-  color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'emerald';
+  color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'violet' | 'mint' | 'emerald';
 }
 
 interface RowProps {
@@ -1398,6 +1398,8 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
     purple: { bg: 'rgba(168,85,247,0.15)', border: 'rgba(168,85,247,0.3)', text: '#c084fc' },
     orange: { bg: 'rgba(249,115,22,0.15)', border: 'rgba(249,115,22,0.3)', text: '#fb923c' },
     cyan: { bg: 'rgba(34,211,238,0.15)', border: 'rgba(34,211,238,0.3)', text: '#22d3ee' },
+    violet: { bg: 'rgba(167,139,250,0.15)', border: 'rgba(167,139,250,0.3)', text: '#a78bfa' },
+    mint: { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.3)', text: '#34d399' },
     emerald: { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.3)', text: '#34d399' }
   };
   const c = colorMap[color || 'blue'] || colorMap.blue;
@@ -1734,7 +1736,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
   return (
   <>
     <h2 className="section-head">Investment Thesis</h2>
-    <div className="highlight"><h3>The Opportunity (Dec 2025)</h3>
+    <div className="highlight"><h3>The Opportunity</h3>
       <p style={{ fontSize: '14px' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 

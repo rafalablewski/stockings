@@ -168,7 +168,7 @@ interface CardProps {
   label: string;
   value: string | number;
   sub?: string;
-  color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'emerald' | 'violet';
+  color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'violet' | 'mint' | 'emerald';
 }
 
 interface RowProps {
@@ -1345,7 +1345,9 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
     yellow: { bg: 'rgba(234,179,8,0.15)', border: 'rgba(234,179,8,0.3)', text: '#facc15' },
     purple: { bg: 'rgba(168,85,247,0.15)', border: 'rgba(168,85,247,0.3)', text: '#c084fc' },
     orange: { bg: 'rgba(249,115,22,0.15)', border: 'rgba(249,115,22,0.3)', text: '#fb923c' },
+    cyan: { bg: 'rgba(34,211,238,0.15)', border: 'rgba(34,211,238,0.3)', text: '#22d3ee' },
     violet: { bg: 'rgba(167,139,250,0.15)', border: 'rgba(167,139,250,0.3)', text: '#a78bfa' },
+    mint: { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.3)', text: '#34d399' },
     emerald: { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.3)', text: '#34d399' }
   };
   const c = colorMap[color || 'blue'] || colorMap.blue;
@@ -1771,7 +1773,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       </div>
     </div>
 
-    <div className="card" style={{ marginTop: 32 }}><div className="card-title">Edit Parameters</div><div className="g4" style={{ marginTop: '16px' }}><Input label="ETH Holdings" value={currentETH} onChange={setCurrentETH} /><Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} /><Input label="Stock Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} /><Input label="ETH Price ($)" value={ethPrice} onChange={setEthPrice} /></div><div style={{ marginTop: '16px' }}><Input label="Qtr Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} /></div></div>
+    <div className="card" style={{ marginTop: 32 }}><div className="card-title">Parameters</div><div className="g4" style={{ marginTop: '16px' }}><Input label="ETH Holdings" value={currentETH} onChange={setCurrentETH} /><Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} /><Input label="Stock Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} /><Input label="ETH Price ($)" value={ethPrice} onChange={setEthPrice} /></div><div style={{ marginTop: '16px' }}><Input label="Qtr Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} /></div></div>
     
     <CFANotes title="CFA Level III — ETH Treasury Fundamentals" items={[
       { term: 'Net Asset Value (NAV)', def: 'The per-share intrinsic value = (Total ETH Holdings × ETH Price) ÷ Shares Outstanding. Represents liquidation value — what each share would be worth if all ETH were sold today. This is the fundamental anchor for valuation.' },

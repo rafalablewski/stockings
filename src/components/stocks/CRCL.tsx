@@ -158,7 +158,7 @@ interface CardProps {
   label: string;
   value: string | number;
   sub?: string;
-  color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'emerald' | 'violet';
+  color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'violet' | 'mint' | 'emerald';
 }
 
 interface RowProps {
@@ -1688,7 +1688,26 @@ input[type="range"]::-webkit-slider-thumb {
 
 // Card Component for unified risk metrics display
 // N1: Memoized pure components for performance optimization
-const Card = React.memo(({ label, value, sub, color }: { label: string; value: string; sub: string; color: string }) => {
+const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: '12px 0',
+    borderBottom: '1px solid var(--border)',
+    background: highlight ? 'var(--mint-dim)' : 'transparent',
+    paddingLeft: highlight ? '12px' : 0,
+    paddingRight: highlight ? '12px' : 0,
+    marginLeft: highlight ? '-12px' : 0,
+    marginRight: highlight ? '-12px' : 0,
+    borderRadius: highlight ? '8px' : 0
+  }}>
+    <span style={{ fontSize: '14px', color: 'var(--text2)' }}>{label}</span>
+    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--mint)' : 'var(--text)' }}>{value}</span>
+  </div>
+));
+Row.displayName = 'Row';
+
+const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
   const colorMap: Record<string, { bg: string; border: string; text: string }> = {
     blue: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', text: '#60a5fa' },
     green: { bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' },
@@ -1696,10 +1715,12 @@ const Card = React.memo(({ label, value, sub, color }: { label: string; value: s
     yellow: { bg: 'rgba(234,179,8,0.15)', border: 'rgba(234,179,8,0.3)', text: '#facc15' },
     purple: { bg: 'rgba(168,85,247,0.15)', border: 'rgba(168,85,247,0.3)', text: '#c084fc' },
     orange: { bg: 'rgba(249,115,22,0.15)', border: 'rgba(249,115,22,0.3)', text: '#fb923c' },
+    cyan: { bg: 'rgba(34,211,238,0.15)', border: 'rgba(34,211,238,0.3)', text: '#22d3ee' },
+    violet: { bg: 'rgba(167,139,250,0.15)', border: 'rgba(167,139,250,0.3)', text: '#a78bfa' },
     mint: { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.3)', text: '#34d399' },
     emerald: { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.3)', text: '#34d399' }
   };
-  const c = colorMap[color] || colorMap.blue;
+  const c = colorMap[color || 'blue'] || colorMap.blue;
   return (
     <div style={{ 
       background: c.bg, 
@@ -1717,7 +1738,7 @@ const Card = React.memo(({ label, value, sub, color }: { label: string; value: s
 Card.displayName = 'Card';
 
 // Input Component for adjustable parameters
-const Input = React.memo(({ label, value, onChange, step = 1, min, max }: { label: string; value: number; onChange: (v: number) => void; step?: number; min?: number; max?: number }) => (
+const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, max }) => (
   <div>
     <label style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600, marginBottom: '8px' }}>{label}</label>
     <input 
@@ -1744,7 +1765,7 @@ const Input = React.memo(({ label, value, onChange, step = 1, min, max }: { labe
 Input.displayName = 'Input';
 
 // CFA Level III Educational Notes Component
-const CFANotes = React.memo(({ title, items }: { title?: string; items: { term: string; def: string }[] }) => (
+const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
   <div style={{ marginTop: 24, padding: 20, background: 'var(--surface2)', borderRadius: 12, border: '1px solid var(--border)' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
       <span style={{ fontSize: 16 }}>📚</span>
@@ -1855,7 +1876,13 @@ function CRCLModel() {
   const [sensRate, setSensRate] = useState(4.0);  // Fed Funds Rate %
   const [sensUsdc, setSensUsdc] = useState(75);   // USDC Circulation $B
   const [sensDist, setSensDist] = useState(54);   // Coinbase Distribution %
-  
+
+  // Overview Tab Parameters - Unified with ASTS/BMNR structure
+  const [currentShares, setCurrentShares] = useState(MARKET.shares);  // Millions (Class A + Class B)
+  const [currentStockPrice, setCurrentStockPrice] = useState(MARKET.price);  // ⚠️ UPDATE REGULARLY
+  const [currentUSDC, setCurrentUSDC] = useState(62.5);  // USDC Circulation $B - from Q3'25 10-Q
+  const [currentMarketShare, setCurrentMarketShare] = useState(29);  // USDC market share %
+
   const toggleInvestmentSection = (section: string) => {
     const next = new Set(investmentSections);
     if (next.has(section)) next.delete(section);
@@ -1921,6 +1948,20 @@ function CRCLModel() {
   const revGrowth = prevYear && prevYear.totalRevenue > 0 ? ((latest.totalRevenue - prevYear.totalRevenue) / prevYear.totalRevenue * 100) : 0;
   const usdcGrowth = prevYear && prevYear.usdcCirculation > 0 ? ((latest.usdcCirculation - prevYear.usdcCirculation) / prevYear.usdcCirculation * 100) : 0;
   const ipoReturn = MARKET.ipo > 0 ? ((MARKET.price - MARKET.ipo) / MARKET.ipo * 100) : 0;
+
+  // Overview calc - Unified with ASTS/BMNR structure
+  const calc = useMemo(() => {
+    const marketCap = currentShares * currentStockPrice;  // in millions
+    const totalStablecoins = currentUSDC / (currentMarketShare / 100);  // Total stablecoin market
+    const revenuePerBillionUsdc = latest.totalRevenue / latest.usdcCirculation;  // Revenue efficiency
+    const rldcMargin = latest.rldc / latest.totalRevenue * 100;
+    return {
+      marketCap,
+      totalStablecoins,
+      revenuePerBillionUsdc,
+      rldcMargin,
+    };
+  }, [currentShares, currentStockPrice, currentUSDC, currentMarketShare, latest]);
 
   // Helper to ensure values are finite
   const safe = (v: number) => (isFinite(v) ? v : 0);
@@ -2305,10 +2346,10 @@ function CRCLModel() {
               
               <div className="highlight">
                 <h3>The Opportunity</h3>
-                <p>
-                  Circle is building financial infrastructure for the internet economy. USDC enables 24/7 
-                  global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share 
-                  and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of 
+                <p style={{ fontSize: '14px' }}>
+                  Circle is building financial infrastructure for the internet economy. USDC enables 24/7
+                  global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share
+                  and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of
                   traditional finance and blockchain technology.
                 </p>
               </div>
@@ -2359,7 +2400,40 @@ function CRCLModel() {
                 <Card label="Active Wallets" value={`${latest.meaningfulWallets}M`} sub="Meaningful wallets" color="blue" />
                 <Card label="Arc Partners" value="100+" sub="Platform integrations" color="purple" />
               </div>
-              
+
+              <div className="g3" style={{ marginTop: 32 }}>
+                <div className="card"><div className="card-title">Equity (Q3 2025)</div>
+                  <Row label="Shares Outstanding" value={`${currentShares.toFixed(1)}M`} />
+                  <Row label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} />
+                  <Row label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} highlight />
+                  <Row label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} />
+                  <Row label="Since IPO" value={`+${ipoReturn.toFixed(0)}%`} />
+                </div>
+                <div className="card"><div className="card-title">USDC Metrics</div>
+                  <Row label="USDC Circulation" value={`$${currentUSDC.toFixed(1)}B`} />
+                  <Row label="Market Share" value={`${currentMarketShare}%`} highlight />
+                  <Row label="Total Stablecoin Mkt" value={`$${calc.totalStablecoins.toFixed(0)}B`} />
+                  <Row label="YoY Growth" value={`+${usdcGrowth.toFixed(0)}%`} />
+                  <Row label="Active Wallets" value={`${latest.meaningfulWallets}M`} />
+                </div>
+                <div className="card"><div className="card-title">Revenue</div>
+                  <Row label="Q3 Revenue" value={`$${latest.totalRevenue}M`} />
+                  <Row label="RLDC" value={`$${latest.rldc}M`} highlight />
+                  <Row label="RLDC Margin" value={`${latest.rldcMargin}%`} />
+                  <Row label="Adj. EBITDA" value={`$${latest.adjustedEbitda}M`} />
+                  <Row label="Rev/B USDC" value={`$${calc.revenuePerBillionUsdc.toFixed(0)}M`} />
+                </div>
+              </div>
+
+              <div className="card" style={{ marginTop: 32 }}><div className="card-title">Parameters</div>
+                <div className="g4" style={{ marginTop: '16px' }}>
+                  <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} step={0.1} />
+                  <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
+                  <Input label="USDC Circ ($B)" value={currentUSDC} onChange={setCurrentUSDC} step={0.5} />
+                  <Input label="Market Share (%)" value={currentMarketShare} onChange={setCurrentMarketShare} step={1} />
+                </div>
+              </div>
+
               <CFANotes title="CFA Level III — Stablecoin Economics" items={[
                 { term: 'USDC Reserve Income', def: 'Circle earns interest on USDC reserves (T-bills, cash). $1 USDC outstanding = $1 in reserves earning ~4-5% in current rate environment.' },
                 { term: 'Revenue = AUM × Rate', def: 'Revenue scales with both USDC circulation and interest rates. Fed rate cuts reduce revenue; USDC growth offsets.' },
