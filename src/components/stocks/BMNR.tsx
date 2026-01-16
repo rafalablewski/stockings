@@ -545,6 +545,7 @@ const css = `
 /* Navigation */
 .nav {
   display: flex;
+  align-items: center;
   gap: 8px;
   padding: 16px 64px;
   background: var(--bg);
