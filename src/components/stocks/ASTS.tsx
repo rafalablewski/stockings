@@ -610,6 +610,7 @@ const css = `
 /* Navigation */
 .nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   padding: 16px 64px;
   background: var(--bg);
@@ -618,12 +619,7 @@ const css = `
   top: 0;
   z-index: 100;
   backdrop-filter: blur(12px);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
-.nav::-webkit-scrollbar { display: none; }
 
 .nav-btn {
   padding: 12px 24px;
@@ -684,6 +680,9 @@ const css = `
   color: var(--bg);
 }
 .nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
   min-width: 180px;
   background: var(--surface);
   border: 1px solid var(--surface2);
@@ -691,6 +690,7 @@ const css = `
   padding: 8px 0;
   z-index: 9999;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  margin-top: 4px;
 }
 .nav-dropdown-item {
   display: block;
@@ -1656,15 +1656,12 @@ const ASTSAnalysis = () => {
           <div className="nav-dropdown" ref={dropdownRef}>
             <button
               className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
-              onClick={handleDropdownToggle}
+              onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
             >
               ASTS Analysis {analysisDropdownOpen ? '▲' : '▼'}
             </button>
             {analysisDropdownOpen && (
-              <div
-                className="nav-dropdown-menu"
-                style={{ position: 'fixed', top: dropdownPosition.top, left: dropdownPosition.left }}
-              >
+              <div className="nav-dropdown-menu">
                 {tabs.filter(t => t.group).map(t => (
                   <button
                     key={t.id}
