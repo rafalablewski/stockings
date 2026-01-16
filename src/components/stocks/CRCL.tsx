@@ -931,7 +931,7 @@ const css = `
 
 /* Dropdown Navigation - Stock-specific tabs in expandable menu */
 .nav-dropdown {
-  position: relative;
+  display: inline-flex;
 }
 .nav-dropdown-trigger {
   display: flex;
@@ -943,46 +943,49 @@ const css = `
   background: var(--violet);
   color: var(--bg);
 }
+
+/* Reserved space below nav for dropdown content - always present */
+.nav-dropdown-space {
+  height: 52px;
+  padding: 0 64px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .nav-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  min-width: 180px;
-  background: var(--surface);
-  border: 1px solid var(--surface2);
-  border-radius: 8px;
-  padding: 8px 0;
-  z-index: 9999;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .nav-dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 10px 16px;
-  text-align: left;
+  padding: 10px 20px;
   font-size: 14px;
+  font-weight: 500;
   color: var(--muted);
-  background: none;
-  border: none;
-  border-left: 3px solid transparent;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s;
+  white-space: nowrap;
 }
 .nav-dropdown-item:hover {
   background: var(--surface2);
   color: var(--text);
+  border-color: var(--surface2);
 }
 .nav-dropdown-item.active {
   background: var(--violet);
   color: var(--bg);
-  border-left-color: var(--violet);
+  border-color: var(--violet);
 }
 .nav-dropdown-item.tab-projection {
-  border-left-color: var(--violet);
+  border-left: 3px solid var(--violet);
 }
 .nav-dropdown-item.tab-tracking {
-  border-left-color: var(--mint);
+  border-left: 3px solid var(--mint);
 }
 
 /* Main Content */
@@ -1621,7 +1624,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* Responsive */
 @media (max-width: 1200px) {
-  .hero, .stats-row, .nav, .main { padding-left: 32px; padding-right: 32px; }
+  .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 32px; padding-right: 32px; }
   .g4 { grid-template-columns: repeat(2, 1fr); }
   .g5 { grid-template-columns: repeat(3, 1fr); }
   .timeline-header { grid-template-columns: 90px 1fr auto auto; }
@@ -1632,6 +1635,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 @media (max-width: 900px) {
+  .nav-dropdown-space { padding-left: 24px; padding-right: 24px; }
   .timeline-header { grid-template-columns: 90px 1fr auto auto; }
   .timeline-header .t-cat { display: none; }
 }
@@ -1650,6 +1654,8 @@ input[type="range"]::-webkit-slider-thumb {
   .t-toggle { width: 28px; height: 28px; font-size: 14px; }
   .nav { padding: 12px 16px; gap: 6px; }
   .nav-btn { padding: 10px 16px; font-size: 13px; }
+  .nav-dropdown-space { padding: 0 16px; height: 48px; }
+  .nav-dropdown-item { padding: 10px 16px; font-size: 13px; }
 }
 
 @media (max-width: 600px) {
@@ -1673,6 +1679,8 @@ input[type="range"]::-webkit-slider-thumb {
 
   .nav { padding: 8px 10px; }
   .nav-btn { padding: 6px 10px; font-size: 11px; gap: 4px; }
+  .nav-dropdown-space { padding: 0 10px; height: 40px; }
+  .nav-dropdown-item { padding: 6px 10px; font-size: 11px; }
 
   .main { padding: 16px 12px; }
   .card, .highlight { padding: 14px; }
@@ -1763,8 +1771,6 @@ CFANotes.displayName = 'CFANotes';
 function CRCLModel() {
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [discount, setDiscount] = useState(12);
   const [scenario, setScenario] = useState('Base');
   const [timelineCat, setTimelineCat] = useState('All');
@@ -1776,28 +1782,6 @@ function CRCLModel() {
   const [secFilter, setSecFilter] = useState('All');
   const [showAllFilings, setShowAllFilings] = useState(false);
   const [capitalView, setCapitalView] = useState('structure');
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setAnalysisDropdownOpen(false);
-      }
-    };
-    if (analysisDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [analysisDropdownOpen]);
-
-  // Calculate dropdown position
-  const handleDropdownToggle = () => {
-    if (!analysisDropdownOpen && dropdownRef.current) {
-      const rect = dropdownRef.current.getBoundingClientRect();
-      setDropdownPosition({ top: rect.bottom + 4, left: rect.left });
-    }
-    setAnalysisDropdownOpen(!analysisDropdownOpen);
-  };
 
   // Use imported SEC filings from @/data/crcl
   const secFilings = SEC_FILINGS;
@@ -2283,28 +2267,13 @@ function CRCLModel() {
             </button>
           ))}
 
-          {/* Stock-specific dropdown */}
-          <div className="nav-dropdown" ref={dropdownRef}>
-            <button
-              className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
-              onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
-            >
-              CRCL Analysis <span className="arrow">{analysisDropdownOpen ? '▲' : '▼'}</span>
-            </button>
-            {analysisDropdownOpen && (
-              <div className="nav-dropdown-menu">
-                {tabs.filter(t => t.group).map(t => (
-                  <button
-                    key={t.id}
-                    className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-                    onClick={() => { setActiveTab(t.id); setAnalysisDropdownOpen(false); }}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Stock-specific dropdown trigger */}
+          <button
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+          >
+            CRCL Analysis <span className="arrow">{analysisDropdownOpen ? '▲' : '▼'}</span>
+          </button>
 
           {/* Tabs after dropdown */}
           {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) < tabs.indexOf(t)).map(t => (
@@ -2317,6 +2286,23 @@ function CRCLModel() {
             </button>
           ))}
         </nav>
+
+        {/* Reserved space for dropdown menu - always present to prevent layout shift */}
+        <div className="nav-dropdown-space">
+          {analysisDropdownOpen && (
+            <div className="nav-dropdown-menu">
+              {tabs.filter(t => t.group).map(t => (
+                <button
+                  key={t.id}
+                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+                  onClick={() => { setActiveTab(t.id); setAnalysisDropdownOpen(false); }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Main */}
         <main className="main">
