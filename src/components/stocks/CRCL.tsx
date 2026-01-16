@@ -915,12 +915,12 @@ const css = `
 }
 
 /* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
-/* mint=tracking (actual data), signature color=projection (user models) */
+/* mint=tracking (actual data), violet=projection (user models) */
 .nav-btn.tab-tracking {
   border-left: 3px solid var(--mint);
 }
 .nav-btn.tab-projection {
-  border-left: 3px solid var(--mint);
+  border-left: 3px solid var(--violet);
 }
 .nav-btn.tab-tracking.active {
   border-left-color: var(--mint);
@@ -928,9 +928,9 @@ const css = `
   border-color: var(--mint);
 }
 .nav-btn.tab-projection.active {
-  border-left-color: var(--mint);
-  background: var(--mint);
-  border-color: var(--mint);
+  border-left-color: var(--violet);
+  background: var(--violet);
+  border-color: var(--violet);
 }
 
 /* Dropdown Navigation - Stock-specific tabs in expandable menu */
