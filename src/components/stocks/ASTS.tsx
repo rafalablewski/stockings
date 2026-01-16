@@ -8650,6 +8650,13 @@ const TimelineTab = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 16, 2026</span>
+                <span style={{ fontSize: 11, color: 'var(--gold)' }}>Government</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>MDA SHIELD Prime Contract Award — Golden Dome Program</div>
+            </div>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Dec 24, 2025</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Launch</span>
               </div>
@@ -8657,10 +8664,10 @@ const TimelineTab = () => {
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Oct 2025</span>
-                <span style={{ fontSize: 11, color: 'var(--violet)' }}>Financing</span>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Nov 2025</span>
+                <span style={{ fontSize: 11, color: 'var(--gold)' }}>Earnings</span>
               </div>
-              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>$1.15B Convertible Notes Offering Completed</div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Q3 2025 Results: $1.22B Cash, 6 Satellites Operational</div>
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -8668,13 +8675,6 @@ const TimelineTab = () => {
                 <span style={{ fontSize: 11, color: 'var(--cyan)' }}>Partnership</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Verizon Definitive Agreement — $100M+ Commitment</div>
-            </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Nov 2025</span>
-                <span style={{ fontSize: 11, color: 'var(--gold)' }}>Earnings</span>
-              </div>
-              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Q3 2025 Results: $1.22B Cash, 6 Satellites Operational</div>
             </div>
           </div>
         </div>
