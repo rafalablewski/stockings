@@ -1655,7 +1655,7 @@ const ASTSAnalysis = () => {
                 <button
                   key={t.id}
                   className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-                  onClick={() => { setActiveTab(t.id); setAnalysisDropdownOpen(false); }}
+                  onClick={() => setActiveTab(t.id)}
                 >
                   {t.label}
                 </button>
