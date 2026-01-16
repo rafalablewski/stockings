@@ -686,10 +686,11 @@ const MAJOR_SHAREHOLDERS = [
 
 // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
 // Order: Overview first, then stock-specific projections, common projections, then tracking
-const tabs = [
+// group: optional grouping for nested display (stock-specific tabs)
+const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
   { id: 'overview', label: 'Overview', type: 'tracking' },
-  // Stock-specific projections
-  { id: 'usdc', label: 'USDC', type: 'projection' },
+  // Stock-specific projections (grouped under "CRCL Analysis")
+  { id: 'usdc', label: 'USDC', type: 'projection', group: 'CRCL Analysis' },
   // Common projections
   { id: 'scenarios', label: 'Scenarios', type: 'projection' },
   { id: 'dcf', label: 'DCF', type: 'projection' },
@@ -925,6 +926,24 @@ const css = `
 }
 .nav-btn.tab-projection.active {
   border-left-color: var(--violet);
+}
+
+/* Nested Tab Groups - Stock-specific tabs grouped under a header */
+.nav-group-header {
+  width: 100%;
+  padding: 8px 16px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  background: var(--surface);
+  border-bottom: 1px solid var(--surface2);
+  margin-top: 4px;
+}
+.nav-nested {
+  padding-left: 32px;
+  font-size: 13px;
 }
 
 /* Main Content */
@@ -2189,15 +2208,21 @@ function CRCLModel() {
 
         {/* Nav */}
         <nav className="nav">
-          {tabs.map(t => (
-            <button
-              key={t.id}
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
+          {tabs.map((t, i) => {
+            const prevTab = tabs[i - 1];
+            const showGroupHeader = t.group && (!prevTab || prevTab.group !== t.group);
+            return (
+              <React.Fragment key={t.id}>
+                {showGroupHeader && <div className="nav-group-header">{t.group}</div>}
+                <button
+                  className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}${t.group ? ' nav-nested' : ''}`}
+                  onClick={() => setActiveTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              </React.Fragment>
+            );
+          })}
         </nav>
 
         {/* Main */}

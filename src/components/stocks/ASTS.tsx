@@ -669,6 +669,24 @@ const css = `
   border-left-color: var(--violet);
 }
 
+/* Nested Tab Groups - Stock-specific tabs grouped under a header */
+.nav-group-header {
+  width: 100%;
+  padding: 8px 16px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  background: var(--surface);
+  border-bottom: 1px solid var(--surface2);
+  margin-top: 4px;
+}
+.nav-nested {
+  padding-left: 32px;
+  font-size: 13px;
+}
+
 /* Main Content */
 .main {
   padding: 48px 64px;
@@ -1472,15 +1490,16 @@ const ASTSAnalysis = () => {
 
   // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
   // Order: Overview first, then stock-specific projections, common projections, then tracking
-  const tabs = [
+  // group: optional grouping for nested display (stock-specific tabs)
+  const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
     { id: 'overview', label: 'Overview', type: 'tracking' },
-    // Stock-specific projections
-    { id: 'catalysts', label: 'Catalysts', type: 'projection' },
-    { id: 'constellation', label: 'Constellation', type: 'projection' },
-    { id: 'subscribers', label: 'Subscribers', type: 'projection' },
-    { id: 'revenue', label: 'Revenue', type: 'projection' },
-    { id: 'partners', label: 'Partners', type: 'projection' },
-    { id: 'runway', label: 'Cash Runway', type: 'projection' },
+    // Stock-specific projections (grouped under "ASTS Analysis")
+    { id: 'catalysts', label: 'Catalysts', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'constellation', label: 'Constellation', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'subscribers', label: 'Subscribers', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'revenue', label: 'Revenue', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'partners', label: 'Partners', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'runway', label: 'Cash Runway', type: 'projection', group: 'ASTS Analysis' },
     // Common projections
     { id: 'scenarios', label: 'Scenarios', type: 'projection' },
     { id: 'dcf', label: 'DCF', type: 'projection' },
@@ -1563,15 +1582,21 @@ const ASTSAnalysis = () => {
 
         {/* Navigation */}
         <nav className="nav">
-          {tabs.map(t => (
-            <button
-              key={t.id}
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
+          {tabs.map((t, i) => {
+            const prevTab = tabs[i - 1];
+            const showGroupHeader = t.group && (!prevTab || prevTab.group !== t.group);
+            return (
+              <React.Fragment key={t.id}>
+                {showGroupHeader && <div className="nav-group-header">{t.group}</div>}
+                <button
+                  className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}${t.group ? ' nav-nested' : ''}`}
+                  onClick={() => setActiveTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              </React.Fragment>
+            );
+          })}
         </nav>
         
         {/* Main Content */}
