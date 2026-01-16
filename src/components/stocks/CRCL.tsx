@@ -943,15 +943,12 @@ const css = `
   color: var(--bg);
 }
 .nav-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
   min-width: 180px;
   background: var(--surface);
   border: 1px solid var(--surface2);
   border-radius: 8px;
   padding: 8px 0;
-  z-index: 100;
+  z-index: 9999;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 .nav-dropdown-item {
