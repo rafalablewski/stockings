@@ -69,7 +69,7 @@ export const COMPARABLES = [
   {
     name: 'BMNR',
     crypto: 'ETH',
-    holdings: 4167768,        // Current ETH holdings
+    holdings: 4168000,        // Current ETH holdings (Jan MTD)
     shares: 434e6,            // Shares outstanding
     price: 27.15,             // Stock price
     yield: 2.81,              // Staking yield
