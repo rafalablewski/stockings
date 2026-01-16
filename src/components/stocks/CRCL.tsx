@@ -870,6 +870,7 @@ const css = `
 .nav {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 8px;
   padding: 16px 64px;
   background: var(--bg);
