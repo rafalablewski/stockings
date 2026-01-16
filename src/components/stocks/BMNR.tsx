@@ -600,9 +600,13 @@ const css = `
 }
 .nav-btn.tab-tracking.active {
   border-left-color: var(--mint);
+  background: var(--mint);
+  border-color: var(--mint);
 }
 .nav-btn.tab-projection.active {
   border-left-color: var(--violet);
+  background: var(--violet);
+  border-color: var(--violet);
 }
 
 /* Dropdown Navigation - Stock-specific tabs in expandable menu */
