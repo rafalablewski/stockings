@@ -928,7 +928,8 @@ const css = `
 /* Dropdown Navigation - Stock-specific tabs in expandable menu */
 .nav-dropdown {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: flex-start;
 }
 .nav-dropdown-trigger {
   border-left: 3px solid var(--violet);
