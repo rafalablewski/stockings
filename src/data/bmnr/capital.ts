@@ -26,8 +26,8 @@ import type { DataMetadata } from '../shared/types';
 // ============================================================================
 
 export const CAPITAL_METADATA: DataMetadata = {
-  lastUpdated: '2026-01-12',
-  source: 'Q1 FY26 10-Q (Jan 13, 2026)',
+  lastUpdated: '2026-01-15',
+  source: 'Jan 15, 2026 Annual Meeting 8-K',
   nextExpectedUpdate: 'Q2 FY26 10-Q or DEF 14A proxy',
   notes: 'Simple single-class structure supports rapid ATM execution',
 };
@@ -155,7 +155,7 @@ export const MAJOR_SHAREHOLDERS = [
     shares: null,
     percent: null,
     type: 'Individual',
-    source: 'Jul 2025 PR',
+    source: 'Jan 15, 2026 8-K',
     notes: 'High-profile value investor',
   },
   {
@@ -163,15 +163,23 @@ export const MAJOR_SHAREHOLDERS = [
     shares: null,
     percent: null,
     type: 'Institution',
-    source: 'PR mentions',
+    source: 'Jan 15, 2026 8-K',
     notes: 'Reaffirmed institutional backing',
+  },
+  {
+    name: 'MOZAYYX',
+    shares: null,
+    percent: null,
+    type: 'Institution',
+    source: 'Jan 15, 2026 8-K',
+    notes: 'Premier institutional investor',
   },
   {
     name: 'Founders Fund',
     shares: null,
     percent: null,
     type: 'Institution',
-    source: 'PR mentions',
+    source: 'Jan 15, 2026 8-K',
     notes: 'Peter Thiel\'s fund',
   },
   {
@@ -179,16 +187,40 @@ export const MAJOR_SHAREHOLDERS = [
     shares: null,
     percent: null,
     type: 'Institution',
-    source: 'PR mentions',
+    source: 'Jan 15, 2026 8-K',
     notes: 'Crypto-focused fund',
+  },
+  {
+    name: 'Kraken',
+    shares: null,
+    percent: null,
+    type: 'Institution',
+    source: 'Jan 15, 2026 8-K',
+    notes: 'Crypto exchange',
+  },
+  {
+    name: 'DCG (Digital Currency Group)',
+    shares: null,
+    percent: null,
+    type: 'Institution',
+    source: 'Jan 15, 2026 8-K',
+    notes: 'Barry Silbert\'s crypto conglomerate',
   },
   {
     name: 'Galaxy Digital',
     shares: null,
     percent: null,
     type: 'Institution',
-    source: 'PR mentions',
+    source: 'Jan 15, 2026 8-K',
     notes: 'Mike Novogratz',
+  },
+  {
+    name: 'Tom Lee',
+    shares: null,
+    percent: null,
+    type: 'Individual',
+    source: 'Jan 15, 2026 8-K',
+    notes: 'Chairman of the Board',
   },
 ];
 

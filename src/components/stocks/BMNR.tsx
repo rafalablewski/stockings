@@ -6305,6 +6305,7 @@ const TimelineTab = () => {
   
   // SEC Filings data - update when new filings are processed
   const secFilings = [
+    { date: 'Jan 15, 2026', type: '8-K', description: '2026 Annual Stockholder Meeting + Investor Presentation', period: '—', color: 'yellow' },
     { date: 'Jan 13, 2026', type: '10-Q', description: 'Quarterly Report (Q1 FY2026) - First Staking Revenue', period: 'Q1 FY26', color: 'purple' },
     { date: 'Jan 2, 2026', type: 'DEFA14A', description: 'Proxy Solicitation - Chairman\'s Message', period: '—', color: 'cyan' },
     { date: 'Jan 2, 2026', type: '8-K', description: 'Vote YES on Auth Shares (500M→50B)', period: '—', color: 'yellow' },
@@ -6323,7 +6324,7 @@ const TimelineTab = () => {
     cik: '0001829311',
     ticker: 'BMNR',
     exchange: 'NYSE American',
-    lastPR: { date: 'January 9, 2026', title: 'CFO/COO Young Kim Appointed' }
+    lastPR: { date: 'January 15, 2026', title: '$200M Beast Industries Investment' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {

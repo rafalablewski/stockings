@@ -28,8 +28,8 @@ import type { DataMetadata, StockDefaults } from '../shared/types';
 // ============================================================================
 
 export const BMNR_METADATA: DataMetadata = {
-  lastUpdated: '2026-01-12',
-  source: 'Jan 12, 2026 PR and 8-K',
+  lastUpdated: '2026-01-15',
+  source: 'Jan 15, 2026 Annual Meeting 8-K + Investor Presentation',
   nextExpectedUpdate: 'Next weekly holdings update (8-K)',
   notes: 'ETH holdings updated weekly via 8-K filings',
 };
@@ -105,12 +105,12 @@ export const DEFAULTS: StockDefaults & {
  * - Update ethSupplyPercent from PR (or calculate from 120.7M supply)
  */
 export const ETH_HOLDINGS = {
-  totalETH: 4167768,          // Total ETH holdings
+  totalETH: 4168000,          // Total ETH holdings (4.168M Jan MTD)
   stakedETH: 1256083,         // ETH staked with validators
   stakingRatio: 30.14,        // % of holdings staked (1,256,083 / 4,167,768)
   ethSupplyPercent: 3.45,     // % of total ETH supply (~120.7M)
-  targetSupplyPercent: 5.0,   // "Alchemy of 5%" target
-  progressToTarget: 69,       // % progress to 5% (3.45/5.0)
+  targetSupplyPercent: 5.0,   // "Alchemy of 5%" target = 6,035K ETH
+  progressToTarget: 68,       // % progress to 5% (68% ETH only, 74% with cash)
 };
 
 // ============================================================================
@@ -160,8 +160,8 @@ export const DIVIDEND_DATA = {
  * For display in the UI data freshness badge
  */
 export const DATA_FRESHNESS = {
-  dataAsOf: 'Jan 12, 2026',
-  lastFiling: '8-K (Jan 12, 2026)',
+  dataAsOf: 'Jan 15, 2026',
+  lastFiling: '8-K (Jan 15, 2026) Annual Meeting',
   nextFiling: 'Weekly 8-K',
   priceNote: 'Update prices regularly',
 };
