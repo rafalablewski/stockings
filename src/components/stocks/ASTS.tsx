@@ -1746,7 +1746,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           <li>53+ MNO partners with 3.2B addressable subscribers</li>
           <li>$1B+ contracted revenue locked in</li>
           <li>First-mover advantage in direct-to-phone satellite</li>
-          <li>Government/defense contracts (secure comms)</li>
+          <li>MDA SHIELD prime contractor + DoD/SDA contracts</li>
           <li>Regulatory moat — licensed spectrum agreements</li>
         </ul>
       </div>
@@ -2019,7 +2019,7 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Revenue</h2>
-      <div className="highlight"><h3>Revenue Analysis</h3><p className="text-sm">Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+), Prepayments, Spectrum. $1B+ contracted.</p></div>
+      <div className="highlight"><h3>Revenue Analysis</h3><p className="text-sm">Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
       <div className="card"><div className="card-title">Sources</div>{revenueSources.map((r, i) => (<div key={i} className="flex items-center justify-between p-2 border-b border-slate-800"><div><span className="font-medium text-cyan-400">{r.source}</span><span className="text-slate-400 text-sm ml-2">{r.description}</span></div><span className={`text-xs px-2 py-1 rounded ${r.status.includes('Active') ? 'bg-green-900/50 text-green-400' : 'bg-slate-700'}`}>{r.status}</span></div>))}</div>
       <div className="g4">
         <Card label="Gross" value={`$${(calc.grossAnnualRev / 1000).toFixed(1)}B`} color="cyan" />
@@ -2168,10 +2168,10 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
 
   // Government Contracts
   const govContracts = [
+    { agency: 'MDA SHIELD (Golden Dome)', value: 'IDIQ', status: 'Prime Contractor', notes: 'Awarded Jan 16, 2026 - enables future task orders' },
     { agency: 'Space Development Agency (SDA)', value: '$43M', status: 'Active', notes: 'Satellite communications' },
     { agency: 'Defense Innovation Unit (DIU)', value: 'Up to $20M', status: 'Active', notes: 'Via prime contractor' },
     { agency: 'FirstNet (Band 14)', value: 'Testing', status: 'Authorized Apr 2025', notes: 'First responder communications' },
-    { agency: 'New Prime Contract', value: 'TBD', status: 'Subject to negotiations', notes: 'Announced Q3 2025' },
   ];
 
   const totalPrepay = definitiveAgreements.reduce((s, p) => s + p.prepayment, 0);
@@ -2328,7 +2328,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           </tbody>
         </table>
         <div className="mt-2 text-xs text-slate-500">
-          Total disclosed government contracts: $63M+. Dual-use model prioritized. Additional contracts pending government reopening.
+          Total disclosed government contracts: $63M+ (plus SHIELD IDIQ). Dual-use model validated. MDA prime contractor status enables future task orders.
         </div>
       </div>
 
@@ -10078,7 +10078,7 @@ const InvestmentTab = () => {
       { driver: 'Constellation Buildout', impact: 'Critical', description: 'Manufacturing 6 satellites per month. 40+ in production. Each launch expands coverage and revenue potential.', color: 'var(--mint)' },
       { driver: 'MNO Partnerships', impact: 'High', description: 'Six carriers signed. Fifty more in pipeline. Every new deal multiplies the addressable market.', color: 'var(--mint)' },
       { driver: 'Geographic Expansion', impact: 'High', description: 'US coverage first. Europe, India, Middle East following. 5 billion people without reliable coverage waiting.', color: 'var(--sky)' },
-      { driver: 'Government Contracts', impact: 'Medium', description: 'Eight contracts secured. Defense and civilian agencies see strategic value. Program of record potential.', color: 'var(--sky)' },
+      { driver: 'Government Contracts', impact: 'High', description: 'MDA SHIELD prime contractor (Jan 2026). Multiple DoD/SDA/DIU contracts. Defense sees strategic value in dual-use LEO constellation.', color: 'var(--mint)' },
     ],
     
     // Competitive Moat
