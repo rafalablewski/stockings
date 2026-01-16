@@ -669,22 +669,59 @@ const css = `
   border-left-color: var(--violet);
 }
 
-/* Nested Tab Groups - Stock-specific tabs grouped under a header */
-.nav-group-header {
-  width: 100%;
-  padding: 8px 16px 4px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--muted);
-  background: var(--surface);
-  border-bottom: 1px solid var(--surface2);
-  margin-top: 4px;
+/* Dropdown Navigation - Stock-specific tabs in expandable menu */
+.nav-dropdown {
+  position: relative;
 }
-.nav-nested {
-  padding-left: 32px;
-  font-size: 13px;
+.nav-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-left: 3px solid var(--violet);
+}
+.nav-dropdown-trigger.active {
+  background: var(--violet);
+  color: var(--bg);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 180px;
+  background: var(--surface);
+  border: 1px solid var(--surface2);
+  border-radius: 8px;
+  padding: 8px 0;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.nav-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 14px;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.nav-dropdown-item:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+.nav-dropdown-item.active {
+  background: var(--violet);
+  color: var(--bg);
+  border-left-color: var(--violet);
+}
+.nav-dropdown-item.tab-projection {
+  border-left-color: var(--violet);
+}
+.nav-dropdown-item.tab-tracking {
+  border-left-color: var(--mint);
 }
 
 /* Main Content */
@@ -1464,6 +1501,7 @@ const ASTSAnalysis = () => {
   const [techRisk, setTechRisk] = useState(8);
   const [competitionRisk, setCompetitionRisk] = useState(10);
   const [activeTab, setActiveTab] = useState('overview');
+  const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
 
   // Use imported data from @/data/asts
   const partners = PARTNERS;
@@ -1582,21 +1620,50 @@ const ASTSAnalysis = () => {
 
         {/* Navigation */}
         <nav className="nav">
-          {tabs.map((t, i) => {
-            const prevTab = tabs[i - 1];
-            const showGroupHeader = t.group && (!prevTab || prevTab.group !== t.group);
-            return (
-              <React.Fragment key={t.id}>
-                {showGroupHeader && <div className="nav-group-header">{t.group}</div>}
-                <button
-                  className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}${t.group ? ' nav-nested' : ''}`}
-                  onClick={() => setActiveTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              </React.Fragment>
-            );
-          })}
+          {/* Tabs before dropdown */}
+          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) > tabs.indexOf(t)).map(t => (
+            <button
+              key={t.id}
+              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+              onClick={() => setActiveTab(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+
+          {/* Stock-specific dropdown */}
+          <div className="nav-dropdown">
+            <button
+              className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
+              onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+            >
+              ASTS Analysis {analysisDropdownOpen ? '▲' : '▼'}
+            </button>
+            {analysisDropdownOpen && (
+              <div className="nav-dropdown-menu">
+                {tabs.filter(t => t.group).map(t => (
+                  <button
+                    key={t.id}
+                    className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+                    onClick={() => { setActiveTab(t.id); setAnalysisDropdownOpen(false); }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Tabs after dropdown */}
+          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) < tabs.indexOf(t)).map(t => (
+            <button
+              key={t.id}
+              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+              onClick={() => setActiveTab(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
         </nav>
         
         {/* Main Content */}
