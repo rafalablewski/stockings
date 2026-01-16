@@ -656,18 +656,18 @@ const css = `
 }
 
 /* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
-/* Consistent across all stocks: mint=tracking (actual data), violet=projection (user models) */
+/* mint=tracking (actual data), signature color=projection (user models) */
 .nav-btn.tab-tracking {
   border-left: 3px solid var(--mint);
 }
 .nav-btn.tab-projection {
-  border-left: 3px solid var(--violet);
+  border-left: 3px solid var(--cyan);
 }
 .nav-btn.tab-tracking.active {
   border-left-color: var(--mint);
 }
 .nav-btn.tab-projection.active {
-  border-left-color: var(--violet);
+  border-left-color: var(--cyan);
 }
 
 /* Dropdown Navigation - Stock-specific tabs in expandable menu */
