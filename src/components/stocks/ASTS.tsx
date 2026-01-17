@@ -1517,6 +1517,7 @@ const ASTSAnalysis = () => {
 
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
+  const [valuationDropdownOpen, setValuationDropdownOpen] = useState(false);
 
   // Use imported data from @/data/asts
   const partners = PARTNERS;
@@ -1553,10 +1554,10 @@ const ASTSAnalysis = () => {
     { id: 'revenue', label: 'Revenue', type: 'projection', group: 'ASTS Analysis' },
     { id: 'partners', label: 'Partners', type: 'projection', group: 'ASTS Analysis' },
     { id: 'runway', label: 'Cash Runway', type: 'projection', group: 'ASTS Analysis' },
-    // Valuation model - Model in main nav, Scenarios/DCF in dropdown
-    { id: 'model', label: 'Model', type: 'projection' },
-    { id: 'scenarios', label: 'Scenarios', type: 'projection', group: 'Valuation' },
-    { id: 'dcf', label: 'DCF', type: 'projection', group: 'Valuation' },
+    // Valuation model - Model as dropdown trigger, Scenarios/DCF in its dropdown
+    { id: 'model', label: 'Model', type: 'projection', group: 'Model' },
+    { id: 'scenarios', label: 'Scenarios', type: 'projection', group: 'Model' },
+    { id: 'dcf', label: 'DCF', type: 'projection', group: 'Model' },
     // Other projections
     { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
     { id: 'comps', label: 'Comps', type: 'projection' },
@@ -1637,8 +1638,8 @@ const ASTSAnalysis = () => {
 
         {/* Navigation */}
         <nav className="nav">
-          {/* Tabs before dropdown */}
-          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) > tabs.indexOf(t)).map(t => (
+          {/* Overview tab (before any grouped tabs) */}
+          {tabs.filter(t => !t.group).slice(0, 1).map(t => (
             <button
               key={t.id}
               className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
@@ -1648,16 +1649,24 @@ const ASTSAnalysis = () => {
             </button>
           ))}
 
-          {/* Stock-specific dropdown trigger */}
+          {/* ASTS Analysis dropdown trigger */}
           <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'ASTS Analysis' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setValuationDropdownOpen(false); }}
           >
             ASTS Analysis ↕
           </button>
 
-          {/* Tabs after dropdown */}
-          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) < tabs.indexOf(t)).map(t => (
+          {/* Model dropdown trigger */}
+          <button
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'Model' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setValuationDropdownOpen(!valuationDropdownOpen); setAnalysisDropdownOpen(false); }}
+          >
+            Model ↕
+          </button>
+
+          {/* Remaining ungrouped tabs */}
+          {tabs.filter(t => !t.group).slice(1).map(t => (
             <button
               key={t.id}
               className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
@@ -1668,11 +1677,24 @@ const ASTSAnalysis = () => {
           ))}
         </nav>
 
-        {/* Reserved space for dropdown menu - always present to prevent layout shift */}
+        {/* Reserved space for dropdown menus - always present to prevent layout shift */}
         <div className="nav-dropdown-space">
           {analysisDropdownOpen && (
             <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group).map(t => (
+              {tabs.filter(t => t.group === 'ASTS Analysis').map(t => (
+                <button
+                  key={t.id}
+                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+                  onClick={() => setActiveTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+          {valuationDropdownOpen && (
+            <div className="nav-dropdown-menu">
+              {tabs.filter(t => t.group === 'Model').map(t => (
                 <button
                   key={t.id}
                   className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
