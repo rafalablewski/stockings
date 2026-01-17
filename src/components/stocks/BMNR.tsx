@@ -3165,7 +3165,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
             <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
             <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} />
           </div>
-          <div className="g2">
+          <div className="g2" style={{ marginTop: 16 }}>
             <Input label="Terminal Multiple" value={terminalMult} onChange={setTerminalMult} step={0.1} />
             <Input label="Years" value={years} onChange={setYears} min={1} max={10} />
           </div>
@@ -3176,18 +3176,18 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
             <Card label="Implied Value" value={`$${dcf.impliedValue.toFixed(2)}`} sub={dcfMethod === 'intermediate' ? 'CFs + Terminal' : dcfMethod === 'dividend' ? 'Divs + Terminal' : 'Terminal only'} color="mint" />
             <Card label="Current NAV" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value" />
           </div>
-          <div className="g2">
+          <div className="g2" style={{ marginTop: 16 }}>
             <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs NAV" color={dcf.upside >= 0 ? 'green' : 'red'} />
             <Card label="Implied IRR" value={`${irr.toFixed(1)}%`} sub="Annualized" />
           </div>
           {dcfMethod === 'intermediate' && (
-            <div className="g2">
+            <div className="g2" style={{ marginTop: 16 }}>
               <Card label="PV of Cash Flows" value={`$${dcf.sumIntermediatePV.toFixed(2)}`} sub={`${years}yr yield @ ${yieldPayout}% payout`} color="cyan" />
               <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
             </div>
           )}
           {dcfMethod === 'dividend' && (
-            <div className="g2">
+            <div className="g2" style={{ marginTop: 16 }}>
               <Card label="PV of Dividends" value={`$${dcf.sumDividendPV.toFixed(2)}`} sub={`${years}yr @ ${dividendGrowthRate}% growth`} color="mint" />
               <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
             </div>
@@ -3244,31 +3244,31 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
                 </tr>
               ))}
               {dcfMethod === 'intermediate' && (
-                <tr style={{ borderTop: '1px solid var(--sky)', background: 'rgba(56,189,248,0.1)' }}>
-                  <td style={{ fontWeight: 600, color: 'var(--sky)' }}>Sum CFs</td>
+                <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+                  <td style={{ fontWeight: 500 }}>Sum CFs</td>
                   <td colSpan={5}></td>
-                  <td className="r" style={{ fontWeight: 700, color: 'var(--sky)' }}>${dcf.sumIntermediatePV.toFixed(2)}</td>
+                  <td className="r" style={{ fontWeight: 500, color: 'var(--cyan)' }}>${dcf.sumIntermediatePV.toFixed(2)}</td>
                   <td></td>
                 </tr>
               )}
               {dcfMethod === 'dividend' && (
-                <tr style={{ borderTop: '1px solid var(--mint)', background: 'rgba(0,212,170,0.1)' }}>
-                  <td style={{ fontWeight: 600, color: 'var(--mint)' }}>Sum Dividends</td>
+                <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+                  <td style={{ fontWeight: 500 }}>Sum Dividends</td>
                   <td colSpan={3}></td>
-                  <td colSpan={2} className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${dcf.sumDividendPV.toFixed(2)}</td>
+                  <td colSpan={2} className="r" style={{ fontWeight: 500, color: 'var(--mint)' }}>${dcf.sumDividendPV.toFixed(2)}</td>
                   <td></td>
                 </tr>
               )}
-              <tr style={{ borderTop: '2px solid var(--violet)', background: 'rgba(139,92,246,0.1)' }}>
-                <td style={{ fontWeight: 600 }}>Terminal</td>
+              <tr style={{ background: 'var(--surface2)' }}>
+                <td style={{ fontWeight: 500 }}>Terminal</td>
                 <td colSpan={dcfMethod === 'terminal' ? 2 : dcfMethod === 'intermediate' ? 5 : 4}></td>
                 <td className="r">${dcf.terminalNAV.toFixed(2)}</td>
-                <td className="r" style={{ fontWeight: 700, color: 'var(--violet)' }}>${dcf.terminalPV.toFixed(2)}</td>
+                <td className="r" style={{ fontWeight: 500 }}>${dcf.terminalPV.toFixed(2)}</td>
               </tr>
-              <tr style={{ borderTop: '2px solid var(--mint)', background: 'rgba(0,212,170,0.1)' }}>
-                <td style={{ fontWeight: 700, color: 'var(--mint)' }}>TOTAL</td>
+              <tr style={{ background: 'rgba(0,212,170,0.1)' }}>
+                <td style={{ fontWeight: 700 }}>TOTAL</td>
                 <td colSpan={dcfMethod === 'terminal' ? 3 : dcfMethod === 'intermediate' ? 6 : 5}></td>
-                <td className="r" style={{ fontWeight: 700, fontSize: 18, color: 'var(--mint)' }}>${dcf.impliedValue.toFixed(2)}</td>
+                <td className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${dcf.impliedValue.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
