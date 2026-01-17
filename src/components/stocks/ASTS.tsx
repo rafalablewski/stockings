@@ -3378,7 +3378,7 @@ const ScenariosTab = ({
     return TARGET_YEARS.map(year => {
       const yc = yearConfigs[year];
       const yearsFromNow = year - 2025;
-      const df = Math.pow(1 + discountRate, yearsFromNow);
+      const df = Math.pow(1 + discountRatePct, yearsFromNow);
 
       // SAME FORMULAS as scenarios calculation (steps 1-11)
       const pen = s2030.pen * yc.penMult;
