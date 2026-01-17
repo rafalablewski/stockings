@@ -2037,7 +2037,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                 <div>
                   <h3 style={{ color: selected.color, marginBottom: 8 }}>
-                    {selected.name} — {targetYear}
+                    {selected.name} Case — {targetYear}
                   </h3>
                   <p style={{ color: 'var(--text2)', maxWidth: 600 }}>{selected.description}</p>
                 </div>
