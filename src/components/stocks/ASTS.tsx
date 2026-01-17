@@ -3239,17 +3239,20 @@ const ModelTab = ({
   const terminalGrossRev = terminalSubs * blendedARPU * 12 / 1000;
   const terminalRev = terminalGrossRev * (revenueShare / 100);
 
-  // Projections (10-year S-curve ramp)
+  // Projections (10-year S-curve ramp) - 2030 is terminal year at 100%
   const TARGET_YEARS = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
-  const baseRamp = [0.01, 0.05, 0.15, 0.35, 0.65, 1.0, 1.15, 1.28, 1.38, 1.45];
-  const marginRamp = [-500, -100, 10, 30, 45, terminalMargin, terminalMargin + 2, terminalMargin + 3, terminalMargin + 4, terminalMargin + 5];
-  const capexRamp = [200, 80, 40, 25, 15, terminalCapex, terminalCapex - 1, terminalCapex - 2, terminalCapex - 2, terminalCapex - 3];
+  const baseRamp = [0.03, 0.12, 0.30, 0.60, 1.0, 1.10, 1.18, 1.25, 1.30, 1.35];
+  // Margin ramp: negative early (pre-scale losses), reaching terminal at 2030
+  const marginRamp = [-80, -20, 15, 35, terminalMargin, terminalMargin + 2, terminalMargin + 3, terminalMargin + 4, terminalMargin + 5, terminalMargin + 5];
+  // CapEx ramp: high early (build-out), declining to terminal at 2030
+  const capexRamp = [60, 40, 25, 18, terminalCapex, terminalCapex - 1, terminalCapex - 2, terminalCapex - 2, terminalCapex - 3, terminalCapex - 3];
   const phaseLabels = ['Launch', 'US/EU', 'Global', 'Scale', 'Mature', 'Growth', 'Maturation', 'Steady', 'Cash Gen', 'Platform'];
 
   const discountRatePct = discountRate / 100;
 
   const projections = useMemo(() => {
-    return TARGET_YEARS.map((year, i) => {
+    // First pass: calculate basic financials for each year
+    const baseProjections = TARGET_YEARS.map((year, i) => {
       const yearsFromNow = year - 2025;
       const rampIdx = Math.max(0, Math.min(baseRamp.length - 1, i - deploymentDelay));
       const ramp = baseRamp[rampIdx];
@@ -3262,25 +3265,53 @@ const ModelTab = ({
       const ebitda = rev * (margin / 100);
       const fcf = ebitda - rev * (capex / 100);
       const pv = fcf / Math.pow(1 + discountRatePct, yearsFromNow);
-
       const dilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, yearsFromNow);
 
-      const spreadPct = Math.max(discountRate - terminalGrowth, 1) / 100;
-      const termValue = fcf > 0 ? (fcf * (1 + terminalGrowth / 100)) / spreadPct : 0;
-      const pvTerm = termValue / Math.pow(1 + discountRatePct, yearsFromNow);
+      return { year, subs, rev, margin, capex, ebitda, fcf, pv, dilutedShares, phase: phaseLabels[i], yearsFromNow };
+    });
 
-      const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
-      const ev = pv + pvTerm;
-      const adjEv = ev * riskFactor;
-      const equityValue = adjEv * 1000 + netCash;
-      const priceInYear = Math.max(0, equityValue / dilutedShares);
-      const presentValue = priceInYear / Math.pow(1 + discountRatePct, yearsFromNow);
+    // Risk factor
+    const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
+    const spreadPct = Math.max(discountRate - terminalGrowth, 1) / 100;
+
+    // Terminal value based on 2030 (index 4) FCF
+    const terminalFCF = baseProjections[4].fcf;
+    const terminalValue = terminalFCF > 0 ? (terminalFCF * (1 + terminalGrowth / 100)) / spreadPct : 0;
+
+    // Second pass: calculate valuations
+    // For each year Y, stock price = DCF from Y to terminal, discounted to today
+    return baseProjections.map((p, i) => {
+      // Sum PV of FCFs from this year to 2030
+      const sumFuturePv = baseProjections.slice(i, 5).reduce((sum, fp) => {
+        const yearsFromThisYear = fp.yearsFromNow - p.yearsFromNow;
+        const pvFromThisYear = fp.fcf / Math.pow(1 + discountRatePct, yearsFromThisYear);
+        return sum + pvFromThisYear;
+      }, 0);
+
+      // Add terminal value (discounted to this year)
+      const yearsToTerminal = Math.max(0, 5 - p.yearsFromNow);
+      const pvTermFromThisYear = terminalValue / Math.pow(1 + discountRatePct, yearsToTerminal);
+
+      // EV in this year
+      const evInYear = sumFuturePv + pvTermFromThisYear;
+      const adjEvInYear = evInYear * riskFactor;
+
+      // Equity value and price in this year
+      const equityInYear = adjEvInYear * 1000 + netCash;
+      const priceInYear = Math.max(0, equityInYear / p.dilutedShares);
+
+      // Present value of that price (discounted to today)
+      const presentValue = priceInYear / Math.pow(1 + discountRatePct, p.yearsFromNow);
       const upside = ((presentValue - currentStockPrice) / currentStockPrice) * 100;
 
       return {
-        year, subs, rev, margin, capex, ebitda, fcf, pv, pvTerm,
-        dilutedShares, ev: adjEv, equityValue, priceInYear, presentValue, upside,
-        phase: phaseLabels[i],
+        ...p,
+        pvTerm: pvTermFromThisYear,
+        ev: adjEvInYear,
+        equityValue: equityInYear,
+        priceInYear,
+        presentValue,
+        upside,
       };
     });
   }, [terminalSubs, terminalRev, discountRatePct, discountRate, terminalGrowth,
