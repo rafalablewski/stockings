@@ -1694,7 +1694,14 @@ const ASTSAnalysis = () => {
           {activeTab === 'partners' && <PartnersTab partners={partners} revenueShare={revenueShare} blendedARPU={blendedARPU} penetrationRate={penetrationRate} />}
           {activeTab === 'runway' && <RunwayTab calc={calc} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} debtRate={debtRate} setDebtRate={setDebtRate} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
           {activeTab === 'capital' && <CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} />}
-          {activeTab === 'scenarios' && <ScenariosTab currentShares={currentShares} currentStockPrice={currentStockPrice} totalDebt={totalDebt} cashOnHand={cashOnHand} />}
+          {activeTab === 'scenarios' && <ScenariosTab
+            currentShares={currentShares} currentStockPrice={currentStockPrice}
+            totalDebt={totalDebt} cashOnHand={cashOnHand}
+            partnerReach={partnerReach} penetrationRate={penetrationRate}
+            blendedARPU={blendedARPU} revenueShare={revenueShare}
+            terminalMargin={terminalMargin} dilutionRate={dilutionRate}
+            competitionDiscount={competitionDiscount} discountRate={discountRate}
+          />}
           {activeTab === 'model' && <ModelTab
             partnerReach={partnerReach} setPartnerReach={setPartnerReach}
             penetrationRate={penetrationRate} setPenetrationRate={setPenetrationRate}
@@ -3146,12 +3153,26 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 };
 
 // SCENARIOS TAB - Deterministic analysis
-const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand }) => {
+const ScenariosTab = ({
+  currentShares, currentStockPrice, totalDebt, cashOnHand,
+  // Model state - used as base case anchor
+  partnerReach, penetrationRate, blendedARPU, revenueShare,
+  terminalMargin, dilutionRate, competitionDiscount, discountRate: modelDiscountRate,
+}) => {
   const netCash = cashOnHand - totalDebt;
   const [targetYear, setTargetYear] = useState(2030);
   const [selectedScenario, setSelectedScenario] = useState('base');
   const [showMath, setShowMath] = useState(false);
-  
+
+  // ============================================================================
+  // MODEL-DERIVED BASE CASE (from Model tab)
+  // Terminal year (2030) values calculated from subscriber model
+  // ============================================================================
+  const baseSubs = partnerReach * (penetrationRate / 100) * (1 - competitionDiscount / 100);
+  const baseGrossRev = baseSubs * blendedARPU * 12 / 1000; // $B
+  const baseRev = baseGrossRev * (revenueShare / 100);
+  const basePen = penetrationRate * (1 - competitionDiscount / 100);
+
   // ============================================================================
   // YEAR CONFIGURATION
   // Each year scales from 2030 "anchor" values based on business maturity
@@ -3171,21 +3192,43 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
 
   const yc = yearConfigs[targetYear];
   const yearsFromNow = targetYear - 2025;
-  const discountRate = 0.15; // 15% required return for pre-revenue space company
-  const discountFactor = Math.pow(1 + discountRate, yearsFromNow);
+  const discountRatePct = modelDiscountRate / 100;
+  const discountFactor = Math.pow(1 + discountRatePct, yearsFromNow);
 
   // ============================================================================
-  // 2030 ANCHOR SCENARIOS (Terminal Year Assumptions)
-  // All other years scale from these base values
+  // SCENARIO MULTIPLIERS (applied to Model tab's base case)
+  // Each scenario scales the base assumptions up or down
   // ============================================================================
-  const scenarios2030 = {
-    worst: { pen: 0.30, rev: 0.8, margin: -20, mult: 4, dil: 40, prob: 5 },
-    bear:  { pen: 1.00, rev: 2.5, margin: 25, mult: 8, dil: 15, prob: 20 },
-    base:  { pen: 2.50, rev: 5.5, margin: 45, mult: 10, dil: 5, prob: 35 },
-    mgmt:  { pen: 3.50, rev: 8.0, margin: 52, mult: 12, dil: 0, prob: 25 },
-    bull:  { pen: 5.00, rev: 12.0, margin: 58, mult: 14, dil: 0, prob: 12 },
-    moon:  { pen: 8.00, rev: 18.0, margin: 62, mult: 16, dil: 0, prob: 3 },
+  const scenarioMultipliers = {
+    worst: { penMult: 0.10, marginMult: -0.4, evMult: 4, dilAdd: 35, prob: 5 },
+    bear:  { penMult: 0.40, marginMult: 0.45, evMult: 8, dilAdd: 10, prob: 20 },
+    base:  { penMult: 1.00, marginMult: 1.00, evMult: 10, dilAdd: 0, prob: 35 },
+    mgmt:  { penMult: 1.40, marginMult: 1.10, evMult: 12, dilAdd: -5, prob: 25 },
+    bull:  { penMult: 2.00, marginMult: 1.15, evMult: 14, dilAdd: -5, prob: 12 },
+    moon:  { penMult: 3.20, marginMult: 1.20, evMult: 16, dilAdd: -5, prob: 3 },
   };
+
+  // Generate scenarios2030 dynamically from Model state
+  const scenarios2030 = useMemo(() => {
+    const result: Record<string, { pen: number; rev: number; margin: number; mult: number; dil: number; prob: number }> = {};
+    Object.entries(scenarioMultipliers).forEach(([key, mult]) => {
+      const scenPen = basePen * mult.penMult;
+      const scenSubs = partnerReach * (scenPen / 100);
+      const scenGrossRev = scenSubs * blendedARPU * 12 / 1000;
+      const scenRev = scenGrossRev * (revenueShare / 100);
+      const scenMargin = mult.marginMult < 0 ? mult.marginMult * 100 : terminalMargin * mult.marginMult;
+      const scenDil = Math.max(0, dilutionRate * 5 + mult.dilAdd); // 5 years of dilution + adjustment
+      result[key] = {
+        pen: scenPen,
+        rev: scenRev,
+        margin: scenMargin,
+        mult: mult.evMult,
+        dil: scenDil,
+        prob: mult.prob,
+      };
+    });
+    return result;
+  }, [basePen, partnerReach, blendedARPU, revenueShare, terminalMargin, dilutionRate]);
 
   const scenarioMeta = {
     worst: { name: 'Worst', label: '🔴', color: '#ef4444', desc: 'Catastrophic failure',
@@ -3372,9 +3415,9 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
       <div className="highlight">
         <h3>Multi-Year Projections</h3>
         <p className="text-sm">
-          Model stock price under different scenarios based on subscriber growth, satellite deployment, and MNO partnerships.
-          Bear case assumes delays and competition. Bull case models category dominance with premium ARPU.
-          Probability-weight for expected value.
+          Scenarios derived from Model tab assumptions ({penetrationRate}% pen × ${blendedARPU} ARPU).
+          Each scenario applies multipliers: Bear 0.4x, Base 1x, Bull 2x, Moon 3.2x.
+          Probability-weighted expected value across all outcomes.
         </p>
       </div>
 
