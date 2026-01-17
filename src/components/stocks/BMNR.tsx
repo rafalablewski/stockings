@@ -1684,7 +1684,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'comps' && <CompsTab comparables={comparables} ethPrice={ethPrice} />}
         {activeTab === 'sensitivity' && <SensitivityTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} />}
         {activeTab === 'backtest' && <BacktestTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} historicalETH={historicalETH} baseStakingAPY={baseStakingAPY} navMultiple={currentStockPrice / calc.currentNAV} />}
-        {activeTab === 'dcf' && <ValuationTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} baseStakingAPY={calc.effectiveAPY} quarterlyDividend={quarterlyDividend} dividendGrowthRate={dividendGrowthRate} />}
+        {activeTab === 'dcf' && <DCFTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} baseStakingAPY={calc.effectiveAPY} quarterlyDividend={quarterlyDividend} dividendGrowthRate={dividendGrowthRate} />}
         {activeTab === 'monte-carlo' && <MonteCarloTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} stakingYield={calc.effectiveAPY} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} operatingCosts={operatingCosts} regulatoryRisk={regulatoryRisk} />}
         {activeTab === 'investment' && <InvestmentTab />}
         {activeTab === 'financials' && <SECFilingsTab />}
@@ -2997,9 +2997,9 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
 };
 
 // DCF TAB - Enhanced with intermediate cash flow option
-const ValuationTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, quarterlyDividend, dividendGrowthRate }) => {
+const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, quarterlyDividend, dividendGrowthRate }) => {
   const [ethGrowth, setEthGrowth] = useState(15);
-  const [discountRate, setDiscountRate] = useState(12);
+  const [discount, setDiscount] = useState(12);
   const [terminalMult, setTerminalMult] = useState(1.0);
   const [years, setYears] = useState(5);
   const [dcfMethod, setDcfMethod] = useState('dividend'); // 'terminal', 'intermediate', or 'dividend'
@@ -3017,25 +3017,25 @@ const ValuationTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAP
       eth += yieldETH; 
       const futurePrice = ethPrice * Math.pow(1 + ethGrowth / 100, y); 
       const nav = (eth * futurePrice) / (currentShares * 1e6); 
-      const pv = nav / Math.pow(1 + discountRate / 100, y);
+      const pv = nav / Math.pow(1 + discount / 100, y);
       
       // Intermediate cash flow: portion of staking yield distributed
       const yieldValue = yieldETH * futurePrice;
       const distributedCF = yieldValue * (yieldPayout / 100);
       const cfPerShare = distributedCF / (currentShares * 1e6);
-      const cfPV = cfPerShare / Math.pow(1 + discountRate / 100, y);
+      const cfPV = cfPerShare / Math.pow(1 + discount / 100, y);
       sumIntermediatePV += cfPV;
       
       // Dividend cash flow with growth
       const yearDiv = annualDiv * Math.pow(1 + dividendGrowthRate / 100, y - 1);
-      const divPV = yearDiv / Math.pow(1 + discountRate / 100, y);
+      const divPV = yearDiv / Math.pow(1 + discount / 100, y);
       sumDividendPV += divPV;
       
       projections.push({ year: y, eth, ethPrice: futurePrice, nav, pv, yieldETH, cfPerShare, cfPV, yearDiv, divPV }); 
     }
     
     const terminalNAV = projections[projections.length - 1].nav * terminalMult;
-    const terminalPV = terminalNAV / Math.pow(1 + discountRate / 100, years);
+    const terminalPV = terminalNAV / Math.pow(1 + discount / 100, years);
     
     // Calculate implied value based on method
     let impliedValue;
@@ -3056,197 +3056,219 @@ const ValuationTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAP
       impliedValue, 
       upside: ((impliedValue / calc.currentNAV) - 1) * 100 
     };
-  }, [currentETH, currentShares, ethPrice, baseStakingAPY, ethGrowth, discountRate, terminalMult, years, calc.currentNAV, dcfMethod, yieldPayout, quarterlyDividend, dividendGrowthRate]);
+  }, [currentETH, currentShares, ethPrice, baseStakingAPY, ethGrowth, discount, terminalMult, years, calc.currentNAV, dcfMethod, yieldPayout, quarterlyDividend, dividendGrowthRate]);
   
   const irr = (Math.pow(dcf.impliedValue / calc.currentNAV, 1 / years) - 1) * 100;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Valuation</h2>
-      <div className="highlight"><h3>Intrinsic Value Model</h3>
+      <h2 className="section-head">DCF</h2>
+      <div className="highlight"><h3>DCF Valuation</h3>
         <p className="text-sm">DCF valuation with three methods: terminal NAV only, with staking cash flows, or with declared dividends. Adjust growth and discount rate.</p>
       </div>
       
       {/* DCF Method Selector */}
       <div className="card"><div className="card-title">DCF Method</div>
-        <div className="flex flex-wrap gap-2 mb-4">
-          <button 
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+          <button
             onClick={() => setDcfMethod('terminal')}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
-              dcfMethod === 'terminal' 
-                ? 'bg-violet-600 text-white' 
-                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-            }`}
+            style={{
+              padding: '10px 16px',
+              borderRadius: 8,
+              fontWeight: 500,
+              border: dcfMethod === 'terminal' ? '2px solid var(--violet)' : '1px solid var(--border)',
+              background: dcfMethod === 'terminal' ? 'rgba(139,92,246,0.2)' : 'var(--surface2)',
+              color: dcfMethod === 'terminal' ? 'var(--violet)' : 'var(--text2)',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
           >
             Terminal Only
           </button>
-          <button 
+          <button
             onClick={() => setDcfMethod('intermediate')}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
-              dcfMethod === 'intermediate' 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-            }`}
+            style={{
+              padding: '10px 16px',
+              borderRadius: 8,
+              fontWeight: 500,
+              border: dcfMethod === 'intermediate' ? '2px solid var(--sky)' : '1px solid var(--border)',
+              background: dcfMethod === 'intermediate' ? 'rgba(56,189,248,0.2)' : 'var(--surface2)',
+              color: dcfMethod === 'intermediate' ? 'var(--sky)' : 'var(--text2)',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
           >
             With Staking CFs
           </button>
-          <button 
+          <button
             onClick={() => setDcfMethod('dividend')}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
-              dcfMethod === 'dividend' 
-                ? 'bg-emerald-600 text-white' 
-                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-            }`}
+            style={{
+              padding: '10px 16px',
+              borderRadius: 8,
+              fontWeight: 500,
+              border: dcfMethod === 'dividend' ? '2px solid var(--mint)' : '1px solid var(--border)',
+              background: dcfMethod === 'dividend' ? 'rgba(0,212,170,0.2)' : 'var(--surface2)',
+              color: dcfMethod === 'dividend' ? 'var(--mint)' : 'var(--text2)',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
           >
-            💰 With Dividends
+            With Dividends
           </button>
         </div>
         {dcfMethod === 'intermediate' && (
-          <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-3 mb-4">
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-blue-300">Yield Payout Ratio:</span>
-              <input 
-                type="range" 
-                min="0" 
-                max="100" 
-                value={yieldPayout} 
+          <div style={{ background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.3)', borderRadius: 8, padding: 12, marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <span style={{ fontSize: 14, color: 'var(--sky)' }}>Yield Payout Ratio:</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={yieldPayout}
                 onChange={e => setYieldPayout(Number(e.target.value))}
-                className="flex-1"
+                style={{ flex: 1 }}
               />
-              <span className="text-sm font-mono text-blue-400 w-12">{yieldPayout}%</span>
+              <span style={{ fontSize: 14, fontFamily: "'Space Mono', monospace", color: 'var(--sky)', width: 48 }}>{yieldPayout}%</span>
             </div>
-            <p className="text-xs text-slate-500 mt-2">% of annual staking yield treated as distributed cash flow</p>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8 }}>% of annual staking yield treated as distributed cash flow</p>
           </div>
         )}
         {dcfMethod === 'dividend' && (
-          <div className="bg-emerald-900/20 border border-emerald-700/50 rounded-lg p-3 mb-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
+          <div style={{ background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.3)', borderRadius: 8, padding: 12, marginBottom: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, fontSize: 14 }}>
               <div>
-                <span className="text-emerald-300">Current Quarterly Dividend:</span>
-                <span className="font-mono text-emerald-400 ml-2">${quarterlyDividend.toFixed(2)}</span>
+                <span style={{ color: 'var(--mint)' }}>Current Quarterly Dividend:</span>
+                <span style={{ fontFamily: "'Space Mono', monospace", color: 'var(--mint)', marginLeft: 8 }}>${quarterlyDividend.toFixed(2)}</span>
               </div>
               <div>
-                <span className="text-emerald-300">Annual Dividend:</span>
-                <span className="font-mono text-emerald-400 ml-2">${(quarterlyDividend * 4).toFixed(2)}</span>
+                <span style={{ color: 'var(--mint)' }}>Annual Dividend:</span>
+                <span style={{ fontFamily: "'Space Mono', monospace", color: 'var(--mint)', marginLeft: 8 }}>${(quarterlyDividend * 4).toFixed(2)}</span>
               </div>
               <div>
-                <span className="text-emerald-300">Dividend Growth Rate:</span>
-                <span className="font-mono text-emerald-400 ml-2">{dividendGrowthRate}%/yr</span>
+                <span style={{ color: 'var(--mint)' }}>Dividend Growth Rate:</span>
+                <span style={{ fontFamily: "'Space Mono', monospace", color: 'var(--mint)', marginLeft: 8 }}>{dividendGrowthRate}%/yr</span>
               </div>
               <div>
-                <span className="text-emerald-300">Current Yield:</span>
-                <span className="font-mono text-emerald-400 ml-2">{calc.dividendYield.toFixed(2)}%</span>
+                <span style={{ color: 'var(--mint)' }}>Current Yield:</span>
+                <span style={{ fontFamily: "'Space Mono', monospace", color: 'var(--mint)', marginLeft: 8 }}>{calc.dividendYield.toFixed(2)}%</span>
               </div>
             </div>
-            <p className="text-xs text-slate-500 mt-2">Based on declared $0.01/qtr dividend (first payment Dec 29, 2025). Adjust growth rate in Overview tab.</p>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8 }}>Based on declared $0.01/qtr dividend (first payment Dec 29, 2025). Adjust growth rate in Overview tab.</p>
           </div>
         )}
       </div>
       
-      <div className="card"><div className="card-title">Assumptions</div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
-          <Input label="Discount Rate (%)" value={discountRate} onChange={setDiscountRate} />
-          <Input label="Terminal Multiple" value={terminalMult} onChange={setTerminalMult} step={0.1} />
-          <Input label="Years" value={years} onChange={setYears} min={1} max={10} />
+      <div className="g2">
+        <div className="card">
+          <div className="card-title">Model Inputs</div>
+          <div className="g2">
+            <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
+            <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} />
+          </div>
+          <div className="g2" style={{ marginTop: 16 }}>
+            <Input label="Terminal Multiple" value={terminalMult} onChange={setTerminalMult} step={0.1} />
+            <Input label="Years" value={years} onChange={setYears} min={1} max={10} />
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-title">Valuation Output</div>
+          <div className="g2">
+            <Card label="Implied Value" value={`$${dcf.impliedValue.toFixed(2)}`} sub={dcfMethod === 'intermediate' ? 'CFs + Terminal' : dcfMethod === 'dividend' ? 'Divs + Terminal' : 'Terminal only'} color="mint" />
+            <Card label="Current NAV" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value" />
+          </div>
+          <div className="g2" style={{ marginTop: 16 }}>
+            <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs NAV" color={dcf.upside >= 0 ? 'green' : 'red'} />
+            <Card label="Implied IRR" value={`${irr.toFixed(1)}%`} sub="Annualized" />
+          </div>
+          {dcfMethod === 'intermediate' && (
+            <div className="g2" style={{ marginTop: 16 }}>
+              <Card label="PV of Cash Flows" value={`$${dcf.sumIntermediatePV.toFixed(2)}`} sub={`${years}yr yield @ ${yieldPayout}% payout`} color="cyan" />
+              <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
+            </div>
+          )}
+          {dcfMethod === 'dividend' && (
+            <div className="g2" style={{ marginTop: 16 }}>
+              <Card label="PV of Dividends" value={`$${dcf.sumDividendPV.toFixed(2)}`} sub={`${years}yr @ ${dividendGrowthRate}% growth`} color="mint" />
+              <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
+            </div>
+          )}
         </div>
       </div>
-      
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card label="Implied Value" value={`$${dcf.impliedValue.toFixed(2)}`} sub={dcfMethod === 'intermediate' ? 'CFs + Terminal' : 'Terminal only'} color="green" />
-        <Card label="Current NAV" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value" color="blue" />
-        <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs NAV" color={dcf.upside >= 0 ? 'green' : 'red'} />
-        <Card label="Implied IRR" value={`${irr.toFixed(1)}%`} sub="Annualized" color="yellow" />
-      </div>
-      
-      {/* Show breakdown if using intermediate or dividend method */}
-      {dcfMethod === 'intermediate' && (
-        <div className="g2">
-          <Card label="PV of Cash Flows" value={`$${dcf.sumIntermediatePV.toFixed(2)}`} sub={`${years}yr yield @ ${yieldPayout}% payout`} color="blue" />
-          <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="purple" />
-        </div>
-      )}
-      {dcfMethod === 'dividend' && (
-        <div className="g2">
-          <Card label="PV of Dividends" value={`$${dcf.sumDividendPV.toFixed(2)}`} sub={`${years}yr @ ${dividendGrowthRate}% growth`} color="emerald" />
-          <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="purple" />
-        </div>
-      )}
       
       <div className="card"><div className="card-title">Projections</div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
             <thead>
-              <tr className="text-slate-400 text-xs border-b border-slate-700">
-                <th className="text-left py-2">Year</th>
-                <th className="text-right py-2">ETH</th>
-                <th className="text-right py-2">ETH Price</th>
-                <th className="text-right py-2">NAV</th>
+              <tr>
+                <th>Year</th>
+                <th className="r">ETH</th>
+                <th className="r">ETH Price</th>
+                <th className="r">NAV</th>
                 {dcfMethod === 'intermediate' && (
                   <>
-                    <th className="text-right py-2">Yield ETH</th>
-                    <th className="text-right py-2">CF/Share</th>
-                    <th className="text-right py-2">CF PV</th>
+                    <th className="r">Yield ETH</th>
+                    <th className="r">CF/Share</th>
+                    <th className="r">CF PV</th>
                   </>
                 )}
                 {dcfMethod === 'dividend' && (
                   <>
-                    <th className="text-right py-2">Dividend</th>
-                    <th className="text-right py-2">Div PV</th>
+                    <th className="r">Dividend</th>
+                    <th className="r">Div PV</th>
                   </>
                 )}
-                <th className="text-right py-2">NAV PV</th>
+                <th className="r">NAV PV</th>
               </tr>
             </thead>
             <tbody>
               {dcf.projections.map(p => (
-                <tr key={p.year} className="border-t border-slate-800">
-                  <td className="py-2">{p.year}</td>
-                  <td className="py-2 text-right">{(p.eth / 1e6).toFixed(2)}M</td>
-                  <td className="py-2 text-right">${p.ethPrice.toFixed(0)}</td>
-                  <td className="py-2 text-right">${p.nav.toFixed(2)}</td>
+                <tr key={p.year}>
+                  <td style={{ fontWeight: 500 }}>{p.year}</td>
+                  <td className="r">{(p.eth / 1e6).toFixed(2)}M</td>
+                  <td className="r">${p.ethPrice.toFixed(0)}</td>
+                  <td className="r">${p.nav.toFixed(2)}</td>
                   {dcfMethod === 'intermediate' && (
                     <>
-                      <td className="py-2 text-right text-green-400">+{Math.round(p.yieldETH).toLocaleString()}</td>
-                      <td className="py-2 text-right text-blue-400">${p.cfPerShare.toFixed(2)}</td>
-                      <td className="py-2 text-right text-blue-300">${p.cfPV.toFixed(2)}</td>
+                      <td className="r" style={{ color: 'var(--mint)' }}>+{Math.round(p.yieldETH).toLocaleString()}</td>
+                      <td className="r" style={{ color: 'var(--sky)' }}>${p.cfPerShare.toFixed(2)}</td>
+                      <td className="r" style={{ color: 'var(--sky)' }}>${p.cfPV.toFixed(2)}</td>
                     </>
                   )}
                   {dcfMethod === 'dividend' && (
                     <>
-                      <td className="py-2 text-right text-emerald-400">${p.yearDiv.toFixed(2)}</td>
-                      <td className="py-2 text-right text-emerald-300">${p.divPV.toFixed(2)}</td>
+                      <td className="r" style={{ color: 'var(--mint)' }}>${p.yearDiv.toFixed(2)}</td>
+                      <td className="r" style={{ color: 'var(--mint)' }}>${p.divPV.toFixed(2)}</td>
                     </>
                   )}
-                  <td className="py-2 text-right font-medium">${p.pv.toFixed(2)}</td>
+                  <td className="r" style={{ fontWeight: 500 }}>${p.pv.toFixed(2)}</td>
                 </tr>
               ))}
               {dcfMethod === 'intermediate' && (
-                <tr className="border-t border-blue-600 bg-blue-900/20">
-                  <td className="py-2 font-semibold text-blue-300">Sum CFs</td>
+                <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+                  <td style={{ fontWeight: 500 }}>Sum CFs</td>
                   <td colSpan={5}></td>
-                  <td className="py-2 text-right font-bold text-blue-400">${dcf.sumIntermediatePV.toFixed(2)}</td>
+                  <td className="r" style={{ fontWeight: 500, color: 'var(--cyan)' }}>${dcf.sumIntermediatePV.toFixed(2)}</td>
                   <td></td>
                 </tr>
               )}
               {dcfMethod === 'dividend' && (
-                <tr className="border-t border-emerald-600 bg-emerald-900/20">
-                  <td className="py-2 font-semibold text-emerald-300">Sum Dividends</td>
+                <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+                  <td style={{ fontWeight: 500 }}>Sum Dividends</td>
                   <td colSpan={3}></td>
-                  <td colSpan={2} className="py-2 text-right font-bold text-emerald-400">${dcf.sumDividendPV.toFixed(2)}</td>
+                  <td colSpan={2} className="r" style={{ fontWeight: 500, color: 'var(--mint)' }}>${dcf.sumDividendPV.toFixed(2)}</td>
                   <td></td>
                 </tr>
               )}
-              <tr className="border-t-2 border-violet-600 bg-violet-900/20">
-                <td className="py-2 font-semibold">Terminal</td>
+              <tr style={{ background: 'var(--surface2)' }}>
+                <td style={{ fontWeight: 500 }}>Terminal</td>
                 <td colSpan={dcfMethod === 'terminal' ? 2 : dcfMethod === 'intermediate' ? 5 : 4}></td>
-                <td className="py-2 text-right">${dcf.terminalNAV.toFixed(2)}</td>
-                <td className="py-2 text-right font-bold text-violet-400">${dcf.terminalPV.toFixed(2)}</td>
+                <td className="r">${dcf.terminalNAV.toFixed(2)}</td>
+                <td className="r" style={{ fontWeight: 500 }}>${dcf.terminalPV.toFixed(2)}</td>
               </tr>
-              <tr className="border-t-2 border-green-600 bg-green-900/20">
-                <td className="py-2 font-bold text-green-300">TOTAL</td>
+              <tr style={{ background: 'rgba(0,212,170,0.1)' }}>
+                <td style={{ fontWeight: 700 }}>TOTAL</td>
                 <td colSpan={dcfMethod === 'terminal' ? 3 : dcfMethod === 'intermediate' ? 6 : 5}></td>
-                <td className="py-2 text-right font-bold text-green-400 text-lg">${dcf.impliedValue.toFixed(2)}</td>
+                <td className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${dcf.impliedValue.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>

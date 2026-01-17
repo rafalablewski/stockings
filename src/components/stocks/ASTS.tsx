@@ -1504,8 +1504,20 @@ const ASTSAnalysis = () => {
   const [regulatoryRisk, setRegulatoryRisk] = useState(5);
   const [techRisk, setTechRisk] = useState(8);
   const [competitionRisk, setCompetitionRisk] = useState(10);
+
+  // DCF Model Assumptions - NEW
+  const [deploymentDelay, setDeploymentDelay] = useState(0); // Years behind/ahead of plan (-2 to +2)
+  const [terminalMargin, setTerminalMargin] = useState(55); // Terminal EBITDA margin %
+  const [terminalCapex, setTerminalCapex] = useState(10); // Terminal CapEx as % of revenue
+  const [dilutionRate, setDilutionRate] = useState(5); // Annual dilution % from warrants/SBC
+  const [competitionDiscount, setCompetitionDiscount] = useState(20); // % reduction for Starlink/T-Mobile
+  const [discountRate, setDiscountRate] = useState(15); // WACC / hurdle rate
+  const [terminalGrowth, setTerminalGrowth] = useState(3); // Perpetuity growth rate
+  const [selectedScenario, setSelectedScenario] = useState<'bull' | 'base' | 'bear' | 'custom'>('base');
+
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
+  const [valuationDropdownOpen, setValuationDropdownOpen] = useState(false);
 
   // Use imported data from @/data/asts
   const partners = PARTNERS;
@@ -1542,9 +1554,11 @@ const ASTSAnalysis = () => {
     { id: 'revenue', label: 'Revenue', type: 'projection', group: 'ASTS Analysis' },
     { id: 'partners', label: 'Partners', type: 'projection', group: 'ASTS Analysis' },
     { id: 'runway', label: 'Cash Runway', type: 'projection', group: 'ASTS Analysis' },
-    // Common projections
-    { id: 'scenarios', label: 'Scenarios', type: 'projection' },
-    { id: 'dcf', label: 'DCF', type: 'projection' },
+    // Valuation model - Model as dropdown trigger, Scenarios/DCF in its dropdown
+    { id: 'model', label: 'Model', type: 'projection', group: 'Model' },
+    { id: 'scenarios', label: 'Scenarios', type: 'projection', group: 'Model' },
+    { id: 'dcf', label: 'DCF', type: 'projection', group: 'Model' },
+    // Other projections
     { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
     { id: 'comps', label: 'Comps', type: 'projection' },
     // Tracking
@@ -1624,8 +1638,8 @@ const ASTSAnalysis = () => {
 
         {/* Navigation */}
         <nav className="nav">
-          {/* Tabs before dropdown */}
-          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) > tabs.indexOf(t)).map(t => (
+          {/* Overview tab (before any grouped tabs) */}
+          {tabs.filter(t => !t.group).slice(0, 1).map(t => (
             <button
               key={t.id}
               className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
@@ -1635,16 +1649,24 @@ const ASTSAnalysis = () => {
             </button>
           ))}
 
-          {/* Stock-specific dropdown trigger */}
+          {/* ASTS Analysis dropdown trigger */}
           <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'ASTS Analysis' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setValuationDropdownOpen(false); }}
           >
             ASTS Analysis ↕
           </button>
 
-          {/* Tabs after dropdown */}
-          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) < tabs.indexOf(t)).map(t => (
+          {/* Model dropdown trigger */}
+          <button
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'Model' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setValuationDropdownOpen(!valuationDropdownOpen); setAnalysisDropdownOpen(false); }}
+          >
+            Model ↕
+          </button>
+
+          {/* Remaining ungrouped tabs */}
+          {tabs.filter(t => !t.group).slice(1).map(t => (
             <button
               key={t.id}
               className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
@@ -1655,11 +1677,24 @@ const ASTSAnalysis = () => {
           ))}
         </nav>
 
-        {/* Reserved space for dropdown menu - always present to prevent layout shift */}
+        {/* Reserved space for dropdown menus - always present to prevent layout shift */}
         <div className="nav-dropdown-space">
           {analysisDropdownOpen && (
             <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group).map(t => (
+              {tabs.filter(t => t.group === 'ASTS Analysis').map(t => (
+                <button
+                  key={t.id}
+                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+                  onClick={() => setActiveTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+          {valuationDropdownOpen && (
+            <div className="nav-dropdown-menu">
+              {tabs.filter(t => t.group === 'Model').map(t => (
                 <button
                   key={t.id}
                   className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
@@ -1682,8 +1717,47 @@ const ASTSAnalysis = () => {
           {activeTab === 'partners' && <PartnersTab partners={partners} revenueShare={revenueShare} blendedARPU={blendedARPU} penetrationRate={penetrationRate} />}
           {activeTab === 'runway' && <RunwayTab calc={calc} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} debtRate={debtRate} setDebtRate={setDebtRate} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
           {activeTab === 'capital' && <CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} />}
-          {activeTab === 'scenarios' && <ScenariosTab currentShares={currentShares} currentStockPrice={currentStockPrice} totalDebt={totalDebt} cashOnHand={cashOnHand} />}
-          {activeTab === 'dcf' && <DCFTab calc={calc} currentShares={currentShares} currentStockPrice={currentStockPrice} cashOnHand={cashOnHand} totalDebt={totalDebt} regulatoryRisk={regulatoryRisk} setRegulatoryRisk={setRegulatoryRisk} techRisk={techRisk} setTechRisk={setTechRisk} competitionRisk={competitionRisk} setCompetitionRisk={setCompetitionRisk} />}
+          {activeTab === 'scenarios' && <ScenariosTab
+            currentShares={currentShares} currentStockPrice={currentStockPrice}
+            totalDebt={totalDebt} cashOnHand={cashOnHand}
+            partnerReach={partnerReach} penetrationRate={penetrationRate}
+            blendedARPU={blendedARPU} revenueShare={revenueShare}
+            terminalMargin={terminalMargin} terminalCapex={terminalCapex}
+            dilutionRate={dilutionRate} competitionDiscount={competitionDiscount}
+            discountRate={discountRate} terminalGrowth={terminalGrowth}
+            deploymentDelay={deploymentDelay}
+            regulatoryRisk={regulatoryRisk} techRisk={techRisk} competitionRisk={competitionRisk}
+            selectedScenario={selectedScenario}
+          />}
+          {activeTab === 'model' && <ModelTab
+            partnerReach={partnerReach} setPartnerReach={setPartnerReach}
+            penetrationRate={penetrationRate} setPenetrationRate={setPenetrationRate}
+            blendedARPU={blendedARPU} setBlendedARPU={setBlendedARPU}
+            revenueShare={revenueShare} setRevenueShare={setRevenueShare}
+            deploymentDelay={deploymentDelay} setDeploymentDelay={setDeploymentDelay}
+            terminalMargin={terminalMargin} setTerminalMargin={setTerminalMargin}
+            terminalCapex={terminalCapex} setTerminalCapex={setTerminalCapex}
+            dilutionRate={dilutionRate} setDilutionRate={setDilutionRate}
+            competitionDiscount={competitionDiscount} setCompetitionDiscount={setCompetitionDiscount}
+            discountRate={discountRate} setDiscountRate={setDiscountRate}
+            terminalGrowth={terminalGrowth} setTerminalGrowth={setTerminalGrowth}
+            regulatoryRisk={regulatoryRisk} setRegulatoryRisk={setRegulatoryRisk}
+            techRisk={techRisk} setTechRisk={setTechRisk}
+            competitionRisk={competitionRisk} setCompetitionRisk={setCompetitionRisk}
+            selectedScenario={selectedScenario} setSelectedScenario={setSelectedScenario}
+            currentShares={currentShares} cashOnHand={cashOnHand} totalDebt={totalDebt}
+          />}
+          {activeTab === 'dcf' && <DCFTab
+            calc={calc} currentShares={currentShares} currentStockPrice={currentStockPrice}
+            cashOnHand={cashOnHand} totalDebt={totalDebt}
+            partnerReach={partnerReach} penetrationRate={penetrationRate}
+            blendedARPU={blendedARPU} revenueShare={revenueShare}
+            deploymentDelay={deploymentDelay} terminalMargin={terminalMargin}
+            terminalCapex={terminalCapex} dilutionRate={dilutionRate}
+            competitionDiscount={competitionDiscount} discountRate={discountRate}
+            terminalGrowth={terminalGrowth} regulatoryRisk={regulatoryRisk}
+            techRisk={techRisk} competitionRisk={competitionRisk}
+          />}
           {activeTab === 'monte-carlo' && <MonteCarloTab currentShares={currentShares} currentStockPrice={currentStockPrice} totalDebt={totalDebt} cashOnHand={cashOnHand} />}
           {activeTab === 'comps' && <CompsTab calc={calc} currentStockPrice={currentStockPrice} />}
           {activeTab === 'timeline' && <TimelineTab />}
@@ -3105,313 +3179,143 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
   );
 };
 
-// SCENARIOS TAB - Deterministic analysis
-const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand }) => {
+// SCENARIOS TAB - Extended projections using Model's exact values
+const ScenariosTab = ({
+  currentShares, currentStockPrice, totalDebt, cashOnHand,
+  // Model state - used directly (no multipliers)
+  partnerReach, penetrationRate, blendedARPU, revenueShare,
+  terminalMargin, terminalCapex, dilutionRate, competitionDiscount,
+  discountRate, terminalGrowth, deploymentDelay,
+  regulatoryRisk, techRisk, competitionRisk,
+  selectedScenario, // From Model tab
+}) => {
   const netCash = cashOnHand - totalDebt;
   const [targetYear, setTargetYear] = useState(2030);
-  const [selectedScenario, setSelectedScenario] = useState('base');
-  const [showMath, setShowMath] = useState(false);
-  
-  // ============================================================================
-  // YEAR CONFIGURATION
-  // Each year scales from 2030 "anchor" values based on business maturity
-  // ============================================================================
-  const yearConfigs = {
-    2026: { penMult: 0.08, revMult: 0.05, marginAdj: -40, multAdj: 0, sats: '45-60', phase: 'Initial Commercial Launch' },
-    2027: { penMult: 0.18, revMult: 0.14, marginAdj: -25, multAdj: 0, sats: '70-90', phase: 'US/EU Continuous Coverage' },
-    2028: { penMult: 0.38, revMult: 0.32, marginAdj: -12, multAdj: 0, sats: '90-110', phase: 'Global Expansion' },
-    2029: { penMult: 0.68, revMult: 0.62, marginAdj: -5, multAdj: 0, sats: '110-130', phase: 'Scale & Optimization' },
-    2030: { penMult: 1.00, revMult: 1.00, marginAdj: 0, multAdj: 0, sats: '130-150', phase: 'Mature Operations' },
-    2031: { penMult: 1.18, revMult: 1.22, marginAdj: 2, multAdj: -1, sats: '150-170', phase: 'Growth Continuation' },
-    2032: { penMult: 1.32, revMult: 1.42, marginAdj: 3, multAdj: -2, sats: '170-190', phase: 'Market Maturation' },
-    2033: { penMult: 1.44, revMult: 1.58, marginAdj: 4, multAdj: -2, sats: '190-210', phase: 'Steady State' },
-    2034: { penMult: 1.52, revMult: 1.70, marginAdj: 5, multAdj: -3, sats: '210-230', phase: 'Cash Generation' },
-    2035: { penMult: 1.58, revMult: 1.80, marginAdj: 5, multAdj: -3, sats: '230-250', phase: 'Mature Platform' },
-  };
-
-  const yc = yearConfigs[targetYear];
-  const yearsFromNow = targetYear - 2025;
-  const discountRate = 0.15; // 15% required return for pre-revenue space company
-  const discountFactor = Math.pow(1 + discountRate, yearsFromNow);
 
   // ============================================================================
-  // 2030 ANCHOR SCENARIOS (Terminal Year Assumptions)
-  // All other years scale from these base values
+  // TERMINAL VALUES FROM MODEL (2030 anchor)
   // ============================================================================
-  const scenarios2030 = {
-    worst: { pen: 0.30, rev: 0.8, margin: -20, mult: 4, dil: 40, prob: 5 },
-    bear:  { pen: 1.00, rev: 2.5, margin: 25, mult: 8, dil: 15, prob: 20 },
-    base:  { pen: 2.50, rev: 5.5, margin: 45, mult: 10, dil: 5, prob: 35 },
-    mgmt:  { pen: 3.50, rev: 8.0, margin: 52, mult: 12, dil: 0, prob: 25 },
-    bull:  { pen: 5.00, rev: 12.0, margin: 58, mult: 14, dil: 0, prob: 12 },
-    moon:  { pen: 8.00, rev: 18.0, margin: 62, mult: 16, dil: 0, prob: 3 },
-  };
-
-  const scenarioMeta = {
-    worst: { name: 'Worst', label: '🔴', color: '#ef4444', desc: 'Catastrophic failure',
-      assumptions: ['Satellite constellation fails to achieve coverage targets', 'Technology proves uncompetitive vs terrestrial 5G expansion', 'MNO partners terminate agreements', 'Regulatory barriers block commercial service'],
-      catalysts: [],
-      risks: ['Complete technology failure requiring write-off', 'Bankruptcy or distressed restructuring', 'Competition from Starlink Direct-to-Cell']
-    },
-    bear:  { name: 'Bear', label: '🟠', color: '#f97316', desc: 'Delays & competition',
-      assumptions: ['Significant launch delays push revenue to 2028+', 'Only 2-3 MNO partners generate meaningful revenue', 'ARPU lower than expected due to pricing pressure', 'Margins compressed by higher operating costs'],
-      catalysts: ['Successful Block 2 satellite deployment', 'First commercial revenue milestone'],
-      risks: ['Continued execution delays', 'MNO partner churn', 'Dilutive capital raises']
-    },
-    base:  { name: 'Base', label: '🟡', color: '#eab308', desc: 'Plan execution',
-      assumptions: ['Constellation deployment on revised timeline', 'AT&T partnership scales as planned', 'International expansion with 2-3 new MNOs', 'Gradual margin improvement with scale'],
-      catalysts: ['Commercial service launch with AT&T', 'New MNO partnership announcements', 'Positive ARPU data from early subscribers'],
-      risks: ['Execution delays', 'Competitive pressure on pricing']
-    },
-    mgmt:  { name: 'Mgmt', label: '🟢', color: '#22c55e', desc: 'Mgmt targets hit',
-      assumptions: ['Management guidance achieved on timeline', '5+ MNO partners generating revenue', 'Premium ARPU maintained through differentiation', 'Operating leverage drives margin expansion'],
-      catalysts: ['Beat-and-raise earnings reports', 'Expansion into new geographies', 'Government/enterprise contract wins'],
-      risks: ['Satellite replacement costs', 'Currency headwinds in emerging markets']
-    },
-    bull:  { name: 'Bull', label: '🔵', color: '#3b82f6', desc: 'Outperformance',
-      assumptions: ['Faster than expected subscriber growth', 'Premium pricing power maintained', 'Minimal competition from alternatives', 'Strong operating leverage drives 50%+ margins'],
-      catalysts: ['Accelerated MNO partnership signings', 'Higher than expected ARPU', 'Strategic investment or partnership'],
-      risks: ['Execution risk on rapid scaling', 'Regulatory changes']
-    },
-    moon:  { name: 'Moon', label: '🟣', color: '#8b5cf6', desc: 'Category winner',
-      assumptions: ['Dominant market position in satellite-to-phone', 'Global MNO adoption across all major markets', 'Pricing power and 60%+ EBITDA margins', 'Platform expansion beyond voice/text'],
-      catalysts: ['Acquisition interest from major telecom/tech', 'Exclusive partnerships with tier-1 carriers', 'New spectrum allocations'],
-      risks: ['Antitrust scrutiny', 'Key person risk']
-    },
-  };
+  const terminalSubs = partnerReach * (penetrationRate / 100) * (1 - competitionDiscount / 100);
+  const terminalGrossRev = terminalSubs * blendedARPU * 12 / 1000; // $B
+  const terminalRev = terminalGrossRev * (revenueShare / 100);
 
   // ============================================================================
-  // VALUATION CALCULATION ENGINE
-  // Step-by-step with full audit trail
+  // YEAR CONFIGURATION - S-curve ramp to terminal values
   // ============================================================================
-  const scenarios = useMemo(() => {
-    return Object.entries(scenarios2030).map(([key, s2030]) => {
-      // STEP 1: Scale metrics from 2030 anchor to target year
-      const pen = s2030.pen * yc.penMult;
-      const rev = s2030.rev * yc.revMult;
-      const subs = 3000 * pen / 100; // 3B addressable base
-      
-      // STEP 2: Adjust margin for business maturity
-      // Early years: higher fixed costs relative to revenue = lower margins
-      // Worst case stays negative; others capped at realistic early-stage levels
-      let margin = s2030.margin + yc.marginAdj;
-      if (key === 'worst') margin = Math.min(margin, -10); // Worst case always negative
-      if (key !== 'worst' && targetYear <= 2027) margin = Math.max(margin, -15); // Allow losses in early years
-      
-      // STEP 3: Adjust valuation multiple for growth stage
-      // Early years: higher growth = higher multiple (within reason)
-      // Late years: lower growth = lower multiple
-      let mult = s2030.mult + yc.multAdj;
-      if (targetYear <= 2027) mult = Math.min(mult + 2, 16); // Growth premium cap
-      if (targetYear >= 2033) mult = Math.max(mult, 5); // Floor for mature company
-      
-      // STEP 4: Calculate dilution (primarily early-year phenomenon)
-      let dil = s2030.dil;
-      if (targetYear <= 2027) dil = Math.min(dil + 10, 60); // More dilution risk early
-      if (targetYear >= 2029) dil = Math.max(0, dil - 5); // Less dilution once profitable
-      
-      // STEP 5: Calculate EBITDA
-      const ebitda = rev * (margin / 100);
-      
-      // STEP 6: Calculate Enterprise Value
-      // If EBITDA positive: EV = EBITDA × Multiple
-      // If EBITDA negative: Use revenue multiple (2x) as distressed proxy
-      const ev = margin > 0 ? ebitda * mult : rev * 2;
-      
-      // STEP 7: Calculate Equity Value
-      // Equity = EV × 1000 (convert to $M) + Net Cash
-      const equityValue = ev * 1000 + netCash;
-      
-      // STEP 8: Calculate diluted shares
-      const dilutedShares = currentShares * (1 + dil / 100);
-      
-      // STEP 9: Calculate target year stock price
-      const priceInTargetYear = Math.max(0, equityValue / dilutedShares);
-      
-      // STEP 10: Discount to present value
-      // PV = Future Value / (1 + r)^n
-      const presentValue = priceInTargetYear / discountFactor;
-      
-      // STEP 11: Calculate upside vs current price
-      const upside = ((presentValue - currentStockPrice) / currentStockPrice) * 100;
-      
-      return {
-        id: key,
-        ...scenarioMeta[key],
-        prob: s2030.prob,
-        // Metrics
-        pen, rev, subs, margin, mult, dil,
-        // Calculated values
-        ebitda, ev, equityValue, dilutedShares,
-        priceInTargetYear, presentValue, upside,
-        // Audit trail
-        audit: {
-          step1: `Penetration: ${s2030.pen}% × ${yc.penMult} = ${pen.toFixed(2)}%`,
-          step2: `Revenue: $${s2030.rev}B × ${yc.revMult} = $${rev.toFixed(2)}B`,
-          step3: `Margin: ${s2030.margin}% + (${yc.marginAdj}) = ${margin.toFixed(0)}%`,
-          step4: `Multiple: ${s2030.mult}x + (${yc.multAdj}) = ${mult}x`,
-          step5: `EBITDA: $${rev.toFixed(2)}B × ${margin.toFixed(0)}% = $${ebitda.toFixed(2)}B`,
-          step6: margin > 0 
-            ? `EV: $${ebitda.toFixed(2)}B × ${mult}x = $${ev.toFixed(1)}B`
-            : `EV: $${rev.toFixed(2)}B × 2x (distressed) = $${ev.toFixed(1)}B`,
-          step7: `Equity: $${ev.toFixed(1)}B × 1000 + $${(netCash/1000).toFixed(2)}B = $${(equityValue/1000).toFixed(2)}B`,
-          step8: `Shares: ${currentShares}M × (1 + ${dil}%) = ${dilutedShares.toFixed(0)}M`,
-          step9: `${targetYear} Price: $${(equityValue/1000).toFixed(2)}B ÷ ${dilutedShares.toFixed(0)}M = $${priceInTargetYear.toFixed(2)}`,
-          step10: `PV: $${priceInTargetYear.toFixed(2)} ÷ (1.15)^${yearsFromNow} = $${presentValue.toFixed(2)}`,
-        }
-      };
-    });
-  }, [targetYear, currentShares, currentStockPrice, netCash, yc, discountFactor, yearsFromNow]);
-
-  // ============================================================================
-  // EXPECTED VALUE CALCULATION
-  // Probability-weighted average of present values
-  // ============================================================================
-  const expectedValue = useMemo(() => {
-    const weightedPV = scenarios.reduce((sum, s) => sum + (s.presentValue * s.prob / 100), 0);
-    const weightedFuture = scenarios.reduce((sum, s) => sum + (s.priceInTargetYear * s.prob / 100), 0);
-    const upside = ((weightedPV - currentStockPrice) / currentStockPrice) * 100;
-    
-    return {
-      presentValue: weightedPV,
-      futureValue: weightedFuture,
-      upside,
-      calculation: scenarios.map(s => `(${s.prob}% × $${s.presentValue.toFixed(0)})`).join(' + ')
-    };
-  }, [scenarios, currentStockPrice]);
-
-  // Get the currently selected scenario data
-  const selected = useMemo(() => {
-    return scenarios.find(s => s.id === selectedScenario) || scenarios[2]; // Default to base
-  }, [scenarios, selectedScenario]);
-
   const TARGET_YEARS = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
+  const baseRamp = [0.01, 0.05, 0.15, 0.35, 0.65, 1.0, 1.15, 1.28, 1.38, 1.45];
+  const marginRamp = [-500, -100, 10, 30, 45, terminalMargin, terminalMargin + 2, terminalMargin + 3, terminalMargin + 4, terminalMargin + 5];
+  const capexRamp = [200, 80, 40, 25, 15, terminalCapex, terminalCapex - 1, terminalCapex - 2, terminalCapex - 2, terminalCapex - 3];
 
-  // Generate year-by-year projections for the selected scenario (SAME formulas as scenarios calculation)
+  const yearConfigs = TARGET_YEARS.reduce((acc, year, i) => {
+    acc[year] = {
+      ramp: baseRamp[Math.max(0, Math.min(baseRamp.length - 1, i - deploymentDelay))],
+      margin: marginRamp[Math.min(i, marginRamp.length - 1)],
+      capex: capexRamp[Math.min(i, capexRamp.length - 1)],
+      phase: ['Launch', 'US/EU Coverage', 'Global Expansion', 'Scale', 'Mature', 'Growth', 'Maturation', 'Steady State', 'Cash Gen', 'Platform'][i],
+    };
+    return acc;
+  }, {} as Record<number, { ramp: number; margin: number; capex: number; phase: string }>);
+
+  const discountRatePct = discountRate / 100;
+
+  // ============================================================================
+  // PROJECTIONS - Using Model's exact parameters
+  // ============================================================================
   const projections = useMemo(() => {
-    const s2030 = scenarios2030[selectedScenario];
-    if (!s2030) return [];
-
-    return TARGET_YEARS.map(year => {
+    return TARGET_YEARS.map((year, i) => {
       const yc = yearConfigs[year];
       const yearsFromNow = year - 2025;
-      const df = Math.pow(1 + discountRate, yearsFromNow);
 
-      // SAME FORMULAS as scenarios calculation (steps 1-11)
-      const pen = s2030.pen * yc.penMult;
-      const rev = s2030.rev * yc.revMult;
-      const subs = 3000 * pen / 100;
-
-      let margin = s2030.margin + yc.marginAdj;
-      if (selectedScenario === 'worst') margin = Math.min(margin, -10);
-      if (selectedScenario !== 'worst' && year <= 2027) margin = Math.max(margin, -15);
-
-      let mult = s2030.mult + yc.multAdj;
-      if (year <= 2027) mult = Math.min(mult + 2, 16);
-      if (year >= 2033) mult = Math.max(mult, 5);
-
-      let dil = s2030.dil;
-      if (year <= 2027) dil = Math.min(dil + 10, 60);
-      if (year >= 2029) dil = Math.max(0, dil - 5);
+      const subs = terminalSubs * yc.ramp;
+      const rev = terminalRev * yc.ramp;
+      const margin = yc.margin;
+      const capex = yc.capex;
 
       const ebitda = rev * (margin / 100);
-      const ev = margin > 0 ? ebitda * mult : rev * 2;
-      const equityValue = ev * 1000 + netCash;
-      const dilutedShares = currentShares * (1 + dil / 100);
-      const priceInYear = Math.max(0, equityValue / dilutedShares);
-      const presentValue = priceInYear / df;
+      const fcf = ebitda - rev * (capex / 100);
+      const pv = fcf / Math.pow(1 + discountRatePct, yearsFromNow);
 
-      return { year, pen, rev, subs, margin, mult, dil, ebitda, ev, dilutedShares, priceInYear, presentValue };
+      const dilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, yearsFromNow);
+
+      // Terminal value calculation for selected year
+      const spreadPct = Math.max(discountRate - terminalGrowth, 1) / 100;
+      const termValue = fcf > 0 ? (fcf * (1 + terminalGrowth / 100)) / spreadPct : 0;
+      const pvTerm = termValue / Math.pow(1 + discountRatePct, yearsFromNow);
+
+      // Risk adjustment
+      const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
+
+      // Enterprise value (PV of FCFs to this year + terminal)
+      const ev = pv + pvTerm;
+      const adjEv = ev * riskFactor;
+      const equityValue = adjEv * 1000 + netCash;
+      const priceInYear = Math.max(0, equityValue / dilutedShares);
+      const presentValue = priceInYear / Math.pow(1 + discountRatePct, yearsFromNow);
+      const upside = ((presentValue - currentStockPrice) / currentStockPrice) * 100;
+
+      return {
+        year, subs, rev, margin, capex, ebitda, fcf, pv,
+        dilutedShares, ev: adjEv, equityValue, priceInYear, presentValue, upside,
+        phase: yc.phase,
+      };
     });
-  }, [selectedScenario, currentShares, netCash]);
+  }, [terminalSubs, terminalRev, yearConfigs, discountRatePct, discountRate, terminalGrowth,
+      currentShares, dilutionRate, regulatoryRisk, techRisk, competitionRisk, netCash, currentStockPrice]);
+
+  const selected = projections.find(p => p.year === targetYear) || projections[4];
+
+  // Scenario display info
+  const scenarioInfo = {
+    bull: { name: 'Bull', color: 'var(--mint)', icon: '🐂' },
+    base: { name: 'Base', color: 'var(--cyan)', icon: '📊' },
+    bear: { name: 'Bear', color: 'var(--coral)', icon: '🐻' },
+    custom: { name: 'Custom', color: 'var(--violet)', icon: '⚙️' },
+  };
+  const scenario = scenarioInfo[selectedScenario] || scenarioInfo.base;
 
   return (
     <>
-      <h2 className="section-head">Scenario Simulation</h2>
+      <h2 className="section-head">Projections</h2>
 
       <div className="highlight">
-        <h3>Multi-Year Projections</h3>
+        <h3>{scenario.icon} {scenario.name} Scenario — Extended Projections</h3>
         <p className="text-sm">
-          Model stock price under different scenarios based on subscriber growth, satellite deployment, and MNO partnerships.
-          Bear case assumes delays and competition. Bull case models category dominance with premium ARPU.
-          Probability-weight for expected value.
+          Using Model assumptions: {penetrationRate}% penetration × ${blendedARPU} ARPU × {revenueShare}% share.
+          {deploymentDelay !== 0 && ` Deployment ${deploymentDelay > 0 ? 'delayed' : 'ahead'} by ${Math.abs(deploymentDelay)} year(s).`}
         </p>
       </div>
 
-      {/* Controls - Target Year and Scenario Selector */}
-      <div className="g2" style={{ marginBottom: 24 }}>
-        <div className="card">
-          <div className="card-title">Target Year</div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {TARGET_YEARS.map(year => (
-              <button
-                key={year}
-                onClick={() => setTargetYear(year)}
-                style={{
-                  padding: '12px 20px',
-                  borderRadius: 8,
-                  border: targetYear === year ? '2px solid var(--mint)' : '1px solid var(--border)',
-                  background: targetYear === year ? 'rgba(0,212,170,0.15)' : 'var(--surface2)',
-                  color: targetYear === year ? 'var(--mint)' : 'var(--text2)',
-                  cursor: 'pointer',
-                  fontWeight: targetYear === year ? 700 : 400,
-                  fontFamily: 'Space Mono',
-                  fontSize: 16,
-                }}
-              >
+      {/* Target Year Selector */}
+      <div className="card">
+        <div className="card-title">Target Year</div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {TARGET_YEARS.map(year => (
+            <button
+              key={year}
+              onClick={() => setTargetYear(year)}
+              style={{
+                padding: '12px 20px',
+                borderRadius: 8,
+                border: targetYear === year ? `2px solid ${scenario.color}` : '1px solid var(--border)',
+                background: targetYear === year ? `${scenario.color}22` : 'var(--surface2)',
+                color: targetYear === year ? scenario.color : 'var(--text2)',
+                cursor: 'pointer',
+                fontWeight: targetYear === year ? 700 : 400,
+                fontFamily: 'Space Mono',
+                fontSize: 16,
+              }}
+            >
                 {year}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="card">
-          <div className="card-title">Scenario</div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {scenarios.map(s => (
-              <button
-                key={s.id}
-                onClick={() => setSelectedScenario(s.id)}
-                style={{
-                  padding: '12px 16px',
-                  borderRadius: 8,
-                  border: s.id === selectedScenario ? `2px solid ${s.color}` : '1px solid var(--border)',
-                  background: s.id === selectedScenario ? `${s.color}22` : 'var(--surface2)',
-                  color: s.id === selectedScenario ? s.color : 'var(--text2)',
-                  cursor: 'pointer',
-                  fontWeight: s.id === selectedScenario ? 700 : 400,
-                  fontSize: 14,
-                }}
-              >
-                {s.name} ({s.prob}%)
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Selected Scenario Header */}
-      <div className="card" style={{ borderLeft: `4px solid ${selected.color}` }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
-          <div>
-            <h3 style={{ color: selected.color, marginBottom: 8 }}>
-              {selected.name} Case — {targetYear}
-            </h3>
-            <p style={{ color: 'var(--text2)', maxWidth: 600 }}>{scenarioMeta[selectedScenario].desc}</p>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 12, color: 'var(--text3)' }}>Probability Weight</div>
-            <div style={{ fontFamily: 'Space Mono', fontSize: 32, fontWeight: 700, color: selected.color }}>
-              {selected.prob}%
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Key Metrics */}
+      {/* Key Metrics for Selected Year */}
       <div className="g4" style={{ marginTop: 24 }}>
         <div className="big-stat">
-          <div className="num" style={{ color: selected.color }}>${selected.priceInTargetYear.toFixed(0)}</div>
+          <div className="num" style={{ color: scenario.color }}>${selected.priceInYear.toFixed(0)}</div>
           <div className="lbl">{targetYear} Price</div>
           <div style={{ fontSize: 12, color: selected.upside >= 0 ? 'var(--mint)' : 'var(--coral)', marginTop: 4 }}>
             {selected.upside >= 0 ? '+' : ''}{selected.upside.toFixed(0)}% from ${currentStockPrice}
@@ -3421,14 +3325,14 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
           <div className="num" style={{ color: 'var(--sky)' }}>${selected.presentValue.toFixed(0)}</div>
           <div className="lbl">PV Today</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
-            Discounted @ 15%/yr
+            Discounted @ {discountRate}%/yr
           </div>
         </div>
         <div className="big-stat">
-          <div className="num">{selected.subs.toFixed(1)}M</div>
+          <div className="num">{(selected.subs / 1000000).toFixed(1)}M</div>
           <div className="lbl">Subscribers</div>
           <div style={{ fontSize: 12, color: 'var(--sky)', marginTop: 4 }}>
-            {selected.pen.toFixed(2)}% penetration
+            {penetrationRate}% penetration
           </div>
         </div>
         <div className="big-stat">
@@ -3442,7 +3346,7 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
 
       {/* Financial Projections Table */}
       <div className="card" style={{ marginTop: 24 }}>
-        <div className="card-title">Financial Projections — {selected.name} Scenario</div>
+        <div className="card-title">Financial Projections — {scenario.name} Scenario</div>
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>
@@ -3462,16 +3366,16 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
                 <td className="r">—</td>
                 {projections.map(p => (
                   <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                    {p.subs.toFixed(1)}
+                    {(p.subs / 1000000).toFixed(1)}
                   </td>
                 ))}
               </tr>
               <tr>
-                <td>Penetration (%)</td>
+                <td>Phase</td>
                 <td className="r">—</td>
                 {projections.map(p => (
-                  <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                    {p.pen.toFixed(2)}%
+                  <td key={p.year} className="r" style={{ fontSize: 11, background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.phase}
                   </td>
                 ))}
               </tr>
@@ -3503,29 +3407,29 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
                 ))}
               </tr>
               <tr style={{ borderTop: '1px solid var(--border)' }}>
-                <td>EV/EBITDA Multiple</td>
+                <td>Free Cash Flow ($B)</td>
                 <td className="r">—</td>
                 {projections.map(p => (
-                  <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                    {p.mult}x
+                  <td key={p.year} className="r" style={{ color: p.fcf >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.fcf >= 0 ? '$' : '($'}{Math.abs(p.fcf).toFixed(2)}{p.fcf < 0 ? ')' : ''}
                   </td>
                 ))}
               </tr>
               <tr>
+                <td>CapEx (% Rev)</td>
+                <td className="r">—</td>
+                {projections.map(p => (
+                  <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.capex.toFixed(0)}%
+                  </td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '1px solid var(--border)' }}>
                 <td>Enterprise Value ($B)</td>
                 <td className="r">—</td>
                 {projections.map(p => (
                   <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
                     ${p.ev.toFixed(1)}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td>Dilution (%)</td>
-                <td className="r">—</td>
-                {projections.map(p => (
-                  <td key={p.year} className="r" style={{ color: 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                    +{p.dil.toFixed(0)}%
                   </td>
                 ))}
               </tr>
@@ -3542,7 +3446,7 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
                 <td>Stock Price ($)</td>
                 <td className="r">${currentStockPrice}</td>
                 {projections.map(p => (
-                  <td key={p.year} className="r" style={{ color: selected.color, background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                  <td key={p.year} className="r" style={{ color: scenario.color, background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
                     ${p.priceInYear.toFixed(0)}
                   </td>
                 ))}
@@ -3561,221 +3465,93 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         </div>
       </div>
 
-      {/* KEY ASSUMPTIONS & CATALYSTS */}
+      {/* Model Assumptions Summary */}
       <div className="g2" style={{ marginTop: 24 }}>
         <div className="card">
-          <div className="card-title">Key Assumptions</div>
-          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
-            {scenarioMeta[selectedScenario].assumptions.map((a, i) => (
-              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{a}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="card">
-          <div className="card-title">{scenarioMeta[selectedScenario].catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</div>
-          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
-            {(scenarioMeta[selectedScenario].catalysts.length > 0 ? scenarioMeta[selectedScenario].catalysts : scenarioMeta[selectedScenario].risks).map((item, i) => (
-              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{item}</li>
-            ))}
-          </ul>
-          {scenarioMeta[selectedScenario].catalysts.length > 0 && scenarioMeta[selectedScenario].risks.length > 0 && (
-            <>
-              <div className="card-title" style={{ marginTop: 16 }}>Risks</div>
-              <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
-                {scenarioMeta[selectedScenario].risks.map((r, i) => (
-                  <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{r}</li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Probability-Weighted Expected Value */}
-      <div className="highlight" style={{ marginTop: 32 }}>
-        <h3>Probability-Weighted Expected Value — {targetYear}</h3>
-        <p style={{ marginBottom: 20, color: 'var(--text2)' }}>
-          Weighted average across all scenarios based on assigned probabilities
-        </p>
-
-        <div className="g4">
-          <div className="big-stat">
-            <div className="num" style={{ color: 'var(--violet)' }}>${expectedValue.futureValue.toFixed(0)}</div>
-            <div className="lbl">Expected {targetYear} Price</div>
-          </div>
-          <div className="big-stat">
-            <div className="num mint">${expectedValue.presentValue.toFixed(0)}</div>
-            <div className="lbl">Expected PV Today</div>
-          </div>
-          <div className="big-stat">
-            <div className="num" style={{ color: expectedValue.upside >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-              {expectedValue.upside >= 0 ? '+' : ''}{expectedValue.upside.toFixed(0)}%
-            </div>
-            <div className="lbl">Expected Upside</div>
-          </div>
-          <div className="big-stat">
-            <div className="num">${currentStockPrice}</div>
-            <div className="lbl">Current Price</div>
-          </div>
-        </div>
-
-        {/* Scenario Breakdown Table */}
-        <div style={{ marginTop: 24 }}>
+          <div className="card-title">Revenue Drivers (from Model)</div>
           <table className="tbl">
-            <thead>
-              <tr>
-                <th>Scenario</th>
-                <th className="r">Probability</th>
-                <th className="r">{targetYear} Price</th>
-                <th className="r">PV Today</th>
-                <th className="r">Weighted Contribution</th>
-              </tr>
-            </thead>
             <tbody>
-              {scenarios.map(s => {
-                const contribution = s.presentValue * (s.prob / 100);
-                return (
-                  <tr key={s.id} style={{ background: selectedScenario === s.id ? `${s.color}11` : 'transparent' }}>
-                    <td>
-                      <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
-                      {s.name}
-                    </td>
-                    <td className="r">{s.prob}%</td>
-                    <td className="r" style={{ fontFamily: 'Space Mono' }}>${s.priceInTargetYear.toFixed(0)}</td>
-                    <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>${s.presentValue.toFixed(0)}</td>
-                    <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--mint)' }}>${contribution.toFixed(0)}</td>
-                  </tr>
-                );
-              })}
-              <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
-                <td>Expected Value</td>
-                <td className="r">100%</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--violet)' }}>${expectedValue.futureValue.toFixed(0)}</td>
-                <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${expectedValue.presentValue.toFixed(0)}</td>
-                <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${expectedValue.presentValue.toFixed(0)}</td>
+              <tr><td>Partner Reach</td><td className="r">{(partnerReach / 1000000000).toFixed(1)}B subscribers</td></tr>
+              <tr><td>Penetration Rate</td><td className="r">{penetrationRate}%</td></tr>
+              <tr><td>Blended ARPU</td><td className="r">${blendedARPU}/mo</td></tr>
+              <tr><td>Revenue Share</td><td className="r">{revenueShare}%</td></tr>
+              <tr><td>Competition Discount</td><td className="r">{competitionDiscount}%</td></tr>
+              <tr style={{ borderTop: '1px solid var(--border)', fontWeight: 600 }}>
+                <td>Terminal Subscribers</td>
+                <td className="r" style={{ color: 'var(--mint)' }}>{(terminalSubs / 1000000).toFixed(1)}M</td>
+              </tr>
+              <tr style={{ fontWeight: 600 }}>
+                <td>Terminal Revenue</td>
+                <td className="r" style={{ color: 'var(--mint)' }}>${terminalRev.toFixed(2)}B</td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
-
-      {/* ALL SCENARIOS COMPARISON TABLE */}
-      <div className="card" style={{ marginTop: 24 }}>
-        <div className="card-title">All Scenarios — {targetYear} Comparison</div>
-        <div style={{ overflowX: 'auto' }}>
+        <div className="card">
+          <div className="card-title">DCF Parameters (from Model)</div>
           <table className="tbl">
-            <thead>
-              <tr>
-                <th>Metric</th>
-                {scenarios.map(s => (
-                  <th key={s.id} className="r" style={{ color: s.color }}>{s.name}</th>
-                ))}
-              </tr>
-            </thead>
             <tbody>
-              <tr>
-                <td>Subscribers (M)</td>
-                {scenarios.map(s => <td key={s.id} className="r">{s.subs.toFixed(1)}</td>)}
+              <tr><td>Discount Rate</td><td className="r">{discountRate}%</td></tr>
+              <tr><td>Terminal Growth</td><td className="r">{terminalGrowth}%</td></tr>
+              <tr><td>Terminal EBITDA Margin</td><td className="r">{terminalMargin}%</td></tr>
+              <tr><td>Terminal CapEx (% Rev)</td><td className="r">{terminalCapex}%</td></tr>
+              <tr><td>Annual Dilution Rate</td><td className="r">{dilutionRate}%</td></tr>
+              <tr><td>Deployment Delay</td><td className="r">{deploymentDelay > 0 ? `+${deploymentDelay}` : deploymentDelay} year(s)</td></tr>
+              <tr style={{ borderTop: '1px solid var(--border)' }}>
+                <td>Regulatory Risk</td><td className="r">{regulatoryRisk}%</td>
               </tr>
-              <tr>
-                <td>Revenue ($B)</td>
-                {scenarios.map(s => <td key={s.id} className="r">${s.rev.toFixed(2)}</td>)}
-              </tr>
-              <tr>
-                <td>EBITDA ($B)</td>
-                {scenarios.map(s => (
-                  <td key={s.id} className="r" style={{ color: s.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                    {s.ebitda >= 0 ? '$' : '($'}{Math.abs(s.ebitda).toFixed(2)}{s.ebitda < 0 ? ')' : ''}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td>EBITDA Margin (%)</td>
-                {scenarios.map(s => (
-                  <td key={s.id} className="r" style={{ color: s.margin >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                    {s.margin.toFixed(0)}%
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td>EV/EBITDA Multiple</td>
-                {scenarios.map(s => <td key={s.id} className="r">{s.mult}x</td>)}
-              </tr>
-              <tr style={{ fontWeight: 700 }}>
-                <td>{targetYear} Price</td>
-                {scenarios.map(s => (
-                  <td key={s.id} className="r" style={{ color: s.color }}>
-                    ${s.priceInTargetYear.toFixed(0)}
-                  </td>
-                ))}
-              </tr>
-              <tr style={{ fontWeight: 600 }}>
-                <td>PV Today</td>
-                {scenarios.map(s => (
-                  <td key={s.id} className="r" style={{ color: 'var(--sky)' }}>
-                    ${s.presentValue.toFixed(0)}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td>Return vs Today</td>
-                {scenarios.map(s => (
-                  <td key={s.id} className="r" style={{ color: s.upside >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                    {s.upside >= 0 ? '+' : ''}{s.upside.toFixed(0)}%
-                  </td>
-                ))}
-              </tr>
+              <tr><td>Technology Risk</td><td className="r">{techRisk}%</td></tr>
+              <tr><td>Competition Risk</td><td className="r">{competitionRisk}%</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
       {/* Key Insights */}
-      <div className="card" style={{ marginTop: 24 }}><div className="card-title">Key Insights</div>
-        <div className="grid md:grid-cols-2 gap-4 text-sm">
-          <div className="bg-slate-900/50 rounded-lg p-4">
-            <h4 className="font-semibold text-violet-400 mb-2">Operating Leverage</h4>
-            <p className="text-slate-300">Once constellation is deployed, incremental subscribers add revenue with minimal marginal cost. EBITDA margins can expand rapidly from negative to 50%+ as fixed satellite costs are spread across growing subscriber base.</p>
+      <div className="card" style={{ marginTop: 24 }}>
+        <div className="card-title">Key Insights</div>
+        <div className="g2">
+          <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
+            <h4 style={{ color: 'var(--violet)', marginBottom: 8 }}>Operating Leverage</h4>
+            <p style={{ color: 'var(--text2)', lineHeight: 1.6, fontSize: 14 }}>Once constellation is deployed, incremental subscribers add revenue with minimal marginal cost. EBITDA margins can expand rapidly from negative to 50%+ as fixed satellite costs are spread across growing subscriber base.</p>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-4">
-            <h4 className="font-semibold text-violet-400 mb-2">MNO Partnership Value</h4>
-            <p className="text-slate-300">Each major MNO partnership (AT&T, Vodafone, etc.) represents access to hundreds of millions of potential subscribers. The revenue share model means ASTS captures recurring value without customer acquisition costs.</p>
+          <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
+            <h4 style={{ color: 'var(--violet)', marginBottom: 8 }}>MNO Partnership Value</h4>
+            <p style={{ color: 'var(--text2)', lineHeight: 1.6, fontSize: 14 }}>Each major MNO partnership represents access to hundreds of millions of potential subscribers. The revenue share model means ASTS captures recurring value without customer acquisition costs.</p>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-4">
-            <h4 className="font-semibold text-violet-400 mb-2">Dilution Risk</h4>
-            <p className="text-slate-300">Pre-revenue companies often require capital raises. Worst/Bear cases model 15-40% dilution. Bull cases assume profitability eliminates dilution need. Watch cash runway and partnership milestones.</p>
+          <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
+            <h4 style={{ color: 'var(--violet)', marginBottom: 8 }}>Dilution Risk</h4>
+            <p style={{ color: 'var(--text2)', lineHeight: 1.6, fontSize: 14 }}>Pre-revenue companies often require capital raises. Model assumes {dilutionRate}% annual dilution. Watch cash runway and partnership milestones.</p>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-4">
-            <h4 className="font-semibold text-violet-400 mb-2">Risk/Reward</h4>
-            <p className="text-slate-300">Worst case: {scenarios[0].upside.toFixed(0)}%. Moon case: +{scenarios[5].upside.toFixed(0)}%. Asymmetric upside if technology works and MNO partnerships scale as planned.</p>
+          <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
+            <h4 style={{ color: 'var(--violet)', marginBottom: 8 }}>Scenario Sensitivity</h4>
+            <p style={{ color: 'var(--text2)', lineHeight: 1.6, fontSize: 14 }}>Use the Model tab to switch between Bull/Base/Bear presets or customize parameters. Changes flow directly to this projection view.</p>
           </div>
         </div>
       </div>
 
-      {/* METHODOLOGY & ASSUMPTIONS */}
+      {/* Methodology */}
       <div className="card" style={{ marginTop: 24 }}>
-        <div className="card-title">Methodology & Assumptions</div>
+        <div className="card-title">Methodology</div>
         <div className="g2">
           <div>
             <h4 style={{ color: 'var(--mint)', marginBottom: 12 }}>Valuation Framework</h4>
             <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
-              <li><strong>Revenue Model:</strong> Addressable Subscribers (3B) × Penetration Rate × ARPU = Revenue</li>
-              <li><strong>EBITDA:</strong> Revenue × EBITDA Margin (varies by scenario maturity)</li>
-              <li><strong>Enterprise Value:</strong> EBITDA × EV/EBITDA Multiple (or Revenue × 2x if distressed)</li>
-              <li><strong>Equity Value:</strong> Enterprise Value + Net Cash Position</li>
-              <li><strong>Share Price:</strong> Equity Value ÷ Diluted Shares Outstanding</li>
-              <li><strong>Present Value:</strong> Future Price ÷ (1 + 15%)^Years (pre-revenue discount rate)</li>
+              <li><strong>Revenue Model:</strong> Partner Reach × Penetration × ARPU × 12 × Revenue Share</li>
+              <li><strong>EBITDA:</strong> Revenue × EBITDA Margin (S-curve ramp to terminal)</li>
+              <li><strong>FCF:</strong> EBITDA − CapEx (as % of revenue)</li>
+              <li><strong>Terminal Value:</strong> FCF × (1 + g) / (r − g) where g = terminal growth</li>
+              <li><strong>Risk Adjustment:</strong> EV × (1 − regulatory) × (1 − tech) × (1 − competition)</li>
+              <li><strong>Share Price:</strong> (Risk-Adj EV + Net Cash) ÷ Diluted Shares</li>
             </ul>
           </div>
           <div>
-            <h4 style={{ color: 'var(--sky)', marginBottom: 12 }}>Key Model Inputs</h4>
+            <h4 style={{ color: 'var(--sky)', marginBottom: 12 }}>How to Use</h4>
             <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
-              <li><strong>Addressable Market:</strong> 3 billion MNO subscribers across partner networks</li>
-              <li><strong>Penetration Range:</strong> 0.1% (Worst) to 8.0% (Moon) by {targetYear}</li>
-              <li><strong>Revenue Range:</strong> $0.3B (Worst) to $18B (Moon) by {targetYear}</li>
-              <li><strong>EBITDA Margins:</strong> -50% (Worst) to 62% (Moon) at scale</li>
-              <li><strong>EV/EBITDA Multiples:</strong> 0x (distressed) to 16x (category winner)</li>
-              <li><strong>Dilution:</strong> 0-50% depending on capital needs</li>
+              <li><strong>1. Model Tab:</strong> Select a scenario preset (Bull/Base/Bear) or customize</li>
+              <li><strong>2. Scenarios Tab:</strong> View year-by-year projections with your parameters</li>
+              <li><strong>3. DCF Tab:</strong> See detailed DCF breakdown with terminal value</li>
+              <li><strong>Tip:</strong> Compare scenarios by switching presets in Model tab</li>
             </ul>
           </div>
         </div>
@@ -3783,219 +3559,437 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
           <h4 style={{ color: 'var(--gold)', marginBottom: 12 }}>Important Caveats</h4>
           <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text3)', lineHeight: 1.8, fontSize: 13 }}>
             <li>Projections are illustrative scenarios, not forecasts. Actual results may differ materially.</li>
-            <li>Probabilities are subjective estimates based on management guidance and competitive analysis.</li>
             <li>Pre-revenue company with unproven technology at commercial scale; high execution risk.</li>
-            <li>Satellite constellation economics and MNO revenue share terms are subject to change.</li>
             <li>Competition from Starlink Direct-to-Cell and terrestrial 5G expansion not fully modeled.</li>
             <li>Regulatory approval timelines and spectrum availability vary by jurisdiction.</li>
           </ul>
         </div>
       </div>
-      
+
       <CFANotes title="CFA Level III — Scenario Analysis" items={[
         { term: 'Scenario Framework', def: 'Define discrete future states with specific operational and financial assumptions. Test thesis robustness across outcomes.' },
         { term: 'Revenue Drivers', def: 'Subscribers × ARPU × Revenue Share. Penetration rate is the key variable. 1% of 3.2B = 32M subs.' },
         { term: 'Margin Progression', def: 'Operating leverage as fixed costs spread over growing revenue. Telecom networks typically reach 40-60% EBITDA margins at scale.' },
-        { term: 'EV/EBITDA Multiples', def: 'Satellite peers: 8-15x. Growth premium justified for high-growth, asset-light after build-out. Use lower multiples for conservative cases.' },
-        { term: 'Present Value Discount', def: '15% discount rate for pre-revenue tech. Higher than mature companies. Reflects execution and technology risk.' },
-        { term: 'Probability Weighting', def: 'Assign probabilities to scenarios. Expected Value = Σ(probability × outcome). Bull 20%, Base 50%, Bear 30% is typical.' },
+        { term: 'Present Value Discount', def: `${discountRate}% discount rate for pre-revenue tech. Higher than mature companies. Reflects execution and technology risk.` },
+        { term: 'Terminal Value', def: 'Gordon Growth Model: FCF × (1+g)/(r-g). Assumes perpetual growth at terminal rate after projection period.' },
       ]} />
     </>
   );
 };
 
-// DCF TAB - Enhanced with implied market cap and share prices
-const DCFTab = ({ calc, currentShares, currentStockPrice, cashOnHand, totalDebt, regulatoryRisk, setRegulatoryRisk, techRisk, setTechRisk, competitionRisk, setCompetitionRisk }) => {
-  const [discount, setDiscount] = useState(15);
-  const [termGrowth, setTermGrowth] = useState(3);
-  const [evMultiple, setEvMultiple] = useState(10);
-  
+// SCENARIO PRESETS
+const SCENARIO_PRESETS = {
+  bull: {
+    label: 'Bull',
+    desc: 'Faster deployment, higher penetration, less competition',
+    penetrationRate: 5,
+    blendedARPU: 22,
+    deploymentDelay: -1,
+    terminalMargin: 60,
+    terminalCapex: 8,
+    dilutionRate: 3,
+    competitionDiscount: 10,
+    discountRate: 12,
+    terminalGrowth: 4,
+    regulatoryRisk: 3,
+    techRisk: 5,
+    competitionRisk: 5,
+  },
+  base: {
+    label: 'Base',
+    desc: 'Management guidance with moderate competition adjustment',
+    penetrationRate: 3,
+    blendedARPU: 18,
+    deploymentDelay: 0,
+    terminalMargin: 55,
+    terminalCapex: 10,
+    dilutionRate: 5,
+    competitionDiscount: 20,
+    discountRate: 15,
+    terminalGrowth: 3,
+    regulatoryRisk: 5,
+    techRisk: 8,
+    competitionRisk: 10,
+  },
+  bear: {
+    label: 'Bear',
+    desc: 'Delayed deployment, Starlink captures half the market',
+    penetrationRate: 1.5,
+    blendedARPU: 14,
+    deploymentDelay: 2,
+    terminalMargin: 45,
+    terminalCapex: 15,
+    dilutionRate: 8,
+    competitionDiscount: 50,
+    discountRate: 18,
+    terminalGrowth: 2,
+    regulatoryRisk: 10,
+    techRisk: 15,
+    competitionRisk: 20,
+  },
+};
+
+// MODEL TAB - Consolidated assumptions for DCF projections
+const ModelTab = ({
+  partnerReach, setPartnerReach,
+  penetrationRate, setPenetrationRate,
+  blendedARPU, setBlendedARPU,
+  revenueShare, setRevenueShare,
+  deploymentDelay, setDeploymentDelay,
+  terminalMargin, setTerminalMargin,
+  terminalCapex, setTerminalCapex,
+  dilutionRate, setDilutionRate,
+  competitionDiscount, setCompetitionDiscount,
+  discountRate, setDiscountRate,
+  terminalGrowth, setTerminalGrowth,
+  regulatoryRisk, setRegulatoryRisk,
+  techRisk, setTechRisk,
+  competitionRisk, setCompetitionRisk,
+  selectedScenario, setSelectedScenario,
+  currentShares, cashOnHand, totalDebt,
+}) => {
+  const applyScenario = (scenario: 'bull' | 'base' | 'bear') => {
+    const p = SCENARIO_PRESETS[scenario];
+    setPenetrationRate(p.penetrationRate);
+    setBlendedARPU(p.blendedARPU);
+    setDeploymentDelay(p.deploymentDelay);
+    setTerminalMargin(p.terminalMargin);
+    setTerminalCapex(p.terminalCapex);
+    setDilutionRate(p.dilutionRate);
+    setCompetitionDiscount(p.competitionDiscount);
+    setDiscountRate(p.discountRate);
+    setTerminalGrowth(p.terminalGrowth);
+    setRegulatoryRisk(p.regulatoryRisk);
+    setTechRisk(p.techRisk);
+    setCompetitionRisk(p.competitionRisk);
+    setSelectedScenario(scenario);
+  };
+
+  // Calculate projected revenue using subscriber model
+  const projectedSubs = partnerReach * (penetrationRate / 100) * (1 - competitionDiscount / 100);
+  const grossRevenue = projectedSubs * blendedARPU * 12 / 1000; // $B
+  const astsRevenue = grossRevenue * (revenueShare / 100);
+  const terminalEBITDA = astsRevenue * (terminalMargin / 100);
+  const terminalFCF = terminalEBITDA - astsRevenue * (terminalCapex / 100);
+  const dilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, 5);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <h2 className="section-head">Model Assumptions</h2>
+
+      <div className="highlight">
+        <h3>DCF Model Configuration</h3>
+        <p className="text-sm">
+          Configure all assumptions that drive the DCF valuation. Choose a preset scenario or customize individual parameters.
+          Changes here flow through to the DCF tab projections.
+        </p>
+      </div>
+
+      {/* Scenario Presets */}
+      <div className="card">
+        <div className="card-title">Scenario Presets</div>
+        <div className="g3">
+          {(['bull', 'base', 'bear'] as const).map(s => {
+            const preset = SCENARIO_PRESETS[s];
+            const isActive = selectedScenario === s;
+            return (
+              <div
+                key={s}
+                onClick={() => applyScenario(s)}
+                style={{
+                  padding: 16,
+                  borderRadius: 12,
+                  border: isActive ? '2px solid var(--cyan)' : '1px solid var(--border)',
+                  background: isActive ? 'rgba(34,211,238,0.1)' : 'var(--surface2)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <div style={{ fontWeight: 600, color: isActive ? 'var(--cyan)' : 'var(--text)', marginBottom: 4 }}>
+                  {s === 'bull' ? '🐂' : s === 'bear' ? '🐻' : '📊'} {preset.label}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text3)' }}>{preset.desc}</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+                  {preset.penetrationRate}% pen · ${preset.blendedARPU} ARPU · {preset.discountRate}% disc
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {selectedScenario === 'custom' && (
+          <div style={{ marginTop: 12, padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: 'var(--violet)' }}>
+            ⚙️ Custom scenario - parameters modified from preset
+          </div>
+        )}
+      </div>
+
+      {/* Subscriber & Revenue Assumptions */}
+      <div className="card">
+        <div className="card-title">Subscriber & Revenue</div>
+        <div className="g2">
+          <div className="g2">
+            <Input label="Partner Reach (M)" value={partnerReach} onChange={v => { setPartnerReach(v); setSelectedScenario('custom'); }} />
+            <Input label="Penetration %" value={penetrationRate} onChange={v => { setPenetrationRate(v); setSelectedScenario('custom'); }} step={0.5} />
+          </div>
+          <div className="g2">
+            <Input label="ARPU $/mo" value={blendedARPU} onChange={v => { setBlendedARPU(v); setSelectedScenario('custom'); }} />
+            <Input label="Revenue Share %" value={revenueShare} onChange={v => { setRevenueShare(v); setSelectedScenario('custom'); }} />
+          </div>
+        </div>
+        <div className="g2" style={{ marginTop: 16 }}>
+          <Input label="Competition Discount %" value={competitionDiscount} onChange={v => { setCompetitionDiscount(v); setSelectedScenario('custom'); }} />
+          <Input label="Deployment Delay (yrs)" value={deploymentDelay} onChange={v => { setDeploymentDelay(v); setSelectedScenario('custom'); }} min={-2} max={3} />
+        </div>
+      </div>
+
+      {/* Margin & CapEx Trajectory */}
+      <div className="card">
+        <div className="card-title">Margin & CapEx (Terminal Year)</div>
+        <div className="g2">
+          <Input label="EBITDA Margin %" value={terminalMargin} onChange={v => { setTerminalMargin(v); setSelectedScenario('custom'); }} />
+          <Input label="CapEx % of Rev" value={terminalCapex} onChange={v => { setTerminalCapex(v); setSelectedScenario('custom'); }} />
+        </div>
+      </div>
+
+      {/* Dilution & Risk */}
+      <div className="card">
+        <div className="card-title">Dilution & Risk Adjustments</div>
+        <div className="g2">
+          <div className="g2">
+            <Input label="Annual Dilution %" value={dilutionRate} onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }} />
+            <Input label="Discount Rate %" value={discountRate} onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }} />
+          </div>
+          <div className="g2">
+            <Input label="Terminal Growth %" value={terminalGrowth} onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }} />
+            <div></div>
+          </div>
+        </div>
+        <div className="g3" style={{ marginTop: 16 }}>
+          <Input label="Regulatory Risk %" value={regulatoryRisk} onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }} />
+          <Input label="Tech Risk %" value={techRisk} onChange={v => { setTechRisk(v); setSelectedScenario('custom'); }} />
+          <Input label="Competition Risk %" value={competitionRisk} onChange={v => { setCompetitionRisk(v); setSelectedScenario('custom'); }} />
+        </div>
+      </div>
+
+      {/* Live Preview */}
+      <div className="card">
+        <div className="card-title">Terminal Year Preview (2030)</div>
+        <div className="g4">
+          <Card label="Net Subs" value={`${projectedSubs.toFixed(0)}M`} sub={`After ${competitionDiscount}% competition`} color="cyan" />
+          <Card label="ASTS Revenue" value={`$${astsRevenue.toFixed(1)}B`} sub={`${revenueShare}% of gross`} color="green" />
+          <Card label="Terminal FCF" value={`$${terminalFCF.toFixed(1)}B`} sub={`${terminalMargin}% margin`} color="mint" />
+          <Card label="Diluted Shares" value={`${dilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr for 5yrs`} color="violet" />
+        </div>
+      </div>
+
+      <CFANotes title="CFA Level III — Model Assumptions" items={[
+        { term: 'Bottom-Up Revenue', def: 'Subscribers × ARPU × Revenue Share. More robust than top-down because each driver can be validated independently.' },
+        { term: 'Competition Discount', def: 'Reduction in TAM for Starlink/T-Mobile and other D2D entrants. Transhumanica uses 50% in conservative case.' },
+        { term: 'Deployment Delay', def: 'Years behind management guidance. Each year of delay pushes revenue curve right and reduces present value.' },
+        { term: 'Dilution Modeling', def: 'Warrants, convertibles, and SBC increase share count. ASTS has significant warrant overhang. Model 3-8% annually.' },
+        { term: 'Terminal Margin', def: 'Mature satellite operators achieve 40-60% EBITDA margins. Lower CapEx intensity at scale improves FCF conversion.' },
+        { term: 'Risk Adjustments', def: 'Probability haircuts for regulatory, technology, and competition. Applied to enterprise value before equity bridge.' },
+      ]} />
+    </div>
+  );
+};
+
+// DCF TAB - Now uses dynamic projections from Model assumptions
+const DCFTab = ({
+  calc, currentShares, currentStockPrice, cashOnHand, totalDebt,
+  partnerReach, penetrationRate, blendedARPU, revenueShare,
+  deploymentDelay, terminalMargin, terminalCapex, dilutionRate, competitionDiscount,
+  discountRate, terminalGrowth,
+  regulatoryRisk, techRisk, competitionRisk,
+}) => {
   const dcf = useMemo(() => {
-    // Revenue projections with CapEx intensity declining as network matures
-    const yrs = [
-      { y: 2025, r: 0.065, m: -800, c: 1.2 },  // Pre-revenue, heavy CapEx
-      { y: 2026, r: 0.5, m: -150, c: 1.0 },    // Early commercial
-      { y: 2027, r: 1.8, m: 5, c: 0.5 },       // Ramp, breakeven
-      { y: 2028, r: 4.5, m: 30, c: 0.25 },     // Scaling
-      { y: 2029, r: 7.5, m: 45, c: 0.15 },     // Mature growth
-      { y: 2030, r: 11.5, m: 55, c: 0.1 },     // Near steady-state
-    ];
-    
-    const netCash = cashOnHand - totalDebt; // Dynamic net cash position
-    
-    // Calculate FCF and PV for each year
-    const proj = yrs.map((y, i) => {
-      const ebitda = y.r * (y.m / 100);
-      const fcf = ebitda - y.r * y.c;
-      const pv = fcf / Math.pow(1 + discount / 100, i + 1);
-      
-      // Calculate implied EV and equity value for each year using EV/Revenue multiple
-      // This shows what the stock "should" be worth if it traded at that year's fundamentals
-      const impliedEV = y.r * evMultiple; // EV = Revenue × Multiple
-      const impliedEquity = impliedEV * 1000 + netCash; // In $M (EV + Net Cash = Equity)
-      const impliedMktCap = impliedEquity;
-      const impliedPrice = impliedMktCap / currentShares;
-      
-      // Also calculate forward-looking implied price (discounted to today)
-      const pvImpliedPrice = impliedPrice / Math.pow(1 + discount / 100, i + 1);
-      
-      return { ...y, ebitda, fcf, pv, impliedEV, impliedMktCap, impliedPrice, pvImpliedPrice };
+    // Calculate terminal year (2030) metrics from subscriber model
+    const terminalSubs = partnerReach * (penetrationRate / 100) * (1 - competitionDiscount / 100);
+    const terminalGrossRev = terminalSubs * blendedARPU * 12 / 1000; // $B
+    const terminalRev = terminalGrossRev * (revenueShare / 100);
+
+    // Build revenue ramp curve (S-curve from 2025 to 2030)
+    // deploymentDelay shifts the curve
+    const baseRamp = [0.01, 0.05, 0.15, 0.35, 0.65, 1.0]; // % of terminal revenue reached each year
+    const years = [2025, 2026, 2027, 2028, 2029, 2030];
+
+    // Margin ramp: starts negative, reaches terminal margin
+    const marginRamp = [-500, -100, 10, 30, 45, terminalMargin];
+    // CapEx ramp: starts high (build-out), declines to terminal
+    const capexRamp = [200, 80, 40, 25, 15, terminalCapex];
+
+    const netCash = cashOnHand - totalDebt;
+
+    const proj = years.map((y, i) => {
+      // Apply deployment delay by shifting the ramp index
+      const delayedIdx = Math.max(0, Math.min(5, i - deploymentDelay));
+      const rampPct = baseRamp[delayedIdx] || 0;
+
+      const r = terminalRev * rampPct;
+      const m = marginRamp[Math.min(i, marginRamp.length - 1)];
+      const c = capexRamp[Math.min(i, capexRamp.length - 1)];
+
+      const ebitda = r * (m / 100);
+      const fcf = ebitda - r * (c / 100);
+      const pv = fcf / Math.pow(1 + discountRate / 100, i + 1);
+
+      // Diluted shares for this year
+      const dilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, i + 1);
+
+      return { y, r, m, c, ebitda, fcf, pv, subs: terminalSubs * rampPct, dilutedShares };
     });
-    
+
     const sumPv = proj.reduce((s, p) => s + p.pv, 0);
-    // Guard against discount <= termGrowth (would cause division by zero or negative terminal value)
-    const spreadPct = Math.max(discount - termGrowth, 1) / 100; // Minimum 1% spread
-    const term = (proj[5].fcf * (1 + termGrowth / 100)) / spreadPct;
-    const pvTerm = term / Math.pow(1 + discount / 100, 6);
+    const spreadPct = Math.max(discountRate - terminalGrowth, 1) / 100;
+    const terminalFCF = proj[5].fcf;
+    const term = (terminalFCF * (1 + terminalGrowth / 100)) / spreadPct;
+    const pvTerm = term / Math.pow(1 + discountRate / 100, 6);
     const ev = sumPv + pvTerm;
+
+    // Risk adjustments
     const risk = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
     const adj = ev * risk;
-    const eq = adj * 1000 + netCash; // Convert EV to $M, add net cash for equity
-    const fair = eq / currentShares;
+
+    // Equity value with diluted shares
+    const finalDilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, 6);
+    const eq = adj * 1000 + netCash;
+    const fair = eq / finalDilutedShares;
     const up = ((fair - currentStockPrice) / currentStockPrice) * 100;
-    
-    // Ensure outputs are finite numbers
-    const safeValue = (v) => (isFinite(v) ? v : 0);
-    return { proj, sumPv: safeValue(sumPv), pvTerm: safeValue(pvTerm), ev: safeValue(ev), adj: safeValue(adj), eq: safeValue(eq), fair: safeValue(fair), up: safeValue(up) };
-  }, [discount, termGrowth, evMultiple, regulatoryRisk, techRisk, competitionRisk, currentShares, currentStockPrice, cashOnHand, totalDebt]);
+
+    const safeValue = (v: number) => (isFinite(v) ? v : 0);
+    return {
+      proj,
+      sumPv: safeValue(sumPv),
+      pvTerm: safeValue(pvTerm),
+      ev: safeValue(ev),
+      adj: safeValue(adj),
+      eq: safeValue(eq),
+      fair: safeValue(fair),
+      up: safeValue(up),
+      terminalSubs,
+      terminalRev,
+      finalDilutedShares,
+    };
+  }, [
+    partnerReach, penetrationRate, blendedARPU, revenueShare,
+    deploymentDelay, terminalMargin, terminalCapex, dilutionRate, competitionDiscount,
+    discountRate, terminalGrowth,
+    regulatoryRisk, techRisk, competitionRisk,
+    currentShares, currentStockPrice, cashOnHand, totalDebt
+  ]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">DCF</h2>
-      <div className="highlight"><h3>DCF Valuation</h3>
-        <div className="space-y-2 text-sm">
-          <p><strong className="text-cyan-400">Method:</strong> 6-year explicit forecast (2025-2030) + terminal value. FCF = EBITDA - CapEx. Terminal = FCF₂₀₃₀ × (1+g) / (r-g).</p>
-          <p><strong className="text-cyan-400">Implied Prices:</strong> Shows what stock "should" trade at each year if market values it at {evMultiple}x EV/Revenue. Useful for setting price targets.</p>
+
+      <div className="highlight">
+        <h3>DCF Valuation</h3>
+        <p className="text-sm">
+          Dynamic projections from subscriber model. {penetrationRate}% penetration × ${blendedARPU} ARPU × {revenueShare}% share = ${dcf.terminalRev.toFixed(1)}B terminal revenue.
+          Adjust assumptions in the Model tab.
+        </p>
+      </div>
+
+      <div className="g2">
+        <div className="card">
+          <div className="card-title">Key Assumptions</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13 }}>
+            <div><span style={{ color: 'var(--text3)' }}>Penetration:</span> <span style={{ color: 'var(--cyan)', fontWeight: 500 }}>{penetrationRate}%</span></div>
+            <div><span style={{ color: 'var(--text3)' }}>ARPU:</span> <span style={{ color: 'var(--cyan)', fontWeight: 500 }}>${blendedARPU}/mo</span></div>
+            <div><span style={{ color: 'var(--text3)' }}>Competition:</span> <span style={{ color: 'var(--coral)', fontWeight: 500 }}>-{competitionDiscount}%</span></div>
+            <div><span style={{ color: 'var(--text3)' }}>Delay:</span> <span style={{ color: deploymentDelay > 0 ? 'var(--coral)' : 'var(--mint)', fontWeight: 500 }}>{deploymentDelay > 0 ? '+' : ''}{deploymentDelay}yr</span></div>
+            <div><span style={{ color: 'var(--text3)' }}>Discount:</span> <span style={{ color: 'var(--text)', fontWeight: 500 }}>{discountRate}%</span></div>
+            <div><span style={{ color: 'var(--text3)' }}>Dilution:</span> <span style={{ color: 'var(--violet)', fontWeight: 500 }}>{dilutionRate}%/yr</span></div>
+          </div>
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)', fontSize: 12, color: 'var(--text3)' }}>
+            Risk haircut: {regulatoryRisk}% reg + {techRisk}% tech + {competitionRisk}% comp = {((1-(1-regulatoryRisk/100)*(1-techRisk/100)*(1-competitionRisk/100))*100).toFixed(0)}% total
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-title">Valuation Output</div>
+          <div className="g2">
+            <Card label="Fair Value" value={`$${dcf.fair.toFixed(0)}`} sub={`${dcf.finalDilutedShares.toFixed(0)}M diluted shares`} color="mint" />
+            <Card label="Upside" value={`${dcf.up >= 0 ? '+' : ''}${dcf.up.toFixed(0)}%`} sub={`vs $${currentStockPrice}`} color={dcf.up >= 0 ? 'green' : 'red'} />
+          </div>
+          <div className="g2" style={{ marginTop: 16 }}>
+            <Card label="Enterprise Value" value={`$${dcf.ev.toFixed(1)}B`} sub="Raw EV" color="cyan" />
+            <Card label="Risk-Adj EV" value={`$${dcf.adj.toFixed(1)}B`} sub={`${((1-regulatoryRisk/100)*(1-techRisk/100)*(1-competitionRisk/100)*100).toFixed(0)}% prob`} color="violet" />
+          </div>
         </div>
       </div>
-      
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card label="Raw EV" value={`$${dcf.ev.toFixed(0)}B`} sub="Before risk adj" color="blue" />
-        <Card label="Risk-Adj EV" value={`$${dcf.adj.toFixed(0)}B`} sub={`×${((1-regulatoryRisk/100)*(1-techRisk/100)*(1-competitionRisk/100)*100).toFixed(0)}%`} color="purple" />
-        <Card label="Equity Value" value={`$${(dcf.eq/1000).toFixed(1)}B`} sub="EV + Net Cash" color="cyan" />
-        <Card label="Fair Value" value={`$${dcf.fair.toFixed(0)}`} sub="Per share" color="green" />
-        <Card label="Upside" value={`${dcf.up >= 0 ? '+' : ''}${dcf.up.toFixed(0)}%`} sub="vs $72 current" color={dcf.up >= 0 ? 'green' : 'red'} />
-      </div>
 
-      {/* Chart showing revenue and FCF */}
-      <div className="card"><div className="card-title">Revenue & FCF Trajectory</div>
-        <ResponsiveContainer width="100%" height={180}>
-          <ComposedChart data={dcf.proj}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey="y" stroke="var(--text3)" />
-            <YAxis stroke="var(--text3)" tickFormatter={v => `$${v}B`} />
-            <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={(v, name) => [`$${v.toFixed(2)}B`, name]} />
-            <Legend />
-            <Bar dataKey="r" fill="var(--cyan)" name="Revenue" />
-            <Line type="monotone" dataKey="fcf" stroke="var(--mint)" strokeWidth={2} name="FCF" dot={{ fill: '#22c55e' }} />
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Main DCF table with implied prices */}
-      <div className="card"><div className="card-title">Detailed Projections with Implied Valuations</div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="card">
+        <div className="card-title">Projections (Subscriber-Driven)</div>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
             <thead>
-              <tr className="text-slate-400 text-xs border-b border-slate-700">
-                <th className="text-left py-2">Year</th>
-                <th className="text-right">Revenue</th>
-                <th className="text-right">EBITDA %</th>
-                <th className="text-right">FCF</th>
-                <th className="text-right">PV(FCF)</th>
-                <th className="text-right px-2 border-l border-slate-600">Implied EV</th>
-                <th className="text-right">Implied Mkt Cap</th>
-                <th className="text-right">Implied Price</th>
-                <th className="text-right">PV Price</th>
+              <tr>
+                <th>Metric</th>
+                <th className="r">Today</th>
+                {dcf.proj.map(p => (
+                  <th key={p.y} className="r">{p.y}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {dcf.proj.map(p => (
-                <tr key={p.y} className="border-t border-slate-800 hover:bg-slate-800/30">
-                  <td className="py-2 font-medium">{p.y}</td>
-                  <td className="py-2 text-right">${p.r.toFixed(2)}B</td>
-                  <td className="py-2 text-right">{p.m}%</td>
-                  <td className={`py-2 text-right ${p.fcf >= 0 ? 'text-green-400' : 'text-red-400'}`}>${p.fcf.toFixed(2)}B</td>
-                  <td className={`py-2 text-right ${p.pv >= 0 ? 'text-cyan-400' : 'text-orange-400'}`}>${p.pv.toFixed(2)}B</td>
-                  <td className="py-2 text-right px-2 border-l border-slate-700">${p.impliedEV.toFixed(1)}B</td>
-                  <td className="py-2 text-right">${(p.impliedMktCap/1000).toFixed(1)}B</td>
-                  <td className="py-2 text-right font-medium text-yellow-400">${p.impliedPrice.toFixed(0)}</td>
-                  <td className="py-2 text-right text-slate-400">${p.pvImpliedPrice.toFixed(0)}</td>
-                </tr>
-              ))}
-              <tr className="border-t-2 border-slate-600 bg-slate-800/50">
-                <td colSpan={4} className="py-2 text-right font-medium">Sum PV(FCF)</td>
-                <td className="py-2 text-right font-medium">${dcf.sumPv.toFixed(1)}B</td>
-                <td colSpan={4}></td>
+              <tr>
+                <td>Subscribers (M)</td>
+                <td className="r">—</td>
+                {dcf.proj.map(p => (
+                  <td key={p.y} className="r">{p.subs.toFixed(0)}</td>
+                ))}
               </tr>
-              <tr className="bg-slate-800/50">
-                <td colSpan={4} className="py-2 text-right font-medium">PV(Terminal Value)</td>
-                <td className="py-2 text-right font-medium">${dcf.pvTerm.toFixed(1)}B</td>
-                <td colSpan={4}></td>
+              <tr>
+                <td>Revenue ($B)</td>
+                <td className="r">—</td>
+                {dcf.proj.map(p => (
+                  <td key={p.y} className="r">${p.r.toFixed(2)}</td>
+                ))}
               </tr>
-              <tr className="bg-cyan-900/20">
-                <td colSpan={4} className="py-2 text-right font-bold">Enterprise Value</td>
-                <td className="py-2 text-right font-bold text-cyan-400">${dcf.ev.toFixed(1)}B</td>
-                <td colSpan={4}></td>
+              <tr>
+                <td>EBITDA Margin (%)</td>
+                <td className="r">—</td>
+                {dcf.proj.map(p => (
+                  <td key={p.y} className="r" style={{ color: p.m < 0 ? 'var(--coral)' : 'var(--text)' }}>{p.m}%</td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '1px solid var(--border)' }}>
+                <td>FCF ($B)</td>
+                <td className="r">—</td>
+                {dcf.proj.map(p => (
+                  <td key={p.y} className="r" style={{ color: p.fcf >= 0 ? 'var(--mint)' : 'var(--coral)' }}>${p.fcf.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr>
+                <td>PV of FCF ($B)</td>
+                <td className="r">—</td>
+                {dcf.proj.map(p => (
+                  <td key={p.y} className="r" style={{ color: 'var(--cyan)' }}>${p.pv.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>Sum PV(FCF)</td>
+                <td colSpan={6} className="r" style={{ fontWeight: 500 }}>${dcf.sumPv.toFixed(1)}B</td>
+              </tr>
+              <tr style={{ background: 'var(--surface2)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>PV(Terminal Value)</td>
+                <td colSpan={6} className="r" style={{ fontWeight: 500 }}>${dcf.pvTerm.toFixed(1)}B</td>
+              </tr>
+              <tr style={{ background: 'rgba(0,212,170,0.1)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 700 }}>Enterprise Value</td>
+                <td colSpan={6} className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${dcf.ev.toFixed(1)}B</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div className="mt-3 text-xs text-slate-500">
-          <strong>Implied Price</strong> = If stock traded at {evMultiple}x EV/Revenue in that year. <strong>PV Price</strong> = Discounted to today at {discount}% rate.
-        </div>
       </div>
 
-      {/* Implied price trajectory chart */}
-      <div className="card"><div className="card-title">Implied Share Price Trajectory</div>
-        <ResponsiveContainer width="100%" height={200}>
-          <ComposedChart data={dcf.proj}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey="y" stroke="var(--text3)" />
-            <YAxis stroke="var(--text3)" tickFormatter={v => `$${v}`} domain={[0, 'auto']} />
-            <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={(v) => [`$${v.toFixed(0)}`, '']} />
-            <Legend />
-            <Bar dataKey="impliedPrice" fill="#eab308" name={`Implied @ ${evMultiple}x Rev`} />
-            <Line type="monotone" dataKey="pvImpliedPrice" stroke="var(--violet)" strokeWidth={2} name="PV to Today" dot={{ fill: '#8b5cf6' }} />
-            <ReferenceLine y={currentStockPrice} stroke="#fff" strokeDasharray="5 5" label={{ value: `Current $${currentStockPrice}`, fill: '#fff', fontSize: 10 }} />
-          </ComposedChart>
-        </ResponsiveContainer>
-        <div className="mt-2 text-xs text-slate-500">
-          Yellow bars show what price would be if valued at {evMultiple}x revenue in each year. Purple line shows those prices discounted back to today.
-        </div>
-      </div>
-
-      {/* Parameters */}
-      <div className="g3">
-        <div className="card"><div className="card-title">DCF Parameters</div>
-          <div className="g2">
-            <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} step={0.5} />
-            <Input label="Terminal Growth (%)" value={termGrowth} onChange={setTermGrowth} step={0.5} />
-          </div>
-        </div>
-        <div className="card"><div className="card-title">Valuation Multiple</div>
-          <Input label="EV/Revenue Multiple (x)" value={evMultiple} onChange={setEvMultiple} step={0.5} />
-          <div className="mt-2 text-xs text-slate-500">Used for implied price calculation. Starlink ~17x, growth SaaS 8-15x, telcos 1-3x.</div>
-        </div>
-        <div className="card"><div className="card-title">Risk Adjustments</div>
-          <div className="g3">
-            <Input label="Regulatory %" value={regulatoryRisk} onChange={setRegulatoryRisk} />
-            <Input label="Tech %" value={techRisk} onChange={setTechRisk} />
-            <Input label="Competition %" value={competitionRisk} onChange={setCompetitionRisk} />
-          </div>
-          <div className="mt-2 text-xs text-slate-500">
-            Combined success probability: {((1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100) * 100).toFixed(0)}%
-          </div>
-        </div>
-      </div>
-      
       <CFANotes title="CFA Level III — DCF Valuation" items={[
-        { term: 'DCF Framework', def: 'Sum of discounted future free cash flows + terminal value. Most rigorous intrinsic value method. Highly sensitive to assumptions.' },
-        { term: 'Revenue Build-Up', def: 'Project from operational metrics: sats deployed → coverage → subscribers → revenue. More credible than top-down guesses.' },
-        { term: 'EBITDA Margins', def: 'Early years negative (pre-revenue), ramping to 40-60% at scale. Satellite networks have high operating leverage after build-out.' },
-        { term: 'Free Cash Flow', def: 'EBITDA - CapEx - Working Capital changes. Negative during build phase, turning positive as CapEx intensity declines.' },
-        { term: 'Terminal Value', def: 'Value beyond explicit forecast. Gordon Growth: FCF₅(1+g)/(r-g). Often 50-70% of total DCF value.' },
-        { term: 'Risk Adjustments', def: 'Apply success probabilities: regulatory × technical × competitive. 77% combined = 23% failure probability haircut.' },
+        { term: 'Discounted Cash Flow', def: 'Present value of future free cash flows + terminal value. Most rigorous valuation method. Sensitive to assumptions.' },
+        { term: 'WACC (Weighted Average Cost of Capital)', def: 'Blended cost of equity and debt. Used as discount rate. Higher WACC = lower present value.' },
+        { term: 'Terminal Value', def: 'Value of cash flows beyond explicit forecast period. Often 60-80% of total DCF value. Exit multiple or perpetuity growth method.' },
+        { term: 'Risk Adjustments', def: 'Apply success probabilities: regulatory × technical × competitive. Discount EV by combined failure probability.' },
+        { term: 'Margin of Safety', def: 'Difference between price and intrinsic value. Larger margin = more protection against assumption errors.' },
       ]} />
     </div>
   );

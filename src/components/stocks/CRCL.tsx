@@ -2323,11 +2323,159 @@ const ScenariosTab = () => {
   );
 };
 
+const DCFTab = () => {
+  const [discount, setDiscount] = useState(12);
+  const [scenario, setScenario] = useState('Base');
+
+  const calcDCF = () => {
+    const s = SCENARIOS.find(x => x.name === scenario) || SCENARIOS[1];
+    const projections: { year: number; usdc: number; rev: number; fcf: number; pv: number }[] = [];
+    let circ = CURRENT_METRICS.usdc;
+    const discountFactor = Math.max(discount, 1);
+    const baseYear = 2025;
+
+    for (let y = 1; y <= 5; y++) {
+      circ *= 1 + s.cagr / 100;
+      const rev = circ * s.rate / 100;
+      const fcf = rev * s.margin / 100;
+      const pv = fcf / Math.pow(1 + discountFactor / 100, y);
+      projections.push({ year: baseYear + y, usdc: circ, rev, fcf, pv });
+    }
+
+    const pvFCF = projections.reduce((sum, p) => sum + p.pv, 0);
+    const tv = projections[4].fcf * s.multiple;
+    const pvTV = tv / Math.pow(1 + discountFactor / 100, 5);
+    const equity = (pvFCF + pvTV) * 1000 + 1349 - 149;
+    const pt = MARKET.shares > 0 ? equity / MARKET.shares : 0;
+    const upside = MARKET.price > 0 ? (pt / MARKET.price - 1) * 100 : 0;
+    return { projections, pvFCF, tv, pvTV, equity, pt, upside };
+  };
+
+  const dcf = calcDCF();
+  const s = SCENARIOS.find(x => x.name === scenario) || SCENARIOS[1];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <h2 className="section-head">DCF</h2>
+
+      <div className="highlight">
+        <h3>DCF Valuation</h3>
+        <p className="text-sm">
+          DCF values Circle based on projected future free cash flows discounted to present value. Key drivers
+          are USDC circulation growth, RLDC margins, and reserve yield rates. Terminal value uses exit multiple
+          method based on expected steady-state profitability.
+        </p>
+      </div>
+
+      <div className="g3" style={{ marginBottom: 32 }}>
+        {SCENARIOS.map(sc => (
+          <div
+            key={sc.name}
+            className={`scenario ${sc.name.toLowerCase()} ${scenario === sc.name ? 'active' : ''}`}
+            onClick={() => setScenario(sc.name)}
+          >
+            <h4>{sc.name}</h4>
+            <div className="scenario-row"><span>USDC CAGR</span><span>{sc.cagr}%</span></div>
+            <div className="scenario-row"><span>Terminal Margin</span><span>{sc.margin}%</span></div>
+            <div className="scenario-row"><span>Exit Multiple</span><span>{sc.multiple}x</span></div>
+            <div className="scenario-row"><span>Rate Assumption</span><span>{sc.rate}%</span></div>
+          </div>
+        ))}
+      </div>
+
+      <div className="g2">
+        <div className="card">
+          <div className="card-title">Model Inputs</div>
+          <Input label="Discount Rate (WACC) %" value={discount} onChange={setDiscount} min={5} max={20} />
+        </div>
+        <div className="card">
+          <div className="card-title">Valuation Output</div>
+          <div className="g2">
+            <Card label="Price Target" value={`$${dcf.pt.toFixed(0)}`} sub={`Based on ${scenario} scenario`} color="mint" />
+            <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs current price" color={dcf.upside >= 0 ? 'green' : 'red'} />
+          </div>
+        </div>
+      </div>
+
+      {/* Financial Projections Table */}
+      <div className="card">
+        <div className="card-title">Projections</div>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th className="r">Today</th>
+                {dcf.projections.map(p => (
+                  <th key={p.year} className="r">{p.year}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>USDC Circulation ($B)</td>
+                <td className="r">{CURRENT_METRICS.usdc.toFixed(1)}</td>
+                {dcf.projections.map(p => (
+                  <td key={p.year} className="r">{p.usdc.toFixed(1)}</td>
+                ))}
+              </tr>
+              <tr>
+                <td>Reserve Revenue ($B)</td>
+                <td className="r">—</td>
+                {dcf.projections.map(p => (
+                  <td key={p.year} className="r">${p.rev.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '1px solid var(--border)' }}>
+                <td>Net FCF ($B)</td>
+                <td className="r">—</td>
+                {dcf.projections.map(p => (
+                  <td key={p.year} className="r" style={{ color: 'var(--mint)' }}>${p.fcf.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr>
+                <td>PV of FCF ($B)</td>
+                <td className="r">—</td>
+                {dcf.projections.map(p => (
+                  <td key={p.year} className="r" style={{ color: 'var(--cyan)' }}>${p.pv.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>Sum PV(FCF)</td>
+                <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.pvFCF.toFixed(2)}B</td>
+              </tr>
+              <tr style={{ background: 'var(--surface2)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>Terminal Value ({s.multiple}x FCF)</td>
+                <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.tv.toFixed(1)}B</td>
+              </tr>
+              <tr style={{ background: 'var(--surface2)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>PV(Terminal Value)</td>
+                <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.pvTV.toFixed(2)}B</td>
+              </tr>
+              <tr style={{ background: 'rgba(0,212,170,0.1)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 700 }}>Equity Value</td>
+                <td colSpan={5} className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${(dcf.equity / 1000).toFixed(1)}B</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <CFANotes title="CFA Level III — DCF Valuation" items={[
+        { term: 'Discounted Cash Flow', def: 'Present value of future free cash flows + terminal value. Most rigorous valuation method. Sensitive to assumptions.' },
+        { term: 'WACC (Weighted Average Cost of Capital)', def: 'Blended cost of equity and debt. Used as discount rate. Higher WACC = lower present value.' },
+        { term: 'Terminal Value', def: 'Value of cash flows beyond explicit forecast period. Often 60-80% of total DCF value. Exit multiple or perpetuity growth method.' },
+        { term: 'Scenario Analysis', def: 'Bull/Base/Bear cases test sensitivity to key assumptions. Assign probabilities to weight expected value.' },
+        { term: 'Margin of Safety', def: 'Difference between price and intrinsic value. Larger margin = more protection against assumption errors.' },
+      ]} />
+    </div>
+  );
+};
+
 function CRCLModel() {
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
   const [discount, setDiscount] = useState(12);
-  const [scenario, setScenario] = useState('Base');
   const [timelineCat, setTimelineCat] = useState('All');
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [runKey, setRunKey] = useState(0); // For Monte Carlo re-runs
@@ -2562,26 +2710,6 @@ function CRCLModel() {
     return { sorted, p5, p25, p50, p75, p95, mean, winProb, sharpe, sortino, var5, cvar5, histogram, n };
   }, [discount, runKey, mcPreset, mcSims, mcYears, mcRevenueGrowthMin, mcRevenueGrowthMax, mcMarginMin, mcMarginMax, mcDiscountMin, mcDiscountMax, mcTerminalMultMin, mcTerminalMultMax]);
 
-  const calcDCF = () => {
-    const s = SCENARIOS.find(x => x.name === scenario) || SCENARIOS[1];
-    const fcfs: number[] = [];
-    let circ = latest.usdcCirculation;
-    const discountFactor = Math.max(discount, 1); // Ensure positive discount
-    for (let y = 1; y <= 5; y++) {
-      circ *= 1 + s.cagr / 100;
-      const rev = circ * s.rate / 100;
-      fcfs.push(rev * s.margin / 100 * 1000);
-    }
-    const pvFCF = fcfs.reduce((sum, f, i) => sum + f / Math.pow(1 + discountFactor/100, i + 1), 0);
-    const tv = fcfs[4] * s.multiple;
-    const pvTV = tv / Math.pow(1 + discountFactor/100, 5);
-    const equity = pvFCF + pvTV + 1349 - 149;
-    const pt = MARKET.shares > 0 ? equity / MARKET.shares : 0;
-    const upside = MARKET.price > 0 ? (pt / MARKET.price - 1) * 100 : 0;
-    return { fcfs, pvFCF: safe(pvFCF), tv: safe(tv), pvTV: safe(pvTV), equity: safe(equity), pt: safe(pt), upside: safe(upside) };
-  };
-
-  const dcf = calcDCF();
   const cats = ['All', ...Array.from(new Set(TIMELINE.map(p => p.category)))];
   const filteredEvents = (timelineCat === 'All' ? TIMELINE : TIMELINE.filter(p => p.category === timelineCat))
     .filter(p => {
@@ -4760,65 +4888,7 @@ function CRCLModel() {
             </>
           )}
 
-          {activeTab === 'dcf' && (
-            <>
-              <h2 className="section-head">DCF Valuation</h2>
-              
-              {/* Highlight Box */}
-              <div className="highlight">
-                <h3>Discounted Cash Flow Analysis</h3>
-                <p className="text-sm">
-                  DCF values Circle based on projected future free cash flows discounted to present value. Key drivers
-                  are USDC circulation growth, RLDC margins, and reserve yield rates. Terminal value uses exit multiple
-                  method based on expected steady-state profitability.
-                </p>
-              </div>
-              
-              <div className="g3" style={{ marginBottom: 32 }}>
-                {SCENARIOS.map(s => (
-                  <div
-                    key={s.name}
-                    className={`scenario ${s.name.toLowerCase()} ${scenario === s.name ? 'active' : ''}`}
-                    onClick={() => setScenario(s.name)}
-                  >
-                    <h4>{s.name}</h4>
-                    <div className="scenario-row"><span>USDC CAGR</span><span>{s.cagr}%</span></div>
-                    <div className="scenario-row"><span>Terminal Margin</span><span>{s.margin}%</span></div>
-                    <div className="scenario-row"><span>Exit Multiple</span><span>{s.multiple}x</span></div>
-                    <div className="scenario-row"><span>Rate Assumption</span><span>{s.rate}%</span></div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="g2">
-                <div className="card">
-                  <div className="card-title">Model Inputs</div>
-                  <div className="slider-wrap">
-                    <div className="slider-head">
-                      <span>Discount Rate (WACC)</span>
-                      <span>{discount}%</span>
-                    </div>
-                    <input type="range" min="8" max="18" value={discount} onChange={e => setDiscount(+e.target.value)} />
-                  </div>
-                </div>
-                <div className="card">
-                  <div className="card-title">Valuation Output</div>
-                  <div className="g2">
-                    <Card label="Price Target" value={`$${dcf.pt.toFixed(0)}`} sub={`Based on ${scenario} scenario`} color="mint" />
-                    <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs current price" color={dcf.upside >= 0 ? 'green' : 'red'} />
-                  </div>
-                </div>
-              </div>
-              
-              <CFANotes title="CFA Level III — DCF Valuation" items={[
-                { term: 'Discounted Cash Flow', def: 'Present value of future free cash flows + terminal value. Most rigorous valuation method. Sensitive to assumptions.' },
-                { term: 'WACC (Weighted Average Cost of Capital)', def: 'Blended cost of equity and debt. Used as discount rate. Higher WACC = lower present value.' },
-                { term: 'Terminal Value', def: 'Value of cash flows beyond explicit forecast period. Often 60-80% of total DCF value. Exit multiple or perpetuity growth method.' },
-                { term: 'Scenario Analysis', def: 'Bull/Base/Bear cases test sensitivity to key assumptions. Assign probabilities to weight expected value.' },
-                { term: 'Margin of Safety', def: 'Difference between price and intrinsic value. Larger margin = more protection against assumption errors.' },
-              ]} />
-            </>
-          )}
+          {activeTab === 'dcf' && <DCFTab />}
 
           {activeTab === 'monte-carlo' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -5014,524 +5084,6 @@ function CRCLModel() {
           )}
 
           {activeTab === 'scenarios' && <ScenariosTab />}
-
-          {/* PLACEHOLDER - Delete old content below */}
-          {false && <div>OLD_CONTENT_START
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    {TARGET_YEARS.map(year => (
-                      <button
-                        key={year}
-                        onClick={() => setTargetYear(year)}
-                        style={{
-                          padding: '12px 20px',
-                          borderRadius: 8,
-                          border: targetYear === year ? '2px solid var(--mint)' : '1px solid var(--border)',
-                          background: targetYear === year ? 'rgba(0,212,170,0.15)' : 'var(--surface2)',
-                          color: targetYear === year ? 'var(--mint)' : 'var(--text2)',
-                          cursor: 'pointer',
-                          fontWeight: targetYear === year ? 700 : 400,
-                          fontFamily: 'Space Mono',
-                          fontSize: 16,
-                        }}
-                      >
-                        {year}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Scenario Selector */}
-                <div className="card">
-                  <div className="card-title">Scenario</div>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    {SCENARIO_KEYS.map(key => {
-                      const s = SCENARIO_SIMULATIONS[key];
-                      return (
-                        <button
-                          key={key}
-                          onClick={() => setSelectedScenario(key)}
-                          style={{
-                            padding: '12px 16px',
-                            borderRadius: 8,
-                            border: selectedScenario === key ? `2px solid ${s.color}` : '1px solid var(--border)',
-                            background: selectedScenario === key ? `${s.color}22` : 'var(--surface2)',
-                            color: selectedScenario === key ? s.color : 'var(--text2)',
-                            cursor: 'pointer',
-                            fontWeight: selectedScenario === key ? 700 : 400,
-                            fontSize: 14,
-                          }}
-                        >
-                          {s.name} ({s.prob}%)
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Selected Scenario Results */}
-              {(() => {
-                const selected = SCENARIO_SIMULATIONS[selectedScenario];
-                const projection = selected.projections.find(p => p.year === targetYear);
-                if (!projection) return null;
-
-                const priceReturn = ((projection.sharePrice / CURRENT_METRICS.sharePrice) - 1) * 100;
-                const usdcGrowth = ((projection.usdc / CURRENT_METRICS.usdc) - 1) * 100;
-
-                return (
-                  <>
-                    {/* Scenario Header */}
-                    <div className="card" style={{ borderLeft: `4px solid ${selected.color}` }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
-                        <div>
-                          <h3 style={{ color: selected.color, marginBottom: 8 }}>
-                            {selected.name} Case — {targetYear}
-                          </h3>
-                          <p style={{ color: 'var(--text2)', maxWidth: 600 }}>{selected.description}</p>
-                        </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: 12, color: 'var(--text3)' }}>Probability Weight</div>
-                          <div style={{ fontFamily: 'Space Mono', fontSize: 32, fontWeight: 700, color: selected.color }}>
-                            {selected.prob}%
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Key Metrics */}
-                    <div className="g4" style={{ marginTop: 24 }}>
-                      <div className="big-stat">
-                        <div className="num" style={{ color: selected.color }}>${projection.sharePrice.toLocaleString()}</div>
-                        <div className="lbl">Share Price</div>
-                        <div style={{ fontSize: 12, color: priceReturn >= 0 ? 'var(--mint)' : 'var(--coral)', marginTop: 4 }}>
-                          {priceReturn >= 0 ? '+' : ''}{priceReturn.toFixed(0)}% from today
-                        </div>
-                      </div>
-                      <div className="big-stat">
-                        <div className="num">${projection.equityValue}B</div>
-                        <div className="lbl">Equity Value</div>
-                      </div>
-                      <div className="big-stat">
-                        <div className="num">${projection.usdc}B</div>
-                        <div className="lbl">USDC Circulation</div>
-                        <div style={{ fontSize: 12, color: 'var(--sky)', marginTop: 4 }}>
-                          +{usdcGrowth.toFixed(0)}% growth
-                        </div>
-                      </div>
-                      <div className="big-stat">
-                        <div className="num">{projection.marketShare}%</div>
-                        <div className="lbl">Market Share</div>
-                      </div>
-                    </div>
-
-                    {/* Financial Projections Table */}
-                    <div className="card" style={{ marginTop: 24 }}>
-                      <div className="card-title">Financial Projections — {selected.name} Scenario</div>
-                      <div style={{ overflowX: 'auto' }}>
-                        <table className="tbl">
-                          <thead>
-                            <tr>
-                              <th>Metric</th>
-                              <th className="r">Today</th>
-                              {selected.projections.map(p => (
-                                <th key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  {p.year}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>USDC Circulation ($B)</td>
-                              <td className="r">{CURRENT_METRICS.usdc}</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  {p.usdc}
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td>Market Share (%)</td>
-                              <td className="r">29%</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  {p.marketShare}%
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td>Reserve Yield (%)</td>
-                              <td className="r">4.33%</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  {p.reserveRate}%
-                                </td>
-                              ))}
-                            </tr>
-                            <tr style={{ borderTop: '1px solid var(--border)' }}>
-                              <td>Gross Revenue ($B)</td>
-                              <td className="r">$2.96</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  ${p.grossRevenue.toFixed(2)}
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td>Distribution Costs ($B)</td>
-                              <td className="r">($1.15)</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ color: 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  (${p.distributionCost.toFixed(2)})
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td>Net Revenue ($B)</td>
-                              <td className="r mint">$1.81</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r mint" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  ${p.netRevenue.toFixed(2)}
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td>RLDC Margin (%)</td>
-                              <td className="r">39%</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  {p.rldcMargin}%
-                                </td>
-                              ))}
-                            </tr>
-                            <tr style={{ borderTop: '1px solid var(--border)' }}>
-                              <td>EBITDA ($B)</td>
-                              <td className="r">$0.29</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ color: p.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  {p.ebitda >= 0 ? '$' : '($'}{Math.abs(p.ebitda).toFixed(2)}{p.ebitda < 0 ? ')' : ''}
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td>Net Income ($B)</td>
-                              <td className="r">$0.16</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ color: p.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  {p.netIncome >= 0 ? '$' : '($'}{Math.abs(p.netIncome).toFixed(2)}{p.netIncome < 0 ? ')' : ''}
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td>Free Cash Flow ($B)</td>
-                              <td className="r">$0.14</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ color: p.fcf >= 0 ? 'var(--sky)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  {p.fcf >= 0 ? '$' : '($'}{Math.abs(p.fcf).toFixed(2)}{p.fcf < 0 ? ')' : ''}
-                                </td>
-                              ))}
-                            </tr>
-                            <tr style={{ borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-                              <td>Exit P/S Multiple</td>
-                              <td className="r">6.4x</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  {p.exitMultiple}x
-                                </td>
-                              ))}
-                            </tr>
-                            <tr style={{ fontWeight: 600 }}>
-                              <td>Implied EV ($B)</td>
-                              <td className="r">$18.9</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  ${p.evImplied.toFixed(1)}
-                                </td>
-                              ))}
-                            </tr>
-                            <tr style={{ fontWeight: 700, fontSize: 15 }}>
-                              <td>Share Price ($)</td>
-                              <td className="r">${CURRENT_METRICS.sharePrice}</td>
-                              {selected.projections.map(p => (
-                                <td key={p.year} className="r" style={{ color: selected.color, background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                                  ${p.sharePrice.toLocaleString()}
-                                </td>
-                              ))}
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-
-                    {/* Assumptions & Catalysts */}
-                    <div className="g2" style={{ marginTop: 24 }}>
-                      <div className="card">
-                        <div className="card-title">Key Assumptions</div>
-                        <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
-                          {selected.assumptions.map((a, i) => (
-                            <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{a}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="card">
-                        <div className="card-title">{selected.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</div>
-                        <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
-                          {(selected.catalysts.length > 0 ? selected.catalysts : selected.risks).map((item, i) => (
-                            <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{item}</li>
-                          ))}
-                        </ul>
-                        {selected.catalysts.length > 0 && selected.risks.length > 0 && (
-                          <>
-                            <div className="card-title" style={{ marginTop: 16 }}>Risks</div>
-                            <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
-                              {selected.risks.map((r, i) => (
-                                <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{r}</li>
-                              ))}
-                            </ul>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                );
-              })()}
-
-              {/* Probability-Weighted Expected Value */}
-              <div className="highlight" style={{ marginTop: 32 }}>
-                <h3>Probability-Weighted Expected Value — {targetYear}</h3>
-                <p style={{ marginBottom: 20, color: 'var(--text2)' }}>
-                  Weighted average across all scenarios based on assigned probabilities
-                </p>
-                
-                {(() => {
-                  const pwev = SCENARIO_KEYS.reduce((acc, key) => {
-                    const s = SCENARIO_SIMULATIONS[key];
-                    const p = s.projections.find(proj => proj.year === targetYear);
-                    if (p) {
-                      acc.sharePrice += p.sharePrice * (s.prob / 100);
-                      acc.equityValue += p.equityValue * (s.prob / 100);
-                      acc.usdc += p.usdc * (s.prob / 100);
-                      acc.netIncome += p.netIncome * (s.prob / 100);
-                    }
-                    return acc;
-                  }, { sharePrice: 0, equityValue: 0, usdc: 0, netIncome: 0 });
-
-                  const expectedReturn = ((pwev.sharePrice / CURRENT_METRICS.sharePrice) - 1) * 100;
-                  const cagr = (Math.pow(pwev.sharePrice / CURRENT_METRICS.sharePrice, 1 / (targetYear - 2025)) - 1) * 100;
-
-                  return (
-                    <>
-                      <div className="g4">
-                        <div className="big-stat">
-                          <div className="num mint">${pwev.sharePrice.toFixed(0)}</div>
-                          <div className="lbl">Expected Share Price</div>
-                        </div>
-                        <div className="big-stat">
-                          <div className="num">${pwev.equityValue.toFixed(1)}B</div>
-                          <div className="lbl">Expected Equity Value</div>
-                        </div>
-                        <div className="big-stat">
-                          <div className="num sky">{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</div>
-                          <div className="lbl">Expected Return</div>
-                        </div>
-                        <div className="big-stat">
-                          <div className="num">{cagr.toFixed(1)}%</div>
-                          <div className="lbl">Implied CAGR</div>
-                        </div>
-                      </div>
-
-                      {/* Scenario Breakdown */}
-                      <div style={{ marginTop: 24 }}>
-                        <table className="tbl">
-                          <thead>
-                            <tr>
-                              <th>Scenario</th>
-                              <th className="r">Probability</th>
-                              <th className="r">Share Price</th>
-                              <th className="r">Return</th>
-                              <th className="r">Weighted Contribution</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {SCENARIO_KEYS.map(key => {
-                              const s = SCENARIO_SIMULATIONS[key];
-                              const p = s.projections.find(proj => proj.year === targetYear);
-                              if (!p) return null;
-                              const ret = ((p.sharePrice / CURRENT_METRICS.sharePrice) - 1) * 100;
-                              const contribution = p.sharePrice * (s.prob / 100);
-                              return (
-                                <tr key={key} style={{ background: selectedScenario === key ? `${s.color}11` : 'transparent' }}>
-                                  <td>
-                                    <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
-                                    {s.name}
-                                  </td>
-                                  <td className="r">{s.prob}%</td>
-                                  <td className="r" style={{ fontFamily: 'Space Mono' }}>${p.sharePrice.toLocaleString()}</td>
-                                  <td className="r" style={{ color: ret >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                                    {ret >= 0 ? '+' : ''}{ret.toFixed(0)}%
-                                  </td>
-                                  <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>${contribution.toFixed(0)}</td>
-                                </tr>
-                              );
-                            })}
-                            <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
-                              <td>Expected Value</td>
-                              <td className="r">100%</td>
-                              <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.sharePrice.toFixed(0)}</td>
-                              <td className="r mint">{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</td>
-                              <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.sharePrice.toFixed(0)}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-
-              {/* All Scenarios Comparison */}
-              <div className="card" style={{ marginTop: 24 }}>
-                <div className="card-title">All Scenarios — {targetYear} Comparison</div>
-                <div style={{ overflowX: 'auto' }}>
-                  <table className="tbl">
-                    <thead>
-                      <tr>
-                        <th>Metric</th>
-                        {SCENARIO_KEYS.map(key => {
-                          const s = SCENARIO_SIMULATIONS[key];
-                          return <th key={key} className="r" style={{ color: s.color }}>{s.name}</th>;
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(() => {
-                        const projections = SCENARIO_KEYS.map(key => 
-                          SCENARIO_SIMULATIONS[key].projections.find(p => p.year === targetYear)
-                        );
-                        return (
-                          <>
-                            <tr>
-                              <td>USDC ($B)</td>
-                              {projections.map((p, i) => <td key={i} className="r">{p?.usdc || '—'}</td>)}
-                            </tr>
-                            <tr>
-                              <td>Gross Revenue ($B)</td>
-                              {projections.map((p, i) => <td key={i} className="r">${p?.grossRevenue.toFixed(1) || '—'}</td>)}
-                            </tr>
-                            <tr>
-                              <td>Net Income ($B)</td>
-                              {projections.map((p, i) => (
-                                <td key={i} className="r" style={{ color: (p?.netIncome || 0) >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                                  {p ? (p.netIncome >= 0 ? `$${p.netIncome.toFixed(2)}` : `($${Math.abs(p.netIncome).toFixed(2)})`) : '—'}
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td>Exit Multiple (P/S)</td>
-                              {projections.map((p, i) => <td key={i} className="r">{p?.exitMultiple}x</td>)}
-                            </tr>
-                            <tr>
-                              <td>Equity Value ($B)</td>
-                              {projections.map((p, i) => <td key={i} className="r">${p?.equityValue || '—'}</td>)}
-                            </tr>
-                            <tr style={{ fontWeight: 700 }}>
-                              <td>Share Price</td>
-                              {projections.map((p, i) => (
-                                <td key={i} className="r" style={{ color: SCENARIO_SIMULATIONS[SCENARIO_KEYS[i]].color }}>
-                                  ${p?.sharePrice.toLocaleString() || '—'}
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td>Return vs Today</td>
-                              {projections.map((p, i) => {
-                                const ret = p ? ((p.sharePrice / CURRENT_METRICS.sharePrice) - 1) * 100 : 0;
-                                return (
-                                  <td key={i} className="r" style={{ color: ret >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                                    {ret >= 0 ? '+' : ''}{ret.toFixed(0)}%
-                                  </td>
-                                );
-                              })}
-                            </tr>
-                          </>
-                        );
-                      })()}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Key Insights */}
-              <div className="card" style={{ marginTop: 24 }}><div className="card-title">Key Insights</div>
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div className="bg-slate-900/50 rounded-lg p-4">
-                    <h4 className="font-semibold text-violet-400 mb-2">Interest Rate Sensitivity</h4>
-                    <p className="text-slate-300">Reserve income is directly tied to Fed rates. Each 100bp rate cut reduces gross revenue by ~$737M annually at current circulation. Rate cuts are the primary bear case risk.</p>
-                  </div>
-                  <div className="bg-slate-900/50 rounded-lg p-4">
-                    <h4 className="font-semibold text-violet-400 mb-2">Coinbase Dependency</h4>
-                    <p className="text-slate-300">~54% of gross revenue goes to Coinbase as distribution cost. Renegotiating this agreement or diversifying distribution (CPN, direct bank partnerships) is key to margin expansion.</p>
-                  </div>
-                  <div className="bg-slate-900/50 rounded-lg p-4">
-                    <h4 className="font-semibold text-violet-400 mb-2">Regulatory Moat</h4>
-                    <p className="text-slate-300">Circle's regulatory-first approach (state licenses, MiCA compliance, OCC charter) creates barriers to entry. GENIUS Act could cement USDC as the preferred regulated stablecoin for TradFi.</p>
-                  </div>
-                  <div className="bg-slate-900/50 rounded-lg p-4">
-                    <h4 className="font-semibold text-violet-400 mb-2">Risk/Reward</h4>
-                    <p className="text-slate-300">Bear case scenarios model rate cuts + market share loss. Bull cases require continued USDC growth + multiple expansion to payment network peers. Asymmetric if stablecoin adoption accelerates.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Methodology & Assumptions */}
-              <div className="card" style={{ marginTop: 24 }}>
-                <div className="card-title">Methodology & Assumptions</div>
-                <div className="g2">
-                  <div>
-                    <h4 style={{ color: 'var(--mint)', marginBottom: 12 }}>Valuation Framework</h4>
-                    <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
-                      <li><strong>Revenue Model:</strong> USDC Circulation × Reserve Yield = Gross Reserve Income</li>
-                      <li><strong>Distribution Costs:</strong> Coinbase revenue share (currently ~54%, varies by scenario)</li>
-                      <li><strong>Net Revenue:</strong> Gross Revenue − Distribution Costs + Other Revenue</li>
-                      <li><strong>Exit Multiple:</strong> Applied to Net Revenue (P/S basis) based on peer comps</li>
-                      <li><strong>Equity Value:</strong> Enterprise Value + Net Cash − Convertible Debt</li>
-                      <li><strong>Share Price:</strong> Equity Value ÷ Fully Diluted Shares (~229M)</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 style={{ color: 'var(--sky)', marginBottom: 12 }}>Key Model Inputs</h4>
-                    <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
-                      <li><strong>Stablecoin TAM:</strong> $250B (2025) → $500B-2T (2030) depending on scenario</li>
-                      <li><strong>Fed Funds Rate:</strong> 4.0-4.5% (2025) → 1.5-4.0% (2030) depending on scenario</li>
-                      <li><strong>Market Share:</strong> Current 29% vs Tether 65%; varies 8-48% by scenario</li>
-                      <li><strong>Exit Multiples:</strong> 0.5x (distressed) to 18x (Visa-like network)</li>
-                      <li><strong>Probabilities:</strong> Assigned based on qualitative assessment of macro/regulatory risks</li>
-                    </ul>
-                  </div>
-                </div>
-                <div style={{ marginTop: 24, padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
-                  <h4 style={{ color: 'var(--gold)', marginBottom: 12 }}>Important Caveats</h4>
-                  <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text3)', lineHeight: 1.8, fontSize: 13 }}>
-                    <li>Projections are illustrative scenarios, not forecasts. Actual results may differ materially.</li>
-                    <li>Probabilities are subjective estimates and do not represent statistical likelihoods.</li>
-                    <li>Model assumes current share count (~229M); dilution from equity plans not explicitly modeled.</li>
-                    <li>Interest rate sensitivity is highly uncertain; Fed policy may diverge significantly from assumptions.</li>
-                    <li>Coinbase distribution agreement renegotiation timing and terms are speculative.</li>
-                    <li>Regulatory outcomes (stablecoin legislation, bank charter) are binary events with uncertain timing.</li>
-                  </ul>
-                </div>
-              </div>
-              
-              <CFANotes title="CFA Level III — Scenario Modeling" items={[
-                { term: 'Scenario Framework', def: 'Define discrete future states (Bull/Base/Bear) with specific assumptions for each. More structured than point estimates.' },
-                { term: 'Revenue Drivers', def: 'For Circle: USDC circulation × interest rate × Circle\'s share. Decompose into controllable vs market-driven factors.' },
-                { term: 'Margin Assumptions', def: 'Operating leverage means margins expand with scale. Test different terminal margin assumptions.' },
-                { term: 'Probability Weighting', def: 'Assign probabilities to scenarios. Expected value = Σ(probability × outcome). Be honest about uncertainty.' },
-                { term: 'Sensitivity Tables', def: 'Two-variable matrices show interaction effects. Key for understanding non-linear relationships.' },
-                { term: 'Target Year Selection', def: 'Choose time horizon based on investment thesis. Longer horizons have more uncertainty but show full potential.' },
-              ]} />
-            </div>}
-
           {activeTab === 'timeline' && (
             <>
               <h2 className="section-head">Company Timeline</h2>
