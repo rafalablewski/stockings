@@ -1684,7 +1684,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'comps' && <CompsTab comparables={comparables} ethPrice={ethPrice} />}
         {activeTab === 'sensitivity' && <SensitivityTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} />}
         {activeTab === 'backtest' && <BacktestTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} historicalETH={historicalETH} baseStakingAPY={baseStakingAPY} navMultiple={currentStockPrice / calc.currentNAV} />}
-        {activeTab === 'dcf' && <ValuationTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} baseStakingAPY={calc.effectiveAPY} quarterlyDividend={quarterlyDividend} dividendGrowthRate={dividendGrowthRate} />}
+        {activeTab === 'dcf' && <DCFTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} baseStakingAPY={calc.effectiveAPY} quarterlyDividend={quarterlyDividend} dividendGrowthRate={dividendGrowthRate} />}
         {activeTab === 'monte-carlo' && <MonteCarloTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} stakingYield={calc.effectiveAPY} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} operatingCosts={operatingCosts} regulatoryRisk={regulatoryRisk} />}
         {activeTab === 'investment' && <InvestmentTab />}
         {activeTab === 'financials' && <SECFilingsTab />}
@@ -2997,9 +2997,9 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
 };
 
 // DCF TAB - Enhanced with intermediate cash flow option
-const ValuationTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, quarterlyDividend, dividendGrowthRate }) => {
+const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, quarterlyDividend, dividendGrowthRate }) => {
   const [ethGrowth, setEthGrowth] = useState(15);
-  const [discountRate, setDiscountRate] = useState(12);
+  const [discount, setDiscount] = useState(12);
   const [terminalMult, setTerminalMult] = useState(1.0);
   const [years, setYears] = useState(5);
   const [dcfMethod, setDcfMethod] = useState('dividend'); // 'terminal', 'intermediate', or 'dividend'
@@ -3017,25 +3017,25 @@ const ValuationTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAP
       eth += yieldETH; 
       const futurePrice = ethPrice * Math.pow(1 + ethGrowth / 100, y); 
       const nav = (eth * futurePrice) / (currentShares * 1e6); 
-      const pv = nav / Math.pow(1 + discountRate / 100, y);
+      const pv = nav / Math.pow(1 + discount / 100, y);
       
       // Intermediate cash flow: portion of staking yield distributed
       const yieldValue = yieldETH * futurePrice;
       const distributedCF = yieldValue * (yieldPayout / 100);
       const cfPerShare = distributedCF / (currentShares * 1e6);
-      const cfPV = cfPerShare / Math.pow(1 + discountRate / 100, y);
+      const cfPV = cfPerShare / Math.pow(1 + discount / 100, y);
       sumIntermediatePV += cfPV;
       
       // Dividend cash flow with growth
       const yearDiv = annualDiv * Math.pow(1 + dividendGrowthRate / 100, y - 1);
-      const divPV = yearDiv / Math.pow(1 + discountRate / 100, y);
+      const divPV = yearDiv / Math.pow(1 + discount / 100, y);
       sumDividendPV += divPV;
       
       projections.push({ year: y, eth, ethPrice: futurePrice, nav, pv, yieldETH, cfPerShare, cfPV, yearDiv, divPV }); 
     }
     
     const terminalNAV = projections[projections.length - 1].nav * terminalMult;
-    const terminalPV = terminalNAV / Math.pow(1 + discountRate / 100, years);
+    const terminalPV = terminalNAV / Math.pow(1 + discount / 100, years);
     
     // Calculate implied value based on method
     let impliedValue;
@@ -3056,14 +3056,14 @@ const ValuationTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAP
       impliedValue, 
       upside: ((impliedValue / calc.currentNAV) - 1) * 100 
     };
-  }, [currentETH, currentShares, ethPrice, baseStakingAPY, ethGrowth, discountRate, terminalMult, years, calc.currentNAV, dcfMethod, yieldPayout, quarterlyDividend, dividendGrowthRate]);
+  }, [currentETH, currentShares, ethPrice, baseStakingAPY, ethGrowth, discount, terminalMult, years, calc.currentNAV, dcfMethod, yieldPayout, quarterlyDividend, dividendGrowthRate]);
   
   const irr = (Math.pow(dcf.impliedValue / calc.currentNAV, 1 / years) - 1) * 100;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Valuation</h2>
-      <div className="highlight"><h3>Intrinsic Value Model</h3>
+      <h2 className="section-head">DCF</h2>
+      <div className="highlight"><h3>DCF Valuation</h3>
         <p className="text-sm">DCF valuation with three methods: terminal NAV only, with staking cash flows, or with declared dividends. Adjust growth and discount rate.</p>
       </div>
       
@@ -3146,7 +3146,7 @@ const ValuationTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAP
       <div className="card"><div className="card-title">Assumptions</div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
-          <Input label="Discount Rate (%)" value={discountRate} onChange={setDiscountRate} />
+          <Input label="Discount Rate (%)" value={discount} onChange={setDiscountRate} />
           <Input label="Terminal Multiple" value={terminalMult} onChange={setTerminalMult} step={0.1} />
           <Input label="Years" value={years} onChange={setYears} min={1} max={10} />
         </div>

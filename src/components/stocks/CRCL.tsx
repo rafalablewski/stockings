@@ -2323,11 +2323,95 @@ const ScenariosTab = () => {
   );
 };
 
+const DCFTab = () => {
+  const [discount, setDiscount] = useState(12);
+  const [scenario, setScenario] = useState('Base');
+
+  const calcDCF = () => {
+    const s = SCENARIOS.find(x => x.name === scenario) || SCENARIOS[1];
+    const fcfs: number[] = [];
+    let circ = CURRENT_METRICS.usdc;
+    const discountFactor = Math.max(discount, 1);
+    for (let y = 1; y <= 5; y++) {
+      circ *= 1 + s.cagr / 100;
+      const rev = circ * s.rate / 100;
+      fcfs.push(rev * s.margin / 100 * 1000);
+    }
+    const pvFCF = fcfs.reduce((sum, f, i) => sum + f / Math.pow(1 + discountFactor/100, i + 1), 0);
+    const tv = fcfs[4] * s.multiple;
+    const pvTV = tv / Math.pow(1 + discountFactor/100, 5);
+    const equity = pvFCF + pvTV + 1349 - 149;
+    const pt = MARKET.shares > 0 ? equity / MARKET.shares : 0;
+    const upside = MARKET.price > 0 ? (pt / MARKET.price - 1) * 100 : 0;
+    return { fcfs, pvFCF, tv, pvTV, equity, pt, upside };
+  };
+
+  const dcf = calcDCF();
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <h2 className="section-head">DCF</h2>
+
+      <div className="highlight">
+        <h3>DCF Valuation</h3>
+        <p className="text-sm">
+          DCF values Circle based on projected future free cash flows discounted to present value. Key drivers
+          are USDC circulation growth, RLDC margins, and reserve yield rates. Terminal value uses exit multiple
+          method based on expected steady-state profitability.
+        </p>
+      </div>
+
+      <div className="g3" style={{ marginBottom: 32 }}>
+        {SCENARIOS.map(s => (
+          <div
+            key={s.name}
+            className={`scenario ${s.name.toLowerCase()} ${scenario === s.name ? 'active' : ''}`}
+            onClick={() => setScenario(s.name)}
+          >
+            <h4>{s.name}</h4>
+            <div className="scenario-row"><span>USDC CAGR</span><span>{s.cagr}%</span></div>
+            <div className="scenario-row"><span>Terminal Margin</span><span>{s.margin}%</span></div>
+            <div className="scenario-row"><span>Exit Multiple</span><span>{s.multiple}x</span></div>
+            <div className="scenario-row"><span>Rate Assumption</span><span>{s.rate}%</span></div>
+          </div>
+        ))}
+      </div>
+
+      <div className="g2">
+        <div className="card">
+          <div className="card-title">Model Inputs</div>
+          <div className="slider-wrap">
+            <div className="slider-head">
+              <span>Discount Rate (WACC)</span>
+              <span>{discount}%</span>
+            </div>
+            <input type="range" min="8" max="18" value={discount} onChange={e => setDiscount(+e.target.value)} />
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-title">Valuation Output</div>
+          <div className="g2">
+            <Card label="Price Target" value={`$${dcf.pt.toFixed(0)}`} sub={`Based on ${scenario} scenario`} color="mint" />
+            <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs current price" color={dcf.upside >= 0 ? 'green' : 'red'} />
+          </div>
+        </div>
+      </div>
+
+      <CFANotes title="CFA Level III — DCF Valuation" items={[
+        { term: 'Discounted Cash Flow', def: 'Present value of future free cash flows + terminal value. Most rigorous valuation method. Sensitive to assumptions.' },
+        { term: 'WACC (Weighted Average Cost of Capital)', def: 'Blended cost of equity and debt. Used as discount rate. Higher WACC = lower present value.' },
+        { term: 'Terminal Value', def: 'Value of cash flows beyond explicit forecast period. Often 60-80% of total DCF value. Exit multiple or perpetuity growth method.' },
+        { term: 'Scenario Analysis', def: 'Bull/Base/Bear cases test sensitivity to key assumptions. Assign probabilities to weight expected value.' },
+        { term: 'Margin of Safety', def: 'Difference between price and intrinsic value. Larger margin = more protection against assumption errors.' },
+      ]} />
+    </div>
+  );
+};
+
 function CRCLModel() {
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
   const [discount, setDiscount] = useState(12);
-  const [scenario, setScenario] = useState('Base');
   const [timelineCat, setTimelineCat] = useState('All');
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [runKey, setRunKey] = useState(0); // For Monte Carlo re-runs
@@ -2562,26 +2646,6 @@ function CRCLModel() {
     return { sorted, p5, p25, p50, p75, p95, mean, winProb, sharpe, sortino, var5, cvar5, histogram, n };
   }, [discount, runKey, mcPreset, mcSims, mcYears, mcRevenueGrowthMin, mcRevenueGrowthMax, mcMarginMin, mcMarginMax, mcDiscountMin, mcDiscountMax, mcTerminalMultMin, mcTerminalMultMax]);
 
-  const calcDCF = () => {
-    const s = SCENARIOS.find(x => x.name === scenario) || SCENARIOS[1];
-    const fcfs: number[] = [];
-    let circ = latest.usdcCirculation;
-    const discountFactor = Math.max(discount, 1); // Ensure positive discount
-    for (let y = 1; y <= 5; y++) {
-      circ *= 1 + s.cagr / 100;
-      const rev = circ * s.rate / 100;
-      fcfs.push(rev * s.margin / 100 * 1000);
-    }
-    const pvFCF = fcfs.reduce((sum, f, i) => sum + f / Math.pow(1 + discountFactor/100, i + 1), 0);
-    const tv = fcfs[4] * s.multiple;
-    const pvTV = tv / Math.pow(1 + discountFactor/100, 5);
-    const equity = pvFCF + pvTV + 1349 - 149;
-    const pt = MARKET.shares > 0 ? equity / MARKET.shares : 0;
-    const upside = MARKET.price > 0 ? (pt / MARKET.price - 1) * 100 : 0;
-    return { fcfs, pvFCF: safe(pvFCF), tv: safe(tv), pvTV: safe(pvTV), equity: safe(equity), pt: safe(pt), upside: safe(upside) };
-  };
-
-  const dcf = calcDCF();
   const cats = ['All', ...Array.from(new Set(TIMELINE.map(p => p.category)))];
   const filteredEvents = (timelineCat === 'All' ? TIMELINE : TIMELINE.filter(p => p.category === timelineCat))
     .filter(p => {
@@ -4760,65 +4824,7 @@ function CRCLModel() {
             </>
           )}
 
-          {activeTab === 'dcf' && (
-            <>
-              <h2 className="section-head">DCF Valuation</h2>
-              
-              {/* Highlight Box */}
-              <div className="highlight">
-                <h3>Discounted Cash Flow Analysis</h3>
-                <p className="text-sm">
-                  DCF values Circle based on projected future free cash flows discounted to present value. Key drivers
-                  are USDC circulation growth, RLDC margins, and reserve yield rates. Terminal value uses exit multiple
-                  method based on expected steady-state profitability.
-                </p>
-              </div>
-              
-              <div className="g3" style={{ marginBottom: 32 }}>
-                {SCENARIOS.map(s => (
-                  <div
-                    key={s.name}
-                    className={`scenario ${s.name.toLowerCase()} ${scenario === s.name ? 'active' : ''}`}
-                    onClick={() => setScenario(s.name)}
-                  >
-                    <h4>{s.name}</h4>
-                    <div className="scenario-row"><span>USDC CAGR</span><span>{s.cagr}%</span></div>
-                    <div className="scenario-row"><span>Terminal Margin</span><span>{s.margin}%</span></div>
-                    <div className="scenario-row"><span>Exit Multiple</span><span>{s.multiple}x</span></div>
-                    <div className="scenario-row"><span>Rate Assumption</span><span>{s.rate}%</span></div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="g2">
-                <div className="card">
-                  <div className="card-title">Model Inputs</div>
-                  <div className="slider-wrap">
-                    <div className="slider-head">
-                      <span>Discount Rate (WACC)</span>
-                      <span>{discount}%</span>
-                    </div>
-                    <input type="range" min="8" max="18" value={discount} onChange={e => setDiscount(+e.target.value)} />
-                  </div>
-                </div>
-                <div className="card">
-                  <div className="card-title">Valuation Output</div>
-                  <div className="g2">
-                    <Card label="Price Target" value={`$${dcf.pt.toFixed(0)}`} sub={`Based on ${scenario} scenario`} color="mint" />
-                    <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs current price" color={dcf.upside >= 0 ? 'green' : 'red'} />
-                  </div>
-                </div>
-              </div>
-              
-              <CFANotes title="CFA Level III — DCF Valuation" items={[
-                { term: 'Discounted Cash Flow', def: 'Present value of future free cash flows + terminal value. Most rigorous valuation method. Sensitive to assumptions.' },
-                { term: 'WACC (Weighted Average Cost of Capital)', def: 'Blended cost of equity and debt. Used as discount rate. Higher WACC = lower present value.' },
-                { term: 'Terminal Value', def: 'Value of cash flows beyond explicit forecast period. Often 60-80% of total DCF value. Exit multiple or perpetuity growth method.' },
-                { term: 'Scenario Analysis', def: 'Bull/Base/Bear cases test sensitivity to key assumptions. Assign probabilities to weight expected value.' },
-                { term: 'Margin of Safety', def: 'Difference between price and intrinsic value. Larger margin = more protection against assumption errors.' },
-              ]} />
-            </>
-          )}
+          {activeTab === 'dcf' && <DCFTab />}
 
           {activeTab === 'monte-carlo' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
