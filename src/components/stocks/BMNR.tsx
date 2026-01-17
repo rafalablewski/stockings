@@ -3146,7 +3146,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
       <div className="card"><div className="card-title">Assumptions</div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
-          <Input label="Discount Rate (%)" value={discount} onChange={setDiscountRate} />
+          <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} />
           <Input label="Terminal Multiple" value={terminalMult} onChange={setTerminalMult} step={0.1} />
           <Input label="Years" value={years} onChange={setYears} min={1} max={10} />
         </div>
