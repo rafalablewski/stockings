@@ -3863,10 +3863,10 @@ const DCFTab = ({ calc, currentShares, currentStockPrice, cashOnHand, totalDebt,
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">DCF</h2>
       <div className="highlight"><h3>DCF Valuation</h3>
-        <div className="space-y-2 text-sm">
-          <p><strong className="text-cyan-400">Method:</strong> 6-year explicit forecast (2025-2030) + terminal value. FCF = EBITDA - CapEx. Terminal = FCF₂₀₃₀ × (1+g) / (r-g).</p>
-          <p><strong className="text-cyan-400">Implied Prices:</strong> Shows what stock "should" trade at each year if market values it at {evMultiple}x EV/Revenue. Useful for setting price targets.</p>
-        </div>
+        <p className="text-sm">
+          <strong style={{ color: 'var(--cyan)' }}>Method:</strong> 6-year explicit forecast (2025-2030) + terminal value. FCF = EBITDA - CapEx. Terminal = FCF₂₀₃₀ × (1+g) / (r-g).
+          <br /><strong style={{ color: 'var(--cyan)' }}>Implied Prices:</strong> Shows what stock "should" trade at each year if market values it at {evMultiple}x EV/Revenue. Useful for setting price targets.
+        </p>
       </div>
       
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
@@ -3894,54 +3894,54 @@ const DCFTab = ({ calc, currentShares, currentStockPrice, cashOnHand, totalDebt,
 
       {/* Main DCF table with implied prices */}
       <div className="card"><div className="card-title">Detailed Projections with Implied Valuations</div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
             <thead>
-              <tr className="text-slate-400 text-xs border-b border-slate-700">
-                <th className="text-left py-2">Year</th>
-                <th className="text-right">Revenue</th>
-                <th className="text-right">EBITDA %</th>
-                <th className="text-right">FCF</th>
-                <th className="text-right">PV(FCF)</th>
-                <th className="text-right px-2 border-l border-slate-600">Implied EV</th>
-                <th className="text-right">Implied Mkt Cap</th>
-                <th className="text-right">Implied Price</th>
-                <th className="text-right">PV Price</th>
+              <tr>
+                <th>Year</th>
+                <th className="r">Revenue</th>
+                <th className="r">EBITDA %</th>
+                <th className="r">FCF</th>
+                <th className="r">PV(FCF)</th>
+                <th className="r" style={{ borderLeft: '1px solid var(--border)' }}>Implied EV</th>
+                <th className="r">Implied Mkt Cap</th>
+                <th className="r">Implied Price</th>
+                <th className="r">PV Price</th>
               </tr>
             </thead>
             <tbody>
               {dcf.proj.map(p => (
-                <tr key={p.y} className="border-t border-slate-800 hover:bg-slate-800/30">
-                  <td className="py-2 font-medium">{p.y}</td>
-                  <td className="py-2 text-right">${p.r.toFixed(2)}B</td>
-                  <td className="py-2 text-right">{p.m}%</td>
-                  <td className={`py-2 text-right ${p.fcf >= 0 ? 'text-green-400' : 'text-red-400'}`}>${p.fcf.toFixed(2)}B</td>
-                  <td className={`py-2 text-right ${p.pv >= 0 ? 'text-cyan-400' : 'text-orange-400'}`}>${p.pv.toFixed(2)}B</td>
-                  <td className="py-2 text-right px-2 border-l border-slate-700">${p.impliedEV.toFixed(1)}B</td>
-                  <td className="py-2 text-right">${(p.impliedMktCap/1000).toFixed(1)}B</td>
-                  <td className="py-2 text-right font-medium text-yellow-400">${p.impliedPrice.toFixed(0)}</td>
-                  <td className="py-2 text-right text-slate-400">${p.pvImpliedPrice.toFixed(0)}</td>
+                <tr key={p.y}>
+                  <td style={{ fontWeight: 500 }}>{p.y}</td>
+                  <td className="r">${p.r.toFixed(2)}B</td>
+                  <td className="r">{p.m}%</td>
+                  <td className="r" style={{ color: p.fcf >= 0 ? 'var(--mint)' : 'var(--coral)' }}>${p.fcf.toFixed(2)}B</td>
+                  <td className="r" style={{ color: p.pv >= 0 ? 'var(--cyan)' : 'var(--coral)' }}>${p.pv.toFixed(2)}B</td>
+                  <td className="r" style={{ borderLeft: '1px solid var(--border)' }}>${p.impliedEV.toFixed(1)}B</td>
+                  <td className="r">${(p.impliedMktCap/1000).toFixed(1)}B</td>
+                  <td className="r" style={{ fontWeight: 500, color: 'var(--gold)' }}>${p.impliedPrice.toFixed(0)}</td>
+                  <td className="r" style={{ color: 'var(--text3)' }}>${p.pvImpliedPrice.toFixed(0)}</td>
                 </tr>
               ))}
-              <tr className="border-t-2 border-slate-600 bg-slate-800/50">
-                <td colSpan={4} className="py-2 text-right font-medium">Sum PV(FCF)</td>
-                <td className="py-2 text-right font-medium">${dcf.sumPv.toFixed(1)}B</td>
+              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+                <td colSpan={4} className="r" style={{ fontWeight: 500 }}>Sum PV(FCF)</td>
+                <td className="r" style={{ fontWeight: 500 }}>${dcf.sumPv.toFixed(1)}B</td>
                 <td colSpan={4}></td>
               </tr>
-              <tr className="bg-slate-800/50">
-                <td colSpan={4} className="py-2 text-right font-medium">PV(Terminal Value)</td>
-                <td className="py-2 text-right font-medium">${dcf.pvTerm.toFixed(1)}B</td>
+              <tr style={{ background: 'var(--surface2)' }}>
+                <td colSpan={4} className="r" style={{ fontWeight: 500 }}>PV(Terminal Value)</td>
+                <td className="r" style={{ fontWeight: 500 }}>${dcf.pvTerm.toFixed(1)}B</td>
                 <td colSpan={4}></td>
               </tr>
-              <tr className="bg-cyan-900/20">
-                <td colSpan={4} className="py-2 text-right font-bold">Enterprise Value</td>
-                <td className="py-2 text-right font-bold text-cyan-400">${dcf.ev.toFixed(1)}B</td>
+              <tr style={{ background: 'rgba(0,212,170,0.1)' }}>
+                <td colSpan={4} className="r" style={{ fontWeight: 700 }}>Enterprise Value</td>
+                <td className="r" style={{ fontWeight: 700, color: 'var(--cyan)' }}>${dcf.ev.toFixed(1)}B</td>
                 <td colSpan={4}></td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div className="mt-3 text-xs text-slate-500">
+        <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text3)' }}>
           <strong>Implied Price</strong> = If stock traded at {evMultiple}x EV/Revenue in that year. <strong>PV Price</strong> = Discounted to today at {discount}% rate.
         </div>
       </div>
@@ -3960,7 +3960,7 @@ const DCFTab = ({ calc, currentShares, currentStockPrice, cashOnHand, totalDebt,
             <ReferenceLine y={currentStockPrice} stroke="#fff" strokeDasharray="5 5" label={{ value: `Current $${currentStockPrice}`, fill: '#fff', fontSize: 10 }} />
           </ComposedChart>
         </ResponsiveContainer>
-        <div className="mt-2 text-xs text-slate-500">
+        <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text3)' }}>
           Yellow bars show what price would be if valued at {evMultiple}x revenue in each year. Purple line shows those prices discounted back to today.
         </div>
       </div>
@@ -3975,7 +3975,7 @@ const DCFTab = ({ calc, currentShares, currentStockPrice, cashOnHand, totalDebt,
         </div>
         <div className="card"><div className="card-title">Valuation Multiple</div>
           <Input label="EV/Revenue Multiple (x)" value={evMultiple} onChange={setEvMultiple} step={0.5} />
-          <div className="mt-2 text-xs text-slate-500">Used for implied price calculation. Starlink ~17x, growth SaaS 8-15x, telcos 1-3x.</div>
+          <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text3)' }}>Used for implied price calculation. Starlink ~17x, growth SaaS 8-15x, telcos 1-3x.</div>
         </div>
         <div className="card"><div className="card-title">Risk Adjustments</div>
           <div className="g3">
@@ -3983,7 +3983,7 @@ const DCFTab = ({ calc, currentShares, currentStockPrice, cashOnHand, totalDebt,
             <Input label="Tech %" value={techRisk} onChange={setTechRisk} />
             <Input label="Competition %" value={competitionRisk} onChange={setCompetitionRisk} />
           </div>
-          <div className="mt-2 text-xs text-slate-500">
+          <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text3)' }}>
             Combined success probability: {((1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100) * 100).toFixed(0)}%
           </div>
         </div>

@@ -2329,24 +2329,30 @@ const DCFTab = () => {
 
   const calcDCF = () => {
     const s = SCENARIOS.find(x => x.name === scenario) || SCENARIOS[1];
-    const fcfs: number[] = [];
+    const projections: { year: number; usdc: number; rev: number; fcf: number; pv: number }[] = [];
     let circ = CURRENT_METRICS.usdc;
     const discountFactor = Math.max(discount, 1);
+    const baseYear = 2025;
+
     for (let y = 1; y <= 5; y++) {
       circ *= 1 + s.cagr / 100;
       const rev = circ * s.rate / 100;
-      fcfs.push(rev * s.margin / 100 * 1000);
+      const fcf = rev * s.margin / 100;
+      const pv = fcf / Math.pow(1 + discountFactor / 100, y);
+      projections.push({ year: baseYear + y, usdc: circ, rev, fcf, pv });
     }
-    const pvFCF = fcfs.reduce((sum, f, i) => sum + f / Math.pow(1 + discountFactor/100, i + 1), 0);
-    const tv = fcfs[4] * s.multiple;
-    const pvTV = tv / Math.pow(1 + discountFactor/100, 5);
-    const equity = pvFCF + pvTV + 1349 - 149;
+
+    const pvFCF = projections.reduce((sum, p) => sum + p.pv, 0);
+    const tv = projections[4].fcf * s.multiple;
+    const pvTV = tv / Math.pow(1 + discountFactor / 100, 5);
+    const equity = (pvFCF + pvTV) * 1000 + 1349 - 149;
     const pt = MARKET.shares > 0 ? equity / MARKET.shares : 0;
     const upside = MARKET.price > 0 ? (pt / MARKET.price - 1) * 100 : 0;
-    return { fcfs, pvFCF, tv, pvTV, equity, pt, upside };
+    return { projections, pvFCF, tv, pvTV, equity, pt, upside };
   };
 
   const dcf = calcDCF();
+  const s = SCENARIOS.find(x => x.name === scenario) || SCENARIOS[1];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -2362,17 +2368,17 @@ const DCFTab = () => {
       </div>
 
       <div className="g3" style={{ marginBottom: 32 }}>
-        {SCENARIOS.map(s => (
+        {SCENARIOS.map(sc => (
           <div
-            key={s.name}
-            className={`scenario ${s.name.toLowerCase()} ${scenario === s.name ? 'active' : ''}`}
-            onClick={() => setScenario(s.name)}
+            key={sc.name}
+            className={`scenario ${sc.name.toLowerCase()} ${scenario === sc.name ? 'active' : ''}`}
+            onClick={() => setScenario(sc.name)}
           >
-            <h4>{s.name}</h4>
-            <div className="scenario-row"><span>USDC CAGR</span><span>{s.cagr}%</span></div>
-            <div className="scenario-row"><span>Terminal Margin</span><span>{s.margin}%</span></div>
-            <div className="scenario-row"><span>Exit Multiple</span><span>{s.multiple}x</span></div>
-            <div className="scenario-row"><span>Rate Assumption</span><span>{s.rate}%</span></div>
+            <h4>{sc.name}</h4>
+            <div className="scenario-row"><span>USDC CAGR</span><span>{sc.cagr}%</span></div>
+            <div className="scenario-row"><span>Terminal Margin</span><span>{sc.margin}%</span></div>
+            <div className="scenario-row"><span>Exit Multiple</span><span>{sc.multiple}x</span></div>
+            <div className="scenario-row"><span>Rate Assumption</span><span>{sc.rate}%</span></div>
           </div>
         ))}
       </div>
@@ -2380,13 +2386,7 @@ const DCFTab = () => {
       <div className="g2">
         <div className="card">
           <div className="card-title">Model Inputs</div>
-          <div className="slider-wrap">
-            <div className="slider-head">
-              <span>Discount Rate (WACC)</span>
-              <span>{discount}%</span>
-            </div>
-            <input type="range" min="8" max="18" value={discount} onChange={e => setDiscount(+e.target.value)} />
-          </div>
+          <Input label="Discount Rate (WACC) %" value={discount} onChange={setDiscount} min={5} max={20} />
         </div>
         <div className="card">
           <div className="card-title">Valuation Output</div>
@@ -2394,6 +2394,70 @@ const DCFTab = () => {
             <Card label="Price Target" value={`$${dcf.pt.toFixed(0)}`} sub={`Based on ${scenario} scenario`} color="mint" />
             <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs current price" color={dcf.upside >= 0 ? 'green' : 'red'} />
           </div>
+        </div>
+      </div>
+
+      {/* Financial Projections Table */}
+      <div className="card" style={{ marginTop: 24 }}>
+        <div className="card-title">Financial Projections — {scenario} Scenario</div>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th className="r">Today</th>
+                {dcf.projections.map(p => (
+                  <th key={p.year} className="r">{p.year}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>USDC Circulation ($B)</td>
+                <td className="r">{CURRENT_METRICS.usdc.toFixed(1)}</td>
+                {dcf.projections.map(p => (
+                  <td key={p.year} className="r">{p.usdc.toFixed(1)}</td>
+                ))}
+              </tr>
+              <tr>
+                <td>Reserve Revenue ($B)</td>
+                <td className="r">—</td>
+                {dcf.projections.map(p => (
+                  <td key={p.year} className="r">${p.rev.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '1px solid var(--border)' }}>
+                <td>Net FCF ($B)</td>
+                <td className="r">—</td>
+                {dcf.projections.map(p => (
+                  <td key={p.year} className="r" style={{ color: 'var(--mint)' }}>${p.fcf.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr>
+                <td>PV of FCF ($B)</td>
+                <td className="r">—</td>
+                {dcf.projections.map(p => (
+                  <td key={p.year} className="r" style={{ color: 'var(--cyan)' }}>${p.pv.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>Sum PV(FCF)</td>
+                <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.pvFCF.toFixed(2)}B</td>
+              </tr>
+              <tr style={{ background: 'var(--surface2)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>Terminal Value ({s.multiple}x FCF)</td>
+                <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.tv.toFixed(1)}B</td>
+              </tr>
+              <tr style={{ background: 'var(--surface2)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>PV(Terminal Value)</td>
+                <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.pvTV.toFixed(2)}B</td>
+              </tr>
+              <tr style={{ background: 'rgba(0,212,170,0.1)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 700 }}>Equity Value</td>
+                <td colSpan={5} className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${(dcf.equity / 1000).toFixed(1)}B</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
