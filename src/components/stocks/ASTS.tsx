@@ -1517,7 +1517,6 @@ const ASTSAnalysis = () => {
 
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
-  const [valuationDropdownOpen, setValuationDropdownOpen] = useState(false);
 
   // Use imported data from @/data/asts
   const partners = PARTNERS;
@@ -1650,20 +1649,12 @@ const ASTSAnalysis = () => {
           {/* ASTS Analysis dropdown trigger */}
           <button
             className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'ASTS Analysis' && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setValuationDropdownOpen(false); }}
+            onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
           >
             ASTS Analysis ↕
           </button>
 
-          {/* Model dropdown trigger */}
-          <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'Model' && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => { setValuationDropdownOpen(!valuationDropdownOpen); setAnalysisDropdownOpen(false); }}
-          >
-            Model ↕
-          </button>
-
-          {/* Remaining ungrouped tabs */}
+          {/* Remaining ungrouped tabs (includes Model) */}
           {tabs.filter(t => !t.group).slice(1).map(t => (
             <button
               key={t.id}
@@ -1680,19 +1671,6 @@ const ASTSAnalysis = () => {
           {analysisDropdownOpen && (
             <div className="nav-dropdown-menu">
               {tabs.filter(t => t.group === 'ASTS Analysis').map(t => (
-                <button
-                  key={t.id}
-                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-                  onClick={() => setActiveTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          )}
-          {valuationDropdownOpen && (
-            <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group === 'Model').map(t => (
                 <button
                   key={t.id}
                   className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
@@ -3589,6 +3567,10 @@ const ModelTab = ({
                       <span style={{ color: 'var(--text)' }}>${p.rev.toFixed(2)}B</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>Margin</span>
+                      <span style={{ color: p.margin >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{p.margin.toFixed(0)}%</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'var(--text3)' }}>FCF</span>
                       <span style={{ color: p.fcf >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                         {p.fcf >= 0 ? '$' : '($'}{Math.abs(p.fcf).toFixed(2)}{p.fcf < 0 ? ')' : ''}
@@ -3597,6 +3579,10 @@ const ModelTab = ({
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 4, marginTop: 4 }}>
                       <span style={{ color: 'var(--text3)' }}>Price</span>
                       <span style={{ color: scenario.color, fontWeight: 600 }}>${p.priceInYear.toFixed(0)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>PV</span>
+                      <span style={{ color: 'var(--sky)' }}>${p.presentValue.toFixed(0)}</span>
                     </div>
                   </div>
                 </div>
@@ -3672,6 +3658,8 @@ const ModelTab = ({
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Penetration</span><span>{penetrationRate}%</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>ARPU</span><span>${blendedARPU}/mo</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Revenue Share</span><span>{revenueShare}%</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Competition Discount</span><span style={{ color: 'var(--coral)' }}>-{competitionDiscount}%</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Deployment Delay</span><span style={{ color: deploymentDelay > 0 ? 'var(--coral)' : deploymentDelay < 0 ? 'var(--mint)' : 'var(--text)' }}>{deploymentDelay > 0 ? `+${deploymentDelay}` : deploymentDelay}yr</span></div>
                 </div>
               </div>
               <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
@@ -3680,6 +3668,8 @@ const ModelTab = ({
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>EBITDA Margin</span><span>{terminalMargin}%</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>CapEx % Rev</span><span>{terminalCapex}%</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Terminal Growth</span><span>{terminalGrowth}%</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 4, marginTop: 4 }}><span style={{ color: 'var(--text3)' }}>Terminal Subs</span><span style={{ color: 'var(--mint)' }}>{(terminalSubs / 1000000).toFixed(1)}M</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Terminal Rev</span><span style={{ color: 'var(--mint)' }}>${terminalRev.toFixed(2)}B</span></div>
                 </div>
               </div>
               <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
@@ -3687,7 +3677,13 @@ const ModelTab = ({
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Discount Rate</span><span>{discountRate}%</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Dilution Rate</span><span>{dilutionRate}%/yr</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Risk Haircut</span><span>{((1 - dcfSummary.riskFactor) * 100).toFixed(0)}%</span></div>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8, marginTop: 12, textTransform: 'uppercase' }}>Risk Factors</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Regulatory</span><span>{regulatoryRisk}%</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Technology</span><span>{techRisk}%</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Competition</span><span>{competitionRisk}%</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 4, marginTop: 4 }}><span style={{ color: 'var(--text3)' }}>Total Haircut</span><span style={{ color: 'var(--coral)' }}>{((1 - dcfSummary.riskFactor) * 100).toFixed(0)}%</span></div>
                 </div>
               </div>
             </div>
