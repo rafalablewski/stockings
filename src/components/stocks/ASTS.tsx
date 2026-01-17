@@ -186,7 +186,7 @@ interface CardProps {
   label: string;
   value: string | number;
   sub?: string;
-  color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'emerald';
+  color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'violet' | 'mint' | 'emerald';
 }
 
 interface RowProps {
@@ -1398,6 +1398,8 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
     purple: { bg: 'rgba(168,85,247,0.15)', border: 'rgba(168,85,247,0.3)', text: '#c084fc' },
     orange: { bg: 'rgba(249,115,22,0.15)', border: 'rgba(249,115,22,0.3)', text: '#fb923c' },
     cyan: { bg: 'rgba(34,211,238,0.15)', border: 'rgba(34,211,238,0.3)', text: '#22d3ee' },
+    violet: { bg: 'rgba(167,139,250,0.15)', border: 'rgba(167,139,250,0.3)', text: '#a78bfa' },
+    mint: { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.3)', text: '#34d399' },
     emerald: { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.3)', text: '#34d399' }
   };
   const c = colorMap[color || 'blue'] || colorMap.blue;
@@ -1734,7 +1736,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
   return (
   <>
     <h2 className="section-head">Investment Thesis</h2>
-    <div className="highlight"><h3>The Opportunity (Dec 2025)</h3>
+    <div className="highlight"><h3>The Opportunity</h3>
       <p style={{ fontSize: '14px' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
@@ -3234,7 +3236,7 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
       const upside = ((presentValue - currentStockPrice) / currentStockPrice) * 100;
       
       return {
-        key,
+        id: key,
         ...scenarioMeta[key],
         prob: s2030.prob,
         // Metrics
@@ -3280,17 +3282,17 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
 
   // Get the currently selected scenario data
   const selected = useMemo(() => {
-    return scenarios.find(s => s.key === selectedScenario) || scenarios[2]; // Default to base
+    return scenarios.find(s => s.id === selectedScenario) || scenarios[2]; // Default to base
   }, [scenarios, selectedScenario]);
 
-  const years = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
+  const TARGET_YEARS = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
 
   // Generate year-by-year projections for the selected scenario (SAME formulas as scenarios calculation)
   const projections = useMemo(() => {
     const s2030 = scenarios2030[selectedScenario];
     if (!s2030) return [];
 
-    return years.map(year => {
+    return TARGET_YEARS.map(year => {
       const yc = yearConfigs[year];
       const yearsFromNow = year - 2025;
       const df = Math.pow(1 + discountRate, yearsFromNow);
@@ -3341,23 +3343,23 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
         <div className="card">
           <div className="card-title">Target Year</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {years.map(y => (
+            {TARGET_YEARS.map(year => (
               <button
-                key={y}
-                onClick={() => setTargetYear(y)}
+                key={year}
+                onClick={() => setTargetYear(year)}
                 style={{
                   padding: '12px 20px',
                   borderRadius: 8,
-                  border: y === targetYear ? '2px solid var(--mint)' : '1px solid var(--border)',
-                  background: y === targetYear ? 'rgba(0,212,170,0.15)' : 'var(--surface2)',
-                  color: y === targetYear ? 'var(--mint)' : 'var(--text2)',
+                  border: targetYear === year ? '2px solid var(--mint)' : '1px solid var(--border)',
+                  background: targetYear === year ? 'rgba(0,212,170,0.15)' : 'var(--surface2)',
+                  color: targetYear === year ? 'var(--mint)' : 'var(--text2)',
                   cursor: 'pointer',
-                  fontWeight: y === targetYear ? 700 : 400,
+                  fontWeight: targetYear === year ? 700 : 400,
                   fontFamily: 'Space Mono',
                   fontSize: 16,
                 }}
               >
-                {y}
+                {year}
               </button>
             ))}
           </div>
@@ -3368,16 +3370,16 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {scenarios.map(s => (
               <button
-                key={s.key}
-                onClick={() => setSelectedScenario(s.key)}
+                key={s.id}
+                onClick={() => setSelectedScenario(s.id)}
                 style={{
                   padding: '12px 16px',
                   borderRadius: 8,
-                  border: s.key === selectedScenario ? `2px solid ${s.color}` : '1px solid var(--border)',
-                  background: s.key === selectedScenario ? `${s.color}22` : 'var(--surface2)',
-                  color: s.key === selectedScenario ? s.color : 'var(--text2)',
+                  border: s.id === selectedScenario ? `2px solid ${s.color}` : '1px solid var(--border)',
+                  background: s.id === selectedScenario ? `${s.color}22` : 'var(--surface2)',
+                  color: s.id === selectedScenario ? s.color : 'var(--text2)',
                   cursor: 'pointer',
-                  fontWeight: s.key === selectedScenario ? 700 : 400,
+                  fontWeight: s.id === selectedScenario ? 700 : 400,
                   fontSize: 14,
                 }}
               >
@@ -3633,7 +3635,7 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
               {scenarios.map(s => {
                 const contribution = s.presentValue * (s.prob / 100);
                 return (
-                  <tr key={s.key} style={{ background: selectedScenario === s.key ? `${s.color}11` : 'transparent' }}>
+                  <tr key={s.id} style={{ background: selectedScenario === s.id ? `${s.color}11` : 'transparent' }}>
                     <td>
                       <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
                       {s.name}
@@ -3666,23 +3668,23 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
               <tr>
                 <th>Metric</th>
                 {scenarios.map(s => (
-                  <th key={s.key} className="r" style={{ color: s.color }}>{s.name}</th>
+                  <th key={s.id} className="r" style={{ color: s.color }}>{s.name}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Subscribers (M)</td>
-                {scenarios.map(s => <td key={s.key} className="r">{s.subs.toFixed(1)}</td>)}
+                {scenarios.map(s => <td key={s.id} className="r">{s.subs.toFixed(1)}</td>)}
               </tr>
               <tr>
                 <td>Revenue ($B)</td>
-                {scenarios.map(s => <td key={s.key} className="r">${s.rev.toFixed(2)}</td>)}
+                {scenarios.map(s => <td key={s.id} className="r">${s.rev.toFixed(2)}</td>)}
               </tr>
               <tr>
                 <td>EBITDA ($B)</td>
                 {scenarios.map(s => (
-                  <td key={s.key} className="r" style={{ color: s.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  <td key={s.id} className="r" style={{ color: s.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                     {s.ebitda >= 0 ? '$' : '($'}{Math.abs(s.ebitda).toFixed(2)}{s.ebitda < 0 ? ')' : ''}
                   </td>
                 ))}
@@ -3690,19 +3692,19 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
               <tr>
                 <td>EBITDA Margin (%)</td>
                 {scenarios.map(s => (
-                  <td key={s.key} className="r" style={{ color: s.margin >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  <td key={s.id} className="r" style={{ color: s.margin >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                     {s.margin.toFixed(0)}%
                   </td>
                 ))}
               </tr>
               <tr>
                 <td>EV/EBITDA Multiple</td>
-                {scenarios.map(s => <td key={s.key} className="r">{s.mult}x</td>)}
+                {scenarios.map(s => <td key={s.id} className="r">{s.mult}x</td>)}
               </tr>
               <tr style={{ fontWeight: 700 }}>
                 <td>{targetYear} Price</td>
                 {scenarios.map(s => (
-                  <td key={s.key} className="r" style={{ color: s.color }}>
+                  <td key={s.id} className="r" style={{ color: s.color }}>
                     ${s.priceInTargetYear.toFixed(0)}
                   </td>
                 ))}
@@ -3710,7 +3712,7 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
               <tr style={{ fontWeight: 600 }}>
                 <td>PV Today</td>
                 {scenarios.map(s => (
-                  <td key={s.key} className="r" style={{ color: 'var(--sky)' }}>
+                  <td key={s.id} className="r" style={{ color: 'var(--sky)' }}>
                     ${s.presentValue.toFixed(0)}
                   </td>
                 ))}
@@ -3718,7 +3720,7 @@ const ScenariosTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand 
               <tr>
                 <td>Return vs Today</td>
                 {scenarios.map(s => (
-                  <td key={s.key} className="r" style={{ color: s.upside >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  <td key={s.id} className="r" style={{ color: s.upside >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                     {s.upside >= 0 ? '+' : ''}{s.upside.toFixed(0)}%
                   </td>
                 ))}
