@@ -3457,7 +3457,7 @@ const ModelTab = ({
           <div className="card">
             <div className="card-title">Terminal Year Output (2030)</div>
             <div className="g4">
-              <Card label="Net Subscribers" value={`${(terminalSubs / 1000000).toFixed(1)}M`} sub={`${penetrationRate}% of ${(partnerReach / 1000000000).toFixed(1)}B reach`} color="cyan" />
+              <Card label="Net Subscribers" value={`${terminalSubs.toFixed(1)}M`} sub={`${penetrationRate}% of ${(partnerReach / 1000).toFixed(1)}B reach`} color="cyan" />
               <Card label="ASTS Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of gross`} color="green" />
               <Card label="Terminal FCF" value={`$${(terminalRev * (terminalMargin - terminalCapex) / 100).toFixed(2)}B`} sub={`${terminalMargin}% margin - ${terminalCapex}% capex`} color="mint" />
               <Card label="Diluted Shares" value={`${dcfSummary.finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr for 5yrs`} color="violet" />
@@ -3521,7 +3521,7 @@ const ModelTab = ({
               </div>
             </div>
             <div className="big-stat">
-              <div className="num">{(selected.subs / 1000000).toFixed(1)}M</div>
+              <div className="num">{selected.subs.toFixed(1)}M</div>
               <div className="lbl">Subscribers</div>
               <div style={{ fontSize: 12, color: 'var(--sky)', marginTop: 4 }}>
                 {selected.phase}
@@ -3560,7 +3560,7 @@ const ModelTab = ({
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'var(--text3)' }}>Subs</span>
-                      <span style={{ color: 'var(--text)' }}>{(p.subs / 1000000).toFixed(1)}M</span>
+                      <span style={{ color: 'var(--text)' }}>{p.subs.toFixed(1)}M</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'var(--text3)' }}>Rev</span>
@@ -3594,7 +3594,7 @@ const ModelTab = ({
           <div className="card" style={{ marginTop: 16 }}>
             <div className="card-title">{targetYear} Detail</div>
             <div className="g4">
-              <Card label="Subscribers" value={`${(selected.subs / 1000000).toFixed(1)}M`} sub={selected.phase} color="cyan" />
+              <Card label="Subscribers" value={`${selected.subs.toFixed(1)}M`} sub={selected.phase} color="cyan" />
               <Card label="Revenue" value={`$${selected.rev.toFixed(2)}B`} sub={`ARPU: $${blendedARPU}/mo`} color="green" />
               <Card label="EBITDA" value={`$${Math.abs(selected.ebitda).toFixed(2)}B`} sub={`${selected.margin.toFixed(0)}% margin`} color={selected.ebitda >= 0 ? 'mint' : 'red'} />
               <Card label="Free Cash Flow" value={`$${Math.abs(selected.fcf).toFixed(2)}B`} sub={`${selected.capex}% CapEx`} color={selected.fcf >= 0 ? 'mint' : 'red'} />
@@ -3654,7 +3654,7 @@ const ModelTab = ({
               <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
                 <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8, textTransform: 'uppercase' }}>Revenue Drivers</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Partner Reach</span><span>{(partnerReach / 1000000000).toFixed(1)}B</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Partner Reach</span><span>{(partnerReach / 1000).toFixed(1)}B</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Penetration</span><span>{penetrationRate}%</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>ARPU</span><span>${blendedARPU}/mo</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Revenue Share</span><span>{revenueShare}%</span></div>
@@ -3668,7 +3668,7 @@ const ModelTab = ({
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>EBITDA Margin</span><span>{terminalMargin}%</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>CapEx % Rev</span><span>{terminalCapex}%</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Terminal Growth</span><span>{terminalGrowth}%</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 4, marginTop: 4 }}><span style={{ color: 'var(--text3)' }}>Terminal Subs</span><span style={{ color: 'var(--mint)' }}>{(terminalSubs / 1000000).toFixed(1)}M</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 4, marginTop: 4 }}><span style={{ color: 'var(--text3)' }}>Terminal Subs</span><span style={{ color: 'var(--mint)' }}>{terminalSubs.toFixed(1)}M</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Terminal Rev</span><span style={{ color: 'var(--mint)' }}>${terminalRev.toFixed(2)}B</span></div>
                 </div>
               </div>
