@@ -3185,7 +3185,7 @@ const SCENARIO_PRESETS = {
   },
 };
 
-// UNIFIED MODEL TAB - With subnav for Assumptions vs Scenario+DCF
+// MODEL TAB - Assumptions configuration
 const ModelTab = ({
   partnerReach, setPartnerReach,
   penetrationRate, setPenetrationRate,
@@ -3204,9 +3204,6 @@ const ModelTab = ({
   selectedScenario, setSelectedScenario,
   currentShares, currentStockPrice, cashOnHand, totalDebt,
 }) => {
-  const [activeSubnav, setActiveSubnav] = useState<'assumptions' | 'scenario'>('assumptions');
-  const [targetYear, setTargetYear] = useState(2030);
-  const netCash = cashOnHand - totalDebt;
 
   const applyScenario = (scenario: 'bull' | 'base' | 'bear') => {
     const p = SCENARIO_PRESETS[scenario];
@@ -3239,159 +3236,16 @@ const ModelTab = ({
   const terminalGrossRev = terminalSubs * blendedARPU * 12 / 1000;
   const terminalRev = terminalGrossRev * (revenueShare / 100);
 
-  // Projections (10-year S-curve ramp) - 2030 is terminal year at 100%
-  const TARGET_YEARS = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
-  const baseRamp = [0.03, 0.12, 0.30, 0.60, 1.0, 1.10, 1.18, 1.25, 1.30, 1.35];
-  // Margin ramp: negative early (pre-scale losses), reaching terminal at 2030
-  const marginRamp = [-80, -20, 15, 35, terminalMargin, terminalMargin + 2, terminalMargin + 3, terminalMargin + 4, terminalMargin + 5, terminalMargin + 5];
-  // CapEx ramp: high early (build-out), declining to terminal at 2030
-  const capexRamp = [60, 40, 25, 18, terminalCapex, terminalCapex - 1, terminalCapex - 2, terminalCapex - 2, terminalCapex - 3, terminalCapex - 3];
-  const phaseLabels = ['Launch', 'US/EU', 'Global', 'Scale', 'Mature', 'Growth', 'Maturation', 'Steady', 'Cash Gen', 'Platform'];
-
-  const discountRatePct = discountRate / 100;
-
-  const projections = useMemo(() => {
-    // First pass: calculate basic financials for each year
-    const baseProjections = TARGET_YEARS.map((year, i) => {
-      const yearsFromNow = year - 2025;
-      const rampIdx = Math.max(0, Math.min(baseRamp.length - 1, i - deploymentDelay));
-      const ramp = baseRamp[rampIdx];
-
-      const subs = terminalSubs * ramp;
-      const rev = terminalRev * ramp;
-      const margin = marginRamp[Math.min(i, marginRamp.length - 1)];
-      const capex = capexRamp[Math.min(i, capexRamp.length - 1)];
-
-      const ebitda = rev * (margin / 100);
-      const fcf = ebitda - rev * (capex / 100);
-      const pv = fcf / Math.pow(1 + discountRatePct, yearsFromNow);
-      const dilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, yearsFromNow);
-
-      return { year, subs, rev, margin, capex, ebitda, fcf, pv, dilutedShares, phase: phaseLabels[i], yearsFromNow };
-    });
-
-    // Risk factor
-    const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
-    const spreadPct = Math.max(discountRate - terminalGrowth, 1) / 100;
-
-    // Terminal value based on 2030 (index 4) FCF
-    const terminalFCF = baseProjections[4].fcf;
-    const terminalValue = terminalFCF > 0 ? (terminalFCF * (1 + terminalGrowth / 100)) / spreadPct : 0;
-
-    // Second pass: calculate valuations
-    // For each year Y, stock price = DCF from Y to terminal, discounted to today
-    return baseProjections.map((p, i) => {
-      // Sum PV of FCFs from this year to 2030
-      const sumFuturePv = baseProjections.slice(i, 5).reduce((sum, fp) => {
-        const yearsFromThisYear = fp.yearsFromNow - p.yearsFromNow;
-        const pvFromThisYear = fp.fcf / Math.pow(1 + discountRatePct, yearsFromThisYear);
-        return sum + pvFromThisYear;
-      }, 0);
-
-      // Add terminal value (discounted to this year)
-      const yearsToTerminal = Math.max(0, 5 - p.yearsFromNow);
-      const pvTermFromThisYear = terminalValue / Math.pow(1 + discountRatePct, yearsToTerminal);
-
-      // EV in this year
-      const evInYear = sumFuturePv + pvTermFromThisYear;
-      const adjEvInYear = evInYear * riskFactor;
-
-      // Equity value and price in this year
-      const equityInYear = adjEvInYear * 1000 + netCash;
-      const priceInYear = Math.max(0, equityInYear / p.dilutedShares);
-
-      // Present value of that price (discounted to today)
-      const presentValue = priceInYear / Math.pow(1 + discountRatePct, p.yearsFromNow);
-      const upside = ((presentValue - currentStockPrice) / currentStockPrice) * 100;
-
-      return {
-        ...p,
-        pvTerm: pvTermFromThisYear,
-        ev: adjEvInYear,
-        equityValue: equityInYear,
-        priceInYear,
-        presentValue,
-        upside,
-      };
-    });
-  }, [terminalSubs, terminalRev, discountRatePct, discountRate, terminalGrowth,
-      currentShares, dilutionRate, regulatoryRisk, techRisk, competitionRisk, netCash, currentStockPrice,
-      deploymentDelay, terminalMargin, terminalCapex]);
-
-  const selected = projections.find(p => p.year === targetYear) || projections[4];
-
-  // DCF summary calculations
-  const dcfSummary = useMemo(() => {
-    const sumPv = projections.slice(0, 5).reduce((s, p) => s + p.pv, 0);
-    const terminalFCF = projections[4].fcf;
-    const spreadPct = Math.max(discountRate - terminalGrowth, 1) / 100;
-    const term = (terminalFCF * (1 + terminalGrowth / 100)) / spreadPct;
-    const pvTerm = term / Math.pow(1 + discountRatePct, 5);
-    const ev = sumPv + pvTerm;
-    const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
-    const adj = ev * riskFactor;
-    const finalDilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, 5);
-    const eq = adj * 1000 + netCash;
-    const fair = eq / finalDilutedShares;
-    const up = ((fair - currentStockPrice) / currentStockPrice) * 100;
-    const safeValue = (v: number) => (isFinite(v) ? v : 0);
-    return {
-      sumPv: safeValue(sumPv),
-      pvTerm: safeValue(pvTerm),
-      ev: safeValue(ev),
-      adj: safeValue(adj),
-      eq: safeValue(eq),
-      fair: safeValue(fair),
-      up: safeValue(up),
-      finalDilutedShares,
-      riskFactor,
-    };
-  }, [projections, discountRate, terminalGrowth, discountRatePct, regulatoryRisk, techRisk, competitionRisk,
-      currentShares, dilutionRate, netCash, currentStockPrice]);
+  // Simple calculations for display
+  const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
+  const finalDilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, 5);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Model</h2>
 
-      {/* Subnav */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-        <button
-          onClick={() => setActiveSubnav('assumptions')}
-          style={{
-            padding: '12px 24px',
-            borderRadius: 8,
-            border: activeSubnav === 'assumptions' ? '2px solid var(--cyan)' : '1px solid var(--border)',
-            background: activeSubnav === 'assumptions' ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-            color: activeSubnav === 'assumptions' ? 'var(--cyan)' : 'var(--text2)',
-            cursor: 'pointer',
-            fontWeight: activeSubnav === 'assumptions' ? 600 : 400,
-            fontSize: 14,
-          }}
-        >
-          Assumptions
-        </button>
-        <button
-          onClick={() => setActiveSubnav('scenario')}
-          style={{
-            padding: '12px 24px',
-            borderRadius: 8,
-            border: activeSubnav === 'scenario' ? '2px solid var(--mint)' : '1px solid var(--border)',
-            background: activeSubnav === 'scenario' ? 'rgba(0,212,170,0.15)' : 'var(--surface2)',
-            color: activeSubnav === 'scenario' ? 'var(--mint)' : 'var(--text2)',
-            cursor: 'pointer',
-            fontWeight: activeSubnav === 'scenario' ? 600 : 400,
-            fontSize: 14,
-          }}
-        >
-          Scenario + DCF
-        </button>
-      </div>
-
-      {/* ============================================================================
-          ASSUMPTIONS SECTION
-          ============================================================================ */}
-      {activeSubnav === 'assumptions' && (
-        <>
+      {/* ASSUMPTIONS SECTION */}
+      <>
           <div className="highlight">
             <h3>{scenario.icon} {scenario.name} Scenario</h3>
             <p className="text-sm">
@@ -3480,7 +3334,7 @@ const ModelTab = ({
               <Input label="Competition Risk %" value={competitionRisk} onChange={v => { setCompetitionRisk(v); setSelectedScenario('custom'); }} />
             </div>
             <div style={{ marginTop: 12, padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 12, color: 'var(--text3)' }}>
-              Combined risk haircut: {((1 - dcfSummary.riskFactor) * 100).toFixed(0)}% → EV probability factor: {(dcfSummary.riskFactor * 100).toFixed(0)}%
+              Combined risk haircut: {((1 - riskFactor) * 100).toFixed(0)}% → EV probability factor: {(riskFactor * 100).toFixed(0)}%
             </div>
           </div>
 
@@ -3491,236 +3345,10 @@ const ModelTab = ({
               <Card label="Net Subscribers" value={`${terminalSubs.toFixed(1)}M`} sub={`${penetrationRate}% of ${(partnerReach / 1000).toFixed(1)}B reach`} color="cyan" />
               <Card label="ASTS Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of gross`} color="green" />
               <Card label="Terminal FCF" value={`$${(terminalRev * (terminalMargin - terminalCapex) / 100).toFixed(2)}B`} sub={`${terminalMargin}% margin - ${terminalCapex}% capex`} color="mint" />
-              <Card label="Diluted Shares" value={`${dcfSummary.finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr for 5yrs`} color="violet" />
+              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr for 5yrs`} color="violet" />
             </div>
           </div>
         </>
-      )}
-
-      {/* ============================================================================
-          SCENARIO + DCF SECTION
-          ============================================================================ */}
-      {activeSubnav === 'scenario' && (
-        <>
-          <div className="highlight">
-            <h3>{scenario.icon} {scenario.name} Scenario — Projections & DCF</h3>
-            <p className="text-sm">
-              10-year projections with DCF valuation. Select target year to see detailed metrics.
-            </p>
-          </div>
-
-          {/* Target Year Selector */}
-          <div className="card">
-            <div className="card-title">Target Year</div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {TARGET_YEARS.map(year => (
-                <button
-                  key={year}
-                  onClick={() => setTargetYear(year)}
-                  style={{
-                    padding: '12px 20px',
-                    borderRadius: 8,
-                    border: targetYear === year ? `2px solid ${scenario.color}` : '1px solid var(--border)',
-                    background: targetYear === year ? `${scenario.color}22` : 'var(--surface2)',
-                    color: targetYear === year ? scenario.color : 'var(--text2)',
-                    cursor: 'pointer',
-                    fontWeight: targetYear === year ? 700 : 400,
-                    fontFamily: 'Space Mono',
-                    fontSize: 16,
-                  }}
-                >
-                  {year}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Selected Year Key Metrics */}
-          <div className="g4" style={{ marginTop: 16 }}>
-            <div className="big-stat">
-              <div className="num" style={{ color: scenario.color }}>${selected.priceInYear.toFixed(0)}</div>
-              <div className="lbl">{targetYear} Price</div>
-              <div style={{ fontSize: 12, color: selected.upside >= 0 ? 'var(--mint)' : 'var(--coral)', marginTop: 4 }}>
-                {selected.upside >= 0 ? '+' : ''}{selected.upside.toFixed(0)}% from ${currentStockPrice}
-              </div>
-            </div>
-            <div className="big-stat">
-              <div className="num" style={{ color: 'var(--sky)' }}>${selected.presentValue.toFixed(0)}</div>
-              <div className="lbl">PV Today</div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
-                Discounted @ {discountRate}%/yr
-              </div>
-            </div>
-            <div className="big-stat">
-              <div className="num">{selected.subs.toFixed(1)}M</div>
-              <div className="lbl">Subscribers</div>
-              <div style={{ fontSize: 12, color: 'var(--sky)', marginTop: 4 }}>
-                {selected.phase}
-              </div>
-            </div>
-            <div className="big-stat">
-              <div className="num">${selected.rev.toFixed(2)}B</div>
-              <div className="lbl">{targetYear} Revenue</div>
-              <div style={{ fontSize: 12, color: selected.margin >= 0 ? 'var(--mint)' : 'var(--coral)', marginTop: 4 }}>
-                {selected.margin.toFixed(0)}% EBITDA margin
-              </div>
-            </div>
-          </div>
-
-          {/* Year-by-Year Projections as Cards */}
-          <div className="card" style={{ marginTop: 16 }}>
-            <div className="card-title">Year-by-Year Projections</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
-              {projections.map(p => (
-                <div
-                  key={p.year}
-                  onClick={() => setTargetYear(p.year)}
-                  style={{
-                    padding: 16,
-                    borderRadius: 12,
-                    border: p.year === targetYear ? `2px solid ${scenario.color}` : '1px solid var(--border)',
-                    background: p.year === targetYear ? `${scenario.color}11` : 'var(--surface2)',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  <div style={{ fontWeight: 700, fontSize: 18, color: p.year === targetYear ? scenario.color : 'var(--text)', marginBottom: 8 }}>
-                    {p.year}
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>{p.phase}</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: 'var(--text3)' }}>Subs</span>
-                      <span style={{ color: 'var(--text)' }}>{p.subs.toFixed(1)}M</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: 'var(--text3)' }}>Rev</span>
-                      <span style={{ color: 'var(--text)' }}>${p.rev.toFixed(2)}B</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: 'var(--text3)' }}>Margin</span>
-                      <span style={{ color: p.margin >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{p.margin.toFixed(0)}%</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: 'var(--text3)' }}>FCF</span>
-                      <span style={{ color: p.fcf >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                        {p.fcf >= 0 ? '$' : '($'}{Math.abs(p.fcf).toFixed(2)}{p.fcf < 0 ? ')' : ''}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 4, marginTop: 4 }}>
-                      <span style={{ color: 'var(--text3)' }}>Price</span>
-                      <span style={{ color: scenario.color, fontWeight: 600 }}>${p.priceInYear.toFixed(0)}</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: 'var(--text3)' }}>PV</span>
-                      <span style={{ color: 'var(--sky)' }}>${p.presentValue.toFixed(0)}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Selected Year Detail */}
-          <div className="card" style={{ marginTop: 16 }}>
-            <div className="card-title">{targetYear} Detail</div>
-            <div className="g4">
-              <Card label="Subscribers" value={`${selected.subs.toFixed(1)}M`} sub={selected.phase} color="cyan" />
-              <Card label="Revenue" value={`$${selected.rev.toFixed(2)}B`} sub={`ARPU: $${blendedARPU}/mo`} color="green" />
-              <Card label="EBITDA" value={`$${Math.abs(selected.ebitda).toFixed(2)}B`} sub={`${selected.margin.toFixed(0)}% margin`} color={selected.ebitda >= 0 ? 'mint' : 'red'} />
-              <Card label="Free Cash Flow" value={`$${Math.abs(selected.fcf).toFixed(2)}B`} sub={`${selected.capex}% CapEx`} color={selected.fcf >= 0 ? 'mint' : 'red'} />
-            </div>
-            <div className="g4" style={{ marginTop: 16 }}>
-              <Card label="Diluted Shares" value={`${selected.dilutedShares.toFixed(0)}M`} sub={`+${dilutionRate}%/yr`} color="violet" />
-              <Card label="EV (Risk-Adj)" value={`$${selected.ev.toFixed(1)}B`} sub={`${(dcfSummary.riskFactor * 100).toFixed(0)}% prob`} color="violet" />
-              <Card label="Stock Price" value={`$${selected.priceInYear.toFixed(0)}`} sub={`${targetYear}`} color="cyan" />
-              <Card label="PV Today" value={`$${selected.presentValue.toFixed(0)}`} sub={`@ ${discountRate}% disc`} color="sky" />
-            </div>
-          </div>
-
-          {/* DCF Valuation Summary */}
-          <div className="card" style={{ marginTop: 16 }}>
-            <div className="card-title">DCF Valuation (2030 Terminal)</div>
-            <div className="g2">
-              <div>
-                <div className="g2">
-                  <Card label="Sum PV(FCF)" value={`$${dcfSummary.sumPv.toFixed(1)}B`} sub="Years 1-5" color="cyan" />
-                  <Card label="PV(Terminal)" value={`$${dcfSummary.pvTerm.toFixed(1)}B`} sub="Gordon Growth" color="cyan" />
-                </div>
-                <div className="g2" style={{ marginTop: 12 }}>
-                  <Card label="Enterprise Value" value={`$${dcfSummary.ev.toFixed(1)}B`} sub="Raw EV" color="violet" />
-                  <Card label="Risk-Adj EV" value={`$${dcfSummary.adj.toFixed(1)}B`} sub={`${(dcfSummary.riskFactor * 100).toFixed(0)}% success prob`} color="violet" />
-                </div>
-              </div>
-              <div>
-                <div className="g2">
-                  <Card label="Fair Value" value={`$${dcfSummary.fair.toFixed(0)}`} sub={`${dcfSummary.finalDilutedShares.toFixed(0)}M shares`} color="mint" />
-                  <Card label="Upside" value={`${dcfSummary.up >= 0 ? '+' : ''}${dcfSummary.up.toFixed(0)}%`} sub={`vs $${currentStockPrice}`} color={dcfSummary.up >= 0 ? 'green' : 'red'} />
-                </div>
-                <div style={{ marginTop: 12, padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
-                  <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 8 }}>DCF Breakdown</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: 'var(--text3)' }}>+ Net Cash</span>
-                      <span style={{ color: 'var(--text)' }}>${(netCash / 1000).toFixed(2)}B</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: 'var(--text3)' }}>= Equity Value</span>
-                      <span style={{ color: 'var(--mint)', fontWeight: 600 }}>${(dcfSummary.eq / 1000).toFixed(1)}B</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: 'var(--text3)' }}>÷ Diluted Shares</span>
-                      <span style={{ color: 'var(--text)' }}>{dcfSummary.finalDilutedShares.toFixed(0)}M</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Current Assumptions Summary */}
-          <div className="card" style={{ marginTop: 16 }}>
-            <div className="card-title">Model Assumptions</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-              <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8, textTransform: 'uppercase' }}>Revenue Drivers</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Partner Reach</span><span>{(partnerReach / 1000).toFixed(1)}B</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Penetration</span><span>{penetrationRate}%</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>ARPU</span><span>${blendedARPU}/mo</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Revenue Share</span><span>{revenueShare}%</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Competition Discount</span><span style={{ color: 'var(--coral)' }}>-{competitionDiscount}%</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Deployment Delay</span><span style={{ color: deploymentDelay > 0 ? 'var(--coral)' : deploymentDelay < 0 ? 'var(--mint)' : 'var(--text)' }}>{deploymentDelay > 0 ? `+${deploymentDelay}` : deploymentDelay}yr</span></div>
-                </div>
-              </div>
-              <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8, textTransform: 'uppercase' }}>Terminal Metrics</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>EBITDA Margin</span><span>{terminalMargin}%</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>CapEx % Rev</span><span>{terminalCapex}%</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Terminal Growth</span><span>{terminalGrowth}%</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 4, marginTop: 4 }}><span style={{ color: 'var(--text3)' }}>Terminal Subs</span><span style={{ color: 'var(--mint)' }}>{terminalSubs.toFixed(1)}M</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Terminal Rev</span><span style={{ color: 'var(--mint)' }}>${terminalRev.toFixed(2)}B</span></div>
-                </div>
-              </div>
-              <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8, textTransform: 'uppercase' }}>DCF Parameters</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Discount Rate</span><span>{discountRate}%</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Dilution Rate</span><span>{dilutionRate}%/yr</span></div>
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8, marginTop: 12, textTransform: 'uppercase' }}>Risk Factors</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Regulatory</span><span>{regulatoryRisk}%</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Technology</span><span>{techRisk}%</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Competition</span><span>{competitionRisk}%</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 4, marginTop: 4 }}><span style={{ color: 'var(--text3)' }}>Total Haircut</span><span style={{ color: 'var(--coral)' }}>{((1 - dcfSummary.riskFactor) * 100).toFixed(0)}%</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 };
