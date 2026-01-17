@@ -3158,35 +3158,42 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
         )}
       </div>
       
-      <div className="card"><div className="card-title">Model Inputs</div>
-        <div className="g4">
-          <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
-          <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} />
-          <Input label="Terminal Multiple" value={terminalMult} onChange={setTerminalMult} step={0.1} />
-          <Input label="Years" value={years} onChange={setYears} min={1} max={10} />
+      <div className="g2">
+        <div className="card">
+          <div className="card-title">Model Inputs</div>
+          <div className="g2">
+            <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
+            <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} />
+          </div>
+          <div className="g2">
+            <Input label="Terminal Multiple" value={terminalMult} onChange={setTerminalMult} step={0.1} />
+            <Input label="Years" value={years} onChange={setYears} min={1} max={10} />
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-title">Valuation Output</div>
+          <div className="g2">
+            <Card label="Implied Value" value={`$${dcf.impliedValue.toFixed(2)}`} sub={dcfMethod === 'intermediate' ? 'CFs + Terminal' : dcfMethod === 'dividend' ? 'Divs + Terminal' : 'Terminal only'} color="mint" />
+            <Card label="Current NAV" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value" />
+          </div>
+          <div className="g2">
+            <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs NAV" color={dcf.upside >= 0 ? 'green' : 'red'} />
+            <Card label="Implied IRR" value={`${irr.toFixed(1)}%`} sub="Annualized" />
+          </div>
+          {dcfMethod === 'intermediate' && (
+            <div className="g2">
+              <Card label="PV of Cash Flows" value={`$${dcf.sumIntermediatePV.toFixed(2)}`} sub={`${years}yr yield @ ${yieldPayout}% payout`} color="cyan" />
+              <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
+            </div>
+          )}
+          {dcfMethod === 'dividend' && (
+            <div className="g2">
+              <Card label="PV of Dividends" value={`$${dcf.sumDividendPV.toFixed(2)}`} sub={`${years}yr @ ${dividendGrowthRate}% growth`} color="mint" />
+              <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
+            </div>
+          )}
         </div>
       </div>
-
-      <div className="g4">
-        <Card label="Implied Value" value={`$${dcf.impliedValue.toFixed(2)}`} sub={dcfMethod === 'intermediate' ? 'CFs + Terminal' : 'Terminal only'} color="green" />
-        <Card label="Current NAV" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value" color="blue" />
-        <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs NAV" color={dcf.upside >= 0 ? 'green' : 'red'} />
-        <Card label="Implied IRR" value={`${irr.toFixed(1)}%`} sub="Annualized" color="yellow" />
-      </div>
-      
-      {/* Show breakdown if using intermediate or dividend method */}
-      {dcfMethod === 'intermediate' && (
-        <div className="g2">
-          <Card label="PV of Cash Flows" value={`$${dcf.sumIntermediatePV.toFixed(2)}`} sub={`${years}yr yield @ ${yieldPayout}% payout`} color="blue" />
-          <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="purple" />
-        </div>
-      )}
-      {dcfMethod === 'dividend' && (
-        <div className="g2">
-          <Card label="PV of Dividends" value={`$${dcf.sumDividendPV.toFixed(2)}`} sub={`${years}yr @ ${dividendGrowthRate}% growth`} color="emerald" />
-          <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="purple" />
-        </div>
-      )}
       
       <div className="card"><div className="card-title">Projections</div>
         <div style={{ overflowX: 'auto' }}>

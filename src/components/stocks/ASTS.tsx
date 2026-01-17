@@ -3809,52 +3809,42 @@ const DCFTab = ({ calc, currentShares, currentStockPrice, cashOnHand, totalDebt,
   const [discount, setDiscount] = useState(15);
   const [termGrowth, setTermGrowth] = useState(3);
   const [evMultiple, setEvMultiple] = useState(10);
-  
+
   const dcf = useMemo(() => {
-    // Revenue projections with CapEx intensity declining as network matures
     const yrs = [
-      { y: 2025, r: 0.065, m: -800, c: 1.2 },  // Pre-revenue, heavy CapEx
-      { y: 2026, r: 0.5, m: -150, c: 1.0 },    // Early commercial
-      { y: 2027, r: 1.8, m: 5, c: 0.5 },       // Ramp, breakeven
-      { y: 2028, r: 4.5, m: 30, c: 0.25 },     // Scaling
-      { y: 2029, r: 7.5, m: 45, c: 0.15 },     // Mature growth
-      { y: 2030, r: 11.5, m: 55, c: 0.1 },     // Near steady-state
+      { y: 2025, r: 0.065, m: -800, c: 1.2 },
+      { y: 2026, r: 0.5, m: -150, c: 1.0 },
+      { y: 2027, r: 1.8, m: 5, c: 0.5 },
+      { y: 2028, r: 4.5, m: 30, c: 0.25 },
+      { y: 2029, r: 7.5, m: 45, c: 0.15 },
+      { y: 2030, r: 11.5, m: 55, c: 0.1 },
     ];
-    
-    const netCash = cashOnHand - totalDebt; // Dynamic net cash position
-    
-    // Calculate FCF and PV for each year
+
+    const netCash = cashOnHand - totalDebt;
+
     const proj = yrs.map((y, i) => {
       const ebitda = y.r * (y.m / 100);
       const fcf = ebitda - y.r * y.c;
       const pv = fcf / Math.pow(1 + discount / 100, i + 1);
-      
-      // Calculate implied EV and equity value for each year using EV/Revenue multiple
-      // This shows what the stock "should" be worth if it traded at that year's fundamentals
-      const impliedEV = y.r * evMultiple; // EV = Revenue × Multiple
-      const impliedEquity = impliedEV * 1000 + netCash; // In $M (EV + Net Cash = Equity)
+      const impliedEV = y.r * evMultiple;
+      const impliedEquity = impliedEV * 1000 + netCash;
       const impliedMktCap = impliedEquity;
       const impliedPrice = impliedMktCap / currentShares;
-      
-      // Also calculate forward-looking implied price (discounted to today)
       const pvImpliedPrice = impliedPrice / Math.pow(1 + discount / 100, i + 1);
-      
       return { ...y, ebitda, fcf, pv, impliedEV, impliedMktCap, impliedPrice, pvImpliedPrice };
     });
-    
+
     const sumPv = proj.reduce((s, p) => s + p.pv, 0);
-    // Guard against discount <= termGrowth (would cause division by zero or negative terminal value)
-    const spreadPct = Math.max(discount - termGrowth, 1) / 100; // Minimum 1% spread
+    const spreadPct = Math.max(discount - termGrowth, 1) / 100;
     const term = (proj[5].fcf * (1 + termGrowth / 100)) / spreadPct;
     const pvTerm = term / Math.pow(1 + discount / 100, 6);
     const ev = sumPv + pvTerm;
     const risk = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
     const adj = ev * risk;
-    const eq = adj * 1000 + netCash; // Convert EV to $M, add net cash for equity
+    const eq = adj * 1000 + netCash;
     const fair = eq / currentShares;
     const up = ((fair - currentStockPrice) / currentStockPrice) * 100;
-    
-    // Ensure outputs are finite numbers
+
     const safeValue = (v) => (isFinite(v) ? v : 0);
     return { proj, sumPv: safeValue(sumPv), pvTerm: safeValue(pvTerm), ev: safeValue(ev), adj: safeValue(adj), eq: safeValue(eq), fair: safeValue(fair), up: safeValue(up) };
   }, [discount, termGrowth, evMultiple, regulatoryRisk, techRisk, competitionRisk, currentShares, currentStockPrice, cashOnHand, totalDebt]);
@@ -3862,139 +3852,105 @@ const DCFTab = ({ calc, currentShares, currentStockPrice, cashOnHand, totalDebt,
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">DCF</h2>
-      <div className="highlight"><h3>DCF Valuation</h3>
+
+      <div className="highlight">
+        <h3>DCF Valuation</h3>
         <p className="text-sm">
-          6-year explicit forecast (2025-2030) with terminal value. FCF = EBITDA - CapEx. Shows implied share prices at different revenue multiples, discounted to present value.
+          6-year explicit forecast (2025-2030) with terminal value. FCF = EBITDA - CapEx. Risk-adjusted for regulatory, technology, and competitive factors.
         </p>
       </div>
 
-      <div className="g5">
-        <Card label="Raw EV" value={`$${dcf.ev.toFixed(0)}B`} sub="Before risk adj" color="blue" />
-        <Card label="Risk-Adj EV" value={`$${dcf.adj.toFixed(0)}B`} sub={`×${((1-regulatoryRisk/100)*(1-techRisk/100)*(1-competitionRisk/100)*100).toFixed(0)}%`} color="purple" />
-        <Card label="Equity Value" value={`$${(dcf.eq/1000).toFixed(1)}B`} sub="EV + Net Cash" color="cyan" />
-        <Card label="Fair Value" value={`$${dcf.fair.toFixed(0)}`} sub="Per share" color="green" />
-        <Card label="Upside" value={`${dcf.up >= 0 ? '+' : ''}${dcf.up.toFixed(0)}%`} sub="vs $72 current" color={dcf.up >= 0 ? 'green' : 'red'} />
-      </div>
-
-      {/* Chart showing revenue and FCF */}
-      <div className="card"><div className="card-title">Revenue & FCF Trajectory</div>
-        <ResponsiveContainer width="100%" height={180}>
-          <ComposedChart data={dcf.proj}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey="y" stroke="var(--text3)" />
-            <YAxis stroke="var(--text3)" tickFormatter={v => `$${v}B`} />
-            <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={(v, name) => [`$${v.toFixed(2)}B`, name]} />
-            <Legend />
-            <Bar dataKey="r" fill="var(--cyan)" name="Revenue" />
-            <Line type="monotone" dataKey="fcf" stroke="var(--mint)" strokeWidth={2} name="FCF" dot={{ fill: '#22c55e' }} />
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Main DCF table with implied prices */}
-      <div className="card"><div className="card-title">Projections</div>
-        <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Year</th>
-                <th className="r">Revenue</th>
-                <th className="r">EBITDA %</th>
-                <th className="r">FCF</th>
-                <th className="r">PV(FCF)</th>
-                <th className="r" style={{ borderLeft: '1px solid var(--border)' }}>Implied EV</th>
-                <th className="r">Implied Mkt Cap</th>
-                <th className="r">Implied Price</th>
-                <th className="r">PV Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dcf.proj.map(p => (
-                <tr key={p.y}>
-                  <td style={{ fontWeight: 500 }}>{p.y}</td>
-                  <td className="r">${p.r.toFixed(2)}B</td>
-                  <td className="r">{p.m}%</td>
-                  <td className="r" style={{ color: p.fcf >= 0 ? 'var(--mint)' : 'var(--coral)' }}>${p.fcf.toFixed(2)}B</td>
-                  <td className="r" style={{ color: p.pv >= 0 ? 'var(--cyan)' : 'var(--coral)' }}>${p.pv.toFixed(2)}B</td>
-                  <td className="r" style={{ borderLeft: '1px solid var(--border)' }}>${p.impliedEV.toFixed(1)}B</td>
-                  <td className="r">${(p.impliedMktCap/1000).toFixed(1)}B</td>
-                  <td className="r" style={{ fontWeight: 500, color: 'var(--gold)' }}>${p.impliedPrice.toFixed(0)}</td>
-                  <td className="r" style={{ color: 'var(--text3)' }}>${p.pvImpliedPrice.toFixed(0)}</td>
-                </tr>
-              ))}
-              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
-                <td colSpan={4} className="r" style={{ fontWeight: 500 }}>Sum PV(FCF)</td>
-                <td className="r" style={{ fontWeight: 500 }}>${dcf.sumPv.toFixed(1)}B</td>
-                <td colSpan={4}></td>
-              </tr>
-              <tr style={{ background: 'var(--surface2)' }}>
-                <td colSpan={4} className="r" style={{ fontWeight: 500 }}>PV(Terminal Value)</td>
-                <td className="r" style={{ fontWeight: 500 }}>${dcf.pvTerm.toFixed(1)}B</td>
-                <td colSpan={4}></td>
-              </tr>
-              <tr style={{ background: 'rgba(0,212,170,0.1)' }}>
-                <td colSpan={4} className="r" style={{ fontWeight: 700 }}>Enterprise Value</td>
-                <td className="r" style={{ fontWeight: 700, color: 'var(--cyan)' }}>${dcf.ev.toFixed(1)}B</td>
-                <td colSpan={4}></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text3)' }}>
-          <strong>Implied Price</strong> = If stock traded at {evMultiple}x EV/Revenue in that year. <strong>PV Price</strong> = Discounted to today at {discount}% rate.
-        </div>
-      </div>
-
-      {/* Implied price trajectory chart */}
-      <div className="card"><div className="card-title">Implied Share Price Trajectory</div>
-        <ResponsiveContainer width="100%" height={200}>
-          <ComposedChart data={dcf.proj}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey="y" stroke="var(--text3)" />
-            <YAxis stroke="var(--text3)" tickFormatter={v => `$${v}`} domain={[0, 'auto']} />
-            <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={(v) => [`$${v.toFixed(0)}`, '']} />
-            <Legend />
-            <Bar dataKey="impliedPrice" fill="#eab308" name={`Implied @ ${evMultiple}x Rev`} />
-            <Line type="monotone" dataKey="pvImpliedPrice" stroke="var(--violet)" strokeWidth={2} name="PV to Today" dot={{ fill: '#8b5cf6' }} />
-            <ReferenceLine y={currentStockPrice} stroke="#fff" strokeDasharray="5 5" label={{ value: `Current $${currentStockPrice}`, fill: '#fff', fontSize: 10 }} />
-          </ComposedChart>
-        </ResponsiveContainer>
-        <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text3)' }}>
-          Yellow bars show what price would be if valued at {evMultiple}x revenue in each year. Purple line shows those prices discounted back to today.
-        </div>
-      </div>
-
-      {/* Parameters */}
-      <div className="g3">
-        <div className="card"><div className="card-title">DCF Parameters</div>
+      <div className="g2">
+        <div className="card">
+          <div className="card-title">Model Inputs</div>
           <div className="g2">
             <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} step={0.5} />
             <Input label="Terminal Growth (%)" value={termGrowth} onChange={setTermGrowth} step={0.5} />
           </div>
-        </div>
-        <div className="card"><div className="card-title">Valuation Multiple</div>
-          <Input label="EV/Revenue Multiple (x)" value={evMultiple} onChange={setEvMultiple} step={0.5} />
-          <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text3)' }}>Used for implied price calculation. Starlink ~17x, growth SaaS 8-15x, telcos 1-3x.</div>
-        </div>
-        <div className="card"><div className="card-title">Risk Adjustments</div>
-          <div className="g3">
-            <Input label="Regulatory %" value={regulatoryRisk} onChange={setRegulatoryRisk} />
-            <Input label="Tech %" value={techRisk} onChange={setTechRisk} />
-            <Input label="Competition %" value={competitionRisk} onChange={setCompetitionRisk} />
+          <div className="g3" style={{ marginTop: 16 }}>
+            <Input label="Regulatory Risk %" value={regulatoryRisk} onChange={setRegulatoryRisk} />
+            <Input label="Tech Risk %" value={techRisk} onChange={setTechRisk} />
+            <Input label="Competition Risk %" value={competitionRisk} onChange={setCompetitionRisk} />
           </div>
-          <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text3)' }}>
-            Combined success probability: {((1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100) * 100).toFixed(0)}%
+        </div>
+        <div className="card">
+          <div className="card-title">Valuation Output</div>
+          <div className="g2">
+            <Card label="Fair Value" value={`$${dcf.fair.toFixed(0)}`} sub="Per share" color="mint" />
+            <Card label="Upside" value={`${dcf.up >= 0 ? '+' : ''}${dcf.up.toFixed(0)}%`} sub={`vs $${currentStockPrice}`} color={dcf.up >= 0 ? 'green' : 'red'} />
+          </div>
+          <div className="g2" style={{ marginTop: 16 }}>
+            <Card label="Enterprise Value" value={`$${dcf.ev.toFixed(0)}B`} sub="Raw EV" color="cyan" />
+            <Card label="Risk-Adj EV" value={`$${dcf.adj.toFixed(0)}B`} sub={`${((1-regulatoryRisk/100)*(1-techRisk/100)*(1-competitionRisk/100)*100).toFixed(0)}% prob`} color="purple" />
           </div>
         </div>
       </div>
-      
+
+      <div className="card">
+        <div className="card-title">Projections</div>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th className="r">Today</th>
+                {dcf.proj.map(p => (
+                  <th key={p.y} className="r">{p.y}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Revenue ($B)</td>
+                <td className="r">—</td>
+                {dcf.proj.map(p => (
+                  <td key={p.y} className="r">${p.r.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr>
+                <td>EBITDA Margin (%)</td>
+                <td className="r">—</td>
+                {dcf.proj.map(p => (
+                  <td key={p.y} className="r">{p.m}%</td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '1px solid var(--border)' }}>
+                <td>FCF ($B)</td>
+                <td className="r">—</td>
+                {dcf.proj.map(p => (
+                  <td key={p.y} className="r" style={{ color: p.fcf >= 0 ? 'var(--mint)' : 'var(--coral)' }}>${p.fcf.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr>
+                <td>PV of FCF ($B)</td>
+                <td className="r">—</td>
+                {dcf.proj.map(p => (
+                  <td key={p.y} className="r" style={{ color: 'var(--cyan)' }}>${p.pv.toFixed(2)}</td>
+                ))}
+              </tr>
+              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>Sum PV(FCF)</td>
+                <td colSpan={6} className="r" style={{ fontWeight: 500 }}>${dcf.sumPv.toFixed(1)}B</td>
+              </tr>
+              <tr style={{ background: 'var(--surface2)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>PV(Terminal Value)</td>
+                <td colSpan={6} className="r" style={{ fontWeight: 500 }}>${dcf.pvTerm.toFixed(1)}B</td>
+              </tr>
+              <tr style={{ background: 'rgba(0,212,170,0.1)' }}>
+                <td colSpan={2} className="r" style={{ fontWeight: 700 }}>Enterprise Value</td>
+                <td colSpan={6} className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${dcf.ev.toFixed(1)}B</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <CFANotes title="CFA Level III — DCF Valuation" items={[
-        { term: 'DCF Framework', def: 'Sum of discounted future free cash flows + terminal value. Most rigorous intrinsic value method. Highly sensitive to assumptions.' },
-        { term: 'Revenue Build-Up', def: 'Project from operational metrics: sats deployed → coverage → subscribers → revenue. More credible than top-down guesses.' },
-        { term: 'EBITDA Margins', def: 'Early years negative (pre-revenue), ramping to 40-60% at scale. Satellite networks have high operating leverage after build-out.' },
-        { term: 'Free Cash Flow', def: 'EBITDA - CapEx - Working Capital changes. Negative during build phase, turning positive as CapEx intensity declines.' },
-        { term: 'Terminal Value', def: 'Value beyond explicit forecast. Gordon Growth: FCF₅(1+g)/(r-g). Often 50-70% of total DCF value.' },
-        { term: 'Risk Adjustments', def: 'Apply success probabilities: regulatory × technical × competitive. 77% combined = 23% failure probability haircut.' },
+        { term: 'Discounted Cash Flow', def: 'Present value of future free cash flows + terminal value. Most rigorous valuation method. Sensitive to assumptions.' },
+        { term: 'WACC (Weighted Average Cost of Capital)', def: 'Blended cost of equity and debt. Used as discount rate. Higher WACC = lower present value.' },
+        { term: 'Terminal Value', def: 'Value of cash flows beyond explicit forecast period. Often 60-80% of total DCF value. Exit multiple or perpetuity growth method.' },
+        { term: 'Risk Adjustments', def: 'Apply success probabilities: regulatory × technical × competitive. Discount EV by combined failure probability.' },
+        { term: 'Margin of Safety', def: 'Difference between price and intrinsic value. Larger margin = more protection against assumption errors.' },
       ]} />
     </div>
   );
