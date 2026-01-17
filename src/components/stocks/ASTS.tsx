@@ -3864,12 +3864,11 @@ const DCFTab = ({ calc, currentShares, currentStockPrice, cashOnHand, totalDebt,
       <h2 className="section-head">DCF</h2>
       <div className="highlight"><h3>DCF Valuation</h3>
         <p className="text-sm">
-          <strong style={{ color: 'var(--cyan)' }}>Method:</strong> 6-year explicit forecast (2025-2030) + terminal value. FCF = EBITDA - CapEx. Terminal = FCF₂₀₃₀ × (1+g) / (r-g).
-          <br /><strong style={{ color: 'var(--cyan)' }}>Implied Prices:</strong> Shows what stock "should" trade at each year if market values it at {evMultiple}x EV/Revenue. Useful for setting price targets.
+          6-year explicit forecast (2025-2030) with terminal value. FCF = EBITDA - CapEx. Shows implied share prices at different revenue multiples, discounted to present value.
         </p>
       </div>
-      
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+
+      <div className="g5">
         <Card label="Raw EV" value={`$${dcf.ev.toFixed(0)}B`} sub="Before risk adj" color="blue" />
         <Card label="Risk-Adj EV" value={`$${dcf.adj.toFixed(0)}B`} sub={`×${((1-regulatoryRisk/100)*(1-techRisk/100)*(1-competitionRisk/100)*100).toFixed(0)}%`} color="purple" />
         <Card label="Equity Value" value={`$${(dcf.eq/1000).toFixed(1)}B`} sub="EV + Net Cash" color="cyan" />
@@ -3893,7 +3892,7 @@ const DCFTab = ({ calc, currentShares, currentStockPrice, cashOnHand, totalDebt,
       </div>
 
       {/* Main DCF table with implied prices */}
-      <div className="card"><div className="card-title">Detailed Projections with Implied Valuations</div>
+      <div className="card"><div className="card-title">Projections</div>
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>

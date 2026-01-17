@@ -3158,16 +3158,16 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
         )}
       </div>
       
-      <div className="card"><div className="card-title">Assumptions</div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="card"><div className="card-title">Model Inputs</div>
+        <div className="g4">
           <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
           <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} />
           <Input label="Terminal Multiple" value={terminalMult} onChange={setTerminalMult} step={0.1} />
           <Input label="Years" value={years} onChange={setYears} min={1} max={10} />
         </div>
       </div>
-      
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+
+      <div className="g4">
         <Card label="Implied Value" value={`$${dcf.impliedValue.toFixed(2)}`} sub={dcfMethod === 'intermediate' ? 'CFs + Terminal' : 'Terminal only'} color="green" />
         <Card label="Current NAV" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value" color="blue" />
         <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs NAV" color={dcf.upside >= 0 ? 'green' : 'red'} />
@@ -3216,7 +3216,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
             <tbody>
               {dcf.projections.map(p => (
                 <tr key={p.year}>
-                  <td>{p.year}</td>
+                  <td style={{ fontWeight: 500 }}>{p.year}</td>
                   <td className="r">{(p.eth / 1e6).toFixed(2)}M</td>
                   <td className="r">${p.ethPrice.toFixed(0)}</td>
                   <td className="r">${p.nav.toFixed(2)}</td>
@@ -3258,7 +3258,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
                 <td className="r">${dcf.terminalNAV.toFixed(2)}</td>
                 <td className="r" style={{ fontWeight: 700, color: 'var(--violet)' }}>${dcf.terminalPV.toFixed(2)}</td>
               </tr>
-              <tr style={{ borderTop: '2px solid var(--mint)', background: 'rgba(0,212,170,0.15)' }}>
+              <tr style={{ borderTop: '2px solid var(--mint)', background: 'rgba(0,212,170,0.1)' }}>
                 <td style={{ fontWeight: 700, color: 'var(--mint)' }}>TOTAL</td>
                 <td colSpan={dcfMethod === 'terminal' ? 3 : dcfMethod === 'intermediate' ? 6 : 5}></td>
                 <td className="r" style={{ fontWeight: 700, fontSize: 18, color: 'var(--mint)' }}>${dcf.impliedValue.toFixed(2)}</td>

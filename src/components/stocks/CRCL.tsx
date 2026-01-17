@@ -2398,8 +2398,8 @@ const DCFTab = () => {
       </div>
 
       {/* Financial Projections Table */}
-      <div className="card" style={{ marginTop: 24 }}>
-        <div className="card-title">Financial Projections — {scenario} Scenario</div>
+      <div className="card">
+        <div className="card-title">Projections</div>
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>
