@@ -3379,48 +3379,102 @@ const ModelTab = ({
     ? { name: currentPreset.label, color: currentPreset.color, icon: currentPreset.icon }
     : { name: 'Custom', color: '#a855f7', icon: '⚙️' };
 
-  // Terminal values (2030 anchor)
-  // partnerReach is in millions, so 3000M = 3B subscribers
+  // ============================================================================
+  // DCF CALCULATION - Step by step with proper formulas
+  // ============================================================================
+
+  // STEP 1: Calculate Terminal Year Subscribers (2030)
+  // Formula: Partner Reach × Penetration Rate × (1 - Competition Loss)
   const terminalSubs = partnerReach * (penetrationRate / 100) * (1 - competitionDiscount / 100);
-  // terminalSubs in M, ARPU in $/mo, result in $B
+  // Units: M subscribers
+
+  // STEP 2: Calculate Terminal Year Gross Revenue
+  // Formula: Subscribers × ARPU × 12 months
   const terminalGrossRev = terminalSubs * blendedARPU * 12 / 1000;
+  // Units: $B (divided by 1000 to convert M×$ to B)
+
+  // STEP 3: Calculate ASTS's Share of Revenue
+  // Formula: Gross Revenue × Revenue Share %
   const terminalRev = terminalGrossRev * (revenueShare / 100);
+  // Units: $B
 
-  // Risk factor (probability-weighted)
-  const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
-
-  // Diluted shares in 5 years (currentShares in M)
-  const yearsToTerminal = 5 + deploymentDelay; // Adjust for deployment timing
-  const finalDilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, Math.max(yearsToTerminal, 1));
-
-  // DCF Valuation (all in $B)
+  // STEP 4: Calculate Terminal EBITDA
+  // Formula: Revenue × EBITDA Margin %
   const terminalEBITDA = terminalRev * (terminalMargin / 100);
+  // Units: $B
+
+  // STEP 5: Calculate Terminal Free Cash Flow
+  // Formula: Revenue × (EBITDA Margin - CapEx %)
+  // This is a simplification: FCF ≈ EBITDA - CapEx (ignoring taxes, working capital)
   const terminalFCF = terminalRev * ((terminalMargin - terminalCapex) / 100);
+  // Units: $B
 
-  // Gordon Growth Model: TV = FCF / (r - g)
-  // Guard against discount rate <= terminal growth
-  const spreadPct = (discountRate - terminalGrowth) / 100;
-  const terminalValue = spreadPct > 0 ? terminalFCF / spreadPct : 0;
+  // STEP 6: Calculate Terminal Enterprise Value using Gordon Growth Model
+  // Formula: TV = FCF × (1 + g) / (r - g)  [perpetuity formula]
+  // Simplified: TV = FCF / (r - g) when FCF is already terminal year
+  const discountRateDecimal = discountRate / 100;
+  const terminalGrowthDecimal = terminalGrowth / 100;
+  const spread = discountRateDecimal - terminalGrowthDecimal;
+  const terminalEV = spread > 0.01 ? terminalFCF / spread : 0;
+  // Units: $B
+  // Note: This is the Enterprise Value AT 2030, not today
 
-  // Discount terminal value back to present (adjust for deployment delay)
+  // STEP 7: Discount Terminal Value back to Present
+  // Formula: PV = FV / (1 + r)^n
+  const yearsToTerminal = 5 + deploymentDelay;
   const discountYears = Math.max(yearsToTerminal, 1);
-  const presentValueTV = terminalValue / Math.pow(1 + discountRate / 100, discountYears);
+  const discountFactor = Math.pow(1 + discountRateDecimal, discountYears);
+  const presentValueEV = terminalEV / discountFactor;
+  // Units: $B (today's value)
 
-  // Apply risk factor to get probability-weighted EV
-  const riskAdjustedEV = presentValueTV * riskFactor;
+  // STEP 8: Calculate Risk Factor (probability of success)
+  // Formula: (1 - Risk1) × (1 - Risk2) × (1 - Risk3)
+  // This represents probability that none of the risks materialize
+  const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
+  // Range: 0 to 1
 
-  // Net debt: totalDebt and cashOnHand are in $M, convert to $B
+  // STEP 9: Apply Risk Factor to get Probability-Weighted EV
+  // Formula: PV × Probability of Success
+  const riskAdjustedEV = presentValueEV * riskFactor;
+  // Units: $B (risk-adjusted present value)
+
+  // STEP 10: Calculate Net Debt
+  // Formula: Total Debt - Cash
+  // Positive = net debt (reduces equity), Negative = net cash (increases equity)
   const netDebtB = (totalDebt - cashOnHand) / 1000;
-  const equityValue = riskAdjustedEV - netDebtB; // Subtract net debt (or add net cash if negative)
+  // Units: $B
 
-  // Target stock price: equityValue in $B, shares in M
-  // Price = (Equity $B * 1000) / Shares M = $/share
-  const targetStockPrice = equityValue > 0 ? (equityValue * 1000) / finalDilutedShares : 0;
-  const impliedUpside = currentStockPrice > 0 ? ((targetStockPrice - currentStockPrice) / currentStockPrice) * 100 : 0;
+  // STEP 11: Calculate Equity Value
+  // Formula: Enterprise Value - Net Debt
+  // If net cash (negative net debt), this adds to equity value
+  const equityValue = riskAdjustedEV - netDebtB;
+  // Units: $B
 
-  // Valuation multiples (guard against division by zero)
-  const evRevenueMultiple = terminalRev > 0 ? riskAdjustedEV / terminalRev : 0;
-  const fcfYield = riskAdjustedEV > 0 ? (terminalFCF / riskAdjustedEV) * 100 : 0;
+  // STEP 12: Calculate Diluted Shares Outstanding at Terminal Year
+  // Formula: Current Shares × (1 + Dilution Rate)^Years
+  const finalDilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, Math.max(discountYears, 1));
+  // Units: M shares
+
+  // STEP 13: Calculate Target Stock Price
+  // Formula: Equity Value / Diluted Shares
+  // Convert $B to $M by multiplying by 1000, then divide by M shares = $/share
+  const targetStockPrice = equityValue > 0 && finalDilutedShares > 0
+    ? (equityValue * 1000) / finalDilutedShares
+    : 0;
+  // Units: $/share
+
+  // STEP 14: Calculate Implied Upside/Downside
+  // Formula: (Target Price - Current Price) / Current Price × 100
+  const impliedUpside = currentStockPrice > 0
+    ? ((targetStockPrice - currentStockPrice) / currentStockPrice) * 100
+    : 0;
+  // Units: %
+
+  // STEP 15: Calculate Valuation Multiples (at Terminal Year 2030)
+  // These use TERMINAL EV (before discounting) for proper comparison
+  const terminalEVperRev = terminalRev > 0 ? terminalEV / terminalRev : 0;
+  const terminalEVperEBITDA = terminalEBITDA > 0 ? terminalEV / terminalEBITDA : 0;
+  const terminalFCFyield = terminalEV > 0 ? (terminalFCF / terminalEV) * 100 : 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -3618,12 +3672,12 @@ const ModelTab = ({
             />
           </div>
 
-          {/* DCF VALUATION OUTPUT - Unified section */}
+          {/* DCF VALUATION OUTPUT - Unified section with consistent styling */}
           <div className="card" style={{ marginTop: 24, border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
             <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (2030 Terminal Year)</div>
 
-            {/* Primary Valuation Outputs */}
-            <div className="g4" style={{ marginBottom: 20 }}>
+            {/* All cards use consistent grid with same gap */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
               <Card
                 label="Target Stock Price"
                 value={targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}
@@ -3637,32 +3691,101 @@ const ModelTab = ({
                 color={impliedUpside > 50 ? 'mint' : impliedUpside > 0 ? 'gold' : 'coral'}
               />
               <Card
-                label="Enterprise Value"
+                label="Present Value EV"
                 value={`$${riskAdjustedEV.toFixed(1)}B`}
-                sub={`${(riskFactor * 100).toFixed(0)}% probability-weighted`}
+                sub={`${(riskFactor * 100).toFixed(0)}% prob × $${presentValueEV.toFixed(1)}B`}
                 color="violet"
               />
               <Card
                 label="Equity Value"
                 value={`$${equityValue.toFixed(1)}B`}
-                sub={netDebtB < 0 ? `EV + $${Math.abs(netDebtB).toFixed(2)}B net cash` : `EV - $${netDebtB.toFixed(2)}B net debt`}
+                sub={netDebtB < 0 ? `+ $${Math.abs(netDebtB).toFixed(2)}B net cash` : `- $${netDebtB.toFixed(2)}B net debt`}
                 color="green"
               />
             </div>
 
-            {/* Terminal Year Metrics + Multiples - unified grid */}
-            <div className="g4" style={{ marginBottom: 12 }}>
-              <Card label="Net Subscribers" value={`${terminalSubs.toFixed(0)}M`} sub={`${penetrationRate}% × ${(partnerReach/1000).toFixed(1)}B`} color="text3" />
-              <Card label="ASTS Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of $${terminalGrossRev.toFixed(2)}B`} color="text3" />
-              <Card label="Terminal EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${terminalMargin}% margin`} color="text3" />
-              <Card label="Terminal FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${terminalMargin - terminalCapex}% FCF margin`} color="text3" />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
+              <Card label="2030 Subscribers" value={`${terminalSubs.toFixed(0)}M`} sub={`${penetrationRate}% × ${(partnerReach/1000).toFixed(1)}B`} color="text3" />
+              <Card label="2030 Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of $${terminalGrossRev.toFixed(2)}B`} color="text3" />
+              <Card label="2030 EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${terminalMargin}% margin`} color="text3" />
+              <Card label="2030 FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${terminalMargin - terminalCapex}% FCF margin`} color="text3" />
             </div>
 
-            <div className="g4">
-              <Card label="EV / Revenue" value={`${evRevenueMultiple.toFixed(1)}x`} sub="Terminal multiple" color="text3" />
-              <Card label="EV / EBITDA" value={terminalEBITDA > 0 ? `${(riskAdjustedEV / terminalEBITDA).toFixed(1)}x` : 'N/A'} sub="Terminal multiple" color="text3" />
-              <Card label="FCF Yield" value={`${fcfYield.toFixed(1)}%`} sub="At terminal" color="text3" />
-              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr × ${Math.max(yearsToTerminal, 1)}yrs`} color="text3" />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+              <Card label="2030 EV/Revenue" value={`${terminalEVperRev.toFixed(1)}x`} sub={`$${terminalEV.toFixed(1)}B EV`} color="text3" />
+              <Card label="2030 EV/EBITDA" value={`${terminalEVperEBITDA.toFixed(1)}x`} sub="Terminal multiple" color="text3" />
+              <Card label="2030 FCF Yield" value={`${terminalFCFyield.toFixed(1)}%`} sub="FCF / Terminal EV" color="text3" />
+              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr × ${discountYears}yrs`} color="text3" />
+            </div>
+          </div>
+
+          {/* CALCULATION METHODOLOGY - Full explanation */}
+          <div className="card" style={{ marginTop: 16 }}>
+            <div className="card-title">Calculation Methodology</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
+              <p style={{ marginBottom: 12 }}>
+                This DCF model calculates ASTS intrinsic value using a <strong>terminal value approach</strong> with
+                Gordon Growth Model, discounted to present value and adjusted for execution risk.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 1-5: Terminal Year Metrics (2030)</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                    Subscribers = {(partnerReach/1000).toFixed(1)}B × {penetrationRate}% × (1 - {competitionDiscount}%)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{terminalSubs.toFixed(0)}M</strong> subscribers<br/><br/>
+                    Gross Rev = {terminalSubs.toFixed(0)}M × ${blendedARPU} × 12mo<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalGrossRev.toFixed(2)}B</strong><br/><br/>
+                    ASTS Rev = ${terminalGrossRev.toFixed(2)}B × {revenueShare}%<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${terminalRev.toFixed(2)}B</strong><br/><br/>
+                    EBITDA = ${terminalRev.toFixed(2)}B × {terminalMargin}% = <strong>${terminalEBITDA.toFixed(2)}B</strong><br/>
+                    FCF = ${terminalRev.toFixed(2)}B × {terminalMargin - terminalCapex}% = <strong>${terminalFCF.toFixed(2)}B</strong>
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 6-7: Terminal Value & Discounting</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                    Gordon Growth: TV = FCF ÷ (r - g)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalFCF.toFixed(2)}B ÷ ({discountRate}% - {terminalGrowth}%)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalFCF.toFixed(2)}B ÷ {(spread * 100).toFixed(1)}%<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalEV.toFixed(1)}B</strong> (2030 EV)<br/><br/>
+                    Present Value = ${terminalEV.toFixed(1)}B ÷ (1 + {discountRate}%)^{discountYears}<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= ${terminalEV.toFixed(1)}B ÷ {discountFactor.toFixed(3)}<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${presentValueEV.toFixed(1)}B</strong> (today)
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 8-9: Risk Adjustment</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                    Risk Factor = (1 - {regulatoryRisk}%) × (1 - {techRisk}%) × (1 - {competitionRisk}%)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= {(100 - regulatoryRisk)}% × {(100 - techRisk)}% × {(100 - competitionRisk)}%<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>{(riskFactor * 100).toFixed(1)}%</strong> probability<br/><br/>
+                    Risk-Adj EV = ${presentValueEV.toFixed(1)}B × {(riskFactor * 100).toFixed(1)}%<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${riskAdjustedEV.toFixed(1)}B</strong>
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 10-14: Equity Value & Price</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                    Net Debt = ${(totalDebt/1000).toFixed(2)}B - ${(cashOnHand/1000).toFixed(2)}B<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${netDebtB.toFixed(2)}B</strong> {netDebtB < 0 ? '(net cash)' : '(net debt)'}<br/><br/>
+                    Equity = ${riskAdjustedEV.toFixed(1)}B - (${netDebtB.toFixed(2)}B)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${equityValue.toFixed(1)}B</strong><br/><br/>
+                    Shares = {currentShares}M × (1 + {dilutionRate}%)^{discountYears} = <strong>{finalDilutedShares.toFixed(0)}M</strong><br/><br/>
+                    Price = ${equityValue.toFixed(1)}B ÷ {finalDilutedShares.toFixed(0)}M = <strong>${targetStockPrice.toFixed(2)}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 12, padding: 10, background: 'rgba(34,211,238,0.1)', borderRadius: 6, fontSize: 11 }}>
+                <strong>Key Assumptions:</strong> Terminal year is {2025 + discountYears} ({discountYears} years out).
+                FCF margin = EBITDA margin - CapEx (simplified, ignores taxes/WC).
+                Risk factors are multiplicative (independent events).
+                Gordon Growth assumes perpetual {terminalGrowth}% growth after terminal year.
+              </div>
             </div>
           </div>
         </>
