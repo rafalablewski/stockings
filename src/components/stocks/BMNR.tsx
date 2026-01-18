@@ -1535,7 +1535,6 @@ const BMNRDilutionAnalysis = () => {
   // group: optional grouping for nested display (stock-specific tabs)
   const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
     { id: 'overview', label: 'Overview', type: 'tracking' },
-    { id: 'model', label: 'Model', type: 'projection' },
     // Stock-specific projections (grouped under "BMNR Analysis")
     { id: 'ethereum', label: 'Ethereum', type: 'projection', group: 'BMNR Analysis' },
     { id: 'staking', label: 'Staking', type: 'projection', group: 'BMNR Analysis' },
@@ -1543,9 +1542,9 @@ const BMNRDilutionAnalysis = () => {
     { id: 'debt', label: 'Debt', type: 'projection', group: 'BMNR Analysis' },
     { id: 'sensitivity', label: 'Sensitivity', type: 'projection', group: 'BMNR Analysis' },
     { id: 'backtest', label: 'Backtest', type: 'projection', group: 'BMNR Analysis' },
-    // Common projections
-    { id: 'scenarios', label: 'Scenarios', type: 'projection' },
-    { id: 'dcf', label: 'DCF', type: 'projection' },
+    // Unified valuation model (combines Scenarios + DCF)
+    { id: 'model', label: 'Model', type: 'projection' },
+    // Other projections
     { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
     { id: 'comps', label: 'Comps', type: 'projection' },
     // Tracking
@@ -1677,7 +1676,6 @@ const BMNRDilutionAnalysis = () => {
         <main className="main">
         {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} />}
         {activeTab === 'model' && <ModelTab currentETH={currentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
-        {activeTab === 'scenarios' && <ScenariosTab calc={calc} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} quarterlyDividend={quarterlyDividend} dividendGrowthRate={dividendGrowthRate} />}
         {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
         {activeTab === 'staking' && <StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} />}
         {activeTab === 'dilution' && <DilutionTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} tranches={tranches} setTranches={setTranches} dilutionPercent={dilutionPercent} setDilutionPercent={setDilutionPercent} saleDiscount={saleDiscount} setSaleDiscount={setSaleDiscount} navMultiple={navMultiple} setNavMultiple={setNavMultiple} maxAuthorizedShares={maxAuthorizedShares} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} regulatoryRisk={regulatoryRisk} />}
@@ -1686,7 +1684,6 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'comps' && <CompsTab comparables={comparables} ethPrice={ethPrice} />}
         {activeTab === 'sensitivity' && <SensitivityTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} />}
         {activeTab === 'backtest' && <BacktestTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} historicalETH={historicalETH} baseStakingAPY={baseStakingAPY} navMultiple={currentStockPrice / calc.currentNAV} />}
-        {activeTab === 'dcf' && <DCFTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} baseStakingAPY={calc.effectiveAPY} quarterlyDividend={quarterlyDividend} dividendGrowthRate={dividendGrowthRate} />}
         {activeTab === 'monte-carlo' && <MonteCarloTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} stakingYield={calc.effectiveAPY} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} operatingCosts={operatingCosts} regulatoryRisk={regulatoryRisk} />}
         {activeTab === 'investment' && <InvestmentTab />}
         {activeTab === 'financials' && <SECFilingsTab />}

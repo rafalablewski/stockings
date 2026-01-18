@@ -689,12 +689,11 @@ const MAJOR_SHAREHOLDERS = [
 // group: optional grouping for nested display (stock-specific tabs)
 const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
   { id: 'overview', label: 'Overview', type: 'tracking' },
-  { id: 'model', label: 'Model', type: 'projection' },
   // Stock-specific projections (grouped under "CRCL Analysis")
   { id: 'usdc', label: 'USDC', type: 'projection', group: 'CRCL Analysis' },
-  // Common projections
-  { id: 'scenarios', label: 'Scenarios', type: 'projection' },
-  { id: 'dcf', label: 'DCF', type: 'projection' },
+  // Unified valuation model (combines Scenarios + DCF)
+  { id: 'model', label: 'Model', type: 'projection' },
+  // Other projections
   { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
   { id: 'comps', label: 'Comps', type: 'projection' },
   // Tracking
@@ -5495,8 +5494,6 @@ function CRCLModel() {
             </>
           )}
 
-          {activeTab === 'dcf' && <DCFTab />}
-
           {activeTab === 'monte-carlo' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
               <h2 className="section-head">Monte Carlo</h2>
@@ -5690,7 +5687,6 @@ function CRCLModel() {
             </div>
           )}
 
-          {activeTab === 'scenarios' && <ScenariosTab />}
           {activeTab === 'timeline' && (
             <>
               <h2 className="section-head">Company Timeline</h2>

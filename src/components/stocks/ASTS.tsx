@@ -1646,9 +1646,9 @@ const ASTSAnalysis = () => {
             </button>
           ))}
 
-          {/* ASTS Analysis dropdown trigger */}
+          {/* Stock-specific dropdown trigger */}
           <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'ASTS Analysis' && activeTab === t.id) ? 'active' : ''}`}
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
             onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
           >
             ASTS Analysis ↕
@@ -1670,7 +1670,7 @@ const ASTSAnalysis = () => {
         <div className="nav-dropdown-space">
           {analysisDropdownOpen && (
             <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group === 'ASTS Analysis').map(t => (
+              {tabs.filter(t => t.group).map(t => (
                 <button
                   key={t.id}
                   className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
