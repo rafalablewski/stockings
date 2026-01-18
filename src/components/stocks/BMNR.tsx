@@ -1700,6 +1700,8 @@ const BMNRDilutionAnalysis = () => {
 // ============================================================================
 
 // 6 Scenario Presets for ETH Treasury Company
+// Note: Discount rate captures ALL risk (regulatory, liquidity, tech, execution)
+// No separate risk factors - simpler model, no double-counting
 const BMNR_SCENARIO_PRESETS = {
   worst: {
     label: 'Worst',
@@ -1711,11 +1713,8 @@ const BMNR_SCENARIO_PRESETS = {
     navPremium: 0.4,         // 60% discount to NAV
     dilutionRate: 25,        // Massive dilution
     operatingCosts: 3,       // High costs
-    discountRate: 30,        // Very high risk premium
-    terminalGrowth: 0,       // No growth
-    regulatoryRisk: 50,      // High probability of adverse regulation
-    liquidityRisk: 40,       // Large holder can't easily exit
-    techRisk: 30,            // Staking/smart contract risk
+    discountRate: 35,        // Very high - captures all risk
+    terminalGrowth: 0,
   },
   bear: {
     label: 'Bear',
@@ -1727,15 +1726,12 @@ const BMNR_SCENARIO_PRESETS = {
     navPremium: 0.7,         // 30% discount
     dilutionRate: 15,        // Significant dilution
     operatingCosts: 2,       // Moderate costs
-    discountRate: 22,        // High risk premium
-    terminalGrowth: 1,       // Minimal growth
-    regulatoryRisk: 25,
-    liquidityRisk: 20,
-    techRisk: 15,
+    discountRate: 20,        // High risk
+    terminalGrowth: 1,
   },
   base: {
     label: 'Base',
-    desc: 'ETH tracks crypto market, moderate premium, disciplined capital',
+    desc: 'ETH tracks crypto market, trading at NAV, disciplined capital',
     icon: '📊',
     color: '#eab308',
     ethGrowthRate: 10,       // Moderate appreciation
@@ -1743,11 +1739,8 @@ const BMNR_SCENARIO_PRESETS = {
     navPremium: 1.0,         // Trading at NAV
     dilutionRate: 8,         // Normal equity raises
     operatingCosts: 1,       // Efficient operations
-    discountRate: 16,        // Reasonable risk premium
-    terminalGrowth: 2,       // GDP-like growth
-    regulatoryRisk: 10,
-    liquidityRisk: 10,
-    techRisk: 8,
+    discountRate: 12,        // Moderate risk (established company)
+    terminalGrowth: 2,
   },
   mgmt: {
     label: 'Mgmt',
@@ -1759,11 +1752,8 @@ const BMNR_SCENARIO_PRESETS = {
     navPremium: 1.2,         // 20% premium (like MSTR)
     dilutionRate: 5,         // Accretive raises only
     operatingCosts: 0.5,     // Low costs
-    discountRate: 14,        // Lower risk as execution proves out
+    discountRate: 11,        // Lower risk as execution proves out
     terminalGrowth: 2.5,
-    regulatoryRisk: 5,
-    liquidityRisk: 5,
-    techRisk: 5,
   },
   bull: {
     label: 'Bull',
@@ -1775,11 +1765,8 @@ const BMNR_SCENARIO_PRESETS = {
     navPremium: 1.5,         // 50% premium
     dilutionRate: 3,         // Minimal dilution needed
     operatingCosts: 0.3,     // Very efficient
-    discountRate: 12,        // De-risked
+    discountRate: 10,        // De-risked, proven
     terminalGrowth: 3,
-    regulatoryRisk: 3,
-    liquidityRisk: 3,
-    techRisk: 3,
   },
   moon: {
     label: 'Moon',
@@ -1791,11 +1778,8 @@ const BMNR_SCENARIO_PRESETS = {
     navPremium: 2.0,         // 100% premium (MSTR-like)
     dilutionRate: 0,         // No dilution - self-funding
     operatingCosts: 0.2,     // Minimal overhead
-    discountRate: 10,        // Blue chip
-    terminalGrowth: 4,       // Crypto economy growth
-    regulatoryRisk: 1,
-    liquidityRisk: 1,
-    techRisk: 1,
+    discountRate: 8,         // Blue chip / ETF-like
+    terminalGrowth: 4,
   },
 };
 
@@ -1899,6 +1883,7 @@ const ModelTab = ({
   stakingRatio: number;
 }) => {
   // Model parameters state
+  // Note: For NAV companies, discount rate captures ALL risk (no separate risk factors)
   const [ethInputMode, setEthInputMode] = useState<'growth' | 'target'>('growth');
   const [ethGrowthRate, setEthGrowthRate] = useState(10);
   const [ethTargetPrice, setEthTargetPrice] = useState(10000);
@@ -1906,11 +1891,8 @@ const ModelTab = ({
   const [navPremium, setNavPremium] = useState(1.0);
   const [dilutionRate, setDilutionRate] = useState(8);
   const [operatingCosts, setOperatingCosts] = useState(1);
-  const [discountRate, setDiscountRate] = useState(16);
+  const [discountRate, setDiscountRate] = useState(12); // Lower default - captures all risk in one number
   const [terminalGrowth, setTerminalGrowth] = useState(2);
-  const [regulatoryRisk, setRegulatoryRisk] = useState(10);
-  const [liquidityRisk, setLiquidityRisk] = useState(10);
-  const [techRisk, setTechRisk] = useState(8);
   const [selectedScenario, setSelectedScenario] = useState('base');
 
   type ScenarioKey = 'worst' | 'bear' | 'base' | 'mgmt' | 'bull' | 'moon';
@@ -1925,9 +1907,6 @@ const ModelTab = ({
     setOperatingCosts(p.operatingCosts);
     setDiscountRate(p.discountRate);
     setTerminalGrowth(p.terminalGrowth);
-    setRegulatoryRisk(p.regulatoryRisk);
-    setLiquidityRisk(p.liquidityRisk);
-    setTechRisk(p.techRisk);
     setSelectedScenario(scenario);
   };
 
@@ -1981,24 +1960,25 @@ const ModelTab = ({
   const terminalNavPerShare = terminalNAV / terminalShares;
   const terminalPriceAtNav = terminalNavPerShare * navPremium;
 
-  // STEP 9: Risk Factor (probability-weighted scenarios)
-  // This represents probability that ETH thesis plays out as modeled
-  const riskFactor = (1 - regulatoryRisk/100) * (1 - liquidityRisk/100) * (1 - techRisk/100);
-
-  // STEP 10: Discount to Present Value
-  // Discount rate = required rate of return / opportunity cost of capital
-  // Even for NAV companies, we discount future values to compare with today's price
+  // STEP 9: Discount to Present Value
+  // For NAV companies, discount rate captures ALL risk (no separate risk factors)
+  // This avoids double-counting since discount rate already includes risk premium
   const discountRateDecimal = discountRate / 100;
   const discountFactor = Math.pow(1 + discountRateDecimal, terminalYears);
 
-  // STEP 11: Target Stock Price Calculation
-  // Formula: (Terminal NAV/share × NAV Premium × Risk Factor) / Discount Factor
+  // STEP 10: Target Stock Price Calculation
+  // Formula: Terminal NAV/share × NAV Premium / Discount Factor
   //
   // - Terminal NAV/share: projected NAV per share in 5 years
   // - NAV Premium: market's willingness to pay above/below NAV (like MSTR)
-  // - Risk Factor: probability thesis plays out (regulatory, liquidity, tech risks)
-  // - Discount Factor: time value of money / opportunity cost
-  const targetStockPrice = (terminalPriceAtNav * riskFactor) / discountFactor;
+  // - Discount Factor: captures time value + ALL risk in one number
+  //
+  // Discount rate guidance for NAV companies:
+  //   8-10%: Low risk (ETF-like, established)
+  //   12-14%: Moderate (proven treasury company)
+  //   16-18%: Higher (execution/regulatory concerns)
+  //   20%+: High risk (new/unproven)
+  const targetStockPrice = terminalPriceAtNav / discountFactor;
 
   // STEP 12: Implied Upside/Downside
   const impliedUpside = currentStockPrice > 0
@@ -2248,42 +2228,6 @@ const ModelTab = ({
           </div>
         </div>
 
-        {/* RISK PARAMETERS */}
-        <h3 style={{ color: 'var(--coral)', marginTop: 24, marginBottom: 8 }}>Risk Probability Factors</h3>
-        <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>
-          Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Liq) × (1-Tech) = {(riskFactor * 100).toFixed(0)}% success probability.
-        </p>
-
-        <div className="g3">
-          <BMNRParameterCard
-            title="Regulatory Risk (%)"
-            explanation="Probability of adverse crypto regulation (SEC enforcement, tax changes, custody rules). US crypto regulation uncertain. 5% = favorable outlook. 25%+ = major regulatory threats."
-            options={[1, 3, 5, 8, 10, 15, 20, 25, 35, 50]}
-            value={regulatoryRisk}
-            onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }}
-            format="%"
-            inverse
-          />
-          <BMNRParameterCard
-            title="Liquidity Risk (%)"
-            explanation="Probability large ETH position can't be exited without significant market impact. 4M+ ETH is 3.5% of supply. 5% = deep markets. 30%+ = illiquid or market stress scenario."
-            options={[1, 3, 5, 8, 10, 15, 20, 25, 30, 40]}
-            value={liquidityRisk}
-            onChange={v => { setLiquidityRisk(v); setSelectedScenario('custom'); }}
-            format="%"
-            inverse
-          />
-          <BMNRParameterCard
-            title="Technology Risk (%)"
-            explanation="Probability of smart contract failure, staking slashing, or Ethereum network issues. ETH is battle-tested but staking has risks. 3% = robust. 20%+ = novel/risky staking strategies."
-            options={[1, 3, 5, 8, 10, 15, 20, 25, 30]}
-            value={techRisk}
-            onChange={v => { setTechRisk(v); setSelectedScenario('custom'); }}
-            format="%"
-            inverse
-          />
-        </div>
-
         {/* DCF VALUATION OUTPUT */}
         <div className="card" style={{ marginTop: 24, border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
           <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
@@ -2304,8 +2248,8 @@ const ModelTab = ({
             />
             <Card
               label="Present Value"
-              value={`$${(riskAdjustedEV / 1000).toFixed(2)}B`}
-              sub={`${(riskFactor * 100).toFixed(0)}% prob × $${(presentValueEV / 1000).toFixed(2)}B`}
+              value={`$${(presentValueEV / 1000).toFixed(2)}B`}
+              sub={`Terminal ÷ ${discountFactor.toFixed(2)}x discount`}
               color="violet"
             />
             <Card
@@ -2338,8 +2282,8 @@ const ModelTab = ({
           <div className="card-title">Calculation Methodology</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
             <p style={{ marginBottom: 12 }}>
-              <strong>NAV-based valuation</strong> for ETH treasury companies. Value = NAV × Premium.
-              Risk factors capture probability of thesis success. Mild time discount for waiting.
+              <strong>NAV-based valuation</strong> for ETH treasury companies. Formula: Target = Terminal NAV/Share ÷ Discount.
+              Discount rate captures ALL risk (regulatory, liquidity, tech, execution) in one number - no double-counting.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -2373,20 +2317,24 @@ const ModelTab = ({
               </div>
 
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 8-9: Risk & Discount</div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 8: Discount Factor</div>
                 <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
-                  Risk Factor = (1-{regulatoryRisk}%) × (1-{liquidityRisk}%) × (1-{techRisk}%)<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{(riskFactor * 100).toFixed(1)}%</strong> probability<br/><br/>
-                  Discount = (1 + {discountRate}%)^5<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{discountFactor.toFixed(2)}x</strong> (opportunity cost)
+                  Discount Rate = <strong>{discountRate}%</strong><br/>
+                  (captures time value + ALL risk)<br/><br/>
+                  Discount Factor = (1 + {discountRate}%)^5<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{discountFactor.toFixed(2)}x</strong><br/><br/>
+                  <span style={{ fontSize: 10, color: 'var(--text3)' }}>
+                    8-10%: Low risk | 12-14%: Moderate<br/>
+                    16-18%: Higher | 20%+: High risk
+                  </span>
                 </div>
               </div>
 
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 10-11: Target Price</div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 9-10: Target Price</div>
                 <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
-                  Target = (Terminal × Risk) ÷ Discount<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = (${terminalPriceAtNav.toFixed(2)} × {(riskFactor * 100).toFixed(0)}%) ÷ {discountFactor.toFixed(2)}<br/>
+                  Target = Terminal NAV ÷ Discount<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalPriceAtNav.toFixed(2)} ÷ {discountFactor.toFixed(2)}<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${targetStockPrice.toFixed(2)}</strong><br/><br/>
                   Upside = (${targetStockPrice.toFixed(2)} - ${currentStockPrice.toFixed(2)}) / ${currentStockPrice.toFixed(2)}<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>{impliedUpside > 0 ? '+' : ''}{impliedUpside.toFixed(0)}%</strong>
@@ -2396,8 +2344,7 @@ const ModelTab = ({
 
             <div style={{ marginTop: 12, padding: 10, background: 'rgba(34,211,238,0.1)', borderRadius: 6, fontSize: 11 }}>
               <strong>Key Assumptions:</strong> Terminal year is {new Date().getFullYear() + 5} (5 years out).
-              Uses max of Gordon Growth or NAV×Multiple for terminal value.
-              Risk factors are multiplicative (independent events).
+              Discount rate captures ALL risk in one number (no separate risk factors to avoid double-counting).
               Staking yield compounds ETH holdings; operating costs reduce effective yield.
             </div>
           </div>
