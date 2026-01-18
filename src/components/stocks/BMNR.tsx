@@ -1915,6 +1915,7 @@ const ModelTab = ({
 
   const applyScenario = (scenario: ScenarioKey) => {
     const p = BMNR_SCENARIO_PRESETS[scenario];
+    setEthInputMode('growth'); // Reset to growth mode when applying preset
     setEthGrowthRate(p.ethGrowthRate);
     setStakingYield(p.stakingYield);
     setNavPremium(p.navPremium);
@@ -1935,8 +1936,11 @@ const ModelTab = ({
     : { name: 'Custom', color: '#a855f7', icon: '⚙️' };
 
   // ============================================================================
-  // DCF CALCULATION - NAV-based for ETH Treasury Company
+  // NAV-BASED VALUATION - For ETH Treasury Company
   // ============================================================================
+  // For BMNR (and similar treasury companies), value = NAV × premium.
+  // We don't use traditional DCF because the asset IS the value.
+  // Risk is incorporated via discount rate, not as a separate haircut.
 
   // STEP 1: Current NAV Calculation
   const currentNAV = (currentETH * ethPrice) / 1_000_000; // $M
@@ -1964,48 +1968,48 @@ const ModelTab = ({
   const annualStakingRevenue = (currentETH * ethPrice * stakingYield / 100) / 1_000_000; // $M/year
   const annualNetCashFlow = annualStakingRevenue * (1 - operatingCosts / stakingYield);
 
-  // STEP 6: Terminal Enterprise Value using Gordon Growth Model
-  // For NAV companies: EV = NAV × Premium Multiple, or use cash flow approach
-  // Using cash flow: Terminal FCF = Terminal NAV × Net Yield
-  const terminalFCF = terminalNAV * netYieldRate; // $M
-  const discountRateDecimal = discountRate / 100;
-  const terminalGrowthDecimal = terminalGrowth / 100;
-  const spread = discountRateDecimal - terminalGrowthDecimal;
-  const terminalEV = spread > 0.01 ? terminalFCF / spread : 0; // $M
+  // STEP 6: Terminal Equity Value = NAV × Premium
+  // For treasury companies, the market cap trades at a premium/discount to NAV
+  const terminalEquityValue = terminalNAV * navPremium; // $M
 
-  // Alternative: NAV × Multiple approach (use whichever is higher as sanity check)
-  const terminalEV_NAV = terminalNAV * navPremium; // $M
-
-  // Use the higher of the two approaches
-  const effectiveTerminalEV = Math.max(terminalEV, terminalEV_NAV);
-
-  // STEP 7: Discount Terminal Value to Present
-  const discountFactor = Math.pow(1 + discountRateDecimal, terminalYears);
-  const presentValueEV = effectiveTerminalEV / discountFactor; // $M
-
-  // STEP 8: Risk Factor (probability of success)
-  const riskFactor = (1 - regulatoryRisk/100) * (1 - liquidityRisk/100) * (1 - techRisk/100);
-
-  // STEP 9: Risk-Adjusted Present Value
-  const riskAdjustedEV = presentValueEV * riskFactor; // $M
-
-  // STEP 10: Diluted Shares at Terminal Year
+  // STEP 7: Diluted Shares at Terminal Year
   const terminalShares = currentShares * Math.pow(1 + dilutionRate / 100, terminalYears);
 
-  // STEP 11: Target Stock Price
-  const targetStockPrice = riskAdjustedEV > 0 && terminalShares > 0
-    ? riskAdjustedEV / terminalShares
-    : 0;
+  // STEP 8: Terminal NAV per Share
+  const terminalNavPerShare = terminalNAV / terminalShares;
+  const terminalPriceAtNav = terminalNavPerShare * navPremium;
+
+  // STEP 9: Risk Factor (probability-weighted scenarios)
+  // This represents probability that ETH thesis plays out as modeled
+  const riskFactor = (1 - regulatoryRisk/100) * (1 - liquidityRisk/100) * (1 - techRisk/100);
+
+  // STEP 10: Target Stock Price Calculation
+  // For NAV companies: Terminal NAV/share × Risk Factor
+  //
+  // KEY INSIGHT: We do NOT apply time discounting because:
+  // 1. NAV is a realizable asset today, not a future cash flow
+  // 2. You own the underlying ETH NOW through BMNR shares
+  // 3. Time discounting is for cash flows, not appreciating assets
+  // 4. The risk factor already captures probability-weighted outcomes
+  //
+  // This matches how MicroStrategy and other treasury companies are valued:
+  // Market cap = NAV × Premium/Discount, adjusted for execution risk
+  const targetStockPrice = terminalPriceAtNav * riskFactor;
 
   // STEP 12: Implied Upside/Downside
   const impliedUpside = currentStockPrice > 0
     ? ((targetStockPrice - currentStockPrice) / currentStockPrice) * 100
     : 0;
 
-  // STEP 13: Valuation Multiples
+  // STEP 13: Valuation Multiples & Metrics
   const currentPriceToNAV = currentStockPrice / navPerShare;
-  const terminalPriceToNAV = targetStockPrice / (terminalNAV / terminalShares);
+  const terminalPriceToNAV = terminalPriceAtNav / terminalNavPerShare;
   const impliedDividendYield = annualNetCashFlow / (currentShares * currentStockPrice) * 100;
+
+  // For display: total market cap values
+  const presentValueEV = (targetStockPrice * currentShares); // Current implied market cap
+  const riskAdjustedEV = presentValueEV; // Same for display compatibility
+  const effectiveTerminalEV = terminalEquityValue; // Terminal market cap
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -2281,7 +2285,7 @@ const ModelTab = ({
             <Card label="Current P/NAV" value={`${currentPriceToNAV.toFixed(2)}x`} sub={currentPriceToNAV > 1 ? 'Premium' : 'Discount'} color="purple" />
             <Card label="Implied Yield" value={`${impliedDividendYield.toFixed(2)}%`} sub="Net staking / Mkt Cap" color="purple" />
             <Card label="Annual Staking Rev" value={`$${annualStakingRevenue.toFixed(1)}M`} sub={`${stakingYield}% × ${(currentETH * ethPrice / 1_000_000).toFixed(0)}M`} color="purple" />
-            <Card label="Terminal EV Method" value={terminalEV > terminalEV_NAV ? 'DCF' : 'NAV×'} sub={`$${(effectiveTerminalEV / 1000).toFixed(2)}B`} color="purple" />
+            <Card label="Terminal NAV/Share" value={`$${terminalNavPerShare.toFixed(2)}`} sub={`at ${navPremium}x = $${terminalPriceAtNav.toFixed(0)}`} color="purple" />
           </div>
         </div>
 
@@ -2290,8 +2294,8 @@ const ModelTab = ({
           <div className="card-title">Calculation Methodology</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
             <p style={{ marginBottom: 12 }}>
-              This DCF model calculates BMNR intrinsic value using an <strong>NAV-based terminal value approach</strong>,
-              incorporating ETH price growth, staking yield accumulation, and risk-adjusted discounting.
+              <strong>NAV-based valuation</strong> for ETH treasury companies. Value = NAV × Premium.
+              Risk factors capture probability of thesis success. Mild time discount for waiting.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -2302,51 +2306,46 @@ const ModelTab = ({
                     <>ETH Price = ${ethPrice.toLocaleString()} × (1 + {ethGrowthRate}%)^5<br/></>
                   ) : (
                     <>ETH Price = ${ethTargetPrice.toLocaleString()} (target)<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ≈ {impliedGrowthRate.toFixed(1)}% annual growth<br/></>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ≈ {impliedGrowthRate.toFixed(1)}%/yr implied<br/></>
                   )}
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong><br/><br/>
                   ETH Holdings = {currentETH.toLocaleString()} × (1 + {(netYieldRate * 100).toFixed(2)}%)^5<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{terminalETH.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong><br/><br/>
-                  Terminal NAV = {(terminalETH / 1_000_000).toFixed(2)}M × ${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}<br/>
+                  Terminal NAV = {(terminalETH / 1_000_000).toFixed(2)}M ETH × ${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${(terminalNAV / 1000).toFixed(2)}B</strong>
                 </div>
               </div>
 
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 5-6: Terminal Value</div>
-                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
-                  <strong>Method 1 - Gordon Growth:</strong><br/>
-                  Terminal FCF = ${(terminalNAV / 1000).toFixed(2)}B × {(netYieldRate * 100).toFixed(2)}%<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${(terminalFCF / 1000).toFixed(3)}B<br/>
-                  TV = FCF ÷ ({discountRate}% - {terminalGrowth}%)<br/>
-                  &nbsp;&nbsp; = <strong>${(terminalEV / 1000).toFixed(2)}B</strong><br/><br/>
-                  <strong>Method 2 - NAV Multiple:</strong><br/>
-                  TV = ${(terminalNAV / 1000).toFixed(2)}B × {navPremium}x = <strong>${(terminalEV_NAV / 1000).toFixed(2)}B</strong><br/>
-                  Using: <strong>{terminalEV > terminalEV_NAV ? 'Gordon Growth' : 'NAV Multiple'}</strong>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 7-9: Risk Adjustment</div>
-                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
-                  Present Value = ${(effectiveTerminalEV / 1000).toFixed(2)}B ÷ (1 + {discountRate}%)^5<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${(effectiveTerminalEV / 1000).toFixed(2)}B ÷ {discountFactor.toFixed(3)}<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${(presentValueEV / 1000).toFixed(2)}B</strong><br/><br/>
-                  Risk Factor = (1-{regulatoryRisk}%) × (1-{liquidityRisk}%) × (1-{techRisk}%)<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{(riskFactor * 100).toFixed(1)}%</strong><br/><br/>
-                  Risk-Adj EV = ${(presentValueEV / 1000).toFixed(2)}B × {(riskFactor * 100).toFixed(1)}%<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${(riskAdjustedEV / 1000).toFixed(2)}B</strong>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 10-12: Target Price</div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 5-7: NAV Per Share</div>
                 <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
                   Diluted Shares = {currentShares}M × (1 + {dilutionRate}%)^5<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{terminalShares.toFixed(0)}M</strong><br/><br/>
-                  Target Price = ${(riskAdjustedEV / 1000).toFixed(2)}B ÷ {terminalShares.toFixed(0)}M<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${targetStockPrice.toFixed(2)}</strong><br/><br/>
-                  Upside = (${targetStockPrice.toFixed(2)} - ${currentStockPrice}) / ${currentStockPrice}<br/>
+                  Terminal NAV/Share = ${(terminalNAV / 1000).toFixed(2)}B ÷ {terminalShares.toFixed(0)}M<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${terminalNavPerShare.toFixed(2)}</strong><br/><br/>
+                  At {navPremium}x Premium = ${terminalNavPerShare.toFixed(2)} × {navPremium}<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalPriceAtNav.toFixed(2)}</strong>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 8-9: Risk Factor</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  Risk Factor = (1-{regulatoryRisk}%) × (1-{liquidityRisk}%) × (1-{techRisk}%)<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{(riskFactor * 100).toFixed(1)}%</strong> probability<br/><br/>
+                  (No time discounting: NAV is a<br/>
+                  &nbsp;realizable asset, not a future<br/>
+                  &nbsp;cash flow. Like MSTR valuation.)
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 10: Target Price</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  Target = Terminal NAV × Risk<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalPriceAtNav.toFixed(2)} × {(riskFactor * 100).toFixed(0)}%<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${targetStockPrice.toFixed(2)}</strong><br/><br/>
+                  Upside = (${targetStockPrice.toFixed(2)} - ${currentStockPrice.toFixed(2)}) / ${currentStockPrice.toFixed(2)}<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>{impliedUpside > 0 ? '+' : ''}{impliedUpside.toFixed(0)}%</strong>
                 </div>
               </div>
