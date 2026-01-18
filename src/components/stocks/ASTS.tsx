@@ -3185,6 +3185,87 @@ const SCENARIO_PRESETS = {
   },
 };
 
+// Button selector for bear/base/bull values
+const ButtonSelector = ({
+  label,
+  options,
+  value,
+  onChange,
+  inverse = false, // For metrics where lower is better (risk, capex, dilution)
+}: {
+  label: string;
+  options: { bear: number | string; base: number | string; bull: number | string; format?: string };
+  value: number;
+  onChange: (v: number) => void;
+  inverse?: boolean;
+}) => {
+  const format = (v: number | string) => {
+    if (typeof v === 'string') return v;
+    if (options.format === '$') return `$${v}`;
+    if (options.format === '%') return `${v}%`;
+    if (options.format === 'yr') return v === 0 ? '0' : v > 0 ? `+${v}` : `${v}`;
+    return String(v);
+  };
+
+  // Determine which button is active
+  const getActiveButton = () => {
+    if (value === options.bear) return 'bear';
+    if (value === options.base) return 'base';
+    if (value === options.bull) return 'bull';
+    return null;
+  };
+  const active = getActiveButton();
+
+  const buttonStyle = (type: 'bear' | 'base' | 'bull', isActive: boolean) => {
+    const colors = inverse
+      ? { bear: 'var(--mint)', base: 'var(--gold)', bull: 'var(--coral)' }
+      : { bear: 'var(--coral)', base: 'var(--gold)', bull: 'var(--mint)' };
+    const bgColors = inverse
+      ? { bear: 'rgba(52,211,153,0.15)', base: 'rgba(251,191,36,0.15)', bull: 'rgba(248,113,113,0.15)' }
+      : { bear: 'rgba(248,113,113,0.15)', base: 'rgba(251,191,36,0.15)', bull: 'rgba(52,211,153,0.15)' };
+
+    return {
+      flex: 1,
+      padding: '8px 4px',
+      borderRadius: 8,
+      border: isActive ? `2px solid ${colors[type]}` : '1px solid var(--border)',
+      background: isActive ? bgColors[type] : 'var(--surface2)',
+      cursor: 'pointer',
+      transition: 'all 0.15s',
+      textAlign: 'center' as const,
+      fontSize: 13,
+      fontWeight: isActive ? 600 : 400,
+      color: isActive ? colors[type] : 'var(--text3)',
+    };
+  };
+
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 6, fontWeight: 500 }}>{label}</div>
+      <div style={{ display: 'flex', gap: 6 }}>
+        <div
+          style={buttonStyle('bear', active === 'bear')}
+          onClick={() => onChange(Number(options.bear))}
+        >
+          {format(options.bear)}
+        </div>
+        <div
+          style={buttonStyle('base', active === 'base')}
+          onClick={() => onChange(Number(options.base))}
+        >
+          {format(options.base)}
+        </div>
+        <div
+          style={buttonStyle('bull', active === 'bull')}
+          onClick={() => onChange(Number(options.bull))}
+        >
+          {format(options.bull)}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // MODEL TAB - Assumptions configuration
 const ModelTab = ({
   partnerReach, setPartnerReach,
@@ -3240,6 +3321,19 @@ const ModelTab = ({
   const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
   const finalDilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, 5);
 
+  // DCF Valuation outputs
+  const terminalEBITDA = terminalRev * (terminalMargin / 100);
+  const terminalFCF = terminalRev * ((terminalMargin - terminalCapex) / 100);
+  const terminalValue = terminalFCF / ((discountRate - terminalGrowth) / 100); // Gordon Growth Model
+  const presentValueTV = terminalValue / Math.pow(1 + discountRate / 100, 5); // Discount back 5 years
+  const riskAdjustedEV = presentValueTV * riskFactor; // Apply probability factor
+  const netDebt = totalDebt - cashOnHand;
+  const equityValue = riskAdjustedEV - netDebt;
+  const targetStockPrice = equityValue / finalDilutedShares * 1000; // Convert B to per share
+  const impliedUpside = ((targetStockPrice - currentStockPrice) / currentStockPrice) * 100;
+  const evRevenueMultiple = riskAdjustedEV / terminalRev;
+  const fcfYield = (terminalFCF / riskAdjustedEV) * 100;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Model</h2>
@@ -3291,61 +3385,159 @@ const ModelTab = ({
             )}
           </div>
 
-          {/* Input Controls */}
+          {/* Button-based Input Controls */}
           <div className="g2">
             <div className="card">
               <div className="card-title">Subscriber & Revenue</div>
-              <div className="g2">
-                <Input label="Partner Reach (M)" value={partnerReach} onChange={v => { setPartnerReach(v); setSelectedScenario('custom'); }} />
-                <Input label="Penetration %" value={penetrationRate} onChange={v => { setPenetrationRate(v); setSelectedScenario('custom'); }} step={0.5} />
-              </div>
-              <div className="g2" style={{ marginTop: 12 }}>
-                <Input label="ARPU $/mo" value={blendedARPU} onChange={v => { setBlendedARPU(v); setSelectedScenario('custom'); }} />
-                <Input label="Revenue Share %" value={revenueShare} onChange={v => { setRevenueShare(v); setSelectedScenario('custom'); }} />
-              </div>
-              <div className="g2" style={{ marginTop: 12 }}>
-                <Input label="Competition Discount %" value={competitionDiscount} onChange={v => { setCompetitionDiscount(v); setSelectedScenario('custom'); }} />
-                <Input label="Deployment Delay (yrs)" value={deploymentDelay} onChange={v => { setDeploymentDelay(v); setSelectedScenario('custom'); }} min={-2} max={3} />
-              </div>
+              <ButtonSelector
+                label="Penetration Rate"
+                options={{ bear: 1.5, base: 3, bull: 5, format: '%' }}
+                value={penetrationRate}
+                onChange={v => { setPenetrationRate(v); setSelectedScenario('custom'); }}
+              />
+              <ButtonSelector
+                label="Blended ARPU"
+                options={{ bear: 14, base: 18, bull: 22, format: '$' }}
+                value={blendedARPU}
+                onChange={v => { setBlendedARPU(v); setSelectedScenario('custom'); }}
+              />
+              <ButtonSelector
+                label="Revenue Share"
+                options={{ bear: 40, base: 50, bull: 60, format: '%' }}
+                value={revenueShare}
+                onChange={v => { setRevenueShare(v); setSelectedScenario('custom'); }}
+              />
+              <ButtonSelector
+                label="Competition Discount"
+                options={{ bear: 50, base: 20, bull: 10, format: '%' }}
+                value={competitionDiscount}
+                onChange={v => { setCompetitionDiscount(v); setSelectedScenario('custom'); }}
+                inverse
+              />
             </div>
             <div className="card">
               <div className="card-title">Margin, CapEx & Dilution</div>
-              <div className="g2">
-                <Input label="Terminal EBITDA Margin %" value={terminalMargin} onChange={v => { setTerminalMargin(v); setSelectedScenario('custom'); }} />
-                <Input label="Terminal CapEx % Rev" value={terminalCapex} onChange={v => { setTerminalCapex(v); setSelectedScenario('custom'); }} />
-              </div>
-              <div className="g2" style={{ marginTop: 12 }}>
-                <Input label="Annual Dilution %" value={dilutionRate} onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }} />
-                <Input label="Discount Rate %" value={discountRate} onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }} />
-              </div>
-              <div className="g2" style={{ marginTop: 12 }}>
-                <Input label="Terminal Growth %" value={terminalGrowth} onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }} />
-                <div></div>
+              <ButtonSelector
+                label="Terminal EBITDA Margin"
+                options={{ bear: 45, base: 55, bull: 60, format: '%' }}
+                value={terminalMargin}
+                onChange={v => { setTerminalMargin(v); setSelectedScenario('custom'); }}
+              />
+              <ButtonSelector
+                label="Terminal CapEx (% Rev)"
+                options={{ bear: 15, base: 10, bull: 8, format: '%' }}
+                value={terminalCapex}
+                onChange={v => { setTerminalCapex(v); setSelectedScenario('custom'); }}
+                inverse
+              />
+              <ButtonSelector
+                label="Annual Dilution"
+                options={{ bear: 8, base: 5, bull: 3, format: '%' }}
+                value={dilutionRate}
+                onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }}
+                inverse
+              />
+              <ButtonSelector
+                label="Deployment Delay"
+                options={{ bear: 2, base: 0, bull: -1, format: 'yr' }}
+                value={deploymentDelay}
+                onChange={v => { setDeploymentDelay(v); setSelectedScenario('custom'); }}
+                inverse
+              />
+            </div>
+          </div>
+
+          {/* Valuation & Risk */}
+          <div className="g2">
+            <div className="card">
+              <div className="card-title">Valuation Parameters</div>
+              <ButtonSelector
+                label="Discount Rate (WACC)"
+                options={{ bear: 18, base: 15, bull: 12, format: '%' }}
+                value={discountRate}
+                onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }}
+                inverse
+              />
+              <ButtonSelector
+                label="Terminal Growth Rate"
+                options={{ bear: 2, base: 3, bull: 4, format: '%' }}
+                value={terminalGrowth}
+                onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }}
+              />
+            </div>
+            <div className="card">
+              <div className="card-title">Risk Adjustments</div>
+              <ButtonSelector
+                label="Regulatory Risk"
+                options={{ bear: 10, base: 5, bull: 3, format: '%' }}
+                value={regulatoryRisk}
+                onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }}
+                inverse
+              />
+              <ButtonSelector
+                label="Technology Risk"
+                options={{ bear: 15, base: 8, bull: 5, format: '%' }}
+                value={techRisk}
+                onChange={v => { setTechRisk(v); setSelectedScenario('custom'); }}
+                inverse
+              />
+              <ButtonSelector
+                label="Competition Risk"
+                options={{ bear: 20, base: 10, bull: 5, format: '%' }}
+                value={competitionRisk}
+                onChange={v => { setCompetitionRisk(v); setSelectedScenario('custom'); }}
+                inverse
+              />
+              <div style={{ padding: 10, background: 'var(--surface2)', borderRadius: 8, fontSize: 12, color: 'var(--text3)' }}>
+                Combined haircut: {((1 - riskFactor) * 100).toFixed(0)}% → Probability: {(riskFactor * 100).toFixed(0)}%
               </div>
             </div>
           </div>
 
-          {/* Risk Adjustments */}
+          {/* Terminal Year Outputs */}
           <div className="card">
-            <div className="card-title">Risk Adjustments</div>
-            <div className="g3">
-              <Input label="Regulatory Risk %" value={regulatoryRisk} onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }} />
-              <Input label="Tech Risk %" value={techRisk} onChange={v => { setTechRisk(v); setSelectedScenario('custom'); }} />
-              <Input label="Competition Risk %" value={competitionRisk} onChange={v => { setCompetitionRisk(v); setSelectedScenario('custom'); }} />
-            </div>
-            <div style={{ marginTop: 12, padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 12, color: 'var(--text3)' }}>
-              Combined risk haircut: {((1 - riskFactor) * 100).toFixed(0)}% → EV probability factor: {(riskFactor * 100).toFixed(0)}%
-            </div>
-          </div>
-
-          {/* Terminal Year Output Preview */}
-          <div className="card">
-            <div className="card-title">Terminal Year Output (2030)</div>
+            <div className="card-title">Terminal Year Metrics (2030)</div>
             <div className="g4">
-              <Card label="Net Subscribers" value={`${terminalSubs.toFixed(1)}M`} sub={`${penetrationRate}% of ${(partnerReach / 1000).toFixed(1)}B reach`} color="cyan" />
+              <Card label="Net Subscribers" value={`${terminalSubs.toFixed(1)}M`} sub={`${penetrationRate}% pen rate`} color="cyan" />
               <Card label="ASTS Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of gross`} color="green" />
-              <Card label="Terminal FCF" value={`$${(terminalRev * (terminalMargin - terminalCapex) / 100).toFixed(2)}B`} sub={`${terminalMargin}% margin - ${terminalCapex}% capex`} color="mint" />
-              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr for 5yrs`} color="violet" />
+              <Card label="Terminal EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${terminalMargin}% margin`} color="blue" />
+              <Card label="Terminal FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${(terminalMargin - terminalCapex)}% FCF margin`} color="mint" />
+            </div>
+          </div>
+
+          {/* DCF Valuation Output - THE KEY OUTPUT */}
+          <div className="card" style={{ border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.05) 0%, rgba(34,211,238,0.02) 100%)' }}>
+            <div className="card-title" style={{ color: 'var(--cyan)' }}>DCF Valuation Output</div>
+            <div className="g4">
+              <Card
+                label="Target Stock Price"
+                value={targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}
+                sub={`vs $${currentStockPrice} current`}
+                color="cyan"
+              />
+              <Card
+                label="Implied Upside"
+                value={targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}
+                sub={impliedUpside > 50 ? 'Strong Buy' : impliedUpside > 0 ? 'Buy' : 'Hold/Sell'}
+                color={impliedUpside > 25 ? 'mint' : impliedUpside > 0 ? 'gold' : 'coral'}
+              />
+              <Card
+                label="Enterprise Value"
+                value={`$${riskAdjustedEV.toFixed(1)}B`}
+                sub={`Risk-adj PV of TV`}
+                color="violet"
+              />
+              <Card
+                label="Equity Value"
+                value={`$${equityValue.toFixed(1)}B`}
+                sub={`EV - $${(netDebt / 1000).toFixed(2)}B net debt`}
+                color="green"
+              />
+            </div>
+            <div className="g3" style={{ marginTop: 16 }}>
+              <Card label="EV / Revenue" value={`${evRevenueMultiple.toFixed(1)}x`} sub="Terminal multiple" color="text3" />
+              <Card label="FCF Yield" value={`${fcfYield.toFixed(1)}%`} sub="At terminal" color="text3" />
+              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr × 5yrs`} color="text3" />
             </div>
           </div>
         </>
