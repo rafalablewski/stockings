@@ -343,8 +343,11 @@ const RATING_NORMALIZATION: Record<string, 'bullish' | 'neutral' | 'bearish'> = 
 /** Discount rate for pre-revenue space company (15% = high risk premium) */
 const DISCOUNT_RATE = 0.15;
 
-/** Addressable subscriber base across MNO partners (3 billion) */
-const ADDRESSABLE_SUBSCRIBERS_BILLIONS = 3;
+/** Addressable subscriber base across MNO partners (3.2 billion) */
+const ADDRESSABLE_SUBSCRIBERS_BILLIONS = 3.2;
+
+/** Addressable subscribers in millions (for state/calculations) */
+const PARTNER_REACH_MILLIONS = 3200;
 
 /** Minimum discount rate for DCF calculations */
 const MIN_DISCOUNT_RATE = 5;
@@ -1495,7 +1498,7 @@ const ASTSAnalysis = () => {
   const [block2Sats, setBlock2Sats] = useState(1);  // BB6 launched Dec 23, 2025 (first Block 2)
   const [targetSats2026, setTargetSats2026] = useState(60);  // Per PRs: 45-60 range, using upper end
   const [launchFailureRate, setLaunchFailureRate] = useState(7);
-  const [partnerReach, setPartnerReach] = useState(3000);  // ~3B subs across 50+ MNOs per Q3 PR
+  const [partnerReach, setPartnerReach] = useState(PARTNER_REACH_MILLIONS);  // 3.2B subs across 53+ MNOs
   const [penetrationRate, setPenetrationRate] = useState(3);
   const [blendedARPU, setBlendedARPU] = useState(18);
   const [revenueShare, setRevenueShare] = useState(50);
@@ -1646,9 +1649,9 @@ const ASTSAnalysis = () => {
             </button>
           ))}
 
-          {/* ASTS Analysis dropdown trigger */}
+          {/* Stock-specific dropdown trigger */}
           <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'ASTS Analysis' && activeTab === t.id) ? 'active' : ''}`}
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
             onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
           >
             ASTS Analysis ↕
@@ -1670,7 +1673,7 @@ const ASTSAnalysis = () => {
         <div className="nav-dropdown-space">
           {analysisDropdownOpen && (
             <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group === 'ASTS Analysis').map(t => (
+              {tabs.filter(t => t.group).map(t => (
                 <button
                   key={t.id}
                   className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
@@ -2213,7 +2216,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <h2 className="section-head">Partners</h2>
       <div className="highlight"><h3>Partner & Spectrum Intelligence</h3>
         <div className="space-y-2 text-sm">
-          <p><strong className="text-cyan-400">Commercial Strategy:</strong> 50+ MNO agreements covering ~3B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
+          <p><strong className="text-cyan-400">Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
           <p><strong className="text-cyan-400">Spectrum:</strong> ~80 MHz owned/controlled in US (45 MHz L-band + 5 MHz + partner spectrum). 60 MHz S-band global ITU priority. 1,150 MHz tunable MNO spectrum globally.</p>
         </div>
       </div>
@@ -2223,7 +2226,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         <Card label="Contracted Rev" value="$1B+" sub="Commercial commitments" color="green" />
         <Card label="Prepayments" value={`$${totalPrepay}M`} sub="Non-dilutive" color="cyan" />
         <Card label="Definitive MNOs" value="4" sub={`${totalDefinitiveSubs}M subs`} color="blue" />
-        <Card label="Total MNOs" value="50+" sub={`~3B subs`} color="purple" />
+        <Card label="Total MNOs" value="50+" sub={`~3.2B subs`} color="purple" />
         <Card label="US Spectrum" value="80+ MHz" sub="Owned + partner" color="yellow" />
       </div>
 
@@ -3705,7 +3708,7 @@ const ModelTab = ({
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
-              <Card label="2030 Subscribers" value={`${terminalSubs.toFixed(0)}M`} sub={`${penetrationRate}% × ${(partnerReach/1000).toFixed(1)}B`} color="text3" />
+              <Card label="2030 Subscribers" value={`${terminalSubs.toFixed(0)}M`} sub={`${penetrationRate}% × ${(partnerReach/1000).toFixed(1)}B × ${100 - competitionDiscount}%`} color="text3" />
               <Card label="2030 Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of $${terminalGrossRev.toFixed(2)}B`} color="text3" />
               <Card label="2030 EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${terminalMargin}% margin`} color="text3" />
               <Card label="2030 FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${terminalMargin - terminalCapex}% FCF margin`} color="text3" />
@@ -10567,7 +10570,7 @@ Primary Broadband (Monthly): $1.00`,
             { label: 'Stock Price (4-Mar)', value: '$28.61' },
             { label: '52-Week Range', value: '$2.01-$38.60' },
             { label: 'EPS Change', value: '-$0.67 to -$0.77 (-16.2%)' },
-            { label: 'MNO Subs Coverage', value: '3B globally' },
+            { label: 'MNO Subs Coverage', value: '3.2B globally' },
             { label: 'Vodafone Agreement', value: 'Through 2034' },
           ],
           catalysts: [
@@ -12234,7 +12237,7 @@ DISCLOSURE: Scotiabank has managed/co-managed public offering in past 12 months,
             { catalyst: 'Manufacturing Cadence', impact: 'Positive', outlook: '>11 BlueBirds in manufacturing, ~40 satellite equivalent microns by early 2026', timeframe: 'Increasing to start 2026' },
             { catalyst: 'Launch Cadence', impact: 'Positive', outlook: 'Launch every 45 days, 45-60 satellites by YE26, ~75 launches contracted (SpaceX, Blue Origin)', timeframe: 'Throughout 2026' },
             { catalyst: 'Partial Service', impact: 'Positive', outlook: 'Partial service in primary markets 1H26 with >25 satellites in LEO', timeframe: '1H26' },
-            { catalyst: 'Full Space Service', impact: 'Positive', outlook: '45-60 satellites providing global coverage, revenue acceleration from >50 MNO partners (~3B subscribers)', timeframe: 'YE2026' }
+            { catalyst: 'Full Space Service', impact: 'Positive', outlook: '45-60 satellites providing global coverage, revenue acceleration from >50 MNO partners (~3.2B subscribers)', timeframe: 'YE2026' }
           ]
         },
         // === Oct 30, 2025 - PT Raise to $85 ===
@@ -12535,10 +12538,10 @@ AST SpaceMobile addresses an estimated $30B+ TAM (ROTH estimates) for direct-to-
 Key elements of the AST SpaceMobile solution include:
 • A technology moat: ASTS is vertically integrated. The company supplies its own ASICs (AST5000 for next-gen satellites) and manufactures its own satellites at its Midland, Texas facility. This provides performance, cost and time-to-market advantages. This vertical integration is also supported by a strong IP portfolio around Doppler, beam forming, interference management, etc. (3,450 patent and patent-pending claims worldwide, of which approximately 1,390 have been officially granted or allowed). To date, the constellation has demonstrated throughput of 21Mbps with a near-term roadmap to 120Mbps. In contrast, competing solutions, including Starlink, offer simple text, voice or narrowband data capabilities.
 • Regulatory simplicity: By utilizing existing carrier spectrum, the resource (spectrum) has already been allocated. The process only requires regulatory approval for D2D services. In the US, the FCC has granted the company Special Temporary Authority (STA) authorizing testing service, which we expect to evolve to approval for commercial services in 2H25. The company is going through a similar approval process in select international markets. Again, the spectrum is supported by an existing installed base of 5.6B unique global subscribers.
-• Unique carrier relationships (and, in some cases, investment): ASTS has relationships with 50 carrier partners covering 3B+ subs including the Vodafone Group, AT&T, Verizon, Rakuten Mobile, Bell Canada, Orange, Telefonica, and TIM. Additionally, the company has secured strategic investment from AT&T, Google, Verizon, Vodafone, Rakuten, Bell Canada and American Tower. This provides an immediately addressable installed subscriber base to extend coverage.
+• Unique carrier relationships (and, in some cases, investment): ASTS has relationships with 50 carrier partners covering 3.2B+ subs including the Vodafone Group, AT&T, Verizon, Rakuten Mobile, Bell Canada, Orange, Telefonica, and TIM. Additionally, the company has secured strategic investment from AT&T, Google, Verizon, Vodafone, Rakuten, Bell Canada and American Tower. This provides an immediately addressable installed subscriber base to extend coverage.
 
 **KEY MNO CUSTOMERS**
-AST SpaceMobile has partnership agreements with 50 operators covering 3B+ subscribers. This list includes Vodafone Group, AT&T, Verizon, Rakuten Mobile, Bell Canada, Orange, Telefonica, TIM, Saudi Telecom Company, Zain KSA, Etisalat, Indosat Ooredoo Hutchison, Telkomsel, Smart Communications, Globe Telecom, Millicom, Smartfren, Telecom Argentina, MTN, Telstra, Africell, Liberty Latin America and others. Initial operations are expected to start in the US market upon anticipated regulatory approval in 3Q25 (largely expected to be beta subs and other "friendlies"), with ramping commercial sales in 2027. Similarly, we expect initial international contribution starting in late 2025 (markets serviceable above 30 degrees North latitude) with the full 2026 constellation accelerating driven by the Vodafone relationship.
+AST SpaceMobile has partnership agreements with 50 operators covering 3.2B+ subscribers. This list includes Vodafone Group, AT&T, Verizon, Rakuten Mobile, Bell Canada, Orange, Telefonica, TIM, Saudi Telecom Company, Zain KSA, Etisalat, Indosat Ooredoo Hutchison, Telkomsel, Smart Communications, Globe Telecom, Millicom, Smartfren, Telecom Argentina, MTN, Telstra, Africell, Liberty Latin America and others. Initial operations are expected to start in the US market upon anticipated regulatory approval in 3Q25 (largely expected to be beta subs and other "friendlies"), with ramping commercial sales in 2027. Similarly, we expect initial international contribution starting in late 2025 (markets serviceable above 30 degrees North latitude) with the full 2026 constellation accelerating driven by the Vodafone relationship.
 
 **TOP 10 MNO RELATIONSHIPS**
 | MNO | Markets | Subs | Investor | Notes |
@@ -12582,14 +12585,14 @@ Near-term we expect shares to be volatile and event driven, i.e. launch news, MN
             { label: 'Valuation Method', value: '25x 2030 EPS, 15% discount' },
             { label: 'TAM (2030E)', value: '$30B+' },
             { label: 'Break-even Subs', value: '4-5M (~2% penetration)' },
-            { label: 'MNO Partners', value: '50 carriers, 3B+ subs' },
+            { label: 'MNO Partners', value: '50 carriers, 3.2B+ subs' },
           ],
           catalysts: [
             'Near-fully funded for Phase 1 constellation (45-60 satellites)',
             '$460M convertible notes (Jan 2025) → $950M+ cash',
             'FCC STA granted; commercial approval expected 2H25',
             'Commercial services expected to commence 2H25 (beta), 2H26 (widespread)',
-            '50 MNO partnerships covering 3B+ subscribers globally',
+            '50 MNO partnerships covering 3.2B+ subscribers globally',
             'Strategic investors: AT&T, Verizon, Vodafone, Google, Rakuten, Bell Canada, American Tower',
             'Vodafone JV (SatCo) to accelerate European deployment',
             'Ligado 45MHz L-band spectrum access for 120Mbps speeds',
