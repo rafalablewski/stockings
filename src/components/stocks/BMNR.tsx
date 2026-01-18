@@ -1714,7 +1714,6 @@ const BMNR_SCENARIO_PRESETS = {
     dilutionRate: 25,        // Massive dilution
     operatingCosts: 3,       // High costs
     discountRate: 35,        // Very high - captures all risk
-    terminalGrowth: 0,
   },
   bear: {
     label: 'Bear',
@@ -1727,7 +1726,6 @@ const BMNR_SCENARIO_PRESETS = {
     dilutionRate: 15,        // Significant dilution
     operatingCosts: 2,       // Moderate costs
     discountRate: 20,        // High risk
-    terminalGrowth: 1,
   },
   base: {
     label: 'Base',
@@ -1740,7 +1738,6 @@ const BMNR_SCENARIO_PRESETS = {
     dilutionRate: 8,         // Normal equity raises
     operatingCosts: 1,       // Efficient operations
     discountRate: 12,        // Moderate risk (established company)
-    terminalGrowth: 2,
   },
   mgmt: {
     label: 'Mgmt',
@@ -1753,7 +1750,6 @@ const BMNR_SCENARIO_PRESETS = {
     dilutionRate: 5,         // Accretive raises only
     operatingCosts: 0.5,     // Low costs
     discountRate: 11,        // Lower risk as execution proves out
-    terminalGrowth: 2.5,
   },
   bull: {
     label: 'Bull',
@@ -1766,7 +1762,6 @@ const BMNR_SCENARIO_PRESETS = {
     dilutionRate: 3,         // Minimal dilution needed
     operatingCosts: 0.3,     // Very efficient
     discountRate: 10,        // De-risked, proven
-    terminalGrowth: 3,
   },
   moon: {
     label: 'Moon',
@@ -1779,7 +1774,6 @@ const BMNR_SCENARIO_PRESETS = {
     dilutionRate: 0,         // No dilution - self-funding
     operatingCosts: 0.2,     // Minimal overhead
     discountRate: 8,         // Blue chip / ETF-like
-    terminalGrowth: 4,
   },
 };
 
@@ -1891,8 +1885,7 @@ const ModelTab = ({
   const [navPremium, setNavPremium] = useState(1.0);
   const [dilutionRate, setDilutionRate] = useState(8);
   const [operatingCosts, setOperatingCosts] = useState(1);
-  const [discountRate, setDiscountRate] = useState(12); // Lower default - captures all risk in one number
-  const [terminalGrowth, setTerminalGrowth] = useState(2);
+  const [discountRate, setDiscountRate] = useState(12); // Captures all risk in one number
   const [selectedScenario, setSelectedScenario] = useState('base');
 
   type ScenarioKey = 'worst' | 'bear' | 'base' | 'mgmt' | 'bull' | 'moon';
@@ -1906,7 +1899,6 @@ const ModelTab = ({
     setDilutionRate(p.dilutionRate);
     setOperatingCosts(p.operatingCosts);
     setDiscountRate(p.discountRate);
-    setTerminalGrowth(p.terminalGrowth);
     setSelectedScenario(scenario);
   };
 
@@ -2205,26 +2197,16 @@ const ModelTab = ({
           />
         </div>
 
-        <div className="g2">
-          <BMNRParameterCard
-            title="Terminal Growth Rate (%)"
-            explanation="Perpetual growth rate after terminal year. For crypto treasury: assumes long-term ETH ecosystem growth. Should not exceed nominal GDP (3-4%). 0% = no growth. 2-3% = moderate. 4%+ = aggressive."
-            options={[0, 1, 1.5, 2, 2.5, 3, 3.5, 4]}
-            value={terminalGrowth}
-            onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }}
-            format="%"
-          />
-          <div className="card">
-            <div className="card-title">Current Position</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
-              Live data from BMNR holdings. Used as starting point for projections.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 12 }}>
-              <div><span style={{ color: 'var(--text3)' }}>ETH Holdings:</span> <strong>{currentETH.toLocaleString()}</strong></div>
-              <div><span style={{ color: 'var(--text3)' }}>ETH Price:</span> <strong>${ethPrice.toLocaleString()}</strong></div>
-              <div><span style={{ color: 'var(--text3)' }}>Current NAV:</span> <strong>${currentNAV.toFixed(0)}M</strong></div>
-              <div><span style={{ color: 'var(--text3)' }}>NAV/Share:</span> <strong>${navPerShare.toFixed(2)}</strong></div>
-            </div>
+        <div className="card">
+          <div className="card-title">Current Position</div>
+          <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            Live data from BMNR holdings. Used as starting point for projections.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, fontSize: 12 }}>
+            <div><span style={{ color: 'var(--text3)' }}>ETH Holdings:</span> <strong>{currentETH.toLocaleString()}</strong></div>
+            <div><span style={{ color: 'var(--text3)' }}>ETH Price:</span> <strong>${ethPrice.toLocaleString()}</strong></div>
+            <div><span style={{ color: 'var(--text3)' }}>Current NAV:</span> <strong>${currentNAV.toFixed(0)}M</strong></div>
+            <div><span style={{ color: 'var(--text3)' }}>NAV/Share:</span> <strong>${navPerShare.toFixed(2)}</strong></div>
           </div>
         </div>
 
