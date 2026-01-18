@@ -3134,54 +3134,116 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 };
 
 // SCENARIO PRESETS
+// 6 Scenario Presets from Worst to Moon
+// Sources: ASTS investor presentations, analyst reports, management guidance
 const SCENARIO_PRESETS = {
-  bull: {
-    label: 'Bull',
-    desc: 'Faster deployment, higher penetration, less competition',
-    penetrationRate: 5,
-    blendedARPU: 22,
-    deploymentDelay: -1,
-    terminalMargin: 60,
-    terminalCapex: 8,
-    dilutionRate: 3,
-    competitionDiscount: 10,
-    discountRate: 12,
-    terminalGrowth: 4,
-    regulatoryRisk: 3,
-    techRisk: 5,
-    competitionRisk: 5,
+  worst: {
+    label: 'Worst',
+    desc: 'Tech fails, Starlink dominates, massive dilution, regulatory issues',
+    icon: '💀',
+    color: '#dc2626',
+    penetrationRate: 0.5,
+    blendedARPU: 8,
+    deploymentDelay: 4,
+    terminalMargin: 25,
+    terminalCapex: 25,
+    dilutionRate: 15,
+    competitionDiscount: 75,
+    discountRate: 25,
+    terminalGrowth: 1,
+    regulatoryRisk: 30,
+    techRisk: 35,
+    competitionRisk: 40,
+  },
+  bear: {
+    label: 'Bear',
+    desc: 'Significant delays, Starlink captures majority, pricing pressure',
+    icon: '🐻',
+    color: '#f97316',
+    penetrationRate: 1,
+    blendedARPU: 12,
+    deploymentDelay: 2,
+    terminalMargin: 40,
+    terminalCapex: 18,
+    dilutionRate: 10,
+    competitionDiscount: 50,
+    discountRate: 20,
+    terminalGrowth: 2,
+    regulatoryRisk: 15,
+    techRisk: 20,
+    competitionRisk: 25,
   },
   base: {
     label: 'Base',
-    desc: 'Management guidance with moderate competition adjustment',
+    desc: 'Consensus analyst view with moderate competition adjustment',
+    icon: '📊',
+    color: '#eab308',
+    penetrationRate: 2,
+    blendedARPU: 15,
+    deploymentDelay: 1,
+    terminalMargin: 50,
+    terminalCapex: 12,
+    dilutionRate: 6,
+    competitionDiscount: 30,
+    discountRate: 16,
+    terminalGrowth: 2.5,
+    regulatoryRisk: 8,
+    techRisk: 12,
+    competitionRisk: 15,
+  },
+  mgmt: {
+    label: 'Mgmt',
+    desc: 'Management guidance: 5B TAM, 50/50 revenue share, 85%+ EBITDA margin',
+    icon: '📈',
+    color: '#22c55e',
     penetrationRate: 3,
     blendedARPU: 18,
     deploymentDelay: 0,
-    terminalMargin: 55,
+    terminalMargin: 60,
     terminalCapex: 10,
-    dilutionRate: 5,
+    dilutionRate: 4,
     competitionDiscount: 20,
-    discountRate: 15,
+    discountRate: 14,
     terminalGrowth: 3,
     regulatoryRisk: 5,
     techRisk: 8,
     competitionRisk: 10,
   },
-  bear: {
-    label: 'Bear',
-    desc: 'Delayed deployment, Starlink captures half the market',
-    penetrationRate: 1.5,
-    blendedARPU: 14,
-    deploymentDelay: 2,
-    terminalMargin: 45,
-    terminalCapex: 15,
-    dilutionRate: 8,
-    competitionDiscount: 50,
-    discountRate: 18,
-    terminalGrowth: 2,
-    regulatoryRisk: 10,
-    techRisk: 15,
-    competitionRisk: 20,
+  bull: {
+    label: 'Bull',
+    desc: 'Faster deployment, premium ARPU, limited competition impact',
+    icon: '🐂',
+    color: '#06b6d4',
+    penetrationRate: 5,
+    blendedARPU: 22,
+    deploymentDelay: -1,
+    terminalMargin: 70,
+    terminalCapex: 8,
+    dilutionRate: 3,
+    competitionDiscount: 12,
+    discountRate: 12,
+    terminalGrowth: 3.5,
+    regulatoryRisk: 3,
+    techRisk: 5,
+    competitionRisk: 5,
+  },
+  moon: {
+    label: 'Moon',
+    desc: 'Category winner: 10%+ penetration, premium pricing, minimal competition',
+    icon: '🚀',
+    color: '#a855f7',
+    penetrationRate: 10,
+    blendedARPU: 30,
+    deploymentDelay: -2,
+    terminalMargin: 80,
+    terminalCapex: 5,
+    dilutionRate: 2,
+    competitionDiscount: 5,
+    discountRate: 10,
+    terminalGrowth: 4,
+    regulatoryRisk: 2,
+    techRisk: 2,
+    competitionRisk: 3,
   },
 };
 
@@ -3292,7 +3354,9 @@ const ModelTab = ({
   currentShares, currentStockPrice, cashOnHand, totalDebt,
 }) => {
 
-  const applyScenario = (scenario: 'bull' | 'base' | 'bear') => {
+  type ScenarioKey = 'worst' | 'bear' | 'base' | 'mgmt' | 'bull' | 'moon';
+
+  const applyScenario = (scenario: ScenarioKey) => {
     const p = SCENARIO_PRESETS[scenario];
     setPenetrationRate(p.penetrationRate);
     setBlendedARPU(p.blendedARPU);
@@ -3309,14 +3373,11 @@ const ModelTab = ({
     setSelectedScenario(scenario);
   };
 
-  // Scenario display info
-  const scenarioInfo = {
-    bull: { name: 'Bull', color: 'var(--mint)', icon: '🐂' },
-    base: { name: 'Base', color: 'var(--cyan)', icon: '📊' },
-    bear: { name: 'Bear', color: 'var(--coral)', icon: '🐻' },
-    custom: { name: 'Custom', color: 'var(--violet)', icon: '⚙️' },
-  };
-  const scenario = scenarioInfo[selectedScenario] || scenarioInfo.base;
+  // Get current scenario info (use preset data or custom)
+  const currentPreset = SCENARIO_PRESETS[selectedScenario as ScenarioKey];
+  const scenario = currentPreset
+    ? { name: currentPreset.label, color: currentPreset.color, icon: currentPreset.icon }
+    : { name: 'Custom', color: '#a855f7', icon: '⚙️' };
 
   // Terminal values (2030 anchor)
   // partnerReach is in millions, so 3000M = 3B subscribers
@@ -3374,11 +3435,11 @@ const ModelTab = ({
             </p>
           </div>
 
-          {/* Scenario Presets */}
+          {/* Scenario Presets - 6 scenarios from Worst to Moon */}
           <div className="card">
             <div className="card-title">Scenario Presets</div>
-            <div className="g3">
-              {(['bull', 'base', 'bear'] as const).map(s => {
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
+              {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
                 const preset = SCENARIO_PRESETS[s];
                 const isActive = selectedScenario === s;
                 return (
@@ -3386,30 +3447,30 @@ const ModelTab = ({
                     key={s}
                     onClick={() => applyScenario(s)}
                     style={{
-                      padding: 16,
-                      borderRadius: 12,
-                      border: isActive ? '2px solid var(--cyan)' : '1px solid var(--border)',
-                      background: isActive ? 'rgba(34,211,238,0.1)' : 'var(--surface2)',
+                      padding: 12,
+                      borderRadius: 10,
+                      border: isActive ? `2px solid ${preset.color}` : '1px solid var(--border)',
+                      background: isActive ? `${preset.color}15` : 'var(--surface2)',
                       cursor: 'pointer',
                       transition: 'all 0.2s',
+                      textAlign: 'center',
                     }}
                   >
-                    <div style={{ fontWeight: 600, color: isActive ? 'var(--cyan)' : 'var(--text)', marginBottom: 4 }}>
-                      {s === 'bull' ? '🐂' : s === 'bear' ? '🐻' : '📊'} {preset.label}
+                    <div style={{ fontSize: 20, marginBottom: 4 }}>{preset.icon}</div>
+                    <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)', marginBottom: 4 }}>
+                      {preset.label}
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--text3)' }}>{preset.desc}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
-                      {preset.penetrationRate}% pen · ${preset.blendedARPU} ARPU · {preset.discountRate}% disc
+                    <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
+                      {preset.penetrationRate}% · ${preset.blendedARPU}
                     </div>
                   </div>
                 );
               })}
             </div>
-            {selectedScenario === 'custom' && (
-              <div style={{ marginTop: 12, padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: 'var(--violet)' }}>
-                ⚙️ Custom scenario - parameters modified from preset
-              </div>
-            )}
+            {/* Always show to prevent layout shift */}
+            <div style={{ marginTop: 12, padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
+              ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
+            </div>
           </div>
 
           {/* SUBSCRIBER & REVENUE PARAMETERS */}
@@ -3418,16 +3479,16 @@ const ModelTab = ({
           <div className="g2">
             <ParameterCard
               title="Penetration Rate (%)"
-              explanation="Percentage of partner MNO subscribers who adopt ASTS service. ASTS targets 3% base case. Higher penetration = more subscribers = more revenue. Depends on pricing, marketing, and network quality vs alternatives like Starlink."
-              options={[0.5, 1, 1.5, 2, 3, 4, 5, 6]}
+              explanation="Percentage of partner MNO subscribers who adopt ASTS service. Management targets 3-5%. Analyst estimates range 1-10%. Higher penetration = more subscribers = more revenue. Depends on pricing, network quality, and Starlink competition."
+              options={[0.5, 1, 1.5, 2, 3, 5, 7, 10, 15]}
               value={penetrationRate}
               onChange={v => { setPenetrationRate(v); setSelectedScenario('custom'); }}
               format="%"
             />
             <ParameterCard
               title="Blended ARPU ($/month)"
-              explanation="Average Revenue Per User per month. Blended across regions (US ~$25, LatAm ~$15, Africa ~$8). Higher ARPU in developed markets but lower penetration. Management guidance: $15-20 blended globally."
-              options={[10, 12, 14, 16, 18, 20, 22, 25]}
+              explanation="Average Revenue Per User per month. Blended across regions: US ~$25, LatAm ~$15, Africa/Asia ~$5-10. Management guidance: $15-20 blended. Some analysts model $2-4 for emerging markets only."
+              options={[5, 8, 10, 12, 15, 18, 22, 25, 30, 40]}
               value={blendedARPU}
               onChange={v => { setBlendedARPU(v); setSelectedScenario('custom'); }}
               format="$"
@@ -3437,16 +3498,16 @@ const ModelTab = ({
           <div className="g2">
             <ParameterCard
               title="Revenue Share (%)"
-              explanation="ASTS's share of gross subscriber revenue after MNO partner takes their cut. Typical deals: 50/50 split. Some partners may negotiate 60/40 in their favor. Higher share = more revenue flows to ASTS."
-              options={[35, 40, 45, 50, 55, 60]}
+              explanation="ASTS's share of gross subscriber revenue. Standard MNO deals: 50/50. Some partners may negotiate 60/40 in their favor. Higher share = more revenue flows to ASTS. Could vary by region."
+              options={[30, 35, 40, 45, 50, 55, 60, 65]}
               value={revenueShare}
               onChange={v => { setRevenueShare(v); setSelectedScenario('custom'); }}
               format="%"
             />
             <ParameterCard
               title="Competition Discount (%)"
-              explanation="Revenue reduction due to Starlink and other competitors capturing market share. 0% = ASTS monopoly. 50% = Starlink captures half. Key risk: Starlink Direct-to-Cell launching 2024-2025 with massive satellite fleet."
-              options={[5, 10, 15, 20, 30, 40, 50, 60]}
+              explanation="Revenue reduction due to Starlink and competitors. 0% = ASTS monopoly. 75% = competitors capture most of market. Key risk: Starlink Direct-to-Cell has massive satellite fleet advantage."
+              options={[0, 5, 10, 15, 20, 30, 40, 50, 60, 75]}
               value={competitionDiscount}
               onChange={v => { setCompetitionDiscount(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3460,16 +3521,16 @@ const ModelTab = ({
           <div className="g2">
             <ParameterCard
               title="Terminal EBITDA Margin (%)"
-              explanation="Operating margin at scale (2030). Satellite businesses typically achieve 50-70% EBITDA margins due to high fixed costs and low marginal cost per user. ASTS targets 55%+ at scale. Lower margins if pricing pressure from competition."
-              options={[35, 40, 45, 50, 55, 60, 65, 70]}
+              explanation="Operating margin at scale. Satellite businesses typically achieve 50-70% EBITDA margins. ASTS management targets 85%+. Lower margins possible if pricing pressure or higher opex. 25-30% if competition is brutal."
+              options={[20, 25, 30, 40, 50, 60, 70, 80, 85]}
               value={terminalMargin}
               onChange={v => { setTerminalMargin(v); setSelectedScenario('custom'); }}
               format="%"
             />
             <ParameterCard
               title="Maintenance CapEx (% Rev)"
-              explanation="Ongoing capital expenditure to maintain/replace satellites as % of revenue. Satellites have 7-10yr lifespan. Lower CapEx = more free cash flow. 8-12% typical for mature satellite operators."
-              options={[6, 8, 10, 12, 15, 18, 20, 25]}
+              explanation="Ongoing capital expenditure for satellite replacement (7-10yr lifespan). 5-10% for efficient operators, 15-25% if constellation needs frequent replacement. Lower = more free cash flow."
+              options={[3, 5, 8, 10, 12, 15, 18, 20, 25, 30]}
               value={terminalCapex}
               onChange={v => { setTerminalCapex(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3480,8 +3541,8 @@ const ModelTab = ({
           <div className="g2">
             <ParameterCard
               title="Annual Dilution (%)"
-              explanation="Share count increase per year from stock compensation, warrant exercises, and potential equity raises. ASTS is capital-intensive and may need more funding. High dilution erodes per-share value even if company succeeds."
-              options={[2, 3, 4, 5, 6, 7, 8, 10]}
+              explanation="Share count increase from stock comp, warrants, and equity raises. ASTS is capital-intensive. 2-4% = well-funded. 10-15% = ongoing raises needed. High dilution erodes per-share value."
+              options={[1, 2, 3, 4, 5, 6, 8, 10, 12, 15]}
               value={dilutionRate}
               onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3489,8 +3550,8 @@ const ModelTab = ({
             />
             <ParameterCard
               title="Deployment Delay (Years)"
-              explanation="Schedule variance from plan. Negative = ahead of schedule (bullish). Positive = delayed constellation (bearish). Delays = later revenue, more cash burn, potential dilution. ASTS has history of delays but improving execution."
-              options={[-2, -1, 0, 1, 2, 3]}
+              explanation="Schedule variance from plan. Negative = ahead of schedule. +4yr = major delays, funding issues. Delays = later revenue, more cash burn, potential dilution. ASTS now has $3.2B cash runway."
+              options={[-2, -1, 0, 1, 2, 3, 4, 5]}
               value={deploymentDelay}
               onChange={v => { setDeploymentDelay(v); setSelectedScenario('custom'); }}
               format="yr"
@@ -3504,8 +3565,8 @@ const ModelTab = ({
           <div className="g2">
             <ParameterCard
               title="Discount Rate / WACC (%)"
-              explanation="Required return rate for discounting future cash flows. Higher = more conservative valuation. Pre-revenue space companies typically 15-20%. Lower rates justified as execution risk decreases with successful launches."
-              options={[10, 12, 14, 15, 16, 18, 20, 22]}
+              explanation="Required return for discounting future cash flows. 10% = blue chip. 15-20% = high-growth tech. 25%+ = speculative pre-revenue. Lower rates justified as execution de-risks."
+              options={[8, 10, 12, 14, 16, 18, 20, 22, 25, 30]}
               value={discountRate}
               onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3513,8 +3574,8 @@ const ModelTab = ({
             />
             <ParameterCard
               title="Terminal Growth Rate (%)"
-              explanation="Perpetual growth rate after 2030 for Gordon Growth Model. Should not exceed long-term GDP growth (~3%). Higher growth = higher terminal value. Conservative: 2%. Aggressive: 4%."
-              options={[1, 1.5, 2, 2.5, 3, 3.5, 4, 5]}
+              explanation="Perpetual growth rate for Gordon Growth Model. Should not exceed long-term GDP (~3%). 1% = conservative. 4-5% = aggressive (justified by emerging market connectivity growth)."
+              options={[0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5]}
               value={terminalGrowth}
               onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3530,8 +3591,8 @@ const ModelTab = ({
           <div className="g3">
             <ParameterCard
               title="Regulatory Risk (%)"
-              explanation="Probability of adverse regulatory action: spectrum denial, international restrictions, or unfavorable rulings. ASTS has FCC approval but needs country-by-country clearance. Risk decreases as more approvals secured."
-              options={[2, 3, 5, 7, 10, 15, 20, 25]}
+              explanation="Probability of adverse regulatory action. ASTS has FCC approval but needs country-by-country clearance. 2-5% = most approvals done. 20-30% = major regulatory uncertainty remains."
+              options={[1, 2, 3, 5, 8, 10, 15, 20, 25, 30]}
               value={regulatoryRisk}
               onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3539,8 +3600,8 @@ const ModelTab = ({
             />
             <ParameterCard
               title="Technology Risk (%)"
-              explanation="Probability of technology failure: satellite malfunction, AST array issues, or inability to achieve target throughput/coverage. Decreases with each successful satellite deployment and commercial service proof."
-              options={[2, 5, 8, 10, 12, 15, 20, 25]}
+              explanation="Probability of technology failure. Decreases with each successful satellite and commercial service proof. 2-5% = proven tech. 25-35% = significant unknowns remain."
+              options={[1, 2, 5, 8, 10, 15, 20, 25, 30, 35]}
               value={techRisk}
               onChange={v => { setTechRisk(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3548,8 +3609,8 @@ const ModelTab = ({
             />
             <ParameterCard
               title="Competition Risk (%)"
-              explanation="Probability competitors (Starlink, Lynk, others) capture majority of market or drive pricing to unprofitable levels. Different from Competition Discount - this is binary 'existential threat' probability."
-              options={[3, 5, 8, 10, 15, 20, 25, 30]}
+              explanation="Probability competitors capture majority of market or drive pricing to unprofitable levels. Different from Competition Discount - this is binary 'existential threat' probability."
+              options={[2, 3, 5, 8, 10, 15, 20, 25, 30, 40]}
               value={competitionRisk}
               onChange={v => { setCompetitionRisk(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3557,12 +3618,12 @@ const ModelTab = ({
             />
           </div>
 
-          {/* DCF VALUATION OUTPUT - Combined with Terminal Metrics */}
+          {/* DCF VALUATION OUTPUT - Unified section */}
           <div className="card" style={{ marginTop: 24, border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
             <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (2030 Terminal Year)</div>
 
-            {/* Primary Outputs */}
-            <div className="g4" style={{ marginBottom: 16 }}>
+            {/* Primary Valuation Outputs */}
+            <div className="g4" style={{ marginBottom: 20 }}>
               <Card
                 label="Target Stock Price"
                 value={targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}
@@ -3589,23 +3650,19 @@ const ModelTab = ({
               />
             </div>
 
-            {/* Terminal Year Metrics */}
-            <div style={{ padding: '12px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', marginBottom: 16 }}>
-              <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 8, fontWeight: 500 }}>Terminal Year Metrics (2030)</div>
-              <div className="g4">
-                <Card label="Net Subscribers" value={`${terminalSubs.toFixed(0)}M`} sub={`${penetrationRate}% × ${(partnerReach/1000).toFixed(1)}B reach`} color="text3" />
-                <Card label="ASTS Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of $${terminalGrossRev.toFixed(2)}B gross`} color="text3" />
-                <Card label="Terminal EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${terminalMargin}% margin`} color="text3" />
-                <Card label="Terminal FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${terminalMargin - terminalCapex}% FCF margin`} color="text3" />
-              </div>
+            {/* Terminal Year Metrics + Multiples - unified grid */}
+            <div className="g4" style={{ marginBottom: 12 }}>
+              <Card label="Net Subscribers" value={`${terminalSubs.toFixed(0)}M`} sub={`${penetrationRate}% × ${(partnerReach/1000).toFixed(1)}B`} color="text3" />
+              <Card label="ASTS Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of $${terminalGrossRev.toFixed(2)}B`} color="text3" />
+              <Card label="Terminal EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${terminalMargin}% margin`} color="text3" />
+              <Card label="Terminal FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${terminalMargin - terminalCapex}% FCF margin`} color="text3" />
             </div>
 
-            {/* Valuation Multiples */}
             <div className="g4">
-              <Card label="EV / Revenue" value={`${evRevenueMultiple.toFixed(1)}x`} sub="Terminal year" color="text3" />
-              <Card label="EV / EBITDA" value={`${(riskAdjustedEV / terminalEBITDA).toFixed(1)}x`} sub="Terminal year" color="text3" />
+              <Card label="EV / Revenue" value={`${evRevenueMultiple.toFixed(1)}x`} sub="Terminal multiple" color="text3" />
+              <Card label="EV / EBITDA" value={terminalEBITDA > 0 ? `${(riskAdjustedEV / terminalEBITDA).toFixed(1)}x` : 'N/A'} sub="Terminal multiple" color="text3" />
               <Card label="FCF Yield" value={`${fcfYield.toFixed(1)}%`} sub="At terminal" color="text3" />
-              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr × 5yrs`} color="text3" />
+              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr × ${Math.max(yearsToTerminal, 1)}yrs`} color="text3" />
             </div>
           </div>
         </>
