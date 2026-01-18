@@ -1985,18 +1985,20 @@ const ModelTab = ({
   // This represents probability that ETH thesis plays out as modeled
   const riskFactor = (1 - regulatoryRisk/100) * (1 - liquidityRisk/100) * (1 - techRisk/100);
 
-  // STEP 10: Target Stock Price Calculation
-  // For NAV companies: Terminal NAV/share × Risk Factor
+  // STEP 10: Discount to Present Value
+  // Discount rate = required rate of return / opportunity cost of capital
+  // Even for NAV companies, we discount future values to compare with today's price
+  const discountRateDecimal = discountRate / 100;
+  const discountFactor = Math.pow(1 + discountRateDecimal, terminalYears);
+
+  // STEP 11: Target Stock Price Calculation
+  // Formula: (Terminal NAV/share × NAV Premium × Risk Factor) / Discount Factor
   //
-  // KEY INSIGHT: We do NOT apply time discounting because:
-  // 1. NAV is a realizable asset today, not a future cash flow
-  // 2. You own the underlying ETH NOW through BMNR shares
-  // 3. Time discounting is for cash flows, not appreciating assets
-  // 4. The risk factor already captures probability-weighted outcomes
-  //
-  // This matches how MicroStrategy and other treasury companies are valued:
-  // Market cap = NAV × Premium/Discount, adjusted for execution risk
-  const targetStockPrice = terminalPriceAtNav * riskFactor;
+  // - Terminal NAV/share: projected NAV per share in 5 years
+  // - NAV Premium: market's willingness to pay above/below NAV (like MSTR)
+  // - Risk Factor: probability thesis plays out (regulatory, liquidity, tech risks)
+  // - Discount Factor: time value of money / opportunity cost
+  const targetStockPrice = (terminalPriceAtNav * riskFactor) / discountFactor;
 
   // STEP 12: Implied Upside/Downside
   const impliedUpside = currentStockPrice > 0
@@ -2371,21 +2373,20 @@ const ModelTab = ({
               </div>
 
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 8-9: Risk Factor</div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 8-9: Risk & Discount</div>
                 <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
                   Risk Factor = (1-{regulatoryRisk}%) × (1-{liquidityRisk}%) × (1-{techRisk}%)<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{(riskFactor * 100).toFixed(1)}%</strong> probability<br/><br/>
-                  (No time discounting: NAV is a<br/>
-                  &nbsp;realizable asset, not a future<br/>
-                  &nbsp;cash flow. Like MSTR valuation.)
+                  Discount = (1 + {discountRate}%)^5<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{discountFactor.toFixed(2)}x</strong> (opportunity cost)
                 </div>
               </div>
 
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 10: Target Price</div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 10-11: Target Price</div>
                 <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
-                  Target = Terminal NAV × Risk<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalPriceAtNav.toFixed(2)} × {(riskFactor * 100).toFixed(0)}%<br/>
+                  Target = (Terminal × Risk) ÷ Discount<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = (${terminalPriceAtNav.toFixed(2)} × {(riskFactor * 100).toFixed(0)}%) ÷ {discountFactor.toFixed(2)}<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${targetStockPrice.toFixed(2)}</strong><br/><br/>
                   Upside = (${targetStockPrice.toFixed(2)} - ${currentStockPrice.toFixed(2)}) / ${currentStockPrice.toFixed(2)}<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>{impliedUpside > 0 ? '+' : ''}{impliedUpside.toFixed(0)}%</strong>
