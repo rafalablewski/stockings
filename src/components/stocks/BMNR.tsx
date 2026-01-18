@@ -1808,6 +1808,7 @@ const BMNRParameterCard = ({
   onChange,
   format = '',
   inverse = false, // true = lower values are bullish (risk, dilution, costs)
+  disabled = false, // when true, card is non-interactive
 }: {
   title: string;
   explanation: string;
@@ -1816,6 +1817,7 @@ const BMNRParameterCard = ({
   onChange: (v: number) => void;
   format?: string;
   inverse?: boolean;
+  disabled?: boolean;
 }) => {
   const formatValue = (v: number) => {
     if (format === '$') return `$${v.toLocaleString()}`;
@@ -1844,32 +1846,32 @@ const BMNRParameterCard = ({
   };
 
   return (
-    <div className="card">
+    <div className="card" style={{ opacity: disabled ? 0.6 : 1 }}>
       <div className="card-title">{title}</div>
       <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
         {explanation}
       </p>
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', pointerEvents: disabled ? 'none' : 'auto' }}>
         {options.map((opt, idx) => {
           const isActive = value === opt;
           const colors = getButtonColor(opt, idx, options.length);
           return (
             <div
               key={opt}
-              onClick={() => onChange(opt)}
+              onClick={() => !disabled && onChange(opt)}
               style={{
                 flex: '1 1 auto',
                 minWidth: 44,
                 padding: '8px 6px',
                 borderRadius: 8,
-                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                background: isActive ? colors.bg : 'var(--surface2)',
-                cursor: 'pointer',
+                border: isActive ? `2px solid ${disabled ? 'var(--text3)' : colors.border}` : '1px solid var(--border)',
+                background: isActive ? (disabled ? 'var(--surface2)' : colors.bg) : 'var(--surface2)',
+                cursor: disabled ? 'default' : 'pointer',
                 transition: 'all 0.15s',
                 textAlign: 'center',
                 fontSize: 12,
                 fontWeight: isActive ? 600 : 400,
-                color: isActive ? colors.text : 'var(--text3)',
+                color: isActive ? (disabled ? 'var(--text3)' : colors.text) : 'var(--text3)',
               }}
             >
               {formatValue(opt)}
@@ -2063,70 +2065,110 @@ const ModelTab = ({
         </div>
 
         {/* ETH & YIELD PARAMETERS */}
-        <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>ETH & Yield Model</h3>
+        <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>ETH Price Projection</h3>
+        <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>
+          Choose ONE method to project terminal ETH price. Click on a card to activate it.
+        </p>
 
-        {/* ETH Price Input Mode Toggle */}
-        <div className="card" style={{ marginBottom: 16 }}>
-          <div className="card-title">ETH Price Projection Method</div>
-          <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
-            Choose how to project terminal ETH price: use an annual growth rate, or set a specific target price for {new Date().getFullYear() + 5}.
-          </p>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => setEthInputMode('growth')}
-              style={{
-                flex: 1,
-                padding: '12px 16px',
-                borderRadius: 8,
-                border: ethInputMode === 'growth' ? '2px solid var(--cyan)' : '1px solid var(--border)',
-                background: ethInputMode === 'growth' ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-                color: ethInputMode === 'growth' ? 'var(--cyan)' : 'var(--text3)',
-                cursor: 'pointer',
-                fontSize: 13,
-                fontWeight: ethInputMode === 'growth' ? 600 : 400,
-              }}
-            >
-              📈 Annual Growth Rate
-            </button>
-            <button
-              onClick={() => setEthInputMode('target')}
-              style={{
-                flex: 1,
-                padding: '12px 16px',
-                borderRadius: 8,
-                border: ethInputMode === 'target' ? '2px solid var(--mint)' : '1px solid var(--border)',
-                background: ethInputMode === 'target' ? 'rgba(126,231,135,0.15)' : 'var(--surface2)',
-                color: ethInputMode === 'target' ? 'var(--mint)' : 'var(--text3)',
-                cursor: 'pointer',
-                fontSize: 13,
-                fontWeight: ethInputMode === 'target' ? 600 : 400,
-              }}
-            >
-              🎯 Target ETH Price
-            </button>
+        {/* Two mutually exclusive ETH price inputs */}
+        <div className="g2">
+          {/* Target ETH Price Card */}
+          <div
+            onClick={() => setEthInputMode('target')}
+            style={{
+              opacity: ethInputMode === 'target' ? 1 : 0.5,
+              cursor: ethInputMode === 'target' ? 'default' : 'pointer',
+              position: 'relative',
+            }}
+          >
+            {ethInputMode !== 'target' && (
+              <div style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                background: 'var(--surface2)',
+                padding: '2px 8px',
+                borderRadius: 4,
+                fontSize: 10,
+                color: 'var(--text3)',
+                zIndex: 1,
+              }}>
+                Click to enable
+              </div>
+            )}
+            <BMNRParameterCard
+              title={`Target ETH Price (${new Date().getFullYear() + 5})`}
+              explanation={`Set your target ETH price for ${new Date().getFullYear() + 5}. Current: $${ethPrice.toLocaleString()}. ${ethInputMode === 'target' ? `Implies ${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}% annual growth.` : 'Click to use this method.'}`}
+              options={[1500, 2500, 4000, 6000, 8000, 10000, 15000, 20000, 30000, 50000]}
+              value={ethTargetPrice}
+              onChange={v => { setEthTargetPrice(v); setEthInputMode('target'); setSelectedScenario('custom'); }}
+              format="$"
+              disabled={ethInputMode !== 'target'}
+            />
+          </div>
+
+          {/* ETH Growth Rate Card */}
+          <div
+            onClick={() => setEthInputMode('growth')}
+            style={{
+              opacity: ethInputMode === 'growth' ? 1 : 0.5,
+              cursor: ethInputMode === 'growth' ? 'default' : 'pointer',
+              position: 'relative',
+            }}
+          >
+            {ethInputMode !== 'growth' && (
+              <div style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                background: 'var(--surface2)',
+                padding: '2px 8px',
+                borderRadius: 4,
+                fontSize: 10,
+                color: 'var(--text3)',
+                zIndex: 1,
+              }}>
+                Click to enable
+              </div>
+            )}
+            <BMNRParameterCard
+              title="ETH Annual Growth Rate (%)"
+              explanation={`Expected annual ETH price appreciation. ${ethInputMode === 'growth' ? `Terminal: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}` : 'Click to use this method.'} Historical: +90% (2024), -67% (2022).`}
+              options={[-30, -15, -5, 0, 5, 10, 15, 20, 30, 40, 60]}
+              value={ethGrowthRate}
+              onChange={v => { setEthGrowthRate(v); setEthInputMode('growth'); setSelectedScenario('custom'); }}
+              format="%"
+              disabled={ethInputMode !== 'growth'}
+            />
           </div>
         </div>
 
+        {/* Active method indicator */}
+        <div style={{
+          marginTop: 8,
+          marginBottom: 16,
+          padding: '8px 12px',
+          background: ethInputMode === 'target' ? 'rgba(126,231,135,0.1)' : 'rgba(34,211,238,0.1)',
+          borderRadius: 6,
+          fontSize: 12,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}>
+          <span style={{ color: ethInputMode === 'target' ? 'var(--mint)' : 'var(--cyan)', fontWeight: 600 }}>
+            {ethInputMode === 'target' ? '🎯 Using Target Price' : '📈 Using Growth Rate'}
+          </span>
+          <span style={{ color: 'var(--text3)' }}>→</span>
+          <span style={{ color: 'var(--text2)' }}>
+            Terminal ETH: <strong>${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}</strong>
+            {ethInputMode === 'target' && ` (${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}%/yr)`}
+            {ethInputMode === 'growth' && ` (from $${ethPrice.toLocaleString()})`}
+          </span>
+        </div>
+
+        <h3 style={{ color: 'var(--cyan)', marginTop: 16, marginBottom: 8 }}>Yield & Costs</h3>
+
         <div className="g2">
-          {ethInputMode === 'growth' ? (
-            <BMNRParameterCard
-              title="ETH Annual Growth Rate (%)"
-              explanation="Expected annual ETH price appreciation. Historical: +500% (2020), -67% (2022), +90% (2024). Crypto is volatile. 10-20% is moderate, 30%+ is bullish, negative for bear scenarios."
-              options={[-30, -15, -5, 0, 5, 10, 15, 20, 30, 40, 60]}
-              value={ethGrowthRate}
-              onChange={v => { setEthGrowthRate(v); setSelectedScenario('custom'); }}
-              format="%"
-            />
-          ) : (
-            <BMNRParameterCard
-              title={`Target ETH Price (${new Date().getFullYear() + 5})`}
-              explanation={`Set your target ETH price for ${new Date().getFullYear() + 5}. Current: $${ethPrice.toLocaleString()}. This implies ${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}% annual growth over 5 years.`}
-              options={[1500, 2500, 4000, 6000, 8000, 10000, 15000, 20000, 30000, 50000]}
-              value={ethTargetPrice}
-              onChange={v => { setEthTargetPrice(v); setSelectedScenario('custom'); }}
-              format="$"
-            />
-          )}
           <BMNRParameterCard
             title="Staking Yield (% APY)"
             explanation="Annual yield from ETH staking. Base Ethereum staking: 3-4% APY. With restaking (EigenLayer): 4-7%+. BMNR currently stakes ~30% of holdings. Higher yield = more ETH accumulation."
