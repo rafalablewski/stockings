@@ -1897,7 +1897,9 @@ const ModelTab = ({
   stakingRatio: number;
 }) => {
   // Model parameters state
+  const [ethInputMode, setEthInputMode] = useState<'growth' | 'target'>('growth');
   const [ethGrowthRate, setEthGrowthRate] = useState(10);
+  const [ethTargetPrice, setEthTargetPrice] = useState(10000);
   const [stakingYield, setStakingYield] = useState(3.5);
   const [navPremium, setNavPremium] = useState(1.0);
   const [dilutionRate, setDilutionRate] = useState(8);
@@ -1942,7 +1944,14 @@ const ModelTab = ({
 
   // STEP 2: Terminal Year (5 years) ETH Price
   const terminalYears = 5;
-  const terminalEthPrice = ethPrice * Math.pow(1 + ethGrowthRate / 100, terminalYears);
+  // Support both growth rate and target price modes
+  const terminalEthPrice = ethInputMode === 'target'
+    ? ethTargetPrice
+    : ethPrice * Math.pow(1 + ethGrowthRate / 100, terminalYears);
+  // Calculate implied values for display
+  const impliedGrowthRate = ethInputMode === 'target'
+    ? (Math.pow(ethTargetPrice / ethPrice, 1 / terminalYears) - 1) * 100
+    : ethGrowthRate;
 
   // STEP 3: Terminal Year ETH Holdings (with staking yield compounding)
   const netYieldRate = (stakingYield - operatingCosts) / 100;
@@ -2052,15 +2061,68 @@ const ModelTab = ({
         {/* ETH & YIELD PARAMETERS */}
         <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>ETH & Yield Model</h3>
 
+        {/* ETH Price Input Mode Toggle */}
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="card-title">ETH Price Projection Method</div>
+          <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            Choose how to project terminal ETH price: use an annual growth rate, or set a specific target price for {new Date().getFullYear() + 5}.
+          </p>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={() => setEthInputMode('growth')}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                borderRadius: 8,
+                border: ethInputMode === 'growth' ? '2px solid var(--cyan)' : '1px solid var(--border)',
+                background: ethInputMode === 'growth' ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
+                color: ethInputMode === 'growth' ? 'var(--cyan)' : 'var(--text3)',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: ethInputMode === 'growth' ? 600 : 400,
+              }}
+            >
+              📈 Annual Growth Rate
+            </button>
+            <button
+              onClick={() => setEthInputMode('target')}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                borderRadius: 8,
+                border: ethInputMode === 'target' ? '2px solid var(--mint)' : '1px solid var(--border)',
+                background: ethInputMode === 'target' ? 'rgba(126,231,135,0.15)' : 'var(--surface2)',
+                color: ethInputMode === 'target' ? 'var(--mint)' : 'var(--text3)',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: ethInputMode === 'target' ? 600 : 400,
+              }}
+            >
+              🎯 Target ETH Price
+            </button>
+          </div>
+        </div>
+
         <div className="g2">
-          <BMNRParameterCard
-            title="ETH Annual Growth Rate (%)"
-            explanation="Expected annual ETH price appreciation. Historical: +500% (2020), -67% (2022), +90% (2024). Crypto is volatile. 10-20% is moderate, 30%+ is bullish, negative for bear scenarios."
-            options={[-30, -15, -5, 0, 5, 10, 15, 20, 30, 40, 60]}
-            value={ethGrowthRate}
-            onChange={v => { setEthGrowthRate(v); setSelectedScenario('custom'); }}
-            format="%"
-          />
+          {ethInputMode === 'growth' ? (
+            <BMNRParameterCard
+              title="ETH Annual Growth Rate (%)"
+              explanation="Expected annual ETH price appreciation. Historical: +500% (2020), -67% (2022), +90% (2024). Crypto is volatile. 10-20% is moderate, 30%+ is bullish, negative for bear scenarios."
+              options={[-30, -15, -5, 0, 5, 10, 15, 20, 30, 40, 60]}
+              value={ethGrowthRate}
+              onChange={v => { setEthGrowthRate(v); setSelectedScenario('custom'); }}
+              format="%"
+            />
+          ) : (
+            <BMNRParameterCard
+              title={`Target ETH Price (${new Date().getFullYear() + 5})`}
+              explanation={`Set your target ETH price for ${new Date().getFullYear() + 5}. Current: $${ethPrice.toLocaleString()}. This implies ${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}% annual growth over 5 years.`}
+              options={[1500, 2500, 4000, 6000, 8000, 10000, 15000, 20000, 30000, 50000]}
+              value={ethTargetPrice}
+              onChange={v => { setEthTargetPrice(v); setSelectedScenario('custom'); }}
+              format="$"
+            />
+          )}
           <BMNRParameterCard
             title="Staking Yield (% APY)"
             explanation="Annual yield from ETH staking. Base Ethereum staking: 3-4% APY. With restaking (EigenLayer): 4-7%+. BMNR currently stakes ~30% of holdings. Higher yield = more ETH accumulation."
@@ -2208,7 +2270,7 @@ const ModelTab = ({
 
           {/* Terminal year metrics */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
-            <Card label="Terminal ETH Price" value={`$${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} sub={`${ethGrowthRate > 0 ? '+' : ''}${ethGrowthRate}%/yr × 5yrs`} color="blue" />
+            <Card label="Terminal ETH Price" value={`$${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} sub={`${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}%/yr × 5yrs`} color="blue" />
             <Card label="Terminal ETH Holdings" value={`${(terminalETH / 1_000_000).toFixed(2)}M`} sub={`+${((terminalETH / currentETH - 1) * 100).toFixed(1)}% from yield`} color="blue" />
             <Card label="Terminal NAV" value={`$${(terminalNAV / 1000).toFixed(2)}B`} sub={`${(terminalNAV / currentNAV).toFixed(1)}x current`} color="blue" />
             <Card label="Terminal Shares" value={`${terminalShares.toFixed(0)}M`} sub={`+${((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution`} color="blue" />
@@ -2236,7 +2298,12 @@ const ModelTab = ({
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 1-4: Terminal Year NAV</div>
                 <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
-                  ETH Price = ${ethPrice.toLocaleString()} × (1 + {ethGrowthRate}%)^5<br/>
+                  {ethInputMode === 'growth' ? (
+                    <>ETH Price = ${ethPrice.toLocaleString()} × (1 + {ethGrowthRate}%)^5<br/></>
+                  ) : (
+                    <>ETH Price = ${ethTargetPrice.toLocaleString()} (target)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ≈ {impliedGrowthRate.toFixed(1)}% annual growth<br/></>
+                  )}
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong><br/><br/>
                   ETH Holdings = {currentETH.toLocaleString()} × (1 + {(netYieldRate * 100).toFixed(2)}%)^5<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{terminalETH.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong><br/><br/>
