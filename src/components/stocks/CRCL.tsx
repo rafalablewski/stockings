@@ -3553,8 +3553,8 @@ function CRCLModel() {
 
         {/* Nav */}
         <nav className="nav">
-          {/* Tabs before dropdown */}
-          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) > tabs.indexOf(t)).map(t => (
+          {/* Overview tab (before dropdown) */}
+          {tabs.filter(t => !t.group).slice(0, 1).map(t => (
             <button
               key={t.id}
               className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
@@ -3572,8 +3572,8 @@ function CRCLModel() {
             CRCL Analysis ↕
           </button>
 
-          {/* Tabs after dropdown */}
-          {tabs.filter(t => !t.group && tabs.findIndex(x => x.group) < tabs.indexOf(t)).map(t => (
+          {/* Remaining ungrouped tabs (includes Model) */}
+          {tabs.filter(t => !t.group).slice(1).map(t => (
             <button
               key={t.id}
               className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
