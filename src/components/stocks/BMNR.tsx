@@ -1535,6 +1535,7 @@ const BMNRDilutionAnalysis = () => {
   // group: optional grouping for nested display (stock-specific tabs)
   const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
     { id: 'overview', label: 'Overview', type: 'tracking' },
+    { id: 'model', label: 'Model', type: 'projection' },
     // Stock-specific projections (grouped under "BMNR Analysis")
     { id: 'ethereum', label: 'Ethereum', type: 'projection', group: 'BMNR Analysis' },
     { id: 'staking', label: 'Staking', type: 'projection', group: 'BMNR Analysis' },
@@ -1675,6 +1676,7 @@ const BMNRDilutionAnalysis = () => {
         {/* Main Content */}
         <main className="main">
         {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} />}
+        {activeTab === 'model' && <ModelTab currentETH={currentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
         {activeTab === 'scenarios' && <ScenariosTab calc={calc} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} quarterlyDividend={quarterlyDividend} dividendGrowthRate={dividendGrowthRate} />}
         {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
         {activeTab === 'staking' && <StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} />}
@@ -1693,6 +1695,609 @@ const BMNRDilutionAnalysis = () => {
         </main>
       </div>
     </>
+  );
+};
+
+// ============================================================================
+// MODEL TAB - DCF Valuation with Parameter Cards (BMNR-specific)
+// ============================================================================
+
+// 6 Scenario Presets for ETH Treasury Company
+const BMNR_SCENARIO_PRESETS = {
+  worst: {
+    label: 'Worst',
+    desc: 'ETH crash, regulatory ban, massive dilution, staking failures',
+    icon: '💀',
+    color: '#dc2626',
+    ethGrowthRate: -30,      // ETH crashes
+    stakingYield: 1,         // Minimal yield
+    navPremium: 0.4,         // 60% discount to NAV
+    dilutionRate: 25,        // Massive dilution
+    operatingCosts: 3,       // High costs
+    discountRate: 30,        // Very high risk premium
+    terminalGrowth: 0,       // No growth
+    regulatoryRisk: 50,      // High probability of adverse regulation
+    liquidityRisk: 40,       // Large holder can't easily exit
+    techRisk: 30,            // Staking/smart contract risk
+  },
+  bear: {
+    label: 'Bear',
+    desc: 'ETH underperforms, moderate dilution, NAV discount persists',
+    icon: '🐻',
+    color: '#f97316',
+    ethGrowthRate: -5,       // ETH slightly down
+    stakingYield: 2,         // Below average yield
+    navPremium: 0.7,         // 30% discount
+    dilutionRate: 15,        // Significant dilution
+    operatingCosts: 2,       // Moderate costs
+    discountRate: 22,        // High risk premium
+    terminalGrowth: 1,       // Minimal growth
+    regulatoryRisk: 25,
+    liquidityRisk: 20,
+    techRisk: 15,
+  },
+  base: {
+    label: 'Base',
+    desc: 'ETH tracks crypto market, moderate premium, disciplined capital',
+    icon: '📊',
+    color: '#eab308',
+    ethGrowthRate: 10,       // Moderate appreciation
+    stakingYield: 3.5,       // Current yield range
+    navPremium: 1.0,         // Trading at NAV
+    dilutionRate: 8,         // Normal equity raises
+    operatingCosts: 1,       // Efficient operations
+    discountRate: 16,        // Reasonable risk premium
+    terminalGrowth: 2,       // GDP-like growth
+    regulatoryRisk: 10,
+    liquidityRisk: 10,
+    techRisk: 8,
+  },
+  mgmt: {
+    label: 'Mgmt',
+    desc: 'Management targets: ETH outperforms, premium valuation, yield optimization',
+    icon: '📈',
+    color: '#22c55e',
+    ethGrowthRate: 20,       // ETH bull case
+    stakingYield: 4.5,       // Optimized staking + restaking
+    navPremium: 1.2,         // 20% premium (like MSTR)
+    dilutionRate: 5,         // Accretive raises only
+    operatingCosts: 0.5,     // Low costs
+    discountRate: 14,        // Lower risk as execution proves out
+    terminalGrowth: 2.5,
+    regulatoryRisk: 5,
+    liquidityRisk: 5,
+    techRisk: 5,
+  },
+  bull: {
+    label: 'Bull',
+    desc: 'ETH rallies, institutional adoption, significant NAV premium',
+    icon: '🐂',
+    color: '#06b6d4',
+    ethGrowthRate: 35,       // Strong ETH appreciation
+    stakingYield: 5.5,       // High yield environment
+    navPremium: 1.5,         // 50% premium
+    dilutionRate: 3,         // Minimal dilution needed
+    operatingCosts: 0.3,     // Very efficient
+    discountRate: 12,        // De-risked
+    terminalGrowth: 3,
+    regulatoryRisk: 3,
+    liquidityRisk: 3,
+    techRisk: 3,
+  },
+  moon: {
+    label: 'Moon',
+    desc: 'ETH becomes global SoV, massive premium, zero dilution needed',
+    icon: '🚀',
+    color: '#a855f7',
+    ethGrowthRate: 60,       // ETH to new ATH
+    stakingYield: 7,         // MEV + restaking optimized
+    navPremium: 2.0,         // 100% premium (MSTR-like)
+    dilutionRate: 0,         // No dilution - self-funding
+    operatingCosts: 0.2,     // Minimal overhead
+    discountRate: 10,        // Blue chip
+    terminalGrowth: 4,       // Crypto economy growth
+    regulatoryRisk: 1,
+    liquidityRisk: 1,
+    techRisk: 1,
+  },
+};
+
+// ParameterCard component with color gradient based on value
+const BMNRParameterCard = ({
+  title,
+  explanation,
+  options,
+  value,
+  onChange,
+  format = '',
+  inverse = false, // true = lower values are bullish (risk, dilution, costs)
+}: {
+  title: string;
+  explanation: string;
+  options: number[];
+  value: number;
+  onChange: (v: number) => void;
+  format?: string;
+  inverse?: boolean;
+}) => {
+  const formatValue = (v: number) => {
+    if (format === '$') return `$${v.toLocaleString()}`;
+    if (format === '%') return `${v}%`;
+    if (format === 'x') return `${v.toFixed(2)}x`;
+    if (format === 'ETH') return `${v.toLocaleString()} ETH`;
+    return String(v);
+  };
+
+  // Color based on position in the sorted array (bullish to bearish gradient)
+  const getButtonColor = (optionValue: number, idx: number, total: number) => {
+    const sortedOptions = [...options].sort((a, b) => a - b);
+    const position = sortedOptions.indexOf(optionValue);
+    const normalizedPos = position / (total - 1); // 0 to 1
+
+    // For inverse metrics, flip the gradient
+    const effectivePos = inverse ? 1 - normalizedPos : normalizedPos;
+
+    // Color stops: red (0) -> orange (0.25) -> yellow (0.5) -> lime (0.75) -> green (1)
+    if (effectivePos <= 0.2) return { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' };
+    if (effectivePos <= 0.35) return { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' };
+    if (effectivePos <= 0.5) return { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' };
+    if (effectivePos <= 0.65) return { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' };
+    if (effectivePos <= 0.8) return { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' };
+    return { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' };
+  };
+
+  return (
+    <div className="card">
+      <div className="card-title">{title}</div>
+      <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+        {explanation}
+      </p>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+        {options.map((opt, idx) => {
+          const isActive = value === opt;
+          const colors = getButtonColor(opt, idx, options.length);
+          return (
+            <div
+              key={opt}
+              onClick={() => onChange(opt)}
+              style={{
+                flex: '1 1 auto',
+                minWidth: 44,
+                padding: '8px 6px',
+                borderRadius: 8,
+                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                background: isActive ? colors.bg : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? colors.text : 'var(--text3)',
+              }}
+            >
+              {formatValue(opt)}
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
+        {inverse ? '← Bullish | Bearish →' : '← Bearish | Bullish →'}
+      </div>
+    </div>
+  );
+};
+
+// ModelTab component for BMNR - NAV-based DCF valuation
+const ModelTab = ({
+  currentETH, ethPrice, currentShares, currentStockPrice,
+  baseStakingAPY, stakingRatio,
+}: {
+  currentETH: number;
+  ethPrice: number;
+  currentShares: number;
+  currentStockPrice: number;
+  baseStakingAPY: number;
+  stakingRatio: number;
+}) => {
+  // Model parameters state
+  const [ethGrowthRate, setEthGrowthRate] = useState(10);
+  const [stakingYield, setStakingYield] = useState(3.5);
+  const [navPremium, setNavPremium] = useState(1.0);
+  const [dilutionRate, setDilutionRate] = useState(8);
+  const [operatingCosts, setOperatingCosts] = useState(1);
+  const [discountRate, setDiscountRate] = useState(16);
+  const [terminalGrowth, setTerminalGrowth] = useState(2);
+  const [regulatoryRisk, setRegulatoryRisk] = useState(10);
+  const [liquidityRisk, setLiquidityRisk] = useState(10);
+  const [techRisk, setTechRisk] = useState(8);
+  const [selectedScenario, setSelectedScenario] = useState('base');
+
+  type ScenarioKey = 'worst' | 'bear' | 'base' | 'mgmt' | 'bull' | 'moon';
+
+  const applyScenario = (scenario: ScenarioKey) => {
+    const p = BMNR_SCENARIO_PRESETS[scenario];
+    setEthGrowthRate(p.ethGrowthRate);
+    setStakingYield(p.stakingYield);
+    setNavPremium(p.navPremium);
+    setDilutionRate(p.dilutionRate);
+    setOperatingCosts(p.operatingCosts);
+    setDiscountRate(p.discountRate);
+    setTerminalGrowth(p.terminalGrowth);
+    setRegulatoryRisk(p.regulatoryRisk);
+    setLiquidityRisk(p.liquidityRisk);
+    setTechRisk(p.techRisk);
+    setSelectedScenario(scenario);
+  };
+
+  // Get current scenario info
+  const currentPreset = BMNR_SCENARIO_PRESETS[selectedScenario as ScenarioKey];
+  const scenario = currentPreset
+    ? { name: currentPreset.label, color: currentPreset.color, icon: currentPreset.icon }
+    : { name: 'Custom', color: '#a855f7', icon: '⚙️' };
+
+  // ============================================================================
+  // DCF CALCULATION - NAV-based for ETH Treasury Company
+  // ============================================================================
+
+  // STEP 1: Current NAV Calculation
+  const currentNAV = (currentETH * ethPrice) / 1_000_000; // $M
+  const navPerShare = currentNAV / currentShares; // $/share
+
+  // STEP 2: Terminal Year (5 years) ETH Price
+  const terminalYears = 5;
+  const terminalEthPrice = ethPrice * Math.pow(1 + ethGrowthRate / 100, terminalYears);
+
+  // STEP 3: Terminal Year ETH Holdings (with staking yield compounding)
+  const netYieldRate = (stakingYield - operatingCosts) / 100;
+  const terminalETH = currentETH * Math.pow(1 + netYieldRate, terminalYears);
+
+  // STEP 4: Terminal Year NAV
+  const terminalNAV = (terminalETH * terminalEthPrice) / 1_000_000; // $M
+
+  // STEP 5: Annual Staking Cash Flow (for dividend/buyback capacity)
+  const annualStakingRevenue = (currentETH * ethPrice * stakingYield / 100) / 1_000_000; // $M/year
+  const annualNetCashFlow = annualStakingRevenue * (1 - operatingCosts / stakingYield);
+
+  // STEP 6: Terminal Enterprise Value using Gordon Growth Model
+  // For NAV companies: EV = NAV × Premium Multiple, or use cash flow approach
+  // Using cash flow: Terminal FCF = Terminal NAV × Net Yield
+  const terminalFCF = terminalNAV * netYieldRate; // $M
+  const discountRateDecimal = discountRate / 100;
+  const terminalGrowthDecimal = terminalGrowth / 100;
+  const spread = discountRateDecimal - terminalGrowthDecimal;
+  const terminalEV = spread > 0.01 ? terminalFCF / spread : 0; // $M
+
+  // Alternative: NAV × Multiple approach (use whichever is higher as sanity check)
+  const terminalEV_NAV = terminalNAV * navPremium; // $M
+
+  // Use the higher of the two approaches
+  const effectiveTerminalEV = Math.max(terminalEV, terminalEV_NAV);
+
+  // STEP 7: Discount Terminal Value to Present
+  const discountFactor = Math.pow(1 + discountRateDecimal, terminalYears);
+  const presentValueEV = effectiveTerminalEV / discountFactor; // $M
+
+  // STEP 8: Risk Factor (probability of success)
+  const riskFactor = (1 - regulatoryRisk/100) * (1 - liquidityRisk/100) * (1 - techRisk/100);
+
+  // STEP 9: Risk-Adjusted Present Value
+  const riskAdjustedEV = presentValueEV * riskFactor; // $M
+
+  // STEP 10: Diluted Shares at Terminal Year
+  const terminalShares = currentShares * Math.pow(1 + dilutionRate / 100, terminalYears);
+
+  // STEP 11: Target Stock Price
+  const targetStockPrice = riskAdjustedEV > 0 && terminalShares > 0
+    ? riskAdjustedEV / terminalShares
+    : 0;
+
+  // STEP 12: Implied Upside/Downside
+  const impliedUpside = currentStockPrice > 0
+    ? ((targetStockPrice - currentStockPrice) / currentStockPrice) * 100
+    : 0;
+
+  // STEP 13: Valuation Multiples
+  const currentPriceToNAV = currentStockPrice / navPerShare;
+  const terminalPriceToNAV = targetStockPrice / (terminalNAV / terminalShares);
+  const impliedDividendYield = annualNetCashFlow / (currentShares * currentStockPrice) * 100;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <h2 className="section-head">Model</h2>
+
+      {/* ASSUMPTIONS SECTION */}
+      <>
+        <div className="highlight">
+          <h3>{scenario.icon} {scenario.name} Scenario</h3>
+          <p className="text-sm">
+            Configure model assumptions for BMNR's ETH treasury valuation. Changes flow to NAV projections and DCF valuation.
+          </p>
+        </div>
+
+        {/* Scenario Presets - 6 scenarios from Worst to Moon */}
+        <div className="card">
+          <div className="card-title">Scenario Presets</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
+            {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
+              const preset = BMNR_SCENARIO_PRESETS[s];
+              const isActive = selectedScenario === s;
+              return (
+                <div
+                  key={s}
+                  onClick={() => applyScenario(s)}
+                  style={{
+                    padding: 12,
+                    borderRadius: 10,
+                    border: isActive ? `2px solid ${preset.color}` : '1px solid var(--border)',
+                    background: isActive ? `${preset.color}15` : 'var(--surface2)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    textAlign: 'center',
+                  }}
+                >
+                  <div style={{ fontSize: 20, marginBottom: 4 }}>{preset.icon}</div>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)', marginBottom: 4 }}>
+                    {preset.label}
+                  </div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
+                    {preset.ethGrowthRate > 0 ? '+' : ''}{preset.ethGrowthRate}% ETH · {preset.navPremium}x
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {/* Always show to prevent layout shift */}
+          <div style={{ marginTop: 12, padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
+            ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
+          </div>
+        </div>
+
+        {/* ETH & YIELD PARAMETERS */}
+        <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>ETH & Yield Model</h3>
+
+        <div className="g2">
+          <BMNRParameterCard
+            title="ETH Annual Growth Rate (%)"
+            explanation="Expected annual ETH price appreciation. Historical: +500% (2020), -67% (2022), +90% (2024). Crypto is volatile. 10-20% is moderate, 30%+ is bullish, negative for bear scenarios."
+            options={[-30, -15, -5, 0, 5, 10, 15, 20, 30, 40, 60]}
+            value={ethGrowthRate}
+            onChange={v => { setEthGrowthRate(v); setSelectedScenario('custom'); }}
+            format="%"
+          />
+          <BMNRParameterCard
+            title="Staking Yield (% APY)"
+            explanation="Annual yield from ETH staking. Base Ethereum staking: 3-4% APY. With restaking (EigenLayer): 4-7%+. BMNR currently stakes ~30% of holdings. Higher yield = more ETH accumulation."
+            options={[1, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 7]}
+            value={stakingYield}
+            onChange={v => { setStakingYield(v); setSelectedScenario('custom'); }}
+            format="%"
+          />
+        </div>
+
+        <div className="g2">
+          <BMNRParameterCard
+            title="NAV Premium/Discount (x)"
+            explanation="Stock price vs NAV per share. 1.0x = at NAV. <1x = discount (typical for closed-end funds). >1x = premium (like MSTR at 2-3x). Premium justified by: liquidity, management, yield optimization, regulatory wrapper."
+            options={[0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.5, 2.0]}
+            value={navPremium}
+            onChange={v => { setNavPremium(v); setSelectedScenario('custom'); }}
+            format="x"
+          />
+          <BMNRParameterCard
+            title="Operating Costs (% of AUM)"
+            explanation="Annual operating expenses as % of ETH holdings value. Includes: management, custody, legal, admin. 0.3-0.5% = ETF-like efficient. 1-2% = typical fund. 3%+ = high overhead eroding returns."
+            options={[0.2, 0.3, 0.5, 0.75, 1, 1.5, 2, 2.5, 3]}
+            value={operatingCosts}
+            onChange={v => { setOperatingCosts(v); setSelectedScenario('custom'); }}
+            format="%"
+            inverse
+          />
+        </div>
+
+        {/* CAPITAL STRUCTURE PARAMETERS */}
+        <h3 style={{ color: 'var(--mint)', marginTop: 24, marginBottom: 8 }}>Capital Structure</h3>
+
+        <div className="g2">
+          <BMNRParameterCard
+            title="Annual Dilution Rate (%)"
+            explanation="Expected share count increase from equity raises, warrants, stock comp. Treasury companies often raise capital to buy more assets. 0% = self-funding. 5-10% = typical. 20%+ = aggressive accumulation."
+            options={[0, 2, 3, 5, 8, 10, 12, 15, 20, 25]}
+            value={dilutionRate}
+            onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }}
+            format="%"
+            inverse
+          />
+          <BMNRParameterCard
+            title="Discount Rate / WACC (%)"
+            explanation="Required return for discounting future cash flows. Higher for risky assets. 10% = blue chip. 15-20% = volatile crypto exposure. 25%+ = speculative. Should exceed ETH expected return for margin of safety."
+            options={[8, 10, 12, 14, 16, 18, 20, 22, 25, 30]}
+            value={discountRate}
+            onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }}
+            format="%"
+            inverse
+          />
+        </div>
+
+        <div className="g2">
+          <BMNRParameterCard
+            title="Terminal Growth Rate (%)"
+            explanation="Perpetual growth rate after terminal year. For crypto treasury: assumes long-term ETH ecosystem growth. Should not exceed nominal GDP (3-4%). 0% = no growth. 2-3% = moderate. 4%+ = aggressive."
+            options={[0, 1, 1.5, 2, 2.5, 3, 3.5, 4]}
+            value={terminalGrowth}
+            onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }}
+            format="%"
+          />
+          <div className="card">
+            <div className="card-title">Current Position</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Live data from BMNR holdings. Used as starting point for projections.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 12 }}>
+              <div><span style={{ color: 'var(--text3)' }}>ETH Holdings:</span> <strong>{currentETH.toLocaleString()}</strong></div>
+              <div><span style={{ color: 'var(--text3)' }}>ETH Price:</span> <strong>${ethPrice.toLocaleString()}</strong></div>
+              <div><span style={{ color: 'var(--text3)' }}>Current NAV:</span> <strong>${currentNAV.toFixed(0)}M</strong></div>
+              <div><span style={{ color: 'var(--text3)' }}>NAV/Share:</span> <strong>${navPerShare.toFixed(2)}</strong></div>
+            </div>
+          </div>
+        </div>
+
+        {/* RISK PARAMETERS */}
+        <h3 style={{ color: 'var(--coral)', marginTop: 24, marginBottom: 8 }}>Risk Probability Factors</h3>
+        <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>
+          Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Liq) × (1-Tech) = {(riskFactor * 100).toFixed(0)}% success probability.
+        </p>
+
+        <div className="g3">
+          <BMNRParameterCard
+            title="Regulatory Risk (%)"
+            explanation="Probability of adverse crypto regulation (SEC enforcement, tax changes, custody rules). US crypto regulation uncertain. 5% = favorable outlook. 25%+ = major regulatory threats."
+            options={[1, 3, 5, 8, 10, 15, 20, 25, 35, 50]}
+            value={regulatoryRisk}
+            onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }}
+            format="%"
+            inverse
+          />
+          <BMNRParameterCard
+            title="Liquidity Risk (%)"
+            explanation="Probability large ETH position can't be exited without significant market impact. 4M+ ETH is 3.5% of supply. 5% = deep markets. 30%+ = illiquid or market stress scenario."
+            options={[1, 3, 5, 8, 10, 15, 20, 25, 30, 40]}
+            value={liquidityRisk}
+            onChange={v => { setLiquidityRisk(v); setSelectedScenario('custom'); }}
+            format="%"
+            inverse
+          />
+          <BMNRParameterCard
+            title="Technology Risk (%)"
+            explanation="Probability of smart contract failure, staking slashing, or Ethereum network issues. ETH is battle-tested but staking has risks. 3% = robust. 20%+ = novel/risky staking strategies."
+            options={[1, 3, 5, 8, 10, 15, 20, 25, 30]}
+            value={techRisk}
+            onChange={v => { setTechRisk(v); setSelectedScenario('custom'); }}
+            format="%"
+            inverse
+          />
+        </div>
+
+        {/* DCF VALUATION OUTPUT */}
+        <div className="card" style={{ marginTop: 24, border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
+          <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
+
+          {/* Primary metrics */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
+            <Card
+              label="Target Stock Price"
+              value={targetStockPrice > 0 ? `$${targetStockPrice.toFixed(2)}` : 'N/A'}
+              sub={`vs $${currentStockPrice.toFixed(2)} current`}
+              color="cyan"
+            />
+            <Card
+              label="Implied Upside"
+              value={targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}
+              sub={impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}
+              color={impliedUpside > 50 ? 'mint' : impliedUpside > 0 ? 'yellow' : 'red'}
+            />
+            <Card
+              label="Present Value"
+              value={`$${(riskAdjustedEV / 1000).toFixed(2)}B`}
+              sub={`${(riskFactor * 100).toFixed(0)}% prob × $${(presentValueEV / 1000).toFixed(2)}B`}
+              color="violet"
+            />
+            <Card
+              label="Market Cap"
+              value={`$${((currentShares * currentStockPrice) / 1000).toFixed(2)}B`}
+              sub={`${currentPriceToNAV.toFixed(2)}x current NAV`}
+              color="green"
+            />
+          </div>
+
+          {/* Terminal year metrics */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
+            <Card label="Terminal ETH Price" value={`$${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} sub={`${ethGrowthRate > 0 ? '+' : ''}${ethGrowthRate}%/yr × 5yrs`} color="blue" />
+            <Card label="Terminal ETH Holdings" value={`${(terminalETH / 1_000_000).toFixed(2)}M`} sub={`+${((terminalETH / currentETH - 1) * 100).toFixed(1)}% from yield`} color="blue" />
+            <Card label="Terminal NAV" value={`$${(terminalNAV / 1000).toFixed(2)}B`} sub={`${(terminalNAV / currentNAV).toFixed(1)}x current`} color="blue" />
+            <Card label="Terminal Shares" value={`${terminalShares.toFixed(0)}M`} sub={`+${((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution`} color="blue" />
+          </div>
+
+          {/* Additional metrics */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+            <Card label="Current P/NAV" value={`${currentPriceToNAV.toFixed(2)}x`} sub={currentPriceToNAV > 1 ? 'Premium' : 'Discount'} color="purple" />
+            <Card label="Implied Yield" value={`${impliedDividendYield.toFixed(2)}%`} sub="Net staking / Mkt Cap" color="purple" />
+            <Card label="Annual Staking Rev" value={`$${annualStakingRevenue.toFixed(1)}M`} sub={`${stakingYield}% × ${(currentETH * ethPrice / 1_000_000).toFixed(0)}M`} color="purple" />
+            <Card label="Terminal EV Method" value={terminalEV > terminalEV_NAV ? 'DCF' : 'NAV×'} sub={`$${(effectiveTerminalEV / 1000).toFixed(2)}B`} color="purple" />
+          </div>
+        </div>
+
+        {/* CALCULATION METHODOLOGY */}
+        <div className="card" style={{ marginTop: 16 }}>
+          <div className="card-title">Calculation Methodology</div>
+          <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
+            <p style={{ marginBottom: 12 }}>
+              This DCF model calculates BMNR intrinsic value using an <strong>NAV-based terminal value approach</strong>,
+              incorporating ETH price growth, staking yield accumulation, and risk-adjusted discounting.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 1-4: Terminal Year NAV</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  ETH Price = ${ethPrice.toLocaleString()} × (1 + {ethGrowthRate}%)^5<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong><br/><br/>
+                  ETH Holdings = {currentETH.toLocaleString()} × (1 + {(netYieldRate * 100).toFixed(2)}%)^5<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{terminalETH.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong><br/><br/>
+                  Terminal NAV = {(terminalETH / 1_000_000).toFixed(2)}M × ${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${(terminalNAV / 1000).toFixed(2)}B</strong>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 5-6: Terminal Value</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  <strong>Method 1 - Gordon Growth:</strong><br/>
+                  Terminal FCF = ${(terminalNAV / 1000).toFixed(2)}B × {(netYieldRate * 100).toFixed(2)}%<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${(terminalFCF / 1000).toFixed(3)}B<br/>
+                  TV = FCF ÷ ({discountRate}% - {terminalGrowth}%)<br/>
+                  &nbsp;&nbsp; = <strong>${(terminalEV / 1000).toFixed(2)}B</strong><br/><br/>
+                  <strong>Method 2 - NAV Multiple:</strong><br/>
+                  TV = ${(terminalNAV / 1000).toFixed(2)}B × {navPremium}x = <strong>${(terminalEV_NAV / 1000).toFixed(2)}B</strong><br/>
+                  Using: <strong>{terminalEV > terminalEV_NAV ? 'Gordon Growth' : 'NAV Multiple'}</strong>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 7-9: Risk Adjustment</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  Present Value = ${(effectiveTerminalEV / 1000).toFixed(2)}B ÷ (1 + {discountRate}%)^5<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${(effectiveTerminalEV / 1000).toFixed(2)}B ÷ {discountFactor.toFixed(3)}<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${(presentValueEV / 1000).toFixed(2)}B</strong><br/><br/>
+                  Risk Factor = (1-{regulatoryRisk}%) × (1-{liquidityRisk}%) × (1-{techRisk}%)<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{(riskFactor * 100).toFixed(1)}%</strong><br/><br/>
+                  Risk-Adj EV = ${(presentValueEV / 1000).toFixed(2)}B × {(riskFactor * 100).toFixed(1)}%<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${(riskAdjustedEV / 1000).toFixed(2)}B</strong>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 10-12: Target Price</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  Diluted Shares = {currentShares}M × (1 + {dilutionRate}%)^5<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{terminalShares.toFixed(0)}M</strong><br/><br/>
+                  Target Price = ${(riskAdjustedEV / 1000).toFixed(2)}B ÷ {terminalShares.toFixed(0)}M<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${targetStockPrice.toFixed(2)}</strong><br/><br/>
+                  Upside = (${targetStockPrice.toFixed(2)} - ${currentStockPrice}) / ${currentStockPrice}<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>{impliedUpside > 0 ? '+' : ''}{impliedUpside.toFixed(0)}%</strong>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 12, padding: 10, background: 'rgba(34,211,238,0.1)', borderRadius: 6, fontSize: 11 }}>
+              <strong>Key Assumptions:</strong> Terminal year is {new Date().getFullYear() + 5} (5 years out).
+              Uses max of Gordon Growth or NAV×Multiple for terminal value.
+              Risk factors are multiplicative (independent events).
+              Staking yield compounds ETH holdings; operating costs reduce effective yield.
+            </div>
+          </div>
+        </div>
+      </>
+    </div>
   );
 };
 

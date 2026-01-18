@@ -689,6 +689,7 @@ const MAJOR_SHAREHOLDERS = [
 // group: optional grouping for nested display (stock-specific tabs)
 const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
   { id: 'overview', label: 'Overview', type: 'tracking' },
+  { id: 'model', label: 'Model', type: 'projection' },
   // Stock-specific projections (grouped under "CRCL Analysis")
   { id: 'usdc', label: 'USDC', type: 'projection', group: 'CRCL Analysis' },
   // Common projections
@@ -1781,6 +1782,603 @@ const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
   </div>
 ));
 CFANotes.displayName = 'CFANotes';
+
+// ============================================================================
+// MODEL TAB - DCF Valuation with Parameter Cards (CRCL-specific)
+// ============================================================================
+
+// 6 Scenario Presets for USDC/Stablecoin Company
+const CRCL_SCENARIO_PRESETS = {
+  worst: {
+    label: 'Worst',
+    desc: 'Fed cuts to 1%, USDC loses share, CBDC competition, regulatory crackdown',
+    icon: '💀',
+    color: '#dc2626',
+    usdcGrowthRate: -20,     // USDC circulation shrinks
+    reserveYield: 1.0,       // Fed cuts aggressively
+    marketShare: 15,         // Loses share to USDT/CBDC
+    distributionCost: 60,    // Coinbase takes more
+    operatingMargin: 15,     // Compressed margins
+    discountRate: 25,        // High risk premium
+    terminalGrowth: 0,       // No growth
+    regulatoryRisk: 40,      // High probability of adverse action
+    competitionRisk: 35,     // CBDC/USDT threat
+    rateRisk: 30,            // Fed cuts dramatically
+  },
+  bear: {
+    label: 'Bear',
+    desc: 'Rate cuts compress yield, moderate market share loss, CBDC headwinds',
+    icon: '🐻',
+    color: '#f97316',
+    usdcGrowthRate: 5,       // Slow growth
+    reserveYield: 2.5,       // Fed cuts
+    marketShare: 22,         // Some share loss
+    distributionCost: 56,    // Coinbase maintains leverage
+    operatingMargin: 28,     // Pressured margins
+    discountRate: 18,        // Elevated risk
+    terminalGrowth: 1.5,     // Below GDP
+    regulatoryRisk: 20,
+    competitionRisk: 20,
+    rateRisk: 20,
+  },
+  base: {
+    label: 'Base',
+    desc: 'Moderate stablecoin growth, rates normalize at 3%, market share stable',
+    icon: '📊',
+    color: '#eab308',
+    usdcGrowthRate: 15,      // Healthy growth
+    reserveYield: 3.5,       // Normalized rates
+    marketShare: 28,         // Maintains share
+    distributionCost: 54,    // Current Coinbase deal
+    operatingMargin: 35,     // Stable margins
+    discountRate: 14,        // Moderate risk
+    terminalGrowth: 2.5,     // GDP-like
+    regulatoryRisk: 10,
+    competitionRisk: 12,
+    rateRisk: 10,
+  },
+  mgmt: {
+    label: 'Mgmt',
+    desc: 'Management targets: stablecoin legislation passes, USDC grows, margins expand',
+    icon: '📈',
+    color: '#22c55e',
+    usdcGrowthRate: 25,      // Strong adoption
+    reserveYield: 3.5,       // Stable rates
+    marketShare: 32,         // Gains share
+    distributionCost: 50,    // Better Coinbase terms
+    operatingMargin: 42,     // Scale benefits
+    discountRate: 12,        // De-risked
+    terminalGrowth: 3,
+    regulatoryRisk: 5,
+    competitionRisk: 8,
+    rateRisk: 8,
+  },
+  bull: {
+    label: 'Bull',
+    desc: 'Stablecoin TAM explodes, USDC dominates regulated market, margin expansion',
+    icon: '🐂',
+    color: '#06b6d4',
+    usdcGrowthRate: 40,      // Rapid growth
+    reserveYield: 4.0,       // Higher for longer
+    marketShare: 38,         // Takes share from USDT
+    distributionCost: 45,    // Renegotiated deal
+    operatingMargin: 50,     // Strong scale
+    discountRate: 11,        // Lower risk
+    terminalGrowth: 3.5,
+    regulatoryRisk: 3,
+    competitionRisk: 5,
+    rateRisk: 5,
+  },
+  moon: {
+    label: 'Moon',
+    desc: 'USDC becomes internet money, trillion+ circulation, best-in-class margins',
+    icon: '🚀',
+    color: '#a855f7',
+    usdcGrowthRate: 60,      // Hyper growth
+    reserveYield: 4.5,       // Higher rates persist
+    marketShare: 45,         // Regulatory moat
+    distributionCost: 40,    // Direct distribution
+    operatingMargin: 60,     // Tech platform margins
+    discountRate: 10,        // Blue chip
+    terminalGrowth: 4,
+    regulatoryRisk: 1,
+    competitionRisk: 2,
+    rateRisk: 2,
+  },
+};
+
+// ParameterCard component with color gradient based on value
+const CRCLParameterCard = ({
+  title,
+  explanation,
+  options,
+  value,
+  onChange,
+  format = '',
+  inverse = false, // true = lower values are bullish (risk, costs)
+}: {
+  title: string;
+  explanation: string;
+  options: number[];
+  value: number;
+  onChange: (v: number) => void;
+  format?: string;
+  inverse?: boolean;
+}) => {
+  const formatValue = (v: number) => {
+    if (format === '$') return `$${v}B`;
+    if (format === '%') return `${v}%`;
+    if (format === 'x') return `${v.toFixed(1)}x`;
+    return String(v);
+  };
+
+  // Color based on position in the sorted array (bullish to bearish gradient)
+  const getButtonColor = (optionValue: number, idx: number, total: number) => {
+    const sortedOptions = [...options].sort((a, b) => a - b);
+    const position = sortedOptions.indexOf(optionValue);
+    const normalizedPos = position / (total - 1); // 0 to 1
+
+    // For inverse metrics, flip the gradient
+    const effectivePos = inverse ? 1 - normalizedPos : normalizedPos;
+
+    // Color stops: red (0) -> orange (0.25) -> yellow (0.5) -> lime (0.75) -> green (1)
+    if (effectivePos <= 0.2) return { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' };
+    if (effectivePos <= 0.35) return { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' };
+    if (effectivePos <= 0.5) return { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' };
+    if (effectivePos <= 0.65) return { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' };
+    if (effectivePos <= 0.8) return { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' };
+    return { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' };
+  };
+
+  return (
+    <div className="card">
+      <div className="card-title">{title}</div>
+      <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+        {explanation}
+      </p>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+        {options.map((opt, idx) => {
+          const isActive = value === opt;
+          const colors = getButtonColor(opt, idx, options.length);
+          return (
+            <div
+              key={opt}
+              onClick={() => onChange(opt)}
+              style={{
+                flex: '1 1 auto',
+                minWidth: 44,
+                padding: '8px 6px',
+                borderRadius: 8,
+                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                background: isActive ? colors.bg : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? colors.text : 'var(--text3)',
+              }}
+            >
+              {formatValue(opt)}
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
+        {inverse ? '← Bullish | Bearish →' : '← Bearish | Bullish →'}
+      </div>
+    </div>
+  );
+};
+
+// ModelTab component for CRCL - USDC/Reserve yield DCF valuation
+const CRCLModelTab = ({
+  currentUSDC,
+  currentShares,
+  currentStockPrice,
+  currentMarketShare,
+}: {
+  currentUSDC: number;
+  currentShares: number;
+  currentStockPrice: number;
+  currentMarketShare: number;
+}) => {
+  // Model parameters state
+  const [usdcGrowthRate, setUsdcGrowthRate] = useState(15);
+  const [reserveYield, setReserveYield] = useState(3.5);
+  const [marketShare, setMarketShare] = useState(28);
+  const [distributionCost, setDistributionCost] = useState(54);
+  const [operatingMargin, setOperatingMargin] = useState(35);
+  const [discountRate, setDiscountRate] = useState(14);
+  const [terminalGrowth, setTerminalGrowth] = useState(2.5);
+  const [regulatoryRisk, setRegulatoryRisk] = useState(10);
+  const [competitionRisk, setCompetitionRisk] = useState(12);
+  const [rateRisk, setRateRisk] = useState(10);
+  const [selectedScenario, setSelectedScenario] = useState('base');
+
+  type ScenarioKey = 'worst' | 'bear' | 'base' | 'mgmt' | 'bull' | 'moon';
+
+  const applyScenario = (scenario: ScenarioKey) => {
+    const p = CRCL_SCENARIO_PRESETS[scenario];
+    setUsdcGrowthRate(p.usdcGrowthRate);
+    setReserveYield(p.reserveYield);
+    setMarketShare(p.marketShare);
+    setDistributionCost(p.distributionCost);
+    setOperatingMargin(p.operatingMargin);
+    setDiscountRate(p.discountRate);
+    setTerminalGrowth(p.terminalGrowth);
+    setRegulatoryRisk(p.regulatoryRisk);
+    setCompetitionRisk(p.competitionRisk);
+    setRateRisk(p.rateRisk);
+    setSelectedScenario(scenario);
+  };
+
+  // Get current scenario info
+  const currentPreset = CRCL_SCENARIO_PRESETS[selectedScenario as ScenarioKey];
+  const scenario = currentPreset
+    ? { name: currentPreset.label, color: currentPreset.color, icon: currentPreset.icon }
+    : { name: 'Custom', color: '#a855f7', icon: '⚙️' };
+
+  // ============================================================================
+  // DCF CALCULATION - Revenue/Yield-based for Stablecoin Company
+  // ============================================================================
+
+  // STEP 1: Current Financials
+  const currentGrossRevenue = currentUSDC * (reserveYield / 100); // $B
+  const currentNetRevenue = currentGrossRevenue * (1 - distributionCost / 100); // After Coinbase
+  const currentEBITDA = currentNetRevenue * (operatingMargin / 100);
+
+  // STEP 2: Terminal Year (5 years) USDC Circulation
+  const terminalYears = 5;
+  const terminalUSDC = currentUSDC * Math.pow(1 + usdcGrowthRate / 100, terminalYears);
+
+  // STEP 3: Terminal Year Revenue
+  const terminalGrossRevenue = terminalUSDC * (reserveYield / 100); // $B
+  const terminalNetRevenue = terminalGrossRevenue * (1 - distributionCost / 100);
+  const terminalEBITDA = terminalNetRevenue * (operatingMargin / 100);
+
+  // STEP 4: Terminal Free Cash Flow (assume FCF ≈ 85% of EBITDA for asset-light business)
+  const fcfConversion = 0.85;
+  const terminalFCF = terminalEBITDA * fcfConversion;
+
+  // STEP 5: Terminal Enterprise Value using Gordon Growth Model
+  const discountRateDecimal = discountRate / 100;
+  const terminalGrowthDecimal = terminalGrowth / 100;
+  const spread = discountRateDecimal - terminalGrowthDecimal;
+  const terminalEV = spread > 0.01 ? terminalFCF / spread : 0; // $B
+
+  // STEP 6: Discount Terminal Value to Present
+  const discountFactor = Math.pow(1 + discountRateDecimal, terminalYears);
+  const presentValueEV = terminalEV / discountFactor; // $B
+
+  // STEP 7: Risk Factor (probability of success)
+  const riskFactor = (1 - regulatoryRisk/100) * (1 - competitionRisk/100) * (1 - rateRisk/100);
+
+  // STEP 8: Risk-Adjusted Present Value
+  const riskAdjustedEV = presentValueEV * riskFactor; // $B
+
+  // STEP 9: Equity Value (assume minimal net debt for CRCL)
+  const netDebt = 0.2; // ~$200M net debt
+  const equityValue = riskAdjustedEV - netDebt; // $B
+
+  // STEP 10: Target Stock Price (no significant dilution expected for profitable company)
+  const dilutionRate = 2; // 2% annual stock comp dilution
+  const terminalShares = currentShares * Math.pow(1 + dilutionRate / 100, terminalYears);
+  const targetStockPrice = equityValue > 0 && terminalShares > 0
+    ? (equityValue * 1000) / terminalShares // Convert $B to $M, divide by M shares
+    : 0;
+
+  // STEP 11: Implied Upside/Downside
+  const impliedUpside = currentStockPrice > 0
+    ? ((targetStockPrice - currentStockPrice) / currentStockPrice) * 100
+    : 0;
+
+  // STEP 12: Valuation Multiples
+  const currentMarketCap = (currentShares * currentStockPrice) / 1000; // $B
+  const terminalEVperRev = terminalNetRevenue > 0 ? terminalEV / terminalNetRevenue : 0;
+  const terminalEVperEBITDA = terminalEBITDA > 0 ? terminalEV / terminalEBITDA : 0;
+  const currentPSRatio = currentNetRevenue > 0 ? currentMarketCap / currentNetRevenue : 0;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <h2 className="section-head">Model</h2>
+
+      {/* ASSUMPTIONS SECTION */}
+      <>
+        <div className="highlight">
+          <h3>{scenario.icon} {scenario.name} Scenario</h3>
+          <p className="text-sm">
+            Configure model assumptions for Circle's USDC business. Changes flow to revenue projections and DCF valuation.
+            Key drivers: USDC circulation growth, Fed funds rate (reserve yield), and Coinbase distribution cost.
+          </p>
+        </div>
+
+        {/* Scenario Presets - 6 scenarios from Worst to Moon */}
+        <div className="card">
+          <div className="card-title">Scenario Presets</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
+            {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
+              const preset = CRCL_SCENARIO_PRESETS[s];
+              const isActive = selectedScenario === s;
+              return (
+                <div
+                  key={s}
+                  onClick={() => applyScenario(s)}
+                  style={{
+                    padding: 12,
+                    borderRadius: 10,
+                    border: isActive ? `2px solid ${preset.color}` : '1px solid var(--border)',
+                    background: isActive ? `${preset.color}15` : 'var(--surface2)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    textAlign: 'center',
+                  }}
+                >
+                  <div style={{ fontSize: 20, marginBottom: 4 }}>{preset.icon}</div>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)', marginBottom: 4 }}>
+                    {preset.label}
+                  </div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
+                    {preset.usdcGrowthRate > 0 ? '+' : ''}{preset.usdcGrowthRate}% · {preset.reserveYield}%
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {/* Always show to prevent layout shift */}
+          <div style={{ marginTop: 12, padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
+            ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
+          </div>
+        </div>
+
+        {/* USDC & REVENUE PARAMETERS */}
+        <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>USDC & Revenue Model</h3>
+
+        <div className="g2">
+          <CRCLParameterCard
+            title="USDC Annual Growth Rate (%)"
+            explanation="Expected annual USDC circulation growth. Historical: 500%+ (2020-21), -50% (2022-23), +40% (2024). Crypto cycles are volatile. Stablecoin TAM could grow 10x+ with institutional adoption and regulatory clarity."
+            options={[-20, -10, 0, 5, 10, 15, 20, 25, 35, 50, 60]}
+            value={usdcGrowthRate}
+            onChange={v => { setUsdcGrowthRate(v); setSelectedScenario('custom'); }}
+            format="%"
+          />
+          <CRCLParameterCard
+            title="Reserve Yield / Fed Funds (%)"
+            explanation="Yield on USDC reserves (short-term Treasuries). Currently ~4.5%. Fed projections: cuts to 3-3.5% by 2026. Key revenue driver - 1% rate = ~$625M gross revenue per $62.5B USDC. Lower rates = lower yield income."
+            options={[1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]}
+            value={reserveYield}
+            onChange={v => { setReserveYield(v); setSelectedScenario('custom'); }}
+            format="%"
+          />
+        </div>
+
+        <div className="g2">
+          <CRCLParameterCard
+            title="Market Share (%)"
+            explanation="USDC % of total stablecoin market. Currently ~29%. USDT dominates at ~68%. USDC's advantage: regulatory compliance, transparency, US-friendly. Risk: CBDCs, new entrants (PayPal USD), USDT resilience."
+            options={[10, 15, 18, 22, 25, 28, 32, 38, 45]}
+            value={marketShare}
+            onChange={v => { setMarketShare(v); setSelectedScenario('custom'); }}
+            format="%"
+          />
+          <CRCLParameterCard
+            title="Coinbase Distribution Cost (%)"
+            explanation="Revenue share to Coinbase for USDC distribution. Current estimate: ~54% of reserve income. Coinbase is critical partner but takes majority of economics. Lower % = better Circle unit economics."
+            options={[35, 40, 45, 50, 54, 56, 58, 60, 65]}
+            value={distributionCost}
+            onChange={v => { setDistributionCost(v); setSelectedScenario('custom'); }}
+            format="%"
+            inverse
+          />
+        </div>
+
+        {/* OPERATING PARAMETERS */}
+        <h3 style={{ color: 'var(--mint)', marginTop: 24, marginBottom: 8 }}>Operating Model</h3>
+
+        <div className="g2">
+          <CRCLParameterCard
+            title="Operating Margin (%)"
+            explanation="EBITDA margin on net revenue (after Coinbase). Fintech peers: 30-50%+. Scale benefits: compliance/tech costs spread over larger base. 25% = pressured, 40%+ = scale achieved, 60% = best-in-class."
+            options={[15, 20, 25, 30, 35, 40, 45, 50, 55, 60]}
+            value={operatingMargin}
+            onChange={v => { setOperatingMargin(v); setSelectedScenario('custom'); }}
+            format="%"
+          />
+          <div className="card">
+            <div className="card-title">Current Position</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Live data from Circle financials. Used as starting point for projections.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 12 }}>
+              <div><span style={{ color: 'var(--text3)' }}>USDC Circulation:</span> <strong>${currentUSDC}B</strong></div>
+              <div><span style={{ color: 'var(--text3)' }}>Market Share:</span> <strong>{currentMarketShare}%</strong></div>
+              <div><span style={{ color: 'var(--text3)' }}>Est. Gross Rev:</span> <strong>${currentGrossRevenue.toFixed(2)}B</strong></div>
+              <div><span style={{ color: 'var(--text3)' }}>Est. Net Rev:</span> <strong>${currentNetRevenue.toFixed(2)}B</strong></div>
+            </div>
+          </div>
+        </div>
+
+        {/* VALUATION PARAMETERS */}
+        <h3 style={{ color: 'var(--violet)', marginTop: 24, marginBottom: 8 }}>Valuation Parameters</h3>
+
+        <div className="g2">
+          <CRCLParameterCard
+            title="Discount Rate / WACC (%)"
+            explanation="Required return for discounting future cash flows. 10% = mature fintech. 14% = growth with execution risk. 20%+ = speculative. Higher if rate/regulatory risk is elevated."
+            options={[8, 10, 11, 12, 14, 16, 18, 20, 25]}
+            value={discountRate}
+            onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }}
+            format="%"
+            inverse
+          />
+          <CRCLParameterCard
+            title="Terminal Growth Rate (%)"
+            explanation="Perpetual growth rate after terminal year. For stablecoin infrastructure: 2-3% is reasonable (GDP-like). 4%+ assumes continued crypto economy outgrowth. Should not exceed long-term nominal GDP."
+            options={[0, 1, 1.5, 2, 2.5, 3, 3.5, 4]}
+            value={terminalGrowth}
+            onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }}
+            format="%"
+          />
+        </div>
+
+        {/* RISK PARAMETERS */}
+        <h3 style={{ color: 'var(--coral)', marginTop: 24, marginBottom: 8 }}>Risk Probability Factors</h3>
+        <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>
+          Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Comp) × (1-Rate) = {(riskFactor * 100).toFixed(0)}% success probability.
+        </p>
+
+        <div className="g3">
+          <CRCLParameterCard
+            title="Regulatory Risk (%)"
+            explanation="Probability of adverse stablecoin regulation. SEC/banking agency scrutiny, reserve requirements, licensing issues. 5% = favorable legislation. 30%+ = CBDC mandates or stablecoin restrictions."
+            options={[1, 3, 5, 8, 10, 15, 20, 25, 30, 40]}
+            value={regulatoryRisk}
+            onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }}
+            format="%"
+            inverse
+          />
+          <CRCLParameterCard
+            title="Competition Risk (%)"
+            explanation="Probability competitors (USDT, CBDC, PayPal USD) significantly erode market share or pricing. 5% = strong moat. 25%+ = commoditization risk."
+            options={[2, 5, 8, 10, 12, 15, 20, 25, 30, 35]}
+            value={competitionRisk}
+            onChange={v => { setCompetitionRisk(v); setSelectedScenario('custom'); }}
+            format="%"
+            inverse
+          />
+          <CRCLParameterCard
+            title="Interest Rate Risk (%)"
+            explanation="Probability Fed cuts rates more than expected, compressing yield income. 5% = higher for longer. 25%+ = aggressive easing cycle. Circle's revenue is highly rate-sensitive."
+            options={[2, 5, 8, 10, 15, 20, 25, 30]}
+            value={rateRisk}
+            onChange={v => { setRateRisk(v); setSelectedScenario('custom'); }}
+            format="%"
+            inverse
+          />
+        </div>
+
+        {/* DCF VALUATION OUTPUT */}
+        <div className="card" style={{ marginTop: 24, border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
+          <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
+
+          {/* Primary metrics */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
+            <Card
+              label="Target Stock Price"
+              value={targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}
+              sub={`vs $${currentStockPrice.toFixed(0)} current`}
+              color="cyan"
+            />
+            <Card
+              label="Implied Upside"
+              value={targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}
+              sub={impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}
+              color={impliedUpside > 50 ? 'mint' : impliedUpside > 0 ? 'yellow' : 'red'}
+            />
+            <Card
+              label="Present Value"
+              value={`$${riskAdjustedEV.toFixed(1)}B`}
+              sub={`${(riskFactor * 100).toFixed(0)}% prob × $${presentValueEV.toFixed(1)}B`}
+              color="violet"
+            />
+            <Card
+              label="Market Cap"
+              value={`$${currentMarketCap.toFixed(1)}B`}
+              sub={`${currentPSRatio.toFixed(1)}x Net Revenue`}
+              color="green"
+            />
+          </div>
+
+          {/* Terminal year metrics */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
+            <Card label="Terminal USDC" value={`$${terminalUSDC.toFixed(0)}B`} sub={`${usdcGrowthRate > 0 ? '+' : ''}${usdcGrowthRate}%/yr × 5yrs`} color="blue" />
+            <Card label="Terminal Gross Rev" value={`$${terminalGrossRevenue.toFixed(2)}B`} sub={`$${terminalUSDC.toFixed(0)}B × ${reserveYield}%`} color="blue" />
+            <Card label="Terminal Net Rev" value={`$${terminalNetRevenue.toFixed(2)}B`} sub={`After ${distributionCost}% dist.`} color="blue" />
+            <Card label="Terminal EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${operatingMargin}% margin`} color="blue" />
+          </div>
+
+          {/* Additional metrics */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+            <Card label="Terminal EV/Rev" value={`${terminalEVperRev.toFixed(1)}x`} sub={`$${terminalEV.toFixed(1)}B EV`} color="purple" />
+            <Card label="Terminal EV/EBITDA" value={`${terminalEVperEBITDA.toFixed(1)}x`} sub="Terminal multiple" color="purple" />
+            <Card label="Terminal FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${(fcfConversion * 100).toFixed(0)}% conversion`} color="purple" />
+            <Card label="Diluted Shares" value={`${terminalShares.toFixed(0)}M`} sub={`+${((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution`} color="purple" />
+          </div>
+        </div>
+
+        {/* CALCULATION METHODOLOGY */}
+        <div className="card" style={{ marginTop: 16 }}>
+          <div className="card-title">Calculation Methodology</div>
+          <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
+            <p style={{ marginBottom: 12 }}>
+              This DCF model calculates Circle intrinsic value using a <strong>revenue-based terminal value approach</strong>,
+              incorporating USDC growth, reserve yield, distribution costs, and risk-adjusted discounting.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 1-3: Terminal Year Revenue</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  Terminal USDC = ${currentUSDC}B × (1 + {usdcGrowthRate}%)^5<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalUSDC.toFixed(0)}B</strong><br/><br/>
+                  Gross Revenue = ${terminalUSDC.toFixed(0)}B × {reserveYield}%<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${terminalGrossRevenue.toFixed(2)}B</strong><br/><br/>
+                  Net Revenue = ${terminalGrossRevenue.toFixed(2)}B × (1 - {distributionCost}%)<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${terminalNetRevenue.toFixed(2)}B</strong>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 4-5: Terminal Value</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  EBITDA = ${terminalNetRevenue.toFixed(2)}B × {operatingMargin}%<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${terminalEBITDA.toFixed(2)}B</strong><br/><br/>
+                  FCF = ${terminalEBITDA.toFixed(2)}B × {(fcfConversion * 100).toFixed(0)}%<br/>
+                  &nbsp;&nbsp;&nbsp;= <strong>${terminalFCF.toFixed(3)}B</strong><br/><br/>
+                  Gordon Growth: TV = FCF ÷ ({discountRate}% - {terminalGrowth}%)<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalEV.toFixed(1)}B</strong>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 6-8: Risk Adjustment</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  Present Value = ${terminalEV.toFixed(1)}B ÷ (1 + {discountRate}%)^5<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalEV.toFixed(1)}B ÷ {discountFactor.toFixed(3)}<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${presentValueEV.toFixed(1)}B</strong><br/><br/>
+                  Risk Factor = (1-{regulatoryRisk}%) × (1-{competitionRisk}%) × (1-{rateRisk}%)<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{(riskFactor * 100).toFixed(1)}%</strong><br/><br/>
+                  Risk-Adj EV = ${presentValueEV.toFixed(1)}B × {(riskFactor * 100).toFixed(1)}%<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${riskAdjustedEV.toFixed(1)}B</strong>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 9-11: Target Price</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  Equity Value = ${riskAdjustedEV.toFixed(1)}B - ${netDebt}B debt<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${equityValue.toFixed(1)}B</strong><br/><br/>
+                  Diluted Shares = {currentShares}M × (1 + {dilutionRate}%)^5<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{terminalShares.toFixed(0)}M</strong><br/><br/>
+                  Target Price = ${equityValue.toFixed(1)}B ÷ {terminalShares.toFixed(0)}M<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${targetStockPrice.toFixed(0)}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 12, padding: 10, background: 'rgba(34,211,238,0.1)', borderRadius: 6, fontSize: 11 }}>
+              <strong>Key Assumptions:</strong> Terminal year is {new Date().getFullYear() + 5} (5 years out).
+              FCF conversion = 85% of EBITDA (asset-light model).
+              Coinbase distribution cost is applied to gross yield revenue.
+              Risk factors are multiplicative (independent events).
+            </div>
+          </div>
+        </div>
+      </>
+    </div>
+  );
+};
 
 // Scenarios Tab Component - Unified with ASTS/BMNR structure
 const ScenariosTab = () => {
@@ -4449,6 +5047,15 @@ function CRCLModel() {
                 { term: 'Archive History', def: 'All prior analyses preserved. Track how views evolved and whether predictions proved accurate.' },
               ]} />
             </>
+          )}
+
+          {activeTab === 'model' && (
+            <CRCLModelTab
+              currentUSDC={currentUSDC}
+              currentShares={currentShares}
+              currentStockPrice={currentStockPrice}
+              currentMarketShare={currentMarketShare}
+            />
           )}
 
           {activeTab === 'usdc' && (

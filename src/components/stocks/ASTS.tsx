@@ -3134,55 +3134,204 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 };
 
 // SCENARIO PRESETS
+// 6 Scenario Presets from Worst to Moon
+// Sources: ASTS investor presentations, analyst reports, management guidance
 const SCENARIO_PRESETS = {
-  bull: {
-    label: 'Bull',
-    desc: 'Faster deployment, higher penetration, less competition',
-    penetrationRate: 5,
-    blendedARPU: 22,
-    deploymentDelay: -1,
-    terminalMargin: 60,
-    terminalCapex: 8,
-    dilutionRate: 3,
-    competitionDiscount: 10,
-    discountRate: 12,
-    terminalGrowth: 4,
-    regulatoryRisk: 3,
-    techRisk: 5,
-    competitionRisk: 5,
+  worst: {
+    label: 'Worst',
+    desc: 'Tech fails, Starlink dominates, massive dilution, regulatory issues',
+    icon: '💀',
+    color: '#dc2626',
+    penetrationRate: 0.5,
+    blendedARPU: 8,
+    deploymentDelay: 4,
+    terminalMargin: 25,
+    terminalCapex: 25,
+    dilutionRate: 15,
+    competitionDiscount: 75,
+    discountRate: 25,
+    terminalGrowth: 1,
+    regulatoryRisk: 30,
+    techRisk: 35,
+    competitionRisk: 40,
+  },
+  bear: {
+    label: 'Bear',
+    desc: 'Significant delays, Starlink captures majority, pricing pressure',
+    icon: '🐻',
+    color: '#f97316',
+    penetrationRate: 1,
+    blendedARPU: 12,
+    deploymentDelay: 2,
+    terminalMargin: 40,
+    terminalCapex: 18,
+    dilutionRate: 10,
+    competitionDiscount: 50,
+    discountRate: 20,
+    terminalGrowth: 2,
+    regulatoryRisk: 15,
+    techRisk: 20,
+    competitionRisk: 25,
   },
   base: {
     label: 'Base',
-    desc: 'Management guidance with moderate competition adjustment',
+    desc: 'Consensus analyst view with moderate competition adjustment',
+    icon: '📊',
+    color: '#eab308',
+    penetrationRate: 2,
+    blendedARPU: 15,
+    deploymentDelay: 1,
+    terminalMargin: 50,
+    terminalCapex: 12,
+    dilutionRate: 6,
+    competitionDiscount: 30,
+    discountRate: 16,
+    terminalGrowth: 2.5,
+    regulatoryRisk: 8,
+    techRisk: 12,
+    competitionRisk: 15,
+  },
+  mgmt: {
+    label: 'Mgmt',
+    desc: 'Management guidance: 5B TAM, 50/50 revenue share, 85%+ EBITDA margin',
+    icon: '📈',
+    color: '#22c55e',
     penetrationRate: 3,
     blendedARPU: 18,
     deploymentDelay: 0,
-    terminalMargin: 55,
+    terminalMargin: 60,
     terminalCapex: 10,
-    dilutionRate: 5,
+    dilutionRate: 4,
     competitionDiscount: 20,
-    discountRate: 15,
+    discountRate: 14,
     terminalGrowth: 3,
     regulatoryRisk: 5,
     techRisk: 8,
     competitionRisk: 10,
   },
-  bear: {
-    label: 'Bear',
-    desc: 'Delayed deployment, Starlink captures half the market',
-    penetrationRate: 1.5,
-    blendedARPU: 14,
-    deploymentDelay: 2,
-    terminalMargin: 45,
-    terminalCapex: 15,
-    dilutionRate: 8,
-    competitionDiscount: 50,
-    discountRate: 18,
-    terminalGrowth: 2,
-    regulatoryRisk: 10,
-    techRisk: 15,
-    competitionRisk: 20,
+  bull: {
+    label: 'Bull',
+    desc: 'Faster deployment, premium ARPU, limited competition impact',
+    icon: '🐂',
+    color: '#06b6d4',
+    penetrationRate: 5,
+    blendedARPU: 22,
+    deploymentDelay: -1,
+    terminalMargin: 70,
+    terminalCapex: 8,
+    dilutionRate: 3,
+    competitionDiscount: 12,
+    discountRate: 12,
+    terminalGrowth: 3.5,
+    regulatoryRisk: 3,
+    techRisk: 5,
+    competitionRisk: 5,
   },
+  moon: {
+    label: 'Moon',
+    desc: 'Category winner: 10%+ penetration, premium pricing, minimal competition',
+    icon: '🚀',
+    color: '#a855f7',
+    penetrationRate: 10,
+    blendedARPU: 30,
+    deploymentDelay: -2,
+    terminalMargin: 80,
+    terminalCapex: 5,
+    dilutionRate: 2,
+    competitionDiscount: 5,
+    discountRate: 10,
+    terminalGrowth: 4,
+    regulatoryRisk: 2,
+    techRisk: 2,
+    competitionRisk: 3,
+  },
+};
+
+// Parameter card with 8 options and comprehensive explanation
+const ParameterCard = ({
+  title,
+  explanation,
+  options,
+  value,
+  onChange,
+  format = '',
+  inverse = false, // true = lower values are bullish (risk, capex, dilution)
+}: {
+  title: string;
+  explanation: string;
+  options: number[];
+  value: number;
+  onChange: (v: number) => void;
+  format?: string;
+  inverse?: boolean;
+}) => {
+  const formatValue = (v: number) => {
+    if (format === '$') return `$${v}`;
+    if (format === '%') return `${v}%`;
+    if (format === 'yr') return v === 0 ? 'On-time' : v > 0 ? `+${v}yr` : `${v}yr`;
+    if (format === 'M') return `${(v/1000).toFixed(1)}B`;
+    return String(v);
+  };
+
+  // Color based on position in the sorted array (bullish to bearish gradient)
+  // For normal: low values = red, high values = green
+  // For inverse: low values = green, high values = red
+  const getButtonColor = (optionValue: number, idx: number, total: number) => {
+    const sortedOptions = [...options].sort((a, b) => a - b);
+    const position = sortedOptions.indexOf(optionValue);
+    const normalizedPos = position / (total - 1); // 0 to 1
+
+    // For inverse metrics, flip the gradient
+    const effectivePos = inverse ? 1 - normalizedPos : normalizedPos;
+
+    // Color stops: red (0) -> orange (0.25) -> yellow (0.5) -> lime (0.75) -> green (1)
+    if (effectivePos <= 0.2) return { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' };
+    if (effectivePos <= 0.35) return { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' };
+    if (effectivePos <= 0.5) return { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' };
+    if (effectivePos <= 0.65) return { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' };
+    if (effectivePos <= 0.8) return { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' };
+    return { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' };
+  };
+
+  return (
+    <div className="card">
+      <div className="card-title">{title}</div>
+      <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+        {explanation}
+      </p>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+        {options.map((opt, idx) => {
+          const isActive = value === opt;
+          const colors = getButtonColor(opt, idx, options.length);
+          return (
+            <div
+              key={opt}
+              onClick={() => onChange(opt)}
+              style={{
+                flex: '1 1 auto',
+                minWidth: 44,
+                padding: '8px 6px',
+                borderRadius: 8,
+                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                background: isActive ? colors.bg : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? colors.text : 'var(--text3)',
+              }}
+            >
+              {formatValue(opt)}
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
+        {inverse ? '← Bullish | Bearish →' : '← Bearish | Bullish →'}
+      </div>
+    </div>
+  );
 };
 
 // MODEL TAB - Assumptions configuration
@@ -3205,7 +3354,9 @@ const ModelTab = ({
   currentShares, currentStockPrice, cashOnHand, totalDebt,
 }) => {
 
-  const applyScenario = (scenario: 'bull' | 'base' | 'bear') => {
+  type ScenarioKey = 'worst' | 'bear' | 'base' | 'mgmt' | 'bull' | 'moon';
+
+  const applyScenario = (scenario: ScenarioKey) => {
     const p = SCENARIO_PRESETS[scenario];
     setPenetrationRate(p.penetrationRate);
     setBlendedARPU(p.blendedARPU);
@@ -3222,23 +3373,108 @@ const ModelTab = ({
     setSelectedScenario(scenario);
   };
 
-  // Scenario display info
-  const scenarioInfo = {
-    bull: { name: 'Bull', color: 'var(--mint)', icon: '🐂' },
-    base: { name: 'Base', color: 'var(--cyan)', icon: '📊' },
-    bear: { name: 'Bear', color: 'var(--coral)', icon: '🐻' },
-    custom: { name: 'Custom', color: 'var(--violet)', icon: '⚙️' },
-  };
-  const scenario = scenarioInfo[selectedScenario] || scenarioInfo.base;
+  // Get current scenario info (use preset data or custom)
+  const currentPreset = SCENARIO_PRESETS[selectedScenario as ScenarioKey];
+  const scenario = currentPreset
+    ? { name: currentPreset.label, color: currentPreset.color, icon: currentPreset.icon }
+    : { name: 'Custom', color: '#a855f7', icon: '⚙️' };
 
-  // Terminal values (2030 anchor)
+  // ============================================================================
+  // DCF CALCULATION - Step by step with proper formulas
+  // ============================================================================
+
+  // STEP 1: Calculate Terminal Year Subscribers (2030)
+  // Formula: Partner Reach × Penetration Rate × (1 - Competition Loss)
   const terminalSubs = partnerReach * (penetrationRate / 100) * (1 - competitionDiscount / 100);
-  const terminalGrossRev = terminalSubs * blendedARPU * 12 / 1000;
-  const terminalRev = terminalGrossRev * (revenueShare / 100);
+  // Units: M subscribers
 
-  // Simple calculations for display
+  // STEP 2: Calculate Terminal Year Gross Revenue
+  // Formula: Subscribers × ARPU × 12 months
+  const terminalGrossRev = terminalSubs * blendedARPU * 12 / 1000;
+  // Units: $B (divided by 1000 to convert M×$ to B)
+
+  // STEP 3: Calculate ASTS's Share of Revenue
+  // Formula: Gross Revenue × Revenue Share %
+  const terminalRev = terminalGrossRev * (revenueShare / 100);
+  // Units: $B
+
+  // STEP 4: Calculate Terminal EBITDA
+  // Formula: Revenue × EBITDA Margin %
+  const terminalEBITDA = terminalRev * (terminalMargin / 100);
+  // Units: $B
+
+  // STEP 5: Calculate Terminal Free Cash Flow
+  // Formula: Revenue × (EBITDA Margin - CapEx %)
+  // This is a simplification: FCF ≈ EBITDA - CapEx (ignoring taxes, working capital)
+  const terminalFCF = terminalRev * ((terminalMargin - terminalCapex) / 100);
+  // Units: $B
+
+  // STEP 6: Calculate Terminal Enterprise Value using Gordon Growth Model
+  // Formula: TV = FCF × (1 + g) / (r - g)  [perpetuity formula]
+  // Simplified: TV = FCF / (r - g) when FCF is already terminal year
+  const discountRateDecimal = discountRate / 100;
+  const terminalGrowthDecimal = terminalGrowth / 100;
+  const spread = discountRateDecimal - terminalGrowthDecimal;
+  const terminalEV = spread > 0.01 ? terminalFCF / spread : 0;
+  // Units: $B
+  // Note: This is the Enterprise Value AT 2030, not today
+
+  // STEP 7: Discount Terminal Value back to Present
+  // Formula: PV = FV / (1 + r)^n
+  const yearsToTerminal = 5 + deploymentDelay;
+  const discountYears = Math.max(yearsToTerminal, 1);
+  const discountFactor = Math.pow(1 + discountRateDecimal, discountYears);
+  const presentValueEV = terminalEV / discountFactor;
+  // Units: $B (today's value)
+
+  // STEP 8: Calculate Risk Factor (probability of success)
+  // Formula: (1 - Risk1) × (1 - Risk2) × (1 - Risk3)
+  // This represents probability that none of the risks materialize
   const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
-  const finalDilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, 5);
+  // Range: 0 to 1
+
+  // STEP 9: Apply Risk Factor to get Probability-Weighted EV
+  // Formula: PV × Probability of Success
+  const riskAdjustedEV = presentValueEV * riskFactor;
+  // Units: $B (risk-adjusted present value)
+
+  // STEP 10: Calculate Net Debt
+  // Formula: Total Debt - Cash
+  // Positive = net debt (reduces equity), Negative = net cash (increases equity)
+  const netDebtB = (totalDebt - cashOnHand) / 1000;
+  // Units: $B
+
+  // STEP 11: Calculate Equity Value
+  // Formula: Enterprise Value - Net Debt
+  // If net cash (negative net debt), this adds to equity value
+  const equityValue = riskAdjustedEV - netDebtB;
+  // Units: $B
+
+  // STEP 12: Calculate Diluted Shares Outstanding at Terminal Year
+  // Formula: Current Shares × (1 + Dilution Rate)^Years
+  const finalDilutedShares = currentShares * Math.pow(1 + dilutionRate / 100, Math.max(discountYears, 1));
+  // Units: M shares
+
+  // STEP 13: Calculate Target Stock Price
+  // Formula: Equity Value / Diluted Shares
+  // Convert $B to $M by multiplying by 1000, then divide by M shares = $/share
+  const targetStockPrice = equityValue > 0 && finalDilutedShares > 0
+    ? (equityValue * 1000) / finalDilutedShares
+    : 0;
+  // Units: $/share
+
+  // STEP 14: Calculate Implied Upside/Downside
+  // Formula: (Target Price - Current Price) / Current Price × 100
+  const impliedUpside = currentStockPrice > 0
+    ? ((targetStockPrice - currentStockPrice) / currentStockPrice) * 100
+    : 0;
+  // Units: %
+
+  // STEP 15: Calculate Valuation Multiples (at Terminal Year 2030)
+  // These use TERMINAL EV (before discounting) for proper comparison
+  const terminalEVperRev = terminalRev > 0 ? terminalEV / terminalRev : 0;
+  const terminalEVperEBITDA = terminalEBITDA > 0 ? terminalEV / terminalEBITDA : 0;
+  const terminalFCFyield = terminalEV > 0 ? (terminalFCF / terminalEV) * 100 : 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -3253,11 +3489,11 @@ const ModelTab = ({
             </p>
           </div>
 
-          {/* Scenario Presets */}
+          {/* Scenario Presets - 6 scenarios from Worst to Moon */}
           <div className="card">
             <div className="card-title">Scenario Presets</div>
-            <div className="g3">
-              {(['bull', 'base', 'bear'] as const).map(s => {
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
+              {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
                 const preset = SCENARIO_PRESETS[s];
                 const isActive = selectedScenario === s;
                 return (
@@ -3265,87 +3501,291 @@ const ModelTab = ({
                     key={s}
                     onClick={() => applyScenario(s)}
                     style={{
-                      padding: 16,
-                      borderRadius: 12,
-                      border: isActive ? '2px solid var(--cyan)' : '1px solid var(--border)',
-                      background: isActive ? 'rgba(34,211,238,0.1)' : 'var(--surface2)',
+                      padding: 12,
+                      borderRadius: 10,
+                      border: isActive ? `2px solid ${preset.color}` : '1px solid var(--border)',
+                      background: isActive ? `${preset.color}15` : 'var(--surface2)',
                       cursor: 'pointer',
                       transition: 'all 0.2s',
+                      textAlign: 'center',
                     }}
                   >
-                    <div style={{ fontWeight: 600, color: isActive ? 'var(--cyan)' : 'var(--text)', marginBottom: 4 }}>
-                      {s === 'bull' ? '🐂' : s === 'bear' ? '🐻' : '📊'} {preset.label}
+                    <div style={{ fontSize: 20, marginBottom: 4 }}>{preset.icon}</div>
+                    <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)', marginBottom: 4 }}>
+                      {preset.label}
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--text3)' }}>{preset.desc}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
-                      {preset.penetrationRate}% pen · ${preset.blendedARPU} ARPU · {preset.discountRate}% disc
+                    <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
+                      {preset.penetrationRate}% · ${preset.blendedARPU}
                     </div>
                   </div>
                 );
               })}
             </div>
-            {selectedScenario === 'custom' && (
-              <div style={{ marginTop: 12, padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: 'var(--violet)' }}>
-                ⚙️ Custom scenario - parameters modified from preset
-              </div>
-            )}
+            {/* Always show to prevent layout shift */}
+            <div style={{ marginTop: 12, padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
+              ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
+            </div>
           </div>
 
-          {/* Input Controls */}
+          {/* SUBSCRIBER & REVENUE PARAMETERS */}
+          <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>Subscriber & Revenue Model</h3>
+
           <div className="g2">
-            <div className="card">
-              <div className="card-title">Subscriber & Revenue</div>
-              <div className="g2">
-                <Input label="Partner Reach (M)" value={partnerReach} onChange={v => { setPartnerReach(v); setSelectedScenario('custom'); }} />
-                <Input label="Penetration %" value={penetrationRate} onChange={v => { setPenetrationRate(v); setSelectedScenario('custom'); }} step={0.5} />
-              </div>
-              <div className="g2" style={{ marginTop: 12 }}>
-                <Input label="ARPU $/mo" value={blendedARPU} onChange={v => { setBlendedARPU(v); setSelectedScenario('custom'); }} />
-                <Input label="Revenue Share %" value={revenueShare} onChange={v => { setRevenueShare(v); setSelectedScenario('custom'); }} />
-              </div>
-              <div className="g2" style={{ marginTop: 12 }}>
-                <Input label="Competition Discount %" value={competitionDiscount} onChange={v => { setCompetitionDiscount(v); setSelectedScenario('custom'); }} />
-                <Input label="Deployment Delay (yrs)" value={deploymentDelay} onChange={v => { setDeploymentDelay(v); setSelectedScenario('custom'); }} min={-2} max={3} />
-              </div>
+            <ParameterCard
+              title="Penetration Rate (%)"
+              explanation="Percentage of partner MNO subscribers who adopt ASTS service. Management targets 3-5%. Analyst estimates range 1-10%. Higher penetration = more subscribers = more revenue. Depends on pricing, network quality, and Starlink competition."
+              options={[0.5, 1, 1.5, 2, 3, 5, 7, 10, 15]}
+              value={penetrationRate}
+              onChange={v => { setPenetrationRate(v); setSelectedScenario('custom'); }}
+              format="%"
+            />
+            <ParameterCard
+              title="Blended ARPU ($/month)"
+              explanation="Average Revenue Per User per month. Blended across regions: US ~$25, LatAm ~$15, Africa/Asia ~$5-10. Management guidance: $15-20 blended. Some analysts model $2-4 for emerging markets only."
+              options={[5, 8, 10, 12, 15, 18, 22, 25, 30, 40]}
+              value={blendedARPU}
+              onChange={v => { setBlendedARPU(v); setSelectedScenario('custom'); }}
+              format="$"
+            />
+          </div>
+
+          <div className="g2">
+            <ParameterCard
+              title="Revenue Share (%)"
+              explanation="ASTS's share of gross subscriber revenue. Standard MNO deals: 50/50. Some partners may negotiate 60/40 in their favor. Higher share = more revenue flows to ASTS. Could vary by region."
+              options={[30, 35, 40, 45, 50, 55, 60, 65]}
+              value={revenueShare}
+              onChange={v => { setRevenueShare(v); setSelectedScenario('custom'); }}
+              format="%"
+            />
+            <ParameterCard
+              title="Competition Discount (%)"
+              explanation="Revenue reduction due to Starlink and competitors. 0% = ASTS monopoly. 75% = competitors capture most of market. Key risk: Starlink Direct-to-Cell has massive satellite fleet advantage."
+              options={[0, 5, 10, 15, 20, 30, 40, 50, 60, 75]}
+              value={competitionDiscount}
+              onChange={v => { setCompetitionDiscount(v); setSelectedScenario('custom'); }}
+              format="%"
+              inverse
+            />
+          </div>
+
+          {/* OPERATING PARAMETERS */}
+          <h3 style={{ color: 'var(--mint)', marginTop: 24, marginBottom: 8 }}>Operating Assumptions</h3>
+
+          <div className="g2">
+            <ParameterCard
+              title="Terminal EBITDA Margin (%)"
+              explanation="Operating margin at scale. Satellite businesses typically achieve 50-70% EBITDA margins. ASTS management targets 85%+. Lower margins possible if pricing pressure or higher opex. 25-30% if competition is brutal."
+              options={[20, 25, 30, 40, 50, 60, 70, 80, 85]}
+              value={terminalMargin}
+              onChange={v => { setTerminalMargin(v); setSelectedScenario('custom'); }}
+              format="%"
+            />
+            <ParameterCard
+              title="Maintenance CapEx (% Rev)"
+              explanation="Ongoing capital expenditure for satellite replacement (7-10yr lifespan). 5-10% for efficient operators, 15-25% if constellation needs frequent replacement. Lower = more free cash flow."
+              options={[3, 5, 8, 10, 12, 15, 18, 20, 25, 30]}
+              value={terminalCapex}
+              onChange={v => { setTerminalCapex(v); setSelectedScenario('custom'); }}
+              format="%"
+              inverse
+            />
+          </div>
+
+          <div className="g2">
+            <ParameterCard
+              title="Annual Dilution (%)"
+              explanation="Share count increase from stock comp, warrants, and equity raises. ASTS is capital-intensive. 2-4% = well-funded. 10-15% = ongoing raises needed. High dilution erodes per-share value."
+              options={[1, 2, 3, 4, 5, 6, 8, 10, 12, 15]}
+              value={dilutionRate}
+              onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }}
+              format="%"
+              inverse
+            />
+            <ParameterCard
+              title="Deployment Delay (Years)"
+              explanation="Schedule variance from plan. Negative = ahead of schedule. +4yr = major delays, funding issues. Delays = later revenue, more cash burn, potential dilution. ASTS now has $3.2B cash runway."
+              options={[-2, -1, 0, 1, 2, 3, 4, 5]}
+              value={deploymentDelay}
+              onChange={v => { setDeploymentDelay(v); setSelectedScenario('custom'); }}
+              format="yr"
+              inverse
+            />
+          </div>
+
+          {/* VALUATION PARAMETERS */}
+          <h3 style={{ color: 'var(--violet)', marginTop: 24, marginBottom: 8 }}>Valuation Parameters</h3>
+
+          <div className="g2">
+            <ParameterCard
+              title="Discount Rate / WACC (%)"
+              explanation="Required return for discounting future cash flows. 10% = blue chip. 15-20% = high-growth tech. 25%+ = speculative pre-revenue. Lower rates justified as execution de-risks."
+              options={[8, 10, 12, 14, 16, 18, 20, 22, 25, 30]}
+              value={discountRate}
+              onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }}
+              format="%"
+              inverse
+            />
+            <ParameterCard
+              title="Terminal Growth Rate (%)"
+              explanation="Perpetual growth rate for Gordon Growth Model. Should not exceed long-term GDP (~3%). 1% = conservative. 4-5% = aggressive (justified by emerging market connectivity growth)."
+              options={[0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5]}
+              value={terminalGrowth}
+              onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }}
+              format="%"
+            />
+          </div>
+
+          {/* RISK PARAMETERS */}
+          <h3 style={{ color: 'var(--coral)', marginTop: 24, marginBottom: 8 }}>Risk Probability Factors</h3>
+          <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>
+            Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Tech) × (1-Comp) = {(riskFactor * 100).toFixed(0)}% success probability.
+          </p>
+
+          <div className="g3">
+            <ParameterCard
+              title="Regulatory Risk (%)"
+              explanation="Probability of adverse regulatory action. ASTS has FCC approval but needs country-by-country clearance. 2-5% = most approvals done. 20-30% = major regulatory uncertainty remains."
+              options={[1, 2, 3, 5, 8, 10, 15, 20, 25, 30]}
+              value={regulatoryRisk}
+              onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }}
+              format="%"
+              inverse
+            />
+            <ParameterCard
+              title="Technology Risk (%)"
+              explanation="Probability of technology failure. Decreases with each successful satellite and commercial service proof. 2-5% = proven tech. 25-35% = significant unknowns remain."
+              options={[1, 2, 5, 8, 10, 15, 20, 25, 30, 35]}
+              value={techRisk}
+              onChange={v => { setTechRisk(v); setSelectedScenario('custom'); }}
+              format="%"
+              inverse
+            />
+            <ParameterCard
+              title="Competition Risk (%)"
+              explanation="Probability competitors capture majority of market or drive pricing to unprofitable levels. Different from Competition Discount - this is binary 'existential threat' probability."
+              options={[2, 3, 5, 8, 10, 15, 20, 25, 30, 40]}
+              value={competitionRisk}
+              onChange={v => { setCompetitionRisk(v); setSelectedScenario('custom'); }}
+              format="%"
+              inverse
+            />
+          </div>
+
+          {/* DCF VALUATION OUTPUT - Unified section with consistent styling */}
+          <div className="card" style={{ marginTop: 24, border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
+            <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (2030 Terminal Year)</div>
+
+            {/* All cards use consistent grid with same gap */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
+              <Card
+                label="Target Stock Price"
+                value={targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}
+                sub={`vs $${currentStockPrice} current`}
+                color="cyan"
+              />
+              <Card
+                label="Implied Upside"
+                value={targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}
+                sub={impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}
+                color={impliedUpside > 50 ? 'mint' : impliedUpside > 0 ? 'gold' : 'coral'}
+              />
+              <Card
+                label="Present Value EV"
+                value={`$${riskAdjustedEV.toFixed(1)}B`}
+                sub={`${(riskFactor * 100).toFixed(0)}% prob × $${presentValueEV.toFixed(1)}B`}
+                color="violet"
+              />
+              <Card
+                label="Equity Value"
+                value={`$${equityValue.toFixed(1)}B`}
+                sub={netDebtB < 0 ? `+ $${Math.abs(netDebtB).toFixed(2)}B net cash` : `- $${netDebtB.toFixed(2)}B net debt`}
+                color="green"
+              />
             </div>
-            <div className="card">
-              <div className="card-title">Margin, CapEx & Dilution</div>
-              <div className="g2">
-                <Input label="Terminal EBITDA Margin %" value={terminalMargin} onChange={v => { setTerminalMargin(v); setSelectedScenario('custom'); }} />
-                <Input label="Terminal CapEx % Rev" value={terminalCapex} onChange={v => { setTerminalCapex(v); setSelectedScenario('custom'); }} />
-              </div>
-              <div className="g2" style={{ marginTop: 12 }}>
-                <Input label="Annual Dilution %" value={dilutionRate} onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }} />
-                <Input label="Discount Rate %" value={discountRate} onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }} />
-              </div>
-              <div className="g2" style={{ marginTop: 12 }}>
-                <Input label="Terminal Growth %" value={terminalGrowth} onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }} />
-                <div></div>
-              </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
+              <Card label="2030 Subscribers" value={`${terminalSubs.toFixed(0)}M`} sub={`${penetrationRate}% × ${(partnerReach/1000).toFixed(1)}B`} color="text3" />
+              <Card label="2030 Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of $${terminalGrossRev.toFixed(2)}B`} color="text3" />
+              <Card label="2030 EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${terminalMargin}% margin`} color="text3" />
+              <Card label="2030 FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${terminalMargin - terminalCapex}% FCF margin`} color="text3" />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+              <Card label="2030 EV/Revenue" value={`${terminalEVperRev.toFixed(1)}x`} sub={`$${terminalEV.toFixed(1)}B EV`} color="text3" />
+              <Card label="2030 EV/EBITDA" value={`${terminalEVperEBITDA.toFixed(1)}x`} sub="Terminal multiple" color="text3" />
+              <Card label="2030 FCF Yield" value={`${terminalFCFyield.toFixed(1)}%`} sub="FCF / Terminal EV" color="text3" />
+              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr × ${discountYears}yrs`} color="text3" />
             </div>
           </div>
 
-          {/* Risk Adjustments */}
-          <div className="card">
-            <div className="card-title">Risk Adjustments</div>
-            <div className="g3">
-              <Input label="Regulatory Risk %" value={regulatoryRisk} onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }} />
-              <Input label="Tech Risk %" value={techRisk} onChange={v => { setTechRisk(v); setSelectedScenario('custom'); }} />
-              <Input label="Competition Risk %" value={competitionRisk} onChange={v => { setCompetitionRisk(v); setSelectedScenario('custom'); }} />
-            </div>
-            <div style={{ marginTop: 12, padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 12, color: 'var(--text3)' }}>
-              Combined risk haircut: {((1 - riskFactor) * 100).toFixed(0)}% → EV probability factor: {(riskFactor * 100).toFixed(0)}%
-            </div>
-          </div>
+          {/* CALCULATION METHODOLOGY - Full explanation */}
+          <div className="card" style={{ marginTop: 16 }}>
+            <div className="card-title">Calculation Methodology</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
+              <p style={{ marginBottom: 12 }}>
+                This DCF model calculates ASTS intrinsic value using a <strong>terminal value approach</strong> with
+                Gordon Growth Model, discounted to present value and adjusted for execution risk.
+              </p>
 
-          {/* Terminal Year Output Preview */}
-          <div className="card">
-            <div className="card-title">Terminal Year Output (2030)</div>
-            <div className="g4">
-              <Card label="Net Subscribers" value={`${terminalSubs.toFixed(1)}M`} sub={`${penetrationRate}% of ${(partnerReach / 1000).toFixed(1)}B reach`} color="cyan" />
-              <Card label="ASTS Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of gross`} color="green" />
-              <Card label="Terminal FCF" value={`$${(terminalRev * (terminalMargin - terminalCapex) / 100).toFixed(2)}B`} sub={`${terminalMargin}% margin - ${terminalCapex}% capex`} color="mint" />
-              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr for 5yrs`} color="violet" />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 1-5: Terminal Year Metrics (2030)</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                    Subscribers = {(partnerReach/1000).toFixed(1)}B × {penetrationRate}% × (1 - {competitionDiscount}%)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{terminalSubs.toFixed(0)}M</strong> subscribers<br/><br/>
+                    Gross Rev = {terminalSubs.toFixed(0)}M × ${blendedARPU} × 12mo<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalGrossRev.toFixed(2)}B</strong><br/><br/>
+                    ASTS Rev = ${terminalGrossRev.toFixed(2)}B × {revenueShare}%<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${terminalRev.toFixed(2)}B</strong><br/><br/>
+                    EBITDA = ${terminalRev.toFixed(2)}B × {terminalMargin}% = <strong>${terminalEBITDA.toFixed(2)}B</strong><br/>
+                    FCF = ${terminalRev.toFixed(2)}B × {terminalMargin - terminalCapex}% = <strong>${terminalFCF.toFixed(2)}B</strong>
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 6-7: Terminal Value & Discounting</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                    Gordon Growth: TV = FCF ÷ (r - g)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalFCF.toFixed(2)}B ÷ ({discountRate}% - {terminalGrowth}%)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalFCF.toFixed(2)}B ÷ {(spread * 100).toFixed(1)}%<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalEV.toFixed(1)}B</strong> (2030 EV)<br/><br/>
+                    Present Value = ${terminalEV.toFixed(1)}B ÷ (1 + {discountRate}%)^{discountYears}<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= ${terminalEV.toFixed(1)}B ÷ {discountFactor.toFixed(3)}<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${presentValueEV.toFixed(1)}B</strong> (today)
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 8-9: Risk Adjustment</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                    Risk Factor = (1 - {regulatoryRisk}%) × (1 - {techRisk}%) × (1 - {competitionRisk}%)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= {(100 - regulatoryRisk)}% × {(100 - techRisk)}% × {(100 - competitionRisk)}%<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>{(riskFactor * 100).toFixed(1)}%</strong> probability<br/><br/>
+                    Risk-Adj EV = ${presentValueEV.toFixed(1)}B × {(riskFactor * 100).toFixed(1)}%<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${riskAdjustedEV.toFixed(1)}B</strong>
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 10-14: Equity Value & Price</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                    Net Debt = ${(totalDebt/1000).toFixed(2)}B - ${(cashOnHand/1000).toFixed(2)}B<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${netDebtB.toFixed(2)}B</strong> {netDebtB < 0 ? '(net cash)' : '(net debt)'}<br/><br/>
+                    Equity = ${riskAdjustedEV.toFixed(1)}B - (${netDebtB.toFixed(2)}B)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${equityValue.toFixed(1)}B</strong><br/><br/>
+                    Shares = {currentShares}M × (1 + {dilutionRate}%)^{discountYears} = <strong>{finalDilutedShares.toFixed(0)}M</strong><br/><br/>
+                    Price = ${equityValue.toFixed(1)}B ÷ {finalDilutedShares.toFixed(0)}M = <strong>${targetStockPrice.toFixed(2)}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 12, padding: 10, background: 'rgba(34,211,238,0.1)', borderRadius: 6, fontSize: 11 }}>
+                <strong>Key Assumptions:</strong> Terminal year is {2025 + discountYears} ({discountYears} years out).
+                FCF margin = EBITDA margin - CapEx (simplified, ignores taxes/WC).
+                Risk factors are multiplicative (independent events).
+                Gordon Growth assumes perpetual {terminalGrowth}% growth after terminal year.
+              </div>
             </div>
           </div>
         </>
