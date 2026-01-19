@@ -1677,7 +1677,7 @@ const BMNRDilutionAnalysis = () => {
         {/* Main Content */}
         <main className="main">
         {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} />}
-        {activeTab === 'model' && <ModelTab currentETH={currentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
+        {activeTab === 'model' && <ModelTab currentETH={currentETH} setCurrentETH={setCurrentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
         {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
         {activeTab === 'staking' && <StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} />}
         {activeTab === 'dilution' && <DilutionTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} tranches={tranches} setTranches={setTranches} dilutionPercent={dilutionPercent} setDilutionPercent={setDilutionPercent} saleDiscount={saleDiscount} setSaleDiscount={setSaleDiscount} navMultiple={navMultiple} setNavMultiple={setNavMultiple} maxAuthorizedShares={maxAuthorizedShares} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} regulatoryRisk={regulatoryRisk} />}
@@ -1868,10 +1868,11 @@ const BMNRParameterCard = ({
 
 // ModelTab component for BMNR - NAV-based DCF valuation
 const ModelTab = ({
-  currentETH, ethPrice, currentShares, currentStockPrice,
+  currentETH, setCurrentETH, ethPrice, currentShares, currentStockPrice,
   baseStakingAPY, stakingRatio,
 }: {
   currentETH: number;
+  setCurrentETH: (v: number) => void;
   ethPrice: number;
   currentShares: number;
   currentStockPrice: number;
@@ -2038,6 +2039,19 @@ const ModelTab = ({
           <div style={{ marginTop: 12, padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
             ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
           </div>
+        </div>
+
+        {/* ETH HOLDINGS ASSUMPTION */}
+        <h3 style={{ color: 'var(--violet)', marginTop: 24, marginBottom: 8 }}>ETH Holdings</h3>
+        <div className="g2">
+          <BMNRParameterCard
+            title="ETH Holdings (M)"
+            explanation="Total ETH held by BMNR. Default: 4.17M from Jan 2026 PR (3.45% of ETH supply). Adjust to model different accumulation scenarios or test sensitivity to holdings size."
+            options={[2, 2.5, 3, 3.5, 4, 4.17, 4.5, 5, 5.5, 6, 7]}
+            value={Math.round(currentETH / 1_000_000 * 100) / 100}
+            onChange={v => setCurrentETH(Math.round(v * 1_000_000))}
+            format="ETH"
+          />
         </div>
 
         {/* ETH & YIELD PARAMETERS */}
