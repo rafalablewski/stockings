@@ -3270,6 +3270,10 @@ const ParameterCard = ({
   format?: string;
   inverse?: boolean;
 }) => {
+  const [customMode, setCustomMode] = useState(false);
+  const [customInput, setCustomInput] = useState('');
+  const isCustomValue = !options.includes(value);
+
   const formatValue = (v: number) => {
     if (format === '$') return `$${v}`;
     if (format === '%') return `${v}%`;
@@ -3278,24 +3282,27 @@ const ParameterCard = ({
     return String(v);
   };
 
-  // Color based on position in the sorted array (bullish to bearish gradient)
-  // For normal: low values = red, high values = green
-  // For inverse: low values = green, high values = red
-  const getButtonColor = (optionValue: number, idx: number, total: number) => {
-    const sortedOptions = [...options].sort((a, b) => a - b);
-    const position = sortedOptions.indexOf(optionValue);
-    const normalizedPos = position / (total - 1); // 0 to 1
+  // 5 colors for 5 preset positions: red → orange → yellow → lime → green
+  const presetColors = [
+    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+  ];
 
-    // For inverse metrics, flip the gradient
-    const effectivePos = inverse ? 1 - normalizedPos : normalizedPos;
+  const getButtonColor = (idx: number) => {
+    const effectiveIdx = inverse ? 4 - idx : idx;
+    return presetColors[effectiveIdx];
+  };
 
-    // Color stops: red (0) -> orange (0.25) -> yellow (0.5) -> lime (0.75) -> green (1)
-    if (effectivePos <= 0.2) return { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' };
-    if (effectivePos <= 0.35) return { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' };
-    if (effectivePos <= 0.5) return { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' };
-    if (effectivePos <= 0.65) return { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' };
-    if (effectivePos <= 0.8) return { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' };
-    return { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' };
+  const handleCustomSubmit = () => {
+    const num = parseFloat(customInput);
+    if (!isNaN(num)) {
+      onChange(num);
+      setCustomMode(false);
+      setCustomInput('');
+    }
   };
 
   return (
@@ -3304,14 +3311,14 @@ const ParameterCard = ({
       <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
         {explanation}
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(52px, 1fr))', gap: 6 }}>
-        {options.map((opt, idx) => {
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+        {options.slice(0, 5).map((opt, idx) => {
           const isActive = value === opt;
-          const colors = getButtonColor(opt, idx, options.length);
+          const colors = getButtonColor(idx);
           return (
             <div
               key={opt}
-              onClick={() => onChange(opt)}
+              onClick={() => { onChange(opt); setCustomMode(false); }}
               style={{
                 padding: '10px 4px',
                 borderRadius: 8,
@@ -3329,6 +3336,55 @@ const ParameterCard = ({
             </div>
           );
         })}
+        {/* Custom input button/field */}
+        {customMode ? (
+          <div style={{
+            display: 'flex',
+            borderRadius: 8,
+            border: '2px solid var(--violet)',
+            background: 'rgba(167,139,250,0.15)',
+            overflow: 'hidden',
+          }}>
+            <input
+              type="text"
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
+              placeholder="..."
+              autoFocus
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: '8px 4px',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--violet)',
+                fontSize: 12,
+                fontWeight: 600,
+                textAlign: 'center',
+                outline: 'none',
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            onClick={() => setCustomMode(true)}
+            style={{
+              padding: '10px 4px',
+              borderRadius: 8,
+              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
+              background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              textAlign: 'center',
+              fontSize: 12,
+              fontWeight: isCustomValue ? 600 : 400,
+              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
+            }}
+          >
+            {isCustomValue ? formatValue(value) : '...'}
+          </div>
+        )}
       </div>
       <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
         {inverse ? '← Bullish | Bearish →' : '← Bearish | Bullish →'}
@@ -3537,7 +3593,7 @@ const ModelTab = ({
             <ParameterCard
               title="Penetration Rate (%)"
               explanation="Percentage of partner MNO subscribers who adopt ASTS service. Management targets 3-5%. Analyst estimates range 1-10%. Higher penetration = more subscribers = more revenue. Depends on pricing, network quality, and Starlink competition."
-              options={[0.5, 1, 1.5, 2, 3, 5, 7, 10, 15]}
+              options={[0.5, 1.5, 3, 7, 15]}
               value={penetrationRate}
               onChange={v => { setPenetrationRate(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3545,7 +3601,7 @@ const ModelTab = ({
             <ParameterCard
               title="Blended ARPU ($/month)"
               explanation="Average Revenue Per User per month. Blended across regions: US ~$25, LatAm ~$15, Africa/Asia ~$5-10. Management guidance: $15-20 blended. Some analysts model $2-4 for emerging markets only."
-              options={[5, 8, 10, 12, 15, 18, 22, 25, 30, 40]}
+              options={[5, 10, 15, 25, 40]}
               value={blendedARPU}
               onChange={v => { setBlendedARPU(v); setSelectedScenario('custom'); }}
               format="$"
@@ -3556,7 +3612,7 @@ const ModelTab = ({
             <ParameterCard
               title="Revenue Share (%)"
               explanation="ASTS's share of gross subscriber revenue. Standard MNO deals: 50/50. Some partners may negotiate 60/40 in their favor. Higher share = more revenue flows to ASTS. Could vary by region."
-              options={[30, 35, 40, 45, 50, 55, 60, 65]}
+              options={[30, 40, 50, 55, 65]}
               value={revenueShare}
               onChange={v => { setRevenueShare(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3564,7 +3620,7 @@ const ModelTab = ({
             <ParameterCard
               title="Competition Discount (%)"
               explanation="Revenue reduction due to Starlink and competitors. 0% = ASTS monopoly. 75% = competitors capture most of market. Key risk: Starlink Direct-to-Cell has massive satellite fleet advantage."
-              options={[0, 5, 10, 15, 20, 30, 40, 50, 60, 75]}
+              options={[0, 15, 30, 50, 75]}
               value={competitionDiscount}
               onChange={v => { setCompetitionDiscount(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3579,7 +3635,7 @@ const ModelTab = ({
             <ParameterCard
               title="Terminal EBITDA Margin (%)"
               explanation="Operating margin at scale. Satellite businesses typically achieve 50-70% EBITDA margins. ASTS management targets 85%+. Lower margins possible if pricing pressure or higher opex. 25-30% if competition is brutal."
-              options={[20, 25, 30, 40, 50, 60, 70, 80, 85]}
+              options={[20, 40, 55, 70, 85]}
               value={terminalMargin}
               onChange={v => { setTerminalMargin(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3587,7 +3643,7 @@ const ModelTab = ({
             <ParameterCard
               title="Maintenance CapEx (% Rev)"
               explanation="Ongoing capital expenditure for satellite replacement (7-10yr lifespan). 5-10% for efficient operators, 15-25% if constellation needs frequent replacement. Lower = more free cash flow."
-              options={[3, 5, 8, 10, 12, 15, 18, 20, 25, 30]}
+              options={[3, 8, 12, 20, 30]}
               value={terminalCapex}
               onChange={v => { setTerminalCapex(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3599,7 +3655,7 @@ const ModelTab = ({
             <ParameterCard
               title="Annual Dilution (%)"
               explanation="Share count increase from stock comp, warrants, and equity raises. ASTS is capital-intensive. 2-4% = well-funded. 10-15% = ongoing raises needed. High dilution erodes per-share value."
-              options={[1, 2, 3, 4, 5, 6, 8, 10, 12, 15]}
+              options={[1, 3, 5, 8, 15]}
               value={dilutionRate}
               onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3608,7 +3664,7 @@ const ModelTab = ({
             <ParameterCard
               title="Deployment Delay (Years)"
               explanation="Schedule variance from plan. Negative = ahead of schedule. +4yr = major delays, funding issues. Delays = later revenue, more cash burn, potential dilution. ASTS now has $3.2B cash runway."
-              options={[-2, -1, 0, 1, 2, 3, 4, 5]}
+              options={[-2, 0, 1, 3, 5]}
               value={deploymentDelay}
               onChange={v => { setDeploymentDelay(v); setSelectedScenario('custom'); }}
               format="yr"
@@ -3623,7 +3679,7 @@ const ModelTab = ({
             <ParameterCard
               title="Discount Rate / WACC (%)"
               explanation="Required return for discounting future cash flows. 10% = blue chip. 15-20% = high-growth tech. 25%+ = speculative pre-revenue. Lower rates justified as execution de-risks."
-              options={[8, 10, 12, 14, 16, 18, 20, 22, 25, 30]}
+              options={[8, 12, 16, 22, 30]}
               value={discountRate}
               onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3632,7 +3688,7 @@ const ModelTab = ({
             <ParameterCard
               title="Terminal Growth Rate (%)"
               explanation="Perpetual growth rate for Gordon Growth Model. Should not exceed long-term GDP (~3%). 1% = conservative. 4-5% = aggressive (justified by emerging market connectivity growth)."
-              options={[0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5]}
+              options={[0, 1.5, 2.5, 3.5, 5]}
               value={terminalGrowth}
               onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3649,7 +3705,7 @@ const ModelTab = ({
             <ParameterCard
               title="Regulatory Risk (%)"
               explanation="Probability of adverse regulatory action. ASTS has FCC approval but needs country-by-country clearance. 2-5% = most approvals done. 20-30% = major regulatory uncertainty remains."
-              options={[1, 2, 3, 5, 8, 10, 15, 20, 25, 30]}
+              options={[2, 5, 10, 20, 30]}
               value={regulatoryRisk}
               onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3658,7 +3714,7 @@ const ModelTab = ({
             <ParameterCard
               title="Technology Risk (%)"
               explanation="Probability of technology failure. Decreases with each successful satellite and commercial service proof. 2-5% = proven tech. 25-35% = significant unknowns remain."
-              options={[1, 2, 5, 8, 10, 15, 20, 25, 30, 35]}
+              options={[2, 8, 15, 25, 35]}
               value={techRisk}
               onChange={v => { setTechRisk(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3667,7 +3723,7 @@ const ModelTab = ({
             <ParameterCard
               title="Competition Risk (%)"
               explanation="Probability competitors capture majority of market or drive pricing to unprofitable levels. Different from Competition Discount - this is binary 'existential threat' probability."
-              options={[2, 3, 5, 8, 10, 15, 20, 25, 30, 40]}
+              options={[2, 8, 15, 25, 40]}
               value={competitionRisk}
               onChange={v => { setCompetitionRisk(v); setSelectedScenario('custom'); }}
               format="%"
