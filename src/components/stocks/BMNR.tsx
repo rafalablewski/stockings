@@ -563,6 +563,7 @@ const css = `
 
 .nav-btn {
   padding: 12px 24px;
+  min-width: 100px;
   font-size: 14px;
   font-weight: 600;
   color: var(--text2);
@@ -576,6 +577,7 @@ const css = `
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
 }
 
