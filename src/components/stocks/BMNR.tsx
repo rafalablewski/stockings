@@ -1811,17 +1811,18 @@ const BMNRParameterCard = ({
     return String(v);
   };
 
-  // 5 colors for 5 preset positions: red → orange → yellow → lime → green
+  // 6 colors for 6 preset positions: red → orange → yellow → lime → green → emerald
   const presetColors = [
     { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
     { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
     { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
     { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
     { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
   ];
 
   const getButtonColor = (idx: number) => {
-    const effectiveIdx = inverse ? 4 - idx : idx;
+    const effectiveIdx = inverse ? 5 - idx : idx;
     return presetColors[effectiveIdx];
   };
 
@@ -1840,8 +1841,8 @@ const BMNRParameterCard = ({
       <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
         {explanation}
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6, pointerEvents: disabled ? 'none' : 'auto' }}>
-        {options.slice(0, 5).map((opt, idx) => {
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6, pointerEvents: disabled ? 'none' : 'auto' }}>
+        {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
           const colors = getButtonColor(idx);
           return (
@@ -2103,7 +2104,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="ETH Holdings (M)"
             explanation="Total ETH held by BMNR. Default: 4.17M from Jan 2026 PR (3.45% of ETH supply). Adjust to model different accumulation scenarios or test sensitivity to holdings size."
-            options={[2, 3, 4.17, 5.5, 7]}
+            options={[2, 3, 4, 4.17, 5.5, 7]}
             value={Math.round(currentETH / 1_000_000 * 100) / 100}
             onChange={v => setCurrentETH(Math.round(v * 1_000_000))}
             format="ETH"
@@ -2145,7 +2146,7 @@ const ModelTab = ({
             <BMNRParameterCard
               title={`Target ETH Price (${new Date().getFullYear() + 5})`}
               explanation={`Set your target ETH price for ${new Date().getFullYear() + 5}. Current: $${ethPrice.toLocaleString()}. ${ethInputMode === 'target' ? `Implies ${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}% annual growth.` : 'Click to use this method.'}`}
-              options={[1500, 4000, 8000, 20000, 50000]}
+              options={[1500, 3000, 6000, 12000, 25000, 50000]}
               value={ethTargetPrice}
               onChange={v => { setEthTargetPrice(v); setEthInputMode('target'); setSelectedScenario('custom'); }}
               format="$"
@@ -2180,7 +2181,7 @@ const ModelTab = ({
             <BMNRParameterCard
               title="ETH Annual Growth Rate (%)"
               explanation={`Expected annual ETH price appreciation. ${ethInputMode === 'growth' ? `Terminal: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}` : 'Click to use this method.'} Historical: +90% (2024), -67% (2022).`}
-              options={[-30, 0, 15, 30, 60]}
+              options={[-30, -10, 5, 20, 40, 60]}
               value={ethGrowthRate}
               onChange={v => { setEthGrowthRate(v); setEthInputMode('growth'); setSelectedScenario('custom'); }}
               format="%"
@@ -2218,7 +2219,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="Staking Yield (% APY)"
             explanation="Annual yield from ETH staking. Base Ethereum staking: 3-4% APY. With restaking (EigenLayer): 4-7%+. BMNR currently stakes ~30% of holdings. Higher yield = more ETH accumulation."
-            options={[1, 2.5, 4, 5.5, 7]}
+            options={[1, 2, 3, 4.5, 5.5, 7]}
             value={stakingYield}
             onChange={v => { setStakingYield(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2229,7 +2230,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="NAV Premium/Discount (x)"
             explanation="Stock price vs NAV per share. 1.0x = at NAV. <1x = discount (typical for closed-end funds). >1x = premium (like MSTR at 2-3x). Premium justified by: liquidity, management, yield optimization, regulatory wrapper."
-            options={[0.5, 0.75, 1.0, 1.25, 2.0]}
+            options={[0.5, 0.7, 0.9, 1.1, 1.4, 2.0]}
             value={navPremium}
             onChange={v => { setNavPremium(v); setSelectedScenario('custom'); }}
             format="x"
@@ -2237,7 +2238,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="Operating Costs (% of AUM)"
             explanation="Annual operating expenses as % of ETH holdings value. Includes: management, custody, legal, admin. 0.3-0.5% = ETF-like efficient. 1-2% = typical fund. 3%+ = high overhead eroding returns."
-            options={[0.2, 0.5, 1, 2, 3]}
+            options={[0.2, 0.4, 0.7, 1.2, 2, 3]}
             value={operatingCosts}
             onChange={v => { setOperatingCosts(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2252,7 +2253,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="Annual Dilution Rate (%)"
             explanation="Expected share count increase from equity raises, warrants, stock comp. Treasury companies often raise capital to buy more assets. 0% = self-funding. 5-10% = typical. 20%+ = aggressive accumulation."
-            options={[0, 5, 10, 15, 25]}
+            options={[0, 3, 6, 10, 16, 25]}
             value={dilutionRate}
             onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2261,7 +2262,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="Discount Rate / WACC (%)"
             explanation="Required return for discounting future cash flows. Higher for risky assets. 10% = blue chip. 15-20% = volatile crypto exposure. 25%+ = speculative. Should exceed ETH expected return for margin of safety."
-            options={[8, 12, 16, 22, 30]}
+            options={[8, 11, 14, 18, 24, 30]}
             value={discountRate}
             onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }}
             format="%"

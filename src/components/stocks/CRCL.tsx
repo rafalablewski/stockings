@@ -1917,17 +1917,18 @@ const CRCLParameterCard = ({
     return String(v);
   };
 
-  // 5 colors for 5 preset positions: red → orange → yellow → lime → green
+  // 6 colors for 6 preset positions: red → orange → yellow → lime → green → emerald
   const presetColors = [
     { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
     { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
     { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
     { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
     { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
   ];
 
   const getButtonColor = (idx: number) => {
-    const effectiveIdx = inverse ? 4 - idx : idx;
+    const effectiveIdx = inverse ? 5 - idx : idx;
     return presetColors[effectiveIdx];
   };
 
@@ -1946,8 +1947,8 @@ const CRCLParameterCard = ({
       <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
         {explanation}
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-        {options.slice(0, 5).map((opt, idx) => {
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+        {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
           const colors = getButtonColor(idx);
           return (
@@ -2195,7 +2196,7 @@ const CRCLModelTab = ({
           <CRCLParameterCard
             title="USDC Annual Growth Rate (%)"
             explanation="Expected annual USDC circulation growth. Historical: 500%+ (2020-21), -50% (2022-23), +40% (2024). Crypto cycles are volatile. Stablecoin TAM could grow 10x+ with institutional adoption and regulatory clarity."
-            options={[-20, 0, 15, 35, 60]}
+            options={[-20, -5, 10, 25, 40, 60]}
             value={usdcGrowthRate}
             onChange={v => { setUsdcGrowthRate(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2203,7 +2204,7 @@ const CRCLModelTab = ({
           <CRCLParameterCard
             title="Reserve Yield / Fed Funds (%)"
             explanation="Yield on USDC reserves (short-term Treasuries). Currently ~4.5%. Fed projections: cuts to 3-3.5% by 2026. Key revenue driver - 1% rate = ~$625M gross revenue per $62.5B USDC. Lower rates = lower yield income."
-            options={[1.0, 2.0, 3.0, 4.0, 5.0]}
+            options={[1.0, 1.5, 2.5, 3.5, 4.5, 5.0]}
             value={reserveYield}
             onChange={v => { setReserveYield(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2214,7 +2215,7 @@ const CRCLModelTab = ({
           <CRCLParameterCard
             title="Market Share (%)"
             explanation="USDC % of total stablecoin market. Currently ~29%. USDT dominates at ~68%. USDC's advantage: regulatory compliance, transparency, US-friendly. Risk: CBDCs, new entrants (PayPal USD), USDT resilience."
-            options={[10, 18, 25, 35, 45]}
+            options={[10, 15, 22, 30, 38, 45]}
             value={marketShare}
             onChange={v => { setMarketShare(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2222,7 +2223,7 @@ const CRCLModelTab = ({
           <CRCLParameterCard
             title="Coinbase Distribution Cost (%)"
             explanation="Revenue share to Coinbase for USDC distribution. Current estimate: ~54% of reserve income. Coinbase is critical partner but takes majority of economics. Lower % = better Circle unit economics."
-            options={[35, 45, 54, 58, 65]}
+            options={[35, 42, 50, 54, 58, 65]}
             value={distributionCost}
             onChange={v => { setDistributionCost(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2237,7 +2238,7 @@ const CRCLModelTab = ({
           <CRCLParameterCard
             title="Operating Margin (%)"
             explanation="EBITDA margin on net revenue (after Coinbase). Fintech peers: 30-50%+. Scale benefits: compliance/tech costs spread over larger base. 25% = pressured, 40%+ = scale achieved, 60% = best-in-class."
-            options={[15, 25, 40, 50, 60]}
+            options={[15, 22, 32, 42, 52, 60]}
             value={operatingMargin}
             onChange={v => { setOperatingMargin(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2263,7 +2264,7 @@ const CRCLModelTab = ({
           <CRCLParameterCard
             title="Discount Rate / WACC (%)"
             explanation="Required return for discounting future cash flows. 10% = mature fintech. 14% = growth with execution risk. 20%+ = speculative. Higher if rate/regulatory risk is elevated."
-            options={[8, 12, 16, 20, 25]}
+            options={[8, 10, 13, 16, 20, 25]}
             value={discountRate}
             onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2272,7 +2273,7 @@ const CRCLModelTab = ({
           <CRCLParameterCard
             title="Terminal Growth Rate (%)"
             explanation="Perpetual growth rate after terminal year. For stablecoin infrastructure: 2-3% is reasonable (GDP-like). 4%+ assumes continued crypto economy outgrowth. Should not exceed long-term nominal GDP."
-            options={[0, 1.5, 2.5, 3.5, 4]}
+            options={[0, 1, 2, 2.5, 3.5, 4]}
             value={terminalGrowth}
             onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2289,7 +2290,7 @@ const CRCLModelTab = ({
           <CRCLParameterCard
             title="Regulatory Risk (%)"
             explanation="Probability of adverse stablecoin regulation. SEC/banking agency scrutiny, reserve requirements, licensing issues. 5% = favorable legislation. 30%+ = CBDC mandates or stablecoin restrictions."
-            options={[3, 8, 15, 25, 40]}
+            options={[3, 6, 12, 20, 30, 40]}
             value={regulatoryRisk}
             onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2298,7 +2299,7 @@ const CRCLModelTab = ({
           <CRCLParameterCard
             title="Competition Risk (%)"
             explanation="Probability competitors (USDT, CBDC, PayPal USD) significantly erode market share or pricing. 5% = strong moat. 25%+ = commoditization risk."
-            options={[2, 8, 15, 25, 35]}
+            options={[2, 6, 12, 18, 26, 35]}
             value={competitionRisk}
             onChange={v => { setCompetitionRisk(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2307,7 +2308,7 @@ const CRCLModelTab = ({
           <CRCLParameterCard
             title="Interest Rate Risk (%)"
             explanation="Probability Fed cuts rates more than expected, compressing yield income. 5% = higher for longer. 25%+ = aggressive easing cycle. Circle's revenue is highly rate-sensitive."
-            options={[2, 8, 15, 22, 30]}
+            options={[2, 6, 10, 16, 22, 30]}
             value={rateRisk}
             onChange={v => { setRateRisk(v); setSelectedScenario('custom'); }}
             format="%"
