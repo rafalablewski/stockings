@@ -3693,7 +3693,7 @@ const ModelTab = ({
                 label="Implied Upside"
                 value={targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}
                 sub={impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}
-                color={impliedUpside > 50 ? 'mint' : impliedUpside > 0 ? 'gold' : 'coral'}
+                color={impliedUpside > 50 ? 'mint' : impliedUpside > 0 ? 'yellow' : 'red'}
               />
               <Card
                 label="Present Value EV"
@@ -3710,17 +3710,17 @@ const ModelTab = ({
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
-              <Card label="2030 Subscribers" value={`${terminalSubs.toFixed(0)}M`} sub={`${penetrationRate}% × ${(partnerReach/1000).toFixed(1)}B × ${100 - competitionDiscount}%`} color="text3" />
-              <Card label="2030 Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of $${terminalGrossRev.toFixed(2)}B`} color="text3" />
-              <Card label="2030 EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${terminalMargin}% margin`} color="text3" />
-              <Card label="2030 FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${terminalMargin - terminalCapex}% FCF margin`} color="text3" />
+              <Card label="2030 Subscribers" value={`${terminalSubs.toFixed(0)}M`} sub={`${penetrationRate}% × ${(partnerReach/1000).toFixed(1)}B × ${100 - competitionDiscount}%`} color="blue" />
+              <Card label="2030 Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of $${terminalGrossRev.toFixed(2)}B`} color="blue" />
+              <Card label="2030 EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${terminalMargin}% margin`} color="blue" />
+              <Card label="2030 FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${terminalMargin - terminalCapex}% FCF margin`} color="blue" />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-              <Card label="2030 EV/Revenue" value={`${terminalEVperRev.toFixed(1)}x`} sub={`$${terminalEV.toFixed(1)}B EV`} color="text3" />
-              <Card label="2030 EV/EBITDA" value={`${terminalEVperEBITDA.toFixed(1)}x`} sub="Terminal multiple" color="text3" />
-              <Card label="2030 FCF Yield" value={`${terminalFCFyield.toFixed(1)}%`} sub="FCF / Terminal EV" color="text3" />
-              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr × ${discountYears}yrs`} color="text3" />
+              <Card label="2030 EV/Revenue" value={`${terminalEVperRev.toFixed(1)}x`} sub={`$${terminalEV.toFixed(1)}B EV`} color="purple" />
+              <Card label="2030 EV/EBITDA" value={`${terminalEVperEBITDA.toFixed(1)}x`} sub="Terminal multiple" color="purple" />
+              <Card label="2030 FCF Yield" value={`${terminalFCFyield.toFixed(1)}%`} sub="FCF / Terminal EV" color="purple" />
+              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr × ${discountYears}yrs`} color="purple" />
             </div>
           </div>
 

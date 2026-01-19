@@ -2156,7 +2156,7 @@ const ModelTab = ({
           </span>
         </div>
 
-        <h3 style={{ color: 'var(--cyan)', marginTop: 16, marginBottom: 8 }}>Yield & Costs</h3>
+        <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>Yield & Costs</h3>
 
         <div className="g2">
           <BMNRParameterCard
