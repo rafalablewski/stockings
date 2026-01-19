@@ -3304,7 +3304,7 @@ const ParameterCard = ({
       <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
         {explanation}
       </p>
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(52px, 1fr))', gap: 6 }}>
         {options.map((opt, idx) => {
           const isActive = value === opt;
           const colors = getButtonColor(opt, idx, options.length);
@@ -3313,9 +3313,7 @@ const ParameterCard = ({
               key={opt}
               onClick={() => onChange(opt)}
               style={{
-                flex: '1 1 auto',
-                minWidth: 44,
-                padding: '8px 6px',
+                padding: '10px 4px',
                 borderRadius: 8,
                 border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                 background: isActive ? colors.bg : 'var(--surface2)',
