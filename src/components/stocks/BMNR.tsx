@@ -563,6 +563,7 @@ const css = `
 
 .nav-btn {
   padding: 12px 24px;
+  min-width: 100px;
   font-size: 14px;
   font-weight: 600;
   color: var(--text2);
@@ -576,6 +577,7 @@ const css = `
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
 }
 
@@ -1675,7 +1677,7 @@ const BMNRDilutionAnalysis = () => {
         {/* Main Content */}
         <main className="main">
         {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} />}
-        {activeTab === 'model' && <ModelTab currentETH={currentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
+        {activeTab === 'model' && <ModelTab currentETH={currentETH} setCurrentETH={setCurrentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
         {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
         {activeTab === 'staking' && <StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} />}
         {activeTab === 'dilution' && <DilutionTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} tranches={tranches} setTranches={setTranches} dilutionPercent={dilutionPercent} setDilutionPercent={setDilutionPercent} saleDiscount={saleDiscount} setSaleDiscount={setSaleDiscount} navMultiple={navMultiple} setNavMultiple={setNavMultiple} maxAuthorizedShares={maxAuthorizedShares} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} regulatoryRisk={regulatoryRisk} />}
@@ -1797,6 +1799,10 @@ const BMNRParameterCard = ({
   inverse?: boolean;
   disabled?: boolean;
 }) => {
+  const [customMode, setCustomMode] = useState(false);
+  const [customInput, setCustomInput] = useState('');
+  const isCustomValue = !options.includes(value);
+
   const formatValue = (v: number) => {
     if (format === '$') return `$${v.toLocaleString()}`;
     if (format === '%') return `${v}%`;
@@ -1805,22 +1811,28 @@ const BMNRParameterCard = ({
     return String(v);
   };
 
-  // Color based on position in the sorted array (bullish to bearish gradient)
-  const getButtonColor = (optionValue: number, idx: number, total: number) => {
-    const sortedOptions = [...options].sort((a, b) => a - b);
-    const position = sortedOptions.indexOf(optionValue);
-    const normalizedPos = position / (total - 1); // 0 to 1
+  // 6 colors for 6 preset positions: red → orange → yellow → lime → green → emerald
+  const presetColors = [
+    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+  ];
 
-    // For inverse metrics, flip the gradient
-    const effectivePos = inverse ? 1 - normalizedPos : normalizedPos;
+  const getButtonColor = (idx: number) => {
+    const effectiveIdx = inverse ? 5 - idx : idx;
+    return presetColors[effectiveIdx];
+  };
 
-    // Color stops: red (0) -> orange (0.25) -> yellow (0.5) -> lime (0.75) -> green (1)
-    if (effectivePos <= 0.2) return { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' };
-    if (effectivePos <= 0.35) return { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' };
-    if (effectivePos <= 0.5) return { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' };
-    if (effectivePos <= 0.65) return { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' };
-    if (effectivePos <= 0.8) return { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' };
-    return { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' };
+  const handleCustomSubmit = () => {
+    const num = parseFloat(customInput);
+    if (!isNaN(num)) {
+      onChange(num);
+      setCustomMode(false);
+      setCustomInput('');
+    }
   };
 
   return (
@@ -1829,18 +1841,16 @@ const BMNRParameterCard = ({
       <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
         {explanation}
       </p>
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', pointerEvents: disabled ? 'none' : 'auto' }}>
-        {options.map((opt, idx) => {
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6, pointerEvents: disabled ? 'none' : 'auto' }}>
+        {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
-          const colors = getButtonColor(opt, idx, options.length);
+          const colors = getButtonColor(idx);
           return (
             <div
               key={opt}
-              onClick={() => !disabled && onChange(opt)}
+              onClick={() => { if (!disabled) { onChange(opt); setCustomMode(false); } }}
               style={{
-                flex: '1 1 auto',
-                minWidth: 44,
-                padding: '8px 6px',
+                padding: '10px 4px',
                 borderRadius: 8,
                 border: isActive ? `2px solid ${disabled ? 'var(--text3)' : colors.border}` : '1px solid var(--border)',
                 background: isActive ? (disabled ? 'var(--surface2)' : colors.bg) : 'var(--surface2)',
@@ -1856,9 +1866,58 @@ const BMNRParameterCard = ({
             </div>
           );
         })}
+        {/* Custom input button/field */}
+        {customMode && !disabled ? (
+          <div style={{
+            display: 'flex',
+            borderRadius: 8,
+            border: '2px solid var(--violet)',
+            background: 'rgba(167,139,250,0.15)',
+            overflow: 'hidden',
+          }}>
+            <input
+              type="text"
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
+              placeholder="..."
+              autoFocus
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: '8px 4px',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--violet)',
+                fontSize: 12,
+                fontWeight: 600,
+                textAlign: 'center',
+                outline: 'none',
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            onClick={() => !disabled && setCustomMode(true)}
+            style={{
+              padding: '10px 4px',
+              borderRadius: 8,
+              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
+              background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
+              cursor: disabled ? 'default' : 'pointer',
+              transition: 'all 0.15s',
+              textAlign: 'center',
+              fontSize: 12,
+              fontWeight: isCustomValue ? 600 : 400,
+              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
+            }}
+          >
+            {isCustomValue ? formatValue(value) : '...'}
+          </div>
+        )}
       </div>
       <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
-        {inverse ? '← Bullish | Bearish →' : '← Bearish | Bullish →'}
+        ← Bearish | Bullish →
       </div>
     </div>
   );
@@ -1866,10 +1925,11 @@ const BMNRParameterCard = ({
 
 // ModelTab component for BMNR - NAV-based DCF valuation
 const ModelTab = ({
-  currentETH, ethPrice, currentShares, currentStockPrice,
+  currentETH, setCurrentETH, ethPrice, currentShares, currentStockPrice,
   baseStakingAPY, stakingRatio,
 }: {
   currentETH: number;
+  setCurrentETH: (v: number) => void;
   ethPrice: number;
   currentShares: number;
   currentStockPrice: number;
@@ -2038,6 +2098,19 @@ const ModelTab = ({
           </div>
         </div>
 
+        {/* ETH HOLDINGS ASSUMPTION */}
+        <h3 style={{ color: 'var(--violet)', marginTop: 24, marginBottom: 8 }}>ETH Holdings</h3>
+        <div className="g2">
+          <BMNRParameterCard
+            title="ETH Holdings (M)"
+            explanation="Total ETH held by BMNR. Default: 4.17M from Jan 2026 PR (3.45% of ETH supply). Adjust to model different accumulation scenarios or test sensitivity to holdings size."
+            options={[2, 3, 3.5, 4.17, 5, 7]}
+            value={Math.round(currentETH / 1_000_000 * 100) / 100}
+            onChange={v => setCurrentETH(Math.round(v * 1_000_000))}
+            format="ETH"
+          />
+        </div>
+
         {/* ETH & YIELD PARAMETERS */}
         <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>ETH Price Projection</h3>
         <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>
@@ -2073,7 +2146,7 @@ const ModelTab = ({
             <BMNRParameterCard
               title={`Target ETH Price (${new Date().getFullYear() + 5})`}
               explanation={`Set your target ETH price for ${new Date().getFullYear() + 5}. Current: $${ethPrice.toLocaleString()}. ${ethInputMode === 'target' ? `Implies ${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}% annual growth.` : 'Click to use this method.'}`}
-              options={[1500, 2500, 4000, 6000, 8000, 10000, 15000, 20000, 30000, 50000]}
+              options={[1500, 2500, 4000, 8000, 15000, 50000]}
               value={ethTargetPrice}
               onChange={v => { setEthTargetPrice(v); setEthInputMode('target'); setSelectedScenario('custom'); }}
               format="$"
@@ -2108,7 +2181,7 @@ const ModelTab = ({
             <BMNRParameterCard
               title="ETH Annual Growth Rate (%)"
               explanation={`Expected annual ETH price appreciation. ${ethInputMode === 'growth' ? `Terminal: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}` : 'Click to use this method.'} Historical: +90% (2024), -67% (2022).`}
-              options={[-30, -15, -5, 0, 5, 10, 15, 20, 30, 40, 60]}
+              options={[-30, -5, 10, 20, 35, 60]}
               value={ethGrowthRate}
               onChange={v => { setEthGrowthRate(v); setEthInputMode('growth'); setSelectedScenario('custom'); }}
               format="%"
@@ -2140,13 +2213,13 @@ const ModelTab = ({
           </span>
         </div>
 
-        <h3 style={{ color: 'var(--cyan)', marginTop: 16, marginBottom: 8 }}>Yield & Costs</h3>
+        <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>Yield & Costs</h3>
 
         <div className="g2">
           <BMNRParameterCard
             title="Staking Yield (% APY)"
             explanation="Annual yield from ETH staking. Base Ethereum staking: 3-4% APY. With restaking (EigenLayer): 4-7%+. BMNR currently stakes ~30% of holdings. Higher yield = more ETH accumulation."
-            options={[1, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 7]}
+            options={[1, 2, 3.5, 4.5, 5.5, 7]}
             value={stakingYield}
             onChange={v => { setStakingYield(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2157,7 +2230,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="NAV Premium/Discount (x)"
             explanation="Stock price vs NAV per share. 1.0x = at NAV. <1x = discount (typical for closed-end funds). >1x = premium (like MSTR at 2-3x). Premium justified by: liquidity, management, yield optimization, regulatory wrapper."
-            options={[0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.5, 2.0]}
+            options={[0.4, 0.7, 1.0, 1.2, 1.5, 2.0]}
             value={navPremium}
             onChange={v => { setNavPremium(v); setSelectedScenario('custom'); }}
             format="x"
@@ -2165,7 +2238,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="Operating Costs (% of AUM)"
             explanation="Annual operating expenses as % of ETH holdings value. Includes: management, custody, legal, admin. 0.3-0.5% = ETF-like efficient. 1-2% = typical fund. 3%+ = high overhead eroding returns."
-            options={[0.2, 0.3, 0.5, 0.75, 1, 1.5, 2, 2.5, 3]}
+            options={[3, 2, 1, 0.5, 0.3, 0.2]}
             value={operatingCosts}
             onChange={v => { setOperatingCosts(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2180,7 +2253,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="Annual Dilution Rate (%)"
             explanation="Expected share count increase from equity raises, warrants, stock comp. Treasury companies often raise capital to buy more assets. 0% = self-funding. 5-10% = typical. 20%+ = aggressive accumulation."
-            options={[0, 2, 3, 5, 8, 10, 12, 15, 20, 25]}
+            options={[25, 15, 8, 5, 3, 0]}
             value={dilutionRate}
             onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2189,7 +2262,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="Discount Rate / WACC (%)"
             explanation="Required return for discounting future cash flows. Higher for risky assets. 10% = blue chip. 15-20% = volatile crypto exposure. 25%+ = speculative. Should exceed ETH expected return for margin of safety."
-            options={[8, 10, 12, 14, 16, 18, 20, 22, 25, 30]}
+            options={[35, 20, 12, 11, 10, 8]}
             value={discountRate}
             onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }}
             format="%"
