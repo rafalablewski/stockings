@@ -3388,7 +3388,7 @@ const ParameterCard = ({
         )}
       </div>
       <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
-        {inverse ? '← Bullish | Bearish →' : '← Bearish | Bullish →'}
+        ← Bearish | Bullish →
       </div>
     </div>
   );
@@ -3594,7 +3594,7 @@ const ModelTab = ({
             <ParameterCard
               title="Penetration Rate (%)"
               explanation="Percentage of partner MNO subscribers who adopt ASTS service. Management targets 3-5%. Analyst estimates range 1-10%. Higher penetration = more subscribers = more revenue. Depends on pricing, network quality, and Starlink competition."
-              options={[0.5, 1, 2, 4, 8, 15]}
+              options={[0.5, 1, 2, 3, 5, 10]}
               value={penetrationRate}
               onChange={v => { setPenetrationRate(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3602,7 +3602,7 @@ const ModelTab = ({
             <ParameterCard
               title="Blended ARPU ($/month)"
               explanation="Average Revenue Per User per month. Blended across regions: US ~$25, LatAm ~$15, Africa/Asia ~$5-10. Management guidance: $15-20 blended. Some analysts model $2-4 for emerging markets only."
-              options={[5, 8, 12, 20, 30, 40]}
+              options={[8, 12, 15, 18, 22, 30]}
               value={blendedARPU}
               onChange={v => { setBlendedARPU(v); setSelectedScenario('custom'); }}
               format="$"
@@ -3613,7 +3613,7 @@ const ModelTab = ({
             <ParameterCard
               title="Revenue Share (%)"
               explanation="ASTS's share of gross subscriber revenue. Standard MNO deals: 50/50. Some partners may negotiate 60/40 in their favor. Higher share = more revenue flows to ASTS. Could vary by region."
-              options={[30, 38, 45, 52, 58, 65]}
+              options={[30, 40, 50, 52, 55, 60]}
               value={revenueShare}
               onChange={v => { setRevenueShare(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3621,7 +3621,7 @@ const ModelTab = ({
             <ParameterCard
               title="Competition Discount (%)"
               explanation="Revenue reduction due to Starlink and competitors. 0% = ASTS monopoly. 75% = competitors capture most of market. Key risk: Starlink Direct-to-Cell has massive satellite fleet advantage."
-              options={[0, 10, 25, 40, 55, 75]}
+              options={[75, 50, 30, 20, 12, 5]}
               value={competitionDiscount}
               onChange={v => { setCompetitionDiscount(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3636,7 +3636,7 @@ const ModelTab = ({
             <ParameterCard
               title="Terminal EBITDA Margin (%)"
               explanation="Operating margin at scale. Satellite businesses typically achieve 50-70% EBITDA margins. ASTS management targets 85%+. Lower margins possible if pricing pressure or higher opex. 25-30% if competition is brutal."
-              options={[20, 35, 50, 62, 75, 85]}
+              options={[25, 40, 50, 60, 70, 80]}
               value={terminalMargin}
               onChange={v => { setTerminalMargin(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3644,7 +3644,7 @@ const ModelTab = ({
             <ParameterCard
               title="Maintenance CapEx (% Rev)"
               explanation="Ongoing capital expenditure for satellite replacement (7-10yr lifespan). 5-10% for efficient operators, 15-25% if constellation needs frequent replacement. Lower = more free cash flow."
-              options={[3, 6, 10, 15, 22, 30]}
+              options={[25, 18, 12, 10, 8, 5]}
               value={terminalCapex}
               onChange={v => { setTerminalCapex(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3656,7 +3656,7 @@ const ModelTab = ({
             <ParameterCard
               title="Annual Dilution (%)"
               explanation="Share count increase from stock comp, warrants, and equity raises. ASTS is capital-intensive. 2-4% = well-funded. 10-15% = ongoing raises needed. High dilution erodes per-share value."
-              options={[1, 2, 4, 6, 10, 15]}
+              options={[15, 10, 6, 4, 3, 2]}
               value={dilutionRate}
               onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3665,7 +3665,7 @@ const ModelTab = ({
             <ParameterCard
               title="Deployment Delay (Years)"
               explanation="Schedule variance from plan. Negative = ahead of schedule. +4yr = major delays, funding issues. Delays = later revenue, more cash burn, potential dilution. ASTS now has $3.2B cash runway."
-              options={[-2, -1, 0, 1, 3, 5]}
+              options={[4, 2, 1, 0, -1, -2]}
               value={deploymentDelay}
               onChange={v => { setDeploymentDelay(v); setSelectedScenario('custom'); }}
               format="yr"
@@ -3680,7 +3680,7 @@ const ModelTab = ({
             <ParameterCard
               title="Discount Rate / WACC (%)"
               explanation="Required return for discounting future cash flows. 10% = blue chip. 15-20% = high-growth tech. 25%+ = speculative pre-revenue. Lower rates justified as execution de-risks."
-              options={[8, 11, 14, 18, 24, 30]}
+              options={[25, 20, 16, 14, 12, 10]}
               value={discountRate}
               onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3689,7 +3689,7 @@ const ModelTab = ({
             <ParameterCard
               title="Terminal Growth Rate (%)"
               explanation="Perpetual growth rate for Gordon Growth Model. Should not exceed long-term GDP (~3%). 1% = conservative. 4-5% = aggressive (justified by emerging market connectivity growth)."
-              options={[0, 1, 2, 3, 4, 5]}
+              options={[1, 2, 2.5, 3, 3.5, 4]}
               value={terminalGrowth}
               onChange={v => { setTerminalGrowth(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3706,7 +3706,7 @@ const ModelTab = ({
             <ParameterCard
               title="Regulatory Risk (%)"
               explanation="Probability of adverse regulatory action. ASTS has FCC approval but needs country-by-country clearance. 2-5% = most approvals done. 20-30% = major regulatory uncertainty remains."
-              options={[2, 5, 10, 15, 22, 30]}
+              options={[30, 15, 8, 5, 3, 2]}
               value={regulatoryRisk}
               onChange={v => { setRegulatoryRisk(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3715,7 +3715,7 @@ const ModelTab = ({
             <ParameterCard
               title="Technology Risk (%)"
               explanation="Probability of technology failure. Decreases with each successful satellite and commercial service proof. 2-5% = proven tech. 25-35% = significant unknowns remain."
-              options={[2, 5, 12, 20, 28, 35]}
+              options={[35, 20, 12, 8, 5, 2]}
               value={techRisk}
               onChange={v => { setTechRisk(v); setSelectedScenario('custom'); }}
               format="%"
@@ -3724,7 +3724,7 @@ const ModelTab = ({
             <ParameterCard
               title="Competition Risk (%)"
               explanation="Probability competitors capture majority of market or drive pricing to unprofitable levels. Different from Competition Discount - this is binary 'existential threat' probability."
-              options={[2, 6, 12, 20, 30, 40]}
+              options={[40, 25, 15, 10, 5, 3]}
               value={competitionRisk}
               onChange={v => { setCompetitionRisk(v); setSelectedScenario('custom'); }}
               format="%"

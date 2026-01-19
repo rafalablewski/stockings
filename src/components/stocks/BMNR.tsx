@@ -1917,7 +1917,7 @@ const BMNRParameterCard = ({
         )}
       </div>
       <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
-        {inverse ? '← Bullish | Bearish →' : '← Bearish | Bullish →'}
+        ← Bearish | Bullish →
       </div>
     </div>
   );
@@ -2104,7 +2104,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="ETH Holdings (M)"
             explanation="Total ETH held by BMNR. Default: 4.17M from Jan 2026 PR (3.45% of ETH supply). Adjust to model different accumulation scenarios or test sensitivity to holdings size."
-            options={[2, 3, 4, 4.17, 5.5, 7]}
+            options={[2, 3, 3.5, 4.17, 5, 7]}
             value={Math.round(currentETH / 1_000_000 * 100) / 100}
             onChange={v => setCurrentETH(Math.round(v * 1_000_000))}
             format="ETH"
@@ -2146,7 +2146,7 @@ const ModelTab = ({
             <BMNRParameterCard
               title={`Target ETH Price (${new Date().getFullYear() + 5})`}
               explanation={`Set your target ETH price for ${new Date().getFullYear() + 5}. Current: $${ethPrice.toLocaleString()}. ${ethInputMode === 'target' ? `Implies ${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}% annual growth.` : 'Click to use this method.'}`}
-              options={[1500, 3000, 6000, 12000, 25000, 50000]}
+              options={[1500, 2500, 4000, 8000, 15000, 50000]}
               value={ethTargetPrice}
               onChange={v => { setEthTargetPrice(v); setEthInputMode('target'); setSelectedScenario('custom'); }}
               format="$"
@@ -2181,7 +2181,7 @@ const ModelTab = ({
             <BMNRParameterCard
               title="ETH Annual Growth Rate (%)"
               explanation={`Expected annual ETH price appreciation. ${ethInputMode === 'growth' ? `Terminal: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}` : 'Click to use this method.'} Historical: +90% (2024), -67% (2022).`}
-              options={[-30, -10, 5, 20, 40, 60]}
+              options={[-30, -5, 10, 20, 35, 60]}
               value={ethGrowthRate}
               onChange={v => { setEthGrowthRate(v); setEthInputMode('growth'); setSelectedScenario('custom'); }}
               format="%"
@@ -2219,7 +2219,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="Staking Yield (% APY)"
             explanation="Annual yield from ETH staking. Base Ethereum staking: 3-4% APY. With restaking (EigenLayer): 4-7%+. BMNR currently stakes ~30% of holdings. Higher yield = more ETH accumulation."
-            options={[1, 2, 3, 4.5, 5.5, 7]}
+            options={[1, 2, 3.5, 4.5, 5.5, 7]}
             value={stakingYield}
             onChange={v => { setStakingYield(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2230,7 +2230,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="NAV Premium/Discount (x)"
             explanation="Stock price vs NAV per share. 1.0x = at NAV. <1x = discount (typical for closed-end funds). >1x = premium (like MSTR at 2-3x). Premium justified by: liquidity, management, yield optimization, regulatory wrapper."
-            options={[0.5, 0.7, 0.9, 1.1, 1.4, 2.0]}
+            options={[0.4, 0.7, 1.0, 1.2, 1.5, 2.0]}
             value={navPremium}
             onChange={v => { setNavPremium(v); setSelectedScenario('custom'); }}
             format="x"
@@ -2238,7 +2238,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="Operating Costs (% of AUM)"
             explanation="Annual operating expenses as % of ETH holdings value. Includes: management, custody, legal, admin. 0.3-0.5% = ETF-like efficient. 1-2% = typical fund. 3%+ = high overhead eroding returns."
-            options={[0.2, 0.4, 0.7, 1.2, 2, 3]}
+            options={[3, 2, 1, 0.5, 0.3, 0.2]}
             value={operatingCosts}
             onChange={v => { setOperatingCosts(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2253,7 +2253,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="Annual Dilution Rate (%)"
             explanation="Expected share count increase from equity raises, warrants, stock comp. Treasury companies often raise capital to buy more assets. 0% = self-funding. 5-10% = typical. 20%+ = aggressive accumulation."
-            options={[0, 3, 6, 10, 16, 25]}
+            options={[25, 15, 8, 5, 3, 0]}
             value={dilutionRate}
             onChange={v => { setDilutionRate(v); setSelectedScenario('custom'); }}
             format="%"
@@ -2262,7 +2262,7 @@ const ModelTab = ({
           <BMNRParameterCard
             title="Discount Rate / WACC (%)"
             explanation="Required return for discounting future cash flows. Higher for risky assets. 10% = blue chip. 15-20% = volatile crypto exposure. 25%+ = speculative. Should exceed ETH expected return for margin of safety."
-            options={[8, 11, 14, 18, 24, 30]}
+            options={[35, 20, 12, 11, 10, 8]}
             value={discountRate}
             onChange={v => { setDiscountRate(v); setSelectedScenario('custom'); }}
             format="%"
