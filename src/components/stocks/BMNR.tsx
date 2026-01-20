@@ -222,10 +222,20 @@ import {
 // TYPESCRIPT INTERFACES (H1)
 // ============================================================================
 
+/**
+ * UPDATE SOURCE TYPES - Indicates which document type updates this field
+ * PR = Press Release (weekly 8-K, PRNewswire)
+ * SEC = SEC Filing (10-Q, 10-K, 424B5, S-3, DEF 14A)
+ * WS = Wall Street (analyst reports, coverage)
+ * MARKET = Market Data (prices updated regularly)
+ */
+type UpdateSource = 'PR' | 'SEC' | 'WS' | 'MARKET';
+
 interface StatProps {
   label: string;
   value: string | number;
   color?: 'white' | 'cyan' | 'mint' | 'coral' | 'sky' | 'violet' | 'gold';
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface CardProps {
@@ -233,12 +243,14 @@ interface CardProps {
   value: string | number;
   sub?: string;
   color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'violet' | 'mint' | 'emerald';
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface RowProps {
   label: string;
   value: string | number;
   highlight?: boolean;
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface InputProps {
@@ -1364,7 +1376,178 @@ input[type="range"]::-webkit-slider-thumb {
   .t-details-content { grid-template-columns: 1fr; }
   .t-details-meta { flex-direction: row; flex-wrap: wrap; min-width: auto; }
 }
+
+/* ═══ UPDATE INDICATOR SYSTEM ═══ */
+/* Visual markers showing which fields get updated from different sources */
+.update-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 6px;
+  cursor: help;
+  position: relative;
+  flex-shrink: 0;
+}
+.update-indicator.pr { background: #facc15; color: #1a1a1a; }
+.update-indicator.sec { background: #22d3ee; color: #1a1a1a; }
+.update-indicator.ws { background: #a78bfa; color: #1a1a1a; }
+.update-indicator.market { background: #4ade80; color: #1a1a1a; }
+
+/* Tooltip on hover */
+.update-indicator::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s, visibility 0.15s;
+  z-index: 1000;
+  color: var(--text);
+  pointer-events: none;
+  margin-bottom: 4px;
+}
+.update-indicator:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Update Legend */
+.update-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 12px;
+  margin-bottom: 24px;
+}
+.update-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text2);
+}
+.update-legend-item .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+}
+.update-legend-item .dot.pr { background: #facc15; color: #1a1a1a; }
+.update-legend-item .dot.sec { background: #22d3ee; color: #1a1a1a; }
+.update-legend-item .dot.ws { background: #a78bfa; color: #1a1a1a; }
+.update-legend-item .dot.market { background: #4ade80; color: #1a1a1a; }
 `;
+
+// ============================================================================
+// UPDATE INDICATOR SYSTEM - Visual markers for data update sources
+// ============================================================================
+
+/** Context to control indicator visibility globally */
+const UpdateIndicatorContext = React.createContext<{ showIndicators: boolean; setShowIndicators: (v: boolean) => void }>({ showIndicators: true, setShowIndicators: () => {} });
+
+const UPDATE_SOURCE_CONFIG: Record<UpdateSource, { label: string; tooltip: string; className: string }> = {
+  PR: { label: '!', tooltip: 'Updated from Press Release', className: 'pr' },
+  SEC: { label: '!', tooltip: 'Updated from SEC Filing', className: 'sec' },
+  WS: { label: '!', tooltip: 'Updated from Wall Street Coverage', className: 'ws' },
+  MARKET: { label: '!', tooltip: 'Updated from Market Data', className: 'market' },
+};
+
+/** Small indicator badge showing which document type updates this field */
+const UpdateIndicator = React.memo<{ source: UpdateSource }>(({ source }) => {
+  const { showIndicators } = React.useContext(UpdateIndicatorContext);
+  if (!showIndicators) return null;
+  const config = UPDATE_SOURCE_CONFIG[source];
+  return (
+    <span
+      className={`update-indicator ${config.className}`}
+      data-tooltip={config.tooltip}
+      title={config.tooltip}
+    >
+      {config.label}
+    </span>
+  );
+});
+UpdateIndicator.displayName = 'UpdateIndicator';
+
+/** Renders one or more update indicators */
+const UpdateIndicators = React.memo<{ sources?: UpdateSource | UpdateSource[] }>(({ sources }) => {
+  const { showIndicators } = React.useContext(UpdateIndicatorContext);
+  if (!showIndicators || !sources) return null;
+  const sourceArray = Array.isArray(sources) ? sources : [sources];
+  return (
+    <>
+      {sourceArray.map((s) => <UpdateIndicator key={s} source={s} />)}
+    </>
+  );
+});
+UpdateIndicators.displayName = 'UpdateIndicators';
+
+/** Legend explaining what each indicator color means, with toggle button */
+const UpdateLegend = React.memo(() => {
+  const { showIndicators, setShowIndicators } = React.useContext(UpdateIndicatorContext);
+  return (
+    <div className="update-legend">
+      <span style={{ fontWeight: 600, color: 'var(--text)' }}>Update Sources:</span>
+      <div className="update-legend-item">
+        <span className="dot pr">!</span>
+        <span>Press Release</span>
+      </div>
+      <div className="update-legend-item">
+        <span className="dot sec">!</span>
+        <span>SEC Filing</span>
+      </div>
+      <div className="update-legend-item">
+        <span className="dot ws">!</span>
+        <span>Wall Street</span>
+      </div>
+      <div className="update-legend-item">
+        <span className="dot market">!</span>
+        <span>Market Data</span>
+      </div>
+      <button
+        onClick={() => setShowIndicators(!showIndicators)}
+        style={{
+          marginLeft: 'auto',
+          padding: '6px 12px',
+          fontSize: '12px',
+          fontWeight: 600,
+          color: showIndicators ? 'var(--bg)' : 'var(--text2)',
+          background: showIndicators ? 'var(--violet)' : 'var(--surface2)',
+          border: '1px solid',
+          borderColor: showIndicators ? 'var(--violet)' : 'var(--border)',
+          borderRadius: '6px',
+          cursor: 'pointer',
+          transition: 'all 0.15s',
+          fontFamily: 'Outfit, sans-serif',
+        }}
+      >
+        {showIndicators ? 'Hide Indicators' : 'Show Indicators'}
+      </button>
+    </div>
+  );
+});
+UpdateLegend.displayName = 'UpdateLegend';
 
 // ============================================================================
 // UNIFIED UI COMPONENT LIBRARY - Consistent Design System
@@ -1372,9 +1555,12 @@ input[type="range"]::-webkit-slider-thumb {
 // ============================================================================
 
 // N1: Memoized pure components for performance optimization
-const Stat = React.memo<StatProps>(({ label, value, color = 'white' }) => (
+const Stat = React.memo<StatProps>(({ label, value, color = 'white', updateSource }) => (
   <div className="stat-item">
-    <div className="label">{label}</div>
+    <div className="label" style={{ display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </div>
     <div className={`val ${color}`}>{value}</div>
   </div>
 ));
@@ -1403,7 +1589,7 @@ const Panel = React.memo<PanelProps>(({ title, children }) => (
 ));
 Panel.displayName = 'Panel';
 
-const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
+const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) => {
   const colorMap: Record<string, { bg: string; border: string; text: string }> = {
     blue: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', text: '#60a5fa' },
     green: { bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' },
@@ -1418,14 +1604,17 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
   };
   const c = colorMap[color || 'blue'] || colorMap.blue;
   return (
-    <div style={{ 
-      background: c.bg, 
-      border: `1px solid ${c.border}`, 
-      borderRadius: '16px', 
+    <div style={{
+      background: c.bg,
+      border: `1px solid ${c.border}`,
+      borderRadius: '16px',
       padding: '20px',
       backdropFilter: 'blur(8px)'
     }}>
-      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+        {label}
+        <UpdateIndicators sources={updateSource} />
+      </div>
       <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'Space Mono', monospace", color: c.text, marginTop: '4px' }}>{value}</div>
       {sub && <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '4px' }}>{sub}</div>}
     </div>
@@ -1433,10 +1622,11 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
 });
 Card.displayName = 'Card';
 
-const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
+const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSource }) => (
   <div style={{
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
     background: highlight ? 'var(--violet-dim)' : 'transparent',
@@ -1446,7 +1636,10 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
     marginRight: highlight ? '-12px' : 0,
     borderRadius: highlight ? '8px' : 0
   }}>
-    <span style={{ fontSize: '14px', color: 'var(--text2)' }}>{label}</span>
+    <span style={{ fontSize: '14px', color: 'var(--text2)', display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </span>
     <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--violet)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
@@ -1478,17 +1671,17 @@ const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, m
 ));
 Input.displayName = 'Input';
 
-// CFA Level III Educational Notes Component
+// CFA Level III Educational Notes Component - Subtle footer style
 const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
-  <div style={{ marginTop: 24, padding: 20, background: 'var(--surface2)', borderRadius: 12, border: '1px solid var(--border)' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-      <span style={{ fontSize: 16 }}>📚</span>
-      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--violet)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
+  <div style={{ marginTop: 32, paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+      <span style={{ fontSize: 12, opacity: 0.7 }}>📚</span>
+      <h4 style={{ margin: 0, fontSize: 11, fontWeight: 500, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
     </div>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13, lineHeight: 1.6 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11, lineHeight: 1.5, color: 'var(--text3)' }}>
       {items.map((item, i) => (
-        <p key={i} style={{ margin: 0, color: 'var(--text2)' }}>
-          <strong style={{ color: 'var(--violet)' }}>{item.term}:</strong> {item.def}
+        <p key={i} style={{ margin: 0 }}>
+          <strong style={{ color: 'var(--text2)' }}>{item.term}:</strong> {item.def}
         </p>
       ))}
     </div>
@@ -1557,6 +1750,9 @@ const BMNRDilutionAnalysis = () => {
   const [quarterlyDividend, setQuarterlyDividend] = useState(0.01);
   const [dividendGrowthRate, setDividendGrowthRate] = useState(10); // % annual growth
 
+  // Update indicator visibility toggle
+  const [showIndicators, setShowIndicators] = useState(true);
+
   // Use imported data from @/data/bmnr
   const historicalETH = HISTORICAL_ETH;
   // Build comparables dynamically with current user values for BMNR
@@ -1622,7 +1818,7 @@ const BMNRDilutionAnalysis = () => {
   ];
 
   return (
-    <>
+    <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
       <style>{css}</style>
       <div className="stock-model-app">
         {/* ============================================================================
@@ -1679,13 +1875,13 @@ const BMNRDilutionAnalysis = () => {
 
         {/* Stats Row */}
         <div className="stats-row">
-          <Stat label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} color="violet" />
-          <Stat label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(1)}B`} />
-          <Stat label="ETH Holdings" value={`${(currentETH / 1e6).toFixed(2)}M`} color="violet" />
-          <Stat label="ETH Price" value={`$${ethPrice.toLocaleString()}`} />
-          <Stat label="Staking Yield" value={`${calc.effectiveAPY.toFixed(2)}%`} color="mint" />
-          <Stat label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} color="sky" />
-          <Stat label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(1)}B`} />
+          <Stat label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} color="violet" updateSource={['PR', 'MARKET']} />
+          <Stat label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(1)}B`} updateSource="MARKET" />
+          <Stat label="ETH Holdings" value={`${(currentETH / 1e6).toFixed(2)}M`} color="violet" updateSource="PR" />
+          <Stat label="ETH Price" value={`$${ethPrice.toLocaleString()}`} updateSource="MARKET" />
+          <Stat label="Staking Yield" value={`${calc.effectiveAPY.toFixed(2)}%`} color="mint" updateSource="PR" />
+          <Stat label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} color="sky" updateSource="PR" />
+          <Stat label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(1)}B`} updateSource={['PR', 'MARKET']} />
         </div>
 
         {/* Navigation */}
@@ -1740,6 +1936,8 @@ const BMNRDilutionAnalysis = () => {
 
         {/* Main Content */}
         <main className="main">
+        {/* Update Source Legend - Shows what each indicator color means */}
+        <UpdateLegend />
         {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} />}
         {activeTab === 'model' && <ModelTab currentETH={currentETH} setCurrentETH={setCurrentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
         {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
@@ -1757,7 +1955,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'wall-street' && <WallStreetTab />}
         </main>
       </div>
-    </>
+    </UpdateIndicatorContext.Provider>
   );
 };
 
@@ -1886,8 +2084,7 @@ const BMNRParameterCard = ({
   ];
 
   const getButtonColor = (idx: number) => {
-    const effectiveIdx = inverse ? 5 - idx : idx;
-    return presetColors[effectiveIdx];
+    return presetColors[idx];
   };
 
   const handleCustomSubmit = () => {
@@ -2520,7 +2717,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div className="card" style={{ marginTop: 32 }}>
-      <div className="card-title">ETH Holdings Growth</div>
+      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ETH Holdings Growth<UpdateIndicators sources="PR" /></div>
       <div className="bars">
         {holdingsData.map((d, i) => (
           <div key={i} className="bar-col">
@@ -2533,16 +2730,16 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div className="g4" style={{ marginTop: 32 }}>
-      <Card label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value per share" color="blue" />
-      <Card label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} sub="Market price" color="green" />
+      <Card label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value per share" color="blue" updateSource={['PR', 'MARKET']} />
+      <Card label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} sub="Market price" color="green" updateSource="MARKET" />
       <Card label="Premium/Discount" value={`${calc.navPremium >= 0 ? '+' : ''}${calc.navPremium.toFixed(1)}%`} sub={calc.navPremium >= 0 ? 'Above NAV' : 'Below NAV'} color={calc.navPremium >= 0 ? 'green' : 'red'} />
-      <Card label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} sub={`$${calc.annualDividend.toFixed(2)}/yr`} color="emerald" />
+      <Card label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} sub={`$${calc.annualDividend.toFixed(2)}/yr`} color="emerald" updateSource="PR" />
     </div>
     <div className="g3" style={{ marginTop: 32 }}>
-      <div className="card"><div className="card-title">ETH Holdings</div><Row label="Total ETH" value={currentETH.toLocaleString()} /><Row label="ETH Price" value={`$${ethPrice.toLocaleString()}`} /><Row label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`} highlight /><Row label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} /></div>
-      <div className="card"><div className="card-title">Share Structure</div><Row label="Shares Outstanding" value={`${currentShares}M`} /><Row label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(2)}B`} /><Row label="NAV Multiple" value={`${(currentStockPrice / calc.currentNAV).toFixed(2)}x`} highlight /><Row label="ETH/Share" value={calc.ethPerShare.toFixed(6)} /></div>
+      <div className="card"><div className="card-title">ETH Holdings</div><Row label="Total ETH" value={currentETH.toLocaleString()} updateSource="PR" /><Row label="ETH Price" value={`$${ethPrice.toLocaleString()}`} updateSource="MARKET" /><Row label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`} highlight updateSource={['PR', 'MARKET']} /><Row label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} updateSource="PR" /></div>
+      <div className="card"><div className="card-title">Share Structure</div><Row label="Shares Outstanding" value={`${currentShares}M`} updateSource="SEC" /><Row label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(2)}B`} updateSource="MARKET" /><Row label="NAV Multiple" value={`${(currentStockPrice / calc.currentNAV).toFixed(2)}x`} highlight /><Row label="ETH/Share" value={calc.ethPerShare.toFixed(6)} /></div>
       <div className="card"><div className="card-title">Dividend</div>
-        <Row label="Quarterly Dividend" value={`$${quarterlyDividend.toFixed(2)}`} />
+        <Row label="Quarterly Dividend" value={`$${quarterlyDividend.toFixed(2)}`} updateSource="PR" />
         <Row label="Annual Dividend" value={`$${calc.annualDividend.toFixed(2)}`} />
         <Row label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} highlight />
         <Row label="Annual Payout" value={`$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`} />
@@ -3243,10 +3440,10 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="grid grid-cols-2 md:grid-cols-4 gap-4"><Input label="Base APY (%)" value={baseStakingAPY} onChange={setBaseStakingAPY} step={0.1} /><Input label="Restaking Bonus (%)" value={restakingBonus} onChange={setRestakingBonus} step={0.1} /><Input label="% ETH Staked" value={stakingRatio} onChange={setStakingRatio} max={100} /><Input label="Slashing Risk (%/yr)" value={slashingRisk} onChange={setSlashingRisk} step={0.1} /></div></div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card label="Effective APY" value={`${calc.effectiveAPY.toFixed(2)}%`} sub="Net annual yield" color="green" />
-        <Card label="Staked ETH" value={`${(calc.stakedETH / 1e6).toFixed(2)}M`} sub={`${stakingRatio}% of holdings`} color="blue" />
-        <Card label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} sub="Before slashing" color="yellow" />
-        <Card label="Yield Value" value={`$${(calc.annualYieldUSD / 1e6).toFixed(1)}M`} sub="At current price" color="purple" />
+        <Card label="Effective APY" value={`${calc.effectiveAPY.toFixed(2)}%`} sub="Net annual yield" color="green" updateSource="PR" />
+        <Card label="Staked ETH" value={`${(calc.stakedETH / 1e6).toFixed(2)}M`} sub={`${stakingRatio}% of holdings`} color="blue" updateSource="PR" />
+        <Card label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} sub="Before slashing" color="yellow" updateSource="PR" />
+        <Card label="Yield Value" value={`$${(calc.annualYieldUSD / 1e6).toFixed(1)}M`} sub="At current price" color="purple" updateSource={['PR', 'MARKET']} />
       </div>
       <div className="card"><div className="card-title">Yield Projections (Compounding)</div>
         <table className="w-full text-sm"><thead><tr className="text-slate-400 text-xs border-b border-slate-700"><th className="text-left py-2">Year</th><th className="text-right">Yield ETH</th><th className="text-right">Total ETH</th><th className="text-right">NAV/Share</th></tr></thead>
@@ -3418,10 +3615,10 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Summary Cards */}
       <div className="g4">
-        <Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="violet" />
-        <Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="blue" />
-        <Card label="Basic Mkt Cap" value={`$${((currentShares * 1e6 * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Outstanding × Price" color="green" />
-        <Card label="FD Mkt Cap" value={`$${((totalFD * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Fully diluted" color="yellow" />
+        <Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="violet" updateSource="SEC" />
+        <Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="blue" updateSource="SEC" />
+        <Card label="Basic Mkt Cap" value={`$${((currentShares * 1e6 * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Outstanding × Price" color="green" updateSource={['SEC', 'MARKET']} />
+        <Card label="FD Mkt Cap" value={`$${((totalFD * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Fully diluted" color="yellow" updateSource={['SEC', 'MARKET']} />
       </div>
 
       {/* Navigation Cards */}
@@ -4915,9 +5112,9 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   ];
 
   // Collapsible section component
-  const CollapsibleSection = ({ id, title, children }) => (
+  const CollapsibleSection = ({ id, title, children, showIndicators = true }) => (
     <div className="card" style={{ marginBottom: 16 }}>
-      <div 
+      <div
         onClick={() => toggleSection(id)}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
         role="button"
@@ -4925,7 +5122,10 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         aria-expanded={investmentSections.has(id)}
         onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
       >
-        <div className="card-title" style={{ marginBottom: 0 }}>{title}</div>
+        <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>
+          {title}
+          {showIndicators && <UpdateIndicators sources={['PR', 'SEC']} />}
+        </div>
         <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
       {investmentSections.has(id) && <div style={{ marginTop: 16 }}>{children}</div>}
@@ -4936,7 +5136,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 className="section-head" style={{ marginBottom: 0 }}>Investment Analysis</h2>
+        <h2 className="section-head" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
           <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
@@ -4957,6 +5157,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
               <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 6, fontWeight: 700, fontSize: 18 }}>BUY</span>
               <span style={{ background: 'rgba(126,231,135,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>HIGH CONVICTION</span>
+              <UpdateIndicators sources={['PR', 'SEC']} />
             </div>
             <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>
               {current.executiveSummary.oneLiner}
@@ -5470,13 +5671,13 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HEADER                                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <h2 className="section-head">Financials</h2>
-      
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
+
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: HIGHLIGHT BOX                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="highlight">
-        <h3>{config.highlightTitle}</h3>
+        <h3 style={{ display: 'flex', alignItems: 'center' }}>{config.highlightTitle}<UpdateIndicators sources="SEC" /></h3>
         <p className="text-sm text-slate-300">{config.highlightText}</p>
       </div>
       
@@ -5484,7 +5685,7 @@ const SECFilingsTab = () => {
       {/* SECTION 3: KEY METRICS EVOLUTION                                    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="card">
-        <div className="card-title">Key Metrics Evolution</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
         {/* Summary Badges */}
         <div className="flex flex-wrap gap-2 mb-4">
           <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-cyan-900/30 border-cyan-600/40 border text-cyan-400">
@@ -5608,7 +5809,7 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-cyan-400 mb-3">Cash Position Evolution</h4>
+          <h4 className="text-sm font-medium text-cyan-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={quarterlyData.map(q => ({ quarter: q.quarter, cash: q.cash }))}>
               <defs>
@@ -5628,7 +5829,7 @@ const SECFilingsTab = () => {
         </div>
         
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-purple-400 mb-3">Quarterly Burn Rate (OpEx)</h4>
+          <h4 className="text-sm font-medium text-purple-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <LineChart data={[
               { quarter: 'Q1 FY25', opEx: 2.2 },
@@ -5652,7 +5853,7 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-orange-400 mb-3">Share Count (Outstanding)</h4>
+          <h4 className="text-sm font-medium text-orange-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Share Count (Outstanding)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={quarterlyData.map(q => ({ quarter: q.quarter, shares: q.shares }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5666,7 +5867,7 @@ const SECFilingsTab = () => {
         </div>
         
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-blue-400 mb-3">Market Cap Evolution ($M)</h4>
+          <h4 className="text-sm font-medium text-blue-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={[
               { quarter: 'Q1 FY25', mktCap: 40 },
@@ -5696,7 +5897,7 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-violet-400 mb-3">Crypto Holdings Evolution</h4>
+          <h4 className="text-sm font-medium text-violet-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Crypto Holdings Evolution<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={quarterlyData.map(q => ({ quarter: q.quarter, crypto: q.crypto }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5713,7 +5914,7 @@ const SECFilingsTab = () => {
         </div>
         
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-green-400 mb-3">Net Income/(Loss)</h4>
+          <h4 className="text-sm font-medium text-green-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Net Income/(Loss)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={quarterlyData.map(q => ({ quarter: q.quarter, income: q.netIncome }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5731,7 +5932,7 @@ const SECFilingsTab = () => {
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-        <h4 className="text-sm font-medium text-yellow-400 mb-3">📅 Key Financial Milestones</h4>
+        <h4 className="text-sm font-medium text-yellow-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           {config.milestones.map((m, i) => (
             <div key={i} className="p-2 bg-slate-800/50 rounded">
@@ -8481,7 +8682,7 @@ const TimelineTab = () => {
 
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
       <div className="card" style={{ marginBottom: 0 }}>
-        <div className="card-title">📁 SEC Filings</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
         
         {/* Filter Buttons */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
@@ -8600,6 +8801,7 @@ const TimelineTab = () => {
           <div style={{ fontSize: 11, color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ color: 'var(--mint)' }}>●</span>
             <span>Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}</span>
+            <UpdateIndicators sources="PR" />
           </div>
         </div>
       </div>
@@ -8654,7 +8856,7 @@ const TimelineTab = () => {
 
         <div className="card">
           {/* [PR_CHECKLIST_RECENT_PRESS_RELEASES] - Add new PR at top! */}
-          <div className="card-title">Recent Press Releases</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -8705,6 +8907,7 @@ const TimelineTab = () => {
       {/* Event Timeline Section - CRCL Style */}
       <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span>Event Timeline</span>
+        <UpdateIndicators sources="PR" />
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredEntries.length} events)</span>
       </h3>
 
@@ -8850,7 +9053,7 @@ const TimelineTab = () => {
       </div>
 
       {/* Key Milestones - Unified styling */}
-      <div className="card"><div className="card-title">Key Milestones Tracker</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Milestones Tracker<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           <div className="bg-slate-900/60 border border-slate-700/40 rounded-xl p-4 backdrop-blur-sm">
             <h4 className="font-semibold text-violet-400 mb-3 text-sm uppercase tracking-wider">Alchemy of 5% Progress</h4>
@@ -9107,11 +9310,11 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Wall Street Coverage</h2>
-      
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Wall Street Coverage<UpdateIndicators sources="WS" /></h2>
+
       {/* Consensus Snapshot */}
       <div className="card">
-        <div className="card-title">📊 Consensus Snapshot</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📊 Consensus Snapshot<UpdateIndicators sources="WS" /></div>
         <div className="g2">
           {/* Price Target Summary */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -9176,7 +9379,7 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
       
       {/* Coverage by Firm - Grouped Cards */}
       <div className="card">
-        <div className="card-title">🏦 Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>🏦 Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})<UpdateIndicator source="WS" /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {ANALYST_COVERAGE.map((coverage) => {
             const isExpanded = expandedFirm === coverage.firm;
