@@ -3313,6 +3313,10 @@ const DCFTab = () => {
 function CRCLModel() {
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
+
+  // Update indicator visibility toggle
+  const [showIndicators, setShowIndicators] = useState(true);
+
   const [discount, setDiscount] = useState(12);
   const [timelineCat, setTimelineCat] = useState('All');
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
@@ -3719,7 +3723,7 @@ function CRCLModel() {
   ];
 
   return (
-    <>
+    <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
       <style>{css}</style>
       <div className="stock-model-app">
         {/* ============================================================================
@@ -3856,6 +3860,8 @@ function CRCLModel() {
 
         {/* Main */}
         <main className="main">
+          {/* Update Source Legend - Shows what each indicator color means */}
+          <UpdateLegend />
           {activeTab === 'overview' && (
             <>
               <h2 className="section-head">Investment Thesis</h2>
@@ -6684,7 +6690,7 @@ function CRCLModel() {
           )}
         </main>
       </div>
-    </>
+    </UpdateIndicatorContext.Provider>
   );
 }
 

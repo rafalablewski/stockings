@@ -1705,6 +1705,9 @@ const ASTSAnalysis = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
 
+  // Update indicator visibility toggle
+  const [showIndicators, setShowIndicators] = useState(true);
+
   // Use imported data from @/data/asts
   const partners = PARTNERS;
   const revenueSources = REVENUE_SOURCES;
@@ -1754,7 +1757,7 @@ const ASTSAnalysis = () => {
   ];
 
   return (
-    <>
+    <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
       <style>{css}</style>
       <div className="stock-model-app">
         {/* ============================================================================
@@ -1872,6 +1875,8 @@ const ASTSAnalysis = () => {
         
         {/* Main Content */}
         <main className="main">
+          {/* Update Source Legend - Shows what each indicator color means */}
+          <UpdateLegend />
           {activeTab === 'overview' && <OverviewTab calc={calc} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} block1Sats={block1Sats} block2Sats={block2Sats} targetSats2026={targetSats2026} contractedRevenue={contractedRevenue} partnerReach={partnerReach} penetrationRate={penetrationRate} />}
           {activeTab === 'catalysts' && <CatalystsTab upcomingCatalysts={upcomingCatalysts} completedMilestones={completedMilestones} />}
           {activeTab === 'constellation' && <ConstellationTab calc={calc} block1Sats={block1Sats} setBlock1Sats={setBlock1Sats} block2Sats={block2Sats} setBlock2Sats={setBlock2Sats} targetSats2026={targetSats2026} setTargetSats2026={setTargetSats2026} launchFailureRate={launchFailureRate} setLaunchFailureRate={setLaunchFailureRate} />}
@@ -1907,7 +1912,7 @@ const ASTSAnalysis = () => {
           {activeTab === 'wall-street' && <WallStreetTab />}
         </main>
       </div>
-    </>
+    </UpdateIndicatorContext.Provider>
   );
 };
 
