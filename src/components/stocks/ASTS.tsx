@@ -12454,10 +12454,78 @@ DISCLOSURE: Scotiabank has managed/co-managed public offering in past 12 months,
       firm: 'Clear Street',
       analyst: 'Greg Pendy',
       coverageSince: 'July 2025',
-      currentPT: 87,
+      currentPT: 137,
       currentRating: 'Buy',
       currentRatingNormalized: 'bullish',
       reports: [
+        // === Jan 2026 - PT Raise $87 → $137 (FULL REPORT - Golden Dome & DoD) ===
+        {
+          date: '2026-01-20',
+          action: 'PT Raise',
+          priceTarget: 137,
+          previousTarget: 87,
+          rating: 'Buy',
+          ratingNormalized: 'bullish',
+          reportTitle: "A 'BlueBird' in the Hand and a 'Golden Dome' on the Horizon",
+          source: 'Clear Street Research',
+          isFullReport: true,
+          thesis: 'We raise our price target on AST SpaceMobile to $137 (from $87) and reiterate our Buy rating. We remain bullish on the direct-to-cellular market, as rising competition from SpaceX/Starlink is likely to push mobile network operators to rely more heavily on ASTS partnerships to defend subscriber bases. Higher defense revenue adds ~$460M to 2029E EBITDA with the commercial outlook largely unchanged.',
+          reportSummary: `**RECENT DEVELOPMENTS REINFORCING OUR VIEW**
+✅ Direct-to-Cell Execution: In late 2025 the BlueBird-6 launched, deploying the largest communications array ever placed in LEO.
+✅ Department of Defense Opportunity Expanding: On January 16th, ASTS was chosen to compete in a program under Golden Dome.
+✅ Raising Outlook: Higher defense revenue adds ~$460M to 2029E EBITDA with the commercial outlook largely unchanged.
+
+**VALUATION ADJUSTMENT**
+Our revised target of $137 is based on two primary changes: extending our valuation period to 2029E (up from 2028E) and applying a lower 20x EBITDA multiple (down from 25x). The reduced multiple is a consequence of the projected forward EBITDA CAGR decreasing from ~22% in 2028E to ~16% in 2029E. The new $137 target is derived from a revised 2029E EBITDA of $2.5B, which now incorporates additional revenue from the Department of Defense (DoD).
+
+**BLUEBIRD-6 LAUNCH VALIDATES EXECUTION**
+ASTS's successful late-December launch of the largest LEO satellite array to date marks a key milestone, further validating its 2026 pathway of 45 to 60 launches.
+
+**DUAL-USE BEYOND DIRECT-TO-CELL**
+The Missile Defense Agency's SHIELD program validates ASTS's constellation for high-priority defense missions beyond commercial Direct-to-Cell.
+
+**RAISING REVENUE AND EBITDA ON EXPANDED OPPORTUNITY**
+We primarily increase government DoD estimates, driving consolidated estimates upward:
+• 2028E: Revenue up 14% to $2.6B; EBITDA up 20% to $1.5B
+• 2029E: Revenue up 18% to $4.0B; EBITDA up 24% to $2.5B
+
+**SPECTRUM OPPORTUNITY**
+ASTS's well-timed early 2025 bid for 45 MHz of U.S. L-band spectrum is now seeking FCC approval. Based on recent comparable transactions, we estimate the spectrum value at ~$16B (~$1.05 per POP across 350M people), or ~$24 per share.`,
+          assumptions: [
+            { label: 'Price Target', value: '$137.00' },
+            { label: 'Prev Target', value: '$87.00' },
+            { label: 'PT Change', value: '+57%' },
+            { label: 'Valuation Period', value: '2029E (from 2028E)' },
+            { label: 'EBITDA Multiple', value: '20x (from 25x)' },
+            { label: '2029E EBITDA', value: '$2.5B' },
+            { label: 'DoD EBITDA Contribution', value: '+$460M to 2029E' },
+            { label: 'L-band Spectrum Value', value: '~$16B (~$24/share)' },
+          ],
+          catalysts: [
+            'BlueBird-6 launch validates execution — largest LEO array ever deployed',
+            'Golden Dome program selection (Jan 16) expands DoD opportunity',
+            'MDA SHIELD program validates dual-use defense capability',
+            '45 MHz L-band spectrum bid awaiting FCC approval (~$16B value)',
+            '2026 pathway of 45-60 satellite launches',
+          ],
+          risks: [
+            'SpaceX/Starlink competition in direct-to-cellular market',
+            'Forward EBITDA CAGR declining from ~22% to ~16%',
+            'FCC approval timing for L-band spectrum',
+          ],
+          methodology: '20x multiple on 2029E EBITDA of $2.5B. Valuation period extended to 2029E (from 2028E). Multiple reduced from 25x due to lower forward EBITDA CAGR (~16% vs ~22%).',
+          fullNotes: `ESTIMATE REVISIONS:
+| Metric | 2028E Old | 2028E New | Change | 2029E Old | 2029E New | Change |
+| Revenue | $2.3B | $2.6B | +14% | $3.4B | $4.0B | +18% |
+| EBITDA | $1.3B | $1.5B | +20% | $2.0B | $2.5B | +24% |
+
+SPECTRUM VALUATION:
+- 45 MHz of U.S. L-band spectrum
+- Value: ~$16B (~$1.05 per POP × 350M people)
+- Per share value: ~$24
+
+DISCLOSURE: Clear Street does and seeks to do business with companies covered in its research reports. Distributed January 2026.`
+        },
         { date: '2025-11-12', action: 'PT Raise', priceTarget: 87, previousTarget: 59, rating: 'Buy', ratingNormalized: 'bullish', source: 'TipRanks', sourceUrl: 'https://www.tipranks.com/', isFullReport: false,
           thesis: 'Raising price target post-Q3 results.'
         },
