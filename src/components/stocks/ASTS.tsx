@@ -176,10 +176,20 @@ import {
 // TYPESCRIPT INTERFACES (H1)
 // ============================================================================
 
+/**
+ * UPDATE SOURCE TYPES - Indicates which document type updates this field
+ * PR = Press Release (weekly 8-K, PRNewswire)
+ * SEC = SEC Filing (10-Q, 10-K, 424B5, S-3, DEF 14A)
+ * WS = Wall Street (analyst reports, coverage)
+ * MARKET = Market Data (prices updated regularly)
+ */
+type UpdateSource = 'PR' | 'SEC' | 'WS' | 'MARKET';
+
 interface StatProps {
   label: string;
   value: string | number;
   color?: 'white' | 'cyan' | 'mint' | 'coral' | 'sky';
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface CardProps {
@@ -187,12 +197,14 @@ interface CardProps {
   value: string | number;
   sub?: string;
   color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'violet' | 'mint' | 'emerald';
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface RowProps {
   label: string;
   value: string | number;
   highlight?: boolean;
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface InputProps {
@@ -1360,6 +1372,87 @@ input[type="range"]::-webkit-slider-thumb {
   .t-details-content { grid-template-columns: 1fr; }
   .t-details-meta { flex-direction: row; flex-wrap: wrap; min-width: auto; }
 }
+
+/* ═══ UPDATE INDICATOR SYSTEM ═══ */
+/* Visual markers showing which fields get updated from different sources */
+.update-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 6px;
+  cursor: help;
+  position: relative;
+  flex-shrink: 0;
+}
+.update-indicator.pr { background: #facc15; color: #1a1a1a; }
+.update-indicator.sec { background: #22d3ee; color: #1a1a1a; }
+.update-indicator.ws { background: #a78bfa; color: #1a1a1a; }
+.update-indicator.market { background: #4ade80; color: #1a1a1a; }
+
+/* Tooltip on hover */
+.update-indicator::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s, visibility 0.15s;
+  z-index: 1000;
+  color: var(--text);
+  pointer-events: none;
+  margin-bottom: 4px;
+}
+.update-indicator:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Update Legend */
+.update-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 12px;
+  margin-bottom: 24px;
+}
+.update-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text2);
+}
+.update-legend-item .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+}
+.update-legend-item .dot.pr { background: #facc15; color: #1a1a1a; }
+.update-legend-item .dot.sec { background: #22d3ee; color: #1a1a1a; }
+.update-legend-item .dot.ws { background: #a78bfa; color: #1a1a1a; }
+.update-legend-item .dot.market { background: #4ade80; color: #1a1a1a; }
 `;
 
 // ============================================================================
@@ -1469,17 +1562,106 @@ const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, m
 ));
 Input.displayName = 'Input';
 
-// CFA Level III Educational Notes Component
-const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
-  <div style={{ marginTop: 24, padding: 20, background: 'var(--surface2)', borderRadius: 12, border: '1px solid var(--border)' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-      <span style={{ fontSize: 16 }}>📚</span>
-      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--cyan)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
+// ============================================================================
+// UPDATE INDICATOR SYSTEM - Visual markers for data update sources
+// ============================================================================
+
+/** Context to control indicator visibility globally */
+const UpdateIndicatorContext = React.createContext<{ showIndicators: boolean; setShowIndicators: (v: boolean) => void }>({ showIndicators: true, setShowIndicators: () => {} });
+
+const UPDATE_SOURCE_CONFIG: Record<UpdateSource, { label: string; tooltip: string; className: string }> = {
+  PR: { label: '!', tooltip: 'Updated from Press Release', className: 'pr' },
+  SEC: { label: '!', tooltip: 'Updated from SEC Filing', className: 'sec' },
+  WS: { label: '!', tooltip: 'Updated from Wall Street Coverage', className: 'ws' },
+  MARKET: { label: '!', tooltip: 'Updated from Market Data', className: 'market' },
+};
+
+/** Small indicator badge showing which document type updates this field */
+const UpdateIndicator = React.memo<{ source: UpdateSource }>(({ source }) => {
+  const { showIndicators } = React.useContext(UpdateIndicatorContext);
+  if (!showIndicators) return null;
+  const config = UPDATE_SOURCE_CONFIG[source];
+  return (
+    <span
+      className={`update-indicator ${config.className}`}
+      data-tooltip={config.tooltip}
+      title={config.tooltip}
+    >
+      {config.label}
+    </span>
+  );
+});
+UpdateIndicator.displayName = 'UpdateIndicator';
+
+/** Renders one or more update indicators */
+const UpdateIndicators = React.memo<{ sources?: UpdateSource | UpdateSource[] }>(({ sources }) => {
+  const { showIndicators } = React.useContext(UpdateIndicatorContext);
+  if (!showIndicators || !sources) return null;
+  const sourceArray = Array.isArray(sources) ? sources : [sources];
+  return (
+    <>
+      {sourceArray.map((s) => <UpdateIndicator key={s} source={s} />)}
+    </>
+  );
+});
+UpdateIndicators.displayName = 'UpdateIndicators';
+
+/** Legend explaining what each indicator color means, with toggle button */
+const UpdateLegend = React.memo(() => {
+  const { showIndicators, setShowIndicators } = React.useContext(UpdateIndicatorContext);
+  return (
+    <div className="update-legend">
+      <span style={{ fontWeight: 600, color: 'var(--text)' }}>Update Sources:</span>
+      <div className="update-legend-item">
+        <span className="dot pr">!</span>
+        <span>Press Release</span>
+      </div>
+      <div className="update-legend-item">
+        <span className="dot sec">!</span>
+        <span>SEC Filing</span>
+      </div>
+      <div className="update-legend-item">
+        <span className="dot ws">!</span>
+        <span>Wall Street</span>
+      </div>
+      <div className="update-legend-item">
+        <span className="dot market">!</span>
+        <span>Market Data</span>
+      </div>
+      <button
+        onClick={() => setShowIndicators(!showIndicators)}
+        style={{
+          marginLeft: 'auto',
+          padding: '6px 12px',
+          fontSize: '12px',
+          fontWeight: 600,
+          color: showIndicators ? 'var(--bg)' : 'var(--text2)',
+          background: showIndicators ? 'var(--cyan)' : 'var(--surface2)',
+          border: '1px solid',
+          borderColor: showIndicators ? 'var(--cyan)' : 'var(--border)',
+          borderRadius: '6px',
+          cursor: 'pointer',
+          transition: 'all 0.15s'
+        }}
+      >
+        {showIndicators ? 'Hide' : 'Show'}
+      </button>
     </div>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13, lineHeight: 1.6 }}>
+  );
+});
+UpdateLegend.displayName = 'UpdateLegend';
+
+// CFA Level III Educational Notes Component - Subtle footer style
+const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
+  <div style={{ marginTop: 32, paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+      <span style={{ fontSize: 12, opacity: 0.7 }}>📚</span>
+      <h4 style={{ margin: 0, fontSize: 11, fontWeight: 500, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11, lineHeight: 1.5, color: 'var(--text3)' }}>
       {items.map((item, i) => (
-        <p key={i} style={{ margin: 0, color: 'var(--text2)' }}>
-          <strong style={{ color: 'var(--cyan)' }}>{item.term}:</strong> {item.def}
+        <p key={i} style={{ margin: 0 }}>
+          <strong style={{ color: 'var(--text2)' }}>{item.term}:</strong> {item.def}
         </p>
       ))}
     </div>
@@ -13136,13 +13318,13 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                         const isReportExpanded = expandedReportIdx === reportKey;
                         
                         return (
-                          <div 
+                          <div
                             key={idx}
-                            style={{ 
-                              padding: 12, 
+                            style={{
+                              padding: 12,
                               background: report.isFullReport ? 'var(--surface2)' : 'var(--surface)',
                               borderRadius: 6,
-                              borderLeft: report.isFullReport ? '3px solid var(--cyan)' : '3px solid var(--border)'
+                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? '3px solid var(--cyan)' : 'none'
                             }}
                           >
                             {/* Report Header */}

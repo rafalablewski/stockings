@@ -9463,13 +9463,13 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                         const isReportExpanded = expandedReportIdx === reportKey;
                         
                         return (
-                          <div 
+                          <div
                             key={idx}
-                            style={{ 
-                              padding: 12, 
+                            style={{
+                              padding: 12,
                               background: report.isFullReport ? 'var(--surface2)' : 'var(--surface)',
                               borderRadius: 6,
-                              borderLeft: report.isFullReport ? '3px solid var(--violet)' : '3px solid var(--border)'
+                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? '3px solid var(--violet)' : 'none'
                             }}
                           >
                             {/* Report Header */}
