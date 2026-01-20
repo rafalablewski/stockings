@@ -7479,6 +7479,27 @@ const TimelineTab = () => {
   // Audit log of BMNR company updates - chronological record of official filings and announcements
   // NEWEST ENTRIES AT TOP - maintain descending chronological order
   const timelineEvents = [
+    // [PR_CHECKLIST_EVENT_TIMELINE] - Add new PR entry here at top!
+    // === JANUARY 20, 2026 - ETH HOLDINGS + SHAREHOLDER VOTE ===
+    {
+      date: '2026-01-20',
+      source: 'PRNewswire',
+      category: 'Holdings',
+      title: '📊 ETH Holdings Reach 4.203M — $14.5B Total, 81% Shareholder YES',
+      changes: [
+        { metric: 'ETH Holdings', previous: '4,167,768', new: '4,203,036', change: '+35,268 (+0.8%)' },
+        { metric: 'ETH Price', previous: '$3,119', new: '$3,211', change: '+2.9% (Coinbase)' },
+        { metric: 'ETH Supply %', previous: '3.45%', new: '3.48%', change: '+0.03pp' },
+        { metric: 'Staked ETH', previous: '1,256,083', new: '1,838,003', change: '+581,920 (+46.3%)' },
+        { metric: 'Total Cash', previous: '$988M', new: '$979M', change: '-$9M (post Beast)' },
+        { metric: 'Shareholder Vote', previous: 'Pending', new: '81% YES', change: '52.2% turnout' },
+        { metric: 'Beast Industries', previous: 'Announced', new: 'CLOSED', change: '$200M invested' },
+        { metric: 'Stockholders', previous: 'N/A', new: '500,000+', change: 'Individual investors' },
+        { metric: 'Trading Rank', previous: '#67', new: '#60', change: '+7 ($1.5B/day)' },
+      ],
+      notes: 'Shareholder vote passed with 81% YES on Proposal 2 (share authorization 500M→50B), 52.2% of outstanding shares voted. Beast Industries $200M investment officially closed Jan 17. Staking surged to 1.838M ETH (43.7% of holdings, $5.9B value). 500,000+ individual stockholders. BMNR now #60 most traded US stock at $1.5B/day average volume. CESR rate: 2.81%. MAVAN remains on track for Q1 2026.',
+      impact: 'positive'
+    },
     // === JANUARY 15, 2026 - $200M BEAST INDUSTRIES INVESTMENT ===
     {
       date: '2026-01-15',
@@ -7514,27 +7535,6 @@ const TimelineTab = () => {
       ],
       notes: 'First quarterly filing post-ETH pivot. Key highlights: (1) Digital assets grew to $10.56B (3.74M ETH @ $2,821 avg); (2) First staking revenue recognized: $980K; (3) Net loss of $5.2B driven almost entirely by $5.25B unrealized loss on ETH holdings due to price decline; (4) Cash position strengthened to $888M; (5) Eightco investment valued at $35.9M (up from $20M cost); (6) Material weakness in internal controls still being remediated. Chi Tsang confirmed as CEO (Nov 20), Young Kim as CFO/COO (Jan 7). Shares outstanding: 409M (Nov 30) → 455M (Jan 12).',
       impact: 'neutral'
-    },
-    // [PR_CHECKLIST_EVENT_TIMELINE] - Add new PR entry here at top!
-    // === JANUARY 20, 2026 - ETH HOLDINGS + SHAREHOLDER VOTE ===
-    {
-      date: '2026-01-20',
-      source: 'PRNewswire',
-      category: 'Holdings',
-      title: '📊 ETH Holdings Reach 4.203M — $14.5B Total, 81% Shareholder YES',
-      changes: [
-        { metric: 'ETH Holdings', previous: '4,167,768', new: '4,203,036', change: '+35,268 (+0.8%)' },
-        { metric: 'ETH Price', previous: '$3,119', new: '$3,211', change: '+2.9% (Coinbase)' },
-        { metric: 'ETH Supply %', previous: '3.45%', new: '3.48%', change: '+0.03pp' },
-        { metric: 'Staked ETH', previous: '1,256,083', new: '1,838,003', change: '+581,920 (+46.3%)' },
-        { metric: 'Total Cash', previous: '$988M', new: '$979M', change: '-$9M (post Beast)' },
-        { metric: 'Shareholder Vote', previous: 'Pending', new: '81% YES', change: '52.2% turnout' },
-        { metric: 'Beast Industries', previous: 'Announced', new: 'CLOSED', change: '$200M invested' },
-        { metric: 'Stockholders', previous: 'N/A', new: '500,000+', change: 'Individual investors' },
-        { metric: 'Trading Rank', previous: '#67', new: '#60', change: '+7 ($1.5B/day)' },
-      ],
-      notes: 'Shareholder vote passed with 81% YES on Proposal 2 (share authorization 500M→50B), 52.2% of outstanding shares voted. Beast Industries $200M investment officially closed Jan 17. Staking surged to 1.838M ETH (43.7% of holdings, $5.9B value). 500,000+ individual stockholders. BMNR now #60 most traded US stock at $1.5B/day average volume. CESR rate: 2.81%. MAVAN remains on track for Q1 2026.',
-      impact: 'positive'
     },
     // === JANUARY 12, 2026 - ETH HOLDINGS UPDATE ===
     {
