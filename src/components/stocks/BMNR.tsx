@@ -4909,18 +4909,18 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>NAV/Share</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$29.96</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>@ $3,119 ETH</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$33.41</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)' }}>@ $3,211 ETH</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Total Holdings</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$14.0B</div>
-              <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.17M ETH + $988M Cash</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$14.5B</div>
+              <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.203M ETH + $979M Cash</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Staked ETH</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>1.26M</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>$3.9B Value (30%)</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>1.84M</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)' }}>$5.9B Value (43.7%)</div>
             </div>
           </div>
         </div>
@@ -7359,7 +7359,7 @@ const TimelineTab = () => {
     cik: '0001829311',
     ticker: 'BMNR',
     exchange: 'NYSE American',
-    lastPR: { date: 'January 15, 2026', title: '$200M Beast Industries Investment' }
+    lastPR: { date: 'January 20, 2026', title: '4.203M ETH Holdings + 81% Shareholder Vote YES' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {
