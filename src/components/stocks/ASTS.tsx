@@ -1824,13 +1824,13 @@ const ASTSAnalysis = () => {
 
         {/* Stats Row */}
         <div className="stats-row">
-          <Stat label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} />
-          <Stat label="Enterprise Value" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} />
-          <Stat label="Constellation" value={`${calc.totalSats}/${targetSats2026}`} color="cyan" />
-          <Stat label="Progress" value={`${calc.constellationProgress.toFixed(0)}%`} color="cyan" />
-          <Stat label="Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} color="mint" />
-          <Stat label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} color="mint" />
-          <Stat label="Contracted Rev" value={`$${contractedRevenue}M+`} color="sky" />
+          <Stat label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} updateSource="MARKET" />
+          <Stat label="Enterprise Value" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} updateSource="MARKET" />
+          <Stat label="Constellation" value={`${calc.totalSats}/${targetSats2026}`} color="cyan" updateSource="PR" />
+          <Stat label="Progress" value={`${calc.constellationProgress.toFixed(0)}%`} color="cyan" updateSource="PR" />
+          <Stat label="Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} color="mint" updateSource="SEC" />
+          <Stat label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} color="mint" updateSource="SEC" />
+          <Stat label="Contracted Rev" value={`$${contractedRevenue}M+`} color="sky" updateSource="PR" />
         </div>
 
         {/* Navigation */}
@@ -5544,7 +5544,7 @@ const QuarterlyMetricsPanel = () => {
       {/* ROW 3: Company-Specific (Satellites) */}
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-cyan-400 mb-3">Satellites Deployed</h4>
+          <h4 className="text-sm font-medium text-cyan-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Satellites Deployed<UpdateIndicators sources="PR" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={Object.values(quarterlyData).reverse()}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />

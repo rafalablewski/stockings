@@ -3786,31 +3786,31 @@ function CRCLModel() {
         {/* Stats */}
         <div className="stats-row">
           <div className="stat-item">
-            <div className="label">Market Cap</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Market Cap<UpdateIndicators sources="MARKET" /></div>
             <div className="val">${(MARKET.marketCap / 1e9).toFixed(1)}B</div>
           </div>
           <div className="stat-item">
-            <div className="label">USDC Circulation</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>USDC Circulation<UpdateIndicators sources="PR" /></div>
             <div className="val mint">${latest.usdcCirculation.toFixed(1)}B</div>
           </div>
           <div className="stat-item">
-            <div className="label">Q3 Revenue</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Q3 Revenue<UpdateIndicators sources="SEC" /></div>
             <div className="val">${latest.totalRevenue}M</div>
           </div>
           <div className="stat-item">
-            <div className="label">RLDC Margin</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>RLDC Margin<UpdateIndicators sources="SEC" /></div>
             <div className="val">{latest.rldcMargin}%</div>
           </div>
           <div className="stat-item">
-            <div className="label">Market Share</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Market Share<UpdateIndicators sources="PR" /></div>
             <div className="val sky">{latest.marketShare}%</div>
           </div>
           <div className="stat-item">
-            <div className="label">Reserve Rate</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Reserve Rate<UpdateIndicators sources="SEC" /></div>
             <div className="val">{latest.reserveReturnRate.toFixed(2)}%</div>
           </div>
           <div className="stat-item">
-            <div className="label">P/E Ratio</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>P/E Ratio<UpdateIndicators sources="MARKET" /></div>
             <div className="val">{MARKET.pe.toFixed(0)}x</div>
           </div>
         </div>
