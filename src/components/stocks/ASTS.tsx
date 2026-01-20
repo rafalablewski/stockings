@@ -2721,7 +2721,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Cash Projection Chart */}
-      <div className="card"><div className="card-title">Cash Projection (at current burn)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
         <ResponsiveContainer width="100%" height={180}>
           <AreaChart data={proj}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -2737,7 +2737,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Funding Sources */}
-      <div className="card"><div className="card-title">Capital Raises History (2021-2025)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources="SEC" /></div>
         <div className="mb-4 p-3 bg-slate-800/30 rounded-lg">
           <p className="text-sm text-slate-400">
             <strong className="text-cyan-400">Understanding ASTS Financing:</strong> As a pre-revenue company building a global satellite constellation, 
@@ -2879,7 +2879,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Dilution Analysis */}
-      <div className="card"><div className="card-title">Hypothetical Dilution (if additional raise needed)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
         <table className="w-full text-sm">
           <thead>
             <tr className="text-slate-400 text-xs border-b border-slate-700">
@@ -2992,7 +2992,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Share Structure View */}
       {capitalView === 'structure' && (
       <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title">Share Class Structure (Q3 2025)</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Class Structure (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -3091,7 +3091,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Major Shareholders View */}
       {capitalView === 'shareholders' && (
       <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title">Major Shareholders (Known from SEC Filings)</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Major Shareholders (Known from SEC Filings)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -3127,7 +3127,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Equity Offerings View */}
       {capitalView === 'offerings' && (
       <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title">Equity Offerings Timeline</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Offerings Timeline<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -3166,7 +3166,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* SBC View */}
       {capitalView === 'incentives' && (
       <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title">Stock-Based Compensation (SBC)</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Stock-Based Compensation (SBC)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -3224,7 +3224,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Dilution History View */}
       {capitalView === 'dilution' && (
       <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title">Share Count Evolution</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Count Evolution<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>

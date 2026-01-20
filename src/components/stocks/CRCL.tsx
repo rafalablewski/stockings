@@ -3904,7 +3904,7 @@ function CRCLModel() {
               </div>
 
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Revenue Progression</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Progression<UpdateIndicators sources="SEC" /></div>
                 <div className="bars">
                   {DATA.map((d, i) => (
                     <div key={i} className="bar-col">
@@ -3924,21 +3924,21 @@ function CRCLModel() {
               </div>
 
               <div className="g3" style={{ marginTop: 32 }}>
-                <div className="card"><div className="card-title">Equity (Q3 2025)</div>
+                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity (Q3 2025)<UpdateIndicators sources="SEC" /></div>
                   <Row label="Shares Outstanding" value={`${currentShares.toFixed(1)}M`} />
                   <Row label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} />
                   <Row label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} highlight />
                   <Row label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} />
                   <Row label="Since IPO" value={`+${ipoReturn.toFixed(0)}%`} />
                 </div>
-                <div className="card"><div className="card-title">USDC Metrics</div>
+                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>USDC Metrics<UpdateIndicators sources="SEC" /></div>
                   <Row label="USDC Circulation" value={`$${currentUSDC.toFixed(1)}B`} />
                   <Row label="Market Share" value={`${currentMarketShare}%`} highlight />
                   <Row label="Total Stablecoin Mkt" value={`$${calc.totalStablecoins.toFixed(0)}B`} />
                   <Row label="YoY Growth" value={`+${usdcGrowth.toFixed(0)}%`} />
                   <Row label="Active Wallets" value={`${latest.meaningfulWallets}M`} />
                 </div>
-                <div className="card"><div className="card-title">Revenue</div>
+                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources="SEC" /></div>
                   <Row label="Q3 Revenue" value={`$${latest.totalRevenue}M`} />
                   <Row label="RLDC" value={`$${latest.rldc}M`} highlight />
                   <Row label="RLDC Margin" value={`${latest.rldcMargin}%`} />
@@ -5339,7 +5339,7 @@ function CRCLModel() {
               </div>
 
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Circulation Growth</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Circulation Growth<UpdateIndicators sources="SEC" /></div>
                 <div className="bars">
                   {DATA.map((d, i) => (
                     <div key={i} className="bar-col">
@@ -5353,7 +5353,7 @@ function CRCLModel() {
 
               <div className="g2" style={{ marginTop: 32 }}>
                 <div className="card">
-                  <div className="card-title">Mint / Redeem Activity ($B)</div>
+                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Mint / Redeem Activity ($B)<UpdateIndicators sources="SEC" /></div>
                   <table className="tbl">
                     <thead>
                       <tr><th>Quarter</th><th className="r">Minted</th><th className="r">Redeemed</th><th className="r">Net</th></tr>
@@ -5374,7 +5374,7 @@ function CRCLModel() {
                 </div>
 
                 <div className="card">
-                  <div className="card-title">Rate Sensitivity Matrix ($B Annual)</div>
+                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Rate Sensitivity Matrix ($B Annual)<UpdateIndicators sources="SEC" /></div>
                   <div className="matrix" style={{ gridTemplateColumns: 'repeat(6, 1fr)' }}>
                     <div className="matrix-cell head">USDC \ Rate</div>
                     <div className="matrix-cell head">3.0%</div>
