@@ -135,6 +135,58 @@
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  */
 
+/*
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║           🚨 BMNR PRESS RELEASE PROCESSING CHECKLIST 🚨                       ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║                                                                               ║
+ * ║  EVERY TIME a new BMNR press release is processed, you MUST update ALL of    ║
+ * ║  the following sections. DO NOT skip any. Check off each one as you go.      ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║  SECTION                      │ LOCATION        │ WHAT TO UPDATE              ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║                                                                               ║
+ * ║  ☐ 1. Header/Version          │ Lines 17-24     │ Version #, changelog entry  ║
+ * ║                                                                               ║
+ * ║  ☐ 2. DEFAULT PARAMETERS      │ Lines ~1440     │ Comment block with all      ║
+ * ║       (comment block)         │                 │ current metrics             ║
+ * ║                                                                               ║
+ * ║  ☐ 3. State Variables         │ Lines ~1465-90  │ currentETH, ethPrice,       ║
+ * ║                               │                 │ stakingRatio, etc.          ║
+ * ║                                                                               ║
+ * ║  ☐ 4. filingData object       │ Lines ~4343-60  │ latestEvent, latestEventDate║
+ * ║                               │                 │ lastPressRelease,           ║
+ * ║                               │                 │ lastPressReleaseTitle,      ║
+ * ║                               │                 │ 8-K filing date             ║
+ * ║                                                                               ║
+ * ║  ☐ 5. Investment tab DISPLAY  │ Lines ~4910-24  │ NAV/Share (hardcoded),      ║
+ * ║       (hardcoded metrics)     │                 │ Total Holdings (hardcoded), ║
+ * ║                               │                 │ Staked ETH (hardcoded)      ║
+ * ║                               │                 │ ⚠️ OFTEN FORGOTTEN!         ║
+ * ║                                                                               ║
+ * ║  ☐ 6. Investment `current`    │ Lines ~4458-589 │ Scorecard items,            ║
+ * ║       object                  │                 │ executiveSummary,           ║
+ * ║                               │                 │ growthDrivers, moatSources, ║
+ * ║                               │                 │ catalysts, risks,           ║
+ * ║                               │                 │ perspectives (CFA/HF/CIO)   ║
+ * ║                                                                               ║
+ * ║  ☐ 7. secMeta.lastPR          │ Lines ~7358-63  │ date and title              ║
+ * ║       (Timeline tab)          │                 │ ⚠️ OFTEN FORGOTTEN!         ║
+ * ║                                                                               ║
+ * ║  ☐ 8. Archive entry           │ Lines ~4592+    │ Add NEW entry at top of     ║
+ * ║                               │                 │ archive array with full     ║
+ * ║                               │                 │ analysis details            ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║  ⚠️ COMMON MISTAKES TO AVOID:                                                 ║
+ * ║  - Forgetting Investment tab DISPLAY metrics (they're hardcoded, not dynamic)║
+ * ║  - Forgetting secMeta.lastPR in Timeline tab                                  ║
+ * ║  - Not updating catalysts when events complete (mark as ✅ COMPLETED)         ║
+ * ║  - Forgetting to recalculate NAV/share with new ETH price                     ║
+ * ╚═══════════════════════════════════════════════════════════════════════════════╝
+ */
+
 import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart } from 'recharts';
 
