@@ -3994,7 +3994,7 @@ function CRCLModel() {
               {/* SECTION 3: KEY METRICS EVOLUTION                                    */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
               <div className="card">
-                <div className="card-title">Key Metrics Evolution</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
                 {/* Summary Badges */}
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-cyan-900/30 border-cyan-600/40 border text-cyan-400">
@@ -4352,7 +4352,7 @@ function CRCLModel() {
                       aria-label="Toggle Investment Scorecard"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('scorecard')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Investment Scorecard</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Investment Scorecard<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('scorecard') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('scorecard') && (
@@ -4392,7 +4392,7 @@ function CRCLModel() {
                       aria-label="Toggle Executive Summary"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('summary')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Executive Summary</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Executive Summary<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('summary') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('summary') && (
@@ -4432,7 +4432,7 @@ function CRCLModel() {
                       aria-label="Toggle Financial Health"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('financial')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Financial Health</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Financial Health<UpdateIndicators sources="SEC" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('financial') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('financial') && (
@@ -4495,7 +4495,7 @@ function CRCLModel() {
                       aria-label="Toggle Unit Economics"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('unit-economics')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Unit Economics & Margins</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Unit Economics & Margins<UpdateIndicators sources="SEC" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('unit-economics') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('unit-economics') && (
@@ -4557,7 +4557,7 @@ function CRCLModel() {
                       aria-label="Toggle Growth Drivers"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('growth')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Growth Drivers</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Growth Drivers<UpdateIndicators sources="PR" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('growth') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('growth') && (
@@ -4639,7 +4639,7 @@ function CRCLModel() {
                       aria-label="Toggle Valuation Framework"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('valuation')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Valuation Framework</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Valuation Framework<UpdateIndicators sources="WS" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('valuation') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('valuation') && (
@@ -4699,7 +4699,7 @@ function CRCLModel() {
                       aria-label="Toggle Rate Sensitivity Calculator"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('sensitivity')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Rate Sensitivity Calculator</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Rate Sensitivity Calculator<UpdateIndicators sources="MARKET" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('sensitivity') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('sensitivity') && (
@@ -4839,7 +4839,7 @@ function CRCLModel() {
                       aria-label="Toggle Competitive Moat"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('moat')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Competitive Moat</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Competitive Moat<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('moat') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('moat') && (
@@ -4900,7 +4900,7 @@ function CRCLModel() {
                       aria-label="Toggle Risk Matrix"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('risks')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Risk Matrix</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Risk Matrix<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('risks') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('risks') && (
@@ -4942,7 +4942,7 @@ function CRCLModel() {
                       aria-label="Toggle Catalyst Calendar"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('catalysts')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Catalyst Calendar</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Catalyst Calendar<UpdateIndicators sources="PR" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('catalysts') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('catalysts') && (
@@ -4993,7 +4993,7 @@ function CRCLModel() {
                       aria-label="Toggle Position Management"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('position')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Position Management</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Position Management<UpdateIndicators sources="WS" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('position') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('position') && (
@@ -5048,7 +5048,7 @@ function CRCLModel() {
                       aria-label="Toggle Analysis Archive"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('archive')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Analysis Archive — Complete History</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Analysis Archive — Complete History<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('archive') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('archive') && (
@@ -5105,7 +5105,7 @@ function CRCLModel() {
                       aria-label="Toggle Risks and Strategic Assessment"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('strategic-assessment')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Risks & Strategic Assessment</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Risks & Strategic Assessment<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('strategic-assessment') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('strategic-assessment') && (
@@ -5284,7 +5284,7 @@ function CRCLModel() {
                       aria-label="Toggle Methodology and Disclosures"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('methodology')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Methodology & Disclosures</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Methodology & Disclosures<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('methodology') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('methodology') && (
@@ -5457,7 +5457,7 @@ function CRCLModel() {
               {/* Share Class Structure */}
               {capitalView === 'structure' && (
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Share Class Structure</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Class Structure<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
                     <tr>
@@ -5486,7 +5486,7 @@ function CRCLModel() {
               {/* Major Shareholders */}
               {capitalView === 'shareholders' && (
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Major Shareholders (from Aug 2025 S-1)</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Major Shareholders (from Aug 2025 S-1)<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
                     <tr>
@@ -5521,7 +5521,7 @@ function CRCLModel() {
               <div className="g2" style={{ marginTop: 32 }}>
                 {/* Equity Offerings */}
                 <div className="card">
-                  <div className="card-title">Equity Offerings</div>
+                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Offerings<UpdateIndicators sources="SEC" /></div>
                   <table className="tbl">
                     <thead>
                       <tr>
@@ -5556,7 +5556,7 @@ function CRCLModel() {
 
                 {/* Outstanding Equity Awards */}
                 <div className="card">
-                  <div className="card-title">Outstanding Equity Awards (Jun 30, 2025)</div>
+                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Outstanding Equity Awards (Jun 30, 2025)<UpdateIndicators sources="SEC" /></div>
                   <table className="tbl">
                     <thead>
                       <tr>
@@ -5595,7 +5595,7 @@ function CRCLModel() {
 
               {/* Warrants */}
               <div className="card" style={{ marginTop: 24 }}>
-                <div className="card-title">Outstanding Warrants (Black-Scholes Valuation)</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Outstanding Warrants (Black-Scholes Valuation)<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
                     <tr>
@@ -5637,7 +5637,7 @@ function CRCLModel() {
               {capitalView === 'plans' && (
               <>
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Equity Incentive Plans (Reserved Shares)</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Incentive Plans (Reserved Shares)<UpdateIndicators sources="SEC" /></div>
                 <div className="g3">
                   {EQUITY_PLANS.map((p, i) => (
                     <div key={i} style={{ background: 'var(--surface2)', padding: 20, borderRadius: 12 }}>
@@ -5691,7 +5691,7 @@ function CRCLModel() {
               {/* Dilution View */}
               {capitalView === 'dilution' && (
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Fully Diluted Share Count</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Fully Diluted Share Count<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
                     <tr>

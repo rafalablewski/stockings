@@ -5274,7 +5274,7 @@ const QuarterlyMetricsPanel = () => {
   }, [quarterlyData, displayQuarters]);
 
   return (
-    <div className="card"><div className="card-title">Key Metrics Evolution</div>
+    <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
       {/* Dynamic Summary Badges */}
       <div className="flex flex-wrap gap-2 mb-4">
         <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-cyan-900/30 border-cyan-600/40 border text-cyan-400">
@@ -5341,7 +5341,7 @@ const QuarterlyMetricsPanel = () => {
       
       {/* Key Notes from Filing - Matching BMNR style */}
       <div className="mt-4">
-        <div className="card"><div className="card-title">Latest Quarter Summary (Q3 2025)</div>
+        <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
           <div className="bg-slate-900/50 rounded-lg p-3">
             <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Filing Source</div>
@@ -8641,7 +8641,7 @@ const TimelineTab = () => {
       {/* Upcoming Events + Recent Press Releases */}
       <div className="g2">
         <div className="card">
-          <div className="card-title">Upcoming Events</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div>
@@ -8725,6 +8725,7 @@ const TimelineTab = () => {
       <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span>Event Timeline</span>
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredEntries.length} events)</span>
+        <UpdateIndicators sources="PR" />
       </h3>
 
       {/* Topic Filters (AND logic multi-select) */}
@@ -10317,9 +10318,9 @@ const InvestmentTab = () => {
   ];
 
   // Collapsible section component
-  const CollapsibleSection = ({ id, title, children }) => (
+  const CollapsibleSection = ({ id, title, children, sources }: { id: string; title: string; children: React.ReactNode; sources?: UpdateSource | UpdateSource[] }) => (
     <div className="card" style={{ marginBottom: 16 }}>
-      <div 
+      <div
         onClick={() => toggleSection(id)}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
         role="button"
@@ -10327,7 +10328,7 @@ const InvestmentTab = () => {
         aria-expanded={investmentSections.has(id)}
         onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
       >
-        <div className="card-title" style={{ marginBottom: 0 }}>{title}</div>
+        <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>{title}{sources && <UpdateIndicators sources={sources} />}</div>
         <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
       {investmentSections.has(id) && <div style={{ marginTop: 16 }}>{children}</div>}
@@ -10396,7 +10397,7 @@ const InvestmentTab = () => {
       </div>
 
       {/* Investment Scorecard */}
-      <CollapsibleSection id="scorecard" title="Investment Scorecard">
+      <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
           {current.scorecard.map((item, i) => (
             <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -10411,7 +10412,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Summary */}
-      <CollapsibleSection id="summary" title="Investment Summary">
+      <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
         <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)', marginBottom: 16 }}>
           <div style={{ fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>What's New ({current.source})</div>
           <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
@@ -10434,7 +10435,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Growth Drivers */}
-      <CollapsibleSection id="growth" title="Growth Drivers">
+      <CollapsibleSection id="growth" title="Growth Drivers" sources="PR">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {current.growthDrivers.map((d, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
@@ -10449,7 +10450,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Competitive Moat */}
-      <CollapsibleSection id="moat" title="Competitive Moat">
+      <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
         <div className="g2">
           <div>
             <h4 style={{ color: 'var(--mint)', marginBottom: 12 }}>Moat Sources</h4>
@@ -10482,7 +10483,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Risk Matrix */}
-      <CollapsibleSection id="risks" title="Risk Matrix">
+      <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {current.risks.map((r, i) => (
             <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
@@ -10501,7 +10502,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Risks & Strategic Assessment */}
-      <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment">
+      <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment" sources={['PR', 'SEC']}>
         {/* Section Header */}
         <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 20, fontStyle: 'italic' }}>
           Multi-perspective risk evaluation and strategic decision framework for space-based cellular infrastructure
@@ -10635,7 +10636,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Position Sizing */}
-      <CollapsibleSection id="position" title="Position Sizing & Price Targets">
+      <CollapsibleSection id="position" title="Position Sizing & Price Targets" sources="WS">
         <div className="g2" style={{ marginBottom: 16 }}>
           <div>
             <h4 style={{ color: 'var(--text)', marginBottom: 12, fontSize: 14 }}>Recommended Allocation</h4>
@@ -10666,7 +10667,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Analysis Archive */}
-      <CollapsibleSection id="archive" title="Analysis Archive — Complete History">
+      <CollapsibleSection id="archive" title="Analysis Archive — Complete History" sources={['PR', 'SEC']}>
         <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>Full record of all investment thesis updates. Never deleted. Tracking since Q3 2022.</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
@@ -13606,7 +13607,7 @@ const FinancialsTab = () => {
       {/* SECTION 2: HIGHLIGHT BOX                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="highlight">
-        <h3>{config.highlightTitle}</h3>
+        <h3 style={{ display: 'flex', alignItems: 'center' }}>{config.highlightTitle}<UpdateIndicators sources="SEC" /></h3>
         <p className="text-sm text-slate-300">{config.highlightText}</p>
       </div>
       
@@ -13619,7 +13620,7 @@ const FinancialsTab = () => {
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-        <h4 className="text-sm font-medium text-yellow-400 mb-3">📅 Key Financial Milestones</h4>
+        <h4 className="text-sm font-medium text-yellow-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           {config.milestones.map((m, i) => (
             <div key={i} className="p-2 bg-slate-800/50 rounded">
