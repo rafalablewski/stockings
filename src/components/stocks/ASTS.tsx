@@ -5571,7 +5571,7 @@ const TimelineTab = () => {
     cik: '0001780312',
     ticker: 'ASTS',
     exchange: 'NASDAQ',
-    lastPR: { date: 'December 24, 2025', title: 'BlueBird 6 Successful Launch' }
+    lastPR: { date: 'January 16, 2026', title: 'MDA SHIELD Prime Contract Award' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {
