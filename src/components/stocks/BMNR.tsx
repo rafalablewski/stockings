@@ -1463,6 +1463,9 @@ input[type="range"]::-webkit-slider-thumb {
 // UPDATE INDICATOR SYSTEM - Visual markers for data update sources
 // ============================================================================
 
+/** Context to control indicator visibility globally */
+const UpdateIndicatorContext = React.createContext<{ showIndicators: boolean; setShowIndicators: (v: boolean) => void }>({ showIndicators: true, setShowIndicators: () => {} });
+
 const UPDATE_SOURCE_CONFIG: Record<UpdateSource, { label: string; tooltip: string; className: string }> = {
   PR: { label: '!', tooltip: 'Updated from Press Release', className: 'pr' },
   SEC: { label: '!', tooltip: 'Updated from SEC Filing', className: 'sec' },
@@ -1472,6 +1475,8 @@ const UPDATE_SOURCE_CONFIG: Record<UpdateSource, { label: string; tooltip: strin
 
 /** Small indicator badge showing which document type updates this field */
 const UpdateIndicator = React.memo<{ source: UpdateSource }>(({ source }) => {
+  const { showIndicators } = React.useContext(UpdateIndicatorContext);
+  if (!showIndicators) return null;
   const config = UPDATE_SOURCE_CONFIG[source];
   return (
     <span
@@ -1487,7 +1492,8 @@ UpdateIndicator.displayName = 'UpdateIndicator';
 
 /** Renders one or more update indicators */
 const UpdateIndicators = React.memo<{ sources?: UpdateSource | UpdateSource[] }>(({ sources }) => {
-  if (!sources) return null;
+  const { showIndicators } = React.useContext(UpdateIndicatorContext);
+  if (!showIndicators || !sources) return null;
   const sourceArray = Array.isArray(sources) ? sources : [sources];
   return (
     <>
@@ -1497,28 +1503,50 @@ const UpdateIndicators = React.memo<{ sources?: UpdateSource | UpdateSource[] }>
 });
 UpdateIndicators.displayName = 'UpdateIndicators';
 
-/** Legend explaining what each indicator color means */
-const UpdateLegend = React.memo(() => (
-  <div className="update-legend">
-    <span style={{ fontWeight: 600, color: 'var(--text)' }}>Update Sources:</span>
-    <div className="update-legend-item">
-      <span className="dot pr">!</span>
-      <span>Press Release</span>
+/** Legend explaining what each indicator color means, with toggle button */
+const UpdateLegend = React.memo(() => {
+  const { showIndicators, setShowIndicators } = React.useContext(UpdateIndicatorContext);
+  return (
+    <div className="update-legend">
+      <span style={{ fontWeight: 600, color: 'var(--text)' }}>Update Sources:</span>
+      <div className="update-legend-item">
+        <span className="dot pr">!</span>
+        <span>Press Release</span>
+      </div>
+      <div className="update-legend-item">
+        <span className="dot sec">!</span>
+        <span>SEC Filing</span>
+      </div>
+      <div className="update-legend-item">
+        <span className="dot ws">!</span>
+        <span>Wall Street</span>
+      </div>
+      <div className="update-legend-item">
+        <span className="dot market">!</span>
+        <span>Market Data</span>
+      </div>
+      <button
+        onClick={() => setShowIndicators(!showIndicators)}
+        style={{
+          marginLeft: 'auto',
+          padding: '6px 12px',
+          fontSize: '12px',
+          fontWeight: 600,
+          color: showIndicators ? 'var(--bg)' : 'var(--text2)',
+          background: showIndicators ? 'var(--violet)' : 'var(--surface2)',
+          border: '1px solid',
+          borderColor: showIndicators ? 'var(--violet)' : 'var(--border)',
+          borderRadius: '6px',
+          cursor: 'pointer',
+          transition: 'all 0.15s',
+          fontFamily: 'Outfit, sans-serif',
+        }}
+      >
+        {showIndicators ? 'Hide Indicators' : 'Show Indicators'}
+      </button>
     </div>
-    <div className="update-legend-item">
-      <span className="dot sec">!</span>
-      <span>SEC Filing</span>
-    </div>
-    <div className="update-legend-item">
-      <span className="dot ws">!</span>
-      <span>Wall Street</span>
-    </div>
-    <div className="update-legend-item">
-      <span className="dot market">!</span>
-      <span>Market Data</span>
-    </div>
-  </div>
-));
+  );
+});
 UpdateLegend.displayName = 'UpdateLegend';
 
 // ============================================================================
@@ -1722,6 +1750,9 @@ const BMNRDilutionAnalysis = () => {
   const [quarterlyDividend, setQuarterlyDividend] = useState(0.01);
   const [dividendGrowthRate, setDividendGrowthRate] = useState(10); // % annual growth
 
+  // Update indicator visibility toggle
+  const [showIndicators, setShowIndicators] = useState(true);
+
   // Use imported data from @/data/bmnr
   const historicalETH = HISTORICAL_ETH;
   // Build comparables dynamically with current user values for BMNR
@@ -1787,7 +1818,7 @@ const BMNRDilutionAnalysis = () => {
   ];
 
   return (
-    <>
+    <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
       <style>{css}</style>
       <div className="stock-model-app">
         {/* ============================================================================
@@ -1924,7 +1955,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'wall-street' && <WallStreetTab />}
         </main>
       </div>
-    </>
+    </UpdateIndicatorContext.Provider>
   );
 };
 
@@ -2687,7 +2718,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div className="card" style={{ marginTop: 32 }}>
-      <div className="card-title">ETH Holdings Growth</div>
+      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ETH Holdings Growth<UpdateIndicators sources="PR" /></div>
       <div className="bars">
         {holdingsData.map((d, i) => (
           <div key={i} className="bar-col">
@@ -5103,7 +5134,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 className="section-head" style={{ marginBottom: 0 }}>Investment Analysis</h2>
+        <h2 className="section-head" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
           <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
@@ -5637,13 +5668,13 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HEADER                                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <h2 className="section-head">Financials</h2>
-      
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
+
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: HIGHLIGHT BOX                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="highlight">
-        <h3>{config.highlightTitle}</h3>
+        <h3 style={{ display: 'flex', alignItems: 'center' }}>{config.highlightTitle}<UpdateIndicators sources="SEC" /></h3>
         <p className="text-sm text-slate-300">{config.highlightText}</p>
       </div>
       
@@ -5651,7 +5682,7 @@ const SECFilingsTab = () => {
       {/* SECTION 3: KEY METRICS EVOLUTION                                    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="card">
-        <div className="card-title">Key Metrics Evolution</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
         {/* Summary Badges */}
         <div className="flex flex-wrap gap-2 mb-4">
           <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-cyan-900/30 border-cyan-600/40 border text-cyan-400">
@@ -8648,7 +8679,7 @@ const TimelineTab = () => {
 
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
       <div className="card" style={{ marginBottom: 0 }}>
-        <div className="card-title">📁 SEC Filings</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
         
         {/* Filter Buttons */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
@@ -8767,6 +8798,7 @@ const TimelineTab = () => {
           <div style={{ fontSize: 11, color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ color: 'var(--mint)' }}>●</span>
             <span>Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}</span>
+            <UpdateIndicators sources="PR" />
           </div>
         </div>
       </div>
@@ -8821,7 +8853,7 @@ const TimelineTab = () => {
 
         <div className="card">
           {/* [PR_CHECKLIST_RECENT_PRESS_RELEASES] - Add new PR at top! */}
-          <div className="card-title">Recent Press Releases</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -8872,6 +8904,7 @@ const TimelineTab = () => {
       {/* Event Timeline Section - CRCL Style */}
       <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span>Event Timeline</span>
+        <UpdateIndicators sources="PR" />
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredEntries.length} events)</span>
       </h3>
 
@@ -9017,7 +9050,7 @@ const TimelineTab = () => {
       </div>
 
       {/* Key Milestones - Unified styling */}
-      <div className="card"><div className="card-title">Key Milestones Tracker</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Milestones Tracker<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           <div className="bg-slate-900/60 border border-slate-700/40 rounded-xl p-4 backdrop-blur-sm">
             <h4 className="font-semibold text-violet-400 mb-3 text-sm uppercase tracking-wider">Alchemy of 5% Progress</h4>
@@ -9274,11 +9307,11 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Wall Street Coverage</h2>
-      
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Wall Street Coverage<UpdateIndicators sources="WS" /></h2>
+
       {/* Consensus Snapshot */}
       <div className="card">
-        <div className="card-title">📊 Consensus Snapshot</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📊 Consensus Snapshot<UpdateIndicators sources="WS" /></div>
         <div className="g2">
           {/* Price Target Summary */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
