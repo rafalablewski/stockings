@@ -141,46 +141,44 @@
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
  * ║                                                                               ║
  * ║  EVERY TIME a new BMNR press release is processed, you MUST update ALL of    ║
- * ║  the following sections. DO NOT skip any. Check off each one as you go.      ║
+ * ║  the following sections. DO NOT skip any. Use grep/search for the markers.   ║
  * ║                                                                               ║
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
- * ║  SECTION                      │ LOCATION        │ WHAT TO UPDATE              ║
+ * ║  #  │ SECTION              │ SEARCH FOR                  │ UPDATE             ║
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
  * ║                                                                               ║
- * ║  ☐ 1. Header/Version          │ Lines 17-24     │ Version #, changelog entry  ║
+ * ║  1  │ Header/Version       │ "Version:" + "CHANGELOG v"  │ Version #,         ║
+ * ║     │                      │                             │ changelog entry    ║
  * ║                                                                               ║
- * ║  ☐ 2. DEFAULT PARAMETERS      │ Lines ~1440     │ Comment block with all      ║
- * ║       (comment block)         │                 │ current metrics             ║
+ * ║  2  │ DEFAULT PARAMETERS   │ "DEFAULT PARAMETERS - Based"│ All metrics in     ║
+ * ║     │                      │                             │ comment block      ║
  * ║                                                                               ║
- * ║  ☐ 3. State Variables         │ Lines ~1465-90  │ currentETH, ethPrice,       ║
- * ║                               │                 │ stakingRatio, etc.          ║
+ * ║  3  │ State Variables      │ "DATA FRESHNESS: Last"      │ currentETH,        ║
+ * ║     │                      │                             │ ethPrice,          ║
+ * ║     │                      │                             │ stakingRatio       ║
  * ║                                                                               ║
- * ║  ☐ 4. filingData object       │ Lines ~4343-60  │ latestEvent, latestEventDate║
- * ║                               │                 │ lastPressRelease,           ║
- * ║                               │                 │ lastPressReleaseTitle,      ║
- * ║                               │                 │ 8-K filing date             ║
+ * ║  4  │ filingData           │ "const filingData = {"      │ latestEvent,       ║
+ * ║     │                      │                             │ lastPressRelease,  ║
+ * ║     │                      │                             │ 8-K date           ║
  * ║                                                                               ║
- * ║  ☐ 5. Investment tab DISPLAY  │ Lines ~4910-24  │ NAV/Share (hardcoded),      ║
- * ║       (hardcoded metrics)     │                 │ Total Holdings (hardcoded), ║
- * ║                               │                 │ Staked ETH (hardcoded)      ║
- * ║                               │                 │ ⚠️ OFTEN FORGOTTEN!         ║
+ * ║  5  │ Investment DISPLAY   │ [PR_CHECKLIST_INVESTMENT_   │ NAV/Share,         ║
+ * ║     │ ⚠️ OFTEN FORGOTTEN   │  DISPLAY]                   │ Total Holdings,    ║
+ * ║     │                      │                             │ Staked ETH         ║
  * ║                                                                               ║
- * ║  ☐ 6. Investment `current`    │ Lines ~4458-589 │ Scorecard items,            ║
- * ║       object                  │                 │ executiveSummary,           ║
- * ║                               │                 │ growthDrivers, moatSources, ║
- * ║                               │                 │ catalysts, risks,           ║
- * ║                               │                 │ perspectives (CFA/HF/CIO)   ║
+ * ║  6  │ Investment current   │ "// Current Investment      │ scorecard,         ║
+ * ║     │                      │  Summary"                   │ executiveSummary,  ║
+ * ║     │                      │                             │ growthDrivers,     ║
+ * ║     │                      │                             │ catalysts, etc.    ║
  * ║                                                                               ║
- * ║  ☐ 7. secMeta.lastPR          │ Lines ~7358-63  │ date and title              ║
- * ║       (Timeline tab)          │                 │ ⚠️ OFTEN FORGOTTEN!         ║
+ * ║  7  │ secMeta.lastPR       │ [PR_CHECKLIST_SECMETA]      │ date, title        ║
+ * ║     │ ⚠️ OFTEN FORGOTTEN   │                             │                    ║
  * ║                                                                               ║
- * ║  ☐ 8. Archive entry           │ Lines ~4592+    │ Add NEW entry at top of     ║
- * ║                               │                 │ archive array with full     ║
- * ║                               │                 │ analysis details            ║
+ * ║  8  │ Archive              │ "const archive = ["         │ Add NEW entry      ║
+ * ║     │                      │                             │ at TOP of array    ║
  * ║                                                                               ║
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
  * ║  ⚠️ COMMON MISTAKES TO AVOID:                                                 ║
- * ║  - Forgetting Investment tab DISPLAY metrics (they're hardcoded, not dynamic)║
+ * ║  - Forgetting Investment DISPLAY metrics (hardcoded, not from state!)         ║
  * ║  - Forgetting secMeta.lastPR in Timeline tab                                  ║
  * ║  - Not updating catalysts when events complete (mark as ✅ COMPLETED)         ║
  * ║  - Forgetting to recalculate NAV/share with new ETH price                     ║
@@ -4958,6 +4956,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
               Last Updated: {current.date} • Trigger: {current.source}
             </div>
           </div>
+{/* [PR_CHECKLIST_INVESTMENT_DISPLAY] - Hardcoded metrics, update with every PR! */}
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>NAV/Share</div>
@@ -7407,6 +7406,7 @@ const TimelineTab = () => {
     { date: 'Apr 14, 2025', type: '10-Q', description: 'Quarterly Report (Q2 FY2025)', period: 'Q2 FY25', color: 'purple' },
   ];
   
+  // [PR_CHECKLIST_SECMETA] - Update lastPR with every PR!
   const secMeta = {
     cik: '0001829311',
     ticker: 'BMNR',
