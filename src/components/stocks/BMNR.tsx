@@ -5806,7 +5806,7 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-cyan-400 mb-3">Cash Position Evolution</h4>
+          <h4 className="text-sm font-medium text-cyan-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={quarterlyData.map(q => ({ quarter: q.quarter, cash: q.cash }))}>
               <defs>
@@ -5826,7 +5826,7 @@ const SECFilingsTab = () => {
         </div>
         
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-purple-400 mb-3">Quarterly Burn Rate (OpEx)</h4>
+          <h4 className="text-sm font-medium text-purple-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <LineChart data={[
               { quarter: 'Q1 FY25', opEx: 2.2 },
@@ -5850,7 +5850,7 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-orange-400 mb-3">Share Count (Outstanding)</h4>
+          <h4 className="text-sm font-medium text-orange-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Share Count (Outstanding)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={quarterlyData.map(q => ({ quarter: q.quarter, shares: q.shares }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5864,7 +5864,7 @@ const SECFilingsTab = () => {
         </div>
         
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-blue-400 mb-3">Market Cap Evolution ($M)</h4>
+          <h4 className="text-sm font-medium text-blue-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={[
               { quarter: 'Q1 FY25', mktCap: 40 },
@@ -5894,7 +5894,7 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-violet-400 mb-3">Crypto Holdings Evolution</h4>
+          <h4 className="text-sm font-medium text-violet-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Crypto Holdings Evolution<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={quarterlyData.map(q => ({ quarter: q.quarter, crypto: q.crypto }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5911,7 +5911,7 @@ const SECFilingsTab = () => {
         </div>
         
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-green-400 mb-3">Net Income/(Loss)</h4>
+          <h4 className="text-sm font-medium text-green-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Net Income/(Loss)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={quarterlyData.map(q => ({ quarter: q.quarter, income: q.netIncome }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5929,7 +5929,7 @@ const SECFilingsTab = () => {
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-        <h4 className="text-sm font-medium text-yellow-400 mb-3">📅 Key Financial Milestones</h4>
+        <h4 className="text-sm font-medium text-yellow-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           {config.milestones.map((m, i) => (
             <div key={i} className="p-2 bg-slate-800/50 rounded">
