@@ -2321,7 +2321,7 @@ const CRCLModelTab = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Model</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* ASSUMPTIONS SECTION */}
       <>
@@ -2627,7 +2627,7 @@ const ScenariosTab = () => {
 
   return (
     <>
-      <h2 className="section-head">Scenario Simulation</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Scenario Simulation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* Highlight Box */}
       <div className="highlight">
@@ -3194,7 +3194,7 @@ const DCFTab = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">DCF</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>DCF<UpdateIndicators sources="SEC" /></h2>
 
       <div className="highlight">
         <h3>DCF Valuation</h3>
@@ -3864,7 +3864,7 @@ function CRCLModel() {
           <UpdateLegend />
           {activeTab === 'overview' && (
             <>
-              <h2 className="section-head">Investment Thesis</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
               
               <div className="highlight">
                 <h3>The Opportunity</h3>
@@ -3976,7 +3976,7 @@ function CRCLModel() {
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 1: HEADER                                                   */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
-              <h2 className="section-head">Financials</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
               
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 2: HIGHLIGHT BOX                                            */}
@@ -5319,7 +5319,7 @@ function CRCLModel() {
 
           {activeTab === 'usdc' && (
             <>
-              <h2 className="section-head">USDC Dynamics</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>USDC Dynamics<UpdateIndicators sources={['PR', 'SEC']} /></h2>
               
               {/* Highlight Box */}
               <div className="highlight">
@@ -5408,7 +5408,7 @@ function CRCLModel() {
 
           {activeTab === 'capital' && (
             <>
-              <h2 className="section-head">Capital Structure</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
               
               {/* Highlight Box */}
               <div className="highlight">
@@ -5756,7 +5756,7 @@ function CRCLModel() {
 
           {activeTab === 'monte-carlo' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <h2 className="section-head">Monte Carlo</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
               
               {/* Highlight Box */}
               <div className="highlight">
@@ -5949,11 +5949,11 @@ function CRCLModel() {
 
           {activeTab === 'timeline' && (
             <>
-              <h2 className="section-head">Company Timeline</h2>
-              
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Company Timeline<UpdateIndicators sources="PR" /></h2>
+
               {/* Latest SEC Filings - Enhanced with filtering and pagination */}
               <div className="card" style={{ marginBottom: 32 }}>
-                <div className="card-title">📁 SEC Filings</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
                 
                 {/* Filter Buttons */}
                 <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
@@ -6304,7 +6304,7 @@ function CRCLModel() {
 
           {activeTab === 'comps' && (
             <>
-              <h2 className="section-head">Comparable Companies Analysis</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparable Companies Analysis<UpdateIndicators sources="MARKET" /></h2>
               
               {/* Highlight Box */}
               <div className="highlight">
@@ -6834,11 +6834,11 @@ Source: Example Research`
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <h2 className="section-head">Wall Street Coverage</h2>
-      
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Wall Street Coverage<UpdateIndicators sources="WS" /></h2>
+
       {/* Consensus Snapshot */}
       <div className="card">
-        <div className="card-title">📊 Consensus Snapshot</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📊 Consensus Snapshot<UpdateIndicators sources="WS" /></div>
         <div className="g2">
           {/* Price Target Summary */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -6903,7 +6903,7 @@ Source: Example Research`
       
       {/* Coverage by Firm - Grouped Cards */}
       <div className="card">
-        <div className="card-title">🏦 Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>🏦 Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})<UpdateIndicators sources="WS" /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {ANALYST_COVERAGE.map((coverage) => {
             const isExpanded = expandedFirm === coverage.firm;

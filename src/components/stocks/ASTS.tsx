@@ -1955,7 +1955,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
 
   return (
   <>
-    <h2 className="section-head">Investment Thesis</h2>
+    <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
     <div className="highlight"><h3>The Opportunity</h3>
       <p style={{ fontSize: '14px' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
@@ -2090,9 +2090,9 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Catalysts</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources="PR" /></h2>
       <div className="highlight"><h3>Catalyst Tracker</h3><p className="text-sm">Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
-      <div className="card"><div className="card-title">Upcoming</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
         <div className="space-y-2">{upcomingCatalysts.map((c, i) => (
           <div key={i} className={`flex items-center justify-between p-3 rounded-lg border ${c.impact === 'Critical' ? 'bg-cyan-900/30 border-cyan-600' : 'bg-slate-800/50 border-slate-700'}`}>
             <div><div className="font-medium">{c.event}</div><div className="text-xs text-slate-400">{c.timeline}</div></div>
@@ -2140,7 +2140,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
   const coverage = [{ r: 'US Intermittent', n: 6 }, { r: 'US Continuous', n: 20 }, { r: 'US+Canada+Japan', n: 25 }, { r: 'Global (45-60)', n: 60 }].map(c => ({ ...c, pct: Math.min(100, (calc.totalSats / c.n) * 100) }));
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Constellation</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Constellation<UpdateIndicators sources="PR" /></h2>
       <div className="highlight"><h3>Constellation Status</h3>
         <div className="space-y-2 text-sm">
           <p><strong className="text-cyan-400">Block 1 (BW3 + BB1-5):</strong> 6 satellites in orbit. BW3 is the 693 sq ft prototype (Sept 2022). BB1-5 are first-generation commercial satellites (Sept 2024).</p>
@@ -2157,7 +2157,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
       </div>
       
       {/* Satellite Generations Comparison */}
-      <div className="card"><div className="card-title">Satellite Generations</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Satellite Generations<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           <div className="p-4 bg-cyan-900/20 border border-cyan-800/30 rounded-lg">
             <h4 className="text-cyan-400 font-medium mb-2">Block 1: BW3 + BB1-5</h4>
@@ -2208,7 +2208,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
   const scenarios = [0.5, 1, 2, 3, 5, 7, 10].map(p => ({ p, subs: partnerReach * (p / 100), rev: partnerReach * (p / 100) * blendedARPU * 12 * 0.5 / 1000 }));
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Subscribers</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Subscribers<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3>Subscriber Analysis</h3><p className="text-sm">3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
       <div className="g4">
         <Card label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} sub="53+ MNOs" color="blue" />
@@ -2240,7 +2240,7 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
   const ramp = [{ year: '2025', commercial: 0, gov: 0.05, gateway: 0.015 }, { year: '2026', commercial: 0.3, gov: 0.15, gateway: 0.05 }, { year: '2027', commercial: 1.5, gov: 0.25, gateway: 0.08 }, { year: '2028', commercial: 4.0, gov: 0.35, gateway: 0.1 }, { year: '2029', commercial: 7.0, gov: 0.45, gateway: 0.1 }, { year: '2030', commercial: 11.0, gov: 0.5, gateway: 0.1 }];
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Revenue</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3>Revenue Analysis</h3><p className="text-sm">Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
       <div className="card"><div className="card-title">Sources</div>{revenueSources.map((r, i) => (<div key={i} className="flex items-center justify-between p-2 border-b border-slate-800"><div><span className="font-medium text-cyan-400">{r.source}</span><span className="text-slate-400 text-sm ml-2">{r.description}</span></div><span className={`text-xs px-2 py-1 rounded ${r.status.includes('Active') ? 'bg-green-900/50 text-green-400' : 'bg-slate-700'}`}>{r.status}</span></div>))}</div>
       <div className="g4">
@@ -2402,7 +2402,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Partners</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Partners<UpdateIndicators sources="PR" /></h2>
       <div className="highlight"><h3>Partner & Spectrum Intelligence</h3>
         <div className="space-y-2 text-sm">
           <p><strong className="text-cyan-400">Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
@@ -2640,7 +2640,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Runway</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Runway<UpdateIndicators sources="SEC" /></h2>
       <div className="highlight"><h3>Cash Runway — Q3 2025 Actuals</h3>
         <div className="space-y-2 text-sm">
           <p><strong className="text-cyan-400">Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
@@ -2658,7 +2658,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Q3 2025 Financial Summary */}
-      <div className="card"><div className="card-title">Q3 2025 Financial Summary</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
           <div>
             <h4 className="text-sm font-medium text-cyan-400 mb-2">Income Statement</h4>
@@ -2678,7 +2678,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Convertible Debt Summary */}
-      <div className="card"><div className="card-title">Convertible Debt Outstanding (Q3 2025)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <div className="mb-3 p-2 bg-slate-800/50 rounded-lg text-xs text-slate-400">
           <strong className="text-cyan-400">Balance Sheet vs Principal:</strong> Convertible notes are reported at net carrying value (gross less debt discounts and issuance costs). 
           The $697.6M on the balance sheet represents this accounting value, while $1.625B is the principal that must eventually be repaid or converted.
@@ -2945,7 +2945,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Capital Structure</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
       <div className="highlight">
         <h3>Share Classes, Offerings & Dilution</h3>
         <p className="text-sm">
@@ -8511,11 +8511,11 @@ const TimelineTab = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Timeline</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Timeline<UpdateIndicators sources="PR" /></h2>
       
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
       <div className="card" style={{ marginBottom: 0 }}>
-        <div className="card-title">📁 SEC Filings</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
         
         {/* Filter Buttons */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
@@ -8687,7 +8687,7 @@ const TimelineTab = () => {
         </div>
 
         <div className="card">
-          <div className="card-title">Recent Press Releases</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -10346,7 +10346,7 @@ const InvestmentTab = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 className="section-head" style={{ marginBottom: 0 }}>Investment Analysis</h2>
+        <h2 className="section-head" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
           <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
@@ -13172,11 +13172,11 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Wall Street Coverage</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Wall Street Coverage<UpdateIndicators sources="WS" /></h2>
       
       {/* Consensus Snapshot */}
       <div className="card">
-        <div className="card-title">📊 Consensus Snapshot</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📊 Consensus Snapshot<UpdateIndicators sources="WS" /></div>
         <div className="g2">
           {/* Price Target Summary */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -13241,7 +13241,7 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
       
       {/* Coverage by Firm - Grouped Cards */}
       <div className="card">
-        <div className="card-title">🏦 Coverage by Firm ({totalAnalysts} Analysts)</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>🏦 Coverage by Firm ({totalAnalysts} Analysts)<UpdateIndicators sources="WS" /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {ANALYST_COVERAGE.map((coverage) => {
             const isExpanded = expandedFirm === coverage.firm;
@@ -13600,7 +13600,7 @@ const FinancialsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HEADER                                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <h2 className="section-head">Financials</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
       
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: HIGHLIGHT BOX                                            */}
