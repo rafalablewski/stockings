@@ -1783,10 +1783,11 @@ input[type="range"]::-webkit-slider-thumb {
 
 // Card Component for unified risk metrics display
 // N1: Memoized pure components for performance optimization
-const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
+const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSource }) => (
   <div style={{
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
     background: highlight ? 'var(--mint-dim)' : 'transparent',
@@ -1796,13 +1797,16 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
     marginRight: highlight ? '-12px' : 0,
     borderRadius: highlight ? '8px' : 0
   }}>
-    <span style={{ fontSize: '14px', color: 'var(--text2)' }}>{label}</span>
+    <span style={{ fontSize: '14px', color: 'var(--text2)', display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </span>
     <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--mint)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
 Row.displayName = 'Row';
 
-const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
+const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) => {
   const colorMap: Record<string, { bg: string; border: string; text: string }> = {
     blue: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', text: '#60a5fa' },
     green: { bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' },
@@ -1817,14 +1821,17 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
   };
   const c = colorMap[color || 'blue'] || colorMap.blue;
   return (
-    <div style={{ 
-      background: c.bg, 
-      border: `1px solid ${c.border}`, 
-      borderRadius: '16px', 
+    <div style={{
+      background: c.bg,
+      border: `1px solid ${c.border}`,
+      borderRadius: '16px',
       padding: '20px',
       backdropFilter: 'blur(8px)'
     }}>
-      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+        {label}
+        <UpdateIndicators sources={updateSource} />
+      </div>
       <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'Space Mono', monospace", color: c.text, marginTop: '4px' }}>{value}</div>
       {sub && <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '4px' }}>{sub}</div>}
     </div>

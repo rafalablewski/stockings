@@ -1461,9 +1461,12 @@ input[type="range"]::-webkit-slider-thumb {
 // ============================================================================
 
 // N1: Memoized pure components for performance optimization
-const Stat = React.memo<StatProps>(({ label, value, color = 'white' }) => (
+const Stat = React.memo<StatProps>(({ label, value, color = 'white', updateSource }) => (
   <div className="stat-item">
-    <div className="label">{label}</div>
+    <div className="label" style={{ display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </div>
     <div className={`val ${color}`}>{value}</div>
   </div>
 ));
@@ -1487,7 +1490,7 @@ const Panel = React.memo<PanelProps>(({ title, children }) => (
 ));
 Panel.displayName = 'Panel';
 
-const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
+const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) => {
   const colorMap: Record<string, { bg: string; border: string; text: string }> = {
     blue: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', text: '#60a5fa' },
     green: { bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' },
@@ -1502,14 +1505,17 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
   };
   const c = colorMap[color || 'blue'] || colorMap.blue;
   return (
-    <div style={{ 
-      background: c.bg, 
-      border: `1px solid ${c.border}`, 
-      borderRadius: '16px', 
+    <div style={{
+      background: c.bg,
+      border: `1px solid ${c.border}`,
+      borderRadius: '16px',
       padding: '20px',
       backdropFilter: 'blur(8px)'
     }}>
-      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+        {label}
+        <UpdateIndicators sources={updateSource} />
+      </div>
       <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'Space Mono', monospace", color: c.text, marginTop: '4px' }}>{value}</div>
       {sub && <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '4px' }}>{sub}</div>}
     </div>
@@ -1517,10 +1523,11 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
 });
 Card.displayName = 'Card';
 
-const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
+const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSource }) => (
   <div style={{
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
     background: highlight ? 'var(--cyan-dim)' : 'transparent',
@@ -1530,7 +1537,10 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
     marginRight: highlight ? '-12px' : 0,
     borderRadius: highlight ? '8px' : 0
   }}>
-    <span style={{ fontSize: '14px', color: 'var(--text2)' }}>{label}</span>
+    <span style={{ fontSize: '14px', color: 'var(--text2)', display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </span>
     <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--cyan)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
@@ -5381,7 +5391,7 @@ const QuarterlyMetricsPanel = () => {
       {/* ROW 1: Cash Position & OpEx */}
       <div className="mt-6 grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-cyan-400 mb-3">Cash Position Evolution</h4>
+          <h4 className="text-sm font-medium text-cyan-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={Object.values(quarterlyData).filter(q => q.cashAndEquiv !== null).reverse()}>
               <defs>
@@ -5400,7 +5410,7 @@ const QuarterlyMetricsPanel = () => {
         </div>
         
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-purple-400 mb-3">Quarterly Burn Rate (OpEx)</h4>
+          <h4 className="text-sm font-medium text-purple-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <LineChart data={Object.values(quarterlyData).filter(q => q.opEx !== null).reverse()}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5487,7 +5497,7 @@ const QuarterlyMetricsPanel = () => {
       {/* ROW 2: Share Count & Market Cap */}
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-orange-400 mb-3">Share Count (Outstanding / Implied / Fully Diluted)</h4>
+          <h4 className="text-sm font-medium text-orange-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0)}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5507,7 +5517,7 @@ const QuarterlyMetricsPanel = () => {
         </div>
         
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-blue-400 mb-3">Market Cap Evolution ($M)</h4>
+          <h4 className="text-sm font-medium text-blue-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0 && d.stockPrice > 0).map(d => ({ ...d, marketCap: d.sharesOutstanding * d.stockPrice, impliedMktCap: d.impliedSharesOut * d.stockPrice }))}>
               <defs>
