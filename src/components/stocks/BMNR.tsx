@@ -222,10 +222,20 @@ import {
 // TYPESCRIPT INTERFACES (H1)
 // ============================================================================
 
+/**
+ * UPDATE SOURCE TYPES - Indicates which document type updates this field
+ * PR = Press Release (weekly 8-K, PRNewswire)
+ * SEC = SEC Filing (10-Q, 10-K, 424B5, S-3, DEF 14A)
+ * WS = Wall Street (analyst reports, coverage)
+ * MARKET = Market Data (prices updated regularly)
+ */
+type UpdateSource = 'PR' | 'SEC' | 'WS' | 'MARKET';
+
 interface StatProps {
   label: string;
   value: string | number;
   color?: 'white' | 'cyan' | 'mint' | 'coral' | 'sky' | 'violet' | 'gold';
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface CardProps {
@@ -233,12 +243,14 @@ interface CardProps {
   value: string | number;
   sub?: string;
   color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'violet' | 'mint' | 'emerald';
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface RowProps {
   label: string;
   value: string | number;
   highlight?: boolean;
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface InputProps {
@@ -1364,7 +1376,150 @@ input[type="range"]::-webkit-slider-thumb {
   .t-details-content { grid-template-columns: 1fr; }
   .t-details-meta { flex-direction: row; flex-wrap: wrap; min-width: auto; }
 }
+
+/* ═══ UPDATE INDICATOR SYSTEM ═══ */
+/* Visual markers showing which fields get updated from different sources */
+.update-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 6px;
+  cursor: help;
+  position: relative;
+  flex-shrink: 0;
+}
+.update-indicator.pr { background: #facc15; color: #1a1a1a; }
+.update-indicator.sec { background: #22d3ee; color: #1a1a1a; }
+.update-indicator.ws { background: #a78bfa; color: #1a1a1a; }
+.update-indicator.market { background: #4ade80; color: #1a1a1a; }
+
+/* Tooltip on hover */
+.update-indicator::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s, visibility 0.15s;
+  z-index: 1000;
+  color: var(--text);
+  pointer-events: none;
+  margin-bottom: 4px;
+}
+.update-indicator:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Update Legend */
+.update-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 12px;
+  margin-bottom: 24px;
+}
+.update-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text2);
+}
+.update-legend-item .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+}
+.update-legend-item .dot.pr { background: #facc15; color: #1a1a1a; }
+.update-legend-item .dot.sec { background: #22d3ee; color: #1a1a1a; }
+.update-legend-item .dot.ws { background: #a78bfa; color: #1a1a1a; }
+.update-legend-item .dot.market { background: #4ade80; color: #1a1a1a; }
 `;
+
+// ============================================================================
+// UPDATE INDICATOR SYSTEM - Visual markers for data update sources
+// ============================================================================
+
+const UPDATE_SOURCE_CONFIG: Record<UpdateSource, { label: string; tooltip: string; className: string }> = {
+  PR: { label: '!', tooltip: 'Updated from Press Release', className: 'pr' },
+  SEC: { label: '!', tooltip: 'Updated from SEC Filing', className: 'sec' },
+  WS: { label: '!', tooltip: 'Updated from Wall Street Coverage', className: 'ws' },
+  MARKET: { label: '!', tooltip: 'Updated from Market Data', className: 'market' },
+};
+
+/** Small indicator badge showing which document type updates this field */
+const UpdateIndicator = React.memo<{ source: UpdateSource }>(({ source }) => {
+  const config = UPDATE_SOURCE_CONFIG[source];
+  return (
+    <span
+      className={`update-indicator ${config.className}`}
+      data-tooltip={config.tooltip}
+      title={config.tooltip}
+    >
+      {config.label}
+    </span>
+  );
+});
+UpdateIndicator.displayName = 'UpdateIndicator';
+
+/** Renders one or more update indicators */
+const UpdateIndicators = React.memo<{ sources?: UpdateSource | UpdateSource[] }>(({ sources }) => {
+  if (!sources) return null;
+  const sourceArray = Array.isArray(sources) ? sources : [sources];
+  return (
+    <>
+      {sourceArray.map((s) => <UpdateIndicator key={s} source={s} />)}
+    </>
+  );
+});
+UpdateIndicators.displayName = 'UpdateIndicators';
+
+/** Legend explaining what each indicator color means */
+const UpdateLegend = React.memo(() => (
+  <div className="update-legend">
+    <span style={{ fontWeight: 600, color: 'var(--text)' }}>Update Sources:</span>
+    <div className="update-legend-item">
+      <span className="dot pr">!</span>
+      <span>Press Release</span>
+    </div>
+    <div className="update-legend-item">
+      <span className="dot sec">!</span>
+      <span>SEC Filing</span>
+    </div>
+    <div className="update-legend-item">
+      <span className="dot ws">!</span>
+      <span>Wall Street</span>
+    </div>
+    <div className="update-legend-item">
+      <span className="dot market">!</span>
+      <span>Market Data</span>
+    </div>
+  </div>
+));
+UpdateLegend.displayName = 'UpdateLegend';
 
 // ============================================================================
 // UNIFIED UI COMPONENT LIBRARY - Consistent Design System
@@ -1372,9 +1527,12 @@ input[type="range"]::-webkit-slider-thumb {
 // ============================================================================
 
 // N1: Memoized pure components for performance optimization
-const Stat = React.memo<StatProps>(({ label, value, color = 'white' }) => (
+const Stat = React.memo<StatProps>(({ label, value, color = 'white', updateSource }) => (
   <div className="stat-item">
-    <div className="label">{label}</div>
+    <div className="label" style={{ display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </div>
     <div className={`val ${color}`}>{value}</div>
   </div>
 ));
@@ -1403,7 +1561,7 @@ const Panel = React.memo<PanelProps>(({ title, children }) => (
 ));
 Panel.displayName = 'Panel';
 
-const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
+const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) => {
   const colorMap: Record<string, { bg: string; border: string; text: string }> = {
     blue: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', text: '#60a5fa' },
     green: { bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' },
@@ -1418,14 +1576,17 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
   };
   const c = colorMap[color || 'blue'] || colorMap.blue;
   return (
-    <div style={{ 
-      background: c.bg, 
-      border: `1px solid ${c.border}`, 
-      borderRadius: '16px', 
+    <div style={{
+      background: c.bg,
+      border: `1px solid ${c.border}`,
+      borderRadius: '16px',
       padding: '20px',
       backdropFilter: 'blur(8px)'
     }}>
-      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+        {label}
+        <UpdateIndicators sources={updateSource} />
+      </div>
       <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'Space Mono', monospace", color: c.text, marginTop: '4px' }}>{value}</div>
       {sub && <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '4px' }}>{sub}</div>}
     </div>
@@ -1433,10 +1594,11 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
 });
 Card.displayName = 'Card';
 
-const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
+const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSource }) => (
   <div style={{
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
     background: highlight ? 'var(--violet-dim)' : 'transparent',
@@ -1446,7 +1608,10 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
     marginRight: highlight ? '-12px' : 0,
     borderRadius: highlight ? '8px' : 0
   }}>
-    <span style={{ fontSize: '14px', color: 'var(--text2)' }}>{label}</span>
+    <span style={{ fontSize: '14px', color: 'var(--text2)', display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </span>
     <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--violet)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
@@ -1679,13 +1844,13 @@ const BMNRDilutionAnalysis = () => {
 
         {/* Stats Row */}
         <div className="stats-row">
-          <Stat label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} color="violet" />
-          <Stat label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(1)}B`} />
-          <Stat label="ETH Holdings" value={`${(currentETH / 1e6).toFixed(2)}M`} color="violet" />
-          <Stat label="ETH Price" value={`$${ethPrice.toLocaleString()}`} />
-          <Stat label="Staking Yield" value={`${calc.effectiveAPY.toFixed(2)}%`} color="mint" />
-          <Stat label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} color="sky" />
-          <Stat label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(1)}B`} />
+          <Stat label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} color="violet" updateSource={['PR', 'MARKET']} />
+          <Stat label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(1)}B`} updateSource="MARKET" />
+          <Stat label="ETH Holdings" value={`${(currentETH / 1e6).toFixed(2)}M`} color="violet" updateSource="PR" />
+          <Stat label="ETH Price" value={`$${ethPrice.toLocaleString()}`} updateSource="MARKET" />
+          <Stat label="Staking Yield" value={`${calc.effectiveAPY.toFixed(2)}%`} color="mint" updateSource="PR" />
+          <Stat label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} color="sky" updateSource="PR" />
+          <Stat label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(1)}B`} updateSource={['PR', 'MARKET']} />
         </div>
 
         {/* Navigation */}
@@ -1740,6 +1905,8 @@ const BMNRDilutionAnalysis = () => {
 
         {/* Main Content */}
         <main className="main">
+        {/* Update Source Legend - Shows what each indicator color means */}
+        <UpdateLegend />
         {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} />}
         {activeTab === 'model' && <ModelTab currentETH={currentETH} setCurrentETH={setCurrentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
         {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
@@ -2533,16 +2700,16 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div className="g4" style={{ marginTop: 32 }}>
-      <Card label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value per share" color="blue" />
-      <Card label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} sub="Market price" color="green" />
+      <Card label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value per share" color="blue" updateSource={['PR', 'MARKET']} />
+      <Card label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} sub="Market price" color="green" updateSource="MARKET" />
       <Card label="Premium/Discount" value={`${calc.navPremium >= 0 ? '+' : ''}${calc.navPremium.toFixed(1)}%`} sub={calc.navPremium >= 0 ? 'Above NAV' : 'Below NAV'} color={calc.navPremium >= 0 ? 'green' : 'red'} />
-      <Card label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} sub={`$${calc.annualDividend.toFixed(2)}/yr`} color="emerald" />
+      <Card label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} sub={`$${calc.annualDividend.toFixed(2)}/yr`} color="emerald" updateSource="PR" />
     </div>
     <div className="g3" style={{ marginTop: 32 }}>
-      <div className="card"><div className="card-title">ETH Holdings</div><Row label="Total ETH" value={currentETH.toLocaleString()} /><Row label="ETH Price" value={`$${ethPrice.toLocaleString()}`} /><Row label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`} highlight /><Row label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} /></div>
-      <div className="card"><div className="card-title">Share Structure</div><Row label="Shares Outstanding" value={`${currentShares}M`} /><Row label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(2)}B`} /><Row label="NAV Multiple" value={`${(currentStockPrice / calc.currentNAV).toFixed(2)}x`} highlight /><Row label="ETH/Share" value={calc.ethPerShare.toFixed(6)} /></div>
+      <div className="card"><div className="card-title">ETH Holdings</div><Row label="Total ETH" value={currentETH.toLocaleString()} updateSource="PR" /><Row label="ETH Price" value={`$${ethPrice.toLocaleString()}`} updateSource="MARKET" /><Row label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`} highlight updateSource={['PR', 'MARKET']} /><Row label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} updateSource="PR" /></div>
+      <div className="card"><div className="card-title">Share Structure</div><Row label="Shares Outstanding" value={`${currentShares}M`} updateSource="SEC" /><Row label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(2)}B`} updateSource="MARKET" /><Row label="NAV Multiple" value={`${(currentStockPrice / calc.currentNAV).toFixed(2)}x`} highlight /><Row label="ETH/Share" value={calc.ethPerShare.toFixed(6)} /></div>
       <div className="card"><div className="card-title">Dividend</div>
-        <Row label="Quarterly Dividend" value={`$${quarterlyDividend.toFixed(2)}`} />
+        <Row label="Quarterly Dividend" value={`$${quarterlyDividend.toFixed(2)}`} updateSource="PR" />
         <Row label="Annual Dividend" value={`$${calc.annualDividend.toFixed(2)}`} />
         <Row label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} highlight />
         <Row label="Annual Payout" value={`$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`} />
@@ -3243,10 +3410,10 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="grid grid-cols-2 md:grid-cols-4 gap-4"><Input label="Base APY (%)" value={baseStakingAPY} onChange={setBaseStakingAPY} step={0.1} /><Input label="Restaking Bonus (%)" value={restakingBonus} onChange={setRestakingBonus} step={0.1} /><Input label="% ETH Staked" value={stakingRatio} onChange={setStakingRatio} max={100} /><Input label="Slashing Risk (%/yr)" value={slashingRisk} onChange={setSlashingRisk} step={0.1} /></div></div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card label="Effective APY" value={`${calc.effectiveAPY.toFixed(2)}%`} sub="Net annual yield" color="green" />
-        <Card label="Staked ETH" value={`${(calc.stakedETH / 1e6).toFixed(2)}M`} sub={`${stakingRatio}% of holdings`} color="blue" />
-        <Card label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} sub="Before slashing" color="yellow" />
-        <Card label="Yield Value" value={`$${(calc.annualYieldUSD / 1e6).toFixed(1)}M`} sub="At current price" color="purple" />
+        <Card label="Effective APY" value={`${calc.effectiveAPY.toFixed(2)}%`} sub="Net annual yield" color="green" updateSource="PR" />
+        <Card label="Staked ETH" value={`${(calc.stakedETH / 1e6).toFixed(2)}M`} sub={`${stakingRatio}% of holdings`} color="blue" updateSource="PR" />
+        <Card label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} sub="Before slashing" color="yellow" updateSource="PR" />
+        <Card label="Yield Value" value={`$${(calc.annualYieldUSD / 1e6).toFixed(1)}M`} sub="At current price" color="purple" updateSource={['PR', 'MARKET']} />
       </div>
       <div className="card"><div className="card-title">Yield Projections (Compounding)</div>
         <table className="w-full text-sm"><thead><tr className="text-slate-400 text-xs border-b border-slate-700"><th className="text-left py-2">Year</th><th className="text-right">Yield ETH</th><th className="text-right">Total ETH</th><th className="text-right">NAV/Share</th></tr></thead>
@@ -3418,10 +3585,10 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Summary Cards */}
       <div className="g4">
-        <Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="violet" />
-        <Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="blue" />
-        <Card label="Basic Mkt Cap" value={`$${((currentShares * 1e6 * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Outstanding × Price" color="green" />
-        <Card label="FD Mkt Cap" value={`$${((totalFD * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Fully diluted" color="yellow" />
+        <Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="violet" updateSource="SEC" />
+        <Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="blue" updateSource="SEC" />
+        <Card label="Basic Mkt Cap" value={`$${((currentShares * 1e6 * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Outstanding × Price" color="green" updateSource={['SEC', 'MARKET']} />
+        <Card label="FD Mkt Cap" value={`$${((totalFD * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Fully diluted" color="yellow" updateSource={['SEC', 'MARKET']} />
       </div>
 
       {/* Navigation Cards */}
