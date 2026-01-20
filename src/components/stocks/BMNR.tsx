@@ -2084,8 +2084,7 @@ const BMNRParameterCard = ({
   ];
 
   const getButtonColor = (idx: number) => {
-    const effectiveIdx = inverse ? 5 - idx : idx;
-    return presetColors[effectiveIdx];
+    return presetColors[idx];
   };
 
   const handleCustomSubmit = () => {
@@ -2179,7 +2178,7 @@ const BMNRParameterCard = ({
         )}
       </div>
       <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
-        {inverse ? '← Bullish | Bearish →' : '← Bearish | Bullish →'}
+        ← Bearish | Bullish →
       </div>
     </div>
   );
