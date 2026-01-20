@@ -6330,11 +6330,22 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       significance: 'WATERSHED MOMENT: World\'s largest bank by market cap ($700B+) issuing deposit tokens on public Ethereum L2. JPMorgan choosing Base (Coinbase/Ethereum) over private blockchain validates public infrastructure. Partners include Mastercard — two of world\'s largest financial institutions collaborating on-chain.',
       bmnrImplication: 'JPMorgan on Ethereum L2 is massive validation for the network. Bank deposit tokens create new use case for institutional on-chain activity. Mastercard integration expands potential network effects. More institutional activity on Base = more settlement fees to Ethereum L1.',
       impact: 'Bullish', 
-      source: 'JPMorgan Kinexys Press Release' 
+      source: 'JPMorgan Kinexys Press Release'
     },
-    { 
-      date: '2025-11-08', 
-      category: 'DeFi', 
+    {
+      date: '2025-11-11',
+      category: 'Enterprise',
+      company: 'SoFi',
+      title: 'SoFi Bank Becomes First Nationally Chartered Bank to Launch Crypto Trading',
+      summary: 'SoFi Technologies (NASDAQ: SOFI) launches SoFi Crypto, becoming the first and only nationally chartered, FDIC-insured bank to offer crypto trading to consumers. Members can buy, sell, and hold dozens of cryptocurrencies including Bitcoin (BTC), Ethereum (ETH), and Solana (SOL) directly from their SoFi checking/savings account without moving funds to external platforms. CEO Anthony Noto: "I believe blockchain technology will fundamentally change EVERY way finance is done throughout the world by making money movement faster, cheaper and safer." 60% of SoFi members who own crypto prefer buying from a licensed bank over their primary crypto exchange. Data shows crypto ownership doubled in 2025. SoFi also leveraging blockchain for crypto-enabled remittances and plans to introduce a USD stablecoin and integrate crypto into lending/infrastructure services. 12.6M+ members trust SoFi for banking, borrowing, investing, and now crypto.',
+      significance: 'FIRST nationally chartered US bank offering integrated crypto trading — major milestone for bank-crypto convergence. Demonstrates consumer demand for regulated, bank-grade crypto access (60% prefer bank over exchange). SoFi\'s stablecoin and blockchain lending plans signal deeper TradFi-crypto integration ahead. Over 12.6M potential users with seamless fiat-crypto rails.',
+      bmnrImplication: 'Bank-integrated crypto trading normalizes ETH ownership for mainstream consumers. SoFi\'s 12.6M members get frictionless ETH access from bank accounts. Planned USD stablecoin could add to Ethereum stablecoin ecosystem. More retail on-ramps = more ETH demand = ecosystem value accrual.',
+      impact: 'Bullish',
+      source: 'SoFi Technologies Press Release'
+    },
+    {
+      date: '2025-11-08',
+      category: 'DeFi',
       company: 'Uniswap',
       title: 'Uniswap V4 Hooks Ecosystem Grows', 
       summary: 'Over 200 custom hooks deployed on Uniswap V4 since launch, enabling novel AMM designs including dynamic fees, on-chain limit orders, MEV redistribution, and concentrated liquidity automation. Total Uniswap TVL reaches $8B across all versions (V2, V3, V4). V4\'s singleton contract design reduces gas costs 50%+ for multi-hop swaps. Hook examples: time-weighted average price (TWAP) orders, volatility-based fee adjustment, and loyalty rewards.',
