@@ -1377,86 +1377,86 @@ input[type="range"]::-webkit-slider-thumb {
   .t-details-meta { flex-direction: row; flex-wrap: wrap; min-width: auto; }
 }
 
-/* ═══ UPDATE INDICATOR SYSTEM ═══ */
-/* Visual markers showing which fields get updated from different sources */
-.update-indicator {
+/* ═══ UPDATE INDICATOR SYSTEM (Ive-inspired minimal design) ═══ */
+/* Tiny, subtle dots - visible but never distracting */
+.update-indicator-wrap {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
+  margin-left: 4px;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.update-indicator {
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  font-size: 10px;
-  font-weight: 700;
-  margin-left: 6px;
   cursor: help;
   position: relative;
   flex-shrink: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.update-indicator.pr { background: #facc15; color: #1a1a1a; }
-.update-indicator.sec { background: #22d3ee; color: #1a1a1a; }
-.update-indicator.ws { background: #a78bfa; color: #1a1a1a; }
-.update-indicator.market { background: #4ade80; color: #1a1a1a; }
+.update-indicator.hidden { opacity: 0; transform: scale(0.5); }
+.update-indicator.pr { background: rgba(250, 204, 21, 0.85); }
+.update-indicator.sec { background: rgba(34, 211, 238, 0.85); }
+.update-indicator.ws { background: rgba(167, 139, 250, 0.85); }
+.update-indicator.market { background: rgba(74, 222, 128, 0.85); }
 
-/* Tooltip on hover */
+/* Tooltip on hover - refined */
 .update-indicator::after {
   content: attr(data-tooltip);
   position: absolute;
-  bottom: 100%;
+  bottom: calc(100% + 6px);
   left: 50%;
-  transform: translateX(-50%);
-  padding: 6px 10px;
-  background: var(--surface3);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 11px;
+  transform: translateX(-50%) scale(0.95);
+  padding: 5px 9px;
+  background: rgba(30, 30, 35, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 5px;
+  font-size: 10px;
   font-weight: 500;
   white-space: nowrap;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.15s, visibility 0.15s;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
   z-index: 1000;
-  color: var(--text);
+  color: rgba(255,255,255,0.9);
   pointer-events: none;
-  margin-bottom: 4px;
+  letter-spacing: 0.2px;
 }
 .update-indicator:hover::after {
   opacity: 1;
   visibility: visible;
+  transform: translateX(-50%) scale(1);
 }
 
-/* Update Legend */
+/* Update Legend - minimal */
 .update-legend {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 12px 20px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-size: 12px;
+  gap: 20px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  font-size: 11px;
   margin-bottom: 24px;
 }
 .update-legend-item {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--text2);
+  color: var(--text3);
 }
 .update-legend-item .dot {
-  width: 12px;
-  height: 12px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 8px;
-  font-weight: 700;
 }
-.update-legend-item .dot.pr { background: #facc15; color: #1a1a1a; }
-.update-legend-item .dot.sec { background: #22d3ee; color: #1a1a1a; }
-.update-legend-item .dot.ws { background: #a78bfa; color: #1a1a1a; }
-.update-legend-item .dot.market { background: #4ade80; color: #1a1a1a; }
+.update-legend-item .dot.pr { background: rgba(250, 204, 21, 0.85); }
+.update-legend-item .dot.sec { background: rgba(34, 211, 238, 0.85); }
+.update-legend-item .dot.ws { background: rgba(167, 139, 250, 0.85); }
+.update-legend-item .dot.market { background: rgba(74, 222, 128, 0.85); }
 `;
 
 // ============================================================================
@@ -1466,39 +1466,35 @@ input[type="range"]::-webkit-slider-thumb {
 /** Context to control indicator visibility globally */
 const UpdateIndicatorContext = React.createContext<{ showIndicators: boolean; setShowIndicators: (v: boolean) => void }>({ showIndicators: true, setShowIndicators: () => {} });
 
-const UPDATE_SOURCE_CONFIG: Record<UpdateSource, { label: string; tooltip: string; className: string }> = {
-  PR: { label: '!', tooltip: 'Updated from Press Release', className: 'pr' },
-  SEC: { label: '!', tooltip: 'Updated from SEC Filing', className: 'sec' },
-  WS: { label: '!', tooltip: 'Updated from Wall Street Coverage', className: 'ws' },
-  MARKET: { label: '!', tooltip: 'Updated from Market Data', className: 'market' },
+const UPDATE_SOURCE_CONFIG: Record<UpdateSource, { tooltip: string; className: string }> = {
+  PR: { tooltip: 'Press Release', className: 'pr' },
+  SEC: { tooltip: 'SEC Filing', className: 'sec' },
+  WS: { tooltip: 'Wall Street', className: 'ws' },
+  MARKET: { tooltip: 'Market Data', className: 'market' },
 };
 
-/** Small indicator badge showing which document type updates this field */
-const UpdateIndicator = React.memo<{ source: UpdateSource }>(({ source }) => {
-  const { showIndicators } = React.useContext(UpdateIndicatorContext);
-  if (!showIndicators) return null;
+/** Tiny dot indicator - always rendered, visibility controlled by CSS */
+const UpdateIndicator = React.memo<{ source: UpdateSource; hidden?: boolean }>(({ source, hidden }) => {
   const config = UPDATE_SOURCE_CONFIG[source];
   return (
     <span
-      className={`update-indicator ${config.className}`}
+      className={`update-indicator ${config.className}${hidden ? ' hidden' : ''}`}
       data-tooltip={config.tooltip}
       title={config.tooltip}
-    >
-      {config.label}
-    </span>
+    />
   );
 });
 UpdateIndicator.displayName = 'UpdateIndicator';
 
-/** Renders one or more update indicators */
+/** Renders one or more update indicators - always present to prevent layout shift */
 const UpdateIndicators = React.memo<{ sources?: UpdateSource | UpdateSource[] }>(({ sources }) => {
   const { showIndicators } = React.useContext(UpdateIndicatorContext);
-  if (!showIndicators || !sources) return null;
+  if (!sources) return null;
   const sourceArray = Array.isArray(sources) ? sources : [sources];
   return (
-    <>
-      {sourceArray.map((s) => <UpdateIndicator key={s} source={s} />)}
-    </>
+    <span className="update-indicator-wrap">
+      {sourceArray.map((s) => <UpdateIndicator key={s} source={s} hidden={!showIndicators} />)}
+    </span>
   );
 });
 UpdateIndicators.displayName = 'UpdateIndicators';
@@ -1508,41 +1504,30 @@ const UpdateLegend = React.memo(() => {
   const { showIndicators, setShowIndicators } = React.useContext(UpdateIndicatorContext);
   return (
     <div className="update-legend">
-      <span style={{ fontWeight: 600, color: 'var(--text)' }}>Update Sources:</span>
-      <div className="update-legend-item">
-        <span className="dot pr">!</span>
-        <span>Press Release</span>
-      </div>
-      <div className="update-legend-item">
-        <span className="dot sec">!</span>
-        <span>SEC Filing</span>
-      </div>
-      <div className="update-legend-item">
-        <span className="dot ws">!</span>
-        <span>Wall Street</span>
-      </div>
-      <div className="update-legend-item">
-        <span className="dot market">!</span>
-        <span>Market Data</span>
-      </div>
+      <span style={{ fontWeight: 500, color: 'var(--text3)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sources</span>
+      <div className="update-legend-item"><span className="dot pr" /><span>PR</span></div>
+      <div className="update-legend-item"><span className="dot sec" /><span>SEC</span></div>
+      <div className="update-legend-item"><span className="dot ws" /><span>WS</span></div>
+      <div className="update-legend-item"><span className="dot market" /><span>Live</span></div>
       <button
         onClick={() => setShowIndicators(!showIndicators)}
         style={{
           marginLeft: 'auto',
-          padding: '6px 12px',
-          fontSize: '12px',
-          fontWeight: 600,
-          color: showIndicators ? 'var(--bg)' : 'var(--text2)',
-          background: showIndicators ? 'var(--violet)' : 'var(--surface2)',
+          padding: '4px 10px',
+          fontSize: '10px',
+          fontWeight: 500,
+          color: showIndicators ? 'var(--text)' : 'var(--text3)',
+          background: 'transparent',
           border: '1px solid',
-          borderColor: showIndicators ? 'var(--violet)' : 'var(--border)',
-          borderRadius: '6px',
+          borderColor: showIndicators ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.06)',
+          borderRadius: '4px',
           cursor: 'pointer',
-          transition: 'all 0.15s',
-          fontFamily: 'Outfit, sans-serif',
+          transition: 'all 0.2s ease',
+          fontFamily: 'inherit',
+          letterSpacing: '0.3px',
         }}
       >
-        {showIndicators ? 'Hide Indicators' : 'Show Indicators'}
+        {showIndicators ? 'On' : 'Off'}
       </button>
     </div>
   );
@@ -6345,11 +6330,22 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       significance: 'WATERSHED MOMENT: World\'s largest bank by market cap ($700B+) issuing deposit tokens on public Ethereum L2. JPMorgan choosing Base (Coinbase/Ethereum) over private blockchain validates public infrastructure. Partners include Mastercard — two of world\'s largest financial institutions collaborating on-chain.',
       bmnrImplication: 'JPMorgan on Ethereum L2 is massive validation for the network. Bank deposit tokens create new use case for institutional on-chain activity. Mastercard integration expands potential network effects. More institutional activity on Base = more settlement fees to Ethereum L1.',
       impact: 'Bullish', 
-      source: 'JPMorgan Kinexys Press Release' 
+      source: 'JPMorgan Kinexys Press Release'
     },
-    { 
-      date: '2025-11-08', 
-      category: 'DeFi', 
+    {
+      date: '2025-11-11',
+      category: 'Enterprise',
+      company: 'SoFi',
+      title: 'SoFi Bank Becomes First Nationally Chartered Bank to Launch Crypto Trading',
+      summary: 'SoFi Technologies (NASDAQ: SOFI) launches SoFi Crypto, becoming the first and only nationally chartered, FDIC-insured bank to offer crypto trading to consumers. Members can buy, sell, and hold dozens of cryptocurrencies including Bitcoin (BTC), Ethereum (ETH), and Solana (SOL) directly from their SoFi checking/savings account without moving funds to external platforms. CEO Anthony Noto: "I believe blockchain technology will fundamentally change EVERY way finance is done throughout the world by making money movement faster, cheaper and safer." 60% of SoFi members who own crypto prefer buying from a licensed bank over their primary crypto exchange. Data shows crypto ownership doubled in 2025. SoFi also leveraging blockchain for crypto-enabled remittances and plans to introduce a USD stablecoin and integrate crypto into lending/infrastructure services. 12.6M+ members trust SoFi for banking, borrowing, investing, and now crypto.',
+      significance: 'FIRST nationally chartered US bank offering integrated crypto trading — major milestone for bank-crypto convergence. Demonstrates consumer demand for regulated, bank-grade crypto access (60% prefer bank over exchange). SoFi\'s stablecoin and blockchain lending plans signal deeper TradFi-crypto integration ahead. Over 12.6M potential users with seamless fiat-crypto rails.',
+      bmnrImplication: 'Bank-integrated crypto trading normalizes ETH ownership for mainstream consumers. SoFi\'s 12.6M members get frictionless ETH access from bank accounts. Planned USD stablecoin could add to Ethereum stablecoin ecosystem. More retail on-ramps = more ETH demand = ecosystem value accrual.',
+      impact: 'Bullish',
+      source: 'SoFi Technologies Press Release'
+    },
+    {
+      date: '2025-11-08',
+      category: 'DeFi',
       company: 'Uniswap',
       title: 'Uniswap V4 Hooks Ecosystem Grows', 
       summary: 'Over 200 custom hooks deployed on Uniswap V4 since launch, enabling novel AMM designs including dynamic fees, on-chain limit orders, MEV redistribution, and concentrated liquidity automation. Total Uniswap TVL reaches $8B across all versions (V2, V3, V4). V4\'s singleton contract design reduces gas costs 50%+ for multi-hop swaps. Hook examples: time-weighted average price (TWAP) orders, volatility-based fee adjustment, and loyalty rewards.',
@@ -8809,16 +8805,16 @@ const TimelineTab = () => {
       {/* Upcoming Events + Recent Press Releases */}
       <div className="g2">
         <div className="card">
-          <div className="card-title">Upcoming Events</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(234,179,8,0.1)', borderRadius: 8, border: '1px solid var(--gold)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(74,222,128,0.1)', borderRadius: 8, border: '1px solid rgba(74,222,128,0.4)' }}>
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)' }}>🗳️ Annual Stockholder Meeting</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Wynn Las Vegas · Vote deadline Jan 14</div>
+                <div style={{ fontWeight: 600, color: 'var(--text)' }}>✓ Annual Stockholder Meeting</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Wynn Las Vegas · Prop 2 passed</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>Jan 15, 2026</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>Prop 2: 500M→50B shares</div>
+                <div style={{ fontFamily: 'Space Mono', color: '#4ade80' }}>Jan 15, 2026</div>
+                <div style={{ fontSize: 11, color: '#4ade80' }}>Completed</div>
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
@@ -9463,13 +9459,13 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                         const isReportExpanded = expandedReportIdx === reportKey;
                         
                         return (
-                          <div 
+                          <div
                             key={idx}
-                            style={{ 
-                              padding: 12, 
+                            style={{
+                              padding: 12,
                               background: report.isFullReport ? 'var(--surface2)' : 'var(--surface)',
                               borderRadius: 6,
-                              borderLeft: report.isFullReport ? '3px solid var(--violet)' : '3px solid var(--border)'
+                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? '3px solid var(--violet)' : 'none'
                             }}
                           >
                             {/* Report Header */}

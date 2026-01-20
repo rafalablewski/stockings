@@ -148,10 +148,20 @@ interface ErrorBoundaryState {
 // SHARED UI COMPONENT INTERFACES (Unified across ASTS, BMNR, CRCL)
 // ═══════════════════════════════════════════════════════════════════════════════
 
+/**
+ * UPDATE SOURCE TYPES - Indicates which document type updates this field
+ * PR = Press Release (weekly 8-K, PRNewswire)
+ * SEC = SEC Filing (10-Q, 10-K, 424B5, S-3, DEF 14A)
+ * WS = Wall Street (analyst reports, coverage)
+ * MARKET = Market Data (prices updated regularly)
+ */
+type UpdateSource = 'PR' | 'SEC' | 'WS' | 'MARKET';
+
 interface StatProps {
   label: string;
   value: string | number;
   color?: 'white' | 'cyan' | 'mint' | 'coral' | 'sky' | 'violet' | 'gold';
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface CardProps {
@@ -159,12 +169,14 @@ interface CardProps {
   value: string | number;
   sub?: string;
   color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'violet' | 'mint' | 'emerald';
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface RowProps {
   label: string;
   value: string | number;
   highlight?: boolean;
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface InputProps {
@@ -1686,14 +1698,96 @@ input[type="range"]::-webkit-slider-thumb {
 
   .g2, .g3, .g4 { gap: 12px; }
 }
+
+/* ═══ UPDATE INDICATOR SYSTEM (Ive-inspired minimal design) ═══ */
+/* Tiny, subtle dots - visible but never distracting */
+.update-indicator-wrap {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.update-indicator {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  cursor: help;
+  position: relative;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.update-indicator.hidden { opacity: 0; transform: scale(0.5); }
+.update-indicator.pr { background: rgba(250, 204, 21, 0.85); }
+.update-indicator.sec { background: rgba(34, 211, 238, 0.85); }
+.update-indicator.ws { background: rgba(167, 139, 250, 0.85); }
+.update-indicator.market { background: rgba(74, 222, 128, 0.85); }
+
+/* Tooltip on hover - refined */
+.update-indicator::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.95);
+  padding: 5px 9px;
+  background: rgba(30, 30, 35, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+  z-index: 1000;
+  color: rgba(255,255,255,0.9);
+  pointer-events: none;
+  letter-spacing: 0.2px;
+}
+.update-indicator:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+
+/* Update Legend - minimal */
+.update-legend {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  font-size: 11px;
+  margin-bottom: 24px;
+}
+.update-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text3);
+}
+.update-legend-item .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.update-legend-item .dot.pr { background: rgba(250, 204, 21, 0.85); }
+.update-legend-item .dot.sec { background: rgba(34, 211, 238, 0.85); }
+.update-legend-item .dot.ws { background: rgba(167, 139, 250, 0.85); }
+.update-legend-item .dot.market { background: rgba(74, 222, 128, 0.85); }
 `;
 
 // Card Component for unified risk metrics display
 // N1: Memoized pure components for performance optimization
-const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
+const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSource }) => (
   <div style={{
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
     background: highlight ? 'var(--mint-dim)' : 'transparent',
@@ -1703,13 +1797,16 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
     marginRight: highlight ? '-12px' : 0,
     borderRadius: highlight ? '8px' : 0
   }}>
-    <span style={{ fontSize: '14px', color: 'var(--text2)' }}>{label}</span>
+    <span style={{ fontSize: '14px', color: 'var(--text2)', display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </span>
     <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--mint)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
 Row.displayName = 'Row';
 
-const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
+const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) => {
   const colorMap: Record<string, { bg: string; border: string; text: string }> = {
     blue: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', text: '#60a5fa' },
     green: { bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' },
@@ -1724,14 +1821,17 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
   };
   const c = colorMap[color || 'blue'] || colorMap.blue;
   return (
-    <div style={{ 
-      background: c.bg, 
-      border: `1px solid ${c.border}`, 
-      borderRadius: '16px', 
+    <div style={{
+      background: c.bg,
+      border: `1px solid ${c.border}`,
+      borderRadius: '16px',
       padding: '20px',
       backdropFilter: 'blur(8px)'
     }}>
-      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+        {label}
+        <UpdateIndicators sources={updateSource} />
+      </div>
       <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'Space Mono', monospace", color: c.text, marginTop: '4px' }}>{value}</div>
       {sub && <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '4px' }}>{sub}</div>}
     </div>
@@ -1766,17 +1866,92 @@ const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, m
 ));
 Input.displayName = 'Input';
 
-// CFA Level III Educational Notes Component
-const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
-  <div style={{ marginTop: 24, padding: 20, background: 'var(--surface2)', borderRadius: 12, border: '1px solid var(--border)' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-      <span style={{ fontSize: 16 }}>📚</span>
-      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--mint)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
+// ============================================================================
+// UPDATE INDICATOR SYSTEM - Visual markers for data update sources
+// ============================================================================
+
+/** Context to control indicator visibility globally */
+const UpdateIndicatorContext = React.createContext<{ showIndicators: boolean; setShowIndicators: (v: boolean) => void }>({ showIndicators: true, setShowIndicators: () => {} });
+
+const UPDATE_SOURCE_CONFIG: Record<UpdateSource, { tooltip: string; className: string }> = {
+  PR: { tooltip: 'Press Release', className: 'pr' },
+  SEC: { tooltip: 'SEC Filing', className: 'sec' },
+  WS: { tooltip: 'Wall Street', className: 'ws' },
+  MARKET: { tooltip: 'Market Data', className: 'market' },
+};
+
+/** Tiny dot indicator - always rendered, visibility controlled by CSS */
+const UpdateIndicator = React.memo<{ source: UpdateSource; hidden?: boolean }>(({ source, hidden }) => {
+  const config = UPDATE_SOURCE_CONFIG[source];
+  return (
+    <span
+      className={`update-indicator ${config.className}${hidden ? ' hidden' : ''}`}
+      data-tooltip={config.tooltip}
+      title={config.tooltip}
+    />
+  );
+});
+UpdateIndicator.displayName = 'UpdateIndicator';
+
+/** Renders one or more update indicators - always present to prevent layout shift */
+const UpdateIndicators = React.memo<{ sources?: UpdateSource | UpdateSource[] }>(({ sources }) => {
+  const { showIndicators } = React.useContext(UpdateIndicatorContext);
+  if (!sources) return null;
+  const sourceArray = Array.isArray(sources) ? sources : [sources];
+  return (
+    <span className="update-indicator-wrap">
+      {sourceArray.map((s) => <UpdateIndicator key={s} source={s} hidden={!showIndicators} />)}
+    </span>
+  );
+});
+UpdateIndicators.displayName = 'UpdateIndicators';
+
+/** Legend explaining what each indicator color means, with toggle button */
+const UpdateLegend = React.memo(() => {
+  const { showIndicators, setShowIndicators } = React.useContext(UpdateIndicatorContext);
+  return (
+    <div className="update-legend">
+      <span style={{ fontWeight: 500, color: 'var(--text3)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sources</span>
+      <div className="update-legend-item"><span className="dot pr" /><span>PR</span></div>
+      <div className="update-legend-item"><span className="dot sec" /><span>SEC</span></div>
+      <div className="update-legend-item"><span className="dot ws" /><span>WS</span></div>
+      <div className="update-legend-item"><span className="dot market" /><span>Live</span></div>
+      <button
+        onClick={() => setShowIndicators(!showIndicators)}
+        style={{
+          marginLeft: 'auto',
+          padding: '4px 10px',
+          fontSize: '10px',
+          fontWeight: 500,
+          color: showIndicators ? 'var(--text)' : 'var(--text3)',
+          background: 'transparent',
+          border: '1px solid',
+          borderColor: showIndicators ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.06)',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          fontFamily: 'inherit',
+          letterSpacing: '0.3px',
+        }}
+      >
+        {showIndicators ? 'On' : 'Off'}
+      </button>
     </div>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13, lineHeight: 1.6 }}>
+  );
+});
+UpdateLegend.displayName = 'UpdateLegend';
+
+// CFA Level III Educational Notes Component - Subtle footer style
+const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
+  <div style={{ marginTop: 32, paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+      <span style={{ fontSize: 12, opacity: 0.7 }}>📚</span>
+      <h4 style={{ margin: 0, fontSize: 11, fontWeight: 500, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11, lineHeight: 1.5, color: 'var(--text3)' }}>
       {items.map((item, i) => (
-        <p key={i} style={{ margin: 0, color: 'var(--text2)' }}>
-          <strong style={{ color: 'var(--mint)' }}>{item.term}:</strong> {item.def}
+        <p key={i} style={{ margin: 0 }}>
+          <strong style={{ color: 'var(--text2)' }}>{item.term}:</strong> {item.def}
         </p>
       ))}
     </div>
@@ -2139,7 +2314,7 @@ const CRCLModelTab = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Model</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* ASSUMPTIONS SECTION */}
       <>
@@ -2445,7 +2620,7 @@ const ScenariosTab = () => {
 
   return (
     <>
-      <h2 className="section-head">Scenario Simulation</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Scenario Simulation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* Highlight Box */}
       <div className="highlight">
@@ -3012,7 +3187,7 @@ const DCFTab = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">DCF</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>DCF<UpdateIndicators sources="SEC" /></h2>
 
       <div className="highlight">
         <h3>DCF Valuation</h3>
@@ -3131,6 +3306,10 @@ const DCFTab = () => {
 function CRCLModel() {
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
+
+  // Update indicator visibility toggle
+  const [showIndicators, setShowIndicators] = useState(true);
+
   const [discount, setDiscount] = useState(12);
   const [timelineCat, setTimelineCat] = useState('All');
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
@@ -3309,13 +3488,26 @@ function CRCLModel() {
 
   // Monte Carlo simulation - auto-runs via useMemo
   const mcSim = useMemo(() => {
+    // Box-Muller transform for standard normal random variates
+    const boxMuller = (): number => {
+      const u = Math.random();
+      const v = Math.random();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    };
+
     const res: number[] = [];
     const discountFactor = Math.max(discount, 1);
     const p = mcPresets[mcPreset];
     const n = Math.min(mcSims, 10000); // Cap at 10k for performance
     for (let i = 0; i < n; i++) {
-      const g = p.revMin + Math.random() * (p.revMax - p.revMin);
-      const m = p.marginMin + Math.random() * (p.marginMax - p.marginMin);
+      // Use Box-Muller for normally distributed random variates
+      const z1 = boxMuller(), z2 = boxMuller();
+      const gMean = (p.revMin + p.revMax) / 2;
+      const gStd = (p.revMax - p.revMin) / 4;
+      const mMean = (p.marginMin + p.marginMax) / 2;
+      const mStd = (p.marginMax - p.marginMin) / 4;
+      const g = gMean + z1 * gStd;
+      const m = mMean + z2 * mStd;
       const r = 3 + Math.random() * 2;
       const x = p.termMin + Math.random() * (p.termMax - p.termMin);
       const cY = latest.usdcCirculation * Math.pow(1 + g/100, mcYears);
@@ -3524,7 +3716,7 @@ function CRCLModel() {
   ];
 
   return (
-    <>
+    <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
       <style>{css}</style>
       <div className="stock-model-app">
         {/* ============================================================================
@@ -3580,31 +3772,31 @@ function CRCLModel() {
         {/* Stats */}
         <div className="stats-row">
           <div className="stat-item">
-            <div className="label">Market Cap</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Market Cap<UpdateIndicators sources="MARKET" /></div>
             <div className="val">${(MARKET.marketCap / 1e9).toFixed(1)}B</div>
           </div>
           <div className="stat-item">
-            <div className="label">USDC Circulation</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>USDC Circulation<UpdateIndicators sources="PR" /></div>
             <div className="val mint">${latest.usdcCirculation.toFixed(1)}B</div>
           </div>
           <div className="stat-item">
-            <div className="label">Q3 Revenue</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Q3 Revenue<UpdateIndicators sources="SEC" /></div>
             <div className="val">${latest.totalRevenue}M</div>
           </div>
           <div className="stat-item">
-            <div className="label">RLDC Margin</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>RLDC Margin<UpdateIndicators sources="SEC" /></div>
             <div className="val">{latest.rldcMargin}%</div>
           </div>
           <div className="stat-item">
-            <div className="label">Market Share</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Market Share<UpdateIndicators sources="PR" /></div>
             <div className="val sky">{latest.marketShare}%</div>
           </div>
           <div className="stat-item">
-            <div className="label">Reserve Rate</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Reserve Rate<UpdateIndicators sources="SEC" /></div>
             <div className="val">{latest.reserveReturnRate.toFixed(2)}%</div>
           </div>
           <div className="stat-item">
-            <div className="label">P/E Ratio</div>
+            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>P/E Ratio<UpdateIndicators sources="MARKET" /></div>
             <div className="val">{MARKET.pe.toFixed(0)}x</div>
           </div>
         </div>
@@ -3661,9 +3853,11 @@ function CRCLModel() {
 
         {/* Main */}
         <main className="main">
+          {/* Update Source Legend - Shows what each indicator color means */}
+          <UpdateLegend />
           {activeTab === 'overview' && (
             <>
-              <h2 className="section-head">Investment Thesis</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
               
               <div className="highlight">
                 <h3>The Opportunity</h3>
@@ -3703,7 +3897,7 @@ function CRCLModel() {
               </div>
 
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Revenue Progression</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Progression<UpdateIndicators sources="SEC" /></div>
                 <div className="bars">
                   {DATA.map((d, i) => (
                     <div key={i} className="bar-col">
@@ -3723,21 +3917,21 @@ function CRCLModel() {
               </div>
 
               <div className="g3" style={{ marginTop: 32 }}>
-                <div className="card"><div className="card-title">Equity (Q3 2025)</div>
+                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity (Q3 2025)<UpdateIndicators sources="SEC" /></div>
                   <Row label="Shares Outstanding" value={`${currentShares.toFixed(1)}M`} />
                   <Row label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} />
                   <Row label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} highlight />
                   <Row label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} />
                   <Row label="Since IPO" value={`+${ipoReturn.toFixed(0)}%`} />
                 </div>
-                <div className="card"><div className="card-title">USDC Metrics</div>
+                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>USDC Metrics<UpdateIndicators sources="SEC" /></div>
                   <Row label="USDC Circulation" value={`$${currentUSDC.toFixed(1)}B`} />
                   <Row label="Market Share" value={`${currentMarketShare}%`} highlight />
                   <Row label="Total Stablecoin Mkt" value={`$${calc.totalStablecoins.toFixed(0)}B`} />
                   <Row label="YoY Growth" value={`+${usdcGrowth.toFixed(0)}%`} />
                   <Row label="Active Wallets" value={`${latest.meaningfulWallets}M`} />
                 </div>
-                <div className="card"><div className="card-title">Revenue</div>
+                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources="SEC" /></div>
                   <Row label="Q3 Revenue" value={`$${latest.totalRevenue}M`} />
                   <Row label="RLDC" value={`$${latest.rldc}M`} highlight />
                   <Row label="RLDC Margin" value={`${latest.rldcMargin}%`} />
@@ -3775,7 +3969,7 @@ function CRCLModel() {
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 1: HEADER                                                   */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
-              <h2 className="section-head">Financials</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
               
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 2: HIGHLIGHT BOX                                            */}
@@ -3793,7 +3987,7 @@ function CRCLModel() {
               {/* SECTION 3: KEY METRICS EVOLUTION                                    */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
               <div className="card">
-                <div className="card-title">Key Metrics Evolution</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
                 {/* Summary Badges */}
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-cyan-900/30 border-cyan-600/40 border text-cyan-400">
@@ -4151,7 +4345,7 @@ function CRCLModel() {
                       aria-label="Toggle Investment Scorecard"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('scorecard')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Investment Scorecard</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Investment Scorecard<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('scorecard') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('scorecard') && (
@@ -4191,7 +4385,7 @@ function CRCLModel() {
                       aria-label="Toggle Executive Summary"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('summary')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Executive Summary</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Executive Summary<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('summary') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('summary') && (
@@ -4231,7 +4425,7 @@ function CRCLModel() {
                       aria-label="Toggle Financial Health"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('financial')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Financial Health</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Financial Health<UpdateIndicators sources="SEC" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('financial') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('financial') && (
@@ -4294,7 +4488,7 @@ function CRCLModel() {
                       aria-label="Toggle Unit Economics"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('unit-economics')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Unit Economics & Margins</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Unit Economics & Margins<UpdateIndicators sources="SEC" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('unit-economics') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('unit-economics') && (
@@ -4356,7 +4550,7 @@ function CRCLModel() {
                       aria-label="Toggle Growth Drivers"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('growth')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Growth Drivers</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Growth Drivers<UpdateIndicators sources="PR" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('growth') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('growth') && (
@@ -4438,7 +4632,7 @@ function CRCLModel() {
                       aria-label="Toggle Valuation Framework"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('valuation')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Valuation Framework</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Valuation Framework<UpdateIndicators sources="WS" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('valuation') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('valuation') && (
@@ -4498,7 +4692,7 @@ function CRCLModel() {
                       aria-label="Toggle Rate Sensitivity Calculator"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('sensitivity')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Rate Sensitivity Calculator</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Rate Sensitivity Calculator<UpdateIndicators sources="MARKET" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('sensitivity') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('sensitivity') && (
@@ -4638,7 +4832,7 @@ function CRCLModel() {
                       aria-label="Toggle Competitive Moat"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('moat')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Competitive Moat</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Competitive Moat<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('moat') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('moat') && (
@@ -4699,7 +4893,7 @@ function CRCLModel() {
                       aria-label="Toggle Risk Matrix"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('risks')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Risk Matrix</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Risk Matrix<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('risks') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('risks') && (
@@ -4741,7 +4935,7 @@ function CRCLModel() {
                       aria-label="Toggle Catalyst Calendar"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('catalysts')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Catalyst Calendar</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Catalyst Calendar<UpdateIndicators sources="PR" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('catalysts') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('catalysts') && (
@@ -4792,7 +4986,7 @@ function CRCLModel() {
                       aria-label="Toggle Position Management"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('position')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Position Management</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Position Management<UpdateIndicators sources="WS" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('position') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('position') && (
@@ -4847,7 +5041,7 @@ function CRCLModel() {
                       aria-label="Toggle Analysis Archive"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('archive')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Analysis Archive — Complete History</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Analysis Archive — Complete History<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('archive') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('archive') && (
@@ -4904,7 +5098,7 @@ function CRCLModel() {
                       aria-label="Toggle Risks and Strategic Assessment"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('strategic-assessment')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Risks & Strategic Assessment</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Risks & Strategic Assessment<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('strategic-assessment') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('strategic-assessment') && (
@@ -5083,7 +5277,7 @@ function CRCLModel() {
                       aria-label="Toggle Methodology and Disclosures"
                       onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('methodology')}
                     >
-                      <div className="card-title" style={{ marginBottom: 0 }}>Methodology & Disclosures</div>
+                      <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Methodology & Disclosures<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('methodology') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('methodology') && (
@@ -5118,7 +5312,7 @@ function CRCLModel() {
 
           {activeTab === 'usdc' && (
             <>
-              <h2 className="section-head">USDC Dynamics</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>USDC Dynamics<UpdateIndicators sources={['PR', 'SEC']} /></h2>
               
               {/* Highlight Box */}
               <div className="highlight">
@@ -5138,7 +5332,7 @@ function CRCLModel() {
               </div>
 
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Circulation Growth</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Circulation Growth<UpdateIndicators sources="SEC" /></div>
                 <div className="bars">
                   {DATA.map((d, i) => (
                     <div key={i} className="bar-col">
@@ -5152,7 +5346,7 @@ function CRCLModel() {
 
               <div className="g2" style={{ marginTop: 32 }}>
                 <div className="card">
-                  <div className="card-title">Mint / Redeem Activity ($B)</div>
+                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Mint / Redeem Activity ($B)<UpdateIndicators sources="SEC" /></div>
                   <table className="tbl">
                     <thead>
                       <tr><th>Quarter</th><th className="r">Minted</th><th className="r">Redeemed</th><th className="r">Net</th></tr>
@@ -5173,7 +5367,7 @@ function CRCLModel() {
                 </div>
 
                 <div className="card">
-                  <div className="card-title">Rate Sensitivity Matrix ($B Annual)</div>
+                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Rate Sensitivity Matrix ($B Annual)<UpdateIndicators sources="SEC" /></div>
                   <div className="matrix" style={{ gridTemplateColumns: 'repeat(6, 1fr)' }}>
                     <div className="matrix-cell head">USDC \ Rate</div>
                     <div className="matrix-cell head">3.0%</div>
@@ -5207,7 +5401,7 @@ function CRCLModel() {
 
           {activeTab === 'capital' && (
             <>
-              <h2 className="section-head">Capital Structure</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
               
               {/* Highlight Box */}
               <div className="highlight">
@@ -5256,7 +5450,7 @@ function CRCLModel() {
               {/* Share Class Structure */}
               {capitalView === 'structure' && (
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Share Class Structure</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Class Structure<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
                     <tr>
@@ -5285,7 +5479,7 @@ function CRCLModel() {
               {/* Major Shareholders */}
               {capitalView === 'shareholders' && (
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Major Shareholders (from Aug 2025 S-1)</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Major Shareholders (from Aug 2025 S-1)<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
                     <tr>
@@ -5320,7 +5514,7 @@ function CRCLModel() {
               <div className="g2" style={{ marginTop: 32 }}>
                 {/* Equity Offerings */}
                 <div className="card">
-                  <div className="card-title">Equity Offerings</div>
+                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Offerings<UpdateIndicators sources="SEC" /></div>
                   <table className="tbl">
                     <thead>
                       <tr>
@@ -5355,7 +5549,7 @@ function CRCLModel() {
 
                 {/* Outstanding Equity Awards */}
                 <div className="card">
-                  <div className="card-title">Outstanding Equity Awards (Jun 30, 2025)</div>
+                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Outstanding Equity Awards (Jun 30, 2025)<UpdateIndicators sources="SEC" /></div>
                   <table className="tbl">
                     <thead>
                       <tr>
@@ -5394,7 +5588,7 @@ function CRCLModel() {
 
               {/* Warrants */}
               <div className="card" style={{ marginTop: 24 }}>
-                <div className="card-title">Outstanding Warrants (Black-Scholes Valuation)</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Outstanding Warrants (Black-Scholes Valuation)<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
                     <tr>
@@ -5436,7 +5630,7 @@ function CRCLModel() {
               {capitalView === 'plans' && (
               <>
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Equity Incentive Plans (Reserved Shares)</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Incentive Plans (Reserved Shares)<UpdateIndicators sources="SEC" /></div>
                 <div className="g3">
                   {EQUITY_PLANS.map((p, i) => (
                     <div key={i} style={{ background: 'var(--surface2)', padding: 20, borderRadius: 12 }}>
@@ -5490,7 +5684,7 @@ function CRCLModel() {
               {/* Dilution View */}
               {capitalView === 'dilution' && (
               <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title">Fully Diluted Share Count</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Fully Diluted Share Count<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
                     <tr>
@@ -5555,7 +5749,7 @@ function CRCLModel() {
 
           {activeTab === 'monte-carlo' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <h2 className="section-head">Monte Carlo</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
               
               {/* Highlight Box */}
               <div className="highlight">
@@ -5748,11 +5942,11 @@ function CRCLModel() {
 
           {activeTab === 'timeline' && (
             <>
-              <h2 className="section-head">Company Timeline</h2>
-              
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Company Timeline<UpdateIndicators sources="PR" /></h2>
+
               {/* Latest SEC Filings - Enhanced with filtering and pagination */}
               <div className="card" style={{ marginBottom: 32 }}>
-                <div className="card-title">📁 SEC Filings</div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
                 
                 {/* Filter Buttons */}
                 <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
@@ -6103,7 +6297,7 @@ function CRCLModel() {
 
           {activeTab === 'comps' && (
             <>
-              <h2 className="section-head">Comparable Companies Analysis</h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparable Companies Analysis<UpdateIndicators sources="MARKET" /></h2>
               
               {/* Highlight Box */}
               <div className="highlight">
@@ -6489,7 +6683,7 @@ function CRCLModel() {
           )}
         </main>
       </div>
-    </>
+    </UpdateIndicatorContext.Provider>
   );
 }
 
@@ -6633,11 +6827,11 @@ Source: Example Research`
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <h2 className="section-head">Wall Street Coverage</h2>
-      
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Wall Street Coverage<UpdateIndicators sources="WS" /></h2>
+
       {/* Consensus Snapshot */}
       <div className="card">
-        <div className="card-title">📊 Consensus Snapshot</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📊 Consensus Snapshot<UpdateIndicators sources="WS" /></div>
         <div className="g2">
           {/* Price Target Summary */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -6702,7 +6896,7 @@ Source: Example Research`
       
       {/* Coverage by Firm - Grouped Cards */}
       <div className="card">
-        <div className="card-title">🏦 Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>🏦 Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})<UpdateIndicators sources="WS" /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {ANALYST_COVERAGE.map((coverage) => {
             const isExpanded = expandedFirm === coverage.firm;
@@ -6786,13 +6980,13 @@ Source: Example Research`
                         const isReportExpanded = expandedReportIdx === reportKey;
                         
                         return (
-                          <div 
+                          <div
                             key={idx}
-                            style={{ 
-                              padding: 12, 
+                            style={{
+                              padding: 12,
                               background: report.isFullReport ? 'var(--surface2)' : 'var(--surface)',
                               borderRadius: 6,
-                              borderLeft: report.isFullReport ? '3px solid var(--mint)' : '3px solid var(--border)'
+                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? '3px solid var(--mint)' : 'none'
                             }}
                           >
                             {/* Report Header */}

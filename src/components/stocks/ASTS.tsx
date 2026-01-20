@@ -176,10 +176,20 @@ import {
 // TYPESCRIPT INTERFACES (H1)
 // ============================================================================
 
+/**
+ * UPDATE SOURCE TYPES - Indicates which document type updates this field
+ * PR = Press Release (weekly 8-K, PRNewswire)
+ * SEC = SEC Filing (10-Q, 10-K, 424B5, S-3, DEF 14A)
+ * WS = Wall Street (analyst reports, coverage)
+ * MARKET = Market Data (prices updated regularly)
+ */
+type UpdateSource = 'PR' | 'SEC' | 'WS' | 'MARKET';
+
 interface StatProps {
   label: string;
   value: string | number;
   color?: 'white' | 'cyan' | 'mint' | 'coral' | 'sky';
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface CardProps {
@@ -187,12 +197,14 @@ interface CardProps {
   value: string | number;
   sub?: string;
   color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'violet' | 'mint' | 'emerald';
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface RowProps {
   label: string;
   value: string | number;
   highlight?: boolean;
+  updateSource?: UpdateSource | UpdateSource[];
 }
 
 interface InputProps {
@@ -1360,6 +1372,87 @@ input[type="range"]::-webkit-slider-thumb {
   .t-details-content { grid-template-columns: 1fr; }
   .t-details-meta { flex-direction: row; flex-wrap: wrap; min-width: auto; }
 }
+
+/* ═══ UPDATE INDICATOR SYSTEM (Ive-inspired minimal design) ═══ */
+/* Tiny, subtle dots - visible but never distracting */
+.update-indicator-wrap {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.update-indicator {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  cursor: help;
+  position: relative;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.update-indicator.hidden { opacity: 0; transform: scale(0.5); }
+.update-indicator.pr { background: rgba(250, 204, 21, 0.85); }
+.update-indicator.sec { background: rgba(34, 211, 238, 0.85); }
+.update-indicator.ws { background: rgba(167, 139, 250, 0.85); }
+.update-indicator.market { background: rgba(74, 222, 128, 0.85); }
+
+/* Tooltip on hover - refined */
+.update-indicator::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.95);
+  padding: 5px 9px;
+  background: rgba(30, 30, 35, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+  z-index: 1000;
+  color: rgba(255,255,255,0.9);
+  pointer-events: none;
+  letter-spacing: 0.2px;
+}
+.update-indicator:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+
+/* Update Legend - minimal */
+.update-legend {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  font-size: 11px;
+  margin-bottom: 24px;
+}
+.update-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text3);
+}
+.update-legend-item .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.update-legend-item .dot.pr { background: rgba(250, 204, 21, 0.85); }
+.update-legend-item .dot.sec { background: rgba(34, 211, 238, 0.85); }
+.update-legend-item .dot.ws { background: rgba(167, 139, 250, 0.85); }
+.update-legend-item .dot.market { background: rgba(74, 222, 128, 0.85); }
 `;
 
 // ============================================================================
@@ -1368,9 +1461,12 @@ input[type="range"]::-webkit-slider-thumb {
 // ============================================================================
 
 // N1: Memoized pure components for performance optimization
-const Stat = React.memo<StatProps>(({ label, value, color = 'white' }) => (
+const Stat = React.memo<StatProps>(({ label, value, color = 'white', updateSource }) => (
   <div className="stat-item">
-    <div className="label">{label}</div>
+    <div className="label" style={{ display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </div>
     <div className={`val ${color}`}>{value}</div>
   </div>
 ));
@@ -1394,7 +1490,7 @@ const Panel = React.memo<PanelProps>(({ title, children }) => (
 ));
 Panel.displayName = 'Panel';
 
-const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
+const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) => {
   const colorMap: Record<string, { bg: string; border: string; text: string }> = {
     blue: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', text: '#60a5fa' },
     green: { bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' },
@@ -1409,14 +1505,17 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
   };
   const c = colorMap[color || 'blue'] || colorMap.blue;
   return (
-    <div style={{ 
-      background: c.bg, 
-      border: `1px solid ${c.border}`, 
-      borderRadius: '16px', 
+    <div style={{
+      background: c.bg,
+      border: `1px solid ${c.border}`,
+      borderRadius: '16px',
       padding: '20px',
       backdropFilter: 'blur(8px)'
     }}>
-      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+        {label}
+        <UpdateIndicators sources={updateSource} />
+      </div>
       <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'Space Mono', monospace", color: c.text, marginTop: '4px' }}>{value}</div>
       {sub && <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '4px' }}>{sub}</div>}
     </div>
@@ -1424,10 +1523,11 @@ const Card = React.memo<CardProps>(({ label, value, sub, color }) => {
 });
 Card.displayName = 'Card';
 
-const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
+const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSource }) => (
   <div style={{
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
     background: highlight ? 'var(--cyan-dim)' : 'transparent',
@@ -1437,7 +1537,10 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false }) => (
     marginRight: highlight ? '-12px' : 0,
     borderRadius: highlight ? '8px' : 0
   }}>
-    <span style={{ fontSize: '14px', color: 'var(--text2)' }}>{label}</span>
+    <span style={{ fontSize: '14px', color: 'var(--text2)', display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </span>
     <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--cyan)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
@@ -1469,17 +1572,92 @@ const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, m
 ));
 Input.displayName = 'Input';
 
-// CFA Level III Educational Notes Component
-const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
-  <div style={{ marginTop: 24, padding: 20, background: 'var(--surface2)', borderRadius: 12, border: '1px solid var(--border)' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-      <span style={{ fontSize: 16 }}>📚</span>
-      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--cyan)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
+// ============================================================================
+// UPDATE INDICATOR SYSTEM - Visual markers for data update sources
+// ============================================================================
+
+/** Context to control indicator visibility globally */
+const UpdateIndicatorContext = React.createContext<{ showIndicators: boolean; setShowIndicators: (v: boolean) => void }>({ showIndicators: true, setShowIndicators: () => {} });
+
+const UPDATE_SOURCE_CONFIG: Record<UpdateSource, { tooltip: string; className: string }> = {
+  PR: { tooltip: 'Press Release', className: 'pr' },
+  SEC: { tooltip: 'SEC Filing', className: 'sec' },
+  WS: { tooltip: 'Wall Street', className: 'ws' },
+  MARKET: { tooltip: 'Market Data', className: 'market' },
+};
+
+/** Tiny dot indicator - always rendered, visibility controlled by CSS */
+const UpdateIndicator = React.memo<{ source: UpdateSource; hidden?: boolean }>(({ source, hidden }) => {
+  const config = UPDATE_SOURCE_CONFIG[source];
+  return (
+    <span
+      className={`update-indicator ${config.className}${hidden ? ' hidden' : ''}`}
+      data-tooltip={config.tooltip}
+      title={config.tooltip}
+    />
+  );
+});
+UpdateIndicator.displayName = 'UpdateIndicator';
+
+/** Renders one or more update indicators - always present to prevent layout shift */
+const UpdateIndicators = React.memo<{ sources?: UpdateSource | UpdateSource[] }>(({ sources }) => {
+  const { showIndicators } = React.useContext(UpdateIndicatorContext);
+  if (!sources) return null;
+  const sourceArray = Array.isArray(sources) ? sources : [sources];
+  return (
+    <span className="update-indicator-wrap">
+      {sourceArray.map((s) => <UpdateIndicator key={s} source={s} hidden={!showIndicators} />)}
+    </span>
+  );
+});
+UpdateIndicators.displayName = 'UpdateIndicators';
+
+/** Legend explaining what each indicator color means, with toggle button */
+const UpdateLegend = React.memo(() => {
+  const { showIndicators, setShowIndicators } = React.useContext(UpdateIndicatorContext);
+  return (
+    <div className="update-legend">
+      <span style={{ fontWeight: 500, color: 'var(--text3)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sources</span>
+      <div className="update-legend-item"><span className="dot pr" /><span>PR</span></div>
+      <div className="update-legend-item"><span className="dot sec" /><span>SEC</span></div>
+      <div className="update-legend-item"><span className="dot ws" /><span>WS</span></div>
+      <div className="update-legend-item"><span className="dot market" /><span>Live</span></div>
+      <button
+        onClick={() => setShowIndicators(!showIndicators)}
+        style={{
+          marginLeft: 'auto',
+          padding: '4px 10px',
+          fontSize: '10px',
+          fontWeight: 500,
+          color: showIndicators ? 'var(--text)' : 'var(--text3)',
+          background: 'transparent',
+          border: '1px solid',
+          borderColor: showIndicators ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.06)',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          fontFamily: 'inherit',
+          letterSpacing: '0.3px',
+        }}
+      >
+        {showIndicators ? 'On' : 'Off'}
+      </button>
     </div>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13, lineHeight: 1.6 }}>
+  );
+});
+UpdateLegend.displayName = 'UpdateLegend';
+
+// CFA Level III Educational Notes Component - Subtle footer style
+const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
+  <div style={{ marginTop: 32, paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+      <span style={{ fontSize: 12, opacity: 0.7 }}>📚</span>
+      <h4 style={{ margin: 0, fontSize: 11, fontWeight: 500, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11, lineHeight: 1.5, color: 'var(--text3)' }}>
       {items.map((item, i) => (
-        <p key={i} style={{ margin: 0, color: 'var(--text2)' }}>
-          <strong style={{ color: 'var(--cyan)' }}>{item.term}:</strong> {item.def}
+        <p key={i} style={{ margin: 0 }}>
+          <strong style={{ color: 'var(--text2)' }}>{item.term}:</strong> {item.def}
         </p>
       ))}
     </div>
@@ -1522,6 +1700,9 @@ const ASTSAnalysis = () => {
 
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
+
+  // Update indicator visibility toggle
+  const [showIndicators, setShowIndicators] = useState(true);
 
   // Use imported data from @/data/asts
   const partners = PARTNERS;
@@ -1572,7 +1753,7 @@ const ASTSAnalysis = () => {
   ];
 
   return (
-    <>
+    <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
       <style>{css}</style>
       <div className="stock-model-app">
         {/* ============================================================================
@@ -1629,13 +1810,13 @@ const ASTSAnalysis = () => {
 
         {/* Stats Row */}
         <div className="stats-row">
-          <Stat label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} />
-          <Stat label="Enterprise Value" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} />
-          <Stat label="Constellation" value={`${calc.totalSats}/${targetSats2026}`} color="cyan" />
-          <Stat label="Progress" value={`${calc.constellationProgress.toFixed(0)}%`} color="cyan" />
-          <Stat label="Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} color="mint" />
-          <Stat label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} color="mint" />
-          <Stat label="Contracted Rev" value={`$${contractedRevenue}M+`} color="sky" />
+          <Stat label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} updateSource="MARKET" />
+          <Stat label="Enterprise Value" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} updateSource="MARKET" />
+          <Stat label="Constellation" value={`${calc.totalSats}/${targetSats2026}`} color="cyan" updateSource="PR" />
+          <Stat label="Progress" value={`${calc.constellationProgress.toFixed(0)}%`} color="cyan" updateSource="PR" />
+          <Stat label="Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} color="mint" updateSource="SEC" />
+          <Stat label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} color="mint" updateSource="SEC" />
+          <Stat label="Contracted Rev" value={`$${contractedRevenue}M+`} color="sky" updateSource="PR" />
         </div>
 
         {/* Navigation */}
@@ -1690,6 +1871,8 @@ const ASTSAnalysis = () => {
         
         {/* Main Content */}
         <main className="main">
+          {/* Update Source Legend - Shows what each indicator color means */}
+          <UpdateLegend />
           {activeTab === 'overview' && <OverviewTab calc={calc} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} block1Sats={block1Sats} block2Sats={block2Sats} targetSats2026={targetSats2026} contractedRevenue={contractedRevenue} partnerReach={partnerReach} penetrationRate={penetrationRate} />}
           {activeTab === 'catalysts' && <CatalystsTab upcomingCatalysts={upcomingCatalysts} completedMilestones={completedMilestones} />}
           {activeTab === 'constellation' && <ConstellationTab calc={calc} block1Sats={block1Sats} setBlock1Sats={setBlock1Sats} block2Sats={block2Sats} setBlock2Sats={setBlock2Sats} targetSats2026={targetSats2026} setTargetSats2026={setTargetSats2026} launchFailureRate={launchFailureRate} setLaunchFailureRate={setLaunchFailureRate} />}
@@ -1725,7 +1908,7 @@ const ASTSAnalysis = () => {
           {activeTab === 'wall-street' && <WallStreetTab />}
         </main>
       </div>
-    </>
+    </UpdateIndicatorContext.Provider>
   );
 };
 
@@ -1768,7 +1951,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
 
   return (
   <>
-    <h2 className="section-head">Investment Thesis</h2>
+    <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
     <div className="highlight"><h3>The Opportunity</h3>
       <p style={{ fontSize: '14px' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
@@ -1903,9 +2086,9 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Catalysts</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources="PR" /></h2>
       <div className="highlight"><h3>Catalyst Tracker</h3><p className="text-sm">Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
-      <div className="card"><div className="card-title">Upcoming</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
         <div className="space-y-2">{upcomingCatalysts.map((c, i) => (
           <div key={i} className={`flex items-center justify-between p-3 rounded-lg border ${c.impact === 'Critical' ? 'bg-cyan-900/30 border-cyan-600' : 'bg-slate-800/50 border-slate-700'}`}>
             <div><div className="font-medium">{c.event}</div><div className="text-xs text-slate-400">{c.timeline}</div></div>
@@ -1953,7 +2136,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
   const coverage = [{ r: 'US Intermittent', n: 6 }, { r: 'US Continuous', n: 20 }, { r: 'US+Canada+Japan', n: 25 }, { r: 'Global (45-60)', n: 60 }].map(c => ({ ...c, pct: Math.min(100, (calc.totalSats / c.n) * 100) }));
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Constellation</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Constellation<UpdateIndicators sources="PR" /></h2>
       <div className="highlight"><h3>Constellation Status</h3>
         <div className="space-y-2 text-sm">
           <p><strong className="text-cyan-400">Block 1 (BW3 + BB1-5):</strong> 6 satellites in orbit. BW3 is the 693 sq ft prototype (Sept 2022). BB1-5 are first-generation commercial satellites (Sept 2024).</p>
@@ -1970,7 +2153,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
       </div>
       
       {/* Satellite Generations Comparison */}
-      <div className="card"><div className="card-title">Satellite Generations</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Satellite Generations<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           <div className="p-4 bg-cyan-900/20 border border-cyan-800/30 rounded-lg">
             <h4 className="text-cyan-400 font-medium mb-2">Block 1: BW3 + BB1-5</h4>
@@ -2021,7 +2204,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
   const scenarios = [0.5, 1, 2, 3, 5, 7, 10].map(p => ({ p, subs: partnerReach * (p / 100), rev: partnerReach * (p / 100) * blendedARPU * 12 * 0.5 / 1000 }));
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Subscribers</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Subscribers<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3>Subscriber Analysis</h3><p className="text-sm">3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
       <div className="g4">
         <Card label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} sub="53+ MNOs" color="blue" />
@@ -2053,7 +2236,7 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
   const ramp = [{ year: '2025', commercial: 0, gov: 0.05, gateway: 0.015 }, { year: '2026', commercial: 0.3, gov: 0.15, gateway: 0.05 }, { year: '2027', commercial: 1.5, gov: 0.25, gateway: 0.08 }, { year: '2028', commercial: 4.0, gov: 0.35, gateway: 0.1 }, { year: '2029', commercial: 7.0, gov: 0.45, gateway: 0.1 }, { year: '2030', commercial: 11.0, gov: 0.5, gateway: 0.1 }];
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Revenue</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3>Revenue Analysis</h3><p className="text-sm">Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
       <div className="card"><div className="card-title">Sources</div>{revenueSources.map((r, i) => (<div key={i} className="flex items-center justify-between p-2 border-b border-slate-800"><div><span className="font-medium text-cyan-400">{r.source}</span><span className="text-slate-400 text-sm ml-2">{r.description}</span></div><span className={`text-xs px-2 py-1 rounded ${r.status.includes('Active') ? 'bg-green-900/50 text-green-400' : 'bg-slate-700'}`}>{r.status}</span></div>))}</div>
       <div className="g4">
@@ -2215,7 +2398,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Partners</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Partners<UpdateIndicators sources="PR" /></h2>
       <div className="highlight"><h3>Partner & Spectrum Intelligence</h3>
         <div className="space-y-2 text-sm">
           <p><strong className="text-cyan-400">Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
@@ -2453,7 +2636,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Runway</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Runway<UpdateIndicators sources="SEC" /></h2>
       <div className="highlight"><h3>Cash Runway — Q3 2025 Actuals</h3>
         <div className="space-y-2 text-sm">
           <p><strong className="text-cyan-400">Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
@@ -2471,7 +2654,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Q3 2025 Financial Summary */}
-      <div className="card"><div className="card-title">Q3 2025 Financial Summary</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
           <div>
             <h4 className="text-sm font-medium text-cyan-400 mb-2">Income Statement</h4>
@@ -2491,7 +2674,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Convertible Debt Summary */}
-      <div className="card"><div className="card-title">Convertible Debt Outstanding (Q3 2025)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <div className="mb-3 p-2 bg-slate-800/50 rounded-lg text-xs text-slate-400">
           <strong className="text-cyan-400">Balance Sheet vs Principal:</strong> Convertible notes are reported at net carrying value (gross less debt discounts and issuance costs). 
           The $697.6M on the balance sheet represents this accounting value, while $1.625B is the principal that must eventually be repaid or converted.
@@ -2534,7 +2717,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Cash Projection Chart */}
-      <div className="card"><div className="card-title">Cash Projection (at current burn)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
         <ResponsiveContainer width="100%" height={180}>
           <AreaChart data={proj}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -2550,7 +2733,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Funding Sources */}
-      <div className="card"><div className="card-title">Capital Raises History (2021-2025)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources="SEC" /></div>
         <div className="mb-4 p-3 bg-slate-800/30 rounded-lg">
           <p className="text-sm text-slate-400">
             <strong className="text-cyan-400">Understanding ASTS Financing:</strong> As a pre-revenue company building a global satellite constellation, 
@@ -2692,7 +2875,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Dilution Analysis */}
-      <div className="card"><div className="card-title">Hypothetical Dilution (if additional raise needed)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
         <table className="w-full text-sm">
           <thead>
             <tr className="text-slate-400 text-xs border-b border-slate-700">
@@ -2758,7 +2941,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Capital Structure</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
       <div className="highlight">
         <h3>Share Classes, Offerings & Dilution</h3>
         <p className="text-sm">
@@ -2805,7 +2988,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Share Structure View */}
       {capitalView === 'structure' && (
       <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title">Share Class Structure (Q3 2025)</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Class Structure (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -2904,7 +3087,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Major Shareholders View */}
       {capitalView === 'shareholders' && (
       <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title">Major Shareholders (Known from SEC Filings)</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Major Shareholders (Known from SEC Filings)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -2940,7 +3123,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Equity Offerings View */}
       {capitalView === 'offerings' && (
       <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title">Equity Offerings Timeline</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Offerings Timeline<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -2979,7 +3162,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* SBC View */}
       {capitalView === 'incentives' && (
       <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title">Stock-Based Compensation (SBC)</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Stock-Based Compensation (SBC)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -3037,7 +3220,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Dilution History View */}
       {capitalView === 'dilution' && (
       <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title">Share Count Evolution</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Count Evolution<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -5087,7 +5270,7 @@ const QuarterlyMetricsPanel = () => {
   }, [quarterlyData, displayQuarters]);
 
   return (
-    <div className="card"><div className="card-title">Key Metrics Evolution</div>
+    <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
       {/* Dynamic Summary Badges */}
       <div className="flex flex-wrap gap-2 mb-4">
         <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-cyan-900/30 border-cyan-600/40 border text-cyan-400">
@@ -5154,7 +5337,7 @@ const QuarterlyMetricsPanel = () => {
       
       {/* Key Notes from Filing - Matching BMNR style */}
       <div className="mt-4">
-        <div className="card"><div className="card-title">Latest Quarter Summary (Q3 2025)</div>
+        <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
           <div className="bg-slate-900/50 rounded-lg p-3">
             <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Filing Source</div>
@@ -5194,7 +5377,7 @@ const QuarterlyMetricsPanel = () => {
       {/* ROW 1: Cash Position & OpEx */}
       <div className="mt-6 grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-cyan-400 mb-3">Cash Position Evolution</h4>
+          <h4 className="text-sm font-medium text-cyan-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={Object.values(quarterlyData).filter(q => q.cashAndEquiv !== null).reverse()}>
               <defs>
@@ -5213,7 +5396,7 @@ const QuarterlyMetricsPanel = () => {
         </div>
         
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-purple-400 mb-3">Quarterly Burn Rate (OpEx)</h4>
+          <h4 className="text-sm font-medium text-purple-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <LineChart data={Object.values(quarterlyData).filter(q => q.opEx !== null).reverse()}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5300,7 +5483,7 @@ const QuarterlyMetricsPanel = () => {
       {/* ROW 2: Share Count & Market Cap */}
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-orange-400 mb-3">Share Count (Outstanding / Implied / Fully Diluted)</h4>
+          <h4 className="text-sm font-medium text-orange-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0)}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5320,7 +5503,7 @@ const QuarterlyMetricsPanel = () => {
         </div>
         
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-blue-400 mb-3">Market Cap Evolution ($M)</h4>
+          <h4 className="text-sm font-medium text-blue-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0 && d.stockPrice > 0).map(d => ({ ...d, marketCap: d.sharesOutstanding * d.stockPrice, impliedMktCap: d.impliedSharesOut * d.stockPrice }))}>
               <defs>
@@ -5347,7 +5530,7 @@ const QuarterlyMetricsPanel = () => {
       {/* ROW 3: Company-Specific (Satellites) */}
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-cyan-400 mb-3">Satellites Deployed</h4>
+          <h4 className="text-sm font-medium text-cyan-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Satellites Deployed<UpdateIndicators sources="PR" /></h4>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={Object.values(quarterlyData).reverse()}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5388,7 +5571,7 @@ const TimelineTab = () => {
     cik: '0001780312',
     ticker: 'ASTS',
     exchange: 'NASDAQ',
-    lastPR: { date: 'December 24, 2025', title: 'BlueBird 6 Successful Launch' }
+    lastPR: { date: 'January 16, 2026', title: 'MDA SHIELD Prime Contract Award' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {
@@ -8324,11 +8507,11 @@ const TimelineTab = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Timeline</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Timeline<UpdateIndicators sources="PR" /></h2>
       
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
       <div className="card" style={{ marginBottom: 0 }}>
-        <div className="card-title">📁 SEC Filings</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
         
         {/* Filter Buttons */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
@@ -8446,7 +8629,7 @@ const TimelineTab = () => {
           </div>
           <div style={{ fontSize: 11, color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ color: 'var(--cyan)' }}>●</span>
-            <span>Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}</span>
+            <span style={{ display: 'flex', alignItems: 'center' }}>Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}<UpdateIndicators sources="PR" /></span>
           </div>
         </div>
       </div>
@@ -8454,7 +8637,7 @@ const TimelineTab = () => {
       {/* Upcoming Events + Recent Press Releases */}
       <div className="g2">
         <div className="card">
-          <div className="card-title">Upcoming Events</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div>
@@ -8500,7 +8683,7 @@ const TimelineTab = () => {
         </div>
 
         <div className="card">
-          <div className="card-title">Recent Press Releases</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -8538,6 +8721,7 @@ const TimelineTab = () => {
       <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span>Event Timeline</span>
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredEntries.length} events)</span>
+        <UpdateIndicators sources="PR" />
       </h3>
 
       {/* Topic Filters (AND logic multi-select) */}
@@ -10130,9 +10314,9 @@ const InvestmentTab = () => {
   ];
 
   // Collapsible section component
-  const CollapsibleSection = ({ id, title, children }) => (
+  const CollapsibleSection = ({ id, title, children, sources }: { id: string; title: string; children: React.ReactNode; sources?: UpdateSource | UpdateSource[] }) => (
     <div className="card" style={{ marginBottom: 16 }}>
-      <div 
+      <div
         onClick={() => toggleSection(id)}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
         role="button"
@@ -10140,7 +10324,7 @@ const InvestmentTab = () => {
         aria-expanded={investmentSections.has(id)}
         onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
       >
-        <div className="card-title" style={{ marginBottom: 0 }}>{title}</div>
+        <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>{title}{sources && <UpdateIndicators sources={sources} />}</div>
         <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
       {investmentSections.has(id) && <div style={{ marginTop: 16 }}>{children}</div>}
@@ -10159,7 +10343,7 @@ const InvestmentTab = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 className="section-head" style={{ marginBottom: 0 }}>Investment Analysis</h2>
+        <h2 className="section-head" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
           <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
@@ -10209,7 +10393,7 @@ const InvestmentTab = () => {
       </div>
 
       {/* Investment Scorecard */}
-      <CollapsibleSection id="scorecard" title="Investment Scorecard">
+      <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
           {current.scorecard.map((item, i) => (
             <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -10224,7 +10408,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Summary */}
-      <CollapsibleSection id="summary" title="Investment Summary">
+      <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
         <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)', marginBottom: 16 }}>
           <div style={{ fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>What's New ({current.source})</div>
           <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
@@ -10247,7 +10431,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Growth Drivers */}
-      <CollapsibleSection id="growth" title="Growth Drivers">
+      <CollapsibleSection id="growth" title="Growth Drivers" sources="PR">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {current.growthDrivers.map((d, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
@@ -10262,7 +10446,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Competitive Moat */}
-      <CollapsibleSection id="moat" title="Competitive Moat">
+      <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
         <div className="g2">
           <div>
             <h4 style={{ color: 'var(--mint)', marginBottom: 12 }}>Moat Sources</h4>
@@ -10295,7 +10479,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Risk Matrix */}
-      <CollapsibleSection id="risks" title="Risk Matrix">
+      <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {current.risks.map((r, i) => (
             <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
@@ -10314,7 +10498,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Risks & Strategic Assessment */}
-      <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment">
+      <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment" sources={['PR', 'SEC']}>
         {/* Section Header */}
         <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 20, fontStyle: 'italic' }}>
           Multi-perspective risk evaluation and strategic decision framework for space-based cellular infrastructure
@@ -10448,7 +10632,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Position Sizing */}
-      <CollapsibleSection id="position" title="Position Sizing & Price Targets">
+      <CollapsibleSection id="position" title="Position Sizing & Price Targets" sources="WS">
         <div className="g2" style={{ marginBottom: 16 }}>
           <div>
             <h4 style={{ color: 'var(--text)', marginBottom: 12, fontSize: 14 }}>Recommended Allocation</h4>
@@ -10479,7 +10663,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Analysis Archive */}
-      <CollapsibleSection id="archive" title="Analysis Archive — Complete History">
+      <CollapsibleSection id="archive" title="Analysis Archive — Complete History" sources={['PR', 'SEC']}>
         <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>Full record of all investment thesis updates. Never deleted. Tracking since Q3 2022.</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
@@ -12985,11 +13169,11 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Wall Street Coverage</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Wall Street Coverage<UpdateIndicators sources="WS" /></h2>
       
       {/* Consensus Snapshot */}
       <div className="card">
-        <div className="card-title">📊 Consensus Snapshot</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📊 Consensus Snapshot<UpdateIndicators sources="WS" /></div>
         <div className="g2">
           {/* Price Target Summary */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -13054,7 +13238,7 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
       
       {/* Coverage by Firm - Grouped Cards */}
       <div className="card">
-        <div className="card-title">🏦 Coverage by Firm ({totalAnalysts} Analysts)</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>🏦 Coverage by Firm ({totalAnalysts} Analysts)<UpdateIndicators sources="WS" /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {ANALYST_COVERAGE.map((coverage) => {
             const isExpanded = expandedFirm === coverage.firm;
@@ -13136,13 +13320,13 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                         const isReportExpanded = expandedReportIdx === reportKey;
                         
                         return (
-                          <div 
+                          <div
                             key={idx}
-                            style={{ 
-                              padding: 12, 
+                            style={{
+                              padding: 12,
                               background: report.isFullReport ? 'var(--surface2)' : 'var(--surface)',
                               borderRadius: 6,
-                              borderLeft: report.isFullReport ? '3px solid var(--cyan)' : '3px solid var(--border)'
+                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? '3px solid var(--cyan)' : 'none'
                             }}
                           >
                             {/* Report Header */}
@@ -13413,13 +13597,13 @@ const FinancialsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HEADER                                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <h2 className="section-head">Financials</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
       
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: HIGHLIGHT BOX                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="highlight">
-        <h3>{config.highlightTitle}</h3>
+        <h3 style={{ display: 'flex', alignItems: 'center' }}>{config.highlightTitle}<UpdateIndicators sources="SEC" /></h3>
         <p className="text-sm text-slate-300">{config.highlightText}</p>
       </div>
       
@@ -13432,7 +13616,7 @@ const FinancialsTab = () => {
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-        <h4 className="text-sm font-medium text-yellow-400 mb-3">📅 Key Financial Milestones</h4>
+        <h4 className="text-sm font-medium text-yellow-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           {config.milestones.map((m, i) => (
             <div key={i} className="p-2 bg-slate-800/50 rounded">
