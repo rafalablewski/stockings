@@ -14,9 +14,14 @@
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
  * ║  BMNR (BitMine Immersion Technologies) Financial Analysis Model               ║
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
- * ║  Version: 2.4.7                                                               ║
- * ║  Last Updated: January 15, 2026                                               ║
+ * ║  Version: 2.4.8                                                               ║
+ * ║  Last Updated: January 20, 2026                                               ║
  * ║  Maintainer: Rafal (via Claude AI)                                            ║
+ * ║                                                                               ║
+ * ║  CHANGELOG v2.4.8:                                                            ║
+ * ║  - Jan 20, 2026 PR: 4.203M ETH, $14.5B total, 81% shareholder vote YES        ║
+ * ║  - Staked ETH surged to 1.838M (43.7%), $374M/yr at scale                     ║
+ * ║  - Beast Industries $200M closed, 3.48% ETH supply (70% to Alchemy of 5%)     ║
  * ║                                                                               ║
  * ║  CHANGELOG v2.4.7:                                                            ║
  * ║  - Added $200M Beast Industries investment PR (Jan 15, 2026)                   ║
@@ -1433,22 +1438,22 @@ const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
 CFANotes.displayName = 'CFANotes';
 
 /*
- * DEFAULT PARAMETERS - Based on latest official data (Jan 15, 2026 PR)
+ * DEFAULT PARAMETERS - Based on latest official data (Jan 20, 2026 PR)
  * Update these when new weekly holdings PRs are released
  *
  * Current defaults reflect:
- * - ETH Holdings: 4,167,768 (Jan 12, 2026 PR - 3.45% of ETH supply)
- * - Shares Outstanding: 434M fully diluted (Jan 12, 2026 PR)
- * - Stock Price: ~$27.15 (Jan 12, 2026)
- * - ETH Price: $3,119 (Jan 11, 2026 Coinbase)
- * - Staking Ratio: 30.14% (1,256,083 ETH staked via 3 providers, Jan 11)
+ * - ETH Holdings: 4,203,036 (Jan 20, 2026 PR - 3.48% of 120.7M ETH supply)
+ * - Shares Outstanding: 434M fully diluted (Jan 20, 2026 PR)
+ * - Stock Price: ~$27.15 (Jan 20, 2026)
+ * - ETH Price: $3,211 (Jan 19, 2026 Coinbase)
+ * - Staking Ratio: 43.73% (1,838,003 ETH staked via 3 providers, Jan 19)
  * - Base Staking APY: 2.81% (CESR rate)
- * - Total Cash: $988M → ~$788M after Beast Industries deal
+ * - Total Cash: $979M (post Beast Industries closing)
  * - BTC Holdings: 193 BTC
- * - Moonshots: $23M (Eightco ORBS stake)
- * - Strategic Investments: $200M (Beast Industries - MrBeast, closing Jan 19)
- * - Total Holdings: $14.0B (crypto + cash + moonshots + strategic investments)
- * 
+ * - Moonshots: $22M (Eightco ORBS stake)
+ * - Strategic Investments: $200M (Beast Industries - MrBeast, CLOSED Jan 17)
+ * - Total Holdings: $14.5B (crypto + cash + moonshots + strategic investments)
+ *
  * COMPANY INFO (SEC EDGAR):
  * - CIK: 0001829311
  * - EIN: 84-3986354
@@ -1457,12 +1462,12 @@ CFANotes.displayName = 'CFANotes';
  * - Fiscal Year End: August 31
  */
 const BMNRDilutionAnalysis = () => {
-  // === DATA FRESHNESS: Last updated Jan 12, 2026 ===
+  // === DATA FRESHNESS: Last updated Jan 20, 2026 ===
   // Update prices regularly - stale data affects all NAV calculations
-  const [currentETH, setCurrentETH] = useState(4167768);  // Jan 12, 2026 PR - 3.45% of ETH supply
+  const [currentETH, setCurrentETH] = useState(4203036);  // Jan 20, 2026 PR - 3.48% of ETH supply
   const [currentShares, setCurrentShares] = useState(434);
-  const [currentStockPrice, setCurrentStockPrice] = useState(27.15);  // ⚠️ UPDATE REGULARLY - Last: Jan 12, 2026
-  const [ethPrice, setEthPrice] = useState(3119);  // ⚠️ UPDATE REGULARLY - Last: Jan 11, 2026 (Coinbase)
+  const [currentStockPrice, setCurrentStockPrice] = useState(27.15);  // ⚠️ UPDATE REGULARLY - Last: Jan 20, 2026
+  const [ethPrice, setEthPrice] = useState(3211);  // ⚠️ UPDATE REGULARLY - Last: Jan 19, 2026 (Coinbase)
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
   const [dilutionPercent, setDilutionPercent] = useState(5);
@@ -1482,7 +1487,7 @@ const BMNRDilutionAnalysis = () => {
   const [stakingType, setStakingType] = useState('liquid');
   const [baseStakingAPY, setBaseStakingAPY] = useState(2.81);
   const [restakingBonus, setRestakingBonus] = useState(2.0);
-  const [stakingRatio, setStakingRatio] = useState(30.14);  // 1,256,083 / 4,167,768 = 30.14% (Jan 12, 2026 PR)
+  const [stakingRatio, setStakingRatio] = useState(43.73);  // 1,838,003 / 4,203,036 = 43.73% (Jan 20, 2026 PR)
   const [useDebt, setUseDebt] = useState(false);
   const [debtAmount, setDebtAmount] = useState(100);
   const [debtRate, setDebtRate] = useState(2.5);
@@ -4340,18 +4345,18 @@ const SECFilingTracker = () => {
     // Key dates
     firstFiling: 'October 27, 2020',
     firstFilingNote: 'As Sandy Springs Holdings (renamed Jul 2021)',
-    latestEvent: '4.17M ETH Holdings — $14.0B Total',
-    latestEventDate: 'Jan 12, 2026',
-    
+    latestEvent: '4.203M ETH Holdings — $14.5B Total',
+    latestEventDate: 'Jan 20, 2026',
+
     // Last press release processed (for tracking)
-    lastPressRelease: 'January 12, 2026',
-    lastPressReleaseTitle: '4,167,768 ETH Holdings Update — $14.0B Total',
+    lastPressRelease: 'January 20, 2026',
+    lastPressReleaseTitle: '4,203,036 ETH Holdings Update — $14.5B Total',
 
     // Latest filings by type
     filings: {
       '10-K': { date: 'Nov 21, 2025', description: 'FY 2025', color: 'blue' },
       '10-Q': { date: 'Jan 13, 2026', description: 'Q1 FY2026', color: 'purple' },
-      '8-K': { date: 'Jan 12, 2026', description: '4.17M ETH Holdings', color: 'yellow' },
+      '8-K': { date: 'Jan 20, 2026', description: '4.203M ETH Holdings', color: 'yellow' },
       'S-3ASR': { date: 'Jul 9, 2025', description: '$2B ATM Shelf', color: 'green' },
       '424B5': { date: 'Sep 22, 2025', description: '$365M @ $70 + Warrants', color: 'orange' },
       'DEF 14A': { date: '—', description: 'Proxy (Annual)', color: 'cyan' },
@@ -4451,22 +4456,22 @@ const InvestmentTab = () => {
   
   // Current Investment Summary
   const current = {
-    date: '2026-01-15',
-    source: 'January 15, 2026 — PR: $200M Beast Industries Investment + Annual Meeting',
+    date: '2026-01-20',
+    source: 'January 20, 2026 — PR: 4.203M ETH Holdings + 81% Shareholder Vote YES',
     verdict: 'STRONG BUY',
     verdictColor: 'green',
     tagline: 'The ETH Supercycle Play',
 
     // Investment Scorecard (letter grades like CRCL)
     scorecard: [
-      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Flawless pivot: #1 ETH treasury, $14.0B total holdings, 4.17M ETH' },
-      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Fortress: $13.0B ETH + $788M cash + $200M Beast Industries + $23M moonshots' },
+      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Flawless pivot: #1 ETH treasury, $14.5B total holdings, 4.203M ETH' },
+      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Fortress: $13.5B ETH + $979M cash + $200M Beast Industries + $22M moonshots' },
       { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Leadership: Young Kim (MIT/HBS, Columbia Threadneedle) as CFO+COO' },
-      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: '$200M Beast Industries: GenZ/Millennial reach + DeFi platform integration' },
-      { category: 'Corporate', rating: 'A', color: 'var(--mint)', detail: '3.45% ETH supply — 70% of the way to "Alchemy of 5%" target' },
-      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Staking surged: 1.26M ETH staked (30%), MAVAN Q1 2026' },
-      { category: 'Corporate', rating: 'A-', color: 'var(--mint)', detail: 'Dividend + buyback + accretive raises = shareholder alignment' },
-      { category: 'Corporate', rating: 'B+', color: 'var(--sky)', detail: 'NAV floor limits downside; ETH upside is leveraged' },
+      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: '$200M Beast Industries CLOSED: GenZ/Millennial reach + DeFi platform integration' },
+      { category: 'Corporate', rating: 'A', color: 'var(--mint)', detail: '3.48% ETH supply — 70% of the way to "Alchemy of 5%" target' },
+      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Staking exploded: 1.84M ETH staked (43.7%), MAVAN Q1 2026' },
+      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Shareholder vote: 81% YES on Proposal 2 (52.2% turnout)' },
+      { category: 'Corporate', rating: 'A-', color: 'var(--mint)', detail: '500K+ individual stockholders, #60 most traded US stock ($1.5B/day)' },
     ],
     
     // Ecosystem Health Rating (summarizes Ethereum tab metrics)
@@ -4488,28 +4493,28 @@ const InvestmentTab = () => {
       oneLiner: `BMNR is the single best way to play the Ethereum supercycle with downside protection.`,
       thesis: `This is not just another crypto stock. BMNR has created something unprecedented: a yield-generating, dividend-paying, institutionally-accessible vehicle for leveraged ETH exposure.
 
-They own 3.45% of all Ethereum in existence — 4.17 million tokens. They're 70% of the way to 5%. No one else is even close.
+They own 3.48% of all Ethereum in existence — 4.203 million tokens. They're 70% of the way to 5%. No one else is even close.
 
-The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset — and paying you to wait. With $988M cash and $24.5B ATM capacity, the accumulation machine keeps running. Staking just surged to 1.26M ETH (30% of holdings).`,
-      bottomLine: `If you believe ETH goes higher, BMNR is the trade. If you're wrong, $14.0B in assets, staking income ($374M/yr at scale), and NAV floor limit your downside. Asymmetric.`,
+The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset — and paying you to wait. With $979M cash and $24.5B ATM capacity, the accumulation machine keeps running. Staking exploded to 1.84M ETH (43.7% of holdings). 81% shareholder YES vote just unlocked massive share authorization.`,
+      bottomLine: `If you believe ETH goes higher, BMNR is the trade. If you're wrong, $14.5B in assets, staking income ($518M/yr at current 43.7% staked), and NAV floor limit your downside. Asymmetric.`,
     },
     
     // Growth Drivers (CRCL-style)
     growthDrivers: [
-      { driver: 'ETH Price Appreciation', impact: 'Critical', description: 'Every $1,000 ETH move = $4.17B NAV change. At $10K ETH, NAV/share hits $96+.', color: 'var(--mint)' },
-      { driver: 'Staking Income Scale', impact: 'High', description: '1.26M ETH staked ($3.9B, 30% of holdings). At full deployment: $374M/yr (>$1M/day).', color: 'var(--mint)' },
+      { driver: 'ETH Price Appreciation', impact: 'Critical', description: 'Every $1,000 ETH move = $4.2B NAV change. At $10K ETH, NAV/share hits $96+.', color: 'var(--mint)' },
+      { driver: 'Staking Income Scale', impact: 'High', description: '1.84M ETH staked ($5.9B, 43.7% of holdings). Current run rate: $518M/yr (>$1.4M/day).', color: 'var(--mint)' },
       { driver: 'NAV Premium Expansion', impact: 'High', description: 'Currently near NAV. MSTR trades 2-3x. Gap closure = 2-3x upside.', color: 'var(--sky)' },
-      { driver: 'Continued Accumulation', impact: 'High', description: '$988M cash + $24.5B ATM capacity. Every accretive raise grows your ETH/share.', color: 'var(--sky)' },
+      { driver: 'Continued Accumulation', impact: 'High', description: '$979M cash + $24.5B ATM capacity. 81% YES vote unlocks massive share authorization.', color: 'var(--sky)' },
       { driver: 'Dividend Growth', impact: 'Medium', description: 'Started at $0.04/yr. As staking scales, expect 10-20% annual dividend growth.', color: 'var(--gold)' },
     ],
     
     // Competitive Moat (CRCL-style with sources and threats)
     moatSources: [
-      { source: 'Scale Dominance', strength: 'Strong', detail: '4.17M ETH = 3.45% of total supply. #1 ETH treasury, #2 global crypto treasury behind MSTR.', color: 'var(--mint)' },
-      { source: 'Yield Advantage', strength: 'Strong', detail: 'Only ETH treasury generating staking yield AND paying dividends. 1.26M ETH staked, $374M/yr at scale.', color: 'var(--mint)' },
-      { source: 'Capital Access', strength: 'Strong', detail: '$988M cash + $24.5B ATM + proven ability to raise at premium.', color: 'var(--mint)' },
+      { source: 'Scale Dominance', strength: 'Strong', detail: '4.203M ETH = 3.48% of total supply. #1 ETH treasury, #2 global crypto treasury behind MSTR.', color: 'var(--mint)' },
+      { source: 'Yield Advantage', strength: 'Strong', detail: 'Only ETH treasury generating staking yield AND paying dividends. 1.84M ETH staked, $518M/yr run rate.', color: 'var(--mint)' },
+      { source: 'Capital Access', strength: 'Strong', detail: '$979M cash + $24.5B ATM + 81% shareholder YES vote unlocks massive issuance capacity.', color: 'var(--mint)' },
       { source: 'Management Depth', strength: 'Strong', detail: 'Tom Lee (Chairman) + Young Kim CFO/COO (MIT/HBS, 20yr institutional PM). Backed by ARK, Founders Fund, Pantera, Galaxy, Bill Miller III.', color: 'var(--mint)' },
-      { source: 'First Mover Lock-in', strength: 'Building', detail: 'Institutional allocators need ETH exposure. BMNR is the only liquid option.', color: 'var(--sky)' },
+      { source: 'Retail Base', strength: 'Strong', detail: '500K+ individual stockholders. #60 most traded US stock ($1.5B/day). Deep liquidity.', color: 'var(--mint)' },
     ],
     moatThreats: [
       { threat: 'ETH Price Collapse', risk: 'Critical', detail: '-70% drawdown would devastate NAV. At $1K ETH, NAV/share drops to ~$9.70.', color: 'var(--coral)' },
@@ -4520,10 +4525,10 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
     
     // Catalysts (renamed from predictions)
     catalysts: [
-      { event: 'Annual Meeting', timing: 'Jan 15, 2026 (TODAY)', impact: 'Share authorization vote (500M→50B) @ Wynn Las Vegas — VOTE YES on Proposal #2', color: 'var(--mint)' },
-      { event: 'Beast Industries Deal Close', timing: 'Jan 19, 2026', impact: '$200M equity investment in MrBeast\'s company — GenZ/Millennial reach + DeFi integration', color: 'var(--mint)' },
-      { event: 'MAVAN Launch', timing: 'Q1 2026', impact: 'Proprietary staking = margin expansion to $374M/yr', color: 'var(--mint)' },
-      { event: 'Dividend Increase', timing: 'Q1 2026', impact: 'Likely 2-3x current rate as staking scales', color: 'var(--sky)' },
+      { event: 'Shareholder Vote', timing: 'Jan 15, 2026 ✅ COMPLETED', impact: '81% YES on Proposal 2 (52.2% turnout) — share authorization approved', color: 'var(--mint)' },
+      { event: 'Beast Industries', timing: 'Jan 17, 2026 ✅ CLOSED', impact: '$200M equity investment in MrBeast\'s company — GenZ/Millennial reach + DeFi integration', color: 'var(--mint)' },
+      { event: 'MAVAN Launch', timing: 'Q1 2026', impact: 'Proprietary staking = margin expansion, largest staking provider in crypto', color: 'var(--mint)' },
+      { event: 'Dividend Increase', timing: 'Q1 2026', impact: 'Likely 2-3x current rate as staking scales (43.7% now staked)', color: 'var(--sky)' },
       { event: 'Index Inclusion', timing: 'Jun 2026', impact: 'Russell 2000 inclusion forces passive buying', color: 'var(--sky)' },
       { event: '5% ETH Target', timing: '2026', impact: 'Would own ~6.0M ETH — "Alchemy of 5%" complete (currently 70% there)', color: 'var(--gold)' },
     ],
@@ -4533,8 +4538,8 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       { risk: 'ETH Price Collapse', severity: 'Critical', likelihood: 'Low', impact: 'High', detail: 'The existential risk. A -70% drawdown would devastate NAV. At $1,000 ETH, NAV/share drops to ~$9.60. This is a leveraged ETH bet.', mitigation: 'Staking income ($374M/yr at scale) provides cushion; NAV floor via $1B buyback authorization.' },
       { risk: 'NAV Premium Evaporation', severity: 'High', likelihood: 'Medium', impact: 'High', detail: 'Currently near NAV. If sentiment shifts, could drop to 0.5x. GBTC traded at -40% discount for years.', mitigation: '$1B buyback at discount provides floor; dividend yield supports valuation.' },
       { risk: 'Regulatory Crackdown', severity: 'Medium', likelihood: 'Low', impact: 'High', detail: 'SEC declares ETH a security, bans staking, or targets crypto treasuries. Current environment favorable but politics change.', mitigation: 'Diversified staking providers; compliance-first approach; MAVAN US-based.' },
-      { risk: 'MAVAN Execution Failure', severity: 'Medium', likelihood: 'Low', impact: 'Medium', detail: 'Delays or technical issues with proprietary staking. On track for Q1 2026 launch.', mitigation: 'Third-party providers already operational (1.26M staked); upside risk, not existential.' },
-      { risk: 'Dilution Fatigue', severity: 'Low', likelihood: 'Low', impact: 'Medium', detail: 'Market stops funding ATMs at premium. Would slow accumulation but not fatal.', mitigation: '$988M cash + staking income provides runway without issuance.' },
+      { risk: 'MAVAN Execution Failure', severity: 'Medium', likelihood: 'Low', impact: 'Medium', detail: 'Delays or technical issues with proprietary staking. On track for Q1 2026 launch.', mitigation: 'Third-party providers already operational (1.84M staked); upside risk, not existential.' },
+      { risk: 'Dilution Fatigue', severity: 'Low', likelihood: 'Low', impact: 'Medium', detail: 'Market stops funding ATMs at premium. Would slow accumulation but not fatal.', mitigation: '$979M cash + staking income ($518M/yr run rate) provides runway without issuance.' },
     ],
     
     // Three Perspectives (CRCL-style)
@@ -4543,24 +4548,24 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         title: 'CFA Analyst',
         assessment: 'FAVORABLE',
         color: 'var(--mint)',
-        summary: 'Single-asset concentration with embedded leverage through NAV premium mechanism. Best positioned as 2-5% satellite allocation within alternatives bucket. Execution risk materially reduced — Young Kim (CFO/COO) brings 20yr institutional PM experience. $200M Beast Industries investment expands demographic reach beyond institutional allocators. Staking surged to 1.26M ETH (30%).',
-        ecosystemView: 'Ethereum network fundamentals support the thesis. Deflationary supply (-0.2% annually), healthy staking participation (28%), and growing institutional adoption via ETFs ($12B AUM) create structural demand. $374M annual staking income at full deployment is a game-changer for valuation.',
+        summary: 'Single-asset concentration with embedded leverage through NAV premium mechanism. Best positioned as 2-5% satellite allocation within alternatives bucket. Execution risk materially reduced — Young Kim (CFO/COO) brings 20yr institutional PM experience. $200M Beast Industries investment (CLOSED). Staking exploded to 1.84M ETH (43.7%). 81% shareholder YES vote.',
+        ecosystemView: 'Ethereum network fundamentals support the thesis. Deflationary supply (-0.2% annually), healthy staking participation (28%), and growing institutional adoption via ETFs ($12B AUM) create structural demand. $518M annual staking income at current 43.7% deployment is a game-changer for valuation.',
         recommendation: 'Allocate 2-5% of alternatives sleeve. Rebalance quarterly.',
       },
       hedgeFund: {
         title: 'Hedge Fund PM',
         assessment: 'HIGH CONVICTION LONG',
         color: 'var(--mint)',
-        summary: 'Cleanest asymmetric setup in crypto equities. Market treating BMNR like simple ETH proxy — it\'s not. Staking yield + dividend + accretive issuance creates compounding machine. $200M Beast Industries deal (MrBeast, 450M subs) = GenZ/Millennial reach + DeFi platform integration. Event calendar stacked: Annual Meeting TODAY, Beast deal close Jan 19, MAVAN Q1.',
-        ecosystemView: 'ETF flow momentum is the key near-term catalyst. ~$788M cash + $24.5B ATM = still unlimited firepower post-Beast deal. Staking exploded: 1.26M ETH total (30%). Tom Lee\'s 2026 thesis: government support, stablecoin adoption, tokenization, AI authentication demand, younger generation adoption (now via Beast Industries!).',
+        summary: 'Cleanest asymmetric setup in crypto equities. Market treating BMNR like simple ETH proxy — it\'s not. Staking yield + dividend + accretive issuance creates compounding machine. Beast Industries CLOSED ($200M, 450M subs). 81% shareholder YES vote unlocks massive share authorization. 500K+ stockholders, #60 most traded.',
+        ecosystemView: 'ETF flow momentum is the key near-term catalyst. $979M cash + $24.5B ATM = unlimited firepower. Staking exploded: 1.84M ETH total (43.7%). Tom Lee\'s 2026 thesis: government support, stablecoin adoption, tokenization, AI authentication demand, younger generation adoption (now via Beast Industries!).',
         recommendation: 'Size up to 8-10% of book. Stop loss at 0.6x NAV.',
       },
       cio: {
         title: 'Family Office CIO',
         assessment: 'CORE POSITION',
         color: 'var(--violet)',
-        summary: '$14.0B total holdings. 4.17M ETH. $200M Beast Industries equity stake. This is how you get institutional ETH exposure without custody complexity — and now with creator economy upside. Management bench: Tom Lee (Chairman), Young Kim (CFO/COO). Backed by ARK, Founders Fund, Pantera, Galaxy Digital, Bill Miller III, and Tom Lee personally.',
-        ecosystemView: 'Ecosystem maturation reduces tail risk. Beast Industries investment ($200M) expands reach to 450M+ YouTube subscribers (GenZ/Millennials) with DeFi platform integration planned. Tom Lee\'s 2026 thesis: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication/provenance demand, younger generation adoption. The GENIUS Act is transformational.',
+        summary: '$14.5B total holdings. 4.203M ETH. $200M Beast Industries (CLOSED). 81% shareholder YES vote. 500K+ stockholders. This is how you get institutional ETH exposure without custody complexity — and now with creator economy upside. Management bench: Tom Lee (Chairman), Young Kim (CFO/COO). Backed by ARK, Founders Fund, Pantera, Galaxy Digital, Bill Miller III, and Tom Lee personally.',
+        ecosystemView: 'Ecosystem maturation reduces tail risk. Beast Industries investment ($200M, CLOSED) expands reach to 450M+ YouTube subscribers (GenZ/Millennials) with DeFi platform integration planned. Tom Lee\'s 2026 thesis: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication/provenance demand, younger generation adoption. The GENIUS Act is transformational.',
         recommendation: '5-10% of crypto allocation. Multi-year hold.',
       },
     },
@@ -4585,6 +4590,33 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   
   // Archive - Full historical investment summaries (generous detail for each period)
   const archive = [
+    {
+      date: '2026-01-20',
+      source: 'PR: 4.203M ETH Holdings + 81% Shareholder Vote YES + Beast CLOSED',
+      verdict: 'STRONG BUY',
+      verdictColor: 'green',
+      summary: '4.203M ETH ($13.5B). 81% YES on Proposal 2 (52.2% turnout). 1.84M ETH staked (43.7%). Beast Industries CLOSED. 500K+ stockholders. #60 most traded US stock.',
+      fullAnalysis: {
+        context: 'January 20, 2026 marks multiple landmark achievements: 81% shareholder YES vote on Proposal 2 (share authorization), Beast Industries $200M investment officially closed, staking surged to 1.84M ETH (43.7%), and trading volume hit $1.5B/day making BMNR the #60 most traded US stock.',
+        keyHighlights: [
+          'ETH holdings: 4,203,036 ETH @ $3,211 = $13.5B (3.48% of 120.7M supply)',
+          'Total holdings: $14.5B (ETH + cash + BTC + moonshots + Beast Industries)',
+          'Cash position: $979M (post Beast Industries closing)',
+          'Staked ETH: 1,838,003 ($5.9B) — up 582K in one week (+46.3%)',
+          'Staking ratio: 43.73% of holdings now staked (was 30%)',
+          'Staking income run rate: $518M/yr at 2.81% CESR',
+          'Shareholder vote: 81% YES on Proposal 2 (52.2% of outstanding voted)',
+          'Beast Industries: $200M investment CLOSED Jan 17, 2026',
+          '500,000+ individual stockholders',
+          '#60 most traded US stock ($1.5B/day average volume)',
+          'MAVAN launch on track for Q1 2026',
+        ],
+        verdict: 'All catalysts delivering. Shareholder vote approved with overwhelming 81% YES (only needed 50.1%). Beast Industries closed successfully. Staking accelerating rapidly. Retail adoption exploding with 500K+ stockholders.',
+        scorecard: 9.7,
+        risks: 'ETH price risk remains primary concern. Execution now de-risked with management bench in place.',
+        strategy: 'STRONG BUY. All near-term catalysts completed successfully. Focus shifts to MAVAN launch Q1 and continued ETH accumulation.'
+      }
+    },
     {
       date: '2026-01-15',
       source: 'PR: $200M Beast Industries Investment + Annual Meeting',
@@ -5712,9 +5744,119 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   // Each entry includes: date, category, company, title, summary (detailed), significance, bmnrImplication, impact, source
   const adoptionTimeline = [
     // === DECEMBER 2025 ===
-    { 
-      date: '2025-12-26', 
-      category: 'Enterprise', 
+    {
+      date: '2025-12-24',
+      category: 'Enterprise',
+      company: 'ADI Foundation',
+      title: 'ADI Foundation Partners with M-Pesa to Bring 60M+ Users Onchain',
+      summary: 'ADI Foundation signs MoU with M-Pesa, Africa\'s largest mobile money platform with 60+ million monthly users across 8 countries (Kenya, DR Congo, Egypt, Ethiopia, Ghana, Lesotho, Mozambique, Tanzania). Partnership aims to extend blockchain infrastructure to millions of Africans through M-Pesa\'s existing mobile money rails. Huy Nguyen Trieu, ADI Foundation council member: "M-Pesa has been amazing in terms of financial inclusion. Our view is that we can push it further again by providing the right digital infrastructure." M-Pesa CEO Sitoyo Lopokoiyit: "We are excited to partner with ADI Foundation to tap into their expertise around new technologies and how these can transform financial services." Stablecoin expected to launch January 2026. Part of ADI\'s goal to bring 1 billion people onchain by 2030.',
+      significance: 'Potentially largest single onboarding of emerging market users to Ethereum L2 ecosystem. M-Pesa\'s 60M+ users across 8 African countries represents massive financial inclusion opportunity. 42% of sub-Saharan Africans remain unbanked. Nigeria alone did $50B in crypto transactions in 12 months to June 2024.',
+      bmnrImplication: 'ADI Chain (Ethereum L2) partnership with M-Pesa could bring tens of millions of African users to Ethereum ecosystem. Massive expansion of network\'s user base in emerging markets. Financial inclusion via blockchain = real-world utility that drives ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Semafor Africa'
+    },
+    {
+      date: '2025-12-24',
+      category: 'Enterprise',
+      company: 'Fasset',
+      title: 'Fasset Partners with ADI Foundation for Regulated Digital Asset Infrastructure',
+      summary: 'Fasset, a global banking and investment platform with regulatory approvals in UAE, Indonesia, Malaysia, EU, Turkey, Pakistan and others, announces strategic partnership with ADI Foundation. Fasset will provide regulated onboarding, KYC, and on/off-ramp infrastructure for ADI Chain. Users can purchase $ADI token directly in UAE Dirhams (AED) on Fasset platform. Daniel Ahmed, COO of Fasset: "This partnership reflects the shift from testing to real-world deployment of digital asset infrastructure." Fasset has raised $26.7M and also operates its own Ethereum L2 called "Own" for DeFi access.',
+      significance: 'Regulated fiat on/off-ramp infrastructure enables compliant access to ADI Chain. Fasset\'s multi-country regulatory approvals (UAE, Indonesia, Malaysia, EU, Turkey, Pakistan) expand geographic reach for institutional Ethereum L2 adoption.',
+      bmnrImplication: 'Regulated fiat gateways for ADI Chain (Ethereum L2) enable real-world adoption. More accessible infrastructure = more users = more Ethereum ecosystem value.',
+      impact: 'Bullish',
+      source: 'Fasset / ADI Foundation Press Release'
+    },
+    {
+      date: '2025-12-16',
+      category: 'Enterprise',
+      company: 'Mastercard',
+      title: 'Mastercard Advances Blockchain Innovation Through Strategic Alliance with ADI Foundation',
+      summary: 'Mastercard announces strategic alliance with ADI Foundation to advance blockchain-based asset tokenization and stablecoin-enabled payment innovation in the Middle East. Collaboration areas include: stablecoin-based settlement for domestic and cross-border transactions, stablecoin-linked payment cards, tokenized real-world assets use cases, and remittance/B2B trade flows using digital assets. NEO PAY (UAE) and INFINIOS (Bahrain) adopted stablecoin settlement capabilities. Follows Mastercard\'s expanded partnership with Circle for USDC/EURC settlement across EEMEA region. Prakriti Singh, EVP Mastercard: "By advancing asset tokenization and stablecoin-linked applications, Mastercard is enabling faster, seamless, and more secure transactions."',
+      significance: 'Major payment network ($400B+ market cap) partnering with ADI Foundation (Ethereum L2) for stablecoin and tokenization infrastructure in Middle East. Builds on Mastercard\'s existing USDC/EURC settlement capabilities.',
+      bmnrImplication: 'Mastercard partnership with ADI Chain ecosystem validates Ethereum L2 for payment network infrastructure. More institutional payment infrastructure on Ethereum = more network utility = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Mastercard Press Release'
+    },
+    {
+      date: '2025-12-12',
+      category: 'Institutional',
+      company: 'BlackRock',
+      title: 'BlackRock Signs MoU with IHC, Finstreet, and ADI Foundation for Tokenized Markets',
+      summary: 'BlackRock signs MoU during Abu Dhabi Finance Week with IHC Group entities Finstreet Limited and ADI Foundation to explore tokenized markets and next-generation financial architecture. Kashif Riaz, Managing Director at BlackRock: "We are excited to pursue opportunities with Finstreet and ADI to help advance digital assets and tokenized markets initiatives." Sunidhi Pasan, Finstreet CEO: "Tokenization is becoming the operating system of global markets. Abu Dhabi is emerging as the centre of this new system." Partnership is advisory-based to support Abu Dhabi\'s digital transformation ambitions.',
+      significance: 'World\'s largest asset manager ($10T+ AUM) partnering with UAE\'s ADI Chain ecosystem for tokenized markets development. Major validation for ADGM as institutional digital asset hub.',
+      bmnrImplication: 'BlackRock advising on ADI Chain/Finstreet infrastructure validates Ethereum L2 ecosystem for institutional tokenization. BlackRock already has BUIDL on Ethereum mainnet — now expanding to L2/MENA infrastructure.',
+      impact: 'Bullish',
+      source: 'Abu Dhabi Finance Week / Gulf Today'
+    },
+    {
+      date: '2025-12-09',
+      category: 'L2',
+      company: 'ADI Foundation',
+      title: 'ADI Chain Mainnet Launches - MENA\'s First Institutional L2 for Stablecoins and RWA',
+      summary: 'ADI Foundation announces mainnet launch of ADI Chain, the first institutional L2 blockchain for stablecoins and real-world assets in the MENA region. $ADI token launches simultaneously on Kraken, Crypto.com, KuCoin (eToro coming soon), also available via Telegram Wallet and Fasset. 50+ projects in deployment pipeline. Infrastructure ready to host UAE Dirham-backed stablecoin issued by First Abu Dhabi Bank and IHC, regulated by UAE Central Bank. Built on ZKsync\'s Airbender stack. Governments can build compliant L3 chains. Upcoming milestones: WEF Davos (January), ETHDenver (February), 10,000+ Web3 specialists training program with ADGM.',
+      significance: 'Major institutional Ethereum L2 mainnet launch for emerging markets. Compliance-first blockchain architecture for governments and institutions. 500M+ people in ecosystem reach, targeting 1 billion onchain by 2030.',
+      bmnrImplication: 'ADI Chain mainnet validates Ethereum ecosystem for sovereign/institutional infrastructure. UAE\'s largest conglomerate (IHC) backing Ethereum L2. Potential gateway for billions of users in emerging markets across Middle East, Asia, and Africa.',
+      impact: 'Bullish',
+      source: 'ADI Foundation Press Release'
+    },
+    {
+      date: '2025-12-09',
+      category: 'Institutional',
+      company: 'Franklin Templeton',
+      title: 'Franklin Templeton Signs MOUs with Finstreet and ADI Foundation in ADGM',
+      summary: 'Franklin Templeton ($1.67T AUM) signs parallel MOUs with Finstreet Limited and ADI DLT Foundation to explore digital asset solutions under ADGM\'s regulatory framework. Collaboration includes joint exploration of tokenized assets, stablecoins, digital distribution, and market access models. Jenny Johnson, CEO: "This collaboration with Finstreet Limited and ADI DLT Foundation in ADGM are strategic steps to explore how tokenized assets and digital distribution can unlock new efficiencies and opportunities." Finstreet subsidiaries include: Multilateral Trading Facility, Custody/Depository services, and Fund Management.',
+      significance: 'Major global asset manager ($1.67T AUM) partnering with UAE blockchain infrastructure (ADI Chain) and regulated trading venues. Expands institutional tokenization ecosystem in ADGM.',
+      bmnrImplication: 'Franklin Templeton (already has BENJI tokenized fund on Ethereum) deepening involvement with ADI Chain/Ethereum L2 ecosystem. More major asset managers in ADGM tokenization ecosystem = more Ethereum ecosystem validation.',
+      impact: 'Bullish',
+      source: 'Franklin Templeton / Finstreet / ADI Foundation Press Release'
+    },
+    {
+      date: '2025-12-08',
+      category: 'Institutional',
+      company: 'BlackRock',
+      title: 'BlackRock Files for Staked Ethereum ETF (ETHB)',
+      summary: 'BlackRock files S-1 registration statement with SEC for iShares Ethereum Staking Trust (ETHB), a staked Ethereum ETF. The proposed fund would give investors exposure to ETH staking yield without staking assets themselves. Separate from existing iShares Ethereum Trust (ETHA) which holds ~$11B in ETH. Under new SEC Chair Paul Atkins, regulatory stance on staking appears to be softening — previous Chair Gensler had instructed firms to strip staking from ETF filings. VanEck and others also resubmitting/amending filings to include staking. 19b-4 form still needed from listing exchange to trigger formal SEC deadline.',
+      significance: 'World\'s largest asset manager ($10T+ AUM) filing for staked ETH ETF represents major milestone for institutional staking access in US. Signals regulatory thaw under new SEC leadership.',
+      bmnrImplication: 'BlackRock staked ETH ETF validates productive ETH thesis that underpins BMNR strategy. Competition but also validation — more institutional staking products = more validation of yield-bearing ETH as asset class.',
+      impact: 'Bullish',
+      source: 'CoinDesk'
+    },
+    {
+      date: '2025-12-06',
+      category: 'Enterprise',
+      company: 'ADI Foundation',
+      title: 'ADI Foundation Announces 50+ Institutional Partnerships Across 20 Countries',
+      summary: 'ADI Foundation reveals partnership network spanning 50+ institutions across 20+ countries ahead of mainnet launch. Key partnerships include: Near Protocol (TravAI travel AI settled on ADI Chain), Abu Dhabi Real Estate Centre (tokenized ownership, digital registries), Esyasoft Holding (energy transition infrastructure), Emirates Driving Company (driver education blockchain). Technology partners: ZKsync, Alchemy, WalletConnect, Covalent, OpenZeppelin. Foundation also in discussions with African mobile payment providers with millions of users and billions in transaction volume.',
+      significance: 'Comprehensive institutional L2 ecosystem for emerging markets with real-world use cases across real estate, energy, payments, and identity. Major MENA infrastructure backed by UAE\'s largest conglomerate.',
+      bmnrImplication: 'ADI Chain expanding partnerships validates Ethereum L2 infrastructure for emerging market adoption. Real-world government and enterprise use cases demonstrate practical utility beyond speculation.',
+      impact: 'Bullish',
+      source: 'ADI Foundation / CoinDesk'
+    },
+    {
+      date: '2025-12-04',
+      category: 'Institutional',
+      company: 'WisdomTree',
+      title: 'WisdomTree Launches World\'s First Physical Lido Staked Ether ETP',
+      summary: 'WisdomTree launches WisdomTree Physical Lido Staked Ether ETP (LIST/LSTE), the world\'s first physically-backed ETP providing exposure to Lido Staked Ether (stETH) and staking rewards. Listed on Deutsche Börse Xetra, SIX Swiss Exchange, and Euronext exchanges in Paris and Amsterdam. MER: 0.50%. Lido has ~25% of all ETH staked through its protocol. Kean Gilbert, Lido Ecosystem Foundation: "stETH is already the most widely used path for institutions to access Ethereum\'s staking economy. Bringing it into a fully backed ETP is a natural next step." Available in 15 European countries.',
+      significance: 'First physically-backed stETH ETP gives European investors regulated exposure to ETH staking rewards via liquid staking. Major milestone for institutional staking access.',
+      bmnrImplication: 'Regulated stETH ETP validates institutional demand for ETH staking exposure. WisdomTree ($2.1B+ crypto ETP AUM) product validates productive ETH thesis similar to BMNR\'s staking strategy.',
+      impact: 'Bullish',
+      source: 'WisdomTree Press Release'
+    },
+    {
+      date: '2025-12-01',
+      category: 'Enterprise',
+      company: 'Sony Bank',
+      title: 'Sony Bank Plans USD-Pegged Stablecoin for Gaming and Entertainment Ecosystem',
+      summary: 'Sony Bank announces plans to launch USD-pegged stablecoin in early 2026 for payments across Sony\'s gaming, streaming, and anime platforms. Stablecoin would enable subscriptions, in-game purchases, and digital content payments without credit cards, streamlining cross-border purchases and reducing transaction fees. Sony Bank has applied for US banking license and partnered with Bastion (stablecoin infrastructure provider). 30%+ of Sony\'s global revenue comes from US market. Sony Financial Group (separately listed) supporting the project. Potential integration with Soneium L2 unclear.',
+      significance: 'Major entertainment conglomerate building stablecoin for PlayStation/gaming/streaming ecosystem. Could unify digital payments across PlayStation Network (100M+ users), Sony Music, and streaming services.',
+      bmnrImplication: 'Sony stablecoin potentially on Soneium (Ethereum L2) expands network utility for gaming/entertainment. PlayStation\'s massive user base could drive significant adoption of Ethereum ecosystem infrastructure.',
+      impact: 'Bullish',
+      source: 'Nikkei / Coinspeaker'
+    },
+    {
+      date: '2025-12-26',
+      category: 'Enterprise',
       company: 'Telcoin',
       title: 'Telcoin Launches eUSD - First US Bank-Issued Stablecoin Under GENIUS Act', 
       summary: 'Telcoin Digital Asset Bank, the first Digital Asset Depository Institution in the United States, begins blockchain banking operations with launch of eUSD stablecoin on Ethereum and Polygon blockchains. Initial mint: $10M eUSD. Operating under Nebraska charter (Financial Innovation Act) aligned with federal GENIUS Act guidelines, Telcoin is uniquely positioned to issue stablecoins, accept customer deposits, and process payments under the same charter. CEO Paul Neuner: "This is the crucial first step toward offering blockchain-native bank accounts through our Nebraska charter." Customer onboarding expected early 2026 through Telcoin Wallet V5.',
@@ -5952,13 +6094,79 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Over 200 custom hooks deployed on Uniswap V4 since launch, enabling novel AMM designs including dynamic fees, on-chain limit orders, MEV redistribution, and concentrated liquidity automation. Total Uniswap TVL reaches $8B across all versions (V2, V3, V4). V4\'s singleton contract design reduces gas costs 50%+ for multi-hop swaps. Hook examples: time-weighted average price (TWAP) orders, volatility-based fee adjustment, and loyalty rewards.',
       significance: 'Uniswap V4 hooks create "DeFi Legos 2.0" - permissionless innovation on top of core AMM infrastructure. Developer activity indicates sustained belief in Ethereum DeFi. Gas improvements make DEX trading competitive with CEXs.',
       bmnrImplication: 'Thriving DeFi ecosystem keeps Ethereum as the primary smart contract platform. More protocol innovation = more users = more ETH demand for gas and collateral.',
-      impact: 'Bullish', 
-      source: 'Uniswap Labs' 
+      impact: 'Bullish',
+      source: 'Uniswap Labs'
+    },
+    {
+      date: '2025-11-04',
+      category: 'Enterprise',
+      company: 'Amundi',
+      title: 'Amundi Tokenizes First Mutual Fund Share Class on Ethereum Mainnet',
+      summary: 'Amundi ($2.75T AUM), Europe\'s largest asset manager, launches first tokenized share class of one of its euro money market funds on Ethereum mainnet. Initial subscription November 4, 2025. Fund distributed in hybrid way: accessible via standard distribution networks AND via tokenized share. Project completed in 4 months based on 3 years of tokenization research. Collaboration between Legal, Compliance, Investments, Risk and Marketing teams across Amundi, Crédit Agricole, and CACEIS (Luxembourg). CACEIS provides technology and infrastructure for tokenization, digital wallets, and digital order platform for subscriptions/redemptions.',
+      significance: 'Europe\'s largest asset manager bringing institutional cash management on-chain. Hybrid distribution model allows gradual migration from traditional to tokenized rails. Multi-year R&D commitment demonstrates serious institutional intent. CACEIS infrastructure enables other asset managers to follow.',
+      bmnrImplication: 'Amundi ($2.75T AUM) tokenizing funds on Ethereum validates network for European institutional asset management. More tokenized funds = more on-chain settlement = ETH ecosystem value. Hybrid distribution model lowers barrier for traditional institutions.',
+      impact: 'Bullish',
+      source: 'Amundi'
     },
     // === OCTOBER 2025 ===
-    { 
-      date: '2025-10-31', 
-      category: 'Enterprise', 
+    {
+      date: '2025-10-29',
+      category: 'Enterprise',
+      company: 'Securitize',
+      title: 'Securitize Launches Tokenized AAA CLO Fund with BNY on Ethereum',
+      summary: 'Securitize ($4B+ AUM) launches Securitize Tokenized AAA CLO Fund (STAC) on Ethereum, bringing institutional structured credit on-chain. BNY ($57.8T AUC/A, $2.1T AUM) serves as custodian with BNY Investments as sub-advisor ($1.35T+ fixed income). Grove (Sky/MakerDAO ecosystem) plans $100M anchor allocation pending governance approval. Global CLO issuance exceeds $1.3T. Fund targets AAA-rated CLO tranches with floating rate exposure. Sam Paderewski, Grove Labs: "AAA CLOs offer durable, floating rate exposure that institutions understand. Tokenizing that exposure improves distribution and settlement."',
+      significance: 'World\'s largest custodian (BNY) partnering on tokenized institutional credit on Ethereum. AAA CLO market previously under-represented in tokenization despite consistent performance. DeFi-TradFi bridge via Grove/Sky ecosystem anchor.',
+      bmnrImplication: 'AAA CLO tokenization on Ethereum expands network utility for institutional credit markets. BNY ($57.8T AUC/A) participation validates Ethereum for high-quality credit infrastructure. More tokenized structured credit = more on-chain settlement = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Securitize / BNY Press Release'
+    },
+    {
+      date: '2025-10-27',
+      category: 'Enterprise',
+      company: 'JPYC',
+      title: 'JPYC Launches World\'s First Yen-Pegged Regulated Stablecoin on Ethereum',
+      summary: 'JPYC, a Japanese startup, launches the world\'s first stablecoin pegged to the yen on Ethereum, fully convertible to yen and backed by domestic savings and Japanese Government Bonds (JGBs). Target: 10 trillion yen ($66 billion) issuance over 3 years. No initial transaction fees — revenue from JGB interest. CEO Noritaka Okabe: "We hope to spur innovation by giving startups access to low transaction and settlement fees." BOJ Deputy Governor Ryozo Himino: "Stablecoins might emerge as a key player in the global payment system, partially replacing the role of bank deposits." Japan\'s three megabanks also planning joint stablecoin per Nikkei.',
+      significance: 'First yen stablecoin launches under Japan\'s Payment Services Act. Expands global stablecoin ecosystem beyond USD dominance (99%+ of current supply). BOJ acknowledgment of stablecoin importance signals regulatory acceptance.',
+      bmnrImplication: 'Yen stablecoin on Ethereum expands network utility for non-USD global commerce. More diverse stablecoin ecosystem = more on-chain activity = ETH ecosystem value. Japan megabank interest indicates broader institutional adoption coming.',
+      impact: 'Bullish',
+      source: 'Reuters'
+    },
+    {
+      date: '2025-10-14',
+      category: 'Enterprise',
+      company: 'Stripe',
+      title: 'Stripe Launches Stablecoin Subscription Payments on Ethereum L2s',
+      summary: 'Stripe launches stablecoin-based subscription capabilities, enabling recurring billing via USDC on Base and Polygon (Ethereum L2s). Built smart contract that resolves fundamental blockchain limitation: customers can save wallet as payment method and authorize recurring payments without re-signing each transaction. Supports 400+ wallets. Some AI companies (Shadeform) seeing ~20% of payment volume shift to stablecoins. Stablecoins settle near-instantly and cost half as much per transaction. 30% of Stripe businesses have recurring business models. Alex Mashrabov, Higgsfield CEO: "Stablecoin payments help us reduce our cost of revenue for payments from all around the globe."',
+      significance: 'Major payment processor enabling recurring crypto payments on Ethereum ecosystem. Addresses key blockchain UX limitation (manual signing) via smart contracts. Makes crypto subscriptions as seamless as traditional payment methods.',
+      bmnrImplication: 'Stripe building stablecoin subscription infrastructure on Base/Polygon expands Ethereum ecosystem utility for recurring commerce. More merchant adoption = more on-chain transaction volume = ETH ecosystem value accrual.',
+      impact: 'Bullish',
+      source: 'Stripe Blog'
+    },
+    {
+      date: '2025-10-02',
+      category: 'Enterprise',
+      company: 'FG Nexus',
+      title: 'FG Nexus and Securitize Tokenize NASDAQ-Listed Shares on Ethereum',
+      summary: 'FG Nexus (Nasdaq: FGNX, FGNXP) and Securitize announce agreement to natively tokenize FG Nexus public shares on Ethereum. Among first NASDAQ-listed companies to offer shareholders choice to tokenize shares, with tokenized shares conferring same rights as traditional shares. FIRST to tokenize dividend-paying, exchange-listed perpetual preferred share (FGNXP) — bringing recurring cash flows fully onchain. Uses Securitize\'s SEC-regulated infrastructure (broker-dealer, ATS, transfer agent). Carlos Domingo, Securitize CEO: "U.S. investors being able to hold real stock, not a synthetic wrapper, with instant settlement, automated compliance, and the ability to trade onchain through our regulated ATS."',
+      significance: 'First NASDAQ-listed dividend-paying preferred shares tokenized on Ethereum. Real equity ownership (not synthetic) with regulatory compliance. Dividends onchain = programmable shareholder distributions.',
+      bmnrImplication: 'Public company equity tokenized on Ethereum validates network for securities infrastructure. FG Nexus (ETH treasury company like BMNR) choosing Ethereum for own stock tokenization is strong endorsement. More equity tokenization = more Ethereum ecosystem utility.',
+      impact: 'Bullish',
+      source: 'FG Nexus / Securitize Press Release'
+    },
+    {
+      date: '2025-10-01',
+      category: 'L2',
+      company: 'ADI Foundation',
+      title: 'ADI Chain Joins ZKsync Elastic Network as First Airbender-Built Blockchain',
+      summary: 'ZKsync welcomes ADI Chain into its Elastic Network — a modular system of rollups and validiums enabling interoperability and shared liquidity. ADI Chain is FIRST blockchain built with ZKsync\'s Airbender technology, a high-speed open-source RISC-V prover delivering Ethereum block proofs in ~35 seconds using single GPU. Modular architecture supports EVM, EraVM, and WASM. Joins ZKsync Era, Abstract, Sophon, Lens, Zero Network, Cronos zkEVM, ZKcandy, and Wonder in the network. ADI Chain will host UAE\'s first dirham-pegged stablecoin developed by ADQ, IHC, and First Abu Dhabi Bank, pending Central Bank approval.',
+      significance: 'First production deployment of ZKsync\'s next-generation proving technology. Airbender enables ~35 second Ethereum proofs with single GPU — significant performance improvement. ADI Chain\'s institutional compliance focus plus ZK technology addresses enterprise requirements.',
+      bmnrImplication: 'ADI Chain using ZKsync Airbender to join Ethereum\'s ZK ecosystem validates network for regulated institutional infrastructure. ZK technology enables high-performance L2 meeting both compliance and scalability requirements. UAE sovereign stablecoin infrastructure on Ethereum L2.',
+      impact: 'Bullish',
+      source: 'ZKsync / crypto.news'
+    },
+    {
+      date: '2025-10-31',
+      category: 'Enterprise',
       company: 'HKMA',
       title: 'Hong Kong e-HKD Pilot Programme Phase 2 Report Published', 
       summary: 'Hong Kong Monetary Authority publishes Phase 2 Report of e-HKD Pilot Programme under Project e-HKD+. Eleven pilot groups across three study themes: (1) Settlement of Tokenised Assets — Standard Chartered/BlackRock/Mastercard/Libeara tested end-to-end tokenised MMF settlement; Visa/ANZ/Fidelity/ChinaAMC explored cross-border AUD stablecoin to e-HKD conversion; HSBC tested privacy-enhancing technologies (Zero Knowledge Proofs via Zeto, Anonymous Zether), (2) Programmability — BOCHK/Sanfield tested construction supply chain payments; CCB(Asia) tested multi-chain cross-bank programmable transactions; DBS/Hang Seng tested purpose-bound money vouchers; Mastercard/KBank/Airstar tested deep-tier supply chain financing, (3) Offline Payments — Super SIM cards via BOCOM/China Mobile tested account-based vs UTXO models. Key findings: tokenised deposits can achieve similar efficiencies to e-HKD; commercial banks showed slight preference for tokenised deposits (lower cost of capital under fractional banking, faster time-to-market, stronger customer stickiness). HKMA decision: prioritize wholesale e-HKD development; retail extension subject to market demand. E-HKD Industry Forum developing common token standards for cross-institution programmability.',
@@ -6077,9 +6285,77 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       impact: 'Bullish', 
       source: 'Visa Crypto Research' 
     },
-    { 
-      date: '2025-08-01', 
-      category: 'Institutional', 
+    // === SEPTEMBER 2025 ===
+    {
+      date: '2025-09-25',
+      category: 'Enterprise',
+      company: 'Centrifuge',
+      title: 'Centrifuge Launches First Licensed S&P 500 Index Fund Token (SPXA) on Base',
+      summary: 'Centrifuge launches Janus Henderson Anemoy S&P 500 Fund (SPXA), the first tokenized S&P 500 index fund licensed by S&P Dow Jones Indices, exclusively on Base (Coinbase\'s Ethereum L2). Anemoy serves as investment manager with Janus Henderson ($457B AUM) as sub-investment manager. FalconX joins as anchor investor. Wormhole will enable future multichain expansion. Nick Cherney, Janus Henderson Head of Innovation: "Launching SPXA with Centrifuge is a natural progression of our blockchain strategy, bringing the world\'s most important equity index to a new generation of investors." Bhaji Illuminati, Centrifuge CEO: "There\'s no index more important than the S&P 500. Indices are the best way to bring stocks onchain: they\'re simple, collateral-ready, and unlock liquidity in ways individual securities can\'t."',
+      significance: 'First tokenized S&P 500 index fund with official S&P DJI licensing brings the world\'s flagship equity benchmark on-chain. Major milestone for tokenized equities moving from individual stocks to index products. Builds on Centrifuge\'s track record in private credit and fixed income tokenization.',
+      bmnrImplication: 'S&P 500 index fund on Ethereum L2 (Base) brings flagship equity exposure to blockchain. Janus Henderson ($457B AUM) participation validates Ethereum ecosystem for institutional asset management. More index products on-chain = more network utility = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Centrifuge / Janus Henderson Press Release'
+    },
+    {
+      date: '2025-09-17',
+      category: 'Enterprise',
+      company: 'Google',
+      title: 'Google Launches Agent Payments Protocol (AP2) with Ethereum Foundation and 60+ Partners',
+      summary: 'Google announces Agent Payments Protocol (AP2), an open protocol developed with 60+ organizations to securely initiate agent-led payments across platforms. Partners include Mastercard, PayPal, American Express, Coinbase, Ant International, Adyen, MetaMask, Ethereum Foundation, Salesforce, ServiceNow, and more. AP2 extends Agent2Agent (A2A) and Model Context Protocol (MCP), supporting credit/debit cards, stablecoins, and real-time bank transfers. Uses cryptographic "Mandates" for authorization. A2A x402 extension built with Coinbase, Ethereum Foundation, and MetaMask enables crypto payments. Marco De Rossi, MetaMask AI Lead: "Blockchains are the natural payment layer for agents, and Ethereum will be the backbone of this." Erik Reppel, Coinbase: "x402 and AP2 show that agent-to-agent payments aren\'t just an experiment anymore."',
+      significance: 'Google building payment infrastructure explicitly supporting Ethereum/stablecoins alongside traditional payments. 60+ partners including major payment networks and crypto companies. AI agents using blockchain for payments creates new category of network utility.',
+      bmnrImplication: 'Google + 60 partners building on Ethereum validates network for AI agent commerce infrastructure. MetaMask quote ("Ethereum will be the backbone") signals strong positioning. AI-driven commerce on Ethereum = new source of network utility and transaction volume.',
+      impact: 'Bullish',
+      source: 'Google Cloud Blog'
+    },
+    {
+      date: '2025-09-16',
+      category: 'Enterprise',
+      company: 'Openbank',
+      title: 'Openbank (Santander) Launches ETH Trading in Germany Under MiCA Regulation',
+      summary: 'Openbank, Grupo Santander\'s 100% digital bank, launches cryptocurrency trading service in Germany, enabling customers to buy, sell, and hold Bitcoin, Ether, Litecoin, Polygon, and Cardano alongside other investments. Service operates under MiCA (Markets in Crypto-Assets Regulation) with full investor protection guarantees. Customers can trade without transferring funds to external platforms, backed by Santander Group. Competitive fees: 1.49% on trades (€1 minimum), no custody fees. Spain rollout coming soon. Coty de Monteverde, Head of Crypto at Santander: "By incorporating the main cryptocurrencies into our investment platform, we are responding to the demand of some of our customers."',
+      significance: 'Major European bank (Santander subsidiary) offering regulated ETH trading under MiCA framework. Bank-integrated crypto demonstrates institutional confidence in ETH under European regulation. Part of broader investment platform (3,000+ stocks, 3,000 funds, 2,000+ ETFs).',
+      bmnrImplication: 'Bank-integrated crypto trading expands retail investor access to ETH in Europe. MiCA compliance validates regulatory path for European ETH adoption. More accessible ETH = broader investor base = supports ETH ecosystem.',
+      impact: 'Bullish',
+      source: 'Openbank Press Release'
+    },
+    {
+      date: '2025-09-03',
+      category: 'Enterprise',
+      company: 'Ondo Finance',
+      title: 'Ondo Global Markets Launches with 100+ Tokenized US Stocks and ETFs on Ethereum',
+      summary: 'Ondo Finance launches Ondo Global Markets, platform for tokenized US stocks and ETFs powered by Alpaca\'s Broker API. 100+ assets live with plans to scale to 1,000+ by year-end. Available in qualified Asia-Pacific, African, and Latin American markets. Features: 24/7/365 transferability, peer-to-peer transfers, DeFi usability, fully backed by US stocks/ETFs held by US broker-dealers. Ian De Bode, Ondo CSO: "Global investors have historically faced barriers to accessing the approximately $63 trillion US securities markets due to high fees, limited access, transfer frictions, platform fragmentation, and geographic exclusions." McKinsey projects tokenized market cap reaching ~$2 trillion by 2030. Currently on Ethereum with Solana and BNB Chain coming.',
+      significance: 'Major tokenized securities platform launching on Ethereum first. Opens US equity markets to global investors facing previous barriers. 1,000+ assets planned by year-end demonstrates scale ambitions. DeFi composability enables use in lending/trading protocols.',
+      bmnrImplication: 'Tokenized US equities on Ethereum expands network utility for global securities access. $63T US securities market addressable through tokenization. More tokenized assets = more on-chain activity = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Business Wire / Ondo Finance'
+    },
+    {
+      date: '2025-09-02',
+      category: 'Enterprise',
+      company: 'Kraken',
+      title: 'Kraken Launches xStocks Tokenized Equities on Ethereum with Backed',
+      summary: 'Kraken and Backed expand xStocks tokenized equities to Ethereum mainnet. Backed issues xStocks as ERC-20 tokens with full 1:1 collateralization. Eligible Kraken clients in 140+ countries can deposit/withdraw xStocks directly on Ethereum for self-custody and on-chain activity. Since June launch, xStocks has exceeded $3.5 billion in combined CEX/DEX volume. Multi-chain strategy includes Solana, BNB Chain, and TRON. Arjun Sethi, Kraken co-CEO: "Ethereum is the center of gravity for smart contract innovation, on-chain liquidity and decentralized finance. By launching xStocks on Ethereum, we are making tokenized equities programmable, interoperable and continuously accessible to builders and institutions worldwide."',
+      significance: 'Major crypto exchange bringing tokenized traditional equities to Ethereum ecosystem. $3.5B+ volume since June demonstrates market demand. 140+ country availability expands global access to tokenized stocks. DeFi composability enables integration with lending, trading protocols.',
+      bmnrImplication: 'Tokenized equities on Ethereum expands network utility for traditional securities. Kraken co-CEO quote validates Ethereum as "center of gravity" for smart contract innovation. More tokenized assets = more DeFi composability = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Kraken Blog'
+    },
+    // === AUGUST 2025 ===
+    {
+      date: '2025-08-24',
+      category: 'L2',
+      company: 'ADI Foundation',
+      title: 'ADI Foundation Launches ADI Chain Testnet - UAE\'s Institutional Ethereum L2',
+      summary: 'ADI Foundation, founded by Sirius International Holding (subsidiary of IHC, MENA\'s largest listed holding company at $240B), launches public testnet of ADI Chain, an EVM Layer-2 blockchain designed for institutional use cases including UAE Dirham-backed stablecoin. Uses AI-assisted protocol automation and GPU acceleration for high throughput with low transaction costs. Compliance-native design enables regulated entities to issue stablecoins, operate health systems, manage land registries, and build payment systems. Developed with First Abu Dhabi Bank (FAB), ADQ, and IHC, regulated by Central Bank of UAE. Andrey Lazorenko, ADI Foundation CEO: "ADI Chain will provide enterprise-grade infrastructure and support our mission in bringing 1 billion new users onchain by 2030." Foundation already has 400M+ people in ecosystem reach.',
+      significance: 'UAE\'s largest conglomerate backing Ethereum L2 for sovereign digital economy. Compliance-native design addresses government requirements for blockchain adoption. Dirham stablecoin use case demonstrates real-world institutional application.',
+      bmnrImplication: 'UAE building regulated financial infrastructure on Ethereum L2 validates network for sovereign digital economies. ADI Chain targeting 1B users across Middle East, Asia, Africa creates massive potential adoption. More institutional L2s = more settlement to Ethereum L1.',
+      impact: 'Bullish',
+      source: 'ADI Foundation / The National (Abu Dhabi)'
+    },
+    {
+      date: '2025-08-01',
+      category: 'Institutional',
       company: 'Mastercard',
       title: 'Mastercard Global Crypto Adoption Index: 58% Consumer Engagement Worldwide', 
       summary: 'Mastercard releases Global Cryptocurrency Adoption Index revealing 58% of global consumers either holding crypto (21%) or crypto-curious (37%). Global average adoption score: 35/100. EEMEA (Eastern Europe, Middle East, Africa) region scores 49/100 — significantly above average, demonstrating high interest in emerging economies. Millennials and Gen Z leading adoption alongside higher-income users. Key finding: consumers increasingly expect crypto integrated into existing payment systems and usable for everyday purchases — perception shifting from "novelty to utility." Mastercard partnering with fintechs, digital wallet providers, and central banks to support secure, regulated, inclusive pathways for innovation. Research conducted in coordination with expanded crypto product suite (Crypto Credential, Multi-Token Network, MetaMask Card).',
@@ -6107,12 +6383,23 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Goldman Sachs and BNY Mellon ($50T+ combined AUM/AUC) partner to tokenize ownership records of select money market funds using Goldman\'s GS DAP blockchain infrastructure. Institutional investors can subscribe to fund shares via BNY\'s LiquidityDirect and Digital Assets platforms, with "mirrored" records created on Goldman\'s blockchain. Initial participants include BlackRock, Fidelity, Federated Hermes, Goldman Sachs Asset Management, and BNY\'s Dreyfus unit. BNY maintains official books under existing regulations; tokens enable programmable collateral use and improved fund share transferability. Separately, Bitwise CIO Matt Hougan reports ETH facing "demand shock" — ETFs and corporate treasuries bought 2.83M ETH (~$10B) since mid-May, 32x more than network minted. Hougan projects another $20B in ETH purchases over next year vs. 800K ETH issuance.',
       significance: 'Wall Street\'s two largest custodians/banks partnering on tokenization infrastructure signals mainstream adoption inflection point. Bringing BlackRock, Fidelity, and major asset managers into tokenized fund infrastructure validates blockchain for traditional finance operations. Goldman research separately projects stablecoin market reaching "trillions" with USDC growing $77B by 2027.',
       bmnrImplication: 'Goldman + BNY tokenization infrastructure demonstrates traditional finance actively building on blockchain rails. The "demand shock" data (32x more ETH bought than minted) validates supply/demand thesis for ETH price appreciation. Corporate treasury adoption (BitMine, SharpLink, Bit Digital mentioned) directly parallels BMNR strategy. More institutional infrastructure = more ETH ecosystem value.',
-      impact: 'Bullish', 
-      source: 'The Block / Bitwise' 
+      impact: 'Bullish',
+      source: 'The Block / Bitwise'
     },
-    { 
-      date: '2025-07-15', 
-      category: 'Enterprise', 
+    {
+      date: '2025-07-15',
+      category: 'L2',
+      company: 'Ant Digital Technologies',
+      title: 'Ant Digital Technologies Launches Jovay Testnet - Institutional L2 for RWA',
+      summary: 'Ant Digital Technologies (parent of Alipay, one of world\'s largest fintech companies) launches Jovay testnet, a blockchain specifically built for institutional-grade use cases including RWA tokenization. Features: three-tier pipeline parallel architecture (transaction, block, batch level) for sub-second response times, dual-proof system combining TEE (Trusted Execution Environments) and ZKP (Zero-Knowledge Proofs), modular architecture enabling independent module upgrades. Plans to integrate Ethereum ecosystem resources including decentralized wallets, oracles, fund custody, and security/compliance solutions. Mainnet expected Q4 2025. Jovay statement: "Since its debut in Dubai in April, Jovay has received widespread welcome from global institutions."',
+      significance: 'Alipay parent company building institutional L2 with Ethereum ecosystem integration. Addresses core enterprise pain points: performance, security, compliance, scalability. Potential to bring massive Asian institutional capital to Ethereum ecosystem.',
+      bmnrImplication: 'Ant Group building on Ethereum ecosystem validates network for Asian institutional finance. Alipay scale + Ethereum infrastructure = massive potential user onboarding. More institutional L2s integrating with Ethereum = more ecosystem value.',
+      impact: 'Bullish',
+      source: 'PRNewswire / Ant Digital Technologies'
+    },
+    {
+      date: '2025-07-15',
+      category: 'Enterprise',
       company: 'Standard Chartered',
       title: 'Standard Chartered Becomes First G-SIB to Offer Deliverable Spot Crypto Trading', 
       summary: 'Standard Chartered launches fully integrated digital assets trading service for institutional clients through UK branch — becoming FIRST Global Systemically Important Bank (G-SIB) to offer deliverable spot cryptoasset trading. Initial offerings: Bitcoin (XBT/USD) and Ether (XET/USD) spot trading; non-deliverable forwards (NDFs) coming soon. FCA-registered cryptoasset service provider. Fully integrated with existing FX platforms; clients can settle to custodian of choice including Standard Chartered custody. Part of growing digital asset suite: Zodia Custody, Zodia Markets, Libeara (tokenization). Group CEO Bill Winters: "Digital assets are a foundational element of the evolution in financial services. They\'re integral to enabling new pathways for innovation, greater inclusion and growth across the industry." Tony Hall (Global Head of Trading): "With growing interest in regulated digital assets solutions, we are well positioned to meet client needs while capturing the opportunities in this space."',
@@ -6229,12 +6516,23 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Siemens ($140B+ market cap) issues its second digital bond under Germany\'s Electronic Securities Act (eWpG), with volume of €300 million (5x larger than first bond) and one-year maturity. The bond was settled via SWIAT private permissioned blockchain and the Bundesbank Trigger Solution, enabling first-ever fully automated settlement in central bank money within minutes. This compares to 2-day settlement for Siemens\' first €60M digital bond in Feb 2023. Settlement risk "almost fully eliminated for all parties involved." Transaction supports ECB/Eurosystem trials testing DLT for digital financial markets. DekaBank acted as registrar; BayernLB, DekaBank, DZ BANK, Helaba, and LBBW invested. CFO Ralf Thomas: "We are demonstrating once again our spirit of innovation and underscoring our aim to continuously drive digital solutions for the financial markets."',
       significance: 'Major industrial company scaling blockchain bond issuance 5x while reducing settlement from days to minutes. ECB/Bundesbank involvement signals regulatory endorsement of DLT for securities. Siemens demonstrating that tokenized bonds are production-ready for Tier 1 corporate treasury operations. Settlement in central bank money (not just stablecoins) represents institutional-grade infrastructure.',
       bmnrImplication: 'Proves blockchain infrastructure ready for large-scale corporate treasury operations. €300M bond with minutes settlement and central bank money integration validates tokenized securities thesis. As more corporates issue on-chain bonds, demand for blockchain settlement infrastructure grows. Ethereum ecosystem benefits from expanding institutional use cases.',
-      impact: 'Bullish', 
-      source: 'Siemens Press Release' 
+      impact: 'Bullish',
+      source: 'Siemens Press Release'
     },
-    { 
-      date: '2024-08-14', 
-      category: 'Enterprise', 
+    {
+      date: '2024-08-23',
+      category: 'L2',
+      company: 'Sony',
+      title: 'Sony and Startale Announce Soneium - Public Ethereum L2 Blockchain',
+      summary: 'Sony Group and Startale announce Sony BSL, a joint venture to launch Soneium, a public Ethereum Layer-2 blockchain. Joint venture combines Startale\'s blockchain expertise with Sony Group\'s extensive experience in technology, content creation, finance, gaming, and consumer electronics. Soneium aims to become cornerstone of global blockchain infrastructure, driving Web3 adoption through Sony\'s millions of touchpoints. Astar Network aligning with Soneium, with ASTR token to be integrated into ecosystem. Sony\'s vision: "Realize the Open Internet that Transcends Boundaries. On Soneium, everyone is a creator, no matter where you are or what you do." Startale brings vertically integrated blockchain technology stack from base layer to application layer.',
+      significance: 'Major entertainment/tech conglomerate ($85B+ market cap) building on Ethereum ecosystem. Potential to onboard millions of users through PlayStation, Sony Music, Sony Pictures, and consumer electronics touchpoints. Validates Ethereum as foundation for mainstream consumer applications.',
+      bmnrImplication: 'Sony building L2 on Ethereum validates network for mainstream consumer applications. Entertainment giant with massive user base choosing Ethereum infrastructure expands total addressable market beyond finance. PlayStation ecosystem alone has 100M+ users.',
+      impact: 'Bullish',
+      source: 'Startale / Sony BSL Announcement'
+    },
+    {
+      date: '2024-08-14',
+      category: 'Enterprise',
       company: 'Mastercard',
       title: 'MetaMask Card Launches - First Self-Custody Wallet Debit Card on Mastercard', 
       summary: 'MetaMask (Consensys), Mastercard, and Baanx launch MetaMask Card — world\'s first Mastercard debit card enabling spending directly from self-custody crypto wallet. Supports USDC, USDT, and WETH on Linea network (Ethereum L2). EU and UK pilot launch. Users spend crypto for everyday purchases anywhere Mastercard accepted; crypto converted to fiat at moment of transaction. Eliminates traditional friction: crypto → exchange → fiat → bank account. Users retain keys and control until purchase. Mastercard EVP Raj Dhamodharan: "We see a great opportunity to make shopping easier, safer and more interoperable for users of self-managed wallets... bridging the gaps between Web2 and Web3 worlds." Baanx CCO Simon Jones: "We are working on the vision of enabling neobanking without custody. Anyone with access to a smartphone should have access to basic financial services by default."',
