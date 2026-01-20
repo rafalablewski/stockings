@@ -8794,16 +8794,16 @@ const TimelineTab = () => {
       {/* Upcoming Events + Recent Press Releases */}
       <div className="g2">
         <div className="card">
-          <div className="card-title">Upcoming Events</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(234,179,8,0.1)', borderRadius: 8, border: '1px solid var(--gold)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(74,222,128,0.1)', borderRadius: 8, border: '1px solid rgba(74,222,128,0.4)' }}>
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)' }}>🗳️ Annual Stockholder Meeting</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Wynn Las Vegas · Vote deadline Jan 14</div>
+                <div style={{ fontWeight: 600, color: 'var(--text)' }}>✓ Annual Stockholder Meeting</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Wynn Las Vegas · Prop 2 passed</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>Jan 15, 2026</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>Prop 2: 500M→50B shares</div>
+                <div style={{ fontFamily: 'Space Mono', color: '#4ade80' }}>Jan 15, 2026</div>
+                <div style={{ fontSize: 11, color: '#4ade80' }}>Completed</div>
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>

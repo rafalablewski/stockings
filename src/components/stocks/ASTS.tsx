@@ -8629,7 +8629,7 @@ const TimelineTab = () => {
           </div>
           <div style={{ fontSize: 11, color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ color: 'var(--cyan)' }}>●</span>
-            <span>Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}</span>
+            <span style={{ display: 'flex', alignItems: 'center' }}>Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}<UpdateIndicators sources="PR" /></span>
           </div>
         </div>
       </div>
