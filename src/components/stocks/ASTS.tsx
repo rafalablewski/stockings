@@ -10563,10 +10563,77 @@ const WallStreetTab = () => {
       firm: 'Deutsche Bank',
       analyst: 'Bryan Kraft',
       coverageSince: 'June 2021',
-      currentPT: 81,
+      currentPT: 137,
       currentRating: 'Buy',
       currentRatingNormalized: 'bullish',
       reports: [
+        // === Jan 2026 - PT Raise $81 → $137 (FULL REPORT - Revamped Model) ===
+        {
+          date: '2026-01-20',
+          action: 'PT Raise',
+          priceTarget: 137,
+          previousTarget: 81,
+          rating: 'Buy',
+          ratingNormalized: 'bullish',
+          reportTitle: 'Our New Model Includes A Larger TAM, Greater Capex, And Lower Supplemental Coverage ARPU',
+          source: 'Deutsche Bank Research',
+          isFullReport: true,
+          thesis: 'We\'re publishing a revamped model with updated TAM, penetration, pricing, and launch/capex assumptions. Our updated model also mathematically analyzes capacity against utilization to determine the number of satellites required to support the business, which then drives our build/launch and capex forecast. PT raised to $137 from $81 (+69%).',
+          reportSummary: `**VALUATION METHODOLOGY UPDATE**
+Raising PT to $137, from $81, driven by rolling forward our valuation given the new year and an increase in our EV/2030E EBITDA multiple to 20x, from 15x. The reason for the increase in our 2030 valuation multiple is that our new forecast exits 2030 with a 60% higher EBITDA growth rate of 40%.
+
+**MODEL CHANGES**
+- Larger TAM (Total Addressable Market)
+- Greater Capex assumptions
+- Lower Supplemental Coverage ARPU
+- Mathematical capacity vs utilization analysis for satellite requirements
+- Updated penetration and pricing assumptions
+
+**STOCK OUTLOOK — LAUNCH EXECUTION IS KEY IN 2026**
+We believe that ASTS has the MNO partnerships in place to be successful and scale its D2D business, while also adding incremental revenue in government and potentially enterprise over time. The next step in realizing future success for ASTS is executing the company's satellite build and launch plan in order to enable a 24 hour continuous commercial service.
+
+**LAUNCH TIMELINE EXPECTATIONS**
+- Target: 45-60 satellites by YE2026
+- 5 launches by end of March 2026 (including Dec 23, 2025 successful launch)
+- Goal: 24-hour continuous commercial service by late 2026/1H27
+- Minor timeline slips acceptable (1 launch into 2Q or early 2027)
+
+**EXECUTION MATTERS**
+The company has historically experienced delays in launch plans (as many in the satellite industry have historically, especially new entrants) and, therefore, it is critical that the company largely delivers on schedule this year. ASTS needs to show that it can accelerate the launch cadence and deliver a 24 hour continuous service to its MNO partners in late 2026/1H27. Meeting this timeline would represent significant progress against operationalizing the business plan and we believe would drive continued upside in the stock price.`,
+          assumptions: [
+            { label: 'Price Target', value: '$137.00' },
+            { label: 'Prev Target', value: '$81.00' },
+            { label: 'PT Change', value: '+69%' },
+            { label: 'EV/2030E EBITDA Multiple', value: '20x (from 15x)' },
+            { label: '2030 EBITDA Growth Rate', value: '40%' },
+            { label: 'YE2026 Satellite Target', value: '45-60 satellites' },
+            { label: 'Q1 2026 Launch Target', value: '5 launches by end of March' },
+          ],
+          catalysts: [
+            'Execute satellite build and launch plan for 24-hour continuous service',
+            '5 launches by end of Q1 2026 (including Dec 23, 2025 successful launch)',
+            '45-60 satellites in orbit by YE2026',
+            '24-hour continuous commercial service by late 2026/1H27',
+            'Incremental government and enterprise revenue opportunities',
+          ],
+          risks: [
+            'Launch schedule execution risk — historical delays in satellite industry',
+            'Manufacturing capacity constraints',
+            'Regulatory approval timing',
+          ],
+          methodology: 'EV/2030E EBITDA multiple increased to 20x (from 15x) due to higher 2030 exit EBITDA growth rate of 40%. Valuation rolled forward to reflect new year.',
+          fullNotes: `KEY MODEL UPDATES:
+- Revamped TAM assumptions (larger addressable market)
+- Updated penetration and pricing assumptions
+- Greater capex forecast driven by capacity/utilization analysis
+- Lower Supplemental Coverage ARPU assumptions
+- Mathematical satellite requirement modeling
+
+LAUNCH EXECUTION TIMELINE (Illustrative):
+Note: Company has not provided specific future launch dates for Bluebird 7 and beyond; these are hypothetical launch estimates.
+
+DISCLOSURE: Deutsche Bank does and seeks to do business with companies covered in its research reports. Distributed January 2026.`
+        },
         // === Nov 2025 - PT Raise to $81 (Quick Update) ===
         {
           date: '2025-11-01',
@@ -12387,10 +12454,78 @@ DISCLOSURE: Scotiabank has managed/co-managed public offering in past 12 months,
       firm: 'Clear Street',
       analyst: 'Greg Pendy',
       coverageSince: 'July 2025',
-      currentPT: 87,
+      currentPT: 137,
       currentRating: 'Buy',
       currentRatingNormalized: 'bullish',
       reports: [
+        // === Jan 2026 - PT Raise $87 → $137 (FULL REPORT - Golden Dome & DoD) ===
+        {
+          date: '2026-01-20',
+          action: 'PT Raise',
+          priceTarget: 137,
+          previousTarget: 87,
+          rating: 'Buy',
+          ratingNormalized: 'bullish',
+          reportTitle: "A 'BlueBird' in the Hand and a 'Golden Dome' on the Horizon",
+          source: 'Clear Street Research',
+          isFullReport: true,
+          thesis: 'We raise our price target on AST SpaceMobile to $137 (from $87) and reiterate our Buy rating. We remain bullish on the direct-to-cellular market, as rising competition from SpaceX/Starlink is likely to push mobile network operators to rely more heavily on ASTS partnerships to defend subscriber bases. Higher defense revenue adds ~$460M to 2029E EBITDA with the commercial outlook largely unchanged.',
+          reportSummary: `**RECENT DEVELOPMENTS REINFORCING OUR VIEW**
+✅ Direct-to-Cell Execution: In late 2025 the BlueBird-6 launched, deploying the largest communications array ever placed in LEO.
+✅ Department of Defense Opportunity Expanding: On January 16th, ASTS was chosen to compete in a program under Golden Dome.
+✅ Raising Outlook: Higher defense revenue adds ~$460M to 2029E EBITDA with the commercial outlook largely unchanged.
+
+**VALUATION ADJUSTMENT**
+Our revised target of $137 is based on two primary changes: extending our valuation period to 2029E (up from 2028E) and applying a lower 20x EBITDA multiple (down from 25x). The reduced multiple is a consequence of the projected forward EBITDA CAGR decreasing from ~22% in 2028E to ~16% in 2029E. The new $137 target is derived from a revised 2029E EBITDA of $2.5B, which now incorporates additional revenue from the Department of Defense (DoD).
+
+**BLUEBIRD-6 LAUNCH VALIDATES EXECUTION**
+ASTS's successful late-December launch of the largest LEO satellite array to date marks a key milestone, further validating its 2026 pathway of 45 to 60 launches.
+
+**DUAL-USE BEYOND DIRECT-TO-CELL**
+The Missile Defense Agency's SHIELD program validates ASTS's constellation for high-priority defense missions beyond commercial Direct-to-Cell.
+
+**RAISING REVENUE AND EBITDA ON EXPANDED OPPORTUNITY**
+We primarily increase government DoD estimates, driving consolidated estimates upward:
+• 2028E: Revenue up 14% to $2.6B; EBITDA up 20% to $1.5B
+• 2029E: Revenue up 18% to $4.0B; EBITDA up 24% to $2.5B
+
+**SPECTRUM OPPORTUNITY**
+ASTS's well-timed early 2025 bid for 45 MHz of U.S. L-band spectrum is now seeking FCC approval. Based on recent comparable transactions, we estimate the spectrum value at ~$16B (~$1.05 per POP across 350M people), or ~$24 per share.`,
+          assumptions: [
+            { label: 'Price Target', value: '$137.00' },
+            { label: 'Prev Target', value: '$87.00' },
+            { label: 'PT Change', value: '+57%' },
+            { label: 'Valuation Period', value: '2029E (from 2028E)' },
+            { label: 'EBITDA Multiple', value: '20x (from 25x)' },
+            { label: '2029E EBITDA', value: '$2.5B' },
+            { label: 'DoD EBITDA Contribution', value: '+$460M to 2029E' },
+            { label: 'L-band Spectrum Value', value: '~$16B (~$24/share)' },
+          ],
+          catalysts: [
+            'BlueBird-6 launch validates execution — largest LEO array ever deployed',
+            'Golden Dome program selection (Jan 16) expands DoD opportunity',
+            'MDA SHIELD program validates dual-use defense capability',
+            '45 MHz L-band spectrum bid awaiting FCC approval (~$16B value)',
+            '2026 pathway of 45-60 satellite launches',
+          ],
+          risks: [
+            'SpaceX/Starlink competition in direct-to-cellular market',
+            'Forward EBITDA CAGR declining from ~22% to ~16%',
+            'FCC approval timing for L-band spectrum',
+          ],
+          methodology: '20x multiple on 2029E EBITDA of $2.5B. Valuation period extended to 2029E (from 2028E). Multiple reduced from 25x due to lower forward EBITDA CAGR (~16% vs ~22%).',
+          fullNotes: `ESTIMATE REVISIONS:
+| Metric | 2028E Old | 2028E New | Change | 2029E Old | 2029E New | Change |
+| Revenue | $2.3B | $2.6B | +14% | $3.4B | $4.0B | +18% |
+| EBITDA | $1.3B | $1.5B | +20% | $2.0B | $2.5B | +24% |
+
+SPECTRUM VALUATION:
+- 45 MHz of U.S. L-band spectrum
+- Value: ~$16B (~$1.05 per POP × 350M people)
+- Per share value: ~$24
+
+DISCLOSURE: Clear Street does and seeks to do business with companies covered in its research reports. Distributed January 2026.`
+        },
         { date: '2025-11-12', action: 'PT Raise', priceTarget: 87, previousTarget: 59, rating: 'Buy', ratingNormalized: 'bullish', source: 'TipRanks', sourceUrl: 'https://www.tipranks.com/', isFullReport: false,
           thesis: 'Raising price target post-Q3 results.'
         },
