@@ -5113,9 +5113,9 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   ];
 
   // Collapsible section component
-  const CollapsibleSection = ({ id, title, children }) => (
+  const CollapsibleSection = ({ id, title, children, showIndicators = true }) => (
     <div className="card" style={{ marginBottom: 16 }}>
-      <div 
+      <div
         onClick={() => toggleSection(id)}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
         role="button"
@@ -5123,7 +5123,10 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         aria-expanded={investmentSections.has(id)}
         onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
       >
-        <div className="card-title" style={{ marginBottom: 0 }}>{title}</div>
+        <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>
+          {title}
+          {showIndicators && <UpdateIndicators sources={['PR', 'SEC']} />}
+        </div>
         <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
       {investmentSections.has(id) && <div style={{ marginTop: 16 }}>{children}</div>}
@@ -5155,6 +5158,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
               <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 6, fontWeight: 700, fontSize: 18 }}>BUY</span>
               <span style={{ background: 'rgba(126,231,135,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>HIGH CONVICTION</span>
+              <UpdateIndicators sources={['PR', 'SEC']} />
             </div>
             <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>
               {current.executiveSummary.oneLiner}
