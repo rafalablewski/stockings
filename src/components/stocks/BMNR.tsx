@@ -2179,7 +2179,7 @@ const BMNRParameterCard = ({
         )}
       </div>
       <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
-        ← Bearish | Bullish →
+        {inverse ? '← Bullish | Bearish →' : '← Bearish | Bullish →'}
       </div>
     </div>
   );
