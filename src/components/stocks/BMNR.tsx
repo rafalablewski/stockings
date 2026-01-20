@@ -1671,17 +1671,17 @@ const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, m
 ));
 Input.displayName = 'Input';
 
-// CFA Level III Educational Notes Component
+// CFA Level III Educational Notes Component - Subtle footer style
 const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
-  <div style={{ marginTop: 24, padding: 20, background: 'var(--surface2)', borderRadius: 12, border: '1px solid var(--border)' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-      <span style={{ fontSize: 16 }}>📚</span>
-      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--violet)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
+  <div style={{ marginTop: 32, paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+      <span style={{ fontSize: 12, opacity: 0.7 }}>📚</span>
+      <h4 style={{ margin: 0, fontSize: 11, fontWeight: 500, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
     </div>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13, lineHeight: 1.6 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11, lineHeight: 1.5, color: 'var(--text3)' }}>
       {items.map((item, i) => (
-        <p key={i} style={{ margin: 0, color: 'var(--text2)' }}>
-          <strong style={{ color: 'var(--violet)' }}>{item.term}:</strong> {item.def}
+        <p key={i} style={{ margin: 0 }}>
+          <strong style={{ color: 'var(--text2)' }}>{item.term}:</strong> {item.def}
         </p>
       ))}
     </div>
@@ -9380,7 +9380,7 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
       
       {/* Coverage by Firm - Grouped Cards */}
       <div className="card">
-        <div className="card-title">🏦 Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>🏦 Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})<UpdateIndicator source="WS" /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {ANALYST_COVERAGE.map((coverage) => {
             const isExpanded = expandedFirm === coverage.firm;
