@@ -10563,10 +10563,77 @@ const WallStreetTab = () => {
       firm: 'Deutsche Bank',
       analyst: 'Bryan Kraft',
       coverageSince: 'June 2021',
-      currentPT: 81,
+      currentPT: 137,
       currentRating: 'Buy',
       currentRatingNormalized: 'bullish',
       reports: [
+        // === Jan 2026 - PT Raise $81 → $137 (FULL REPORT - Revamped Model) ===
+        {
+          date: '2026-01-20',
+          action: 'PT Raise',
+          priceTarget: 137,
+          previousTarget: 81,
+          rating: 'Buy',
+          ratingNormalized: 'bullish',
+          reportTitle: 'Our New Model Includes A Larger TAM, Greater Capex, And Lower Supplemental Coverage ARPU',
+          source: 'Deutsche Bank Research',
+          isFullReport: true,
+          thesis: 'We\'re publishing a revamped model with updated TAM, penetration, pricing, and launch/capex assumptions. Our updated model also mathematically analyzes capacity against utilization to determine the number of satellites required to support the business, which then drives our build/launch and capex forecast. PT raised to $137 from $81 (+69%).',
+          reportSummary: `**VALUATION METHODOLOGY UPDATE**
+Raising PT to $137, from $81, driven by rolling forward our valuation given the new year and an increase in our EV/2030E EBITDA multiple to 20x, from 15x. The reason for the increase in our 2030 valuation multiple is that our new forecast exits 2030 with a 60% higher EBITDA growth rate of 40%.
+
+**MODEL CHANGES**
+- Larger TAM (Total Addressable Market)
+- Greater Capex assumptions
+- Lower Supplemental Coverage ARPU
+- Mathematical capacity vs utilization analysis for satellite requirements
+- Updated penetration and pricing assumptions
+
+**STOCK OUTLOOK — LAUNCH EXECUTION IS KEY IN 2026**
+We believe that ASTS has the MNO partnerships in place to be successful and scale its D2D business, while also adding incremental revenue in government and potentially enterprise over time. The next step in realizing future success for ASTS is executing the company's satellite build and launch plan in order to enable a 24 hour continuous commercial service.
+
+**LAUNCH TIMELINE EXPECTATIONS**
+- Target: 45-60 satellites by YE2026
+- 5 launches by end of March 2026 (including Dec 23, 2025 successful launch)
+- Goal: 24-hour continuous commercial service by late 2026/1H27
+- Minor timeline slips acceptable (1 launch into 2Q or early 2027)
+
+**EXECUTION MATTERS**
+The company has historically experienced delays in launch plans (as many in the satellite industry have historically, especially new entrants) and, therefore, it is critical that the company largely delivers on schedule this year. ASTS needs to show that it can accelerate the launch cadence and deliver a 24 hour continuous service to its MNO partners in late 2026/1H27. Meeting this timeline would represent significant progress against operationalizing the business plan and we believe would drive continued upside in the stock price.`,
+          assumptions: [
+            { label: 'Price Target', value: '$137.00' },
+            { label: 'Prev Target', value: '$81.00' },
+            { label: 'PT Change', value: '+69%' },
+            { label: 'EV/2030E EBITDA Multiple', value: '20x (from 15x)' },
+            { label: '2030 EBITDA Growth Rate', value: '40%' },
+            { label: 'YE2026 Satellite Target', value: '45-60 satellites' },
+            { label: 'Q1 2026 Launch Target', value: '5 launches by end of March' },
+          ],
+          catalysts: [
+            'Execute satellite build and launch plan for 24-hour continuous service',
+            '5 launches by end of Q1 2026 (including Dec 23, 2025 successful launch)',
+            '45-60 satellites in orbit by YE2026',
+            '24-hour continuous commercial service by late 2026/1H27',
+            'Incremental government and enterprise revenue opportunities',
+          ],
+          risks: [
+            'Launch schedule execution risk — historical delays in satellite industry',
+            'Manufacturing capacity constraints',
+            'Regulatory approval timing',
+          ],
+          methodology: 'EV/2030E EBITDA multiple increased to 20x (from 15x) due to higher 2030 exit EBITDA growth rate of 40%. Valuation rolled forward to reflect new year.',
+          fullNotes: `KEY MODEL UPDATES:
+- Revamped TAM assumptions (larger addressable market)
+- Updated penetration and pricing assumptions
+- Greater capex forecast driven by capacity/utilization analysis
+- Lower Supplemental Coverage ARPU assumptions
+- Mathematical satellite requirement modeling
+
+LAUNCH EXECUTION TIMELINE (Illustrative):
+Note: Company has not provided specific future launch dates for Bluebird 7 and beyond; these are hypothetical launch estimates.
+
+DISCLOSURE: Deutsche Bank does and seeks to do business with companies covered in its research reports. Distributed January 2026.`
+        },
         // === Nov 2025 - PT Raise to $81 (Quick Update) ===
         {
           date: '2025-11-01',
