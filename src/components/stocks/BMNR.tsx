@@ -135,6 +135,56 @@
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  */
 
+/*
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║           🚨 BMNR PRESS RELEASE PROCESSING CHECKLIST 🚨                       ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║                                                                               ║
+ * ║  EVERY TIME a new BMNR press release is processed, you MUST update ALL of    ║
+ * ║  the following sections. DO NOT skip any. Use grep/search for the markers.   ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║  #  │ SECTION              │ SEARCH FOR                  │ UPDATE             ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║                                                                               ║
+ * ║  1  │ Header/Version       │ "Version:" + "CHANGELOG v"  │ Version #,         ║
+ * ║     │                      │                             │ changelog entry    ║
+ * ║                                                                               ║
+ * ║  2  │ DEFAULT PARAMETERS   │ "DEFAULT PARAMETERS - Based"│ All metrics in     ║
+ * ║     │                      │                             │ comment block      ║
+ * ║                                                                               ║
+ * ║  3  │ State Variables      │ "DATA FRESHNESS: Last"      │ currentETH,        ║
+ * ║     │                      │                             │ ethPrice,          ║
+ * ║     │                      │                             │ stakingRatio       ║
+ * ║                                                                               ║
+ * ║  4  │ filingData           │ "const filingData = {"      │ latestEvent,       ║
+ * ║     │                      │                             │ lastPressRelease,  ║
+ * ║     │                      │                             │ 8-K date           ║
+ * ║                                                                               ║
+ * ║  5  │ Investment DISPLAY   │ [PR_CHECKLIST_INVESTMENT_   │ NAV/Share,         ║
+ * ║     │ ⚠️ OFTEN FORGOTTEN   │  DISPLAY]                   │ Total Holdings,    ║
+ * ║     │                      │                             │ Staked ETH         ║
+ * ║                                                                               ║
+ * ║  6  │ Investment current   │ "// Current Investment      │ scorecard,         ║
+ * ║     │                      │  Summary"                   │ executiveSummary,  ║
+ * ║     │                      │                             │ growthDrivers,     ║
+ * ║     │                      │                             │ catalysts, etc.    ║
+ * ║                                                                               ║
+ * ║  7  │ secMeta.lastPR       │ [PR_CHECKLIST_SECMETA]      │ date, title        ║
+ * ║     │ ⚠️ OFTEN FORGOTTEN   │                             │                    ║
+ * ║                                                                               ║
+ * ║  8  │ Archive              │ "const archive = ["         │ Add NEW entry      ║
+ * ║     │                      │                             │ at TOP of array    ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║  ⚠️ COMMON MISTAKES TO AVOID:                                                 ║
+ * ║  - Forgetting Investment DISPLAY metrics (hardcoded, not from state!)         ║
+ * ║  - Forgetting secMeta.lastPR in Timeline tab                                  ║
+ * ║  - Not updating catalysts when events complete (mark as ✅ COMPLETED)         ║
+ * ║  - Forgetting to recalculate NAV/share with new ETH price                     ║
+ * ╚═══════════════════════════════════════════════════════════════════════════════╝
+ */
+
 import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart } from 'recharts';
 
@@ -4906,21 +4956,22 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
               Last Updated: {current.date} • Trigger: {current.source}
             </div>
           </div>
+{/* [PR_CHECKLIST_INVESTMENT_DISPLAY] - Hardcoded metrics, update with every PR! */}
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>NAV/Share</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$29.96</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>@ $3,119 ETH</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$33.41</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)' }}>@ $3,211 ETH</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Total Holdings</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$14.0B</div>
-              <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.17M ETH + $988M Cash</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$14.5B</div>
+              <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.203M ETH + $979M Cash</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Staked ETH</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>1.26M</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>$3.9B Value (30%)</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>1.84M</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)' }}>$5.9B Value (43.7%)</div>
             </div>
           </div>
         </div>
@@ -7355,11 +7406,12 @@ const TimelineTab = () => {
     { date: 'Apr 14, 2025', type: '10-Q', description: 'Quarterly Report (Q2 FY2025)', period: 'Q2 FY25', color: 'purple' },
   ];
   
+  // [PR_CHECKLIST_SECMETA] - Update lastPR with every PR!
   const secMeta = {
     cik: '0001829311',
     ticker: 'BMNR',
     exchange: 'NYSE American',
-    lastPR: { date: 'January 15, 2026', title: '$200M Beast Industries Investment' }
+    lastPR: { date: 'January 20, 2026', title: '4.203M ETH Holdings + 81% Shareholder Vote YES' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {
