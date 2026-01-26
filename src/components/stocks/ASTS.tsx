@@ -1950,10 +1950,10 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
   const maxValue = Math.max(...chartData.map(d => d.value));
 
   return (
-  <>
+  <div style={{ display: 'flex', flexDirection: 'column' }}>
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
     <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
-      <p style={{ fontSize: '14px' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
+      <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
     <div className="g2">
@@ -2076,7 +2076,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       { term: 'Price per Subscriber', def: 'Market Cap ÷ Potential Subscribers. Valuation metric for telecom. Lower = more attractive if execution succeeds.' },
       { term: 'MNO Partnerships', def: 'Mobile Network Operator agreements. 53+ partners with 3.2B combined subscribers. Revenue share model (typically 50/50).' },
     ]} />
-  </>
+  </div>
   );
 };
 
@@ -2656,16 +2656,16 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Runway<UpdateIndicators sources="SEC" /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Cash Runway — Q3 2025 Actuals<UpdateIndicators sources={['PR', 'SEC']} /></h3>
-        <div className="space-y-2 text-sm">
-          <p><strong className="text-cyan-400">Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
-          <p><strong className="text-cyan-400">Debt (Balance Sheet):</strong> $697.6M net long-term debt (~$724M gross). Principal outstanding: $1.625B ($50M + $575M + $1B converts).</p>
-          <p><strong className="text-cyan-400">Q4 Guidance:</strong> CapEx $275-325M, OpEx ~$65M. Satellite cost: $21-23M average.</p>
+        <div style={{ fontSize: 13, color: 'var(--text2)' }}>
+          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
+          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Debt (Balance Sheet):</strong> $697.6M net long-term debt (~$724M gross). Principal outstanding: $1.625B ($50M + $575M + $1B converts).</p>
+          <p><strong style={{ color: 'var(--cyan)' }}>Q4 Guidance:</strong> CapEx $275-325M, OpEx ~$65M. Satellite cost: $21-23M average.</p>
         </div>
       </div>
-      
-      <div className="card">
+
+      <div className="card" style={{ marginTop: 32 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="g5">
           <Card label="Q3 GAAP Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} sub="~4Q runway at $300M/Q" color="green" />
           <Card label="Q4 Burn Est." value={`$${quarterlyBurn}M`} sub="CapEx + OpEx" color="red" />
           <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub={`~${(calc.cashRunwayQuarters / 4).toFixed(1)} years`} color="yellow" />
@@ -2675,17 +2675,17 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Q3 2025 Financial Summary */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
           <div>
-            <h4 className="text-sm font-medium text-cyan-400 mb-2">Income Statement</h4>
+            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)', marginBottom: 8 }}>Income Statement</h4>
             <Row label="Q3 Revenue" value={`$${financials.q3Revenue}M`} highlight />
             <Row label="H2 2025 Guidance" value={`$${financials.h2Guidance}M`} />
             <Row label="Q3 Adj. OpEx" value={`$${financials.q3AdjOpex}M`} />
             <Row label="Q4 OpEx Guidance" value={financials.q4OpexGuide} />
           </div>
           <div>
-            <h4 className="text-sm font-medium text-cyan-400 mb-2">Capital</h4>
+            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)', marginBottom: 8 }}>Capital</h4>
             <Row label="Q3 CapEx" value={`$${financials.q3Capex}M`} />
             <Row label="Q4 CapEx Guidance" value={`$${financials.q4CapexGuide}M`} />
             <Row label="Satellite Cost (avg)" value={`$${financials.satCost}M`} highlight />
@@ -2695,50 +2695,50 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Convertible Debt Summary */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
-        <div className="mb-3 p-2 bg-slate-800/50 rounded-lg text-xs text-slate-400">
-          <strong className="text-cyan-400">Balance Sheet vs Principal:</strong> Convertible notes are reported at net carrying value (gross less debt discounts and issuance costs). 
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
+        <div style={{ marginBottom: 12, padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>
+          <strong style={{ color: 'var(--cyan)' }}>Balance Sheet vs Principal:</strong> Convertible notes are reported at net carrying value (gross less debt discounts and issuance costs).
           The $697.6M on the balance sheet represents this accounting value, while $1.625B is the principal that must eventually be repaid or converted.
         </div>
-        <div className="grid md:grid-cols-5 gap-3">
-          <div className="p-3 bg-yellow-900/20 border border-yellow-800/30 rounded-lg text-center">
-            <div className="text-xl font-bold text-yellow-400">$49M</div>
-            <div className="text-xs text-slate-400">Jan 2025 (4.25%)</div>
-            <div className="text-xs text-slate-500">Net carrying</div>
-            <div className="text-xs text-slate-600">Principal: $50M</div>
+        <div className="g5">
+          <div style={{ padding: 12, background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.3)', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--gold)' }}>$49M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 2025 (4.25%)</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $50M</div>
           </div>
-          <div className="p-3 bg-orange-900/20 border border-orange-800/30 rounded-lg text-center">
-            <div className="text-xl font-bold text-orange-400">$530M</div>
-            <div className="text-xs text-slate-400">Jul 2025 (4.25%)</div>
-            <div className="text-xs text-slate-500">Net carrying</div>
-            <div className="text-xs text-slate-600">Principal: $575M</div>
+          <div style={{ padding: 12, background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.3)', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--coral)' }}>$530M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Jul 2025 (4.25%)</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $575M</div>
           </div>
-          <div className="p-3 bg-cyan-900/20 border border-cyan-800/30 rounded-lg text-center">
-            <div className="text-xl font-bold text-cyan-400">$119M</div>
-            <div className="text-xs text-slate-400">Oct 2025 (2.0%)</div>
-            <div className="text-xs text-slate-500">Net carrying (Q3)</div>
-            <div className="text-xs text-slate-600">Principal: $1,000M</div>
+          <div style={{ padding: 12, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--cyan)' }}>$119M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Oct 2025 (2.0%)</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying (Q3)</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $1,000M</div>
           </div>
-          <div className="p-3 bg-emerald-900/20 border border-emerald-800/30 rounded-lg text-center">
-            <div className="text-xl font-bold text-emerald-400">$698M</div>
-            <div className="text-xs text-slate-400">Balance Sheet</div>
-            <div className="text-xs text-slate-500">Net long-term debt</div>
-            <div className="text-xs text-slate-600">Gross: ~$724M</div>
+          <div style={{ padding: 12, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>$698M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Balance Sheet</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net long-term debt</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Gross: ~$724M</div>
           </div>
-          <div className="p-3 bg-purple-900/20 border border-purple-800/30 rounded-lg text-center">
-            <div className="text-xl font-bold text-purple-400">$1,625M</div>
-            <div className="text-xs text-slate-400">Principal Value</div>
-            <div className="text-xs text-slate-500">Total outstanding</div>
-            <div className="text-xs text-slate-600">~2.8% blended rate</div>
+          <div style={{ padding: 12, background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.3)', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--violet)' }}>$1,625M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Principal Value</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Total outstanding</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>~2.8% blended rate</div>
           </div>
         </div>
-        <div className="mt-3 text-xs text-slate-500">
+        <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
           Jan 2025: $410M converted to equity (17.3M shares). Oct 2025 raised at best terms in years ($96.30 strike, 2% coupon). Large discount on Oct notes due to favorable conversion terms.
         </div>
       </div>
 
       {/* Cash Projection Chart */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
         <ResponsiveContainer width="100%" height={180}>
           <AreaChart data={proj}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -2748,24 +2748,24 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
             <Area dataKey="cash" stroke="var(--mint)" fill="var(--mint)" fillOpacity={0.3} />
           </AreaChart>
         </ResponsiveContainer>
-        <div className="text-xs text-slate-500 mt-1">
+        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>
           Note: Does not include H2 revenue ($50-75M guidance) or future prepayments (stc $175M due YE 2025).
         </div>
       </div>
 
       {/* Funding Sources */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="mb-4 p-3 bg-slate-800/30 rounded-lg">
-          <p className="text-sm text-slate-400">
-            <strong className="text-cyan-400">Understanding ASTS Financing:</strong> As a pre-revenue company building a global satellite constellation, 
-            ASTS has used various instruments: SPAC, convertibles, equity offerings, and strategic investments. 
-            Convertible notes are debt that can convert to equity at specified prices. When stock price rises above conversion price, 
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div style={{ marginBottom: 16, padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+          <p style={{ fontSize: 13, color: 'var(--text3)' }}>
+            <strong style={{ color: 'var(--cyan)' }}>Understanding ASTS Financing:</strong> As a pre-revenue company building a global satellite constellation,
+            ASTS has used various instruments: SPAC, convertibles, equity offerings, and strategic investments.
+            Convertible notes are debt that can convert to equity at specified prices. When stock price rises above conversion price,
             holders often convert (eliminating debt) or the company may force conversion. Below shows the full capital structure evolution.
           </p>
         </div>
-        
-        <h4 className="text-sm font-medium text-yellow-400 mb-2">2025 Capital Raises</h4>
-        <table className="w-full text-sm mb-4">
+
+        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--gold)', marginBottom: 8 }}>2025 Capital Raises</h4>
+        <table className="tbl" style={{ marginBottom: 16 }}>
           <thead>
             <tr className="text-slate-400 text-xs border-b border-slate-700">
               <th className="text-left py-2">Source</th>
@@ -2808,8 +2808,8 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
           </tbody>
         </table>
 
-        <h4 className="text-sm font-medium text-purple-400 mb-2">2024 Capital Raises</h4>
-        <table className="w-full text-sm mb-4">
+        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--violet)', marginBottom: 8 }}>2024 Capital Raises</h4>
+        <table className="tbl" style={{ marginBottom: 16 }}>
           <thead>
             <tr className="text-slate-400 text-xs border-b border-slate-700">
               <th className="text-left py-2">Source</th>
@@ -2846,8 +2846,8 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
           </tbody>
         </table>
 
-        <h4 className="text-sm font-medium text-blue-400 mb-2">2021-2023 Foundation</h4>
-        <table className="w-full text-sm">
+        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--sky)', marginBottom: 8 }}>2021-2023 Foundation</h4>
+        <table className="tbl">
           <thead>
             <tr className="text-slate-400 text-xs border-b border-slate-700">
               <th className="text-left py-2">Source</th>
@@ -2884,20 +2884,20 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
           </tbody>
         </table>
         
-        <div className="mt-4 p-3 bg-slate-800/30 rounded-lg">
-          <h4 className="text-sm font-medium text-green-400 mb-2">Debt Resolution Summary</h4>
-          <ul className="text-xs text-slate-400 space-y-1">
-            <li>• <strong>2034 Strategic Converts ($148.5M):</strong> Force-converted to equity Jan 2025 when stock price exceeded trigger. Debt eliminated, 25.8M shares issued.</li>
-            <li>• <strong>Jan 2025 Converts ($460M):</strong> $410M repurchased via equity issuance (arbitrage opportunity). $50M still outstanding as 4.25% notes due 2032.</li>
-            <li>• <strong>Jul/Oct 2025 Converts ($1,575M):</strong> Currently outstanding as debt. Will convert to equity if stock exceeds strike prices ($120.12 / $96.30) or at maturity.</li>
+        <div style={{ marginTop: 16, padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+          <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--mint)', marginBottom: 8 }}>Debt Resolution Summary</h4>
+          <ul style={{ fontSize: 11, color: 'var(--text3)' }}>
+            <li style={{ marginBottom: 4 }}>• <strong>2034 Strategic Converts ($148.5M):</strong> Force-converted to equity Jan 2025 when stock price exceeded trigger. Debt eliminated, 25.8M shares issued.</li>
+            <li style={{ marginBottom: 4 }}>• <strong>Jan 2025 Converts ($460M):</strong> $410M repurchased via equity issuance (arbitrage opportunity). $50M still outstanding as 4.25% notes due 2032.</li>
+            <li style={{ marginBottom: 4 }}>• <strong>Jul/Oct 2025 Converts ($1,575M):</strong> Currently outstanding as debt. Will convert to equity if stock exceeds strike prices ($120.12 / $96.30) or at maturity.</li>
             <li>• <strong>Atlas/Lone Star Loans:</strong> Partially repaid; minimal remaining balance secured by equipment/real estate.</li>
           </ul>
         </div>
       </div>
 
       {/* Dilution Analysis */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
+        <table className="tbl">
           <thead>
             <tr className="text-slate-400 text-xs border-b border-slate-700">
               <th className="text-left py-2">Raise Amount</th>
@@ -3742,13 +3742,13 @@ const ModelTab = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Model</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* ASSUMPTIONS SECTION */}
       <>
           <div className="highlight">
-            <h3>{scenario.icon} {scenario.name} Scenario</h3>
-            <p className="text-sm">
+            <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
+            <p style={{ fontSize: 13, color: 'var(--text2)' }}>
               Configure model assumptions. Changes flow to projections and DCF valuation.
             </p>
           </div>
@@ -4320,13 +4320,13 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Monte Carlo</h2>
-      
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+
       {/* Highlight Box */}
       <div className="highlight">
-        <h3>Revenue-Based Valuation Simulation</h3>
-        <p className="text-sm">
-          Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory) 
+        <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue-Based Valuation Simulation</h3>
+        <p style={{ fontSize: 13, color: 'var(--text2)' }}>
+          Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
           and log-normal revenue distribution. Terminal value discounted to present.
         </p>
       </div>
@@ -5293,29 +5293,29 @@ const QuarterlyMetricsPanel = () => {
   return (
     <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
       {/* Dynamic Summary Badges */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-cyan-900/30 border-cyan-600/40 border text-cyan-400">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+        <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
           {summaryStats.quarterCount} quarters of data ({summaryStats.firstQuarter} - {summaryStats.lastQuarter})
         </span>
-        <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-green-900/30 border-green-600/40 border text-green-400">
+        <span className="pill" style={{ background: 'rgba(34,197,94,0.15)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
           Cash: {summaryStats.cashRange.first !== null ? `$${summaryStats.cashRange.first.toFixed(0)}M` : 'N/A'} → {summaryStats.cashRange.last !== null ? `$${summaryStats.cashRange.last.toFixed(0)}M` : 'N/A'}
         </span>
-        <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-orange-900/30 border-orange-600/40 border text-orange-400">
+        <span className="pill" style={{ background: 'rgba(251,146,60,0.15)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>
           Shares: {summaryStats.sharesRange.first !== null ? `${summaryStats.sharesRange.first.toFixed(0)}M` : 'N/A'} → {summaryStats.sharesRange.last !== null ? `${summaryStats.sharesRange.last.toFixed(0)}M` : 'N/A'}
         </span>
-        <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-purple-900/30 border-purple-600/40 border text-purple-400">
+        <span className="pill" style={{ background: 'rgba(168,85,247,0.15)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
           Satellites: {summaryStats.satellitesRange.first ?? 'N/A'} → {summaryStats.satellitesRange.last ?? 'N/A'}
         </span>
       </div>
       
       {/* All Quarters Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs">
+      <div style={{ overflowX: 'auto' }}>
+        <table className="tbl" style={{ fontSize: 12 }}>
           <thead>
-            <tr className="border-b border-slate-700">
-              <th className="text-left py-2 px-2 text-slate-400 sticky left-0 bg-slate-900 min-w-[100px]">Metric</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: '8px', color: 'var(--text3)', position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
               {displayQuarters.map(q => (
-                <th key={q} className="text-right py-2 px-2 text-slate-400 min-w-[70px] whitespace-nowrap">
+                <th key={q} style={{ textAlign: 'right', padding: '8px', color: 'var(--text3)', minWidth: 70, whiteSpace: 'nowrap' }}>
                   {q.replace('Q', '').replace(' ', "'")}
                 </th>
               ))}
@@ -5323,20 +5323,20 @@ const QuarterlyMetricsPanel = () => {
           </thead>
           <tbody>
             {metrics.map(metric => (
-              <tr key={metric.label} className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">
+              <tr key={metric.label} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: '6px 8px', color: 'var(--text2)', position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
                   {metric.label}
                 </td>
                 {displayQuarters.map(q => {
                   const data = quarterlyData[q];
                   const val = getValue(data, metric);
-                  const tooltip = metric.tooltipKey && data[metric.tooltipKey] !== undefined 
-                    ? `Cash only: $${data[metric.tooltipKey].toFixed(1)}M` 
+                  const tooltip = metric.tooltipKey && data[metric.tooltipKey] !== undefined
+                    ? `Cash only: $${data[metric.tooltipKey].toFixed(1)}M`
                     : null;
                   return (
-                    <td 
-                      key={q} 
-                      className="py-1.5 px-2 text-right text-slate-300 tabular-nums"
+                    <td
+                      key={q}
+                      style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--text2)', fontFamily: 'Space Mono, monospace' }}
                       title={tooltip}
                     >
                       {metric.format(val)}
@@ -5350,55 +5350,55 @@ const QuarterlyMetricsPanel = () => {
       </div>
       
       {/* Footnote */}
-      <div className="mt-2 text-xs text-slate-500 space-y-1">
-        <p>* Cash & Equiv. includes restricted cash (~$0.7-20M depending on quarter). Other reports might exclude restricted cash, which explains small differences between our values and theirs.</p>
-        <p>* Total Debt shows Long-Term Debt only (balance sheet line item). Other sources may report "Total Debt" which includes current portion, accrued interest, and finance leases—explaining differences of $3-45M. Notable: Q3 2024 shows $156M here vs $201M elsewhere because the $48.5M Atlas Credit Facility was classified as current (due within 12 months) and repaid in Q4 2024.</p>
+      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
+        <p style={{ marginBottom: 4 }}>* Cash & Equiv. includes restricted cash (~$0.7-20M depending on quarter). Other reports might exclude restricted cash, which explains small differences between our values and theirs.</p>
+        <p style={{ marginBottom: 4 }}>* Total Debt shows Long-Term Debt only (balance sheet line item). Other sources may report "Total Debt" which includes current portion, accrued interest, and finance leases—explaining differences of $3-45M. Notable: Q3 2024 shows $156M here vs $201M elsewhere because the $48.5M Atlas Credit Facility was classified as current (due within 12 months) and repaid in Q4 2024.</p>
         <p>* Employees estimates from PRs/filings. Data from SEC filings (10-K, 10-Q).</p>
       </div>
       
       {/* Key Notes from Filing - Matching BMNR style */}
-      <div className="mt-4">
+      <div style={{ marginTop: 16 }}>
         <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Filing Source</div>
-            <div className="text-sm text-slate-300">{quarterlyData['Q3 2025'].filing}</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Filing Source</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].filing}</div>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Satellites in Orbit</div>
-            <div className="text-sm text-slate-300">{quarterlyData['Q3 2025'].satellites} (BW3 + BB1-5)</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Satellites in Orbit</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].satellites} (BW3 + BB1-5)</div>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">MNO Partnerships</div>
-            <div className="text-sm text-slate-300">{quarterlyData['Q3 2025'].definitiveAgreements} definitive, {quarterlyData['Q3 2025'].mous}+ MOUs/LOIs</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>MNO Partnerships</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].definitiveAgreements} definitive, {quarterlyData['Q3 2025'].mous}+ MOUs/LOIs</div>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Contracted Revenue</div>
-            <div className="text-sm text-slate-300">${quarterlyData['Q3 2025'].contractedRevenue}M+ committed</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Contracted Revenue</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>${quarterlyData['Q3 2025'].contractedRevenue}M+ committed</div>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Spectrum Position</div>
-            <div className="text-sm text-slate-300">
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Spectrum Position</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>
               {quarterlyData['Q3 2025'].spectrumOwned} MHz owned | {quarterlyData['Q3 2025'].spectrumUS}+ MHz US
             </div>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Headcount</div>
-            <div className="text-sm text-slate-300">{quarterlyData['Q3 2025'].employees ? quarterlyData['Q3 2025'].employees.toLocaleString() : '—'} employees</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Headcount</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].employees ? quarterlyData['Q3 2025'].employees.toLocaleString() : '—'} employees</div>
           </div>
         </div>
       </div>
       </div>
       
-      <div className="mt-3 text-xs text-slate-500">
+      <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
         Data sourced from SEC filings (10-K, 10-K/A, 10-Q). Latest filing: Q3 2025 10-Q (Nov 10, 2025).
       </div>
-      
+
       {/* Historical Trend Charts */}
       {/* ROW 1: Cash Position & OpEx */}
-      <div className="mt-6 grid md:grid-cols-2 gap-4">
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-cyan-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></h4>
+      <div className="g2" style={{ marginTop: 24 }}>
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={Object.values(quarterlyData).filter(q => q.cashAndEquiv !== null).reverse()}>
               <defs>
@@ -5415,27 +5415,27 @@ const QuarterlyMetricsPanel = () => {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-        
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-purple-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></h4>
+
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <LineChart data={Object.values(quarterlyData).filter(q => q.opEx !== null).reverse()}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="label" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
               <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${v.toFixed(0)}M`, 'OpEx']} />
-              <Line type="monotone" dataKey="opEx" stroke="#a855f7" strokeWidth={2} dot={{ fill: '#a855f7' }} />
+              <Line type="monotone" dataKey="opEx" stroke="var(--violet)" strokeWidth={2} dot={{ fill: 'var(--violet)' }} />
             </LineChart>
           </ResponsiveContainer>
           {/* OpEx Breakdown with quarter selector */}
           {opExQuarters.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-slate-700/50">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-slate-500">OpEx Breakdown</span>
-                <select 
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>OpEx Breakdown</span>
+                <select
                   value={opExQuarter}
                   onChange={(e) => setOpExQuarter(e.target.value)}
-                  className="bg-slate-800 border border-slate-600 rounded px-2 py-0.5 text-xs text-white focus:border-purple-500 focus:outline-none"
+                  style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 4, padding: '2px 8px', fontSize: 11, color: 'var(--text1)' }}
                 >
                   {opExQuarters.map(q => (
                     <option key={q} value={q}>{q}</option>
@@ -5444,53 +5444,53 @@ const QuarterlyMetricsPanel = () => {
               </div>
               {quarterlyData[opExQuarter]?.opExEngineering && (
                 <>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">Engineering:</span>
-                      <span className="text-purple-300">${quarterlyData[opExQuarter].opExEngineering}M</span>
+                  <div className="g2" style={{ fontSize: 11 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>Engineering:</span>
+                      <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExEngineering}M</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">G&A:</span>
-                      <span className="text-purple-300">${quarterlyData[opExQuarter].opExGandA}M</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>G&A:</span>
+                      <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExGandA}M</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">R&D:</span>
-                      <span className="text-purple-300">${quarterlyData[opExQuarter].opExRandD}M</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>R&D:</span>
+                      <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExRandD}M</span>
                     </div>
                     {quarterlyData[opExQuarter].opExDandA && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">D&A:</span>
-                        <span className="text-purple-300">${quarterlyData[opExQuarter].opExDandA}M</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text3)' }}>D&A:</span>
+                        <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExDandA}M</span>
                       </div>
                     )}
                     {quarterlyData[opExQuarter].opExSBC && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Stock-Based Comp:</span>
-                        <span className="text-purple-300">${quarterlyData[opExQuarter].opExSBC}M</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text3)' }}>Stock-Based Comp:</span>
+                        <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExSBC}M</span>
                       </div>
                     )}
                     {quarterlyData[opExQuarter].opExCostOfRev && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Cost of Revenue:</span>
-                        <span className="text-purple-300">${quarterlyData[opExQuarter].opExCostOfRev}M</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text3)' }}>Cost of Revenue:</span>
+                        <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExCostOfRev}M</span>
                       </div>
                     )}
                   </div>
-                  <div className="mt-2 pt-2 border-t border-slate-700/30 space-y-1">
-                    <div className="flex justify-between text-xs font-medium">
-                      <span className="text-slate-300">Total OpEx (GAAP):</span>
-                      <span className="text-purple-400">${quarterlyData[opExQuarter].opEx}M</span>
+                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 500 }}>
+                      <span style={{ color: 'var(--text2)' }}>Total OpEx (GAAP):</span>
+                      <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opEx}M</span>
                     </div>
                     {quarterlyData[opExQuarter].adjOpEx && (
-                      <div className="flex justify-between text-xs">
-                        <span className="text-slate-400">Adj. OpEx (ex D&A, SBC):</span>
-                        <span className="text-cyan-400">${quarterlyData[opExQuarter].adjOpEx}M</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginTop: 4 }}>
+                        <span style={{ color: 'var(--text3)' }}>Adj. OpEx (ex D&A, SBC):</span>
+                        <span style={{ color: 'var(--cyan)' }}>${quarterlyData[opExQuarter].adjOpEx}M</span>
                       </div>
                     )}
                     {(quarterlyData[opExQuarter].capEx || quarterlyData[opExQuarter].capExTotal) && (
-                      <div className="flex justify-between text-xs">
-                        <span className="text-slate-400">CapEx:</span>
-                        <span className="text-yellow-400">${quarterlyData[opExQuarter].capEx || quarterlyData[opExQuarter].capExTotal}M</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginTop: 4 }}>
+                        <span style={{ color: 'var(--text3)' }}>CapEx:</span>
+                        <span style={{ color: 'var(--gold)' }}>${quarterlyData[opExQuarter].capEx || quarterlyData[opExQuarter].capExTotal}M</span>
                       </div>
                     )}
                   </div>
@@ -5502,29 +5502,29 @@ const QuarterlyMetricsPanel = () => {
       </div>
       
       {/* ROW 2: Share Count & Market Cap */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-orange-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></h4>
+      <div className="g2" style={{ marginTop: 16 }}>
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0)}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="label" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `${v}M`} />
               <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v, name) => [`${v.toFixed(0)}M`, name === 'sharesOutstanding' ? 'Outstanding (Class A)' : name === 'impliedSharesOut' ? 'Implied (A+B+C)' : 'Fully Diluted']} />
-              <Bar dataKey="sharesOutstanding" fill="#ea580c" name="sharesOutstanding" />
-              <Bar dataKey="impliedSharesOut" fill="#f97316" name="impliedSharesOut" />
-              <Bar dataKey="fullyDiluted" fill="#fdba74" name="fullyDiluted" />
+              <Bar dataKey="sharesOutstanding" fill="var(--coral)" name="sharesOutstanding" />
+              <Bar dataKey="impliedSharesOut" fill="var(--gold)" name="impliedSharesOut" />
+              <Bar dataKey="fullyDiluted" fill="var(--sand)" name="fullyDiluted" />
             </BarChart>
           </ResponsiveContainer>
-          <div className="flex gap-4 mt-2 text-xs">
-            <div className="flex items-center gap-1"><div className="w-3 h-3 bg-orange-600 rounded"></div><span className="text-slate-400">Outstanding (Class A)</span></div>
-            <div className="flex items-center gap-1"><div className="w-3 h-3 bg-orange-500 rounded"></div><span className="text-slate-400">Implied (A+B+C)</span></div>
-            <div className="flex items-center gap-1"><div className="w-3 h-3 bg-orange-300 rounded"></div><span className="text-slate-400">Fully Diluted</span></div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--coral)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Outstanding (Class A)</span></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--gold)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Implied (A+B+C)</span></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sand)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Fully Diluted</span></div>
           </div>
         </div>
-        
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-blue-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></h4>
+
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--sky)' }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0 && d.stockPrice > 0).map(d => ({ ...d, marketCap: d.sharesOutstanding * d.stockPrice, impliedMktCap: d.impliedSharesOut * d.stockPrice }))}>
               <defs>
@@ -5541,17 +5541,17 @@ const QuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="marketCap" stroke="#3b82f6" fill="url(#mcapGradient)" />
             </AreaChart>
           </ResponsiveContainer>
-          <div className="flex gap-4 mt-2 text-xs">
-            <div className="flex items-center gap-1"><div className="w-3 h-3 bg-blue-500 rounded"></div><span className="text-slate-400">Market Cap (Outstanding)</span></div>
-            <div className="flex items-center gap-1"><div className="w-6 h-0.5 bg-blue-400 border-dashed border-t-2"></div><span className="text-slate-400">Market Cap (Implied)</span></div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap (Outstanding)</span></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 24, height: 2, background: 'var(--sky)', opacity: 0.6 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap (Implied)</span></div>
           </div>
         </div>
       </div>
-      
+
       {/* ROW 3: Company-Specific (Satellites) */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-cyan-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Satellites Deployed<UpdateIndicators sources="PR" /></h4>
+      <div className="g2" style={{ marginTop: 16 }}>
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Satellites Deployed<UpdateIndicators sources="PR" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={Object.values(quarterlyData).reverse()}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -10389,9 +10389,9 @@ const InvestmentTab = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 className="section-head" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
@@ -13642,18 +13642,18 @@ const FinancialsTab = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HEADER                                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
-      
+
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: HIGHLIGHT BOX                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="highlight">
         <h3 style={{ display: 'flex', alignItems: 'center' }}>{config.highlightTitle}<UpdateIndicators sources="SEC" /></h3>
-        <p className="text-sm text-slate-300">{config.highlightText}</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>{config.highlightText}</p>
       </div>
       
       {/* ═══════════════════════════════════════════════════════════════════ */}
@@ -13664,13 +13664,13 @@ const FinancialsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-        <h4 className="text-sm font-medium text-yellow-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></div>
+        <div className="g4">
           {config.milestones.map((m, i) => (
-            <div key={i} className="p-2 bg-slate-800/50 rounded">
-              <div className="text-slate-500">{m.date}</div>
-              <div className="text-slate-300">{m.event}</div>
+            <div key={i} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div>
+              <div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div>
             </div>
           ))}
         </div>
@@ -13679,7 +13679,9 @@ const FinancialsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 9: CFA NOTES                                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <CFANotes title="CFA Level III — Financial Analysis" items={config.cfaNotes} />
+      <div style={{ marginTop: 32 }}>
+        <CFANotes title="CFA Level III — Financial Analysis" items={config.cfaNotes} />
+      </div>
     </div>
   );
 };
