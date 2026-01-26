@@ -13524,26 +13524,26 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                                     {report.estimates && report.estimates.length > 0 && (
                                       <div style={{ marginBottom: 12 }}>
                                         <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 4 }}>ESTIMATES</div>
-                                        <table style={{ fontSize: 11, width: '100%' }}>
+                                        <table className="tbl">
                                           <thead>
-                                            <tr style={{ color: 'var(--text3)' }}>
-                                              <th style={{ textAlign: 'left', fontWeight: 500 }}>Metric</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY24</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY25</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY26</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY27</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY28</th>
+                                            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                                              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Metric</th>
+                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY24</th>
+                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY25</th>
+                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY26</th>
+                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY27</th>
+                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY28</th>
                                             </tr>
                                           </thead>
                                           <tbody>
                                             {report.estimates.map((e, i) => (
-                                              <tr key={i} style={{ color: 'var(--text2)' }}>
-                                                <td>{e.metric}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy24 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy25 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy26 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy27 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy28 || '—'}</td>
+                                              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
+                                                <td style={{ padding: 8, color: 'var(--text2)' }}>{e.metric}</td>
+                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy24 || '—'}</td>
+                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy25 || '—'}</td>
+                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy26 || '—'}</td>
+                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy27 || '—'}</td>
+                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy28 || '—'}</td>
                                               </tr>
                                             ))}
                                           </tbody>
