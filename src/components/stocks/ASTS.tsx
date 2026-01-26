@@ -1952,13 +1952,13 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
   return (
   <>
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-    <div className="highlight"><h3>The Opportunity</h3>
+    <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
       <p style={{ fontSize: '14px' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
     <div className="g2">
       <div className="thesis bull">
-        <h4>↑ Bull Case</h4>
+        <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
         <ul>
           <li>BB6 proving D2D technology works at scale</li>
           <li>53+ MNO partners with 3.2B addressable subscribers</li>
@@ -1969,7 +1969,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         </ul>
       </div>
       <div className="thesis bear">
-        <h4>↓ Bear Case</h4>
+        <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
         <ul>
           <li>Pre-revenue company, high execution risk</li>
           <li>Dilution risk — $3.2B raised, may need more</li>
@@ -1983,8 +1983,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
 
     <div className="card" style={{ marginTop: 32 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div className="card-title" style={{ marginBottom: 0 }}>
-          {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}
+        <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>
+          {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}<UpdateIndicators sources="PR" />
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           {[
@@ -2021,33 +2021,39 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
 
-    <div className="g4" style={{ marginTop: 32 }}>
-      <Card label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} sub="Equity value" color="blue" />
-      <Card label="EV" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} sub="MC + Debt - Cash" color="purple" />
-      <Card label="Constellation" value={`${calc.totalSats}/${targetSats2026}`} sub={`${calc.constellationProgress.toFixed(0)}%`} color="cyan" />
-      <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub="~1 year runway" color="green" />
+    <div className="card" style={{ marginTop: 32 }}>
+      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="g4">
+        <Card label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} sub="Equity value" color="blue" />
+        <Card label="EV" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} sub="MC + Debt - Cash" color="purple" />
+        <Card label="Constellation" value={`${calc.totalSats}/${targetSats2026}`} sub={`${calc.constellationProgress.toFixed(0)}%`} color="cyan" />
+        <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub="~1 year runway" color="green" />
+      </div>
     </div>
-    <div className="g3" style={{ marginTop: 32 }}>
-      <div className="card"><div className="card-title">Equity (Q3 2025)</div>
-        <Row label="Shares" value={`${currentShares}M`} />
-        <Row label="Price" value={`$${currentStockPrice}`} />
-        <Row label="Mkt Cap" value={`$${(calc.marketCap / 1000).toFixed(2)}B`} highlight />
-        <Row label="Debt" value={`$${totalDebt}M`} />
-        <Row label="Cash" value={`$${(cashOnHand / 1000).toFixed(2)}B`} />
-      </div>
-      <div className="card"><div className="card-title">Subscribers</div>
-        <Row label="MNO Partners" value="53+" />
-        <Row label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} highlight />
-        <Row label={`@ ${penetrationRate}%`} value={`${calc.potentialSubs.toFixed(0)}M`} />
-        <Row label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} />
-        <Row label="Contracted" value={`$${contractedRevenue}M+`} />
-      </div>
-      <div className="card"><div className="card-title">Constellation</div>
-        <Row label="Block 1 (BW3+BB1-5)" value={`${block1Sats} in orbit`} />
-        <Row label="Block 2 (BB6+)" value={`${block2Sats} launched`} highlight />
-        <Row label="Total Constellation" value={`${block1Sats + block2Sats} satellites`} />
-        <Row label="Target" value={targetSats2026} />
-        <Row label="Next" value="BB7-13 Q1'26" />
+    <div className="card" style={{ marginTop: 32 }}>
+      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="g3">
+        <div><div className="text-xs text-slate-400 mb-2">Equity (Q3 2025)</div>
+          <Row label="Shares" value={`${currentShares}M`} />
+          <Row label="Price" value={`$${currentStockPrice}`} />
+          <Row label="Mkt Cap" value={`$${(calc.marketCap / 1000).toFixed(2)}B`} highlight />
+          <Row label="Debt" value={`$${totalDebt}M`} />
+          <Row label="Cash" value={`$${(cashOnHand / 1000).toFixed(2)}B`} />
+        </div>
+        <div><div className="text-xs text-slate-400 mb-2">Subscribers</div>
+          <Row label="MNO Partners" value="53+" />
+          <Row label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} highlight />
+          <Row label={`@ ${penetrationRate}%`} value={`${calc.potentialSubs.toFixed(0)}M`} />
+          <Row label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} />
+          <Row label="Contracted" value={`$${contractedRevenue}M+`} />
+        </div>
+        <div><div className="text-xs text-slate-400 mb-2">Constellation</div>
+          <Row label="Block 1 (BW3+BB1-5)" value={`${block1Sats} in orbit`} />
+          <Row label="Block 2 (BB6+)" value={`${block2Sats} launched`} highlight />
+          <Row label="Total Constellation" value={`${block1Sats + block2Sats} satellites`} />
+          <Row label="Target" value={targetSats2026} />
+          <Row label="Next" value="BB7-13 Q1'26" />
+        </div>
       </div>
     </div>
     <div className="card" style={{ marginTop: 32 }}><div className="card-title">Parameters</div>
@@ -2087,7 +2093,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources="PR" /></h2>
-      <div className="highlight"><h3>Catalyst Tracker</h3><p className="text-sm">Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Catalyst Tracker<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></h3><p className="text-sm">Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
       <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
         <div className="space-y-2">{upcomingCatalysts.map((c, i) => (
           <div key={i} className={`flex items-center justify-between p-3 rounded-lg border ${c.impact === 'Critical' ? 'bg-cyan-900/30 border-cyan-600' : 'bg-slate-800/50 border-slate-700'}`}>
@@ -2097,7 +2103,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
         ))}</div>
       </div>
       {years.map(year => (
-        <div key={year} className="card"><div className="card-title">{year} Completed</div>
+        <div key={year} className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{year} Completed<UpdateIndicators sources="PR" /></div>
           <div className="grid md:grid-cols-2 gap-2">{milestonesByYear[year].map((m, i) => (
             <div key={i} className="flex items-center gap-3 p-2 rounded bg-green-900/20 border border-green-800/30">
               <span className="text-green-400">✓</span><div><div className="text-sm">{m.event}</div><div className="text-xs text-slate-500">{m.date}</div></div>
@@ -2137,19 +2143,22 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Constellation<UpdateIndicators sources="PR" /></h2>
-      <div className="highlight"><h3>Constellation Status</h3>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Constellation Status<UpdateIndicators sources="PR" /></h3>
         <div className="space-y-2 text-sm">
           <p><strong className="text-cyan-400">Block 1 (BW3 + BB1-5):</strong> 6 satellites in orbit. BW3 is the 693 sq ft prototype (Sept 2022). BB1-5 are first-generation commercial satellites (Sept 2024).</p>
           <p><strong className="text-yellow-400">Block 2 (BB6+):</strong> Next-generation satellites with ~2,400 sq ft arrays (3.5x larger), AST5000 ASIC chips, and 10x capacity. BB6 launched Dec 23, 2025 via ISRO.</p>
           <p><strong className="text-green-400">Target:</strong> 45-60 satellites by end of 2026 via SpaceX, Blue Origin, and ISRO. Launch cadence: every 1-2 months.</p>
         </div>
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card label="Block 1" value={block1Sats} sub="BW3+BB1-5 (693 sq ft)" color="cyan" />
-        <Card label="Block 2" value={block2Sats} sub="BB6+ (~2,400 sq ft)" color="yellow" />
-        <Card label="Total In Orbit" value={calc.totalSats} sub="Operational" color="green" />
-        <Card label="Target 2026" value={targetSats2026} sub="45-60 range" color="blue" />
-        <Card label="Progress" value={`${calc.constellationProgress.toFixed(0)}%`} sub="vs 2026 target" color="purple" />
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Deployment Progress<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <Card label="Block 1" value={block1Sats} sub="BW3+BB1-5 (693 sq ft)" color="cyan" />
+          <Card label="Block 2" value={block2Sats} sub="BB6+ (~2,400 sq ft)" color="yellow" />
+          <Card label="Total In Orbit" value={calc.totalSats} sub="Operational" color="green" />
+          <Card label="Target 2026" value={targetSats2026} sub="45-60 range" color="blue" />
+          <Card label="Progress" value={`${calc.constellationProgress.toFixed(0)}%`} sub="vs 2026 target" color="purple" />
+        </div>
       </div>
       
       {/* Satellite Generations Comparison */}
@@ -2177,13 +2186,13 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         </div>
       </div>
       
-      <div className="card"><div className="card-title">Launch Schedule (Actual + Projected)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Launch Schedule (Actual + Projected)<UpdateIndicators sources="PR" /></div>
         <ResponsiveContainer width="100%" height={200}><ComposedChart data={schedule}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={(v, name, props) => [name === 'sats' ? `${v} sats (${props.payload.note})` : `${v} cumulative`, name === 'sats' ? 'Launched' : 'Total']} /><Bar dataKey="sats" fill="var(--cyan)" /><Line dataKey="cum" stroke="var(--gold)" strokeWidth={2} /></ComposedChart></ResponsiveContainer>
         <div className="mt-2 text-xs text-slate-500">
           ✓ BW3 Sept 2022 | ✓ BB1-5 Sept 2024 | ✓ BB6 Dec 2025 | BB7 ready, BB8-25 in production
         </div>
       </div>
-      <div className="card"><div className="card-title">Coverage Milestones</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage Milestones<UpdateIndicators sources={['PR', 'SEC']} /></div>
         {coverage.map(c => (<div key={c.r} className="flex items-center gap-4 mb-2"><div className="w-36 text-sm">{c.r}</div><div className="flex-1 h-5 bg-slate-900 rounded-full overflow-hidden"><div className={`h-full ${c.pct >= 100 ? 'bg-green-500' : 'bg-cyan-500'}`} style={{ width: `${c.pct}%` }} /></div><div className="w-20 text-right text-sm">{c.n} sats ({c.pct.toFixed(0)}%)</div></div>))}
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g4"><Input label="Block 1 (BW3+BB1-5)" value={block1Sats} onChange={setBlock1Sats} /><Input label="Block 2 (BB6+)" value={block2Sats} onChange={setBlock2Sats} /><Input label="Target 2026" value={targetSats2026} onChange={setTargetSats2026} /><Input label="Failure %" value={launchFailureRate} onChange={setLaunchFailureRate} /></div></div>
@@ -2205,17 +2214,20 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Subscribers<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div className="highlight"><h3>Subscriber Analysis</h3><p className="text-sm">3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
-      <div className="g4">
-        <Card label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} sub="53+ MNOs" color="blue" />
-        <Card label="Penetration" value={`${penetrationRate}%`} color="cyan" />
-        <Card label="Subs" value={`${calc.potentialSubs.toFixed(0)}M`} color="green" />
-        <Card label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} color="yellow" />
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Subscriber Analysis<UpdateIndicators sources="PR" /></h3><p className="text-sm">3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="g4">
+          <Card label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} sub="53+ MNOs" color="blue" />
+          <Card label="Penetration" value={`${penetrationRate}%`} color="cyan" />
+          <Card label="Subs" value={`${calc.potentialSubs.toFixed(0)}M`} color="green" />
+          <Card label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} color="yellow" />
+        </div>
       </div>
-      <div className="card"><div className="card-title">Breakdown</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="w-full text-sm"><thead><tr className="text-slate-400 text-xs border-b border-slate-700"><th className="text-left py-2">Partner</th><th className="text-right">Reach</th><th className="text-right">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name} className="border-t border-slate-800"><td className="py-2">{p.name}</td><td className="py-2 text-right text-cyan-400">{p.subs}M</td><td className="py-2 text-right text-slate-400">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
       </div>
-      <div className="card"><div className="card-title">Sensitivity</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="w-full text-sm"><thead><tr className="text-slate-400 text-xs border-b border-slate-700"><th className="text-left py-2">Pen%</th><th className="text-right">Subs</th><th className="text-right">Rev/yr</th><th className="text-right">$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} className={`border-t border-slate-800 ${s.p === penetrationRate ? 'bg-cyan-900/20' : ''}`}><td className="py-2">{s.p}%</td><td className="py-2 text-right">{s.subs.toFixed(0)}M</td><td className="py-2 text-right text-green-400">${s.rev.toFixed(1)}B</td><td className="py-2 text-right">${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g3"><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div></div>
@@ -2237,15 +2249,18 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div className="highlight"><h3>Revenue Analysis</h3><p className="text-sm">Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
-      <div className="card"><div className="card-title">Sources</div>{revenueSources.map((r, i) => (<div key={i} className="flex items-center justify-between p-2 border-b border-slate-800"><div><span className="font-medium text-cyan-400">{r.source}</span><span className="text-slate-400 text-sm ml-2">{r.description}</span></div><span className={`text-xs px-2 py-1 rounded ${r.status.includes('Active') ? 'bg-green-900/50 text-green-400' : 'bg-slate-700'}`}>{r.status}</span></div>))}</div>
-      <div className="g4">
-        <Card label="Gross" value={`$${(calc.grossAnnualRev / 1000).toFixed(1)}B`} color="cyan" />
-        <Card label="Share" value={`${revenueShare}%`} color="blue" />
-        <Card label="Contracted" value={`$${contractedRevenue}M+`} color="purple" />
-        <Card label="ASTS Rev" value={`$${(calc.astsAnnualRev / 1000).toFixed(1)}B`} color="green" />
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h3><p className="text-sm">Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} className="flex items-center justify-between p-2 border-b border-slate-800"><div><span className="font-medium text-cyan-400">{r.source}</span><span className="text-slate-400 text-sm ml-2">{r.description}</span></div><span className={`text-xs px-2 py-1 rounded ${r.status.includes('Active') ? 'bg-green-900/50 text-green-400' : 'bg-slate-700'}`}>{r.status}</span></div>))}</div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="g4">
+          <Card label="Gross" value={`$${(calc.grossAnnualRev / 1000).toFixed(1)}B`} color="cyan" />
+          <Card label="Share" value={`${revenueShare}%`} color="blue" />
+          <Card label="Contracted" value={`$${contractedRevenue}M+`} color="purple" />
+          <Card label="ASTS Rev" value={`$${(calc.astsAnnualRev / 1000).toFixed(1)}B`} color="green" />
+        </div>
       </div>
-      <div className="card"><div className="card-title">Ramp</div><ResponsiveContainer width="100%" height={220}><AreaChart data={ramp}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="year" stroke="var(--text3)" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v}B`} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} /><Legend /><Area type="monotone" dataKey="commercial" stackId="1" stroke="var(--cyan)" fill="var(--cyan)" fillOpacity={0.6} /><Area type="monotone" dataKey="gov" stackId="1" stroke="var(--gold)" fill="var(--gold)" fillOpacity={0.6} /><Area type="monotone" dataKey="gateway" stackId="1" stroke="var(--violet)" fill="var(--violet)" fillOpacity={0.6} /></AreaChart></ResponsiveContainer></div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Ramp<UpdateIndicators sources={['PR', 'SEC']} /></div><ResponsiveContainer width="100%" height={220}><AreaChart data={ramp}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="year" stroke="var(--text3)" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v}B`} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} /><Legend /><Area type="monotone" dataKey="commercial" stackId="1" stroke="var(--cyan)" fill="var(--cyan)" fillOpacity={0.6} /><Area type="monotone" dataKey="gov" stackId="1" stroke="var(--gold)" fill="var(--gold)" fillOpacity={0.6} /><Area type="monotone" dataKey="gateway" stackId="1" stroke="var(--violet)" fill="var(--violet)" fillOpacity={0.6} /></AreaChart></ResponsiveContainer></div>
       <div className="card"><div className="card-title">Parameters</div><div className="g2"><Input label="Share %" value={revenueShare} onChange={setRevenueShare} /><Input label="Gov $M/yr" value={govRevenue} onChange={setGovRevenue} /></div></div>
       
       <CFANotes title="CFA Level III — Revenue Model" items={[
