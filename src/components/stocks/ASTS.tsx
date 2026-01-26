@@ -2092,7 +2092,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources="PR" /></h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Catalyst Tracker<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
         <div>{upcomingCatalysts.map((c, i) => (
@@ -2142,7 +2142,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
   const coverage = [{ r: 'US Intermittent', n: 6 }, { r: 'US Continuous', n: 20 }, { r: 'US+Canada+Japan', n: 25 }, { r: 'Global (45-60)', n: 60 }].map(c => ({ ...c, pct: Math.min(100, (calc.totalSats / c.n) * 100) }));
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Constellation<UpdateIndicators sources="PR" /></h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Constellation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Constellation Status<UpdateIndicators sources="PR" /></h3>
         <div style={{ fontSize: 13, color: 'var(--text2)' }}>
           <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Block 1 (BW3 + BB1-5):</strong> 6 satellites in orbit. BW3 is the 693 sq ft prototype (Sept 2022). BB1-5 are first-generation commercial satellites (Sept 2024).</p>
@@ -2413,7 +2413,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Partners<UpdateIndicators sources="PR" /></h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Partners<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Partner & Spectrum Intelligence<UpdateIndicators sources="PR" /></h3>
         <div style={{ fontSize: 13, color: 'var(--text2)' }}>
           <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
@@ -2654,7 +2654,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Runway<UpdateIndicators sources="SEC" /></h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Runway<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Cash Runway — Q3 2025 Actuals<UpdateIndicators sources={['PR', 'SEC']} /></h3>
         <div style={{ fontSize: 13, color: 'var(--text2)' }}>
           <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
