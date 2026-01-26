@@ -649,6 +649,7 @@ const css = `
   color: var(--text2);
   background: transparent;
   border: 1px solid transparent;
+  border-left: 3px solid transparent;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
