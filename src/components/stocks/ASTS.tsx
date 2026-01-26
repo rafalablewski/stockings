@@ -2414,7 +2414,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Partners<UpdateIndicators sources="PR" /></h2>
-      <div className="highlight"><h3>Partner & Spectrum Intelligence</h3>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Partner & Spectrum Intelligence<UpdateIndicators sources="PR" /></h3>
         <div className="space-y-2 text-sm">
           <p><strong className="text-cyan-400">Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
           <p><strong className="text-cyan-400">Spectrum:</strong> ~80 MHz owned/controlled in US (45 MHz L-band + 5 MHz + partner spectrum). 60 MHz S-band global ITU priority. 1,150 MHz tunable MNO spectrum globally.</p>
@@ -2422,16 +2422,19 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card label="Contracted Rev" value="$1B+" sub="Commercial commitments" color="green" />
-        <Card label="Prepayments" value={`$${totalPrepay}M`} sub="Non-dilutive" color="cyan" />
-        <Card label="Definitive MNOs" value="4" sub={`${totalDefinitiveSubs}M subs`} color="blue" />
-        <Card label="Total MNOs" value="50+" sub={`~3.2B subs`} color="purple" />
-        <Card label="US Spectrum" value="80+ MHz" sub="Owned + partner" color="yellow" />
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <Card label="Contracted Rev" value="$1B+" sub="Commercial commitments" color="green" />
+          <Card label="Prepayments" value={`$${totalPrepay}M`} sub="Non-dilutive" color="cyan" />
+          <Card label="Definitive MNOs" value="4" sub={`${totalDefinitiveSubs}M subs`} color="blue" />
+          <Card label="Total MNOs" value="50+" sub={`~3.2B subs`} color="purple" />
+          <Card label="US Spectrum" value="80+ MHz" sub="Owned + partner" color="yellow" />
+        </div>
       </div>
 
       {/* Definitive Agreements - Detailed */}
-      <div className="card"><div className="card-title">Definitive Commercial Agreements (Binding)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Definitive Commercial Agreements (Binding)<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -2472,7 +2475,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       {/* Contract Details Expansion */}
       <div className="g2">
         {definitiveAgreements.map(p => (
-          <div key={p.partner} className="card"><div className="card-title">{p.partner} Details</div>
+          <div key={p.partner} className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{p.partner} Details<UpdateIndicators sources="PR" /></div>
             <div className="space-y-2 text-sm">
               <Row label="Signed" value={p.signDate} />
               <Row label="Term" value={p.term} />
@@ -2486,7 +2489,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Spectrum Holdings */}
-      <div className="card"><div className="card-title">ASTS-Owned Spectrum Holdings</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="w-full text-sm">
           <thead>
             <tr className="text-slate-400 text-xs border-b border-slate-700">
@@ -2519,7 +2522,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Partner Spectrum */}
-      <div className="card"><div className="card-title">Partner Spectrum (Shared Access)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Partner Spectrum (Shared Access)<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           {partnerSpectrum.map(s => (
             <div key={s.partner} className="p-3 bg-slate-800/30 rounded border border-slate-700/50">
@@ -2539,7 +2542,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Government Contracts */}
-      <div className="card"><div className="card-title">Government Contracts</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="w-full text-sm">
           <thead>
             <tr className="text-slate-400 text-xs border-b border-slate-700">
@@ -2566,7 +2569,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Other MNO Partners */}
-      <div className="card"><div className="card-title">Other Key Partners (MOUs & Agreements)</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
         <table className="w-full text-sm">
           <thead>
             <tr className="text-slate-400 text-xs border-b border-slate-700">
@@ -2592,7 +2595,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Revenue Commitment Summary */}
-      <div className="card"><div className="card-title">Revenue Commitment Breakdown</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Commitment Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g3">
           <div className="p-4 bg-green-900/20 border border-green-800/30 rounded-xl text-center">
             <div className="text-3xl font-bold text-green-400">$1B+</div>
@@ -2652,7 +2655,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Runway<UpdateIndicators sources="SEC" /></h2>
-      <div className="highlight"><h3>Cash Runway — Q3 2025 Actuals</h3>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Cash Runway — Q3 2025 Actuals<UpdateIndicators sources={['PR', 'SEC']} /></h3>
         <div className="space-y-2 text-sm">
           <p><strong className="text-cyan-400">Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
           <p><strong className="text-cyan-400">Debt (Balance Sheet):</strong> $697.6M net long-term debt (~$724M gross). Principal outstanding: $1.625B ($50M + $575M + $1B converts).</p>
@@ -2660,12 +2663,15 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         </div>
       </div>
       
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card label="Q3 GAAP Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} sub="~4Q runway at $300M/Q" color="green" />
-        <Card label="Q4 Burn Est." value={`$${quarterlyBurn}M`} sub="CapEx + OpEx" color="red" />
-        <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub={`~${(calc.cashRunwayQuarters / 4).toFixed(1)} years`} color="yellow" />
-        <Card label="Debt" value={`$${(totalDebt/1000).toFixed(1)}B`} sub={`${debtRate}% blended`} color="orange" />
-        <Card label="Employees" value="~1,800" sub="Global workforce" color="blue" />
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <Card label="Q3 GAAP Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} sub="~4Q runway at $300M/Q" color="green" />
+          <Card label="Q4 Burn Est." value={`$${quarterlyBurn}M`} sub="CapEx + OpEx" color="red" />
+          <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub={`~${(calc.cashRunwayQuarters / 4).toFixed(1)} years`} color="yellow" />
+          <Card label="Debt" value={`$${(totalDebt/1000).toFixed(1)}B`} sub={`${debtRate}% blended`} color="orange" />
+          <Card label="Employees" value="~1,800" sub="Global workforce" color="blue" />
+        </div>
       </div>
 
       {/* Q3 2025 Financial Summary */}
@@ -2748,7 +2754,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Funding Sources */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources="SEC" /></div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="mb-4 p-3 bg-slate-800/30 rounded-lg">
           <p className="text-sm text-slate-400">
             <strong className="text-cyan-400">Understanding ASTS Financing:</strong> As a pre-revenue company building a global satellite constellation, 
