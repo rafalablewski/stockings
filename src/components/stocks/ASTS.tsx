@@ -1064,8 +1064,8 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 @media (max-width: 768px) {
-  .disclaimer-banner { 
-    padding: 10px 16px; 
+  .disclaimer-banner {
+    padding: 10px 16px;
     font-size: 10px;
   }
   .disclaimer-banner .disclaimer-divider {
@@ -1074,13 +1074,19 @@ input[type="range"]::-webkit-slider-thumb {
   }
 }
 
-/* Mobile-First Table Wrapper */
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROFESSIONAL MOBILE RESPONSIVE STYLES
+   Optimized for touch devices with excellent UX
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Mobile-First Table Wrapper with Scroll Indicator */
 .table-scroll {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--surface3) transparent;
+  position: relative;
 }
 .table-scroll::-webkit-scrollbar { height: 6px; }
 .table-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -1096,22 +1102,24 @@ input[type="range"]::-webkit-slider-thumb {
   min-width: max-content;
 }
 
-/* Touch-friendly inputs */
+/* Touch-friendly inputs - Ensure minimum 44px touch targets */
 @media (pointer: coarse) {
   input[type="range"] { height: 44px; }
-  input[type="range"]::-webkit-slider-thumb { width: 28px; height: 28px; }
+  input[type="range"]::-webkit-slider-thumb { width: 32px; height: 32px; }
   .nav-btn { min-height: 44px; }
   button, .btn { min-height: 44px; }
+  .pill { min-height: 44px; padding: 12px 20px; }
+  .nav-dropdown-item { min-height: 44px; padding: 12px 16px; }
 }
 
-/* Responsive - Desktop */
+/* ═══ RESPONSIVE - DESKTOP (1200px) ═══ */
 @media (max-width: 1200px) {
   .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 32px; padding-right: 32px; }
   .g4 { grid-template-columns: repeat(2, 1fr); }
   .g5 { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* Responsive - Tablet */
+/* ═══ RESPONSIVE - TABLET (900px) ═══ */
 @media (max-width: 900px) {
   .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 24px; padding-right: 24px; }
   .g3 { grid-template-columns: repeat(2, 1fr); }
@@ -1121,81 +1129,434 @@ input[type="range"]::-webkit-slider-thumb {
   .highlight { padding: 20px; }
 }
 
-/* Responsive - Mobile */
+/* ═══ RESPONSIVE - MOBILE (768px) ═══ */
 @media (max-width: 768px) {
-  .hero { padding: 24px 16px 20px; }
-  .hero-grid { grid-template-columns: 1fr; gap: 16px; }
-  .price-block { text-align: left; }
-  .price-big { font-size: 36px; letter-spacing: -1px; }
-  .brand-block h1 { font-size: 28px; letter-spacing: -0.5px; }
-  .brand-block .desc { font-size: 14px; }
-  .brand-block .ticker { font-size: 12px; padding: 4px 10px; margin-bottom: 16px; }
+  /* Hero Section - Compact but readable */
+  .hero {
+    padding: 20px 16px 16px;
+  }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .price-block {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .price-big {
+    font-size: 40px;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+  .price-badge {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  .brand-block h1 {
+    font-size: 26px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+  .brand-block .desc {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+  .brand-block .ticker {
+    font-size: 11px;
+    padding: 4px 10px;
+    margin-bottom: 12px;
+  }
 
-  .g2, .g3, .g4, .g5 { grid-template-columns: 1fr; gap: 16px; }
+  /* Grid Layouts - Single column with proper spacing */
+  .g2, .g3, .g4, .g5 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 
+  /* Stats Row - Horizontal scroll with momentum */
   .stats-row {
-    padding: 20px 16px;
-    gap: 20px;
+    padding: 16px;
+    gap: 24px;
     flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    /* Fade indicators for scroll */
+    mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
   }
-  .stat-item .val { font-size: 18px; }
-  .stat-item .label { font-size: 10px; }
+  .stats-row::-webkit-scrollbar { display: none; }
+  .stat-item {
+    flex-shrink: 0;
+    min-width: 80px;
+    text-align: center;
+  }
+  .stat-item .val {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .stat-item .label {
+    font-size: 9px;
+    letter-spacing: 0.8px;
+  }
 
-  .nav { padding: 10px 12px; gap: 4px; }
-  .nav-btn { padding: 8px 12px; font-size: 12px; }
-  .nav-dropdown-space { padding: 0 12px; height: 44px; }
+  /* Navigation - Horizontal scroll with sticky behavior */
+  .nav {
+    padding: 12px 16px;
+    gap: 8px;
+    /* Fade indicators for scroll */
+    mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+  }
+  .nav-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    min-height: 44px;
+    border-radius: 10px;
+  }
+  .nav-dropdown-space {
+    padding: 0 16px;
+    height: 52px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+  }
+  .nav-dropdown-menu {
+    gap: 4px;
+  }
+  .nav-dropdown-item {
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--surface2);
+  }
+  .nav-dropdown-item.active {
+    background: var(--cyan);
+    color: var(--bg);
+  }
 
-  .main { padding: 20px 16px; }
-  .card { padding: 16px; border-radius: 12px; }
-  .card-title { font-size: 14px; margin-bottom: 16px; }
-  .highlight { padding: 16px; border-radius: 12px; }
-  .highlight h3 { font-size: 15px; }
+  /* Main Content Area */
+  .main {
+    padding: 20px 16px;
+  }
 
-  .section-head { font-size: 20px; margin-bottom: 16px; }
-  .section-head::after { height: 3px; }
+  /* Cards - Clean mobile design */
+  .card {
+    padding: 16px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 12px;
+    margin-bottom: 14px;
+    letter-spacing: 1.2px;
+  }
 
-  /* Mobile tables */
-  .table-scroll table { min-width: 500px; }
-  table th, table td { padding: 8px 10px; font-size: 12px; }
+  /* Highlight boxes */
+  .highlight {
+    padding: 16px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+  }
+  .highlight h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .highlight p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
 
-  /* Mobile cards in grids */
-  .thesis { padding: 16px; }
-  .thesis h4 { font-size: 14px; }
+  /* Section Headers */
+  .section-head {
+    font-size: 22px;
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+  .section-head::before {
+    width: 4px;
+    height: 24px;
+  }
 
-  /* Input controls */
-  input[type="range"] { height: 40px; }
-  input[type="number"], select {
-    font-size: 16px; /* Prevents iOS zoom */
+  /* Tables - Scrollable with visual cues */
+  .table-scroll table { min-width: 480px; }
+  .tbl th, .tbl td {
     padding: 10px 12px;
+    font-size: 12px;
+  }
+  .tbl th {
+    font-size: 10px;
+    letter-spacing: 0.8px;
   }
 
-  /* Slider labels */
-  .input-row { flex-direction: column; gap: 8px; }
-  .input-row label { font-size: 12px; }
+  /* Thesis Cards */
+  .thesis {
+    padding: 16px;
+    border-radius: 14px;
+  }
+  .thesis h4 {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  .thesis ul {
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .thesis li::before {
+    margin-right: 8px;
+  }
+
+  /* Big Stats */
+  .big-stat {
+    padding: 20px;
+    border-radius: 14px;
+  }
+  .big-stat .num {
+    font-size: 28px;
+  }
+  .big-stat .lbl {
+    font-size: 12px;
+  }
+
+  /* Bar Charts */
+  .bars {
+    height: 180px;
+    gap: 8px;
+    padding: 16px 0;
+  }
+  .bar-val {
+    font-size: 10px;
+  }
+  .bar-label {
+    font-size: 9px;
+  }
+
+  /* Monte Carlo Chart */
+  .mc-chart {
+    height: 200px;
+  }
+
+  /* Pills */
+  .pills {
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .pill {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  /* Sliders */
+  .slider-wrap {
+    margin-bottom: 20px;
+  }
+  .slider-head {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  /* Input controls - Prevent iOS zoom */
+  input[type="range"] {
+    height: 44px;
+  }
+  input[type="number"], select {
+    font-size: 16px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    min-height: 44px;
+  }
+
+  /* Input rows */
+  .input-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .input-row label {
+    font-size: 13px;
+  }
+
+  /* UpdateIndicators - Smaller on mobile */
+  .update-dot {
+    width: 6px;
+    height: 6px;
+  }
 }
 
-/* Responsive - Small Mobile */
+/* ═══ RESPONSIVE - SMALL MOBILE (480px) ═══ */
 @media (max-width: 480px) {
-  .hero { padding: 20px 12px 16px; }
-  .price-big { font-size: 32px; }
-  .brand-block h1 { font-size: 24px; }
-  .brand-block .desc { font-size: 13px; line-height: 1.5; }
+  /* Hero */
+  .hero {
+    padding: 16px 12px 12px;
+  }
+  .price-big {
+    font-size: 36px;
+  }
+  .brand-block h1 {
+    font-size: 22px;
+  }
+  .brand-block .desc {
+    font-size: 13px;
+    line-height: 1.5;
+  }
 
-  .stats-row { padding: 16px 12px; gap: 16px; }
+  /* Stats Row */
+  .stats-row {
+    padding: 14px 12px;
+    gap: 20px;
+  }
+  .stat-item .val {
+    font-size: 18px;
+  }
+  .stat-item .label {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Navigation */
+  .nav {
+    padding: 10px 12px;
+    gap: 6px;
+  }
+  .nav-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-width: auto;
+  }
+  .nav-dropdown-space {
+    padding: 0 12px;
+    height: 48px;
+  }
+  .nav-dropdown-item {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  /* Main Content */
+  .main {
+    padding: 16px 12px;
+  }
+
+  /* Cards */
+  .card, .highlight {
+    padding: 14px;
+    border-radius: 12px;
+  }
+  .card-title {
+    font-size: 11px;
+  }
+
+  /* Section Headers */
+  .section-head {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  /* Tables */
+  .table-scroll table { min-width: 380px; }
+  .tbl th, .tbl td {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .tbl th {
+    font-size: 9px;
+  }
+
+  /* Grids */
+  .g2, .g3, .g4, .g5 { gap: 10px; }
+
+  /* Big Stats */
+  .big-stat .num {
+    font-size: 24px;
+  }
+  .big-stat .lbl {
+    font-size: 11px;
+  }
+
+  /* Thesis */
+  .thesis {
+    padding: 14px;
+  }
+  .thesis h4 {
+    font-size: 14px;
+  }
+  .thesis ul {
+    font-size: 12px;
+  }
+
+  /* Pills */
+  .pill {
+    padding: 8px 14px;
+    font-size: 11px;
+  }
+}
+
+/* ═══ RESPONSIVE - EXTRA SMALL (360px) ═══ */
+@media (max-width: 360px) {
+  .hero { padding: 12px 10px; }
+  .price-big { font-size: 32px; }
+  .brand-block h1 { font-size: 20px; }
+  .brand-block .desc { font-size: 12px; }
+
+  .stats-row { padding: 12px 10px; gap: 16px; }
   .stat-item .val { font-size: 16px; }
 
   .nav { padding: 8px 10px; }
-  .nav-btn { padding: 6px 10px; font-size: 11px; gap: 4px; }
-  .nav-dropdown-space { padding: 0 10px; height: 40px; }
+  .nav-btn { padding: 6px 10px; font-size: 11px; }
 
-  .main { padding: 16px 12px; }
-  .card, .highlight { padding: 14px; }
+  .main { padding: 14px 10px; }
+  .card, .highlight { padding: 12px; }
   .section-head { font-size: 18px; }
 
-  .table-scroll table { min-width: 400px; }
-  table th, table td { padding: 6px 8px; font-size: 11px; }
+  .tbl th, .tbl td { padding: 6px 8px; font-size: 10px; }
+}
 
-  .g2, .g3, .g4 { gap: 12px; }
+/* ═══ LANDSCAPE MOBILE ADJUSTMENTS ═══ */
+@media (max-width: 900px) and (orientation: landscape) {
+  .hero { padding: 16px 24px; }
+  .hero-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .stats-row { padding: 12px 24px; }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ═══ HIGH DPI / RETINA ADJUSTMENTS ═══ */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .card, .highlight {
+    border-width: 0.5px;
+  }
+  .nav-btn {
+    border-width: 0.5px;
+  }
+}
+
+/* ═══ REDUCED MOTION ═══ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .bar:hover {
+    transform: none;
+  }
+}
+
+/* ═══ DARK MODE OPTIMIZATION ═══ */
+@media (prefers-color-scheme: dark) {
+  /* Already dark, but ensure proper contrast */
+  .card, .highlight {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
 }
 
 /* Timeline - CRCL Unified Style */
@@ -1950,15 +2311,15 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
   const maxValue = Math.max(...chartData.map(d => d.value));
 
   return (
-  <>
+  <div style={{ display: 'flex', flexDirection: 'column' }}>
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-    <div className="highlight"><h3>The Opportunity</h3>
-      <p style={{ fontSize: '14px' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
+    <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
+      <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
     <div className="g2">
       <div className="thesis bull">
-        <h4>↑ Bull Case</h4>
+        <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
         <ul>
           <li>BB6 proving D2D technology works at scale</li>
           <li>53+ MNO partners with 3.2B addressable subscribers</li>
@@ -1969,7 +2330,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         </ul>
       </div>
       <div className="thesis bear">
-        <h4>↓ Bear Case</h4>
+        <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
         <ul>
           <li>Pre-revenue company, high execution risk</li>
           <li>Dilution risk — $3.2B raised, may need more</li>
@@ -1983,8 +2344,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
 
     <div className="card" style={{ marginTop: 32 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div className="card-title" style={{ marginBottom: 0 }}>
-          {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}
+        <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>
+          {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}<UpdateIndicators sources="PR" />
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           {[
@@ -2021,33 +2382,39 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
 
-    <div className="g4" style={{ marginTop: 32 }}>
-      <Card label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} sub="Equity value" color="blue" />
-      <Card label="EV" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} sub="MC + Debt - Cash" color="purple" />
-      <Card label="Constellation" value={`${calc.totalSats}/${targetSats2026}`} sub={`${calc.constellationProgress.toFixed(0)}%`} color="cyan" />
-      <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub="~1 year runway" color="green" />
+    <div className="card" style={{ marginTop: 32 }}>
+      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="g4">
+        <Card label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} sub="Equity value" color="blue" />
+        <Card label="EV" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} sub="MC + Debt - Cash" color="purple" />
+        <Card label="Constellation" value={`${calc.totalSats}/${targetSats2026}`} sub={`${calc.constellationProgress.toFixed(0)}%`} color="cyan" />
+        <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub="~1 year runway" color="green" />
+      </div>
     </div>
-    <div className="g3" style={{ marginTop: 32 }}>
-      <div className="card"><div className="card-title">Equity (Q3 2025)</div>
-        <Row label="Shares" value={`${currentShares}M`} />
-        <Row label="Price" value={`$${currentStockPrice}`} />
-        <Row label="Mkt Cap" value={`$${(calc.marketCap / 1000).toFixed(2)}B`} highlight />
-        <Row label="Debt" value={`$${totalDebt}M`} />
-        <Row label="Cash" value={`$${(cashOnHand / 1000).toFixed(2)}B`} />
-      </div>
-      <div className="card"><div className="card-title">Subscribers</div>
-        <Row label="MNO Partners" value="53+" />
-        <Row label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} highlight />
-        <Row label={`@ ${penetrationRate}%`} value={`${calc.potentialSubs.toFixed(0)}M`} />
-        <Row label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} />
-        <Row label="Contracted" value={`$${contractedRevenue}M+`} />
-      </div>
-      <div className="card"><div className="card-title">Constellation</div>
-        <Row label="Block 1 (BW3+BB1-5)" value={`${block1Sats} in orbit`} />
-        <Row label="Block 2 (BB6+)" value={`${block2Sats} launched`} highlight />
-        <Row label="Total Constellation" value={`${block1Sats + block2Sats} satellites`} />
-        <Row label="Target" value={targetSats2026} />
-        <Row label="Next" value="BB7-13 Q1'26" />
+    <div className="card" style={{ marginTop: 32 }}>
+      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="g3">
+        <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Equity (Q3 2025)</div>
+          <Row label="Shares" value={`${currentShares}M`} />
+          <Row label="Price" value={`$${currentStockPrice}`} />
+          <Row label="Mkt Cap" value={`$${(calc.marketCap / 1000).toFixed(2)}B`} highlight />
+          <Row label="Debt" value={`$${totalDebt}M`} />
+          <Row label="Cash" value={`$${(cashOnHand / 1000).toFixed(2)}B`} />
+        </div>
+        <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Subscribers</div>
+          <Row label="MNO Partners" value="53+" />
+          <Row label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} highlight />
+          <Row label={`@ ${penetrationRate}%`} value={`${calc.potentialSubs.toFixed(0)}M`} />
+          <Row label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} />
+          <Row label="Contracted" value={`$${contractedRevenue}M+`} />
+        </div>
+        <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Constellation</div>
+          <Row label="Block 1 (BW3+BB1-5)" value={`${block1Sats} in orbit`} />
+          <Row label="Block 2 (BB6+)" value={`${block2Sats} launched`} highlight />
+          <Row label="Total Constellation" value={`${block1Sats + block2Sats} satellites`} />
+          <Row label="Target" value={targetSats2026} />
+          <Row label="Next" value="BB7-13 Q1'26" />
+        </div>
       </div>
     </div>
     <div className="card" style={{ marginTop: 32 }}><div className="card-title">Parameters</div>
@@ -2070,7 +2437,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       { term: 'Price per Subscriber', def: 'Market Cap ÷ Potential Subscribers. Valuation metric for telecom. Lower = more attractive if execution succeeds.' },
       { term: 'MNO Partnerships', def: 'Mobile Network Operator agreements. 53+ partners with 3.2B combined subscribers. Revenue share model (typically 50/50).' },
     ]} />
-  </>
+  </div>
   );
 };
 
@@ -2086,21 +2453,21 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources="PR" /></h2>
-      <div className="highlight"><h3>Catalyst Tracker</h3><p className="text-sm">Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
-        <div className="space-y-2">{upcomingCatalysts.map((c, i) => (
-          <div key={i} className={`flex items-center justify-between p-3 rounded-lg border ${c.impact === 'Critical' ? 'bg-cyan-900/30 border-cyan-600' : 'bg-slate-800/50 border-slate-700'}`}>
-            <div><div className="font-medium">{c.event}</div><div className="text-xs text-slate-400">{c.timeline}</div></div>
-            <span className={`px-2 py-1 rounded text-xs ${c.impact === 'Critical' ? 'bg-cyan-600' : 'bg-yellow-600/50'}`}>{c.impact}</span>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Catalyst Tracker<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
+        <div>{upcomingCatalysts.map((c, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 8, border: '1px solid', marginBottom: 8, background: c.impact === 'Critical' ? 'rgba(34,211,238,0.15)' : 'var(--surface2)', borderColor: c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)' }}>
+            <div><div style={{ fontWeight: 500, color: 'var(--text1)' }}>{c.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.timeline}</div></div>
+            <span className="pill" style={{ background: c.impact === 'Critical' ? 'var(--cyan)' : 'rgba(234,179,8,0.3)', color: c.impact === 'Critical' ? 'var(--bg1)' : 'var(--gold)', fontSize: 11 }}>{c.impact}</span>
           </div>
         ))}</div>
       </div>
       {years.map(year => (
-        <div key={year} className="card"><div className="card-title">{year} Completed</div>
-          <div className="grid md:grid-cols-2 gap-2">{milestonesByYear[year].map((m, i) => (
-            <div key={i} className="flex items-center gap-3 p-2 rounded bg-green-900/20 border border-green-800/30">
-              <span className="text-green-400">✓</span><div><div className="text-sm">{m.event}</div><div className="text-xs text-slate-500">{m.date}</div></div>
+        <div key={year} className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{year} Completed<UpdateIndicators sources="PR" /></div>
+          <div className="g2">{milestonesByYear[year].map((m, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 8, borderRadius: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}>
+              <span style={{ color: 'var(--mint)' }}>✓</span><div><div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div></div>
             </div>
           ))}</div>
         </div>
@@ -2136,55 +2503,58 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
   const coverage = [{ r: 'US Intermittent', n: 6 }, { r: 'US Continuous', n: 20 }, { r: 'US+Canada+Japan', n: 25 }, { r: 'Global (45-60)', n: 60 }].map(c => ({ ...c, pct: Math.min(100, (calc.totalSats / c.n) * 100) }));
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Constellation<UpdateIndicators sources="PR" /></h2>
-      <div className="highlight"><h3>Constellation Status</h3>
-        <div className="space-y-2 text-sm">
-          <p><strong className="text-cyan-400">Block 1 (BW3 + BB1-5):</strong> 6 satellites in orbit. BW3 is the 693 sq ft prototype (Sept 2022). BB1-5 are first-generation commercial satellites (Sept 2024).</p>
-          <p><strong className="text-yellow-400">Block 2 (BB6+):</strong> Next-generation satellites with ~2,400 sq ft arrays (3.5x larger), AST5000 ASIC chips, and 10x capacity. BB6 launched Dec 23, 2025 via ISRO.</p>
-          <p><strong className="text-green-400">Target:</strong> 45-60 satellites by end of 2026 via SpaceX, Blue Origin, and ISRO. Launch cadence: every 1-2 months.</p>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Constellation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Constellation Status<UpdateIndicators sources="PR" /></h3>
+        <div style={{ fontSize: 13, color: 'var(--text2)' }}>
+          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Block 1 (BW3 + BB1-5):</strong> 6 satellites in orbit. BW3 is the 693 sq ft prototype (Sept 2022). BB1-5 are first-generation commercial satellites (Sept 2024).</p>
+          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--gold)' }}>Block 2 (BB6+):</strong> Next-generation satellites with ~2,400 sq ft arrays (3.5x larger), AST5000 ASIC chips, and 10x capacity. BB6 launched Dec 23, 2025 via ISRO.</p>
+          <p><strong style={{ color: 'var(--mint)' }}>Target:</strong> 45-60 satellites by end of 2026 via SpaceX, Blue Origin, and ISRO. Launch cadence: every 1-2 months.</p>
         </div>
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card label="Block 1" value={block1Sats} sub="BW3+BB1-5 (693 sq ft)" color="cyan" />
-        <Card label="Block 2" value={block2Sats} sub="BB6+ (~2,400 sq ft)" color="yellow" />
-        <Card label="Total In Orbit" value={calc.totalSats} sub="Operational" color="green" />
-        <Card label="Target 2026" value={targetSats2026} sub="45-60 range" color="blue" />
-        <Card label="Progress" value={`${calc.constellationProgress.toFixed(0)}%`} sub="vs 2026 target" color="purple" />
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Deployment Progress<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="g5">
+          <Card label="Block 1" value={block1Sats} sub="BW3+BB1-5 (693 sq ft)" color="cyan" />
+          <Card label="Block 2" value={block2Sats} sub="BB6+ (~2,400 sq ft)" color="yellow" />
+          <Card label="Total In Orbit" value={calc.totalSats} sub="Operational" color="green" />
+          <Card label="Target 2026" value={targetSats2026} sub="45-60 range" color="blue" />
+          <Card label="Progress" value={`${calc.constellationProgress.toFixed(0)}%`} sub="vs 2026 target" color="purple" />
+        </div>
       </div>
       
       {/* Satellite Generations Comparison */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Satellite Generations<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Satellite Generations<UpdateIndicators sources="PR" /></div>
         <div className="g2">
-          <div className="p-4 bg-cyan-900/20 border border-cyan-800/30 rounded-lg">
-            <h4 className="text-cyan-400 font-medium mb-2">Block 1: BW3 + BB1-5</h4>
-            <ul className="space-y-1 text-sm text-slate-300">
-              <li>• Array size: 693 sq ft each</li>
-              <li>• Launched: BW3 Sept 2022, BB1-5 Sept 2024</li>
-              <li>• Status: All 6 operational in orbit</li>
+          <div style={{ padding: 16, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8 }}>
+            <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Block 1: BW3 + BB1-5</h4>
+            <ul style={{ fontSize: 13, color: 'var(--text2)' }}>
+              <li style={{ marginBottom: 4 }}>• Array size: 693 sq ft each</li>
+              <li style={{ marginBottom: 4 }}>• Launched: BW3 Sept 2022, BB1-5 Sept 2024</li>
+              <li style={{ marginBottom: 4 }}>• Status: All 6 operational in orbit</li>
               <li>• Purpose: Technology validation, early service</li>
             </ul>
           </div>
-          <div className="p-4 bg-yellow-900/20 border border-yellow-800/30 rounded-lg">
-            <h4 className="text-yellow-400 font-medium mb-2">Block 2: BB6 onwards</h4>
-            <ul className="space-y-1 text-sm text-slate-300">
-              <li>• Array size: ~2,400 sq ft (3.5x larger)</li>
-              <li>• AST5000 ASIC: Custom silicon, 120 Mbps peak</li>
-              <li>• Capacity: 10x improvement over Block 1</li>
-              <li>• BB6 launched Dec 23, 2025 (ISRO)</li>
+          <div style={{ padding: 16, background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.3)', borderRadius: 8 }}>
+            <h4 style={{ color: 'var(--gold)', fontWeight: 500, marginBottom: 8 }}>Block 2: BB6 onwards</h4>
+            <ul style={{ fontSize: 13, color: 'var(--text2)' }}>
+              <li style={{ marginBottom: 4 }}>• Array size: ~2,400 sq ft (3.5x larger)</li>
+              <li style={{ marginBottom: 4 }}>• AST5000 ASIC: Custom silicon, 120 Mbps peak</li>
+              <li style={{ marginBottom: 4 }}>• Capacity: 10x improvement over Block 1</li>
+              <li style={{ marginBottom: 4 }}>• BB6 launched Dec 23, 2025 (ISRO)</li>
               <li>• BB7-25: In production, 6/month by Dec 2025</li>
             </ul>
           </div>
         </div>
       </div>
       
-      <div className="card"><div className="card-title">Launch Schedule (Actual + Projected)</div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Launch Schedule (Actual + Projected)<UpdateIndicators sources="PR" /></div>
         <ResponsiveContainer width="100%" height={200}><ComposedChart data={schedule}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={(v, name, props) => [name === 'sats' ? `${v} sats (${props.payload.note})` : `${v} cumulative`, name === 'sats' ? 'Launched' : 'Total']} /><Bar dataKey="sats" fill="var(--cyan)" /><Line dataKey="cum" stroke="var(--gold)" strokeWidth={2} /></ComposedChart></ResponsiveContainer>
-        <div className="mt-2 text-xs text-slate-500">
+        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
           ✓ BW3 Sept 2022 | ✓ BB1-5 Sept 2024 | ✓ BB6 Dec 2025 | BB7 ready, BB8-25 in production
         </div>
       </div>
-      <div className="card"><div className="card-title">Coverage Milestones</div>
-        {coverage.map(c => (<div key={c.r} className="flex items-center gap-4 mb-2"><div className="w-36 text-sm">{c.r}</div><div className="flex-1 h-5 bg-slate-900 rounded-full overflow-hidden"><div className={`h-full ${c.pct >= 100 ? 'bg-green-500' : 'bg-cyan-500'}`} style={{ width: `${c.pct}%` }} /></div><div className="w-20 text-right text-sm">{c.n} sats ({c.pct.toFixed(0)}%)</div></div>))}
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage Milestones<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        {coverage.map(c => (<div key={c.r} style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8 }}><div style={{ width: 144, fontSize: 13, color: 'var(--text2)' }}>{c.r}</div><div style={{ flex: 1, height: 20, background: 'var(--surface2)', borderRadius: 9999, overflow: 'hidden' }}><div style={{ height: '100%', width: `${c.pct}%`, background: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)' }} /></div><div style={{ width: 80, textAlign: 'right', fontSize: 13, color: 'var(--text2)' }}>{c.n} sats ({c.pct.toFixed(0)}%)</div></div>))}
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g4"><Input label="Block 1 (BW3+BB1-5)" value={block1Sats} onChange={setBlock1Sats} /><Input label="Block 2 (BB6+)" value={block2Sats} onChange={setBlock2Sats} /><Input label="Target 2026" value={targetSats2026} onChange={setTargetSats2026} /><Input label="Failure %" value={launchFailureRate} onChange={setLaunchFailureRate} /></div></div>
       
@@ -2205,18 +2575,21 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Subscribers<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div className="highlight"><h3>Subscriber Analysis</h3><p className="text-sm">3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
-      <div className="g4">
-        <Card label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} sub="53+ MNOs" color="blue" />
-        <Card label="Penetration" value={`${penetrationRate}%`} color="cyan" />
-        <Card label="Subs" value={`${calc.potentialSubs.toFixed(0)}M`} color="green" />
-        <Card label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} color="yellow" />
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Subscriber Analysis<UpdateIndicators sources="PR" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="g4">
+          <Card label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} sub="53+ MNOs" color="blue" />
+          <Card label="Penetration" value={`${penetrationRate}%`} color="cyan" />
+          <Card label="Subs" value={`${calc.potentialSubs.toFixed(0)}M`} color="green" />
+          <Card label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} color="yellow" />
+        </div>
       </div>
-      <div className="card"><div className="card-title">Breakdown</div>
-        <table className="w-full text-sm"><thead><tr className="text-slate-400 text-xs border-b border-slate-700"><th className="text-left py-2">Partner</th><th className="text-right">Reach</th><th className="text-right">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name} className="border-t border-slate-800"><td className="py-2">{p.name}</td><td className="py-2 text-right text-cyan-400">{p.subs}M</td><td className="py-2 text-right text-slate-400">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <table className="tbl"><thead><tr style={{ borderBottom: '1px solid var(--border)' }}><th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Reach</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name} style={{ borderTop: '1px solid var(--border)' }}><td style={{ padding: 8, color: 'var(--text2)' }}>{p.name}</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{p.subs}M</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text3)' }}>{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
       </div>
-      <div className="card"><div className="card-title">Sensitivity</div>
-        <table className="w-full text-sm"><thead><tr className="text-slate-400 text-xs border-b border-slate-700"><th className="text-left py-2">Pen%</th><th className="text-right">Subs</th><th className="text-right">Rev/yr</th><th className="text-right">$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} className={`border-t border-slate-800 ${s.p === penetrationRate ? 'bg-cyan-900/20' : ''}`}><td className="py-2">{s.p}%</td><td className="py-2 text-right">{s.subs.toFixed(0)}M</td><td className="py-2 text-right text-green-400">${s.rev.toFixed(1)}B</td><td className="py-2 text-right">${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <table className="tbl"><thead><tr style={{ borderBottom: '1px solid var(--border)' }}><th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Pen%</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Rev/yr</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={{ borderTop: '1px solid var(--border)', background: s.p === penetrationRate ? 'var(--surface2)' : 'transparent' }}><td style={{ padding: 8, color: 'var(--text2)' }}>{s.p}%</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{s.subs.toFixed(0)}M</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${s.rev.toFixed(1)}B</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g3"><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div></div>
       
@@ -2237,15 +2610,18 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div className="highlight"><h3>Revenue Analysis</h3><p className="text-sm">Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
-      <div className="card"><div className="card-title">Sources</div>{revenueSources.map((r, i) => (<div key={i} className="flex items-center justify-between p-2 border-b border-slate-800"><div><span className="font-medium text-cyan-400">{r.source}</span><span className="text-slate-400 text-sm ml-2">{r.description}</span></div><span className={`text-xs px-2 py-1 rounded ${r.status.includes('Active') ? 'bg-green-900/50 text-green-400' : 'bg-slate-700'}`}>{r.status}</span></div>))}</div>
-      <div className="g4">
-        <Card label="Gross" value={`$${(calc.grossAnnualRev / 1000).toFixed(1)}B`} color="cyan" />
-        <Card label="Share" value={`${revenueShare}%`} color="blue" />
-        <Card label="Contracted" value={`$${contractedRevenue}M+`} color="purple" />
-        <Card label="ASTS Rev" value={`$${(calc.astsAnnualRev / 1000).toFixed(1)}B`} color="green" />
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--border)' }}><div><span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{r.source}</span><span style={{ color: 'var(--text3)', fontSize: 13, marginLeft: 8 }}>{r.description}</span></div><span className="pill" style={{ background: r.status.includes('Active') ? 'rgba(16,185,129,0.15)' : 'var(--surface2)', borderColor: r.status.includes('Active') ? 'var(--mint)' : 'var(--border)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{r.status}</span></div>))}</div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="g4">
+          <Card label="Gross" value={`$${(calc.grossAnnualRev / 1000).toFixed(1)}B`} color="cyan" />
+          <Card label="Share" value={`${revenueShare}%`} color="blue" />
+          <Card label="Contracted" value={`$${contractedRevenue}M+`} color="purple" />
+          <Card label="ASTS Rev" value={`$${(calc.astsAnnualRev / 1000).toFixed(1)}B`} color="green" />
+        </div>
       </div>
-      <div className="card"><div className="card-title">Ramp</div><ResponsiveContainer width="100%" height={220}><AreaChart data={ramp}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="year" stroke="var(--text3)" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v}B`} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} /><Legend /><Area type="monotone" dataKey="commercial" stackId="1" stroke="var(--cyan)" fill="var(--cyan)" fillOpacity={0.6} /><Area type="monotone" dataKey="gov" stackId="1" stroke="var(--gold)" fill="var(--gold)" fillOpacity={0.6} /><Area type="monotone" dataKey="gateway" stackId="1" stroke="var(--violet)" fill="var(--violet)" fillOpacity={0.6} /></AreaChart></ResponsiveContainer></div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Ramp<UpdateIndicators sources={['PR', 'SEC']} /></div><ResponsiveContainer width="100%" height={220}><AreaChart data={ramp}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="year" stroke="var(--text3)" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v}B`} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} /><Legend /><Area type="monotone" dataKey="commercial" stackId="1" stroke="var(--cyan)" fill="var(--cyan)" fillOpacity={0.6} /><Area type="monotone" dataKey="gov" stackId="1" stroke="var(--gold)" fill="var(--gold)" fillOpacity={0.6} /><Area type="monotone" dataKey="gateway" stackId="1" stroke="var(--violet)" fill="var(--violet)" fillOpacity={0.6} /></AreaChart></ResponsiveContainer></div>
       <div className="card"><div className="card-title">Parameters</div><div className="g2"><Input label="Share %" value={revenueShare} onChange={setRevenueShare} /><Input label="Gov $M/yr" value={govRevenue} onChange={setGovRevenue} /></div></div>
       
       <CFANotes title="CFA Level III — Revenue Model" items={[
@@ -2398,55 +2774,58 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Partners<UpdateIndicators sources="PR" /></h2>
-      <div className="highlight"><h3>Partner & Spectrum Intelligence</h3>
-        <div className="space-y-2 text-sm">
-          <p><strong className="text-cyan-400">Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
-          <p><strong className="text-cyan-400">Spectrum:</strong> ~80 MHz owned/controlled in US (45 MHz L-band + 5 MHz + partner spectrum). 60 MHz S-band global ITU priority. 1,150 MHz tunable MNO spectrum globally.</p>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Partners<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Partner & Spectrum Intelligence<UpdateIndicators sources="PR" /></h3>
+        <div style={{ fontSize: 13, color: 'var(--text2)' }}>
+          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
+          <p><strong style={{ color: 'var(--cyan)' }}>Spectrum:</strong> ~80 MHz owned/controlled in US (45 MHz L-band + 5 MHz + partner spectrum). 60 MHz S-band global ITU priority. 1,150 MHz tunable MNO spectrum globally.</p>
         </div>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card label="Contracted Rev" value="$1B+" sub="Commercial commitments" color="green" />
-        <Card label="Prepayments" value={`$${totalPrepay}M`} sub="Non-dilutive" color="cyan" />
-        <Card label="Definitive MNOs" value="4" sub={`${totalDefinitiveSubs}M subs`} color="blue" />
-        <Card label="Total MNOs" value="50+" sub={`~3.2B subs`} color="purple" />
-        <Card label="US Spectrum" value="80+ MHz" sub="Owned + partner" color="yellow" />
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="g5">
+          <Card label="Contracted Rev" value="$1B+" sub="Commercial commitments" color="green" />
+          <Card label="Prepayments" value={`$${totalPrepay}M`} sub="Non-dilutive" color="cyan" />
+          <Card label="Definitive MNOs" value="4" sub={`${totalDefinitiveSubs}M subs`} color="blue" />
+          <Card label="Total MNOs" value="50+" sub={`~3.2B subs`} color="purple" />
+          <Card label="US Spectrum" value="80+ MHz" sub="Owned + partner" color="yellow" />
+        </div>
       </div>
 
       {/* Definitive Agreements - Detailed */}
-      <div className="card"><div className="card-title">Definitive Commercial Agreements (Binding)</div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Definitive Commercial Agreements (Binding)<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
             <thead>
-              <tr className="text-slate-400 text-xs border-b border-slate-700">
-                <th className="text-left py-2">Partner</th>
-                <th className="text-center">Region</th>
-                <th className="text-right">Subs</th>
-                <th className="text-center">Spectrum</th>
-                <th className="text-center">Term</th>
-                <th className="text-right">Prepayment</th>
-                <th className="text-left pl-2">Status</th>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th>
+                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Region</th>
+                <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
+                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Spectrum</th>
+                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Term</th>
+                <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Prepayment</th>
+                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
               </tr>
             </thead>
             <tbody>
               {definitiveAgreements.map(p => (
-                <tr key={p.partner} className="border-t border-slate-800 hover:bg-slate-800/30">
-                  <td className="py-2 font-medium text-cyan-400">{p.partner}</td>
-                  <td className="py-2 text-center text-slate-400">{p.region}</td>
-                  <td className="py-2 text-right">{p.subs}M</td>
-                  <td className="py-2 text-center"><span className="px-2 py-0.5 bg-slate-700 rounded text-xs">{p.spectrum}</span></td>
-                  <td className="py-2 text-center text-slate-400">{p.term}</td>
-                  <td className="py-2 text-right font-medium text-green-400">${p.prepayment}M</td>
-                  <td className="py-2 pl-2 text-xs text-slate-400">{p.prepayStatus}</td>
+                <tr key={p.partner} style={{ borderTop: '1px solid var(--border)' }}>
+                  <td style={{ padding: 8, color: 'var(--text2)' }}>{p.partner}</td>
+                  <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.region}</td>
+                  <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{p.subs}M</td>
+                  <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{p.spectrum}</span></td>
+                  <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.term}</td>
+                  <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${p.prepayment}M</td>
+                  <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{p.prepayStatus}</td>
                 </tr>
               ))}
-              <tr className="border-t-2 border-slate-600 bg-slate-800/50">
-                <td className="py-2 font-bold" colSpan={2}>Total Definitive</td>
-                <td className="py-2 text-right font-bold text-cyan-400">{totalDefinitiveSubs}M</td>
+              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+                <td style={{ padding: 8, fontWeight: 600, color: 'var(--text2)' }} colSpan={2}>Total Definitive</td>
+                <td style={{ padding: 8, textAlign: 'right', fontWeight: 600, color: 'var(--text2)' }}>{totalDefinitiveSubs}M</td>
                 <td colSpan={2}></td>
-                <td className="py-2 text-right font-bold text-green-400">${totalPrepay}M</td>
+                <td style={{ padding: 8, textAlign: 'right', fontWeight: 600, color: 'var(--mint)' }}>${totalPrepay}M</td>
                 <td></td>
               </tr>
             </tbody>
@@ -2455,121 +2834,121 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Contract Details Expansion */}
-      <div className="g2">
+      <div className="g2" style={{ marginTop: 32 }}>
         {definitiveAgreements.map(p => (
-          <div key={p.partner} className="card"><div className="card-title">{p.partner} Details</div>
-            <div className="space-y-2 text-sm">
+          <div key={p.partner} className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{p.partner} Details<UpdateIndicators sources="PR" /></div>
+            <div>
               <Row label="Signed" value={p.signDate} />
               <Row label="Term" value={p.term} />
               <Row label="Spectrum" value={`${p.spectrum} (${p.spectrumType})`} />
               <Row label="Prepayment" value={`$${p.prepayment}M - ${p.prepayStatus}`} highlight />
               <Row label="Revenue Commitment" value={p.revenueCommitment} />
-              <div className="mt-2 p-2 bg-slate-800/50 rounded text-xs text-slate-400">{p.notes}</div>
+              <div style={{ marginTop: 8, padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>{p.notes}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Spectrum Holdings */}
-      <div className="card"><div className="card-title">ASTS-Owned Spectrum Holdings</div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Asset</th>
-              <th className="text-center">Band</th>
-              <th className="text-center">Size</th>
-              <th className="text-center">Coverage</th>
-              <th className="text-center">Term</th>
-              <th className="text-right">Cost</th>
-              <th className="text-center">Status</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Asset</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Band</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Size</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Coverage</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Term</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Cost</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
             </tr>
           </thead>
           <tbody>
             {ownedSpectrum.map(s => (
-              <tr key={s.name} className="border-t border-slate-800">
-                <td className="py-2 font-medium">{s.name}</td>
-                <td className="py-2 text-center text-xs">{s.band}</td>
-                <td className="py-2 text-center font-medium text-cyan-400">{s.size}</td>
-                <td className="py-2 text-center text-slate-400">{s.coverage}</td>
-                <td className="py-2 text-center text-slate-400">{s.term}</td>
-                <td className="py-2 text-right text-yellow-400">{s.cost}</td>
-                <td className="py-2 text-center"><span className="px-2 py-0.5 bg-green-900/50 text-green-400 rounded text-xs">{s.status}</span></td>
+              <tr key={s.name} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{s.name}</td>
+                <td style={{ padding: 8, textAlign: 'center', fontSize: 11, color: 'var(--text3)' }}>{s.band}</td>
+                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>{s.size}</td>
+                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{s.coverage}</td>
+                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{s.term}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>{s.cost}</td>
+                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{s.status}</span></td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="mt-2 text-xs text-slate-500">
+        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
           Total owned: 45 MHz L-band (US/Canada) + 60 MHz S-band (global ITU priority). $80M/yr ongoing L-band payments.
         </div>
       </div>
 
       {/* Partner Spectrum */}
-      <div className="card"><div className="card-title">Partner Spectrum (Shared Access)</div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Partner Spectrum (Shared Access)<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           {partnerSpectrum.map(s => (
-            <div key={s.partner} className="p-3 bg-slate-800/30 rounded border border-slate-700/50">
-              <div className="flex justify-between items-center mb-1">
-                <span className="font-medium text-cyan-400">{s.partner}</span>
-                <span className="text-xs bg-slate-700 px-2 py-0.5 rounded">{s.band}</span>
+            <div key={s.partner} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{s.partner}</span>
+                <span className="pill" style={{ fontSize: 11 }}>{s.band}</span>
               </div>
-              <div className="text-xs text-slate-400">{s.type} • {s.coverage}</div>
-              <div className="text-xs text-slate-500 mt-1">{s.notes}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.type} • {s.coverage}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>{s.notes}</div>
             </div>
           ))}
         </div>
-        <div className="mt-3 p-2 bg-cyan-900/20 border border-cyan-800/30 rounded text-xs">
-          <strong className="text-cyan-400">Key Insight:</strong> Combined AT&T + Verizon 850 MHz spectrum enables ~100% continental US geographic coverage. 
+        <div style={{ marginTop: 12, padding: 8, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8, fontSize: 11 }}>
+          <strong style={{ color: 'var(--cyan)' }}>Key Insight:</strong> Combined AT&T + Verizon 850 MHz spectrum enables ~100% continental US geographic coverage.
           Platform tunable across 1,150 MHz of global MNO spectrum.
         </div>
       </div>
 
       {/* Government Contracts */}
-      <div className="card"><div className="card-title">Government Contracts</div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Agency</th>
-              <th className="text-right">Value</th>
-              <th className="text-center">Status</th>
-              <th className="text-left pl-2">Notes</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Agency</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Value</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Notes</th>
             </tr>
           </thead>
           <tbody>
             {govContracts.map(g => (
-              <tr key={g.agency} className="border-t border-slate-800">
-                <td className="py-2">{g.agency}</td>
-                <td className="py-2 text-right font-medium text-green-400">{g.value}</td>
-                <td className="py-2 text-center"><span className={`px-2 py-0.5 rounded text-xs ${g.status.includes('Active') ? 'bg-green-900/50 text-green-400' : 'bg-yellow-900/50 text-yellow-400'}`}>{g.status}</span></td>
-                <td className="py-2 pl-2 text-xs text-slate-400">{g.notes}</td>
+              <tr key={g.agency} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{g.agency}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>{g.value}</td>
+                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{g.status}</span></td>
+                <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{g.notes}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="mt-2 text-xs text-slate-500">
+        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
           Total disclosed government contracts: $63M+ (plus SHIELD IDIQ). Dual-use model validated. MDA prime contractor status enables future task orders.
         </div>
       </div>
 
       {/* Other MNO Partners */}
-      <div className="card"><div className="card-title">Other Key Partners (MOUs & Agreements)</div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Partner</th>
-              <th className="text-center">Region</th>
-              <th className="text-right">Subs</th>
-              <th className="text-center">Status</th>
-              <th className="text-left pl-2">Notes</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Region</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Notes</th>
             </tr>
           </thead>
           <tbody>
             {otherPartners.map(p => (
-              <tr key={p.partner} className="border-t border-slate-800">
-                <td className="py-2">{p.partner}</td>
-                <td className="py-2 text-center text-slate-400">{p.region}</td>
-                <td className="py-2 text-right text-cyan-400">{p.subs}M</td>
-                <td className="py-2 text-center"><span className={`px-2 py-0.5 rounded text-xs ${p.status === 'Definitive' ? 'bg-green-900/50 text-green-400' : 'bg-slate-700 text-slate-400'}`}>{p.status}</span></td>
-                <td className="py-2 pl-2 text-xs text-slate-400">{p.notes}</td>
+              <tr key={p.partner} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{p.partner}</td>
+                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.region}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{p.subs}M</td>
+                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{p.status}</span></td>
+                <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{p.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -2577,22 +2956,22 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Revenue Commitment Summary */}
-      <div className="card"><div className="card-title">Revenue Commitment Breakdown</div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Commitment Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g3">
-          <div className="p-4 bg-green-900/20 border border-green-800/30 rounded-xl text-center">
-            <div className="text-3xl font-bold text-green-400">$1B+</div>
-            <div className="text-sm text-slate-400">Total Contracted Revenue</div>
-            <div className="text-xs text-slate-500 mt-1">Hard commitments, not soft MOUs</div>
+          <div style={{ padding: 16, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, textAlign: 'center' }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--mint)' }}>$1B+</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Contracted Revenue</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>Hard commitments, not soft MOUs</div>
           </div>
-          <div className="p-4 bg-cyan-900/20 border border-cyan-800/30 rounded-xl text-center">
-            <div className="text-3xl font-bold text-cyan-400">${totalPrepay}M</div>
-            <div className="text-sm text-slate-400">Total Prepayments</div>
-            <div className="text-xs text-slate-500 mt-1">stc $175M due YE 2025</div>
+          <div style={{ padding: 16, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 12, textAlign: 'center' }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--cyan)' }}>${totalPrepay}M</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Prepayments</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>stc $175M due YE 2025</div>
           </div>
-          <div className="p-4 bg-purple-900/20 border border-purple-800/30 rounded-xl text-center">
-            <div className="text-3xl font-bold text-purple-400">50/50</div>
-            <div className="text-sm text-slate-400">Revenue Share Model</div>
-            <div className="text-xs text-slate-500 mt-1">MNOs handle billing/support</div>
+          <div style={{ padding: 16, background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.3)', borderRadius: 12, textAlign: 'center' }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--violet)' }}>50/50</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Revenue Share Model</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>MNOs handle billing/support</div>
           </div>
         </div>
       </div>
@@ -2636,35 +3015,38 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Runway<UpdateIndicators sources="SEC" /></h2>
-      <div className="highlight"><h3>Cash Runway — Q3 2025 Actuals</h3>
-        <div className="space-y-2 text-sm">
-          <p><strong className="text-cyan-400">Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
-          <p><strong className="text-cyan-400">Debt (Balance Sheet):</strong> $697.6M net long-term debt (~$724M gross). Principal outstanding: $1.625B ($50M + $575M + $1B converts).</p>
-          <p><strong className="text-cyan-400">Q4 Guidance:</strong> CapEx $275-325M, OpEx ~$65M. Satellite cost: $21-23M average.</p>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Runway<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Cash Runway — Q3 2025 Actuals<UpdateIndicators sources={['PR', 'SEC']} /></h3>
+        <div style={{ fontSize: 13, color: 'var(--text2)' }}>
+          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
+          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Debt (Balance Sheet):</strong> $697.6M net long-term debt (~$724M gross). Principal outstanding: $1.625B ($50M + $575M + $1B converts).</p>
+          <p><strong style={{ color: 'var(--cyan)' }}>Q4 Guidance:</strong> CapEx $275-325M, OpEx ~$65M. Satellite cost: $21-23M average.</p>
         </div>
       </div>
-      
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card label="Q3 GAAP Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} sub="~4Q runway at $300M/Q" color="green" />
-        <Card label="Q4 Burn Est." value={`$${quarterlyBurn}M`} sub="CapEx + OpEx" color="red" />
-        <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub={`~${(calc.cashRunwayQuarters / 4).toFixed(1)} years`} color="yellow" />
-        <Card label="Debt" value={`$${(totalDebt/1000).toFixed(1)}B`} sub={`${debtRate}% blended`} color="orange" />
-        <Card label="Employees" value="~1,800" sub="Global workforce" color="blue" />
+
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="g5">
+          <Card label="Q3 GAAP Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} sub="~4Q runway at $300M/Q" color="green" />
+          <Card label="Q4 Burn Est." value={`$${quarterlyBurn}M`} sub="CapEx + OpEx" color="red" />
+          <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub={`~${(calc.cashRunwayQuarters / 4).toFixed(1)} years`} color="yellow" />
+          <Card label="Debt" value={`$${(totalDebt/1000).toFixed(1)}B`} sub={`${debtRate}% blended`} color="orange" />
+          <Card label="Employees" value="~1,800" sub="Global workforce" color="blue" />
+        </div>
       </div>
 
       {/* Q3 2025 Financial Summary */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
           <div>
-            <h4 className="text-sm font-medium text-cyan-400 mb-2">Income Statement</h4>
+            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)', marginBottom: 8 }}>Income Statement</h4>
             <Row label="Q3 Revenue" value={`$${financials.q3Revenue}M`} highlight />
             <Row label="H2 2025 Guidance" value={`$${financials.h2Guidance}M`} />
             <Row label="Q3 Adj. OpEx" value={`$${financials.q3AdjOpex}M`} />
             <Row label="Q4 OpEx Guidance" value={financials.q4OpexGuide} />
           </div>
           <div>
-            <h4 className="text-sm font-medium text-cyan-400 mb-2">Capital</h4>
+            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)', marginBottom: 8 }}>Capital</h4>
             <Row label="Q3 CapEx" value={`$${financials.q3Capex}M`} />
             <Row label="Q4 CapEx Guidance" value={`$${financials.q4CapexGuide}M`} />
             <Row label="Satellite Cost (avg)" value={`$${financials.satCost}M`} highlight />
@@ -2674,50 +3056,50 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Convertible Debt Summary */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
-        <div className="mb-3 p-2 bg-slate-800/50 rounded-lg text-xs text-slate-400">
-          <strong className="text-cyan-400">Balance Sheet vs Principal:</strong> Convertible notes are reported at net carrying value (gross less debt discounts and issuance costs). 
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
+        <div style={{ marginBottom: 12, padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>
+          <strong style={{ color: 'var(--cyan)' }}>Balance Sheet vs Principal:</strong> Convertible notes are reported at net carrying value (gross less debt discounts and issuance costs).
           The $697.6M on the balance sheet represents this accounting value, while $1.625B is the principal that must eventually be repaid or converted.
         </div>
-        <div className="grid md:grid-cols-5 gap-3">
-          <div className="p-3 bg-yellow-900/20 border border-yellow-800/30 rounded-lg text-center">
-            <div className="text-xl font-bold text-yellow-400">$49M</div>
-            <div className="text-xs text-slate-400">Jan 2025 (4.25%)</div>
-            <div className="text-xs text-slate-500">Net carrying</div>
-            <div className="text-xs text-slate-600">Principal: $50M</div>
+        <div className="g5">
+          <div style={{ padding: 12, background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.3)', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--gold)' }}>$49M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 2025 (4.25%)</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $50M</div>
           </div>
-          <div className="p-3 bg-orange-900/20 border border-orange-800/30 rounded-lg text-center">
-            <div className="text-xl font-bold text-orange-400">$530M</div>
-            <div className="text-xs text-slate-400">Jul 2025 (4.25%)</div>
-            <div className="text-xs text-slate-500">Net carrying</div>
-            <div className="text-xs text-slate-600">Principal: $575M</div>
+          <div style={{ padding: 12, background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.3)', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--coral)' }}>$530M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Jul 2025 (4.25%)</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $575M</div>
           </div>
-          <div className="p-3 bg-cyan-900/20 border border-cyan-800/30 rounded-lg text-center">
-            <div className="text-xl font-bold text-cyan-400">$119M</div>
-            <div className="text-xs text-slate-400">Oct 2025 (2.0%)</div>
-            <div className="text-xs text-slate-500">Net carrying (Q3)</div>
-            <div className="text-xs text-slate-600">Principal: $1,000M</div>
+          <div style={{ padding: 12, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--cyan)' }}>$119M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Oct 2025 (2.0%)</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying (Q3)</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $1,000M</div>
           </div>
-          <div className="p-3 bg-emerald-900/20 border border-emerald-800/30 rounded-lg text-center">
-            <div className="text-xl font-bold text-emerald-400">$698M</div>
-            <div className="text-xs text-slate-400">Balance Sheet</div>
-            <div className="text-xs text-slate-500">Net long-term debt</div>
-            <div className="text-xs text-slate-600">Gross: ~$724M</div>
+          <div style={{ padding: 12, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>$698M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Balance Sheet</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net long-term debt</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Gross: ~$724M</div>
           </div>
-          <div className="p-3 bg-purple-900/20 border border-purple-800/30 rounded-lg text-center">
-            <div className="text-xl font-bold text-purple-400">$1,625M</div>
-            <div className="text-xs text-slate-400">Principal Value</div>
-            <div className="text-xs text-slate-500">Total outstanding</div>
-            <div className="text-xs text-slate-600">~2.8% blended rate</div>
+          <div style={{ padding: 12, background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.3)', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--violet)' }}>$1,625M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Principal Value</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Total outstanding</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>~2.8% blended rate</div>
           </div>
         </div>
-        <div className="mt-3 text-xs text-slate-500">
+        <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
           Jan 2025: $410M converted to equity (17.3M shares). Oct 2025 raised at best terms in years ($96.30 strike, 2% coupon). Large discount on Oct notes due to favorable conversion terms.
         </div>
       </div>
 
       {/* Cash Projection Chart */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
         <ResponsiveContainer width="100%" height={180}>
           <AreaChart data={proj}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -2727,176 +3109,176 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
             <Area dataKey="cash" stroke="var(--mint)" fill="var(--mint)" fillOpacity={0.3} />
           </AreaChart>
         </ResponsiveContainer>
-        <div className="text-xs text-slate-500 mt-1">
+        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>
           Note: Does not include H2 revenue ($50-75M guidance) or future prepayments (stc $175M due YE 2025).
         </div>
       </div>
 
       {/* Funding Sources */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources="SEC" /></div>
-        <div className="mb-4 p-3 bg-slate-800/30 rounded-lg">
-          <p className="text-sm text-slate-400">
-            <strong className="text-cyan-400">Understanding ASTS Financing:</strong> As a pre-revenue company building a global satellite constellation, 
-            ASTS has used various instruments: SPAC, convertibles, equity offerings, and strategic investments. 
-            Convertible notes are debt that can convert to equity at specified prices. When stock price rises above conversion price, 
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div style={{ marginBottom: 16, padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+          <p style={{ fontSize: 13, color: 'var(--text3)' }}>
+            <strong style={{ color: 'var(--cyan)' }}>Understanding ASTS Financing:</strong> As a pre-revenue company building a global satellite constellation,
+            ASTS has used various instruments: SPAC, convertibles, equity offerings, and strategic investments.
+            Convertible notes are debt that can convert to equity at specified prices. When stock price rises above conversion price,
             holders often convert (eliminating debt) or the company may force conversion. Below shows the full capital structure evolution.
           </p>
         </div>
-        
-        <h4 className="text-sm font-medium text-yellow-400 mb-2">2025 Capital Raises</h4>
-        <table className="w-full text-sm mb-4">
+
+        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--gold)', marginBottom: 8 }}>2025 Capital Raises</h4>
+        <table className="tbl" style={{ marginBottom: 16 }}>
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Source</th>
-              <th className="text-right">Amount</th>
-              <th className="text-center">Terms</th>
-              <th className="text-left pl-2">Status & Notes</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Source</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Terms</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status & Notes</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">Jan 2025 Convertible</td>
-              <td className="py-2 text-right text-green-400">$460M</td>
-              <td className="py-2 text-center">4.25%, 2032</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">$410M repurchased for equity (shares issued); $50M remains as debt</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Jan 2025 Convertible</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$460M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>4.25%, 2032</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>$410M repurchased for equity (shares issued); $50M remains as debt</td>
             </tr>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">Jul 2025 Convertible</td>
-              <td className="py-2 text-right text-green-400">$575M</td>
-              <td className="py-2 text-center">4.25%, 2032</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">$120.12 effective strike via capped call; outstanding as debt</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Jul 2025 Convertible</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$575M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>4.25%, 2032</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>$120.12 effective strike via capped call; outstanding as debt</td>
             </tr>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">Oct 2025 Convertible</td>
-              <td className="py-2 text-right text-green-400">$1,000M</td>
-              <td className="py-2 text-center">2%, 2036</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">$96.30 strike; 10-year term; outstanding as debt</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Oct 2025 Convertible</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$1,000M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>2%, 2036</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>$96.30 strike; 10-year term; outstanding as debt</td>
             </tr>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">ATM Facility (Q3)</td>
-              <td className="py-2 text-right text-green-400">$389M</td>
-              <td className="py-2 text-center">At-the-market</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">Shares sold at market; facility now terminated</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>ATM Facility (Q3)</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$389M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>At-the-market</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Shares sold at market; facility now terminated</td>
             </tr>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">Capped Call Unwind</td>
-              <td className="py-2 text-right text-green-400">$74.5M</td>
-              <td className="py-2 text-center">—</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">Hedge monetized when Jan converts repurchased</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Capped Call Unwind</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$74.5M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>—</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Hedge monetized when Jan converts repurchased</td>
             </tr>
           </tbody>
         </table>
 
-        <h4 className="text-sm font-medium text-purple-400 mb-2">2024 Capital Raises</h4>
-        <table className="w-full text-sm mb-4">
+        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--violet)', marginBottom: 8 }}>2024 Capital Raises</h4>
+        <table className="tbl" style={{ marginBottom: 16 }}>
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Source</th>
-              <th className="text-right">Amount</th>
-              <th className="text-center">Terms</th>
-              <th className="text-left pl-2">Status & Notes</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Source</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Terms</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status & Notes</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">2034 Strategic Convertibles</td>
-              <td className="py-2 text-right text-green-400">$148.5M</td>
-              <td className="py-2 text-center">3.875%, 2034</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">AT&T, Google, Vodafone, Verizon. Force-converted to equity Jan 2025 (25.8M shares)</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>2034 Strategic Convertibles</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$148.5M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>3.875%, 2034</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>AT&T, Google, Vodafone, Verizon. Force-converted to equity Jan 2025 (25.8M shares)</td>
             </tr>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">Public Warrant Exercise</td>
-              <td className="py-2 text-right text-green-400">$153.6M</td>
-              <td className="py-2 text-center">$11.50/share</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">Warrants redeemed Sept 2024; ~13.4M shares issued</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Public Warrant Exercise</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$153.6M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>$11.50/share</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Warrants redeemed Sept 2024; ~13.4M shares issued</td>
             </tr>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">Verizon Strategic Investment</td>
-              <td className="py-2 text-right text-green-400">$100M</td>
-              <td className="py-2 text-center">Equity + Commitment</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">May 2024; converted to definitive Oct 2025</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Verizon Strategic Investment</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$100M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Equity + Commitment</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>May 2024; converted to definitive Oct 2025</td>
             </tr>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">Google Investment</td>
-              <td className="py-2 text-right text-green-400">$100M</td>
-              <td className="py-2 text-center">Equity + Commitment</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">May 2024; strategic technology partnership</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Google Investment</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$100M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Equity + Commitment</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>May 2024; strategic technology partnership</td>
             </tr>
           </tbody>
         </table>
 
-        <h4 className="text-sm font-medium text-blue-400 mb-2">2021-2023 Foundation</h4>
-        <table className="w-full text-sm">
+        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--sky)', marginBottom: 8 }}>2021-2023 Foundation</h4>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Source</th>
-              <th className="text-right">Amount</th>
-              <th className="text-center">Terms</th>
-              <th className="text-left pl-2">Status & Notes</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Source</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Terms</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status & Notes</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">SPAC (April 2021)</td>
-              <td className="py-2 text-right text-green-400">$462M</td>
-              <td className="py-2 text-center">SPAC + PIPE</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">IPO via New Providence; $230M PIPE from Vodafone, Rakuten, American Tower</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>SPAC (April 2021)</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$462M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>SPAC + PIPE</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>IPO via New Providence; $230M PIPE from Vodafone, Rakuten, American Tower</td>
             </tr>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">B. Riley ATM (2022)</td>
-              <td className="py-2 text-right text-green-400">$75M</td>
-              <td className="py-2 text-center">ATM facility</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">24-month committed equity; used opportunistically</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>B. Riley ATM (2022)</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$75M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>ATM facility</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>24-month committed equity; used opportunistically</td>
             </tr>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">NanoAvionics Sale</td>
-              <td className="py-2 text-right text-green-400">$28M net</td>
-              <td className="py-2 text-center">Asset sale</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">Subsidiary sold to Kongsberg (July 2022); focused ASTS on core mission</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>NanoAvionics Sale</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$28M net</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Asset sale</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Subsidiary sold to Kongsberg (July 2022); focused ASTS on core mission</td>
             </tr>
-            <tr className="border-t border-slate-800">
-              <td className="py-2">Atlas Facility</td>
-              <td className="py-2 text-right text-green-400">$30M</td>
-              <td className="py-2 text-center">Secured loan</td>
-              <td className="py-2 pl-2 text-xs text-slate-400">Equipment-backed; partially repaid</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Atlas Facility</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$30M</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Secured loan</td>
+              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Equipment-backed; partially repaid</td>
             </tr>
           </tbody>
         </table>
         
-        <div className="mt-4 p-3 bg-slate-800/30 rounded-lg">
-          <h4 className="text-sm font-medium text-green-400 mb-2">Debt Resolution Summary</h4>
-          <ul className="text-xs text-slate-400 space-y-1">
-            <li>• <strong>2034 Strategic Converts ($148.5M):</strong> Force-converted to equity Jan 2025 when stock price exceeded trigger. Debt eliminated, 25.8M shares issued.</li>
-            <li>• <strong>Jan 2025 Converts ($460M):</strong> $410M repurchased via equity issuance (arbitrage opportunity). $50M still outstanding as 4.25% notes due 2032.</li>
-            <li>• <strong>Jul/Oct 2025 Converts ($1,575M):</strong> Currently outstanding as debt. Will convert to equity if stock exceeds strike prices ($120.12 / $96.30) or at maturity.</li>
+        <div style={{ marginTop: 16, padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+          <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--mint)', marginBottom: 8 }}>Debt Resolution Summary</h4>
+          <ul style={{ fontSize: 11, color: 'var(--text3)' }}>
+            <li style={{ marginBottom: 4 }}>• <strong>2034 Strategic Converts ($148.5M):</strong> Force-converted to equity Jan 2025 when stock price exceeded trigger. Debt eliminated, 25.8M shares issued.</li>
+            <li style={{ marginBottom: 4 }}>• <strong>Jan 2025 Converts ($460M):</strong> $410M repurchased via equity issuance (arbitrage opportunity). $50M still outstanding as 4.25% notes due 2032.</li>
+            <li style={{ marginBottom: 4 }}>• <strong>Jul/Oct 2025 Converts ($1,575M):</strong> Currently outstanding as debt. Will convert to equity if stock exceeds strike prices ($120.12 / $96.30) or at maturity.</li>
             <li>• <strong>Atlas/Lone Star Loans:</strong> Partially repaid; minimal remaining balance secured by equipment/real estate.</li>
           </ul>
         </div>
       </div>
 
       {/* Dilution Analysis */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Raise Amount</th>
-              <th className="text-right">New Shares</th>
-              <th className="text-right">Dilution</th>
-              <th className="text-right">Extended Runway</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Raise Amount</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>New Shares</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Dilution</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Extended Runway</th>
             </tr>
           </thead>
           <tbody>
             {dilution.map(d => (
-              <tr key={d.r} className="border-t border-slate-800">
-                <td className="py-2">${d.r}M</td>
-                <td className="py-2 text-right text-cyan-400">{d.new.toFixed(1)}M</td>
-                <td className="py-2 text-right text-red-400">{d.dil.toFixed(1)}%</td>
-                <td className="py-2 text-right text-green-400">{d.runway.toFixed(1)}Q</td>
+              <tr key={d.r} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--mint)' }}>${d.r}M</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{d.new.toFixed(1)}M</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{d.dil.toFixed(1)}%</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{d.runway.toFixed(1)}Q</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="mt-2 text-xs text-slate-500">
+        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
           Note: Company states fully funded for 100+ satellites. Additional raises unlikely in near term.
         </div>
       </div>
@@ -2944,7 +3326,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
       <div className="highlight">
         <h3>Share Classes, Offerings & Dilution</h3>
-        <p className="text-sm">
+        <p style={{ fontSize: 13, color: 'var(--text2)' }}>
           Three-class structure with Abel Avellan controlling ~73% of voting power via Class C (10x votes).
           ~$3.6B total raised since SPAC (equity + converts). Fully funded for 100+ satellites.
           Class A shares grew from 5.75M (SPAC) to 279M (Nov 2025).
@@ -2952,11 +3334,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </div>
 
       {/* Summary Cards */}
-      <div className="g4">
-        <Card label="Class A Shares" value={`${shareClasses[0].shares}M`} sub="Public float" color="sky" />
-        <Card label="Fully Diluted" value={`${fullyDiluted}M`} sub={`+${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}% dilution`} color="violet" />
-        <Card label="Basic Mkt Cap" value={`$${(marketCap / 1000).toFixed(1)}B`} sub={`@ $${currentStockPrice}`} color="green" />
-        <Card label="FD Mkt Cap" value={`$${(fullyDiluted * currentStockPrice / 1000).toFixed(1)}B`} sub="All securities" color="gold" />
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="g4">
+          <Card label="Class A Shares" value={`${shareClasses[0].shares}M`} sub="Public float" color="sky" />
+          <Card label="Fully Diluted" value={`${fullyDiluted}M`} sub={`+${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}% dilution`} color="violet" />
+          <Card label="Basic Mkt Cap" value={`$${(marketCap / 1000).toFixed(1)}B`} sub={`@ $${currentStockPrice}`} color="green" />
+          <Card label="FD Mkt Cap" value={`$${(fullyDiluted * currentStockPrice / 1000).toFixed(1)}B`} sub="All securities" color="gold" />
+        </div>
       </div>
 
       {/* Navigation Cards */}
@@ -2991,52 +3376,52 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Class Structure (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr>
-              <th>Class</th>
-              <th className="r">Shares (M)</th>
-              <th className="r">% of Basic</th>
-              <th>Voting Rights</th>
-              <th>Description</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Class</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shares (M)</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>% of Basic</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Voting Rights</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Description</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td style={{ fontWeight: 600, color: 'var(--sky)' }}>Class A</td>
-              <td className="r">{shareClasses[0].shares}</td>
-              <td className="r">{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</td>
-              <td style={{ color: 'var(--text2)' }}>1 vote/share</td>
-              <td style={{ color: 'var(--text3)', fontSize: 13 }}>Public trading (NASDAQ: ASTS)</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Class A</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{shareClasses[0].shares}</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</td>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>1 vote/share</td>
+              <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Public trading (NASDAQ: ASTS)</td>
             </tr>
-            <tr>
-              <td style={{ fontWeight: 600, color: 'var(--violet)' }}>Class B</td>
-              <td className="r">11.2</td>
-              <td className="r">{(11.2 / totalBasic * 100).toFixed(1)}%</td>
-              <td style={{ color: 'var(--text2)' }}>1 vote/share</td>
-              <td style={{ color: 'var(--text3)', fontSize: 13 }}>Founder/insider shares</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Class B</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>11.2</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(11.2 / totalBasic * 100).toFixed(1)}%</td>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>1 vote/share</td>
+              <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Founder/insider shares</td>
             </tr>
-            <tr>
-              <td style={{ fontWeight: 600, color: 'var(--gold)' }}>Class C</td>
-              <td className="r">78.2</td>
-              <td className="r">{(78.2 / totalBasic * 100).toFixed(1)}%</td>
-              <td style={{ color: 'var(--text2)' }}>10 votes/share</td>
-              <td style={{ color: 'var(--text3)', fontSize: 13 }}>Abel Avellan (CEO)</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Class C</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>78.2</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(78.2 / totalBasic * 100).toFixed(1)}%</td>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>10 votes/share</td>
+              <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Abel Avellan (CEO)</td>
             </tr>
             <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td>Total Basic</td>
-              <td className="r">{totalBasic.toFixed(1)}</td>
-              <td className="r">100%</td>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Total Basic</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{totalBasic.toFixed(1)}</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>100%</td>
               <td colSpan={2}></td>
             </tr>
-            <tr>
-              <td style={{ color: 'var(--gold)' }}>+ Options/RSUs/Converts</td>
-              <td className="r" style={{ color: 'var(--gold)' }}>{(fullyDiluted - totalBasic).toFixed(1)}</td>
-              <td className="r">+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</td>
-              <td colSpan={2} style={{ color: 'var(--text3)', fontSize: 13 }}>Remaining converts, options, RSUs</td>
+            <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>+ Options/RSUs/Converts</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(fullyDiluted - totalBasic).toFixed(1)}</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</td>
+              <td colSpan={2} style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Remaining converts, options, RSUs</td>
             </tr>
             <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td style={{ color: 'var(--sky)' }}>Fully Diluted</td>
-              <td className="r sky">{fullyDiluted.toFixed(1)}</td>
-              <td className="r sky">{(fullyDiluted / totalBasic * 100).toFixed(1)}%</td>
+              <td style={{ padding: 8, color: 'var(--text2)' }}>Fully Diluted</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{fullyDiluted.toFixed(1)}</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</td>
               <td colSpan={2}></td>
             </tr>
           </tbody>
@@ -3090,26 +3475,26 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Major Shareholders (Known from SEC Filings)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr>
-              <th>Shareholder</th>
-              <th>Role</th>
-              <th className="r">Shares (M)</th>
-              <th>Class</th>
-              <th className="r">% Own</th>
-              <th className="r">% Vote</th>
-              <th>Notes</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shareholder</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Role</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shares (M)</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Class</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>% Own</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>% Vote</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Notes</th>
             </tr>
           </thead>
           <tbody>
             {majorShareholders.map((sh, i) => (
-              <tr key={i}>
-                <td style={{ fontWeight: 500 }}>{sh.name}</td>
-                <td style={{ color: 'var(--text2)', fontSize: 13 }}>{sh.role}</td>
-                <td className="r">{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</td>
-                <td><span style={{ color: sh.shareClass === 'Class C' ? 'var(--gold)' : 'var(--sky)' }}>{sh.shareClass}</span></td>
-                <td className="r sky">{sh.pct}%</td>
-                <td className="r sky">{sh.votingPct}%</td>
-                <td style={{ color: 'var(--text3)', fontSize: 13 }}>{sh.notes}</td>
+              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{sh.name}</td>
+                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{sh.role}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</td>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{sh.shareClass}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{sh.pct}%</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{sh.votingPct}%</td>
+                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{sh.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -3126,29 +3511,29 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Offerings Timeline<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr>
-              <th>Date</th>
-              <th>Event</th>
-              <th>Type</th>
-              <th className="r">Amount</th>
-              <th className="r">Price</th>
-              <th className="r">Shares (M)</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Date</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Event</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Type</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Price</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shares (M)</th>
             </tr>
           </thead>
           <tbody>
             {equityOfferings.map((offering, i) => (
-              <tr key={i}>
-                <td style={{ color: 'var(--text3)', fontSize: 13 }}>{offering.date}</td>
-                <td style={{ fontWeight: 500 }}>{offering.event}</td>
-                <td><span style={{ color: 'var(--gold)' }}>{offering.type}</span></td>
-                <td className="r mint">${offering.amount}M</td>
-                <td className="r">{offering.price ? `$${offering.price.toFixed(2)}` : '—'}</td>
-                <td className="r">{offering.shares ? offering.shares.toFixed(1) : '—'}</td>
+              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{offering.date}</td>
+                <td style={{ padding: 8, fontWeight: 500 }}>{offering.event}</td>
+                <td style={{ padding: 8 }}><span style={{ color: 'var(--gold)' }}>{offering.type}</span></td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${offering.amount}M</td>
+                <td style={{ padding: 8, textAlign: 'right' }}>{offering.price ? `$${offering.price.toFixed(2)}` : '—'}</td>
+                <td style={{ padding: 8, textAlign: 'right' }}>{offering.shares ? offering.shares.toFixed(1) : '—'}</td>
               </tr>
             ))}
             <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td colSpan={3}>Total Capital Raised (2019-2025)</td>
-              <td className="r mint">~$3.6B</td>
+              <td colSpan={3} style={{ padding: 8 }}>Total Capital Raised (2019-2025)</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>~$3.6B</td>
               <td colSpan={2}></td>
             </tr>
           </tbody>
@@ -3165,20 +3550,20 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Stock-Based Compensation (SBC)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr>
-              <th>Quarter</th>
-              <th className="r">Total SBC</th>
-              <th className="r">Engineering</th>
-              <th className="r">G&A</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Quarter</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Total SBC</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Engineering</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>G&A</th>
             </tr>
           </thead>
           <tbody>
             {sbcHistory.map((row, i) => (
-              <tr key={i}>
-                <td>{row.quarter}</td>
-                <td className="r violet">${row.sbc.toFixed(1)}M</td>
-                <td className="r">${row.engineering.toFixed(1)}M</td>
-                <td className="r">${row.gAndA.toFixed(1)}M</td>
+              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{row.quarter}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${row.sbc.toFixed(1)}M</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${row.engineering.toFixed(1)}M</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${row.gAndA.toFixed(1)}M</td>
               </tr>
             ))}
           </tbody>
@@ -3223,22 +3608,22 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Count Evolution<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr>
-              <th>Quarter</th>
-              <th className="r">Class A (M)</th>
-              <th className="r">Implied (M)</th>
-              <th className="r">Fully Diluted (M)</th>
-              <th>Key Event</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Quarter</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Class A (M)</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Implied (M)</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Fully Diluted (M)</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Key Event</th>
             </tr>
           </thead>
           <tbody>
             {dilutionHistory.map((row, i) => (
-              <tr key={i}>
-                <td>{row.quarter}</td>
-                <td className="r sky">{row.classA.toFixed(1)}</td>
-                <td className="r violet">{row.implied.toFixed(1)}</td>
-                <td className="r gold">{row.fullyDiluted.toFixed(1)}</td>
-                <td style={{ color: 'var(--text3)', fontSize: 13 }}>{row.event}</td>
+              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{row.quarter}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{row.classA.toFixed(1)}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{row.implied.toFixed(1)}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{row.fullyDiluted.toFixed(1)}</td>
+                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{row.event}</td>
               </tr>
             ))}
           </tbody>
@@ -3281,24 +3666,24 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
         {/* Potential Future Dilution */}
         <div style={{ marginTop: 16, padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)', marginBottom: 12 }}>Potential Future Dilution</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text2)', marginBottom: 12 }}>Potential Future Dilution</div>
           <table className="tbl">
             <tbody>
-              <tr>
-                <td>Jan 2025 Converts (remaining $50M @ $26.58)</td>
-                <td className="r gold">+1.9M</td>
+              <tr style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>Jan 2025 Converts (remaining $50M @ $26.58)</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+1.9M</td>
               </tr>
-              <tr>
-                <td>Jul 2025 Converts ($575M @ $120.12)</td>
-                <td className="r gold">+4.8M</td>
+              <tr style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>Jul 2025 Converts ($575M @ $120.12)</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+4.8M</td>
               </tr>
-              <tr>
-                <td>Oct 2025 Converts ($1,150M @ $96.30)</td>
-                <td className="r gold">+11.9M</td>
+              <tr style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>Oct 2025 Converts ($1,150M @ $96.30)</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+11.9M</td>
               </tr>
               <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-                <td>Maximum Additional Dilution</td>
-                <td className="r gold">+18.6M (~5%)</td>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>Maximum Additional Dilution</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+18.6M (~5%)</td>
               </tr>
             </tbody>
           </table>
@@ -3721,13 +4106,13 @@ const ModelTab = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Model</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* ASSUMPTIONS SECTION */}
       <>
           <div className="highlight">
-            <h3>{scenario.icon} {scenario.name} Scenario</h3>
-            <p className="text-sm">
+            <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
+            <p style={{ fontSize: 13, color: 'var(--text2)' }}>
               Configure model assumptions. Changes flow to projections and DCF valuation.
             </p>
           </div>
@@ -4299,13 +4684,13 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Monte Carlo</h2>
-      
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+
       {/* Highlight Box */}
       <div className="highlight">
-        <h3>Revenue-Based Valuation Simulation</h3>
-        <p className="text-sm">
-          Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory) 
+        <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue-Based Valuation Simulation</h3>
+        <p style={{ fontSize: 13, color: 'var(--text2)' }}>
+          Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
           and log-normal revenue distribution. Terminal value discounted to present.
         </p>
       </div>
@@ -4517,58 +4902,66 @@ const SECFilingTracker = () => {
     }
   };
 
-  const colorClasses = {
-    blue: 'bg-blue-900/20 border-blue-800/30 text-blue-400',
-    purple: 'bg-purple-900/20 border-purple-800/30 text-purple-400',
-    yellow: 'bg-yellow-900/20 border-yellow-800/30 text-yellow-400',
-    green: 'bg-green-900/20 border-green-800/30 text-green-400',
-    orange: 'bg-orange-900/20 border-orange-800/30 text-orange-400',
-    cyan: 'bg-cyan-900/20 border-cyan-800/30 text-cyan-400',
+  const colorStyles: Record<string, { bg: string; border: string; text: string }> = {
+    blue: { bg: 'rgba(59, 130, 246, 0.1)', border: 'rgba(59, 130, 246, 0.3)', text: 'var(--sky)' },
+    purple: { bg: 'rgba(168, 85, 247, 0.1)', border: 'rgba(168, 85, 247, 0.3)', text: 'var(--violet)' },
+    yellow: { bg: 'rgba(234, 179, 8, 0.1)', border: 'rgba(234, 179, 8, 0.3)', text: 'var(--gold)' },
+    green: { bg: 'rgba(34, 197, 94, 0.1)', border: 'rgba(34, 197, 94, 0.3)', text: 'var(--mint)' },
+    orange: { bg: 'rgba(249, 115, 22, 0.1)', border: 'rgba(249, 115, 22, 0.3)', text: 'var(--gold)' },
+    cyan: { bg: 'rgba(6, 182, 212, 0.1)', border: 'rgba(6, 182, 212, 0.3)', text: 'var(--cyan)' },
+  };
+
+  const rowStyle: React.CSSProperties = {
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    padding: 8, background: 'var(--surface2)', borderRadius: 4
   };
 
   return (
     <div className="card"><div className="card-title">📁 SEC Filing Tracker</div>
       <div className="g2">
-        <div className="space-y-3">
-          <div className="text-xs text-slate-500 uppercase tracking-wide">Filing History</div>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center p-2 bg-slate-900/50 rounded">
-              <span className="text-sm text-slate-400">First SEC Filing</span>
-              <div className="text-right">
-                <span className="text-sm text-cyan-400">{filingData.firstFiling}</span>
-                <div className="text-xs text-slate-500">{filingData.firstFilingNote}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing History</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={rowStyle}>
+              <span style={{ fontSize: 13, color: 'var(--text3)' }}>First SEC Filing</span>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: 13, color: 'var(--cyan)' }}>{filingData.firstFiling}</span>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>{filingData.firstFilingNote}</div>
               </div>
             </div>
-            <div className="flex justify-between items-center p-2 bg-slate-900/50 rounded">
-              <span className="text-sm text-slate-400">Latest Event</span>
-              <div className="text-right">
-                <span className="text-sm text-yellow-400">{filingData.latestEvent}</span>
-                <div className="text-xs text-slate-500">{filingData.latestEventDate}</div>
+            <div style={rowStyle}>
+              <span style={{ fontSize: 13, color: 'var(--text3)' }}>Latest Event</span>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: 13, color: 'var(--gold)' }}>{filingData.latestEvent}</span>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>{filingData.latestEventDate}</div>
               </div>
             </div>
-            <div className="flex justify-between items-center p-2 bg-green-900/30 border border-green-800/50 rounded">
-              <span className="text-sm text-slate-400">Last PR Processed</span>
-              <div className="text-right">
-                <span className="text-sm text-green-400">{filingData.lastPressRelease}</span>
-                <div className="text-xs text-slate-500">{filingData.lastPressReleaseTitle}</div>
+            <div style={{ ...rowStyle, background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
+              <span style={{ fontSize: 13, color: 'var(--text3)' }}>Last PR Processed</span>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: 13, color: 'var(--mint)' }}>{filingData.lastPressRelease}</span>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>{filingData.lastPressReleaseTitle}</div>
               </div>
             </div>
           </div>
         </div>
-        <div className="space-y-3">
-          <div className="text-xs text-slate-500 uppercase tracking-wide">Latest Filings by Type</div>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            {Object.entries(filingData.filings).map(([type, info]) => (
-              <div key={type} className={`p-2 border rounded ${colorClasses[info.color]}`}>
-                <div className="font-medium">{type}</div>
-                <div className="text-slate-400">{info.date}</div>
-                <div className="text-xs text-slate-500">{info.description}</div>
-              </div>
-            ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Latest Filings by Type</div>
+          <div className="g2" style={{ fontSize: 13 }}>
+            {Object.entries(filingData.filings).map(([type, info]) => {
+              const style = colorStyles[info.color] || colorStyles.cyan;
+              return (
+                <div key={type} style={{ padding: 8, border: `1px solid ${style.border}`, borderRadius: 4, background: style.bg }}>
+                  <div style={{ fontWeight: 500, color: style.text }}>{type}</div>
+                  <div style={{ color: 'var(--text3)' }}>{info.date}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{info.description}</div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
-      <div className="mt-3 text-xs text-slate-500">
+      <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
         CIK: {filingData.cik} | {filingData.exchange}: {filingData.ticker} | Update dates as new filings are processed
       </div>
     </div>
@@ -5272,29 +5665,29 @@ const QuarterlyMetricsPanel = () => {
   return (
     <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
       {/* Dynamic Summary Badges */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-cyan-900/30 border-cyan-600/40 border text-cyan-400">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+        <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
           {summaryStats.quarterCount} quarters of data ({summaryStats.firstQuarter} - {summaryStats.lastQuarter})
         </span>
-        <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-green-900/30 border-green-600/40 border text-green-400">
+        <span className="pill" style={{ background: 'rgba(34,197,94,0.15)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
           Cash: {summaryStats.cashRange.first !== null ? `$${summaryStats.cashRange.first.toFixed(0)}M` : 'N/A'} → {summaryStats.cashRange.last !== null ? `$${summaryStats.cashRange.last.toFixed(0)}M` : 'N/A'}
         </span>
-        <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-orange-900/30 border-orange-600/40 border text-orange-400">
+        <span className="pill" style={{ background: 'rgba(251,146,60,0.15)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>
           Shares: {summaryStats.sharesRange.first !== null ? `${summaryStats.sharesRange.first.toFixed(0)}M` : 'N/A'} → {summaryStats.sharesRange.last !== null ? `${summaryStats.sharesRange.last.toFixed(0)}M` : 'N/A'}
         </span>
-        <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-purple-900/30 border-purple-600/40 border text-purple-400">
+        <span className="pill" style={{ background: 'rgba(168,85,247,0.15)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
           Satellites: {summaryStats.satellitesRange.first ?? 'N/A'} → {summaryStats.satellitesRange.last ?? 'N/A'}
         </span>
       </div>
       
       {/* All Quarters Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs">
+      <div style={{ overflowX: 'auto' }}>
+        <table className="tbl" style={{ fontSize: 12 }}>
           <thead>
-            <tr className="border-b border-slate-700">
-              <th className="text-left py-2 px-2 text-slate-400 sticky left-0 bg-slate-900 min-w-[100px]">Metric</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: '8px', color: 'var(--text3)', position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
               {displayQuarters.map(q => (
-                <th key={q} className="text-right py-2 px-2 text-slate-400 min-w-[70px] whitespace-nowrap">
+                <th key={q} style={{ textAlign: 'right', padding: '8px', color: 'var(--text3)', minWidth: 70, whiteSpace: 'nowrap' }}>
                   {q.replace('Q', '').replace(' ', "'")}
                 </th>
               ))}
@@ -5302,20 +5695,20 @@ const QuarterlyMetricsPanel = () => {
           </thead>
           <tbody>
             {metrics.map(metric => (
-              <tr key={metric.label} className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">
+              <tr key={metric.label} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: '6px 8px', color: 'var(--text2)', position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
                   {metric.label}
                 </td>
                 {displayQuarters.map(q => {
                   const data = quarterlyData[q];
                   const val = getValue(data, metric);
-                  const tooltip = metric.tooltipKey && data[metric.tooltipKey] !== undefined 
-                    ? `Cash only: $${data[metric.tooltipKey].toFixed(1)}M` 
+                  const tooltip = metric.tooltipKey && data[metric.tooltipKey] !== undefined
+                    ? `Cash only: $${data[metric.tooltipKey].toFixed(1)}M`
                     : null;
                   return (
-                    <td 
-                      key={q} 
-                      className="py-1.5 px-2 text-right text-slate-300 tabular-nums"
+                    <td
+                      key={q}
+                      style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--text2)', fontFamily: 'Space Mono, monospace' }}
                       title={tooltip}
                     >
                       {metric.format(val)}
@@ -5329,55 +5722,55 @@ const QuarterlyMetricsPanel = () => {
       </div>
       
       {/* Footnote */}
-      <div className="mt-2 text-xs text-slate-500 space-y-1">
-        <p>* Cash & Equiv. includes restricted cash (~$0.7-20M depending on quarter). Other reports might exclude restricted cash, which explains small differences between our values and theirs.</p>
-        <p>* Total Debt shows Long-Term Debt only (balance sheet line item). Other sources may report "Total Debt" which includes current portion, accrued interest, and finance leases—explaining differences of $3-45M. Notable: Q3 2024 shows $156M here vs $201M elsewhere because the $48.5M Atlas Credit Facility was classified as current (due within 12 months) and repaid in Q4 2024.</p>
+      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
+        <p style={{ marginBottom: 4 }}>* Cash & Equiv. includes restricted cash (~$0.7-20M depending on quarter). Other reports might exclude restricted cash, which explains small differences between our values and theirs.</p>
+        <p style={{ marginBottom: 4 }}>* Total Debt shows Long-Term Debt only (balance sheet line item). Other sources may report "Total Debt" which includes current portion, accrued interest, and finance leases—explaining differences of $3-45M. Notable: Q3 2024 shows $156M here vs $201M elsewhere because the $48.5M Atlas Credit Facility was classified as current (due within 12 months) and repaid in Q4 2024.</p>
         <p>* Employees estimates from PRs/filings. Data from SEC filings (10-K, 10-Q).</p>
       </div>
       
       {/* Key Notes from Filing - Matching BMNR style */}
-      <div className="mt-4">
+      <div style={{ marginTop: 16 }}>
         <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Filing Source</div>
-            <div className="text-sm text-slate-300">{quarterlyData['Q3 2025'].filing}</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Filing Source</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].filing}</div>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Satellites in Orbit</div>
-            <div className="text-sm text-slate-300">{quarterlyData['Q3 2025'].satellites} (BW3 + BB1-5)</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Satellites in Orbit</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].satellites} (BW3 + BB1-5)</div>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">MNO Partnerships</div>
-            <div className="text-sm text-slate-300">{quarterlyData['Q3 2025'].definitiveAgreements} definitive, {quarterlyData['Q3 2025'].mous}+ MOUs/LOIs</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>MNO Partnerships</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].definitiveAgreements} definitive, {quarterlyData['Q3 2025'].mous}+ MOUs/LOIs</div>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Contracted Revenue</div>
-            <div className="text-sm text-slate-300">${quarterlyData['Q3 2025'].contractedRevenue}M+ committed</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Contracted Revenue</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>${quarterlyData['Q3 2025'].contractedRevenue}M+ committed</div>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Spectrum Position</div>
-            <div className="text-sm text-slate-300">
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Spectrum Position</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>
               {quarterlyData['Q3 2025'].spectrumOwned} MHz owned | {quarterlyData['Q3 2025'].spectrumUS}+ MHz US
             </div>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Headcount</div>
-            <div className="text-sm text-slate-300">{quarterlyData['Q3 2025'].employees ? quarterlyData['Q3 2025'].employees.toLocaleString() : '—'} employees</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Headcount</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].employees ? quarterlyData['Q3 2025'].employees.toLocaleString() : '—'} employees</div>
           </div>
         </div>
       </div>
       </div>
       
-      <div className="mt-3 text-xs text-slate-500">
+      <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
         Data sourced from SEC filings (10-K, 10-K/A, 10-Q). Latest filing: Q3 2025 10-Q (Nov 10, 2025).
       </div>
-      
+
       {/* Historical Trend Charts */}
       {/* ROW 1: Cash Position & OpEx */}
-      <div className="mt-6 grid md:grid-cols-2 gap-4">
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-cyan-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></h4>
+      <div className="g2" style={{ marginTop: 24 }}>
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={Object.values(quarterlyData).filter(q => q.cashAndEquiv !== null).reverse()}>
               <defs>
@@ -5394,27 +5787,27 @@ const QuarterlyMetricsPanel = () => {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-        
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-purple-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></h4>
+
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <LineChart data={Object.values(quarterlyData).filter(q => q.opEx !== null).reverse()}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="label" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
               <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${v.toFixed(0)}M`, 'OpEx']} />
-              <Line type="monotone" dataKey="opEx" stroke="#a855f7" strokeWidth={2} dot={{ fill: '#a855f7' }} />
+              <Line type="monotone" dataKey="opEx" stroke="var(--violet)" strokeWidth={2} dot={{ fill: 'var(--violet)' }} />
             </LineChart>
           </ResponsiveContainer>
           {/* OpEx Breakdown with quarter selector */}
           {opExQuarters.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-slate-700/50">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-slate-500">OpEx Breakdown</span>
-                <select 
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>OpEx Breakdown</span>
+                <select
                   value={opExQuarter}
                   onChange={(e) => setOpExQuarter(e.target.value)}
-                  className="bg-slate-800 border border-slate-600 rounded px-2 py-0.5 text-xs text-white focus:border-purple-500 focus:outline-none"
+                  style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 4, padding: '2px 8px', fontSize: 11, color: 'var(--text1)' }}
                 >
                   {opExQuarters.map(q => (
                     <option key={q} value={q}>{q}</option>
@@ -5423,53 +5816,53 @@ const QuarterlyMetricsPanel = () => {
               </div>
               {quarterlyData[opExQuarter]?.opExEngineering && (
                 <>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">Engineering:</span>
-                      <span className="text-purple-300">${quarterlyData[opExQuarter].opExEngineering}M</span>
+                  <div className="g2" style={{ fontSize: 11 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>Engineering:</span>
+                      <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExEngineering}M</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">G&A:</span>
-                      <span className="text-purple-300">${quarterlyData[opExQuarter].opExGandA}M</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>G&A:</span>
+                      <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExGandA}M</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">R&D:</span>
-                      <span className="text-purple-300">${quarterlyData[opExQuarter].opExRandD}M</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>R&D:</span>
+                      <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExRandD}M</span>
                     </div>
                     {quarterlyData[opExQuarter].opExDandA && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">D&A:</span>
-                        <span className="text-purple-300">${quarterlyData[opExQuarter].opExDandA}M</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text3)' }}>D&A:</span>
+                        <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExDandA}M</span>
                       </div>
                     )}
                     {quarterlyData[opExQuarter].opExSBC && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Stock-Based Comp:</span>
-                        <span className="text-purple-300">${quarterlyData[opExQuarter].opExSBC}M</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text3)' }}>Stock-Based Comp:</span>
+                        <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExSBC}M</span>
                       </div>
                     )}
                     {quarterlyData[opExQuarter].opExCostOfRev && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Cost of Revenue:</span>
-                        <span className="text-purple-300">${quarterlyData[opExQuarter].opExCostOfRev}M</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text3)' }}>Cost of Revenue:</span>
+                        <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExCostOfRev}M</span>
                       </div>
                     )}
                   </div>
-                  <div className="mt-2 pt-2 border-t border-slate-700/30 space-y-1">
-                    <div className="flex justify-between text-xs font-medium">
-                      <span className="text-slate-300">Total OpEx (GAAP):</span>
-                      <span className="text-purple-400">${quarterlyData[opExQuarter].opEx}M</span>
+                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 500 }}>
+                      <span style={{ color: 'var(--text2)' }}>Total OpEx (GAAP):</span>
+                      <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opEx}M</span>
                     </div>
                     {quarterlyData[opExQuarter].adjOpEx && (
-                      <div className="flex justify-between text-xs">
-                        <span className="text-slate-400">Adj. OpEx (ex D&A, SBC):</span>
-                        <span className="text-cyan-400">${quarterlyData[opExQuarter].adjOpEx}M</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginTop: 4 }}>
+                        <span style={{ color: 'var(--text3)' }}>Adj. OpEx (ex D&A, SBC):</span>
+                        <span style={{ color: 'var(--cyan)' }}>${quarterlyData[opExQuarter].adjOpEx}M</span>
                       </div>
                     )}
                     {(quarterlyData[opExQuarter].capEx || quarterlyData[opExQuarter].capExTotal) && (
-                      <div className="flex justify-between text-xs">
-                        <span className="text-slate-400">CapEx:</span>
-                        <span className="text-yellow-400">${quarterlyData[opExQuarter].capEx || quarterlyData[opExQuarter].capExTotal}M</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginTop: 4 }}>
+                        <span style={{ color: 'var(--text3)' }}>CapEx:</span>
+                        <span style={{ color: 'var(--gold)' }}>${quarterlyData[opExQuarter].capEx || quarterlyData[opExQuarter].capExTotal}M</span>
                       </div>
                     )}
                   </div>
@@ -5481,29 +5874,29 @@ const QuarterlyMetricsPanel = () => {
       </div>
       
       {/* ROW 2: Share Count & Market Cap */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-orange-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></h4>
+      <div className="g2" style={{ marginTop: 16 }}>
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0)}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="label" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `${v}M`} />
               <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v, name) => [`${v.toFixed(0)}M`, name === 'sharesOutstanding' ? 'Outstanding (Class A)' : name === 'impliedSharesOut' ? 'Implied (A+B+C)' : 'Fully Diluted']} />
-              <Bar dataKey="sharesOutstanding" fill="#ea580c" name="sharesOutstanding" />
-              <Bar dataKey="impliedSharesOut" fill="#f97316" name="impliedSharesOut" />
-              <Bar dataKey="fullyDiluted" fill="#fdba74" name="fullyDiluted" />
+              <Bar dataKey="sharesOutstanding" fill="var(--coral)" name="sharesOutstanding" />
+              <Bar dataKey="impliedSharesOut" fill="var(--gold)" name="impliedSharesOut" />
+              <Bar dataKey="fullyDiluted" fill="var(--sand)" name="fullyDiluted" />
             </BarChart>
           </ResponsiveContainer>
-          <div className="flex gap-4 mt-2 text-xs">
-            <div className="flex items-center gap-1"><div className="w-3 h-3 bg-orange-600 rounded"></div><span className="text-slate-400">Outstanding (Class A)</span></div>
-            <div className="flex items-center gap-1"><div className="w-3 h-3 bg-orange-500 rounded"></div><span className="text-slate-400">Implied (A+B+C)</span></div>
-            <div className="flex items-center gap-1"><div className="w-3 h-3 bg-orange-300 rounded"></div><span className="text-slate-400">Fully Diluted</span></div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--coral)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Outstanding (Class A)</span></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--gold)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Implied (A+B+C)</span></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sand)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Fully Diluted</span></div>
           </div>
         </div>
-        
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-blue-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></h4>
+
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--sky)' }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0 && d.stockPrice > 0).map(d => ({ ...d, marketCap: d.sharesOutstanding * d.stockPrice, impliedMktCap: d.impliedSharesOut * d.stockPrice }))}>
               <defs>
@@ -5520,17 +5913,17 @@ const QuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="marketCap" stroke="#3b82f6" fill="url(#mcapGradient)" />
             </AreaChart>
           </ResponsiveContainer>
-          <div className="flex gap-4 mt-2 text-xs">
-            <div className="flex items-center gap-1"><div className="w-3 h-3 bg-blue-500 rounded"></div><span className="text-slate-400">Market Cap (Outstanding)</span></div>
-            <div className="flex items-center gap-1"><div className="w-6 h-0.5 bg-blue-400 border-dashed border-t-2"></div><span className="text-slate-400">Market Cap (Implied)</span></div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap (Outstanding)</span></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 24, height: 2, background: 'var(--sky)', opacity: 0.6 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap (Implied)</span></div>
           </div>
         </div>
       </div>
-      
+
       {/* ROW 3: Company-Specific (Satellites) */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-          <h4 className="text-sm font-medium text-cyan-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>Satellites Deployed<UpdateIndicators sources="PR" /></h4>
+      <div className="g2" style={{ marginTop: 16 }}>
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Satellites Deployed<UpdateIndicators sources="PR" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={Object.values(quarterlyData).reverse()}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5571,7 +5964,7 @@ const TimelineTab = () => {
     cik: '0001780312',
     ticker: 'ASTS',
     exchange: 'NASDAQ',
-    lastPR: { date: 'January 16, 2026', title: 'MDA SHIELD Prime Contract Award' }
+    lastPR: { date: 'January 22, 2026', title: 'BlueBird 7 Launch Timing (New Glenn)' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {
@@ -5620,6 +6013,27 @@ const TimelineTab = () => {
   // Timeline log - chronological record of ACTUAL COMPANY changes (not model creation notes)
   // Categories: GUIDANCE (mgmt projections), DATA (SEC filings, actuals), EVENT (catalysts/news), LAUNCH (orbital launches)
   const timelineEvents = [
+    {
+      date: '2026-01-22',
+      category: 'Guidance',
+      title: 'BlueBird 7 Launch Timing Announced (New Glenn)',
+      summary: 'BB7 scheduled for late February 2026 on Blue Origin New Glenn-3 from Cape Canaveral',
+      details: [
+        'BlueBird 7 launch scheduled for late February 2026',
+        'First ASTS launch on Blue Origin New Glenn rocket (New Glenn-3 mission)',
+        'Launch from Launch Complex 36 at Cape Canaveral Space Force Station',
+        'New Glenn 7-meter fairing enables up to 8 Block 2 BlueBirds per mission (2x payload vs 5m class)',
+        'Multi-launcher campaign: one orbital launch every 1-2 months average during 2026',
+        'On track to launch 45-60 satellites by end of 2026',
+        'BB7 identical to BB6: ~2,400 sq ft array, 3.5x larger than BB1-5, up to 120 Mbps',
+        'Progressing towards commercial services in 2026',
+        'Shareholder in-person launch event planned',
+      ],
+      sources: ['Press release Jan 22, 2026'],
+      prevValue: 'BB7 timeline TBD, launcher TBD',
+      newValue: 'BB7 late Feb 2026 on New Glenn',
+      impact: 'Positive',
+    },
     {
       date: '2026-01-16',
       category: 'News',
@@ -8540,37 +8954,37 @@ const TimelineTab = () => {
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>
-              <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>Period</th>
-                <th className="r">Link</th>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Date</th>
+                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Type</th>
+                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Description</th>
+                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Period</th>
+                <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Link</th>
               </tr>
             </thead>
             <tbody>
               {displayedFilings.map((filing, idx) => (
-                <tr key={idx}>
-                  <td style={{ whiteSpace: 'nowrap' }}>{filing.date}</td>
-                  <td>
-                    <span style={{ 
-                      background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)', 
-                      color: secTypeColors[filing.type]?.text || 'var(--text2)', 
-                      padding: '2px 8px', 
-                      borderRadius: 4, 
-                      fontSize: 11, 
-                      fontWeight: 600 
+                <tr key={idx} style={{ borderTop: '1px solid var(--border)' }}>
+                  <td style={{ padding: 8, whiteSpace: 'nowrap' }}>{filing.date}</td>
+                  <td style={{ padding: 8 }}>
+                    <span style={{
+                      background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)',
+                      color: secTypeColors[filing.type]?.text || 'var(--text2)',
+                      padding: '2px 8px',
+                      borderRadius: 4,
+                      fontSize: 11,
+                      fontWeight: 600
                     }}>
                       {filing.type}
                     </span>
                   </td>
-                  <td>{filing.description}</td>
-                  <td>{filing.period}</td>
-                  <td className="r">
-                    <a 
-                      href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                  <td style={{ padding: 8 }}>{filing.description}</td>
+                  <td style={{ padding: 8 }}>{filing.period}</td>
+                  <td style={{ padding: 8, textAlign: 'right' }}>
+                    <a
+                      href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       style={{ color: 'var(--cyan)' }}
                     >
                       SEC →
@@ -8685,6 +9099,13 @@ const TimelineTab = () => {
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 22, 2026</span>
+                <span style={{ fontSize: 11, color: '#4ade80' }}>Launch</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>BlueBird 7 Launch Timing — Late Feb on New Glenn</div>
+            </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 16, 2026</span>
@@ -8853,7 +9274,7 @@ const TimelineTab = () => {
                     </div>
                     <div className="t-meta-item">
                       <div className="t-meta-label">Sources</div>
-                      <div className="t-meta-value cyan">{entry.sources.join(', ')}</div>
+                      <div className="t-meta-value" style={{ color: 'var(--cyan)' }}>{entry.sources.join(', ')}</div>
                     </div>
                   </div>
                 </div>
@@ -8865,21 +9286,21 @@ const TimelineTab = () => {
 
       {/* How to Use */}
       <div className="card"><div className="card-title">How to Use This Log</div>
-        <div className="grid md:grid-cols-2 gap-4 text-sm">
+        <div className="g2" style={{ fontSize: 13 }}>
           <div>
-            <h4 className="text-cyan-400 font-medium mb-2">Categories Explained</h4>
-            <ul className="space-y-2 text-slate-300">
-              <li><span className="text-orange-400">Partnership:</span> Commercial agreements, MNO deals, government contracts</li>
-              <li><span className="text-green-400">Product:</span> Satellite launches, tech milestones, deployments</li>
-              <li><span className="text-pink-400">Regulatory:</span> FCC approvals, spectrum licenses, authorizations</li>
-              <li><span className="text-emerald-400">Capital:</span> Equity offerings, convertible notes, financing</li>
-              <li><span className="text-purple-400">Guidance:</span> Management projections, targets, timelines</li>
-              <li><span className="text-teal-400">Earnings:</span> Quarterly results, SEC filings, business updates</li>
+            <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Categories Explained</h4>
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--text2)' }}>
+              <li><span style={{ color: 'var(--gold)' }}>Partnership:</span> Commercial agreements, MNO deals, government contracts</li>
+              <li><span style={{ color: 'var(--mint)' }}>Product:</span> Satellite launches, tech milestones, deployments</li>
+              <li><span style={{ color: 'var(--pink)' }}>Regulatory:</span> FCC approvals, spectrum licenses, authorizations</li>
+              <li><span style={{ color: 'var(--green)' }}>Capital:</span> Equity offerings, convertible notes, financing</li>
+              <li><span style={{ color: 'var(--violet)' }}>Guidance:</span> Management projections, targets, timelines</li>
+              <li><span style={{ color: 'var(--cyan)' }}>Earnings:</span> Quarterly results, SEC filings, business updates</li>
             </ul>
           </div>
           <div>
-            <h4 className="text-cyan-400 font-medium mb-2">Updating This Log</h4>
-            <ul className="space-y-1 text-slate-300">
+            <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Updating This Log</h4>
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: 4, color: 'var(--text2)' }}>
               <li>• Add new entries chronologically at the top</li>
               <li>• Include sources for traceability</li>
               <li>• Note prev → new values for comparisons</li>
@@ -9674,31 +10095,31 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Comparables & Competitor Intelligence</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
 
       {/* Valuation Comparables Section */}
-      <div className="highlight"><h3>📊 Valuation Comparables</h3><p className="text-sm text-slate-400">No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
 
-      <div className="card">
-        <div className="card-title">Market Comparison</div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Market Comparison<UpdateIndicators sources="WS" /></div>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Company</th>
-              <th className="text-right">Mkt Cap</th>
-              <th className="text-right">EV/Rev</th>
-              <th className="text-right">$/Sub</th>
-              <th className="text-right">Subs</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Company</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Mkt Cap</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>EV/Rev</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>$/Sub</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
             </tr>
           </thead>
           <tbody>
             {comps.map(c => (
-              <tr key={c.name} className={`border-t border-slate-800 ${c.name === 'ASTS' ? 'bg-cyan-900/20' : ''}`}>
-                <td className="py-2">{c.name}</td>
-                <td className="py-2 text-right">${(c.mc / 1000).toFixed(0)}B</td>
-                <td className="py-2 text-right">{c.evRev.toFixed(1)}x</td>
-                <td className="py-2 text-right">${c.pSub.toLocaleString()}</td>
-                <td className="py-2 text-right">{c.subs.toFixed(0)}M</td>
+              <tr key={c.name} style={{ borderTop: '1px solid var(--border)', background: c.name === 'ASTS' ? 'var(--surface2)' : 'transparent' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{c.name}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${(c.mc / 1000).toFixed(0)}B</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{c.evRev.toFixed(1)}x</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${c.pSub.toLocaleString()}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{c.subs.toFixed(0)}M</td>
               </tr>
             ))}
           </tbody>
@@ -9737,46 +10158,46 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* D2D Competitor Capability Matrix */}
-      <div className="highlight"><h3>🛰️ D2D Competitor Capabilities</h3><p className="text-sm text-slate-400">Direct-to-device competitors and their current capabilities vs ASTS</p></div>
+      <div className="highlight" style={{ marginTop: 32 }}><h3 style={{ display: 'flex', alignItems: 'center' }}>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
 
-      <div className="card">
-        <div className="card-title">Capability Comparison</div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capability Comparison<UpdateIndicators sources="PR" /></div>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Competitor</th>
-              <th className="text-center">Voice</th>
-              <th className="text-center">Text</th>
-              <th className="text-center">Data</th>
-              <th className="text-center">Video</th>
-              <th className="text-center">Unmod. Phones</th>
-              <th className="text-center">Global</th>
-              <th className="text-right">Satellites</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Competitor</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Voice</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Text</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Data</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Video</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Unmod. Phones</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Global</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Satellites</th>
             </tr>
           </thead>
           <tbody>
             {/* ASTS Row - highlighted */}
-            <tr className="border-t border-slate-800 bg-cyan-900/20">
-              <td className="py-2 font-semibold text-cyan-400">ASTS SpaceMobile</td>
-              <td className="py-2 text-center text-green-400">✓</td>
-              <td className="py-2 text-center text-green-400">✓</td>
-              <td className="py-2 text-center text-green-400">✓</td>
-              <td className="py-2 text-center text-green-400">✓</td>
-              <td className="py-2 text-center text-green-400">✓</td>
-              <td className="py-2 text-center text-yellow-400">Building</td>
-              <td className="py-2 text-right text-cyan-400">6+</td>
+            <tr style={{ borderTop: '1px solid var(--border)', background: 'var(--surface2)' }}>
+              <td style={{ padding: 8, fontWeight: 600, color: 'var(--text2)' }}>ASTS SpaceMobile</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Building</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>6+</td>
             </tr>
             {/* Competitor Rows */}
             {COMPETITOR_PROFILES.map(comp => (
-              <tr key={comp.id} className="border-t border-slate-800">
-                <td className="py-2">{comp.name}</td>
-                <td className="py-2 text-center">{comp.capabilities.voice ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
-                <td className="py-2 text-center">{comp.capabilities.text ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
-                <td className="py-2 text-center">{comp.capabilities.data ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
-                <td className="py-2 text-center">{comp.capabilities.video ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
-                <td className="py-2 text-center">{comp.capabilities.unmodifiedPhones ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
-                <td className="py-2 text-center">{comp.capabilities.globalCoverage ? <span className="text-green-400">✓</span> : <span className="text-slate-600">✗</span>}</td>
-                <td className="py-2 text-right text-slate-400">{comp.keyMetrics?.satellites || 'N/A'}</td>
+              <tr key={comp.id} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{comp.name}</td>
+                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.voice ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.text ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.data ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.video ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.unmodifiedPhones ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.globalCoverage ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text3)' }}>{comp.keyMetrics?.satellites || 'N/A'}</td>
               </tr>
             ))}
           </tbody>
@@ -9784,15 +10205,15 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor News Intelligence Section */}
-      <div className="highlight">
-        <h3>📰 Competitor News Intelligence</h3>
-        <p className="text-sm text-slate-400">Track competitor developments to assess ASTS competitive position</p>
+      <div className="highlight" style={{ marginTop: 32 }}>
+        <h3 style={{ display: 'flex', alignItems: 'center' }}>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
+        <p style={{ fontSize: 13, color: 'var(--text2)' }}>Track competitor developments to assess ASTS competitive position</p>
       </div>
 
       {/* Filter Bar */}
-      <div className="card" style={{ padding: '12px 16px' }}>
+      <div className="card" style={{ marginTop: 32, padding: '12px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <span className="text-xs text-slate-400 uppercase tracking-wider">Filter:</span>
+          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filter:</span>
           <button
             onClick={() => setCompetitorFilter('all')}
             className={`nav-btn ${competitorFilter === 'all' ? 'active' : ''}`}
@@ -9821,7 +10242,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {groupedNews.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: 40 }}>
-            <p className="text-slate-400">No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
+            <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
           </div>
         ) : (
           groupedNews.map((story) => (
@@ -10340,9 +10761,9 @@ const InvestmentTab = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 className="section-head" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
@@ -13467,26 +13888,26 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                                     {report.estimates && report.estimates.length > 0 && (
                                       <div style={{ marginBottom: 12 }}>
                                         <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 4 }}>ESTIMATES</div>
-                                        <table style={{ fontSize: 11, width: '100%' }}>
+                                        <table className="tbl">
                                           <thead>
-                                            <tr style={{ color: 'var(--text3)' }}>
-                                              <th style={{ textAlign: 'left', fontWeight: 500 }}>Metric</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY24</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY25</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY26</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY27</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY28</th>
+                                            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                                              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Metric</th>
+                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY24</th>
+                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY25</th>
+                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY26</th>
+                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY27</th>
+                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY28</th>
                                             </tr>
                                           </thead>
                                           <tbody>
                                             {report.estimates.map((e, i) => (
-                                              <tr key={i} style={{ color: 'var(--text2)' }}>
-                                                <td>{e.metric}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy24 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy25 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy26 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy27 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy28 || '—'}</td>
+                                              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
+                                                <td style={{ padding: 8, color: 'var(--text2)' }}>{e.metric}</td>
+                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy24 || '—'}</td>
+                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy25 || '—'}</td>
+                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy26 || '—'}</td>
+                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy27 || '—'}</td>
+                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy28 || '—'}</td>
                                               </tr>
                                             ))}
                                           </tbody>
@@ -13593,18 +14014,18 @@ const FinancialsTab = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HEADER                                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
-      
+
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: HIGHLIGHT BOX                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="highlight">
         <h3 style={{ display: 'flex', alignItems: 'center' }}>{config.highlightTitle}<UpdateIndicators sources="SEC" /></h3>
-        <p className="text-sm text-slate-300">{config.highlightText}</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>{config.highlightText}</p>
       </div>
       
       {/* ═══════════════════════════════════════════════════════════════════ */}
@@ -13615,13 +14036,13 @@ const FinancialsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-        <h4 className="text-sm font-medium text-yellow-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></div>
+        <div className="g4">
           {config.milestones.map((m, i) => (
-            <div key={i} className="p-2 bg-slate-800/50 rounded">
-              <div className="text-slate-500">{m.date}</div>
-              <div className="text-slate-300">{m.event}</div>
+            <div key={i} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div>
+              <div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div>
             </div>
           ))}
         </div>
@@ -13630,7 +14051,9 @@ const FinancialsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 9: CFA NOTES                                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <CFANotes title="CFA Level III — Financial Analysis" items={config.cfaNotes} />
+      <div style={{ marginTop: 32 }}>
+        <CFANotes title="CFA Level III — Financial Analysis" items={config.cfaNotes} />
+      </div>
     </div>
   );
 };
