@@ -1295,10 +1295,12 @@ const ModelTab = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#model-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* ASSUMPTIONS SECTION */}
       <>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#scenario</div>
         <div className="highlight">
           <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
           <p style={{ fontSize: 13, color: 'var(--text2)' }}>
@@ -1306,6 +1308,7 @@ const ModelTab = ({
           </p>
         </div>
 
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#scenario-presets</div>
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
         <div className="card">
           <div className="card-title">Scenario Presets</div>
@@ -1345,7 +1348,8 @@ const ModelTab = ({
         </div>
 
         {/* ETH HOLDINGS ASSUMPTION */}
-        <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>ETH Holdings</h3>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#eth-holdings</div>
+        <h3 style={{ color: 'var(--cyan)', marginBottom: 8 }}>ETH Holdings</h3>
         <div className="g2">
           <BMNRParameterCard
             title="ETH Holdings (M)"
@@ -1358,7 +1362,8 @@ const ModelTab = ({
         </div>
 
         {/* ETH & YIELD PARAMETERS */}
-        <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>ETH Price Projection</h3>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#eth-price</div>
+        <h3 style={{ color: 'var(--cyan)', marginBottom: 8 }}>ETH Price Projection</h3>
         <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>
           Choose ONE method to project terminal ETH price. Click on a card to activate it.
         </p>
@@ -1459,7 +1464,8 @@ const ModelTab = ({
           </span>
         </div>
 
-        <h3 style={{ color: 'var(--mint)', marginTop: 24, marginBottom: 8 }}>Yield & Costs</h3>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#operating-model</div>
+        <h3 style={{ color: 'var(--mint)', marginBottom: 8 }}>Yield & Costs</h3>
 
         <div className="g2">
           <BMNRParameterCard
@@ -1493,7 +1499,8 @@ const ModelTab = ({
         </div>
 
         {/* CAPITAL STRUCTURE PARAMETERS */}
-        <h3 style={{ color: 'var(--violet)', marginTop: 24, marginBottom: 8 }}>Valuation Parameters</h3>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-params</div>
+        <h3 style={{ color: 'var(--violet)', marginBottom: 8 }}>Valuation Parameters</h3>
 
         <div className="g2">
           <BMNRParameterCard
@@ -1516,6 +1523,7 @@ const ModelTab = ({
           />
         </div>
 
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#current-position</div>
         <div className="card">
           <div className="card-title">Current Position</div>
           <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
@@ -1530,7 +1538,8 @@ const ModelTab = ({
         </div>
 
         {/* DCF VALUATION OUTPUT */}
-        <div className="card" style={{ marginTop: 24, border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
+        <div className="card" style={{ border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
           <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
 
           {/* Primary metrics */}
@@ -1579,7 +1588,8 @@ const ModelTab = ({
         </div>
 
         {/* CALCULATION METHODOLOGY */}
-        <div className="card" style={{ marginTop: 16 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#methodology</div>
+        <div className="card">
           <div className="card-title">Calculation Methodology</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
             <p style={{ marginBottom: 12 }}>
