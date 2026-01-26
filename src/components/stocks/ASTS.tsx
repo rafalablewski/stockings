@@ -649,6 +649,7 @@ const css = `
   color: var(--text2);
   background: transparent;
   border: 1px solid transparent;
+  border-left: 3px solid transparent;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
@@ -710,35 +711,43 @@ const css = `
 
 /* Reserved space below nav for dropdown content - always present */
 .nav-dropdown-space {
-  height: 52px;
+  height: 48px;
   padding: 0 64px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   gap: 8px;
+  transition: background 0.2s ease;
+}
+.nav-dropdown-space.open {
+  background: var(--surface);
 }
 .nav-dropdown-menu {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 .nav-dropdown-item {
   padding: 8px 16px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: var(--muted);
-  background: none;
+  color: var(--text2);
+  background: transparent;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
-  transition: color 0.15s;
+  transition: color 0.15s, background 0.15s;
   white-space: nowrap;
+  font-family: 'Outfit', sans-serif;
 }
 .nav-dropdown-item:hover {
   color: var(--text);
+  background: var(--surface2);
 }
 .nav-dropdown-item.active {
   color: var(--cyan);
+  background: var(--cyan-dim);
 }
 
 /* Main Content */
@@ -1221,24 +1230,13 @@ input[type="range"]::-webkit-slider-thumb {
   }
   .nav-dropdown-space {
     padding: 0 16px;
-    height: 52px;
+    height: 44px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
-  }
-  .nav-dropdown-menu {
-    gap: 4px;
   }
   .nav-dropdown-item {
-    font-size: 13px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    background: var(--surface2);
-  }
-  .nav-dropdown-item.active {
-    background: var(--cyan);
-    color: var(--bg);
+    font-size: 12px;
+    padding: 6px 12px;
   }
 
   /* Main Content Area */
@@ -1430,11 +1428,11 @@ input[type="range"]::-webkit-slider-thumb {
   }
   .nav-dropdown-space {
     padding: 0 12px;
-    height: 48px;
+    height: 40px;
   }
   .nav-dropdown-item {
-    font-size: 12px;
-    padding: 8px 12px;
+    font-size: 11px;
+    padding: 5px 8px;
   }
 
   /* Main Content */
@@ -1535,7 +1533,7 @@ input[type="range"]::-webkit-slider-thumb {
     border-width: 0.5px;
   }
   .nav-btn {
-    border-width: 0.5px;
+    border-width: 3px;
   }
 }
 
@@ -2214,7 +2212,7 @@ const ASTSAnalysis = () => {
         </nav>
 
         {/* Reserved space for dropdown menus - always present to prevent layout shift */}
-        <div className="nav-dropdown-space">
+        <div className={`nav-dropdown-space ${analysisDropdownOpen ? 'open' : ''}`}>
           {analysisDropdownOpen && (
             <div className="nav-dropdown-menu">
               {tabs.filter(t => t.group).map(t => (
