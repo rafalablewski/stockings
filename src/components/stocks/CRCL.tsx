@@ -2801,7 +2801,7 @@ function CRCLModel() {
               <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
               
               <div className="highlight">
-                <h3>The Opportunity</h3>
+                <h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
                 <p style={{ fontSize: '14px' }}>
                   Circle is building financial infrastructure for the internet economy. USDC enables 24/7
                   global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share
@@ -2812,7 +2812,7 @@ function CRCLModel() {
 
               <div className="g2">
                 <div className="thesis bull">
-                  <h4>↑ Bull Case</h4>
+                  <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
                   <ul>
                     <li>USDC +{usdcGrowth.toFixed(0)}% YoY, mgmt guides 40% CAGR</li>
                     <li>Market share: 23% → 29% in 12 months</li>
@@ -2824,7 +2824,7 @@ function CRCLModel() {
                   </ul>
                 </div>
                 <div className="thesis bear">
-                  <h4>↓ Bear Case</h4>
+                  <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
                   <ul>
                     <li>96% revenue from reserve income (rate sensitive)</li>
                     <li>~60% of income shared with Coinbase</li>

@@ -1672,13 +1672,13 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
   return (
   <>
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-    <div className="highlight"><h3>The Opportunity</h3>
+    <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
       <p style={{ fontSize: '14px' }}>BMNR operates as an ETH treasury company, accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
     </div>
 
     <div className="g2">
       <div className="thesis bull">
-        <h4>↑ Bull Case</h4>
+        <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
         <ul>
           <li>ETH price appreciation — Cycle targets $10K-$15K+</li>
           <li>NAV premium expansion — MSTR trades 2-3x; BMNR could follow</li>
@@ -1689,7 +1689,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         </ul>
       </div>
       <div className="thesis bear">
-        <h4>↓ Bear Case</h4>
+        <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
         <ul>
           <li>ETH price crash — Crypto winter, -70% drawdowns possible</li>
           <li>NAV discount — Premium compresses or inverts</li>
