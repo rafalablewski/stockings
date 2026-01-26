@@ -1670,12 +1670,12 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
   const maxValue = Math.max(...holdingsData.map(d => d.value));
 
   return (
-  <>
+  <div style={{ display: 'flex', flexDirection: 'column' }}>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#investment-thesis</div>
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
     <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
-      <p style={{ fontSize: '14px' }}>BMNR operates as an ETH treasury company, accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
+      <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--violet)' }}>BMNR:</strong> ETH treasury company accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
@@ -1706,7 +1706,9 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#chart</div>
     <div className="card">
-      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ETH Holdings Growth<UpdateIndicators sources="PR" /></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>ETH Holdings Growth<UpdateIndicators sources="PR" /></div>
+      </div>
       <div className="bars">
         {holdingsData.map((d, i) => (
           <div key={i} className="bar-col">
@@ -1755,7 +1757,17 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#parameters</div>
-    <div className="card"><div className="card-title">Parameters</div><div className="g4" style={{ marginTop: '16px' }}><Input label="ETH Holdings" value={currentETH} onChange={setCurrentETH} /><Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} /><Input label="Stock Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} /><Input label="ETH Price ($)" value={ethPrice} onChange={setEthPrice} /></div><div style={{ marginTop: '16px' }}><Input label="Qtr Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} /></div></div>
+    <div className="card"><div className="card-title">Parameters</div>
+      <div className="g4" style={{ marginTop: '16px' }}>
+        <Input label="ETH Holdings" value={currentETH} onChange={setCurrentETH} />
+        <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
+        <Input label="Stock Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} />
+        <Input label="ETH Price ($)" value={ethPrice} onChange={setEthPrice} />
+      </div>
+      <div style={{ marginTop: '16px' }}>
+        <Input label="Qtr Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} />
+      </div>
+    </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — ETH Treasury Fundamentals" items={[
@@ -1765,7 +1777,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       { term: 'Dividend Yield', def: 'Annual Dividend ÷ Stock Price. BMNR announced its first dividend ($0.01/share quarterly) in Nov 2025, becoming the first large-cap crypto treasury to pay dividends. Funded by staking income.' },
       { term: 'Market Cap vs NAV', def: 'Market Cap = Shares × Stock Price. Compare to total ETH value to understand market sentiment. Premium indicates growth expectations; discount indicates skepticism.' },
     ]} />
-  </>
+  </div>
   );
 };
 

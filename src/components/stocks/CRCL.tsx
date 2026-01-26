@@ -2797,19 +2797,14 @@ function CRCLModel() {
           {/* Update Source Legend - Shows what each indicator color means */}
           <UpdateLegend />
           {activeTab === 'overview' && (
-            <>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#investment-thesis</div>
               <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
               <div className="highlight">
                 <h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
-                <p style={{ fontSize: '14px' }}>
-                  Circle is building financial infrastructure for the internet economy. USDC enables 24/7
-                  global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share
-                  and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of
-                  traditional finance and blockchain technology.
-                </p>
+                <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--mint)' }}>Circle:</strong> Building financial infrastructure for the internet economy. USDC enables 24/7 global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of traditional finance and blockchain technology.</p>
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
@@ -2842,15 +2837,20 @@ function CRCLModel() {
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#chart</div>
               <div className="card">
-                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Progression<UpdateIndicators sources="SEC" /></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Revenue Progression<UpdateIndicators sources="SEC" /></div>
+                </div>
                 <div className="bars">
-                  {DATA.map((d, i) => (
-                    <div key={i} className="bar-col">
-                      <div className="bar-val">${d.totalRevenue}M</div>
-                      <div className="bar" style={{ height: `${(d.totalRevenue / 800) * 180}px` }} />
-                      <div className="bar-label">{d.quarter}</div>
-                    </div>
-                  ))}
+                  {(() => {
+                    const maxRevenue = Math.max(...DATA.map(d => d.totalRevenue));
+                    return DATA.map((d, i) => (
+                      <div key={i} className="bar-col">
+                        <div className="bar-val">${d.totalRevenue}M</div>
+                        <div className="bar" style={{ height: `${maxRevenue > 0 ? (d.totalRevenue / maxRevenue) * 150 : 0}px`, background: 'var(--mint)' }} />
+                        <div className="bar-label">{d.quarter}</div>
+                      </div>
+                    ));
+                  })()}
                 </div>
               </div>
 
@@ -2910,7 +2910,7 @@ function CRCLModel() {
                 { term: 'Network Effects', def: 'More USDC usage → more integrations → more usage. Switching costs increase as ecosystem embeds USDC.' },
                 { term: 'Regulatory Moat', def: 'US money transmitter licenses, potential federal stablecoin regulation creates barriers. Circle positioned for compliance.' },
               ]} />
-            </>
+            </div>
           )}
 
           {activeTab === 'financials' && (
