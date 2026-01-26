@@ -961,14 +961,14 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
 
   return (
   <div style={{ display: 'flex', flexDirection: 'column' }}>
-    {/* #investment-thesis */}
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#investment-thesis</div>
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-    {/* #opportunity */}
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
     <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
       <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
-    {/* #thesis-bull-bear */}
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
     <div className="g2">
       <div className="thesis bull">
         <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
@@ -994,8 +994,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
 
-    {/* #chart */}
-    <div className="card" style={{ marginTop: 32 }}>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#chart</div>
+    <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>
           {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}<UpdateIndicators sources="PR" />
@@ -1035,8 +1035,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
 
-    {/* #key-metrics */}
-    <div className="card" style={{ marginTop: 32 }}>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-metrics</div>
+    <div className="card">
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <div className="g4">
         <Card label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} sub="Equity value" color="blue" />
@@ -1045,8 +1045,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub="~1 year runway" color="green" />
       </div>
     </div>
-    {/* #company-snapshot */}
-    <div className="card" style={{ marginTop: 32 }}>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#company-snapshot</div>
+    <div className="card">
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <div className="g3">
         <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Equity (Q3 2025)</div>
@@ -1072,8 +1072,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         </div>
       </div>
     </div>
-    {/* #parameters */}
-    <div className="card" style={{ marginTop: 32 }}><div className="card-title">Parameters</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#parameters</div>
+    <div className="card"><div className="card-title">Parameters</div>
       <div className="g4" style={{ marginTop: '16px' }}>
         <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
         <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
@@ -1085,7 +1085,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
 
-    {/* #cfa-notes */}
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — Space-Based Cellular" items={[
       { term: 'Market Cap', def: 'Stock price × shares outstanding. Current equity value assigned by market. Compare to DCF intrinsic value.' },
       { term: 'Enterprise Value (EV)', def: 'Market Cap + Total Debt - Cash. Represents total firm value to all capital providers. Used in EV/Revenue multiples.' },

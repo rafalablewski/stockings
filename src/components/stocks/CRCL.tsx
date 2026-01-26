@@ -2798,10 +2798,10 @@ function CRCLModel() {
           <UpdateLegend />
           {activeTab === 'overview' && (
             <>
-              {/* #investment-thesis */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#investment-thesis</div>
               <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
-              {/* #opportunity */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
               <div className="highlight">
                 <h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
                 <p style={{ fontSize: '14px' }}>
@@ -2812,7 +2812,7 @@ function CRCLModel() {
                 </p>
               </div>
 
-              {/* #thesis-bull-bear */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
               <div className="g2">
                 <div className="thesis bull">
                   <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
@@ -2840,8 +2840,8 @@ function CRCLModel() {
                 </div>
               </div>
 
-              {/* #chart */}
-              <div className="card" style={{ marginTop: 32 }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#chart</div>
+              <div className="card">
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Progression<UpdateIndicators sources="SEC" /></div>
                 <div className="bars">
                   {DATA.map((d, i) => (
@@ -2854,8 +2854,8 @@ function CRCLModel() {
                 </div>
               </div>
 
-              {/* #key-metrics */}
-              <div className="card" style={{ marginTop: 32 }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-metrics</div>
+              <div className="card">
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
                 <div className="g4">
                   <Card label="USDC Growth" value={`+${usdcGrowth.toFixed(0)}%`} sub="Year over year" color="mint" />
@@ -2864,8 +2864,8 @@ function CRCLModel() {
                   <Card label="Arc Partners" value="100+" sub="Platform integrations" color="purple" />
                 </div>
               </div>
-              {/* #company-snapshot */}
-              <div className="card" style={{ marginTop: 32 }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#company-snapshot</div>
+              <div className="card">
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
                 <div className="g3">
                   <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Equity (Q3 2025)</div>
@@ -2892,8 +2892,8 @@ function CRCLModel() {
                 </div>
               </div>
 
-              {/* #parameters */}
-              <div className="card" style={{ marginTop: 32 }}><div className="card-title">Parameters</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#parameters</div>
+              <div className="card"><div className="card-title">Parameters</div>
                 <div className="g4" style={{ marginTop: '16px' }}>
                   <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} step={0.1} />
                   <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
@@ -2902,7 +2902,7 @@ function CRCLModel() {
                 </div>
               </div>
 
-              {/* #cfa-notes */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — Stablecoin Economics" items={[
                 { term: 'USDC Reserve Income', def: 'Circle earns interest on USDC reserves (T-bills, cash). $1 USDC outstanding = $1 in reserves earning ~4-5% in current rate environment.' },
                 { term: 'Revenue = AUM × Rate', def: 'Revenue scales with both USDC circulation and interest rates. Fed rate cuts reduce revenue; USDC growth offsets.' },
