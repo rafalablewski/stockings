@@ -1064,8 +1064,8 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 @media (max-width: 768px) {
-  .disclaimer-banner { 
-    padding: 10px 16px; 
+  .disclaimer-banner {
+    padding: 10px 16px;
     font-size: 10px;
   }
   .disclaimer-banner .disclaimer-divider {
@@ -1074,13 +1074,19 @@ input[type="range"]::-webkit-slider-thumb {
   }
 }
 
-/* Mobile-First Table Wrapper */
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROFESSIONAL MOBILE RESPONSIVE STYLES
+   Optimized for touch devices with excellent UX
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Mobile-First Table Wrapper with Scroll Indicator */
 .table-scroll {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--surface3) transparent;
+  position: relative;
 }
 .table-scroll::-webkit-scrollbar { height: 6px; }
 .table-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -1096,22 +1102,24 @@ input[type="range"]::-webkit-slider-thumb {
   min-width: max-content;
 }
 
-/* Touch-friendly inputs */
+/* Touch-friendly inputs - Ensure minimum 44px touch targets */
 @media (pointer: coarse) {
   input[type="range"] { height: 44px; }
-  input[type="range"]::-webkit-slider-thumb { width: 28px; height: 28px; }
+  input[type="range"]::-webkit-slider-thumb { width: 32px; height: 32px; }
   .nav-btn { min-height: 44px; }
   button, .btn { min-height: 44px; }
+  .pill { min-height: 44px; padding: 12px 20px; }
+  .nav-dropdown-item { min-height: 44px; padding: 12px 16px; }
 }
 
-/* Responsive - Desktop */
+/* ═══ RESPONSIVE - DESKTOP (1200px) ═══ */
 @media (max-width: 1200px) {
   .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 32px; padding-right: 32px; }
   .g4 { grid-template-columns: repeat(2, 1fr); }
   .g5 { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* Responsive - Tablet */
+/* ═══ RESPONSIVE - TABLET (900px) ═══ */
 @media (max-width: 900px) {
   .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 24px; padding-right: 24px; }
   .g3 { grid-template-columns: repeat(2, 1fr); }
@@ -1121,81 +1129,434 @@ input[type="range"]::-webkit-slider-thumb {
   .highlight { padding: 20px; }
 }
 
-/* Responsive - Mobile */
+/* ═══ RESPONSIVE - MOBILE (768px) ═══ */
 @media (max-width: 768px) {
-  .hero { padding: 24px 16px 20px; }
-  .hero-grid { grid-template-columns: 1fr; gap: 16px; }
-  .price-block { text-align: left; }
-  .price-big { font-size: 36px; letter-spacing: -1px; }
-  .brand-block h1 { font-size: 28px; letter-spacing: -0.5px; }
-  .brand-block .desc { font-size: 14px; }
-  .brand-block .ticker { font-size: 12px; padding: 4px 10px; margin-bottom: 16px; }
+  /* Hero Section - Compact but readable */
+  .hero {
+    padding: 20px 16px 16px;
+  }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .price-block {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .price-big {
+    font-size: 40px;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+  .price-badge {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  .brand-block h1 {
+    font-size: 26px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+  .brand-block .desc {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+  .brand-block .ticker {
+    font-size: 11px;
+    padding: 4px 10px;
+    margin-bottom: 12px;
+  }
 
-  .g2, .g3, .g4, .g5 { grid-template-columns: 1fr; gap: 16px; }
+  /* Grid Layouts - Single column with proper spacing */
+  .g2, .g3, .g4, .g5 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 
+  /* Stats Row - Horizontal scroll with momentum */
   .stats-row {
-    padding: 20px 16px;
-    gap: 20px;
+    padding: 16px;
+    gap: 24px;
     flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    /* Fade indicators for scroll */
+    mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
   }
-  .stat-item .val { font-size: 18px; }
-  .stat-item .label { font-size: 10px; }
+  .stats-row::-webkit-scrollbar { display: none; }
+  .stat-item {
+    flex-shrink: 0;
+    min-width: 80px;
+    text-align: center;
+  }
+  .stat-item .val {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .stat-item .label {
+    font-size: 9px;
+    letter-spacing: 0.8px;
+  }
 
-  .nav { padding: 10px 12px; gap: 4px; }
-  .nav-btn { padding: 8px 12px; font-size: 12px; }
-  .nav-dropdown-space { padding: 0 12px; height: 44px; }
+  /* Navigation - Horizontal scroll with sticky behavior */
+  .nav {
+    padding: 12px 16px;
+    gap: 8px;
+    /* Fade indicators for scroll */
+    mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+  }
+  .nav-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    min-height: 44px;
+    border-radius: 10px;
+  }
+  .nav-dropdown-space {
+    padding: 0 16px;
+    height: 52px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+  }
+  .nav-dropdown-menu {
+    gap: 4px;
+  }
+  .nav-dropdown-item {
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--surface2);
+  }
+  .nav-dropdown-item.active {
+    background: var(--cyan);
+    color: var(--bg);
+  }
 
-  .main { padding: 20px 16px; }
-  .card { padding: 16px; border-radius: 12px; }
-  .card-title { font-size: 14px; margin-bottom: 16px; }
-  .highlight { padding: 16px; border-radius: 12px; }
-  .highlight h3 { font-size: 15px; }
+  /* Main Content Area */
+  .main {
+    padding: 20px 16px;
+  }
 
-  .section-head { font-size: 20px; margin-bottom: 16px; }
-  .section-head::after { height: 3px; }
+  /* Cards - Clean mobile design */
+  .card {
+    padding: 16px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 12px;
+    margin-bottom: 14px;
+    letter-spacing: 1.2px;
+  }
 
-  /* Mobile tables */
-  .table-scroll table { min-width: 500px; }
-  table th, table td { padding: 8px 10px; font-size: 12px; }
+  /* Highlight boxes */
+  .highlight {
+    padding: 16px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+  }
+  .highlight h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .highlight p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
 
-  /* Mobile cards in grids */
-  .thesis { padding: 16px; }
-  .thesis h4 { font-size: 14px; }
+  /* Section Headers */
+  .section-head {
+    font-size: 22px;
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+  .section-head::before {
+    width: 4px;
+    height: 24px;
+  }
 
-  /* Input controls */
-  input[type="range"] { height: 40px; }
-  input[type="number"], select {
-    font-size: 16px; /* Prevents iOS zoom */
+  /* Tables - Scrollable with visual cues */
+  .table-scroll table { min-width: 480px; }
+  .tbl th, .tbl td {
     padding: 10px 12px;
+    font-size: 12px;
+  }
+  .tbl th {
+    font-size: 10px;
+    letter-spacing: 0.8px;
   }
 
-  /* Slider labels */
-  .input-row { flex-direction: column; gap: 8px; }
-  .input-row label { font-size: 12px; }
+  /* Thesis Cards */
+  .thesis {
+    padding: 16px;
+    border-radius: 14px;
+  }
+  .thesis h4 {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  .thesis ul {
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .thesis li::before {
+    margin-right: 8px;
+  }
+
+  /* Big Stats */
+  .big-stat {
+    padding: 20px;
+    border-radius: 14px;
+  }
+  .big-stat .num {
+    font-size: 28px;
+  }
+  .big-stat .lbl {
+    font-size: 12px;
+  }
+
+  /* Bar Charts */
+  .bars {
+    height: 180px;
+    gap: 8px;
+    padding: 16px 0;
+  }
+  .bar-val {
+    font-size: 10px;
+  }
+  .bar-label {
+    font-size: 9px;
+  }
+
+  /* Monte Carlo Chart */
+  .mc-chart {
+    height: 200px;
+  }
+
+  /* Pills */
+  .pills {
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .pill {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  /* Sliders */
+  .slider-wrap {
+    margin-bottom: 20px;
+  }
+  .slider-head {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  /* Input controls - Prevent iOS zoom */
+  input[type="range"] {
+    height: 44px;
+  }
+  input[type="number"], select {
+    font-size: 16px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    min-height: 44px;
+  }
+
+  /* Input rows */
+  .input-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .input-row label {
+    font-size: 13px;
+  }
+
+  /* UpdateIndicators - Smaller on mobile */
+  .update-dot {
+    width: 6px;
+    height: 6px;
+  }
 }
 
-/* Responsive - Small Mobile */
+/* ═══ RESPONSIVE - SMALL MOBILE (480px) ═══ */
 @media (max-width: 480px) {
-  .hero { padding: 20px 12px 16px; }
-  .price-big { font-size: 32px; }
-  .brand-block h1 { font-size: 24px; }
-  .brand-block .desc { font-size: 13px; line-height: 1.5; }
+  /* Hero */
+  .hero {
+    padding: 16px 12px 12px;
+  }
+  .price-big {
+    font-size: 36px;
+  }
+  .brand-block h1 {
+    font-size: 22px;
+  }
+  .brand-block .desc {
+    font-size: 13px;
+    line-height: 1.5;
+  }
 
-  .stats-row { padding: 16px 12px; gap: 16px; }
+  /* Stats Row */
+  .stats-row {
+    padding: 14px 12px;
+    gap: 20px;
+  }
+  .stat-item .val {
+    font-size: 18px;
+  }
+  .stat-item .label {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Navigation */
+  .nav {
+    padding: 10px 12px;
+    gap: 6px;
+  }
+  .nav-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-width: auto;
+  }
+  .nav-dropdown-space {
+    padding: 0 12px;
+    height: 48px;
+  }
+  .nav-dropdown-item {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  /* Main Content */
+  .main {
+    padding: 16px 12px;
+  }
+
+  /* Cards */
+  .card, .highlight {
+    padding: 14px;
+    border-radius: 12px;
+  }
+  .card-title {
+    font-size: 11px;
+  }
+
+  /* Section Headers */
+  .section-head {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  /* Tables */
+  .table-scroll table { min-width: 380px; }
+  .tbl th, .tbl td {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .tbl th {
+    font-size: 9px;
+  }
+
+  /* Grids */
+  .g2, .g3, .g4, .g5 { gap: 10px; }
+
+  /* Big Stats */
+  .big-stat .num {
+    font-size: 24px;
+  }
+  .big-stat .lbl {
+    font-size: 11px;
+  }
+
+  /* Thesis */
+  .thesis {
+    padding: 14px;
+  }
+  .thesis h4 {
+    font-size: 14px;
+  }
+  .thesis ul {
+    font-size: 12px;
+  }
+
+  /* Pills */
+  .pill {
+    padding: 8px 14px;
+    font-size: 11px;
+  }
+}
+
+/* ═══ RESPONSIVE - EXTRA SMALL (360px) ═══ */
+@media (max-width: 360px) {
+  .hero { padding: 12px 10px; }
+  .price-big { font-size: 32px; }
+  .brand-block h1 { font-size: 20px; }
+  .brand-block .desc { font-size: 12px; }
+
+  .stats-row { padding: 12px 10px; gap: 16px; }
   .stat-item .val { font-size: 16px; }
 
   .nav { padding: 8px 10px; }
-  .nav-btn { padding: 6px 10px; font-size: 11px; gap: 4px; }
-  .nav-dropdown-space { padding: 0 10px; height: 40px; }
+  .nav-btn { padding: 6px 10px; font-size: 11px; }
 
-  .main { padding: 16px 12px; }
-  .card, .highlight { padding: 14px; }
+  .main { padding: 14px 10px; }
+  .card, .highlight { padding: 12px; }
   .section-head { font-size: 18px; }
 
-  .table-scroll table { min-width: 400px; }
-  table th, table td { padding: 6px 8px; font-size: 11px; }
+  .tbl th, .tbl td { padding: 6px 8px; font-size: 10px; }
+}
 
-  .g2, .g3, .g4 { gap: 12px; }
+/* ═══ LANDSCAPE MOBILE ADJUSTMENTS ═══ */
+@media (max-width: 900px) and (orientation: landscape) {
+  .hero { padding: 16px 24px; }
+  .hero-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .stats-row { padding: 12px 24px; }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ═══ HIGH DPI / RETINA ADJUSTMENTS ═══ */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .card, .highlight {
+    border-width: 0.5px;
+  }
+  .nav-btn {
+    border-width: 0.5px;
+  }
+}
+
+/* ═══ REDUCED MOTION ═══ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .bar:hover {
+    transform: none;
+  }
+}
+
+/* ═══ DARK MODE OPTIMIZATION ═══ */
+@media (prefers-color-scheme: dark) {
+  /* Already dark, but ensure proper contrast */
+  .card, .highlight {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
 }
 
 /* Timeline - CRCL Unified Style */
