@@ -1064,9 +1064,11 @@ const CRCLParameterCard = ({
     { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
   ];
 
+  // Colors map directly to position: idx 0 = red (bearish), idx 5 = green (bullish)
+  // Options arrays are always ordered from bearish to bullish scenarios
+  // (for inverse params like risk/costs, HIGH values come first since they're bearish)
   const getButtonColor = (idx: number) => {
-    const effectiveIdx = inverse ? 5 - idx : idx;
-    return presetColors[effectiveIdx];
+    return presetColors[idx];
   };
 
   const handleCustomSubmit = () => {
@@ -1281,8 +1283,8 @@ const CRCLModelTab = ({
       {/* ASSUMPTIONS SECTION */}
       <>
         <div className="highlight">
-          <h3>{scenario.icon} {scenario.name} Scenario</h3>
-          <p className="text-sm">
+          <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
+          <p style={{ fontSize: 13, color: 'var(--text2)' }}>
             Configure model assumptions for Circle's USDC business. Changes flow to revenue projections and DCF valuation.
             Key drivers: USDC circulation growth, Fed funds rate (reserve yield), and Coinbase distribution cost.
           </p>
@@ -1385,7 +1387,7 @@ const CRCLModelTab = ({
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               Live data from Circle financials. Used as starting point for projections.
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, fontSize: 12 }}>
               <div><span style={{ color: 'var(--text3)' }}>USDC Circulation:</span> <strong>${currentUSDC}B</strong></div>
               <div><span style={{ color: 'var(--text3)' }}>Market Share:</span> <strong>{currentMarketShare}%</strong></div>
               <div><span style={{ color: 'var(--text3)' }}>Est. Gross Rev:</span> <strong>${currentGrossRevenue.toFixed(2)}B</strong></div>

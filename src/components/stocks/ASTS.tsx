@@ -2517,9 +2517,11 @@ const ParameterCard = ({
     { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
   ];
 
+  // Colors map directly to position: idx 0 = red (bearish), idx 5 = green (bullish)
+  // Options arrays are always ordered from bearish to bullish scenarios
+  // (for inverse params like risk/dilution, HIGH values come first since they're bearish)
   const getButtonColor = (idx: number) => {
-    const effectiveIdx = inverse ? 5 - idx : idx;
-    return presetColors[effectiveIdx];
+    return presetColors[idx];
   };
 
   const handleCustomSubmit = () => {

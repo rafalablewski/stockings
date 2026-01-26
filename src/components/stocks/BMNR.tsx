@@ -1300,8 +1300,8 @@ const ModelTab = ({
       {/* ASSUMPTIONS SECTION */}
       <>
         <div className="highlight">
-          <h3>{scenario.icon} {scenario.name} Scenario</h3>
-          <p className="text-sm">
+          <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
+          <p style={{ fontSize: 13, color: 'var(--text2)' }}>
             Configure model assumptions for BMNR's ETH treasury valuation. Changes flow to NAV projections and DCF valuation.
           </p>
         </div>
@@ -1345,7 +1345,7 @@ const ModelTab = ({
         </div>
 
         {/* ETH HOLDINGS ASSUMPTION */}
-        <h3 style={{ color: 'var(--violet)', marginTop: 24, marginBottom: 8 }}>ETH Holdings</h3>
+        <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>ETH Holdings</h3>
         <div className="g2">
           <BMNRParameterCard
             title="ETH Holdings (M)"
@@ -1459,7 +1459,7 @@ const ModelTab = ({
           </span>
         </div>
 
-        <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>Yield & Costs</h3>
+        <h3 style={{ color: 'var(--mint)', marginTop: 24, marginBottom: 8 }}>Yield & Costs</h3>
 
         <div className="g2">
           <BMNRParameterCard
@@ -1493,7 +1493,7 @@ const ModelTab = ({
         </div>
 
         {/* CAPITAL STRUCTURE PARAMETERS */}
-        <h3 style={{ color: 'var(--mint)', marginTop: 24, marginBottom: 8 }}>Capital Structure</h3>
+        <h3 style={{ color: 'var(--violet)', marginTop: 24, marginBottom: 8 }}>Valuation Parameters</h3>
 
         <div className="g2">
           <BMNRParameterCard
