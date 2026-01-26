@@ -3433,194 +3433,336 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
   const fanData = sim.percentiles.map((p, i) => ({ year: ((i / 20) * years).toFixed(1), ...p }));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
+        <h2 className="section-head" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      </div>
 
       {/* Highlight Box */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-description</div>
-      <div className="highlight">
-        <h3 style={{ display: 'flex', alignItems: 'center' }}>GBM Price Path Simulation</h3>
-        <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-          Runs {sims.toLocaleString()} simulations over {years} years using Geometric Brownian Motion for ETH price
-          with correlated NAV multiple dynamics. Includes staking yield, slashing, and liquidity discounts.
-        </p>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-description</div>
+        <div className="highlight" style={{ marginTop: 0 }}>
+          <h3 style={{ display: 'flex', alignItems: 'center' }}>GBM Price Path Simulation</h3>
+          <p style={{ fontSize: 13, color: 'var(--text2)' }}>
+            Runs {sims.toLocaleString()} simulations over {years} years using Geometric Brownian Motion for ETH price
+            with correlated NAV multiple dynamics. Includes staking yield, slashing, and liquidity discounts.
+          </p>
+        </div>
       </div>
 
       {/* Scenario Presets */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
-      <div className="card"><div className="card-title">Select Scenario</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-          {Object.entries(presets).map(([key, p]) => (
-            <button
-              key={key}
-              onClick={() => loadPreset(key)}
-              style={{
-                padding: '12px 16px',
-                borderRadius: 8,
-                textAlign: 'left',
-                border: `1px solid ${activePreset === key ? 'var(--violet)' : 'var(--border)'}`,
-                background: activePreset === key ? 'var(--violet)' : 'var(--surface2)',
-                color: activePreset === key ? 'var(--bg)' : 'var(--text)',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-            >
-              <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
-              <div style={{ fontSize: 11, opacity: 0.8 }}>{p.desc}</div>
-            </button>
-          ))}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
+        <div className="card" style={{ marginTop: 0 }}>
+          <div className="card-title">Select Scenario</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+            {Object.entries(presets).map(([key, p]) => (
+              <button
+                key={key}
+                onClick={() => loadPreset(key)}
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: 8,
+                  textAlign: 'left',
+                  border: `2px solid ${activePreset === key ? 'var(--violet)' : 'transparent'}`,
+                  background: activePreset === key ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
+                  color: activePreset === key ? 'var(--violet)' : 'var(--text)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s'
+                }}
+              >
+                <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
+                <div style={{ fontSize: 11, opacity: 0.7 }}>{p.desc}</div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Horizon & Simulation Controls */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
-      <div className="g2">
-        <div className="card">
-          <div className="card-title">Time Horizon</div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {[3, 5, 7].map(yr => (
-              <button
-                key={yr}
-                onClick={() => setYears(yr)}
-                style={{
-                  flex: 1,
-                  padding: '12px 20px',
-                  borderRadius: 8,
-                  border: years === yr ? '2px solid var(--violet)' : '1px solid var(--border)',
-                  background: years === yr ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
-                  color: years === yr ? 'var(--violet)' : 'var(--text2)',
-                  cursor: 'pointer',
-                  fontWeight: years === yr ? 700 : 400,
-                  fontFamily: 'Space Mono',
-                  fontSize: 16,
-                }}
-              >
-                {yr}Y
-              </button>
-            ))}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
+        <div className="g2" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Time Horizon</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {[3, 5, 7].map(yr => (
+                <button
+                  key={yr}
+                  onClick={() => setYears(yr)}
+                  style={{
+                    flex: 1,
+                    padding: '12px 20px',
+                    borderRadius: 8,
+                    border: years === yr ? '2px solid var(--violet)' : '2px solid transparent',
+                    background: years === yr ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
+                    color: years === yr ? 'var(--violet)' : 'var(--text2)',
+                    cursor: 'pointer',
+                    fontWeight: years === yr ? 700 : 400,
+                    fontFamily: 'Space Mono',
+                    fontSize: 16,
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  {yr}Y
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="card">
-          <div className="card-title">Simulations</div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {[1000, 2000, 5000].map(simCount => (
-              <button
-                key={simCount}
-                onClick={() => setSims(simCount)}
-                style={{
-                  flex: 1,
-                  padding: '12px 16px',
-                  borderRadius: 8,
-                  border: sims === simCount ? '2px solid var(--violet)' : '1px solid var(--border)',
-                  background: sims === simCount ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
-                  color: sims === simCount ? 'var(--violet)' : 'var(--text2)',
-                  cursor: 'pointer',
-                  fontWeight: sims === simCount ? 700 : 400,
-                  fontFamily: 'Space Mono',
-                  fontSize: 14,
-                }}
-              >
-                {simCount.toLocaleString()}
-              </button>
-            ))}
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Simulations</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {[1000, 2000, 5000].map(simCount => (
+                <button
+                  key={simCount}
+                  onClick={() => setSims(simCount)}
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    borderRadius: 8,
+                    border: sims === simCount ? '2px solid var(--violet)' : '2px solid transparent',
+                    background: sims === simCount ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
+                    color: sims === simCount ? 'var(--violet)' : 'var(--text2)',
+                    cursor: 'pointer',
+                    fontWeight: sims === simCount ? 700 : 400,
+                    fontFamily: 'Space Mono',
+                    fontSize: 14,
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  {simCount.toLocaleString()}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Parameters Card */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
-      <div className="card"><div className="card-title">Parameters {activePreset === 'custom' ? '(Custom)' : `(${presets[activePreset].label})`}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-          <Input label="Drift %" value={drift} onChange={updateParam(setDrift)} />
-          <Input label="ETH Vol %" value={vol} onChange={updateParam(setVol)} />
-          <Input label="Mult Vol %" value={multVol} onChange={updateParam(setMultVol)} />
-          <Input label="Corr" value={corr} onChange={updateParam(setCorr)} step={0.1} />
+      {/* Parameters - Model Tab Style */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
+        <h3 style={{ color: 'var(--violet)', marginBottom: 8, marginTop: 0 }}>GBM Parameters</h3>
+        <div className="g2" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">ETH Drift (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Expected annual ETH price appreciation. Negative = bear, positive = bull.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[-10, -5, 5, 12, 20, 30].map((opt, idx) => {
+                const isActive = drift === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setDrift)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt > 0 ? '+' : ''}{opt}%</div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">ETH Volatility (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Annual volatility. Crypto typically 50-80%. Higher = wider outcomes.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[90, 80, 70, 65, 55, 45].map((opt, idx) => {
+                const isActive = vol === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setVol)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
+          </div>
         </div>
-        <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
-          NAV: ${currentNAV.toFixed(2)} | Adjustments: +{stakingYield.toFixed(1)}% yield, -{slashingRisk}% slash, -{liquidityDiscount + regulatoryRisk}% disc
+
+        <h3 style={{ color: 'var(--mint)', marginTop: 16, marginBottom: 8 }}>NAV Multiple Dynamics</h3>
+        <div className="g2" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Multiple Volatility (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              How much the NAV multiple (mNAV) varies. Higher = more premium/discount swings.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[40, 35, 30, 25, 20, 15].map((opt, idx) => {
+                const isActive = multVol === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setMultVol)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">ETH-Multiple Correlation</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              How NAV multiple moves with ETH. Higher = more correlated swings.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[0.6, 0.5, 0.4, 0.3, 0.2, 0.1].map((opt, idx) => {
+                const isActive = Math.abs(corr - opt) < 0.05;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setCorr)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}</div>
+                );
+              })}
+            </div>
+          </div>
         </div>
+
+        {/* Current NAV Info */}
+        <div style={{ marginTop: 12, padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 12, color: 'var(--text3)' }}>
+          Current NAV: <strong style={{ color: 'var(--violet)' }}>${currentNAV.toFixed(0)}</strong> | Adjustments: +{stakingYield.toFixed(1)}% yield, -{slashingRisk}% slash, -{liquidityDiscount + regulatoryRisk}% disc
+        </div>
+
+        {/* Run Button */}
         <button onClick={() => setRunKey(k => k + 1)} style={{
-          marginTop: 16, width: '100%', padding: '10px 16px', background: 'var(--violet)', color: 'var(--bg1)', 
-          border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: 13
+          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--violet)', color: 'var(--bg1)',
+          border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
         }}>🎲 Run Simulation</button>
       </div>
 
-      {/* Percentile Cards - Unified 5-card layout */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#f87171' }}>${sim.p5.toFixed(2)}</div>
-          <div style={{ fontSize: 11, color: '#fca5a5', marginTop: 4 }}>{((sim.p5 / currentNAV - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#fdba74', marginBottom: 4 }}>P25</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${sim.p25.toFixed(2)}</div>
-          <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((sim.p25 / currentNAV - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.4)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#c4b5fd', marginBottom: 4 }}>Median</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#a78bfa' }}>${sim.p50.toFixed(2)}</div>
-          <div style={{ fontSize: 11, color: '#c4b5fd', marginTop: 4 }}>{((sim.p50 / currentNAV - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#4ade80' }}>${sim.p75.toFixed(2)}</div>
-          <div style={{ fontSize: 11, color: '#86efac', marginTop: 4 }}>{((sim.p75 / currentNAV - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>P95 (Bull)</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${sim.p95.toFixed(2)}</div>
-          <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((sim.p95 / currentNAV - 1) * 100).toFixed(0)}%</div>
+      {/* Percentile Cards */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#f87171' }}>${sim.p5.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#fca5a5', marginTop: 4 }}>{((sim.p5 / currentNAV - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#fdba74', marginBottom: 4 }}>P25</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${sim.p25.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((sim.p25 / currentNAV - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.4)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#c4b5fd', marginBottom: 4 }}>Median</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#a78bfa' }}>${sim.p50.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#c4b5fd', marginTop: 4 }}>{((sim.p50 / currentNAV - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#4ade80' }}>${sim.p75.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#86efac', marginTop: 4 }}>{((sim.p75 / currentNAV - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>P95 (Bull)</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${sim.p95.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((sim.p95 / currentNAV - 1) * 100).toFixed(0)}%</div>
+          </div>
         </div>
       </div>
 
-      {/* Risk Metrics - Unified 2 rows of 3 */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-        <Card label="Win Probability" value={`${sim.winProb.toFixed(1)}%`} sub="> starting NAV" color="blue" />
-        <Card label="Expected Value" value={`$${sim.mean.toFixed(2)}`} sub="Mean fair value" color="purple" />
-        <Card label="Sharpe Ratio" value={sim.sharpe.toFixed(2)} sub="Risk-adjusted return" color={sim.sharpe > 0.5 ? 'green' : 'yellow'} />
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-        <Card label="Sortino Ratio" value={sim.sortino.toFixed(2)} sub="Downside-adjusted" color={sim.sortino > 0.7 ? 'green' : 'yellow'} />
-        <Card label="VaR (5%)" value={`${sim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
-        <Card label="CVaR (5%)" value={`${sim.cvar5Pct.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
+      {/* Risk Metrics */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <Card label="Win Probability" value={`${sim.winProb.toFixed(0)}%`} sub="> starting NAV" color="blue" />
+          <Card label="Expected Value" value={`$${sim.mean.toFixed(0)}`} sub="Mean fair value" color="purple" />
+          <Card label="Sharpe Ratio" value={sim.sharpe.toFixed(2)} sub="Risk-adjusted return" color={sim.sharpe > 0.5 ? 'green' : 'yellow'} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
+          <Card label="Sortino Ratio" value={sim.sortino.toFixed(2)} sub="Downside-adjusted" color={sim.sortino > 0.7 ? 'green' : 'yellow'} />
+          <Card label="VaR (5%)" value={`${sim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
+          <Card label="CVaR (5%)" value={`${sim.cvar5Pct.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
+        </div>
       </div>
 
       {/* Distribution Chart */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
-      <div className="card"><div className="card-title">Fair Value Distribution</div>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={sim.histogram}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
-            <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
-            <Tooltip
-              contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
-              formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
-              labelFormatter={(v) => `$${v.toFixed(2)}`}
-            />
-            <Bar dataKey="pct" fill="var(--violet)" radius={[2, 2, 0, 0]} />
-            <ReferenceLine x={currentNAV} stroke="#fff" strokeDasharray="5 5" />
-          </BarChart>
-        </ResponsiveContainer>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
-          <span>White line = current NAV (${currentNAV.toFixed(2)})</span>
-          <span>Simulations: {sims.toLocaleString()}</span>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
+        <div className="card" style={{ marginTop: 0 }}>
+          <div className="card-title">Fair Value Distribution</div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={sim.histogram}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
+              <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
+              <Tooltip
+                contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
+                formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
+                labelFormatter={(v) => `$${v.toFixed(0)}`}
+              />
+              <Bar dataKey="pct" fill="var(--violet)" radius={[2, 2, 0, 0]} />
+              <ReferenceLine x={currentNAV} stroke="#fff" strokeDasharray="5 5" />
+            </BarChart>
+          </ResponsiveContainer>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+            <span>White line = current NAV (${currentNAV.toFixed(0)})</span>
+            <span>Simulations: {sims.toLocaleString()}</span>
+          </div>
         </div>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-notes</div>
-      <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
-        { term: 'Geometric Brownian Motion (GBM)', def: 'dS = S(μdt + σdW). Standard model for equity/crypto. Log-normal returns ensure prices stay positive. ETH price and NAV multiple are correlated.' },
-        { term: 'Sharpe Ratio', def: '(Return - Risk-Free) / Volatility. Measures risk-adjusted return. >0.5 decent, >1.0 good, >2.0 excellent. Uses 4% risk-free rate.' },
-        { term: 'Sortino Ratio', def: 'Like Sharpe but only penalizes downside volatility. Better for asymmetric return distributions common in crypto.' },
-        { term: 'VaR (Value at Risk) 5%', def: 'The loss level that won\'t be exceeded with 95% confidence. If VaR = -40%, there\'s 5% chance of losing more than 40%.' },
-        { term: 'CVaR (Conditional VaR) 5%', def: 'Expected loss in the worst 5% of scenarios. Also called Expected Shortfall. More conservative than VaR.' },
-        { term: 'Max Drawdown', def: 'Largest peak-to-trough decline. Shows worst-case loss experience during the holding period.' },
-      ]} />
+      {/* CFA Notes */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-notes</div>
+        <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
+          { term: 'Geometric Brownian Motion (GBM)', def: 'dS = S(μdt + σdW). Standard model for equity/crypto. Log-normal returns ensure prices stay positive. ETH price and NAV multiple are correlated.' },
+          { term: 'Sharpe Ratio', def: '(Return - Risk-Free) / Volatility. Measures risk-adjusted return. >0.5 decent, >1.0 good, >2.0 excellent. Uses 4% risk-free rate.' },
+          { term: 'Sortino Ratio', def: 'Like Sharpe but only penalizes downside volatility. Better for asymmetric return distributions common in crypto.' },
+          { term: 'VaR (Value at Risk) 5%', def: 'The loss level that won\'t be exceeded with 95% confidence. If VaR = -40%, there\'s 5% chance of losing more than 40%.' },
+          { term: 'CVaR (Conditional VaR) 5%', def: 'Expected loss in the worst 5% of scenarios. Also called Expected Shortfall. More conservative than VaR.' },
+          { term: 'Max Drawdown', def: 'Largest peak-to-trough decline. Shows worst-case loss experience during the holding period.' },
+        ]} />
+      </div>
     </div>
   );
 };

@@ -4714,196 +4714,454 @@ function CRCLModel() {
           )}
 
           {activeTab === 'monte-carlo' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-header</div>
-              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
+                <h2 className="section-head" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+              </div>
 
               {/* Highlight Box */}
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-description</div>
-              <div className="highlight">
-                <h3 style={{ display: 'flex', alignItems: 'center' }}>Stablecoin DCF Simulation</h3>
-                <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-                  Runs {mcSim.n.toLocaleString()} simulations over {mcYears} years with randomized inputs (USDC growth, margins, rates, multiples)
-                  to generate a probability distribution of fair values.
-                </p>
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-description</div>
+                <div className="highlight" style={{ marginTop: 0 }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center' }}>Stablecoin DCF Simulation</h3>
+                  <p style={{ fontSize: 13, color: 'var(--text2)' }}>
+                    Runs {mcSim.n.toLocaleString()} simulations over {mcYears} years with randomized inputs (USDC growth, margins, rates, multiples)
+                    to generate a probability distribution of fair values.
+                  </p>
+                </div>
               </div>
 
               {/* Scenario Presets */}
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-scenarios</div>
-              <div className="card">
-                <div className="card-title">Select Scenario</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-                  {(['bear', 'base', 'bull', 'custom'] as const).map(key => {
-                    const p = mcPresets[key];
-                    const isActive = mcPreset === key;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => applyMcPreset(key)}
-                        style={{
-                          padding: '12px 16px',
-                          background: isActive ? 'var(--mint)' : 'var(--surface2)',
-                          color: isActive ? 'var(--bg)' : 'var(--text)',
-                          border: `1px solid ${isActive ? 'var(--mint)' : 'var(--border)'}`,
-                          borderRadius: 8,
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
-                        <div style={{ fontSize: 11, opacity: 0.8 }}>{p.desc}</div>
-                      </button>
-                    );
-                  })}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
+                <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card-title">Select Scenario</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+                    {(['bear', 'base', 'bull', 'custom'] as const).map(key => {
+                      const p = mcPresets[key];
+                      const isActive = mcPreset === key;
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => applyMcPreset(key)}
+                          style={{
+                            padding: '12px 16px',
+                            borderRadius: 8,
+                            textAlign: 'left',
+                            border: `2px solid ${isActive ? 'var(--mint)' : 'transparent'}`,
+                            background: isActive ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
+                            color: isActive ? 'var(--mint)' : 'var(--text)',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s'
+                          }}
+                        >
+                          <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
+                          <div style={{ fontSize: 11, opacity: 0.7 }}>{p.desc}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
               {/* Horizon & Simulation Controls */}
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-controls</div>
-              <div className="g2">
-                <div className="card">
-                  <div className="card-title">Time Horizon</div>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    {[3, 5, 7].map(yr => (
-                      <button
-                        key={yr}
-                        onClick={() => { setMcYears(yr); setRunKey(k => k + 1); }}
-                        style={{
-                          flex: 1,
-                          padding: '12px 20px',
-                          borderRadius: 8,
-                          border: mcYears === yr ? '2px solid var(--mint)' : '1px solid var(--border)',
-                          background: mcYears === yr ? 'rgba(126,231,135,0.15)' : 'var(--surface2)',
-                          color: mcYears === yr ? 'var(--mint)' : 'var(--text2)',
-                          cursor: 'pointer',
-                          fontWeight: mcYears === yr ? 700 : 400,
-                          fontFamily: 'Space Mono',
-                          fontSize: 16,
-                        }}
-                      >
-                        {yr}Y
-                      </button>
-                    ))}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
+                <div className="g2" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Time Horizon</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      {[3, 5, 7].map(yr => (
+                        <button
+                          key={yr}
+                          onClick={() => { setMcYears(yr); setRunKey(k => k + 1); }}
+                          style={{
+                            flex: 1,
+                            padding: '12px 20px',
+                            borderRadius: 8,
+                            border: mcYears === yr ? '2px solid var(--mint)' : '2px solid transparent',
+                            background: mcYears === yr ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
+                            color: mcYears === yr ? 'var(--mint)' : 'var(--text2)',
+                            cursor: 'pointer',
+                            fontWeight: mcYears === yr ? 700 : 400,
+                            fontFamily: 'Space Mono',
+                            fontSize: 16,
+                            transition: 'all 0.15s'
+                          }}
+                        >
+                          {yr}Y
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <div className="card">
-                  <div className="card-title">Simulations</div>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    {[1000, 2000, 5000].map(simCount => (
-                      <button
-                        key={simCount}
-                        onClick={() => { setMcSims(simCount); setRunKey(k => k + 1); }}
-                        style={{
-                          flex: 1,
-                          padding: '12px 16px',
-                          borderRadius: 8,
-                          border: mcSims === simCount ? '2px solid var(--mint)' : '1px solid var(--border)',
-                          background: mcSims === simCount ? 'rgba(126,231,135,0.15)' : 'var(--surface2)',
-                          color: mcSims === simCount ? 'var(--mint)' : 'var(--text2)',
-                          cursor: 'pointer',
-                          fontWeight: mcSims === simCount ? 700 : 400,
-                          fontFamily: 'Space Mono',
-                          fontSize: 14,
-                        }}
-                      >
-                        {simCount.toLocaleString()}
-                      </button>
-                    ))}
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Simulations</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      {[1000, 2000, 5000].map(simCount => (
+                        <button
+                          key={simCount}
+                          onClick={() => { setMcSims(simCount); setRunKey(k => k + 1); }}
+                          style={{
+                            flex: 1,
+                            padding: '12px 16px',
+                            borderRadius: 8,
+                            border: mcSims === simCount ? '2px solid var(--mint)' : '2px solid transparent',
+                            background: mcSims === simCount ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
+                            color: mcSims === simCount ? 'var(--mint)' : 'var(--text2)',
+                            cursor: 'pointer',
+                            fontWeight: mcSims === simCount ? 700 : 400,
+                            fontFamily: 'Space Mono',
+                            fontSize: 14,
+                            transition: 'all 0.15s'
+                          }}
+                        >
+                          {simCount.toLocaleString()}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Parameters Card with Adjustable Inputs */}
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-parameters</div>
-              <div className="card">
-                <div className="card-title">Parameters {mcPreset === 'custom' ? '(Custom)' : `(${mcPresets[mcPreset].label})`}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-                  <Input label="Revenue Growth Min %" value={mcPreset === 'custom' ? mcRevenueGrowthMin : mcPresets[mcPreset].revMin} onChange={v => { setMcRevenueGrowthMin(v); setMcPreset('custom'); }} min={0} max={50} />
-                  <Input label="Revenue Growth Max %" value={mcPreset === 'custom' ? mcRevenueGrowthMax : mcPresets[mcPreset].revMax} onChange={v => { setMcRevenueGrowthMax(v); setMcPreset('custom'); }} min={0} max={100} />
-                  <Input label="Margin Min %" value={mcPreset === 'custom' ? mcMarginMin : mcPresets[mcPreset].marginMin} onChange={v => { setMcMarginMin(v); setMcPreset('custom'); }} min={20} max={90} />
-                  <Input label="Margin Max %" value={mcPreset === 'custom' ? mcMarginMax : mcPresets[mcPreset].marginMax} onChange={v => { setMcMarginMax(v); setMcPreset('custom'); }} min={20} max={95} />
+              {/* Parameters - Model Tab Style */}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
+                <h3 style={{ color: 'var(--mint)', marginBottom: 8, marginTop: 0 }}>USDC Growth Parameters</h3>
+                <div className="g2" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Revenue Growth Min (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Lower bound for annual USDC revenue growth in simulation.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[5, 10, 15, 20, 25, 30].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMin : mcPresets[mcPreset].revMin;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Revenue Growth Max (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Upper bound for annual USDC revenue growth in simulation.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[25, 35, 45, 55, 65, 75].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMax : mcPresets[mcPreset].revMax;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginTop: 16 }}>
-                  <Input label="Discount Min %" value={mcPreset === 'custom' ? mcDiscountMin : mcPresets[mcPreset].discMin} onChange={v => { setMcDiscountMin(v); setMcPreset('custom'); }} min={5} max={25} />
-                  <Input label="Discount Max %" value={mcPreset === 'custom' ? mcDiscountMax : mcPresets[mcPreset].discMax} onChange={v => { setMcDiscountMax(v); setMcPreset('custom'); }} min={5} max={30} />
-                  <Input label="Terminal Mult Min" value={mcPreset === 'custom' ? mcTerminalMultMin : mcPresets[mcPreset].termMin} onChange={v => { setMcTerminalMultMin(v); setMcPreset('custom'); }} min={5} max={30} />
-                  <Input label="Terminal Mult Max" value={mcPreset === 'custom' ? mcTerminalMultMax : mcPresets[mcPreset].termMax} onChange={v => { setMcTerminalMultMax(v); setMcPreset('custom'); }} min={5} max={40} />
+
+                <h3 style={{ color: 'var(--gold)', marginTop: 16, marginBottom: 8 }}>Profitability Parameters</h3>
+                <div className="g2" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Margin Min (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Lower bound for EBITDA margin assumption in DCF model.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[30, 40, 50, 55, 60, 65].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcMarginMin : mcPresets[mcPreset].marginMin;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcMarginMin(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Margin Max (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Upper bound for EBITDA margin assumption in DCF model.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[55, 60, 65, 70, 75, 80].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcMarginMax : mcPresets[mcPreset].marginMax;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcMarginMax(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
+
+                <h3 style={{ color: 'var(--coral)', marginTop: 16, marginBottom: 8 }}>Valuation Parameters</h3>
+                <div className="g2" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Discount Rate Min (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Lower bound for WACC / required return in DCF model.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[8, 10, 12, 14, 16, 18].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcDiscountMin : mcPresets[mcPreset].discMin;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcDiscountMin(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Discount Rate Max (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Upper bound for WACC / required return in DCF model.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[12, 14, 16, 18, 20, 22].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcDiscountMax : mcPresets[mcPreset].discMax;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcDiscountMax(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                <div className="g2" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Terminal Multiple Min</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Lower bound for exit EV/EBITDA multiple in DCF terminal value.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[8, 10, 12, 15, 18, 20].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcTerminalMultMin : mcPresets[mcPreset].termMin;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcTerminalMultMin(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}x</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Terminal Multiple Max</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Upper bound for exit EV/EBITDA multiple in DCF terminal value.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[15, 18, 22, 25, 30, 35].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcTerminalMultMax : mcPresets[mcPreset].termMax;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcTerminalMultMax(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}x</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Run Button */}
                 <button onClick={() => setRunKey(k => k + 1)} style={{
-                  marginTop: 16, width: '100%', padding: '10px 16px', background: 'var(--mint)', color: 'var(--bg1)', 
-                  border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: 13
+                  marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--mint)', color: 'var(--bg1)',
+                  border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
                 }}>🎲 Run Simulation</button>
               </div>
 
-              {/* Percentile Cards - Unified 5-card layout */}
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-percentiles</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
-                <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
-                  <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#f87171' }}>${mcSim.p5.toFixed(0)}</div>
-                  <div style={{ fontSize: 11, color: '#fca5a5', marginTop: 4 }}>{((mcSim.p5 / MARKET.price - 1) * 100).toFixed(0)}%</div>
-                </div>
-                <div style={{ padding: 14, borderRadius: 12, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#fdba74', marginBottom: 4 }}>P25</div>
-                  <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${mcSim.p25.toFixed(0)}</div>
-                  <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((mcSim.p25 / MARKET.price - 1) * 100).toFixed(0)}%</div>
-                </div>
-                <div style={{ padding: 14, borderRadius: 12, background: 'rgba(52,211,153,0.2)', border: '1px solid rgba(52,211,153,0.4)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>Median</div>
-                  <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${mcSim.p50.toFixed(0)}</div>
-                  <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((mcSim.p50 / MARKET.price - 1) * 100).toFixed(0)}%</div>
-                </div>
-                <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
-                  <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#4ade80' }}>${mcSim.p75.toFixed(0)}</div>
-                  <div style={{ fontSize: 11, color: '#86efac', marginTop: 4 }}>{((mcSim.p75 / MARKET.price - 1) * 100).toFixed(0)}%</div>
-                </div>
-                <div style={{ padding: 14, borderRadius: 12, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>P95 (Bull)</div>
-                  <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#10b981' }}>${mcSim.p95.toFixed(0)}</div>
-                  <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((mcSim.p95 / MARKET.price - 1) * 100).toFixed(0)}%</div>
-                </div>
-              </div>
-
-              {/* Risk Metrics - Unified 2 rows of 3 using Card component */}
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-                <Card label="Win Probability" value={`${mcSim.winProb.toFixed(0)}%`} sub="> current price" color={mcSim.winProb > 50 ? 'green' : 'red'} />
-                <Card label="Expected Value" value={`$${mcSim.mean.toFixed(0)}`} sub="Mean fair value" color="mint" />
-                <Card label="Sharpe Ratio" value={mcSim.sharpe.toFixed(2)} sub={mcSim.sharpe > 1 ? 'Excellent' : mcSim.sharpe > 0.5 ? 'Good' : 'Moderate'} color={mcSim.sharpe > 0.5 ? 'green' : 'yellow'} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-                <Card label="Sortino Ratio" value={mcSim.sortino.toFixed(2)} sub="Downside-adjusted" color={mcSim.sortino > 0.7 ? 'green' : 'yellow'} />
-                <Card label="VaR (5%)" value={`${mcSim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
-                <Card label="CVaR (5%)" value={`${mcSim.cvar5.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
-              </div>
-
-              {/* Distribution Chart - Unified Recharts BarChart */}
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-distribution</div>
-              <div className="card">
-                <div className="card-title">Fair Value Distribution</div>
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={mcSim.histogram}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                    <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
-                    <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
-                    <RechartsTooltip 
-                      contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} 
-                      formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
-                      labelFormatter={(v) => `$${v.toFixed(0)}`}
-                    />
-                    <Bar dataKey="pct" fill="var(--mint)" radius={[2, 2, 0, 0]} />
-                    <ReferenceLine x={MARKET.price} stroke="#fff" strokeDasharray="5 5" />
-                  </BarChart>
-                </ResponsiveContainer>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
-                  <span>White line = current price (${MARKET.price.toFixed(0)})</span>
-                  <span>Simulations: {mcSim.n.toLocaleString()}</span>
+              {/* Percentile Cards */}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#f87171' }}>${mcSim.p5.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: '#fca5a5', marginTop: 4 }}>{((mcSim.p5 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  </div>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: '#fdba74', marginBottom: 4 }}>P25</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${mcSim.p25.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((mcSim.p25 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  </div>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(52,211,153,0.2)', border: '1px solid rgba(52,211,153,0.4)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>Median</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${mcSim.p50.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((mcSim.p50 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  </div>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#4ade80' }}>${mcSim.p75.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: '#86efac', marginTop: 4 }}>{((mcSim.p75 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  </div>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>P95 (Bull)</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#10b981' }}>${mcSim.p95.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((mcSim.p95 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  </div>
                 </div>
               </div>
 
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-notes</div>
+              {/* Risk Metrics */}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                  <Card label="Win Probability" value={`${mcSim.winProb.toFixed(0)}%`} sub="> current price" color={mcSim.winProb > 50 ? 'green' : 'red'} />
+                  <Card label="Expected Value" value={`$${mcSim.mean.toFixed(0)}`} sub="Mean fair value" color="mint" />
+                  <Card label="Sharpe Ratio" value={mcSim.sharpe.toFixed(2)} sub={mcSim.sharpe > 1 ? 'Excellent' : mcSim.sharpe > 0.5 ? 'Good' : 'Moderate'} color={mcSim.sharpe > 0.5 ? 'green' : 'yellow'} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
+                  <Card label="Sortino Ratio" value={mcSim.sortino.toFixed(2)} sub="Downside-adjusted" color={mcSim.sortino > 0.7 ? 'green' : 'yellow'} />
+                  <Card label="VaR (5%)" value={`${mcSim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
+                  <Card label="CVaR (5%)" value={`${mcSim.cvar5.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
+                </div>
+              </div>
+
+              {/* Distribution Chart */}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
+                <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card-title">Fair Value Distribution</div>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={mcSim.histogram}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
+                      <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
+                      <RechartsTooltip
+                        contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
+                        formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
+                        labelFormatter={(v) => `$${v.toFixed(0)}`}
+                      />
+                      <Bar dataKey="pct" fill="var(--mint)" radius={[2, 2, 0, 0]} />
+                      <ReferenceLine x={MARKET.price} stroke="#fff" strokeDasharray="5 5" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+                    <span>White line = current price (${MARKET.price.toFixed(0)})</span>
+                    <span>Simulations: {mcSim.n.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-notes</div>
               <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
                 { term: 'Stochastic Modeling', def: 'Uses random sampling to model uncertainty. Each iteration draws from probability distributions for key inputs.' },
                 { term: 'Input Distributions', def: 'USDC growth, margins, rates, multiples vary within defined ranges. Uniform distributions based on confidence.' },

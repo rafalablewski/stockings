@@ -3351,200 +3351,422 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
+        <h2 className="section-head" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      </div>
 
       {/* Highlight Box */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-description</div>
-      <div className="highlight">
-        <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue-Based Valuation Simulation</h3>
-        <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-          Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
-          and log-normal revenue distribution. Terminal value discounted to present.
-        </p>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-description</div>
+        <div className="highlight" style={{ marginTop: 0 }}>
+          <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue-Based Valuation Simulation</h3>
+          <p style={{ fontSize: 13, color: 'var(--text2)' }}>
+            Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
+            and log-normal revenue distribution. Terminal value discounted to present.
+          </p>
+        </div>
       </div>
 
       {/* Scenario Presets */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
-      <div className="card"><div className="card-title">Select Scenario</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
-          {Object.entries(presets).map(([key, p]) => (
-            <button
-              key={key}
-              onClick={() => loadPreset(key)}
-              style={{
-                padding: '12px 16px',
-                borderRadius: 8,
-                textAlign: 'left',
-                border: `1px solid ${activePreset === key ? 'var(--cyan)' : 'var(--border)'}`,
-                background: activePreset === key ? 'var(--cyan)' : 'var(--surface2)',
-                color: activePreset === key ? 'var(--bg)' : 'var(--text)',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-            >
-              <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
-              <div style={{ fontSize: 11, opacity: 0.8 }}>{p.desc}</div>
-            </button>
-          ))}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
+        <div className="card" style={{ marginTop: 0 }}>
+          <div className="card-title">Select Scenario</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+            {Object.entries(presets).filter(([key]) => key !== 'mgmt').map(([key, p]) => (
+              <button
+                key={key}
+                onClick={() => loadPreset(key)}
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: 8,
+                  textAlign: 'left',
+                  border: `2px solid ${activePreset === key ? 'var(--cyan)' : 'transparent'}`,
+                  background: activePreset === key ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
+                  color: activePreset === key ? 'var(--cyan)' : 'var(--text)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s'
+                }}
+              >
+                <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
+                <div style={{ fontSize: 11, opacity: 0.7 }}>{p.desc}</div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Horizon & Simulation Controls */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
-      <div className="g2">
-        <div className="card">
-          <div className="card-title">Time Horizon</div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {[3, 5, 7].map(yr => (
-              <button
-                key={yr}
-                onClick={() => setYears(yr)}
-                style={{
-                  flex: 1,
-                  padding: '12px 20px',
-                  borderRadius: 8,
-                  border: years === yr ? '2px solid var(--cyan)' : '1px solid var(--border)',
-                  background: years === yr ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-                  color: years === yr ? 'var(--cyan)' : 'var(--text2)',
-                  cursor: 'pointer',
-                  fontWeight: years === yr ? 700 : 400,
-                  fontFamily: 'Space Mono',
-                  fontSize: 16,
-                }}
-              >
-                {yr}Y
-              </button>
-            ))}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
+        <div className="g2" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Time Horizon</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {[3, 5, 7].map(yr => (
+                <button
+                  key={yr}
+                  onClick={() => setYears(yr)}
+                  style={{
+                    flex: 1,
+                    padding: '12px 20px',
+                    borderRadius: 8,
+                    border: years === yr ? '2px solid var(--cyan)' : '2px solid transparent',
+                    background: years === yr ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
+                    color: years === yr ? 'var(--cyan)' : 'var(--text2)',
+                    cursor: 'pointer',
+                    fontWeight: years === yr ? 700 : 400,
+                    fontFamily: 'Space Mono',
+                    fontSize: 16,
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  {yr}Y
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="card">
-          <div className="card-title">Simulations</div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {[1000, 2000, 5000].map(simCount => (
-              <button
-                key={simCount}
-                onClick={() => setSims(simCount)}
-                style={{
-                  flex: 1,
-                  padding: '12px 16px',
-                  borderRadius: 8,
-                  border: sims === simCount ? '2px solid var(--cyan)' : '1px solid var(--border)',
-                  background: sims === simCount ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-                  color: sims === simCount ? 'var(--cyan)' : 'var(--text2)',
-                  cursor: 'pointer',
-                  fontWeight: sims === simCount ? 700 : 400,
-                  fontFamily: 'Space Mono',
-                  fontSize: 14,
-                }}
-              >
-                {simCount.toLocaleString()}
-              </button>
-            ))}
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Simulations</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {[1000, 2000, 5000].map(simCount => (
+                <button
+                  key={simCount}
+                  onClick={() => setSims(simCount)}
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    borderRadius: 8,
+                    border: sims === simCount ? '2px solid var(--cyan)' : '2px solid transparent',
+                    background: sims === simCount ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
+                    color: sims === simCount ? 'var(--cyan)' : 'var(--text2)',
+                    cursor: 'pointer',
+                    fontWeight: sims === simCount ? 700 : 400,
+                    fontFamily: 'Space Mono',
+                    fontSize: 14,
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  {simCount.toLocaleString()}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Parameters Card */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
-      <div className="card"><div className="card-title">Parameters {activePreset === 'custom' ? '(Custom)' : `(${presets[activePreset].label})`}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-          <Input label="Base Rev ($B)" value={baseRev} onChange={updateParam(setBaseRev)} step={0.5} />
-          <Input label="Rev Vol (%)" value={revVol} onChange={updateParam(setRevVol)} />
-          <Input label="EBITDA %" value={margin} onChange={updateParam(setMargin)} />
-          <Input label="EV/EBITDA" value={mult} onChange={updateParam(setMult)} step={0.5} />
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginTop: 16 }}>
-          <Input label="Launch Risk %" value={launchRisk} onChange={updateParam(setLaunchRisk)} />
-          <Input label="Regulatory Risk %" value={regRisk} onChange={updateParam(setRegRisk)} />
-          <Input label="Discount Rate %" value={discountRate} onChange={setDiscountRate} step={0.5} />
-          <div style={{ padding: 8, background: 'var(--surface2)', borderRadius: 6, fontSize: 11, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <span style={{ color: 'var(--text3)' }}>Revenue Check:</span>
-            <span><span style={{ color: 'var(--cyan)' }}>${sim.revStats.p5.toFixed(1)}B</span> → <span style={{ color: 'var(--mint)' }}>${sim.revStats.p50.toFixed(1)}B</span> → <span style={{ color: 'var(--sky)' }}>${sim.revStats.p95.toFixed(1)}B</span></span>
+      {/* Parameters - Model Tab Style */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
+        <h3 style={{ color: 'var(--cyan)', marginBottom: 8, marginTop: 0 }}>Revenue Model</h3>
+        <div className="g2" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Base Revenue ($B)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Expected terminal year revenue. Source: DCF model or analyst estimates.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[1.5, 2.5, 4.0, 5.5, 8.0, 12.0].map((opt, idx) => {
+                const isActive = Math.abs(baseRev - opt) < 0.1;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setBaseRev)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>${opt}</div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Revenue Volatility (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Log-normal std dev. 35% = outcomes range 0.7x-1.4x base revenue.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[50, 45, 40, 35, 30, 25].map((opt, idx) => {
+                const isActive = revVol === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setRevVol)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
           </div>
         </div>
+
+        <h3 style={{ color: 'var(--mint)', marginTop: 16, marginBottom: 8 }}>Operating Model</h3>
+        <div className="g2" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">EBITDA Margin (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Terminal margin at scale. Satellite/telecom: 40-60%. Operating leverage applies.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[25, 35, 40, 45, 52, 58].map((opt, idx) => {
+                const isActive = margin === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setMargin)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">EV/EBITDA Multiple</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Terminal valuation multiple. Growth: 10-15x, Mature telcos: 6-8x.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[6, 8, 10, 12, 14, 16].map((opt, idx) => {
+                const isActive = mult === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setMult)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}x</div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <h3 style={{ color: 'var(--coral)', marginTop: 16, marginBottom: 8 }}>Risk Factors</h3>
+        <div className="g3" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Launch Risk (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Prob. of constellation failure. If triggered: -40% revenue.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[30, 25, 20, 15, 10, 5].map((opt, idx) => {
+                const isActive = launchRisk === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setLaunchRisk)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Regulatory Risk (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Prob. of FCC/spectrum issues. If triggered: -30% revenue.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[25, 20, 15, 10, 8, 5].map((opt, idx) => {
+                const isActive = regRisk === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setRegRisk)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Discount Rate (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Required return / WACC. Pre-revenue space: 12-18%.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[20, 18, 16, 15, 13, 11].map((opt, idx) => {
+                const isActive = discountRate === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => setDiscountRate(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Run Button */}
         <button onClick={() => setRunKey(k => k + 1)} style={{
-          marginTop: 16, width: '100%', padding: '10px 16px', background: 'var(--cyan)', color: 'var(--bg1)', 
-          border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: 13
+          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--cyan)', color: 'var(--bg1)',
+          border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
         }}>🎲 Run Simulation</button>
       </div>
 
-      {/* Percentile Cards - Unified 5-card layout */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#f87171' }}>${sim.p5.toFixed(0)}</div>
-          <div style={{ fontSize: 11, color: '#fca5a5', marginTop: 4 }}>{((sim.p5 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#fdba74', marginBottom: 4 }}>P25</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${sim.p25.toFixed(0)}</div>
-          <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((sim.p25 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,211,238,0.2)', border: '1px solid rgba(34,211,238,0.4)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#67e8f9', marginBottom: 4 }}>Median</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#22d3ee' }}>${sim.p50.toFixed(0)}</div>
-          <div style={{ fontSize: 11, color: '#67e8f9', marginTop: 4 }}>{((sim.p50 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#4ade80' }}>${sim.p75.toFixed(0)}</div>
-          <div style={{ fontSize: 11, color: '#86efac', marginTop: 4 }}>{((sim.p75 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>P95 (Bull)</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${sim.p95.toFixed(0)}</div>
-          <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((sim.p95 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+      {/* Percentile Cards */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#f87171' }}>${sim.p5.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#fca5a5', marginTop: 4 }}>{((sim.p5 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#fdba74', marginBottom: 4 }}>P25</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${sim.p25.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((sim.p25 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,211,238,0.2)', border: '1px solid rgba(34,211,238,0.4)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#67e8f9', marginBottom: 4 }}>Median</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#22d3ee' }}>${sim.p50.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#67e8f9', marginTop: 4 }}>{((sim.p50 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#4ade80' }}>${sim.p75.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#86efac', marginTop: 4 }}>{((sim.p75 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>P95 (Bull)</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${sim.p95.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((sim.p95 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          </div>
         </div>
       </div>
 
-      {/* Risk Metrics - Unified 2 rows of 3 */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-        <Card label="Win Probability" value={`${sim.winProbability.toFixed(0)}%`} sub="> current price" color="blue" />
-        <Card label="Expected Value" value={`$${sim.mean.toFixed(0)}`} sub="Mean fair value" color="cyan" />
-        <Card label="Sharpe Ratio" value={sim.sharpe.toFixed(2)} sub={sim.sharpe > 1 ? 'Excellent' : sim.sharpe > 0.5 ? 'Good' : 'Moderate'} color={sim.sharpe > 0.5 ? 'green' : 'yellow'} />
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-        <Card label="Sortino Ratio" value={sim.sortino.toFixed(2)} sub="Downside-adjusted" color={sim.sortino > 0.7 ? 'green' : 'yellow'} />
-        <Card label="VaR (5%)" value={`${sim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
-        <Card label="CVaR (5%)" value={`${sim.cvar5.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
+      {/* Risk Metrics */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <Card label="Win Probability" value={`${sim.winProbability.toFixed(0)}%`} sub="> current price" color="blue" />
+          <Card label="Expected Value" value={`$${sim.mean.toFixed(0)}`} sub="Mean fair value" color="cyan" />
+          <Card label="Sharpe Ratio" value={sim.sharpe.toFixed(2)} sub={sim.sharpe > 1 ? 'Excellent' : sim.sharpe > 0.5 ? 'Good' : 'Moderate'} color={sim.sharpe > 0.5 ? 'green' : 'yellow'} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
+          <Card label="Sortino Ratio" value={sim.sortino.toFixed(2)} sub="Downside-adjusted" color={sim.sortino > 0.7 ? 'green' : 'yellow'} />
+          <Card label="VaR (5%)" value={`${sim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
+          <Card label="CVaR (5%)" value={`${sim.cvar5.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
+        </div>
       </div>
 
       {/* Distribution Chart */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
-      <div className="card"><div className="card-title">Fair Value Distribution</div>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={sim.histogram}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
-            <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
-            <Tooltip 
-              contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} 
-              formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
-              labelFormatter={(v) => `$${v.toFixed(0)}`}
-            />
-            <Bar dataKey="pct" fill="var(--cyan)" radius={[2, 2, 0, 0]} />
-            <ReferenceLine x={currentStockPrice} stroke="#fff" strokeDasharray="5 5" />
-          </BarChart>
-        </ResponsiveContainer>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
-          <span>White line = current price (${currentStockPrice})</span>
-          <span>Simulations: {sim.n.toLocaleString()}</span>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
+        <div className="card" style={{ marginTop: 0 }}>
+          <div className="card-title">Fair Value Distribution</div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={sim.histogram}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
+              <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
+              <Tooltip
+                contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
+                formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
+                labelFormatter={(v) => `$${v.toFixed(0)}`}
+              />
+              <Bar dataKey="pct" fill="var(--cyan)" radius={[2, 2, 0, 0]} />
+              <ReferenceLine x={currentStockPrice} stroke="#fff" strokeDasharray="5 5" />
+            </BarChart>
+          </ResponsiveContainer>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+            <span>White line = current price (${currentStockPrice})</span>
+            <span>Simulations: {sim.n.toLocaleString()}</span>
+          </div>
         </div>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-notes</div>
-      <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
-        { term: 'Monte Carlo Method', def: 'Run thousands of random simulations with input volatility. Distribution of outcomes shows probability-weighted fair values.' },
-        { term: 'Revenue Volatility', def: 'Standard deviation of revenue growth assumptions. Higher volatility = wider distribution of outcomes.' },
-        { term: 'Binary Risk Events', def: 'Launch failure, regulatory rejection. Model as probability of total loss in affected scenarios.' },
-        { term: 'Percentile Interpretation', def: 'P5 = 5% chance of being below this. P50 = median. P95 = 5% chance of exceeding.' },
-        { term: 'VaR (Value at Risk)', def: 'The loss level that won\'t be exceeded with 95% confidence. Shows downside risk.' },
-        { term: 'Expected Value', def: 'Probability-weighted average of all outcomes. Compare to current price for buy/sell signal.' },
-      ]} />
+      {/* CFA Notes */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-notes</div>
+        <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
+          { term: 'Monte Carlo Method', def: 'Run thousands of random simulations with input volatility. Distribution of outcomes shows probability-weighted fair values.' },
+          { term: 'Revenue Volatility', def: 'Standard deviation of revenue growth assumptions. Higher volatility = wider distribution of outcomes.' },
+          { term: 'Binary Risk Events', def: 'Launch failure, regulatory rejection. Model as probability of total loss in affected scenarios.' },
+          { term: 'Percentile Interpretation', def: 'P5 = 5% chance of being below this. P50 = median. P95 = 5% chance of exceeding.' },
+          { term: 'VaR (Value at Risk)', def: 'The loss level that won\'t be exceeded with 95% confidence. Shows downside risk.' },
+          { term: 'Expected Value', def: 'Probability-weighted average of all outcomes. Compare to current price for buy/sell signal.' },
+        ]} />
+      </div>
     </div>
   );
 };
