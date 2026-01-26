@@ -3434,18 +3434,21 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      
+
       {/* Highlight Box */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-description</div>
       <div className="highlight">
-        <h3>GBM Price Path Simulation</h3>
-        <p className="text-sm">
-          Runs {sims.toLocaleString()} simulations over {years} years using Geometric Brownian Motion for ETH price 
+        <h3 style={{ display: 'flex', alignItems: 'center' }}>GBM Price Path Simulation</h3>
+        <p style={{ fontSize: 13, color: 'var(--text2)' }}>
+          Runs {sims.toLocaleString()} simulations over {years} years using Geometric Brownian Motion for ETH price
           with correlated NAV multiple dynamics. Includes staking yield, slashing, and liquidity discounts.
         </p>
       </div>
 
       {/* Scenario Presets */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
       <div className="card"><div className="card-title">Select Scenario</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
           {Object.entries(presets).map(([key, p]) => (
@@ -3469,8 +3472,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           ))}
         </div>
       </div>
-      
+
       {/* Horizon & Simulation Controls */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
       <div className="g2">
         <div className="card">
           <div className="card-title">Time Horizon</div>
@@ -3523,8 +3527,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           </div>
         </div>
       </div>
-      
+
       {/* Parameters Card */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
       <div className="card"><div className="card-title">Parameters {activePreset === 'custom' ? '(Custom)' : `(${presets[activePreset].label})`}</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
           <Input label="Drift %" value={drift} onChange={updateParam(setDrift)} />
@@ -3540,8 +3545,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: 13
         }}>🎲 Run Simulation</button>
       </div>
-      
+
       {/* Percentile Cards - Unified 5-card layout */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
         <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
           <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
@@ -3569,8 +3575,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((sim.p95 / currentNAV - 1) * 100).toFixed(0)}%</div>
         </div>
       </div>
-      
+
       {/* Risk Metrics - Unified 2 rows of 3 */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         <Card label="Win Probability" value={`${sim.winProb.toFixed(1)}%`} sub="> starting NAV" color="blue" />
         <Card label="Expected Value" value={`$${sim.mean.toFixed(2)}`} sub="Mean fair value" color="purple" />
@@ -3581,27 +3588,31 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
         <Card label="VaR (5%)" value={`${sim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
         <Card label="CVaR (5%)" value={`${sim.cvar5Pct.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
       </div>
-      
+
       {/* Distribution Chart */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
       <div className="card"><div className="card-title">Fair Value Distribution</div>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={sim.histogram}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
             <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
             <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
-            <Tooltip 
-              contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} 
-              formatter={(v) => [`${v.toFixed(1)}%`, 'Probability']} 
+            <Tooltip
+              contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
+              formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
+              labelFormatter={(v) => `$${v.toFixed(2)}`}
             />
             <Bar dataKey="pct" fill="var(--violet)" radius={[2, 2, 0, 0]} />
+            <ReferenceLine x={currentNAV} stroke="#fff" strokeDasharray="5 5" />
           </BarChart>
         </ResponsiveContainer>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
-          <span>Current NAV: ${currentNAV.toFixed(2)}</span>
+          <span>White line = current NAV (${currentNAV.toFixed(2)})</span>
           <span>Simulations: {sims.toLocaleString()}</span>
         </div>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-notes</div>
       <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
         { term: 'Geometric Brownian Motion (GBM)', def: 'dS = S(μdt + σdW). Standard model for equity/crypto. Log-normal returns ensure prices stay positive. ETH price and NAV multiple are correlated.' },
         { term: 'Sharpe Ratio', def: '(Return - Risk-Free) / Volatility. Measures risk-adjusted return. >0.5 decent, >1.0 good, >2.0 excellent. Uses 4% risk-free rate.' },

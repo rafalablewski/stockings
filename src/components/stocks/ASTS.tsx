@@ -3352,9 +3352,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* Highlight Box */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-description</div>
       <div className="highlight">
         <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue-Based Valuation Simulation</h3>
         <p style={{ fontSize: 13, color: 'var(--text2)' }}>
@@ -3364,6 +3366,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       </div>
 
       {/* Scenario Presets */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
       <div className="card"><div className="card-title">Select Scenario</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
           {Object.entries(presets).map(([key, p]) => (
@@ -3389,6 +3392,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       </div>
 
       {/* Horizon & Simulation Controls */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
       <div className="g2">
         <div className="card">
           <div className="card-title">Time Horizon</div>
@@ -3443,6 +3447,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       </div>
 
       {/* Parameters Card */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
       <div className="card"><div className="card-title">Parameters {activePreset === 'custom' ? '(Custom)' : `(${presets[activePreset].label})`}</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
           <Input label="Base Rev ($B)" value={baseRev} onChange={updateParam(setBaseRev)} step={0.5} />
@@ -3466,6 +3471,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       </div>
 
       {/* Percentile Cards - Unified 5-card layout */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
         <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
           <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
@@ -3495,6 +3501,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       </div>
 
       {/* Risk Metrics - Unified 2 rows of 3 */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         <Card label="Win Probability" value={`${sim.winProbability.toFixed(0)}%`} sub="> current price" color="blue" />
         <Card label="Expected Value" value={`$${sim.mean.toFixed(0)}`} sub="Mean fair value" color="cyan" />
@@ -3507,6 +3514,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       </div>
 
       {/* Distribution Chart */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
       <div className="card"><div className="card-title">Fair Value Distribution</div>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={sim.histogram}>
@@ -3527,7 +3535,8 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <span>Simulations: {sim.n.toLocaleString()}</span>
         </div>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#mc-notes</div>
       <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
         { term: 'Monte Carlo Method', def: 'Run thousands of random simulations with input volatility. Distribution of outcomes shows probability-weighted fair values.' },
         { term: 'Revenue Volatility', def: 'Standard deviation of revenue growth assumptions. Higher volatility = wider distribution of outcomes.' },

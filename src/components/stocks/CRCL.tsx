@@ -4715,18 +4715,21 @@ function CRCLModel() {
 
           {activeTab === 'monte-carlo' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-header</div>
               <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-              
+
               {/* Highlight Box */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-description</div>
               <div className="highlight">
-                <h3>Stablecoin DCF Simulation</h3>
-                <p className="text-sm">
-                  Runs {mcSim.n.toLocaleString()} simulations over {mcYears} years with randomized inputs (USDC growth, margins, rates, multiples) 
+                <h3 style={{ display: 'flex', alignItems: 'center' }}>Stablecoin DCF Simulation</h3>
+                <p style={{ fontSize: 13, color: 'var(--text2)' }}>
+                  Runs {mcSim.n.toLocaleString()} simulations over {mcYears} years with randomized inputs (USDC growth, margins, rates, multiples)
                   to generate a probability distribution of fair values.
                 </p>
               </div>
-              
+
               {/* Scenario Presets */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-scenarios</div>
               <div className="card">
                 <div className="card-title">Select Scenario</div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
@@ -4755,8 +4758,9 @@ function CRCLModel() {
                   })}
                 </div>
               </div>
-              
+
               {/* Horizon & Simulation Controls */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-controls</div>
               <div className="g2">
                 <div className="card">
                   <div className="card-title">Time Horizon</div>
@@ -4809,8 +4813,9 @@ function CRCLModel() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Parameters Card with Adjustable Inputs */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-parameters</div>
               <div className="card">
                 <div className="card-title">Parameters {mcPreset === 'custom' ? '(Custom)' : `(${mcPresets[mcPreset].label})`}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
@@ -4832,6 +4837,7 @@ function CRCLModel() {
               </div>
 
               {/* Percentile Cards - Unified 5-card layout */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-percentiles</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
                 <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
                   <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
@@ -4859,8 +4865,9 @@ function CRCLModel() {
                   <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((mcSim.p95 / MARKET.price - 1) * 100).toFixed(0)}%</div>
                 </div>
               </div>
-              
+
               {/* Risk Metrics - Unified 2 rows of 3 using Card component */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                 <Card label="Win Probability" value={`${mcSim.winProb.toFixed(0)}%`} sub="> current price" color={mcSim.winProb > 50 ? 'green' : 'red'} />
                 <Card label="Expected Value" value={`$${mcSim.mean.toFixed(0)}`} sub="Mean fair value" color="mint" />
@@ -4871,8 +4878,9 @@ function CRCLModel() {
                 <Card label="VaR (5%)" value={`${mcSim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
                 <Card label="CVaR (5%)" value={`${mcSim.cvar5.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
               </div>
-              
+
               {/* Distribution Chart - Unified Recharts BarChart */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-distribution</div>
               <div className="card">
                 <div className="card-title">Fair Value Distribution</div>
                 <ResponsiveContainer width="100%" height={220}>
@@ -4894,7 +4902,8 @@ function CRCLModel() {
                   <span>Simulations: {mcSim.n.toLocaleString()}</span>
                 </div>
               </div>
-              
+
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: -20, fontFamily: 'monospace' }}>#mc-notes</div>
               <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
                 { term: 'Stochastic Modeling', def: 'Uses random sampling to model uncertainty. Each iteration draws from probability distributions for key inputs.' },
                 { term: 'Input Distributions', def: 'USDC growth, margins, rates, multiples vary within defined ranges. Uniform distributions based on confidence.' },
