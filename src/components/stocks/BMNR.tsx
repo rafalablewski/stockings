@@ -1717,29 +1717,29 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     <div className="card" style={{ marginTop: 32 }}>
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <div className="g4">
-        <Card label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value per share" color="blue" updateSource={['PR', 'MARKET']} />
-        <Card label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} sub="Market price" color="green" updateSource="MARKET" />
+        <Card label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value per share" color="blue" />
+        <Card label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} sub="Market price" color="green" />
         <Card label="Premium/Discount" value={`${calc.navPremium >= 0 ? '+' : ''}${calc.navPremium.toFixed(1)}%`} sub={calc.navPremium >= 0 ? 'Above NAV' : 'Below NAV'} color={calc.navPremium >= 0 ? 'green' : 'red'} />
-        <Card label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} sub={`$${calc.annualDividend.toFixed(2)}/yr`} color="emerald" updateSource="PR" />
+        <Card label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} sub={`$${calc.annualDividend.toFixed(2)}/yr`} color="emerald" />
       </div>
     </div>
     <div className="card" style={{ marginTop: 32 }}>
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <div className="g3">
         <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>ETH Holdings</div>
-          <Row label="Total ETH" value={currentETH.toLocaleString()} updateSource="PR" />
-          <Row label="ETH Price" value={`$${ethPrice.toLocaleString()}`} updateSource="MARKET" />
-          <Row label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`} highlight updateSource={['PR', 'MARKET']} />
-          <Row label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} updateSource="PR" />
+          <Row label="Total ETH" value={currentETH.toLocaleString()} />
+          <Row label="ETH Price" value={`$${ethPrice.toLocaleString()}`} />
+          <Row label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`} highlight />
+          <Row label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} />
         </div>
         <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Share Structure</div>
-          <Row label="Shares Outstanding" value={`${currentShares}M`} updateSource="SEC" />
-          <Row label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(2)}B`} updateSource="MARKET" />
+          <Row label="Shares Outstanding" value={`${currentShares}M`} />
+          <Row label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(2)}B`} />
           <Row label="NAV Multiple" value={`${(currentStockPrice / calc.currentNAV).toFixed(2)}x`} highlight />
           <Row label="ETH/Share" value={calc.ethPerShare.toFixed(6)} />
         </div>
         <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Dividend</div>
-          <Row label="Quarterly Dividend" value={`$${quarterlyDividend.toFixed(2)}`} updateSource="PR" />
+          <Row label="Quarterly Dividend" value={`$${quarterlyDividend.toFixed(2)}`} />
           <Row label="Annual Dividend" value={`$${calc.annualDividend.toFixed(2)}`} />
           <Row label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} highlight />
           <Row label="Annual Payout" value={`$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`} />
