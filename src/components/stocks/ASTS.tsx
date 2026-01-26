@@ -1533,7 +1533,7 @@ input[type="range"]::-webkit-slider-thumb {
     border-width: 0.5px;
   }
   .nav-btn {
-    border-width: 0.5px;
+    border-width: 1px;
   }
 }
 
