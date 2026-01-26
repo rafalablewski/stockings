@@ -2214,8 +2214,8 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Subscribers<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Subscriber Analysis<UpdateIndicators sources="PR" /></h3><p className="text-sm">3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
-      <div className="card">
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Subscriber Analysis<UpdateIndicators sources="PR" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
+      <div className="card" style={{ marginTop: 32 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g4">
           <Card label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} sub="53+ MNOs" color="blue" />
@@ -2224,11 +2224,11 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
           <Card label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} color="yellow" />
         </div>
       </div>
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="w-full text-sm"><thead><tr className="text-slate-400 text-xs border-b border-slate-700"><th className="text-left py-2">Partner</th><th className="text-right">Reach</th><th className="text-right">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name} className="border-t border-slate-800"><td className="py-2">{p.name}</td><td className="py-2 text-right text-cyan-400">{p.subs}M</td><td className="py-2 text-right text-slate-400">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <table className="tbl"><thead><tr style={{ borderBottom: '1px solid var(--border)' }}><th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Reach</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name} style={{ borderTop: '1px solid var(--border)' }}><td style={{ padding: 8, color: 'var(--text2)' }}>{p.name}</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--cyan)' }}>{p.subs}M</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text3)' }}>{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
       </div>
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="w-full text-sm"><thead><tr className="text-slate-400 text-xs border-b border-slate-700"><th className="text-left py-2">Pen%</th><th className="text-right">Subs</th><th className="text-right">Rev/yr</th><th className="text-right">$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} className={`border-t border-slate-800 ${s.p === penetrationRate ? 'bg-cyan-900/20' : ''}`}><td className="py-2">{s.p}%</td><td className="py-2 text-right">{s.subs.toFixed(0)}M</td><td className="py-2 text-right text-green-400">${s.rev.toFixed(1)}B</td><td className="py-2 text-right">${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <table className="tbl"><thead><tr style={{ borderBottom: '1px solid var(--border)' }}><th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Pen%</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Rev/yr</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={{ borderTop: '1px solid var(--border)', background: s.p === penetrationRate ? 'rgba(34,211,238,0.1)' : 'transparent' }}><td style={{ padding: 8, color: 'var(--text2)' }}>{s.p}%</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{s.subs.toFixed(0)}M</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${s.rev.toFixed(1)}B</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g3"><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div></div>
       
@@ -2249,8 +2249,8 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h3><p className="text-sm">Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} className="flex items-center justify-between p-2 border-b border-slate-800"><div><span className="font-medium text-cyan-400">{r.source}</span><span className="text-slate-400 text-sm ml-2">{r.description}</span></div><span className={`text-xs px-2 py-1 rounded ${r.status.includes('Active') ? 'bg-green-900/50 text-green-400' : 'bg-slate-700'}`}>{r.status}</span></div>))}</div>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--border)' }}><div><span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{r.source}</span><span style={{ color: 'var(--text3)', fontSize: 13, marginLeft: 8 }}>{r.description}</span></div><span className="pill" style={{ background: r.status.includes('Active') ? 'rgba(16,185,129,0.15)' : 'var(--surface2)', borderColor: r.status.includes('Active') ? 'var(--mint)' : 'var(--border)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{r.status}</span></div>))}</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g4">
@@ -2415,16 +2415,16 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Partners<UpdateIndicators sources="PR" /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Partner & Spectrum Intelligence<UpdateIndicators sources="PR" /></h3>
-        <div className="space-y-2 text-sm">
-          <p><strong className="text-cyan-400">Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
-          <p><strong className="text-cyan-400">Spectrum:</strong> ~80 MHz owned/controlled in US (45 MHz L-band + 5 MHz + partner spectrum). 60 MHz S-band global ITU priority. 1,150 MHz tunable MNO spectrum globally.</p>
+        <div style={{ fontSize: 13, color: 'var(--text2)' }}>
+          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
+          <p><strong style={{ color: 'var(--cyan)' }}>Spectrum:</strong> ~80 MHz owned/controlled in US (45 MHz L-band + 5 MHz + partner spectrum). 60 MHz S-band global ITU priority. 1,150 MHz tunable MNO spectrum globally.</p>
         </div>
       </div>
 
       {/* Key Metrics */}
-      <div className="card">
+      <div className="card" style={{ marginTop: 32 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="g5">
           <Card label="Contracted Rev" value="$1B+" sub="Commercial commitments" color="green" />
           <Card label="Prepayments" value={`$${totalPrepay}M`} sub="Non-dilutive" color="cyan" />
           <Card label="Definitive MNOs" value="4" sub={`${totalDefinitiveSubs}M subs`} color="blue" />
@@ -2434,37 +2434,37 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Definitive Agreements - Detailed */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Definitive Commercial Agreements (Binding)<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Definitive Commercial Agreements (Binding)<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
             <thead>
-              <tr className="text-slate-400 text-xs border-b border-slate-700">
-                <th className="text-left py-2">Partner</th>
-                <th className="text-center">Region</th>
-                <th className="text-right">Subs</th>
-                <th className="text-center">Spectrum</th>
-                <th className="text-center">Term</th>
-                <th className="text-right">Prepayment</th>
-                <th className="text-left pl-2">Status</th>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th>
+                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Region</th>
+                <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
+                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Spectrum</th>
+                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Term</th>
+                <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Prepayment</th>
+                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
               </tr>
             </thead>
             <tbody>
               {definitiveAgreements.map(p => (
-                <tr key={p.partner} className="border-t border-slate-800 hover:bg-slate-800/30">
-                  <td className="py-2 font-medium text-cyan-400">{p.partner}</td>
-                  <td className="py-2 text-center text-slate-400">{p.region}</td>
-                  <td className="py-2 text-right">{p.subs}M</td>
-                  <td className="py-2 text-center"><span className="px-2 py-0.5 bg-slate-700 rounded text-xs">{p.spectrum}</span></td>
-                  <td className="py-2 text-center text-slate-400">{p.term}</td>
-                  <td className="py-2 text-right font-medium text-green-400">${p.prepayment}M</td>
-                  <td className="py-2 pl-2 text-xs text-slate-400">{p.prepayStatus}</td>
+                <tr key={p.partner} style={{ borderTop: '1px solid var(--border)' }}>
+                  <td style={{ padding: 8, fontWeight: 500, color: 'var(--cyan)' }}>{p.partner}</td>
+                  <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.region}</td>
+                  <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{p.subs}M</td>
+                  <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{p.spectrum}</span></td>
+                  <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.term}</td>
+                  <td style={{ padding: 8, textAlign: 'right', fontWeight: 500, color: 'var(--mint)' }}>${p.prepayment}M</td>
+                  <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{p.prepayStatus}</td>
                 </tr>
               ))}
-              <tr className="border-t-2 border-slate-600 bg-slate-800/50">
-                <td className="py-2 font-bold" colSpan={2}>Total Definitive</td>
-                <td className="py-2 text-right font-bold text-cyan-400">{totalDefinitiveSubs}M</td>
+              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+                <td style={{ padding: 8, fontWeight: 700, color: 'var(--text1)' }} colSpan={2}>Total Definitive</td>
+                <td style={{ padding: 8, textAlign: 'right', fontWeight: 700, color: 'var(--cyan)' }}>{totalDefinitiveSubs}M</td>
                 <td colSpan={2}></td>
-                <td className="py-2 text-right font-bold text-green-400">${totalPrepay}M</td>
+                <td style={{ padding: 8, textAlign: 'right', fontWeight: 700, color: 'var(--mint)' }}>${totalPrepay}M</td>
                 <td></td>
               </tr>
             </tbody>
@@ -2473,121 +2473,121 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Contract Details Expansion */}
-      <div className="g2">
+      <div className="g2" style={{ marginTop: 32 }}>
         {definitiveAgreements.map(p => (
           <div key={p.partner} className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{p.partner} Details<UpdateIndicators sources="PR" /></div>
-            <div className="space-y-2 text-sm">
+            <div>
               <Row label="Signed" value={p.signDate} />
               <Row label="Term" value={p.term} />
               <Row label="Spectrum" value={`${p.spectrum} (${p.spectrumType})`} />
               <Row label="Prepayment" value={`$${p.prepayment}M - ${p.prepayStatus}`} highlight />
               <Row label="Revenue Commitment" value={p.revenueCommitment} />
-              <div className="mt-2 p-2 bg-slate-800/50 rounded text-xs text-slate-400">{p.notes}</div>
+              <div style={{ marginTop: 8, padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>{p.notes}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Spectrum Holdings */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Asset</th>
-              <th className="text-center">Band</th>
-              <th className="text-center">Size</th>
-              <th className="text-center">Coverage</th>
-              <th className="text-center">Term</th>
-              <th className="text-right">Cost</th>
-              <th className="text-center">Status</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Asset</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Band</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Size</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Coverage</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Term</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Cost</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
             </tr>
           </thead>
           <tbody>
             {ownedSpectrum.map(s => (
-              <tr key={s.name} className="border-t border-slate-800">
-                <td className="py-2 font-medium">{s.name}</td>
-                <td className="py-2 text-center text-xs">{s.band}</td>
-                <td className="py-2 text-center font-medium text-cyan-400">{s.size}</td>
-                <td className="py-2 text-center text-slate-400">{s.coverage}</td>
-                <td className="py-2 text-center text-slate-400">{s.term}</td>
-                <td className="py-2 text-right text-yellow-400">{s.cost}</td>
-                <td className="py-2 text-center"><span className="px-2 py-0.5 bg-green-900/50 text-green-400 rounded text-xs">{s.status}</span></td>
+              <tr key={s.name} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, fontWeight: 500, color: 'var(--text2)' }}>{s.name}</td>
+                <td style={{ padding: 8, textAlign: 'center', fontSize: 11, color: 'var(--text3)' }}>{s.band}</td>
+                <td style={{ padding: 8, textAlign: 'center', fontWeight: 500, color: 'var(--cyan)' }}>{s.size}</td>
+                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{s.coverage}</td>
+                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{s.term}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--gold)' }}>{s.cost}</td>
+                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ background: 'rgba(16,185,129,0.15)', borderColor: 'var(--mint)', color: 'var(--mint)', fontSize: 11 }}>{s.status}</span></td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="mt-2 text-xs text-slate-500">
+        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
           Total owned: 45 MHz L-band (US/Canada) + 60 MHz S-band (global ITU priority). $80M/yr ongoing L-band payments.
         </div>
       </div>
 
       {/* Partner Spectrum */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Partner Spectrum (Shared Access)<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Partner Spectrum (Shared Access)<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           {partnerSpectrum.map(s => (
-            <div key={s.partner} className="p-3 bg-slate-800/30 rounded border border-slate-700/50">
-              <div className="flex justify-between items-center mb-1">
-                <span className="font-medium text-cyan-400">{s.partner}</span>
-                <span className="text-xs bg-slate-700 px-2 py-0.5 rounded">{s.band}</span>
+            <div key={s.partner} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{s.partner}</span>
+                <span className="pill" style={{ fontSize: 11 }}>{s.band}</span>
               </div>
-              <div className="text-xs text-slate-400">{s.type} • {s.coverage}</div>
-              <div className="text-xs text-slate-500 mt-1">{s.notes}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.type} • {s.coverage}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>{s.notes}</div>
             </div>
           ))}
         </div>
-        <div className="mt-3 p-2 bg-cyan-900/20 border border-cyan-800/30 rounded text-xs">
-          <strong className="text-cyan-400">Key Insight:</strong> Combined AT&T + Verizon 850 MHz spectrum enables ~100% continental US geographic coverage. 
+        <div style={{ marginTop: 12, padding: 8, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8, fontSize: 11 }}>
+          <strong style={{ color: 'var(--cyan)' }}>Key Insight:</strong> Combined AT&T + Verizon 850 MHz spectrum enables ~100% continental US geographic coverage.
           Platform tunable across 1,150 MHz of global MNO spectrum.
         </div>
       </div>
 
       {/* Government Contracts */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Agency</th>
-              <th className="text-right">Value</th>
-              <th className="text-center">Status</th>
-              <th className="text-left pl-2">Notes</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Agency</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Value</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Notes</th>
             </tr>
           </thead>
           <tbody>
             {govContracts.map(g => (
-              <tr key={g.agency} className="border-t border-slate-800">
-                <td className="py-2">{g.agency}</td>
-                <td className="py-2 text-right font-medium text-green-400">{g.value}</td>
-                <td className="py-2 text-center"><span className={`px-2 py-0.5 rounded text-xs ${g.status.includes('Active') ? 'bg-green-900/50 text-green-400' : 'bg-yellow-900/50 text-yellow-400'}`}>{g.status}</span></td>
-                <td className="py-2 pl-2 text-xs text-slate-400">{g.notes}</td>
+              <tr key={g.agency} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{g.agency}</td>
+                <td style={{ padding: 8, textAlign: 'right', fontWeight: 500, color: 'var(--mint)' }}>{g.value}</td>
+                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ background: g.status.includes('Active') ? 'rgba(16,185,129,0.15)' : 'rgba(234,179,8,0.15)', borderColor: g.status.includes('Active') ? 'var(--mint)' : 'var(--gold)', color: g.status.includes('Active') ? 'var(--mint)' : 'var(--gold)', fontSize: 11 }}>{g.status}</span></td>
+                <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{g.notes}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="mt-2 text-xs text-slate-500">
+        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
           Total disclosed government contracts: $63M+ (plus SHIELD IDIQ). Dual-use model validated. MDA prime contractor status enables future task orders.
         </div>
       </div>
 
       {/* Other MNO Partners */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Partner</th>
-              <th className="text-center">Region</th>
-              <th className="text-right">Subs</th>
-              <th className="text-center">Status</th>
-              <th className="text-left pl-2">Notes</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Region</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Notes</th>
             </tr>
           </thead>
           <tbody>
             {otherPartners.map(p => (
-              <tr key={p.partner} className="border-t border-slate-800">
-                <td className="py-2">{p.partner}</td>
-                <td className="py-2 text-center text-slate-400">{p.region}</td>
-                <td className="py-2 text-right text-cyan-400">{p.subs}M</td>
-                <td className="py-2 text-center"><span className={`px-2 py-0.5 rounded text-xs ${p.status === 'Definitive' ? 'bg-green-900/50 text-green-400' : 'bg-slate-700 text-slate-400'}`}>{p.status}</span></td>
-                <td className="py-2 pl-2 text-xs text-slate-400">{p.notes}</td>
+              <tr key={p.partner} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{p.partner}</td>
+                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.region}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--cyan)' }}>{p.subs}M</td>
+                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ background: p.status === 'Definitive' ? 'rgba(16,185,129,0.15)' : 'var(--surface2)', borderColor: p.status === 'Definitive' ? 'var(--mint)' : 'var(--border)', color: p.status === 'Definitive' ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{p.status}</span></td>
+                <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{p.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -2595,22 +2595,22 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Revenue Commitment Summary */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Commitment Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Commitment Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g3">
-          <div className="p-4 bg-green-900/20 border border-green-800/30 rounded-xl text-center">
-            <div className="text-3xl font-bold text-green-400">$1B+</div>
-            <div className="text-sm text-slate-400">Total Contracted Revenue</div>
-            <div className="text-xs text-slate-500 mt-1">Hard commitments, not soft MOUs</div>
+          <div style={{ padding: 16, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, textAlign: 'center' }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--mint)' }}>$1B+</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Contracted Revenue</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>Hard commitments, not soft MOUs</div>
           </div>
-          <div className="p-4 bg-cyan-900/20 border border-cyan-800/30 rounded-xl text-center">
-            <div className="text-3xl font-bold text-cyan-400">${totalPrepay}M</div>
-            <div className="text-sm text-slate-400">Total Prepayments</div>
-            <div className="text-xs text-slate-500 mt-1">stc $175M due YE 2025</div>
+          <div style={{ padding: 16, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 12, textAlign: 'center' }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--cyan)' }}>${totalPrepay}M</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Prepayments</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>stc $175M due YE 2025</div>
           </div>
-          <div className="p-4 bg-purple-900/20 border border-purple-800/30 rounded-xl text-center">
-            <div className="text-3xl font-bold text-purple-400">50/50</div>
-            <div className="text-sm text-slate-400">Revenue Share Model</div>
-            <div className="text-xs text-slate-500 mt-1">MNOs handle billing/support</div>
+          <div style={{ padding: 16, background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.3)', borderRadius: 12, textAlign: 'center' }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--violet)' }}>50/50</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Revenue Share Model</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>MNOs handle billing/support</div>
           </div>
         </div>
       </div>
@@ -9723,31 +9723,31 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Comparables & Competitor Intelligence</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
 
       {/* Valuation Comparables Section */}
-      <div className="highlight"><h3>📊 Valuation Comparables</h3><p className="text-sm text-slate-400">No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
 
-      <div className="card">
-        <div className="card-title">Market Comparison</div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Market Comparison<UpdateIndicators sources="WS" /></div>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Company</th>
-              <th className="text-right">Mkt Cap</th>
-              <th className="text-right">EV/Rev</th>
-              <th className="text-right">$/Sub</th>
-              <th className="text-right">Subs</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Company</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Mkt Cap</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>EV/Rev</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>$/Sub</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
             </tr>
           </thead>
           <tbody>
             {comps.map(c => (
-              <tr key={c.name} className={`border-t border-slate-800 ${c.name === 'ASTS' ? 'bg-cyan-900/20' : ''}`}>
-                <td className="py-2">{c.name}</td>
-                <td className="py-2 text-right">${(c.mc / 1000).toFixed(0)}B</td>
-                <td className="py-2 text-right">{c.evRev.toFixed(1)}x</td>
-                <td className="py-2 text-right">${c.pSub.toLocaleString()}</td>
-                <td className="py-2 text-right">{c.subs.toFixed(0)}M</td>
+              <tr key={c.name} style={{ borderTop: '1px solid var(--border)', background: c.name === 'ASTS' ? 'rgba(34,211,238,0.1)' : 'transparent' }}>
+                <td style={{ padding: 8, color: 'var(--text2)' }}>{c.name}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${(c.mc / 1000).toFixed(0)}B</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{c.evRev.toFixed(1)}x</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${c.pSub.toLocaleString()}</td>
+                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{c.subs.toFixed(0)}M</td>
               </tr>
             ))}
           </tbody>
@@ -9786,34 +9786,34 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* D2D Competitor Capability Matrix */}
-      <div className="highlight"><h3>🛰️ D2D Competitor Capabilities</h3><p className="text-sm text-slate-400">Direct-to-device competitors and their current capabilities vs ASTS</p></div>
+      <div className="highlight" style={{ marginTop: 32 }}><h3 style={{ display: 'flex', alignItems: 'center' }}>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
 
-      <div className="card">
-        <div className="card-title">Capability Comparison</div>
-        <table className="w-full text-sm">
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capability Comparison<UpdateIndicators sources="PR" /></div>
+        <table className="tbl">
           <thead>
-            <tr className="text-slate-400 text-xs border-b border-slate-700">
-              <th className="text-left py-2">Competitor</th>
-              <th className="text-center">Voice</th>
-              <th className="text-center">Text</th>
-              <th className="text-center">Data</th>
-              <th className="text-center">Video</th>
-              <th className="text-center">Unmod. Phones</th>
-              <th className="text-center">Global</th>
-              <th className="text-right">Satellites</th>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Competitor</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Voice</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Text</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Data</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Video</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Unmod. Phones</th>
+              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Global</th>
+              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Satellites</th>
             </tr>
           </thead>
           <tbody>
             {/* ASTS Row - highlighted */}
-            <tr className="border-t border-slate-800 bg-cyan-900/20">
-              <td className="py-2 font-semibold text-cyan-400">ASTS SpaceMobile</td>
-              <td className="py-2 text-center text-green-400">✓</td>
-              <td className="py-2 text-center text-green-400">✓</td>
-              <td className="py-2 text-center text-green-400">✓</td>
-              <td className="py-2 text-center text-green-400">✓</td>
-              <td className="py-2 text-center text-green-400">✓</td>
-              <td className="py-2 text-center text-yellow-400">Building</td>
-              <td className="py-2 text-right text-cyan-400">6+</td>
+            <tr style={{ borderTop: '1px solid var(--border)', background: 'rgba(34,211,238,0.1)' }}>
+              <td style={{ padding: 8, fontWeight: 600, color: 'var(--cyan)' }}>ASTS SpaceMobile</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--mint)' }}>✓</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--mint)' }}>✓</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--mint)' }}>✓</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--mint)' }}>✓</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--mint)' }}>✓</td>
+              <td style={{ padding: 8, textAlign: 'center', color: 'var(--gold)' }}>Building</td>
+              <td style={{ padding: 8, textAlign: 'right', color: 'var(--cyan)' }}>6+</td>
             </tr>
             {/* Competitor Rows */}
             {COMPETITOR_PROFILES.map(comp => (
