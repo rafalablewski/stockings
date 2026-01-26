@@ -2973,11 +2973,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </div>
 
       {/* Summary Cards */}
-      <div className="g4">
-        <Card label="Class A Shares" value={`${shareClasses[0].shares}M`} sub="Public float" color="sky" />
-        <Card label="Fully Diluted" value={`${fullyDiluted}M`} sub={`+${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}% dilution`} color="violet" />
-        <Card label="Basic Mkt Cap" value={`$${(marketCap / 1000).toFixed(1)}B`} sub={`@ $${currentStockPrice}`} color="green" />
-        <Card label="FD Mkt Cap" value={`$${(fullyDiluted * currentStockPrice / 1000).toFixed(1)}B`} sub="All securities" color="gold" />
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div className="g4">
+          <Card label="Class A Shares" value={`${shareClasses[0].shares}M`} sub="Public float" color="sky" />
+          <Card label="Fully Diluted" value={`${fullyDiluted}M`} sub={`+${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}% dilution`} color="violet" />
+          <Card label="Basic Mkt Cap" value={`$${(marketCap / 1000).toFixed(1)}B`} sub={`@ $${currentStockPrice}`} color="green" />
+          <Card label="FD Mkt Cap" value={`$${(fullyDiluted * currentStockPrice / 1000).toFixed(1)}B`} sub="All securities" color="gold" />
+        </div>
       </div>
 
       {/* Navigation Cards */}
