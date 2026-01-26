@@ -5592,7 +5592,7 @@ const TimelineTab = () => {
     cik: '0001780312',
     ticker: 'ASTS',
     exchange: 'NASDAQ',
-    lastPR: { date: 'January 16, 2026', title: 'MDA SHIELD Prime Contract Award' }
+    lastPR: { date: 'January 22, 2026', title: 'BlueBird 7 Launch Timing (New Glenn)' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {
@@ -5641,6 +5641,27 @@ const TimelineTab = () => {
   // Timeline log - chronological record of ACTUAL COMPANY changes (not model creation notes)
   // Categories: GUIDANCE (mgmt projections), DATA (SEC filings, actuals), EVENT (catalysts/news), LAUNCH (orbital launches)
   const timelineEvents = [
+    {
+      date: '2026-01-22',
+      category: 'Guidance',
+      title: 'BlueBird 7 Launch Timing Announced (New Glenn)',
+      summary: 'BB7 scheduled for late February 2026 on Blue Origin New Glenn-3 from Cape Canaveral',
+      details: [
+        'BlueBird 7 launch scheduled for late February 2026',
+        'First ASTS launch on Blue Origin New Glenn rocket (New Glenn-3 mission)',
+        'Launch from Launch Complex 36 at Cape Canaveral Space Force Station',
+        'New Glenn 7-meter fairing enables up to 8 Block 2 BlueBirds per mission (2x payload vs 5m class)',
+        'Multi-launcher campaign: one orbital launch every 1-2 months average during 2026',
+        'On track to launch 45-60 satellites by end of 2026',
+        'BB7 identical to BB6: ~2,400 sq ft array, 3.5x larger than BB1-5, up to 120 Mbps',
+        'Progressing towards commercial services in 2026',
+        'Shareholder in-person launch event planned',
+      ],
+      sources: ['Press release Jan 22, 2026'],
+      prevValue: 'BB7 timeline TBD, launcher TBD',
+      newValue: 'BB7 late Feb 2026 on New Glenn',
+      impact: 'Positive',
+    },
     {
       date: '2026-01-16',
       category: 'News',
@@ -8706,6 +8727,13 @@ const TimelineTab = () => {
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 22, 2026</span>
+                <span style={{ fontSize: 11, color: '#4ade80' }}>Launch</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>BlueBird 7 Launch Timing — Late Feb on New Glenn</div>
+            </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 16, 2026</span>

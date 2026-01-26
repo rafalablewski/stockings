@@ -8,7 +8,7 @@
  * - Upcoming: Press releases, earnings calls, investor presentations
  * - Completed: Historical press releases, SEC filings
  *
- * LAST UPDATED: 2026-01-16
+ * LAST UPDATED: 2026-01-22
  * NEXT UPDATE: After each milestone completion or new catalyst announcement
  *
  * AI AGENT INSTRUCTIONS:
@@ -30,10 +30,10 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-01-16',
+  lastUpdated: '2026-01-22',
   source: 'Q3 2025 earnings call and press releases',
   nextExpectedUpdate: 'After Q4 2025 earnings (~March 2026)',
-  notes: 'MDA SHIELD prime contract awarded Jan 16, 2026',
+  notes: 'BB7 launch timing announced Jan 22, 2026 (late Feb on New Glenn)',
 };
 
 // ============================================================================
@@ -62,8 +62,8 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
     category: 'Constellation',
   },
   {
-    event: 'BB7 Launch (Blue Origin New Glenn or SpaceX F9)',
-    timeline: 'Q1 2026',
+    event: 'BB7 Launch (New Glenn, Cape Canaveral)',
+    timeline: 'Late Feb 2026',
     impact: 'High',
     category: 'Constellation',
   },
