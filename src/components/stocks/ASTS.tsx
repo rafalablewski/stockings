@@ -189,7 +189,7 @@ type UpdateSource = 'PR' | 'SEC' | 'WS' | 'MARKET';
 interface StatProps {
   label: string;
   value: string | number;
-  color?: 'white' | 'cyan' | 'mint' | 'coral' | 'sky';
+  color?: 'white' | 'cyan' | 'mint' | 'coral' | 'sky' | 'violet' | 'gold';
   updateSource?: UpdateSource | UpdateSource[];
 }
 

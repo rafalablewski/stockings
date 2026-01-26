@@ -730,7 +730,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
     alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
-    background: highlight ? 'var(--mint-dim)' : 'transparent',
+    background: highlight ? 'var(--cyan-dim)' : 'transparent',
     paddingLeft: highlight ? '12px' : 0,
     paddingRight: highlight ? '12px' : 0,
     marginLeft: highlight ? '-12px' : 0,
@@ -741,7 +741,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
       {label}
       <UpdateIndicators sources={updateSource} />
     </span>
-    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--mint)' : 'var(--text)' }}>{value}</span>
+    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--cyan)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
 Row.displayName = 'Row';
@@ -880,6 +880,28 @@ const UpdateLegend = React.memo(() => {
   );
 });
 UpdateLegend.displayName = 'UpdateLegend';
+
+// N1: Memoized pure components for performance optimization
+const Stat = React.memo<StatProps>(({ label, value, color = 'white', updateSource }) => (
+  <div className="stat-item">
+    <div className="label" style={{ display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </div>
+    <div className={`val ${color}`}>{value}</div>
+  </div>
+));
+Stat.displayName = 'Stat';
+
+const Guide = React.memo<GuideProps>(({ title, children }) => (
+  <div className="highlight">
+    <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <span>📚</span> {title}
+    </h3>
+    <div style={{ color: 'var(--text2)', lineHeight: 1.7, fontSize: '15px' }}>{children}</div>
+  </div>
+));
+Guide.displayName = 'Guide';
 
 // CFA Level III Educational Notes Component - Subtle footer style
 const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
@@ -2711,34 +2733,13 @@ function CRCLModel() {
 
         {/* Stats */}
         <div className="stats-row">
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Market Cap<UpdateIndicators sources="MARKET" /></div>
-            <div className="val">${(MARKET.marketCap / 1e9).toFixed(1)}B</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>USDC Circulation<UpdateIndicators sources="PR" /></div>
-            <div className="val mint">${latest.usdcCirculation.toFixed(1)}B</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Q3 Revenue<UpdateIndicators sources="SEC" /></div>
-            <div className="val">${latest.totalRevenue}M</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>RLDC Margin<UpdateIndicators sources="SEC" /></div>
-            <div className="val">{latest.rldcMargin}%</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Market Share<UpdateIndicators sources="PR" /></div>
-            <div className="val sky">{latest.marketShare}%</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Reserve Rate<UpdateIndicators sources="SEC" /></div>
-            <div className="val">{latest.reserveReturnRate.toFixed(2)}%</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>P/E Ratio<UpdateIndicators sources="MARKET" /></div>
-            <div className="val">{MARKET.pe.toFixed(0)}x</div>
-          </div>
+          <Stat label="Market Cap" value={`$${(MARKET.marketCap / 1e9).toFixed(1)}B`} updateSource="MARKET" />
+          <Stat label="USDC Circulation" value={`$${latest.usdcCirculation.toFixed(1)}B`} color="mint" updateSource="PR" />
+          <Stat label="Q3 Revenue" value={`$${latest.totalRevenue}M`} updateSource="SEC" />
+          <Stat label="RLDC Margin" value={`${latest.rldcMargin}%`} updateSource="SEC" />
+          <Stat label="Market Share" value={`${latest.marketShare}%`} color="sky" updateSource="PR" />
+          <Stat label="Reserve Rate" value={`${latest.reserveReturnRate.toFixed(2)}%`} updateSource="SEC" />
+          <Stat label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} updateSource="MARKET" />
         </div>
 
         {/* Nav */}

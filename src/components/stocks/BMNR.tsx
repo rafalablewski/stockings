@@ -268,6 +268,11 @@ interface PanelProps {
   children: ReactNode;
 }
 
+interface GuideProps {
+  title: string;
+  children: ReactNode;
+}
+
 interface CFANotesProps {
   title?: string;
   items: Array<{ term: string; def: string }>;
@@ -551,11 +556,6 @@ const Stat = React.memo<StatProps>(({ label, value, color = 'white', updateSourc
 ));
 Stat.displayName = 'Stat';
 
-interface GuideProps {
-  title: string;
-  children: ReactNode;
-}
-
 const Guide = React.memo<GuideProps>(({ title, children }) => (
   <div className="highlight">
     <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -614,7 +614,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
     alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
-    background: highlight ? 'var(--violet-dim)' : 'transparent',
+    background: highlight ? 'var(--cyan-dim)' : 'transparent',
     paddingLeft: highlight ? '12px' : 0,
     paddingRight: highlight ? '12px' : 0,
     marginLeft: highlight ? '-12px' : 0,
@@ -625,7 +625,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
       {label}
       <UpdateIndicators sources={updateSource} />
     </span>
-    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--violet)' : 'var(--text)' }}>{value}</span>
+    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--cyan)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
 Row.displayName = 'Row';
@@ -1295,7 +1295,7 @@ const ModelTab = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Model</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* ASSUMPTIONS SECTION */}
       <>
@@ -1671,7 +1671,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
 
   return (
   <>
-    <h2 className="section-head">Investment Thesis</h2>
+    <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
     <div className="highlight"><h3>The Opportunity</h3>
       <p style={{ fontSize: '14px' }}>BMNR operates as an ETH treasury company, accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
     </div>
@@ -1917,7 +1917,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
 
   return (
     <>
-      <h2 className="section-head">Scenario Simulation</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Scenario Simulation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       <div className="highlight">
         <h3>Multi-Year Projections</h3>
@@ -2405,7 +2405,7 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Staking</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Staking<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3>ETH Staking Yield</h3>
         <p className="text-sm">BMNR generates yield by staking ETH through validators. Compare staking strategies and model compounding returns over time.</p>
       </div>
@@ -2480,7 +2480,7 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Dilution</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Dilution<UpdateIndicators sources="SEC" /></h2>
       <div className="highlight"><h3>Equity Dilution Analysis</h3>
         <p className="text-sm">Model the impact of share issuance on NAV per share. Accretive when issued above NAV; dilutive when below.</p>
       </div>
@@ -2526,7 +2526,7 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Debt</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Debt<UpdateIndicators sources="SEC" /></h2>
       <div className="highlight"><h3>Leverage & Convertible Debt</h3>
         <p className="text-sm">Model convertible debt financing and analyze LTV covenant risks. Track death spiral trigger prices.</p>
       </div>
@@ -2586,7 +2586,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Capital Structure</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
 
       {/* Highlight Box */}
       <div className="highlight">
@@ -2859,7 +2859,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
   const compsData = comparables.map(c => { const cryptoPrice = c.crypto === 'BTC' ? btcPrice : ethPrice; const navPerShare = (c.holdings * cryptoPrice) / c.shares; return { ...c, navPerShare, premium: ((c.price / navPerShare) - 1) * 100, marketCap: c.price * c.shares }; });
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Comparables</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables<UpdateIndicators sources={['PR', 'WS']} /></h2>
       <div className="highlight"><h3>Peer Comparison</h3>
         <p className="text-sm">Compare BMNR to other crypto treasury companies. Key differentiator: ETH staking yield vs BTC's 0%.</p>
       </div>
@@ -2885,7 +2885,7 @@ const SensitivityTab = ({ calc, currentETH, currentShares, ethPrice }) => {
   const matrix = useMemo(() => [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0].map(em => ({ ethMult: em, ethPrice: ethPrice * em, scenarios: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(nm => ({ navMult: nm, price: ((currentETH * ethPrice * em) / (currentShares * 1e6)) * nm })) })), [currentETH, currentShares, ethPrice]);
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Sensitivity</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3>Price Matrix & Tornado</h3>
         <p className="text-sm">Two-variable sensitivity showing stock price at different ETH prices and NAV multiples. Tornado chart shows parameter impact ranking.</p>
       </div>
@@ -2926,7 +2926,7 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Backtest</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Backtest<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3>Historical NAV Simulation</h3>
         <p className="text-sm">What would NAV have been at historical ETH prices? Toggle staking yield to see compounding effect. Caveat: illustrative only.</p>
       </div>
@@ -3021,7 +3021,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">DCF</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>DCF<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3>DCF Valuation</h3>
         <p className="text-sm">DCF valuation with three methods: terminal NAV only, with staking cash flows, or with declared dividends. Adjust growth and discount rate.</p>
       </div>
@@ -3388,7 +3388,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Monte Carlo</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       
       {/* Highlight Box */}
       <div className="highlight">
@@ -6581,7 +6581,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Ethereum Ecosystem</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Ethereum Ecosystem<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <V1 />
     </div>
   );
@@ -7674,7 +7674,7 @@ const TimelineTab = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Timeline</h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Timeline<UpdateIndicators sources="PR" /></h2>
 
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
       <div className="card" style={{ marginBottom: 0 }}>
