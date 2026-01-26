@@ -1671,11 +1671,14 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
 
   return (
   <>
+    {/* #investment-thesis */}
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+    {/* #opportunity */}
     <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
       <p style={{ fontSize: '14px' }}>BMNR operates as an ETH treasury company, accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
     </div>
 
+    {/* #thesis-bull-bear */}
     <div className="g2">
       <div className="thesis bull">
         <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
@@ -1701,6 +1704,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       </div>
     </div>
 
+    {/* #chart */}
     <div className="card" style={{ marginTop: 32 }}>
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ETH Holdings Growth<UpdateIndicators sources="PR" /></div>
       <div className="bars">
@@ -1714,6 +1718,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       </div>
     </div>
 
+    {/* #key-metrics */}
     <div className="card" style={{ marginTop: 32 }}>
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <div className="g4">
@@ -1723,6 +1728,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         <Card label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} sub={`$${calc.annualDividend.toFixed(2)}/yr`} color="emerald" />
       </div>
     </div>
+    {/* #company-snapshot */}
     <div className="card" style={{ marginTop: 32 }}>
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <div className="g3">
@@ -1748,8 +1754,10 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       </div>
     </div>
 
+    {/* #parameters */}
     <div className="card" style={{ marginTop: 32 }}><div className="card-title">Parameters</div><div className="g4" style={{ marginTop: '16px' }}><Input label="ETH Holdings" value={currentETH} onChange={setCurrentETH} /><Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} /><Input label="Stock Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} /><Input label="ETH Price ($)" value={ethPrice} onChange={setEthPrice} /></div><div style={{ marginTop: '16px' }}><Input label="Qtr Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} /></div></div>
-    
+
+    {/* #cfa-notes */}
     <CFANotes title="CFA Level III — ETH Treasury Fundamentals" items={[
       { term: 'Net Asset Value (NAV)', def: 'The per-share intrinsic value = (Total ETH Holdings × ETH Price) ÷ Shares Outstanding. Represents liquidation value — what each share would be worth if all ETH were sold today. This is the fundamental anchor for valuation.' },
       { term: 'Premium/Discount to NAV', def: 'The % difference between stock price and NAV. Premium (positive) means market prices in future appreciation, management alpha, or scarcity. Discount (negative) suggests market doubts or liquidity concerns. MSTR historically trades 1.5-2.5x NAV.' },
