@@ -2850,34 +2850,39 @@ function CRCLModel() {
                 </div>
               </div>
 
-              <div className="g4" style={{ marginTop: 32 }}>
-                <Card label="USDC Growth" value={`+${usdcGrowth.toFixed(0)}%`} sub="Year over year" color="mint" />
-                <Card label="Revenue Growth" value={`+${revGrowth.toFixed(0)}%`} sub="Year over year" color="green" />
-                <Card label="Active Wallets" value={`${latest.meaningfulWallets}M`} sub="Meaningful wallets" color="blue" />
-                <Card label="Arc Partners" value="100+" sub="Platform integrations" color="purple" />
+              <div className="card" style={{ marginTop: 32 }}>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+                <div className="g4">
+                  <Card label="USDC Growth" value={`+${usdcGrowth.toFixed(0)}%`} sub="Year over year" color="mint" />
+                  <Card label="Revenue Growth" value={`+${revGrowth.toFixed(0)}%`} sub="Year over year" color="green" />
+                  <Card label="Active Wallets" value={`${latest.meaningfulWallets}M`} sub="Meaningful wallets" color="blue" />
+                  <Card label="Arc Partners" value="100+" sub="Platform integrations" color="purple" />
+                </div>
               </div>
-
-              <div className="g3" style={{ marginTop: 32 }}>
-                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity (Q3 2025)<UpdateIndicators sources="SEC" /></div>
-                  <Row label="Shares Outstanding" value={`${currentShares.toFixed(1)}M`} />
-                  <Row label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} />
-                  <Row label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} highlight />
-                  <Row label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} />
-                  <Row label="Since IPO" value={`+${ipoReturn.toFixed(0)}%`} />
-                </div>
-                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>USDC Metrics<UpdateIndicators sources="SEC" /></div>
-                  <Row label="USDC Circulation" value={`$${currentUSDC.toFixed(1)}B`} />
-                  <Row label="Market Share" value={`${currentMarketShare}%`} highlight />
-                  <Row label="Total Stablecoin Mkt" value={`$${calc.totalStablecoins.toFixed(0)}B`} />
-                  <Row label="YoY Growth" value={`+${usdcGrowth.toFixed(0)}%`} />
-                  <Row label="Active Wallets" value={`${latest.meaningfulWallets}M`} />
-                </div>
-                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources="SEC" /></div>
-                  <Row label="Q3 Revenue" value={`$${latest.totalRevenue}M`} />
-                  <Row label="RLDC" value={`$${latest.rldc}M`} highlight />
-                  <Row label="RLDC Margin" value={`${latest.rldcMargin}%`} />
-                  <Row label="Adj. EBITDA" value={`$${latest.adjustedEbitda}M`} />
-                  <Row label="Rev/B USDC" value={`$${calc.revenuePerBillionUsdc.toFixed(0)}M`} />
+              <div className="card" style={{ marginTop: 32 }}>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
+                <div className="g3">
+                  <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Equity (Q3 2025)</div>
+                    <Row label="Shares Outstanding" value={`${currentShares.toFixed(1)}M`} />
+                    <Row label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} />
+                    <Row label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} highlight />
+                    <Row label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} />
+                    <Row label="Since IPO" value={`+${ipoReturn.toFixed(0)}%`} />
+                  </div>
+                  <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>USDC Metrics</div>
+                    <Row label="USDC Circulation" value={`$${currentUSDC.toFixed(1)}B`} />
+                    <Row label="Market Share" value={`${currentMarketShare}%`} highlight />
+                    <Row label="Total Stablecoin Mkt" value={`$${calc.totalStablecoins.toFixed(0)}B`} />
+                    <Row label="YoY Growth" value={`+${usdcGrowth.toFixed(0)}%`} />
+                    <Row label="Active Wallets" value={`${latest.meaningfulWallets}M`} />
+                  </div>
+                  <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Revenue</div>
+                    <Row label="Q3 Revenue" value={`$${latest.totalRevenue}M`} />
+                    <Row label="RLDC" value={`$${latest.rldc}M`} highlight />
+                    <Row label="RLDC Margin" value={`${latest.rldcMargin}%`} />
+                    <Row label="Adj. EBITDA" value={`$${latest.adjustedEbitda}M`} />
+                    <Row label="Rev/B USDC" value={`$${calc.revenuePerBillionUsdc.toFixed(0)}M`} />
+                  </div>
                 </div>
               </div>
 
