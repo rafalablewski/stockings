@@ -5908,6 +5908,24 @@ const CompsTab = () => {
         </div>
       </div>
 
+      {/* Competitor Intelligence Placeholder */}
+      <div className="highlight" style={{ marginTop: 24 }}>
+        <h3>📰 Competitor Intelligence</h3>
+        <p>Track competitor developments to assess Circle's competitive position in stablecoins and digital payments.</p>
+      </div>
+
+      <div className="card" style={{ padding: 32, textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>🔜</div>
+        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)', marginBottom: 8 }}>Competitor Intelligence Coming Soon</div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, maxWidth: 500, margin: '0 auto' }}>
+          This section will track news and developments from stablecoin and payments competitors including Tether (USDT),
+          PayPal (PYUSD), Coinbase, and traditional payment networks (Visa, Mastercard).
+          <br /><br />
+          Key tracking areas: stablecoin market share, regulatory developments, partnership announcements,
+          yield product launches, and cross-border payment initiatives.
+        </p>
+      </div>
+
       <CFANotes title="CFA Level III — Comparable Analysis" items={[
         { term: 'Peer Selection', def: 'Choose comps based on business model similarity, growth profile, and market positioning. No perfect comps for novel businesses like Circle.' },
         { term: 'P/S (Price/Sales)', def: 'Primary multiple for high-growth, pre-profit companies. Compare Circle to fintech and payments peers.' },

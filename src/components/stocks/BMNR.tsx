@@ -2995,6 +2995,161 @@ const CompsTab = ({ comparables, ethPrice }) => {
         </div>
       </div>
 
+      {/* Advanced Valuation Matrices */}
+      <div className="highlight" style={{ marginTop: 24 }}><h3>📈 Valuation Framework</h3><p>NAV-based valuation for crypto treasury companies. Premium/discount analysis vs peers.</p></div>
+
+      {/* Valuation Methodology Matrix */}
+      <div className="card">
+        <div className="card-title">Implied Valuation Matrix</div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>BMNR value under different NAV multiples (current: ${(compsData[0]?.marketCap / 1e9).toFixed(2)}B)</p>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Peer Basis</th>
+              <th className="r">Multiple</th>
+              <th className="r">Implied Value</th>
+              <th className="r">vs Current</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(() => {
+              const bmnr = compsData.find(c => c.name === 'BMNR');
+              const currentMC = bmnr?.marketCap || 0;
+              const nav = bmnr?.navPerShare * (comparables[0]?.shares || 1);
+              return [
+                { method: 'NAV Multiple', basis: 'MSTR Premium', multiple: '2.0x', implied: nav * 2.0, vs: ((nav * 2.0) / currentMC - 1) * 100 },
+                { method: 'NAV Multiple', basis: 'Market Average', multiple: '1.5x', implied: nav * 1.5, vs: ((nav * 1.5) / currentMC - 1) * 100 },
+                { method: 'NAV Multiple', basis: 'Fair Value', multiple: '1.0x', implied: nav * 1.0, vs: ((nav * 1.0) / currentMC - 1) * 100 },
+                { method: 'NAV Multiple', basis: 'Discount', multiple: '0.75x', implied: nav * 0.75, vs: ((nav * 0.75) / currentMC - 1) * 100 },
+                { method: 'Yield-Adjusted', basis: 'ETH Yield Premium', multiple: '1.3x', implied: nav * 1.3, vs: ((nav * 1.3) / currentMC - 1) * 100 },
+                { method: 'Yield-Adjusted', basis: '5yr Compound', multiple: '1.15x', implied: nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5), vs: ((nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5)) / currentMC - 1) * 100 },
+              ].map((v, i) => (
+                <tr key={i}>
+                  <td style={{ fontWeight: 500 }}>{v.method}</td>
+                  <td>{v.basis}</td>
+                  <td className="r">{v.multiple}</td>
+                  <td className="r mint">${(v.implied / 1e9).toFixed(2)}B</td>
+                  <td className="r" style={{ color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                    {v.vs >= 0 ? '+' : ''}{v.vs.toFixed(0)}%
+                  </td>
+                </tr>
+              ));
+            })()}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="g2" style={{ marginTop: 24 }}>
+        {/* SOTP Valuation */}
+        <div className="card">
+          <div className="card-title">Sum-of-the-Parts (SOTP)</div>
+          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Value each component separately</p>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th className="r">Metric</th>
+                <th className="r">Multiple</th>
+                <th className="r">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(() => {
+                const bmnr = compsData.find(c => c.name === 'BMNR');
+                const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
+                const ethValue = ethHoldings * ethPrice;
+                return [
+                  { segment: 'ETH Holdings', basis: 'Spot value', metric: `${(ethHoldings / 1e6).toFixed(2)}M ETH`, multiple: '1.0x', value: ethValue },
+                  { segment: 'Staking Yield', basis: '5yr NPV @ 10%', metric: `${comparables[0]?.yield || 0}% APY`, multiple: 'NPV', value: ethValue * (comparables[0]?.yield || 0) / 100 * 3.79 },
+                  { segment: 'Operational Premium', basis: 'Management + infrastructure', metric: 'Strategic', multiple: '—', value: ethValue * 0.05 },
+                  { segment: 'Growth Optionality', basis: 'Acquisition capacity', metric: 'Option value', multiple: '—', value: ethValue * 0.03 },
+                ].map((s, i) => (
+                  <tr key={i}>
+                    <td>
+                      <div style={{ fontWeight: 500 }}>{s.segment}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
+                    </td>
+                    <td className="r">{s.metric}</td>
+                    <td className="r">{s.multiple}</td>
+                    <td className="r mint">${(s.value / 1e9).toFixed(2)}B</td>
+                  </tr>
+                ));
+              })()}
+              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                <td colSpan={3}>SOTP Total</td>
+                <td className="r mint">${((() => {
+                  const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
+                  const ethValue = ethHoldings * ethPrice;
+                  const yieldNPV = ethValue * (comparables[0]?.yield || 0) / 100 * 3.79;
+                  return (ethValue + yieldNPV + ethValue * 0.08) / 1e9;
+                })()).toFixed(2)}B</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* NAV Premium Sensitivity */}
+        <div className="card">
+          <div className="card-title">NAV Premium Sensitivity</div>
+          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Stock price at different ETH prices × NAV multiples</p>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="tbl">
+              <thead>
+                <tr>
+                  <th>ETH ↓ / NAV → </th>
+                  {[0.75, 1.0, 1.25, 1.5, 2.0].map(m => <th key={m} className="r">{m}x</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(ethMult => {
+                  const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
+                  const shares = comparables[0]?.shares || 1;
+                  const baseNAV = (ethHoldings * ethPrice) / shares;
+                  const currentPrice = comparables[0]?.price || 0;
+                  return (
+                    <tr key={ethMult}>
+                      <td style={{ fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</td>
+                      {[0.75, 1.0, 1.25, 1.5, 2.0].map(navMult => {
+                        const price = baseNAV * ethMult * navMult;
+                        const isNear = ethMult === 1.0 && navMult === 1.0;
+                        return (
+                          <td key={navMult} className="r" style={isNear ? {
+                            background: 'var(--accent-dim)',
+                            fontWeight: 600,
+                            color: 'var(--accent)'
+                          } : { color: price >= currentPrice ? 'var(--mint)' : 'var(--coral)' }}>
+                            ${price.toFixed(2)}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Competitor Intelligence Placeholder */}
+      <div className="highlight" style={{ marginTop: 24 }}>
+        <h3>📰 Competitor Intelligence</h3>
+        <p>Track competitor developments to assess BMNR competitive position in the crypto treasury space.</p>
+      </div>
+
+      <div className="card" style={{ padding: 32, textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>🔜</div>
+        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)', marginBottom: 8 }}>Competitor Intelligence Coming Soon</div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, maxWidth: 500, margin: '0 auto' }}>
+          This section will track news and developments from crypto treasury competitors including MicroStrategy (MSTR),
+          Marathon Digital (MARA), Riot Platforms (RIOT), and other BTC/ETH treasury companies.
+          <br /><br />
+          Key tracking areas: acquisition announcements, funding rounds, regulatory developments,
+          yield strategies, and market positioning changes.
+        </p>
+      </div>
+
       <CFANotes title="CFA Level III — Comparable Analysis" items={[
         { term: 'Relative Valuation', def: 'Benchmarks BMNR against peers. If MSTR trades at 2x NAV and BMNR at 1.2x, is BMNR undervalued or MSTR overvalued? Context matters.' },
         { term: 'Crypto/Share', def: 'Fundamental backing metric. Higher = more crypto per share of ownership. Affected by dilution and accumulation.' },

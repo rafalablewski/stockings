@@ -9089,6 +9089,125 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
       </div>
 
+      {/* Advanced Valuation Matrices */}
+      <div className="highlight" style={{ marginTop: 24 }}><h3>📈 Valuation Framework</h3><p>Multiple methodologies for a pre-revenue, high-growth space company. TAM-based and comparable approaches.</p></div>
+
+      {/* Valuation Methodology Matrix */}
+      <div className="card">
+        <div className="card-title">Implied Valuation Matrix</div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Peer Basis</th>
+              <th className="r">Multiple/Metric</th>
+              <th className="r">Implied Value</th>
+              <th className="r">Premium/(Discount)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { method: '$/Subscriber', basis: 'Starlink', metric: '$43,750/sub', implied: calc.potentialSubs * 43750, premium: ((calc.potentialSubs * 43750) / calc.marketCap - 1) * 100 },
+              { method: '$/Subscriber', basis: 'T-Mobile', metric: '$2,240/sub', implied: calc.potentialSubs * 2240, premium: ((calc.potentialSubs * 2240) / calc.marketCap - 1) * 100 },
+              { method: '$/Subscriber', basis: 'Verizon', metric: '$1,520/sub', implied: calc.potentialSubs * 1520, premium: ((calc.potentialSubs * 1520) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'Starlink', metric: '17x', implied: calc.fwdRevenue * 17, premium: ((calc.fwdRevenue * 17) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'High-Growth SaaS', metric: '10x', implied: calc.fwdRevenue * 10, premium: ((calc.fwdRevenue * 10) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
+            ].map((v, i) => (
+              <tr key={i}>
+                <td style={{ fontWeight: 500 }}>{v.method}</td>
+                <td>{v.basis}</td>
+                <td className="r">{v.metric}</td>
+                <td className="r mint">${(v.implied / 1000).toFixed(1)}B</td>
+                <td className="r" style={{ color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="g2" style={{ marginTop: 24 }}>
+        {/* SOTP Valuation */}
+        <div className="card">
+          <div className="card-title">Sum-of-the-Parts (SOTP)</div>
+          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Value each business segment separately</p>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Segment</th>
+                <th className="r">Metric</th>
+                <th className="r">Multiple</th>
+                <th className="r">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { segment: 'US Commercial', basis: 'AT&T/VZ partnership', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$2,000/sub', value: calc.potentialSubs * 0.4 * 2000 },
+                { segment: 'International', basis: 'Global MNO deals', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$1,500/sub', value: calc.potentialSubs * 0.4 * 1500 },
+                { segment: 'Government/Defense', basis: 'DoD contracts', metric: 'Option value', multiple: '—', value: 2000 },
+                { segment: 'Maritime/Aviation', basis: 'Niche verticals', metric: 'Option value', multiple: '—', value: 1000 },
+                { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
+              ].map((s, i) => (
+                <tr key={i}>
+                  <td>
+                    <div style={{ fontWeight: 500 }}>{s.segment}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
+                  </td>
+                  <td className="r">{s.metric}</td>
+                  <td className="r">{s.multiple}</td>
+                  <td className="r mint">${(s.value / 1000).toFixed(1)}B</td>
+                </tr>
+              ))}
+              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                <td colSpan={3}>SOTP Total</td>
+                <td className="r mint">${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Risk-Adjusted Scenarios */}
+        <div className="card">
+          <div className="card-title">Risk-Adjusted Scenarios</div>
+          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Probability-weighted valuation outcomes</p>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th className="r">Prob.</th>
+                <th className="r">Value</th>
+                <th className="r">Weighted</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { scenario: 'Bull Case', desc: 'Full constellation, global coverage', prob: 25, value: calc.marketCap * 3 },
+                { scenario: 'Base Case', desc: 'Partial success, US + select intl', prob: 45, value: calc.marketCap * 1.5 },
+                { scenario: 'Bear Case', desc: 'Delays, limited commercial traction', prob: 20, value: calc.marketCap * 0.5 },
+                { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
+              ].map((s, i) => (
+                <tr key={i}>
+                  <td>
+                    <div style={{ fontWeight: 500 }}>{s.scenario}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.desc}</div>
+                  </td>
+                  <td className="r">{s.prob}%</td>
+                  <td className="r">${(s.value / 1000).toFixed(1)}B</td>
+                  <td className="r mint">${(s.value * s.prob / 100 / 1000).toFixed(1)}B</td>
+                </tr>
+              ))}
+              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                <td colSpan={3}>Expected Value</td>
+                <td className="r mint">${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* D2D Competitor Capability Matrix */}
       <div className="highlight"><h3>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
 
