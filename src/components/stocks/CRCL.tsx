@@ -5530,34 +5530,25 @@ function CRCLModel() {
 
           {activeTab === 'comps' && (
             <>
-              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparable Companies Analysis<UpdateIndicators sources="MARKET" /></h2>
-              
+              <h2 className="section-head">Comparable Companies Analysis<UpdateIndicators sources="MARKET" /></h2>
+
               {/* Highlight Box */}
               <div className="highlight">
                 <h3>Peer Analysis Framework</h3>
-                <p className="text-sm">
-                  Circle sits at the intersection of multiple peer groups: crypto infrastructure (Coinbase), 
-                  payments networks (Visa, PayPal), and high-growth fintech. Each lens provides different valuation 
+                <p>
+                  Circle sits at the intersection of multiple peer groups: crypto infrastructure (Coinbase),
+                  payments networks (Visa, PayPal), and high-growth fintech. Each lens provides different valuation
                   context. Crypto peers trade at premium P/S; payments peers show margin potential.
                 </p>
               </div>
-              
+
               {/* Peer Group Selector */}
               <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
                 {Object.entries(PEER_GROUPS).map(([key, group]) => (
                   <button
                     key={key}
                     onClick={() => setSelectedPeerGroup(key)}
-                    style={{
-                      padding: '10px 16px',
-                      borderRadius: 8,
-                      border: selectedPeerGroup === key ? '2px solid var(--mint)' : '1px solid var(--border)',
-                      background: selectedPeerGroup === key ? 'rgba(0,212,170,0.1)' : 'var(--surface2)',
-                      color: selectedPeerGroup === key ? 'var(--mint)' : 'var(--text2)',
-                      cursor: 'pointer',
-                      fontWeight: selectedPeerGroup === key ? 600 : 400,
-                      fontSize: 13,
-                    }}
+                    className={`filter-btn ${selectedPeerGroup === key ? 'active' : ''}`}
                   >
                     {group.name}
                   </button>
@@ -5585,7 +5576,7 @@ function CRCLModel() {
                     </thead>
                     <tbody>
                       {currentPeers.peers.map((p, i) => (
-                        <tr key={i} style={{ background: p.highlight ? 'rgba(0,212,170,0.08)' : 'transparent' }}>
+                        <tr key={i} style={p.highlight ? { background: 'var(--mint-dim)' } : undefined}>
                           <td>
                             <div style={{ fontWeight: p.highlight ? 700 : 500 }}>{p.name}</div>
                             <div style={{ fontSize: 11, color: 'var(--text3)' }}>{p.ticker}</div>
@@ -5797,11 +5788,11 @@ function CRCLModel() {
                             {t.notes && <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.notes}</div>}
                           </td>
                           <td className="r">{t.value ? `$${t.value}B` : '—'}</td>
-                          <td><span style={{ 
-                            fontSize: 11, 
-                            padding: '2px 6px', 
-                            borderRadius: 4, 
-                            background: t.type === 'M&A' ? 'rgba(0,212,170,0.2)' : t.type === 'Funding' ? 'rgba(100,149,237,0.2)' : 'rgba(255,193,7,0.2)',
+                          <td><span style={{
+                            fontSize: 11,
+                            padding: '2px 6px',
+                            borderRadius: 4,
+                            background: t.type === 'M&A' ? 'var(--mint-dim)' : t.type === 'Funding' ? 'var(--sky-dim)' : 'var(--gold-dim)',
                             color: t.type === 'M&A' ? 'var(--mint)' : t.type === 'Funding' ? 'var(--sky)' : 'var(--gold)'
                           }}>{t.type}</span></td>
                         </tr>
@@ -5831,11 +5822,11 @@ function CRCLModel() {
                             const val = calcSensitivity(usdc, rate, 13);
                             const isNear = Math.abs(usdc - 73.7) < 15 && Math.abs(rate - 4.0) < 0.5;
                             return (
-                              <td key={rate} className="r" style={{ 
-                                background: isNear ? 'rgba(0,212,170,0.15)' : 'transparent',
-                                fontWeight: isNear ? 600 : 400,
-                                color: isNear ? 'var(--mint)' : 'inherit'
-                              }}>
+                              <td key={rate} className="r" style={isNear ? {
+                                background: 'var(--mint-dim)',
+                                fontWeight: 600,
+                                color: 'var(--mint)'
+                              } : undefined}>
                                 ${val.toFixed(1)}B
                               </td>
                             );

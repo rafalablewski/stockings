@@ -8969,56 +8969,56 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     return profile?.name || id;
   };
 
-  // Implication styling
+  // Implication styling - using design tokens
   const getImplicationStyle = (impl: ASTSImplication) => {
     switch (impl) {
-      case 'positive': return { bg: 'rgba(126,231,135,0.15)', color: '#7EE787', label: '✓ Good for ASTS' };
-      case 'negative': return { bg: 'rgba(255,123,114,0.15)', color: '#FF7B72', label: '⚠ Threat to ASTS' };
-      default: return { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8', label: '○ Neutral' };
+      case 'positive': return { bg: 'var(--mint-dim)', color: 'var(--mint)', label: '✓ Good for ASTS' };
+      case 'negative': return { bg: 'var(--coral-dim)', color: 'var(--coral)', label: '⚠ Threat to ASTS' };
+      default: return { bg: 'var(--surface3)', color: 'var(--text3)', label: '○ Neutral' };
     }
   };
 
-  // Category styling
+  // Category styling - using design tokens
   const getCategoryStyle = (cat: CompetitorNewsCategory) => {
     const styles: Record<CompetitorNewsCategory, { bg: string; color: string }> = {
-      'Launch': { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
-      'Partnership': { bg: 'rgba(59,130,246,0.15)', color: '#60a5fa' },
-      'Technology': { bg: 'rgba(168,85,247,0.15)', color: '#c084fc' },
-      'Regulatory': { bg: 'rgba(234,179,8,0.15)', color: '#facc15' },
-      'Financial': { bg: 'rgba(34,211,238,0.15)', color: '#22d3ee' },
-      'Coverage': { bg: 'rgba(249,115,22,0.15)', color: '#fb923c' },
-      'Product': { bg: 'rgba(236,72,153,0.15)', color: '#f472b6' },
+      'Launch': { bg: 'var(--mint-dim)', color: 'var(--mint)' },
+      'Partnership': { bg: 'var(--sky-dim)', color: 'var(--sky)' },
+      'Technology': { bg: 'var(--violet-dim)', color: 'var(--violet)' },
+      'Regulatory': { bg: 'var(--gold-dim)', color: 'var(--gold)' },
+      'Financial': { bg: 'var(--cyan-dim)', color: 'var(--cyan)' },
+      'Coverage': { bg: 'var(--coral-dim)', color: 'var(--coral)' },
+      'Product': { bg: 'var(--accent-dim)', color: 'var(--accent)' },
     };
     return styles[cat] || { bg: 'var(--surface3)', color: 'var(--text3)' };
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
+      <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
 
       {/* Valuation Comparables Section */}
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
+      <div className="highlight"><h3>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
 
-      <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Market Comparison<UpdateIndicators sources="WS" /></div>
+      <div className="card">
+        <div className="card-title">Market Comparison<UpdateIndicators sources="WS" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Company</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Mkt Cap</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>EV/Rev</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>$/Sub</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
+            <tr>
+              <th>Company</th>
+              <th className="r">Mkt Cap</th>
+              <th className="r">EV/Rev</th>
+              <th className="r">$/Sub</th>
+              <th className="r">Subs</th>
             </tr>
           </thead>
           <tbody>
             {comps.map(c => (
-              <tr key={c.name} style={{ borderTop: '1px solid var(--border)', background: c.name === 'ASTS' ? 'var(--surface2)' : 'transparent' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{c.name}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${(c.mc / 1000).toFixed(0)}B</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{c.evRev.toFixed(1)}x</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${c.pSub.toLocaleString()}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{c.subs.toFixed(0)}M</td>
+              <tr key={c.name} style={c.name === 'ASTS' ? { background: 'var(--accent-dim)' } : undefined}>
+                <td>{c.name}</td>
+                <td className="r">${(c.mc / 1000).toFixed(0)}B</td>
+                <td className="r">{c.evRev.toFixed(1)}x</td>
+                <td className="r">${c.pSub.toLocaleString()}</td>
+                <td className="r">{c.subs.toFixed(0)}M</td>
               </tr>
             ))}
           </tbody>
@@ -9033,9 +9033,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis type="number" stroke="var(--text3)" />
               <YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
               <Bar dataKey="evRev" fill="var(--cyan)">
-                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? '#06b6d4' : '#475569'} />))}
+                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? 'var(--cyan)' : 'var(--text3)'} />))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -9047,9 +9047,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis type="number" stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
               <YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
               <Bar dataKey="pSub" fill="var(--violet)">
-                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? '#8b5cf6' : '#475569'} />))}
+                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? 'var(--violet)' : 'var(--text3)'} />))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -9057,46 +9057,46 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* D2D Competitor Capability Matrix */}
-      <div className="highlight" style={{ marginTop: 32 }}><h3 style={{ display: 'flex', alignItems: 'center' }}>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
+      <div className="highlight"><h3>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
 
-      <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capability Comparison<UpdateIndicators sources="PR" /></div>
+      <div className="card">
+        <div className="card-title">Capability Comparison<UpdateIndicators sources="PR" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Competitor</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Voice</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Text</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Data</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Video</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Unmod. Phones</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Global</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Satellites</th>
+            <tr>
+              <th>Competitor</th>
+              <th className="c">Voice</th>
+              <th className="c">Text</th>
+              <th className="c">Data</th>
+              <th className="c">Video</th>
+              <th className="c">Unmod. Phones</th>
+              <th className="c">Global</th>
+              <th className="r">Satellites</th>
             </tr>
           </thead>
           <tbody>
             {/* ASTS Row - highlighted */}
-            <tr style={{ borderTop: '1px solid var(--border)', background: 'var(--surface2)' }}>
-              <td style={{ padding: 8, fontWeight: 600, color: 'var(--text2)' }}>ASTS SpaceMobile</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Building</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>6+</td>
+            <tr style={{ background: 'var(--accent-dim)' }}>
+              <td style={{ fontWeight: 600 }}>ASTS SpaceMobile</td>
+              <td className="c">✓</td>
+              <td className="c">✓</td>
+              <td className="c">✓</td>
+              <td className="c">✓</td>
+              <td className="c">✓</td>
+              <td className="c">Building</td>
+              <td className="r">6+</td>
             </tr>
             {/* Competitor Rows */}
             {COMPETITOR_PROFILES.map(comp => (
-              <tr key={comp.id} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{comp.name}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.voice ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.text ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.data ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.video ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.unmodifiedPhones ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.globalCoverage ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text3)' }}>{comp.keyMetrics?.satellites || 'N/A'}</td>
+              <tr key={comp.id}>
+                <td>{comp.name}</td>
+                <td className="c">{comp.capabilities.voice ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="c">{comp.capabilities.text ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="c">{comp.capabilities.data ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="c">{comp.capabilities.video ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="c">{comp.capabilities.unmodifiedPhones ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="c">{comp.capabilities.globalCoverage ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="r" style={{ color: 'var(--text3)' }}>{comp.keyMetrics?.satellites || 'N/A'}</td>
               </tr>
             ))}
           </tbody>
@@ -9104,19 +9104,18 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor News Intelligence Section */}
-      <div className="highlight" style={{ marginTop: 32 }}>
-        <h3 style={{ display: 'flex', alignItems: 'center' }}>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
-        <p style={{ fontSize: 13, color: 'var(--text2)' }}>Track competitor developments to assess ASTS competitive position</p>
+      <div className="highlight">
+        <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
+        <p>Track competitor developments to assess ASTS competitive position</p>
       </div>
 
       {/* Filter Bar */}
-      <div className="card" style={{ marginTop: 32, padding: '12px 16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filter:</span>
+      <div className="card" style={{ padding: '12px 16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
           <button
             onClick={() => setCompetitorFilter('all')}
-            className={`nav-btn ${competitorFilter === 'all' ? 'active' : ''}`}
-            style={{ padding: '6px 12px', fontSize: '12px' }}
+            className={`filter-btn ${competitorFilter === 'all' ? 'active' : ''}`}
           >
             All ({COMPETITOR_NEWS.length})
           </button>
@@ -9127,8 +9126,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <button
                 key={comp.id}
                 onClick={() => setCompetitorFilter(comp.id)}
-                className={`nav-btn ${competitorFilter === comp.id ? 'active' : ''}`}
-                style={{ padding: '6px 12px', fontSize: '12px' }}
+                className={`filter-btn ${competitorFilter === comp.id ? 'active' : ''}`}
               >
                 {comp.name.split('/')[0].trim()} ({count})
               </button>

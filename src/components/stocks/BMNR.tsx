@@ -2905,16 +2905,50 @@ const CompsTab = ({ comparables, ethPrice }) => {
   const compsData = comparables.map(c => { const cryptoPrice = c.crypto === 'BTC' ? btcPrice : ethPrice; const navPerShare = (c.holdings * cryptoPrice) / c.shares; return { ...c, navPerShare, premium: ((c.price / navPerShare) - 1) * 100, marketCap: c.price * c.shares }; });
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables<UpdateIndicators sources={['PR', 'WS']} /></h2>
-      <div className="highlight"><h3>Peer Comparison</h3>
-        <p className="text-sm">Compare BMNR to other crypto treasury companies. Key differentiator: ETH staking yield vs BTC's 0%.</p>
+      <h2 className="section-head">Comparables<UpdateIndicators sources={['PR', 'WS']} /></h2>
+      <div className="highlight">
+        <h3>Peer Comparison</h3>
+        <p>Compare BMNR to other crypto treasury companies. Key differentiator: ETH staking yield vs BTC's 0%.</p>
       </div>
-      <div className="card"><div className="card-title">Comparison Table</div>
-        <table className="w-full text-sm"><thead><tr className="text-slate-400 text-xs border-b border-slate-700"><th className="text-left py-3">Company</th><th className="text-center">Crypto</th><th className="text-right">Holdings</th><th className="text-right">NAV/Share</th><th className="text-right">Price</th><th className="text-right">Premium</th><th className="text-right">Yield</th><th className="text-right">Mkt Cap</th></tr></thead>
-        <tbody>{compsData.map(c => (<tr key={c.name} className={`border-t border-slate-800 ${c.name === 'BMNR' ? 'bg-violet-900/20' : ''}`}><td className="py-3 font-medium">{c.name}</td><td className="py-3 text-center">{c.crypto}</td><td className="py-3 text-right">{c.holdings.toLocaleString()}</td><td className="py-3 text-right">${c.navPerShare.toFixed(2)}</td><td className="py-3 text-right">${c.price}</td><td className={`py-3 text-right font-medium ${c.premium >= 0 ? 'text-green-400' : 'text-red-400'}`}>{c.premium >= 0 ? '+' : ''}{c.premium.toFixed(0)}%</td><td className="py-3 text-right">{c.yield > 0 ? <span className="text-green-400">{c.yield}%</span> : '—'}</td><td className="py-3 text-right">${(c.marketCap / 1e9).toFixed(1)}B</td></tr>))}</tbody></table>
+      <div className="card">
+        <div className="card-title">Comparison Table</div>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th className="c">Crypto</th>
+              <th className="r">Holdings</th>
+              <th className="r">NAV/Share</th>
+              <th className="r">Price</th>
+              <th className="r">Premium</th>
+              <th className="r">Yield</th>
+              <th className="r">Mkt Cap</th>
+            </tr>
+          </thead>
+          <tbody>
+            {compsData.map(c => (
+              <tr key={c.name} style={c.name === 'BMNR' ? { background: 'var(--accent-dim)' } : undefined}>
+                <td style={{ fontWeight: 500 }}>{c.name}</td>
+                <td className="c">{c.crypto}</td>
+                <td className="r">{c.holdings.toLocaleString()}</td>
+                <td className="r">${c.navPerShare.toFixed(2)}</td>
+                <td className="r">${c.price}</td>
+                <td className="r" style={{ fontWeight: 500, color: c.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{c.premium >= 0 ? '+' : ''}{c.premium.toFixed(0)}%</td>
+                <td className="r">{c.yield > 0 ? <span className="mint">{c.yield}%</span> : '—'}</td>
+                <td className="r">${(c.marketCap / 1e9).toFixed(1)}B</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <div className="card"><div className="card-title">Yield Advantage</div><div className="text-center py-8"><div className="text-5xl font-bold text-green-400">+{comparables[0].yield}%</div><div className="text-lg text-slate-400 mt-2">Annual staking yield vs BTC (0%)</div></div></div>
-      
+      <div className="card">
+        <div className="card-title">Yield Advantage</div>
+        <div style={{ textAlign: 'center', padding: '32px 0' }}>
+          <div style={{ fontSize: 48, fontWeight: 700, color: 'var(--mint)' }}>+{comparables[0].yield}%</div>
+          <div style={{ fontSize: 16, color: 'var(--text3)', marginTop: 8 }}>Annual staking yield vs BTC (0%)</div>
+        </div>
+      </div>
+
       <CFANotes title="CFA Level III — Comparable Analysis" items={[
         { term: 'Relative Valuation', def: 'Benchmarks BMNR against peers. If MSTR trades at 2x NAV and BMNR at 1.2x, is BMNR undervalued or MSTR overvalued? Context matters.' },
         { term: 'Crypto/Share', def: 'Fundamental backing metric. Higher = more crypto per share of ownership. Affected by dilution and accumulation.' },

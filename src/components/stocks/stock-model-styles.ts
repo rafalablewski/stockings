@@ -254,6 +254,31 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   border-color: var(--accent);
 }
 
+/* Filter Buttons - For inline filtering (competitor filters, peer group selectors) */
+.filter-btn {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+}
+.filter-btn:hover {
+  border-color: var(--text3);
+  color: var(--text);
+}
+.filter-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* Dropdown Navigation - Stock-specific tabs in expandable menu */
 .nav-dropdown {
   display: inline-flex;
