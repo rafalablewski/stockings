@@ -614,7 +614,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
     alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
-    background: highlight ? 'var(--cyan-dim)' : 'transparent',
+    background: highlight ? 'var(--accent-dim)' : 'transparent',
     paddingLeft: highlight ? '12px' : 0,
     paddingRight: highlight ? '12px' : 0,
     marginLeft: highlight ? '-12px' : 0,
@@ -625,7 +625,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
       {label}
       <UpdateIndicators sources={updateSource} />
     </span>
-    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--cyan)' : 'var(--text)' }}>{value}</span>
+    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--accent)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
 Row.displayName = 'Row';
@@ -1539,8 +1539,8 @@ const ModelTab = ({
 
         {/* DCF VALUATION OUTPUT */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
-        <div className="card" style={{ border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
-          <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
+        <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
+          <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
 
           {/* Primary metrics */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
@@ -1653,7 +1653,7 @@ const ModelTab = ({
               </div>
             </div>
 
-            <div style={{ marginTop: 12, padding: 10, background: 'rgba(34,211,238,0.1)', borderRadius: 6, fontSize: 11 }}>
+            <div style={{ marginTop: 12, padding: 10, background: 'var(--accent-dim)', borderRadius: 6, fontSize: 11 }}>
               <strong>Key Assumptions:</strong> Terminal year is {new Date().getFullYear() + 5} (5 years out).
               Discount rate captures ALL risk in one number (no separate risk factors to avoid double-counting).
               Staking yield compounds ETH holdings; operating costs reduce effective yield.
@@ -1685,7 +1685,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
     <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
-      <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--violet)' }}>BMNR:</strong> ETH treasury company accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
+      <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>BMNR:</strong> ETH treasury company accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
@@ -1723,7 +1723,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         {holdingsData.map((d, i) => (
           <div key={i} className="bar-col">
             <div className="bar-val">{d.display}</div>
-            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--violet)' }} />
+            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--accent)' }} />
             <div className="bar-label">{d.label}</div>
           </div>
         ))}
@@ -2902,16 +2902,59 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 // COMPS TAB
 const CompsTab = ({ comparables, ethPrice }) => {
   const btcPrice = 100000;
-  const compsData = comparables.map(c => { const cryptoPrice = c.crypto === 'BTC' ? btcPrice : ethPrice; const navPerShare = (c.holdings * cryptoPrice) / c.shares; return { ...c, navPerShare, premium: ((c.price / navPerShare) - 1) * 100, marketCap: c.price * c.shares }; });
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  const compsData = comparables.map(c => {
+    // Handle mixed holdings (COIN has string)
+    const cryptoPrice = c.crypto === 'BTC' ? btcPrice : ethPrice;
+    const numericHoldings = typeof c.holdings === 'number' ? c.holdings : 0;
+    const navPerShare = numericHoldings > 0 ? (numericHoldings * cryptoPrice) / c.shares : 0;
+    return {
+      ...c,
+      navPerShare,
+      premium: navPerShare > 0 ? ((c.price / navPerShare) - 1) * 100 : 0,
+      marketCap: c.price * c.shares
+    };
+  });
+
+  const categories = [
+    { key: 'all', label: 'All Peers' },
+    { key: 'ETH', label: 'ETH Treasury' },
+    { key: 'BTC', label: 'BTC Treasury' },
+    { key: 'Exchange', label: 'Exchanges' },
+  ];
+
+  const filteredComps = selectedCategory === 'all'
+    ? compsData
+    : compsData.filter(c => c.category === selectedCategory);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Comparables<UpdateIndicators sources={['PR', 'WS']} /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#comparables</div>
+      <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#peer-comparison</div>
       <div className="highlight">
         <h3>Peer Comparison</h3>
         <p>Compare BMNR to other crypto treasury companies. Key differentiator: ETH staking yield vs BTC's 0%.</p>
       </div>
+
+      {/* Peer Group Selector */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+        {categories.map(cat => (
+          <button
+            key={cat.key}
+            onClick={() => setSelectedCategory(cat.key)}
+            className={`filter-btn ${selectedCategory === cat.key ? 'active' : ''}`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#crypto-treasury-comparison</div>
       <div className="card">
-        <div className="card-title">Comparison Table</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Crypto Treasury Comparison<UpdateIndicators sources={['WS']} /></div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>NAV premium/discount analysis — BMNR's ETH staking yield vs BTC treasuries' 0%</p>
         <table className="tbl">
           <thead>
             <tr>
@@ -2926,14 +2969,17 @@ const CompsTab = ({ comparables, ethPrice }) => {
             </tr>
           </thead>
           <tbody>
-            {compsData.map(c => (
+            {filteredComps.map(c => (
               <tr key={c.name} style={c.name === 'BMNR' ? { background: 'var(--accent-dim)' } : undefined}>
-                <td style={{ fontWeight: 500 }}>{c.name}</td>
+                <td>
+                  <div style={{ fontWeight: c.name === 'BMNR' ? 700 : 500 }}>{c.fullName || c.name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.name}</div>
+                </td>
                 <td className="c">{c.crypto}</td>
-                <td className="r">{c.holdings.toLocaleString()}</td>
-                <td className="r">${c.navPerShare.toFixed(2)}</td>
+                <td className="r">{typeof c.holdings === 'number' ? c.holdings.toLocaleString() : c.holdings}</td>
+                <td className="r">{c.navPerShare > 0 ? `$${c.navPerShare.toFixed(2)}` : '—'}</td>
                 <td className="r">${c.price}</td>
-                <td className="r" style={{ fontWeight: 500, color: c.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{c.premium >= 0 ? '+' : ''}{c.premium.toFixed(0)}%</td>
+                <td className="r" style={{ fontWeight: 500, color: c.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{c.navPerShare > 0 ? `${c.premium >= 0 ? '+' : ''}${c.premium.toFixed(0)}%` : '—'}</td>
                 <td className="r">{c.yield > 0 ? <span className="mint">{c.yield}%</span> : '—'}</td>
                 <td className="r">${(c.marketCap / 1e9).toFixed(1)}B</td>
               </tr>
@@ -2941,14 +2987,184 @@ const CompsTab = ({ comparables, ethPrice }) => {
           </tbody>
         </table>
       </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#yield-advantage</div>
       <div className="card">
-        <div className="card-title">Yield Advantage</div>
-        <div style={{ textAlign: 'center', padding: '32px 0' }}>
-          <div style={{ fontSize: 48, fontWeight: 700, color: 'var(--mint)' }}>+{comparables[0].yield}%</div>
-          <div style={{ fontSize: 16, color: 'var(--text3)', marginTop: 8 }}>Annual staking yield vs BTC (0%)</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Yield Advantage<UpdateIndicators sources={['WS']} /></div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ETH staking generates yield vs BTC's 0% — structural advantage</p>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className="big-stat">
+            <div className="num mint">+{comparables[0].yield}%</div>
+            <div className="lbl">Annual staking yield vs BTC (0%)</div>
+          </div>
         </div>
       </div>
 
+      {/* Advanced Valuation Matrices */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-framework</div>
+      <div className="highlight"><h3>📈 Valuation Framework</h3><p>NAV-based valuation for crypto treasury companies. Premium/discount analysis vs peers.</p></div>
+
+      {/* Valuation Methodology Matrix */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>BMNR value under different NAV multiples (current: ${(compsData[0]?.marketCap / 1e9).toFixed(2)}B)</p>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Peer Basis</th>
+              <th className="r">Multiple</th>
+              <th className="r">Implied Value</th>
+              <th className="r">vs Current</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(() => {
+              const bmnr = compsData.find(c => c.name === 'BMNR');
+              const currentMC = bmnr?.marketCap || 0;
+              const nav = bmnr?.navPerShare * (comparables[0]?.shares || 1);
+              return [
+                { method: 'NAV Multiple', basis: 'MSTR Premium', multiple: '2.0x', implied: nav * 2.0, vs: ((nav * 2.0) / currentMC - 1) * 100 },
+                { method: 'NAV Multiple', basis: 'Market Average', multiple: '1.5x', implied: nav * 1.5, vs: ((nav * 1.5) / currentMC - 1) * 100 },
+                { method: 'NAV Multiple', basis: 'Fair Value', multiple: '1.0x', implied: nav * 1.0, vs: ((nav * 1.0) / currentMC - 1) * 100 },
+                { method: 'NAV Multiple', basis: 'Discount', multiple: '0.75x', implied: nav * 0.75, vs: ((nav * 0.75) / currentMC - 1) * 100 },
+                { method: 'Yield-Adjusted', basis: 'ETH Yield Premium', multiple: '1.3x', implied: nav * 1.3, vs: ((nav * 1.3) / currentMC - 1) * 100 },
+                { method: 'Yield-Adjusted', basis: '5yr Compound', multiple: '1.15x', implied: nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5), vs: ((nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5)) / currentMC - 1) * 100 },
+              ].map((v, i) => (
+                <tr key={i}>
+                  <td style={{ fontWeight: 500 }}>{v.method}</td>
+                  <td>{v.basis}</td>
+                  <td className="r">{v.multiple}</td>
+                  <td className="r mint">${(v.implied / 1e9).toFixed(2)}B</td>
+                  <td className="r" style={{ color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                    {v.vs >= 0 ? '+' : ''}{v.vs.toFixed(0)}%
+                  </td>
+                </tr>
+              ));
+            })()}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="g2" style={{ marginTop: 24 }}>
+        {/* SOTP Valuation */}
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
+          <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
+          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Value each component separately</p>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th className="r">Metric</th>
+                <th className="r">Multiple</th>
+                <th className="r">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(() => {
+                const bmnr = compsData.find(c => c.name === 'BMNR');
+                const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
+                const ethValue = ethHoldings * ethPrice;
+                return [
+                  { segment: 'ETH Holdings', basis: 'Spot value', metric: `${(ethHoldings / 1e6).toFixed(2)}M ETH`, multiple: '1.0x', value: ethValue },
+                  { segment: 'Staking Yield', basis: '5yr NPV @ 10%', metric: `${comparables[0]?.yield || 0}% APY`, multiple: 'NPV', value: ethValue * (comparables[0]?.yield || 0) / 100 * 3.79 },
+                  { segment: 'Operational Premium', basis: 'Management + infrastructure', metric: 'Strategic', multiple: '—', value: ethValue * 0.05 },
+                  { segment: 'Growth Optionality', basis: 'Acquisition capacity', metric: 'Option value', multiple: '—', value: ethValue * 0.03 },
+                ].map((s, i) => (
+                  <tr key={i}>
+                    <td>
+                      <div style={{ fontWeight: 500 }}>{s.segment}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
+                    </td>
+                    <td className="r">{s.metric}</td>
+                    <td className="r">{s.multiple}</td>
+                    <td className="r mint">${(s.value / 1e9).toFixed(2)}B</td>
+                  </tr>
+                ));
+              })()}
+              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                <td colSpan={3}>SOTP Total</td>
+                <td className="r mint">${((() => {
+                  const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
+                  const ethValue = ethHoldings * ethPrice;
+                  const yieldNPV = ethValue * (comparables[0]?.yield || 0) / 100 * 3.79;
+                  return (ethValue + yieldNPV + ethValue * 0.08) / 1e9;
+                })()).toFixed(2)}B</td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        {/* NAV Premium Sensitivity */}
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#nav-premium-sensitivity</div>
+          <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>NAV Premium Sensitivity<UpdateIndicators sources={['WS']} /></div>
+          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Stock price at different ETH prices × NAV multiples</p>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="tbl">
+              <thead>
+                <tr>
+                  <th>ETH ↓ / NAV → </th>
+                  {[0.75, 1.0, 1.25, 1.5, 2.0].map(m => <th key={m} className="r">{m}x</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(ethMult => {
+                  const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
+                  const shares = comparables[0]?.shares || 1;
+                  const baseNAV = (ethHoldings * ethPrice) / shares;
+                  const currentPrice = comparables[0]?.price || 0;
+                  return (
+                    <tr key={ethMult}>
+                      <td style={{ fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</td>
+                      {[0.75, 1.0, 1.25, 1.5, 2.0].map(navMult => {
+                        const price = baseNAV * ethMult * navMult;
+                        const isNear = ethMult === 1.0 && navMult === 1.0;
+                        return (
+                          <td key={navMult} className="r" style={isNear ? {
+                            background: 'var(--accent-dim)',
+                            fontWeight: 600,
+                            color: 'var(--accent)'
+                          } : { color: price >= currentPrice ? 'var(--mint)' : 'var(--coral)' }}>
+                            ${price.toFixed(2)}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Competitor Intelligence Placeholder */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-news</div>
+      <div className="highlight">
+        <h3>📰 Competitor Intelligence</h3>
+        <p>Track competitor developments to assess BMNR competitive position in the crypto treasury space.</p>
+      </div>
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-filter</div>
+      <div className="card" style={{ padding: 32, textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>🔜</div>
+        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)', marginBottom: 8 }}>Competitor Intelligence Coming Soon</div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, maxWidth: 500, margin: '0 auto' }}>
+          This section will track news and developments from crypto treasury competitors including MicroStrategy (MSTR),
+          Marathon Digital (MARA), Riot Platforms (RIOT), and other BTC/ETH treasury companies.
+          <br /><br />
+          Key tracking areas: acquisition announcements, funding rounds, regulatory developments,
+          yield strategies, and market positioning changes.
+        </p>
+      </div>
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Comparable Analysis" items={[
         { term: 'Relative Valuation', def: 'Benchmarks BMNR against peers. If MSTR trades at 2x NAV and BMNR at 1.2x, is BMNR undervalued or MSTR overvalued? Context matters.' },
         { term: 'Crypto/Share', def: 'Fundamental backing metric. Higher = more crypto per share of ownership. Affected by dilution and accumulation.' },
@@ -3499,9 +3715,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                   padding: '12px 16px',
                   borderRadius: 8,
                   textAlign: 'left',
-                  border: `2px solid ${activePreset === key ? 'var(--violet)' : 'transparent'}`,
-                  background: activePreset === key ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
-                  color: activePreset === key ? 'var(--violet)' : 'var(--text)',
+                  border: `2px solid ${activePreset === key ? 'var(--accent)' : 'transparent'}`,
+                  background: activePreset === key ? 'var(--accent-dim)' : 'var(--surface2)',
+                  color: activePreset === key ? 'var(--accent)' : 'var(--text)',
                   cursor: 'pointer',
                   transition: 'all 0.15s'
                 }}
@@ -3529,9 +3745,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                     flex: 1,
                     padding: '12px 20px',
                     borderRadius: 8,
-                    border: years === yr ? '2px solid var(--violet)' : '2px solid transparent',
-                    background: years === yr ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
-                    color: years === yr ? 'var(--violet)' : 'var(--text2)',
+                    border: years === yr ? '2px solid var(--accent)' : '2px solid transparent',
+                    background: years === yr ? 'var(--accent-dim)' : 'var(--surface2)',
+                    color: years === yr ? 'var(--accent)' : 'var(--text2)',
                     cursor: 'pointer',
                     fontWeight: years === yr ? 700 : 400,
                     fontFamily: 'Space Mono',
@@ -3555,9 +3771,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                     flex: 1,
                     padding: '12px 16px',
                     borderRadius: 8,
-                    border: sims === simCount ? '2px solid var(--violet)' : '2px solid transparent',
-                    background: sims === simCount ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
-                    color: sims === simCount ? 'var(--violet)' : 'var(--text2)',
+                    border: sims === simCount ? '2px solid var(--accent)' : '2px solid transparent',
+                    background: sims === simCount ? 'var(--accent-dim)' : 'var(--surface2)',
+                    color: sims === simCount ? 'var(--accent)' : 'var(--text2)',
                     cursor: 'pointer',
                     fontWeight: sims === simCount ? 700 : 400,
                     fontFamily: 'Space Mono',
@@ -3576,7 +3792,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       {/* Parameters - Model Tab Style */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
-        <h3 style={{ color: 'var(--violet)', marginBottom: 8, marginTop: 0 }}>GBM Parameters</h3>
+        <h3 style={{ color: 'var(--accent)', marginBottom: 8, marginTop: 0 }}>GBM Parameters</h3>
         <div className="g2" style={{ marginTop: 0 }}>
           <div className="card" style={{ marginTop: 0 }}>
             <div className="card-title">ETH Drift (%)</div>
@@ -3702,12 +3918,12 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
         {/* Current NAV Info */}
         <div style={{ marginTop: 12, padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 12, color: 'var(--text3)' }}>
-          Current NAV: <strong style={{ color: 'var(--violet)' }}>${currentNAV.toFixed(0)}</strong> | Adjustments: +{stakingYield.toFixed(1)}% yield, -{slashingRisk}% slash, -{liquidityDiscount + regulatoryRisk}% disc
+          Current NAV: <strong style={{ color: 'var(--accent)' }}>${currentNAV.toFixed(0)}</strong> | Adjustments: +{stakingYield.toFixed(1)}% yield, -{slashingRisk}% slash, -{liquidityDiscount + regulatoryRisk}% disc
         </div>
 
         {/* Run Button */}
         <button onClick={() => setRunKey(k => k + 1)} style={{
-          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--violet)', color: 'var(--bg1)',
+          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
           border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
         }}>🎲 Run Simulation</button>
       </div>
@@ -3726,10 +3942,10 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
             <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${sim.p25.toFixed(0)}</div>
             <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((sim.p25 / currentNAV - 1) * 100).toFixed(0)}%</div>
           </div>
-          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.4)', textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#c4b5fd', marginBottom: 4 }}>Median</div>
-            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#a78bfa' }}>${sim.p50.toFixed(0)}</div>
-            <div style={{ fontSize: 11, color: '#c4b5fd', marginTop: 4 }}>{((sim.p50 / currentNAV - 1) * 100).toFixed(0)}%</div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'var(--accent-dim)', border: '1px solid var(--accent)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: 'var(--accent)', marginBottom: 4, opacity: 0.8 }}>Median</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--accent)' }}>${sim.p50.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 4, opacity: 0.8 }}>{((sim.p50 / currentNAV - 1) * 100).toFixed(0)}%</div>
           </div>
           <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
             <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
@@ -3774,7 +3990,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
                 labelFormatter={(v) => `$${v.toFixed(0)}`}
               />
-              <Bar dataKey="pct" fill="var(--violet)" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
               <ReferenceLine x={currentNAV} stroke="#fff" strokeDasharray="5 5" />
             </BarChart>
           </ResponsiveContainer>

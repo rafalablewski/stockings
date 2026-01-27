@@ -336,7 +336,7 @@ class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, ErrorBou
             style={{
               marginTop: '20px',
               padding: '12px 24px',
-              background: '#10B981',
+              background: '#34d399',
               color: '#05070A',
               border: 'none',
               borderRadius: '8px',
@@ -730,7 +730,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
     alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
-    background: highlight ? 'var(--cyan-dim)' : 'transparent',
+    background: highlight ? 'var(--accent-dim)' : 'transparent',
     paddingLeft: highlight ? '12px' : 0,
     paddingRight: highlight ? '12px' : 0,
     marginLeft: highlight ? '-12px' : 0,
@@ -741,7 +741,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
       {label}
       <UpdateIndicators sources={updateSource} />
     </span>
-    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--cyan)' : 'var(--text)' }}>{value}</span>
+    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--accent)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
 Row.displayName = 'Row';
@@ -778,6 +778,14 @@ const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) 
   );
 });
 Card.displayName = 'Card';
+
+const Panel = React.memo<PanelProps>(({ title, children }) => (
+  <div className="card">
+    {title && <div className="card-title">{title}</div>}
+    {children}
+  </div>
+));
+Panel.displayName = 'Panel';
 
 // Input Component for adjustable parameters
 const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, max }) => (
@@ -1465,8 +1473,8 @@ const CRCLModelTab = ({
 
         {/* DCF VALUATION OUTPUT */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
-        <div className="card" style={{ border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
-          <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
+        <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
+          <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
 
           {/* Primary metrics */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
@@ -1574,7 +1582,7 @@ const CRCLModelTab = ({
               </div>
             </div>
 
-            <div style={{ marginTop: 12, padding: 10, background: 'rgba(34,211,238,0.1)', borderRadius: 6, fontSize: 11 }}>
+            <div style={{ marginTop: 12, padding: 10, background: 'var(--accent-dim)', borderRadius: 6, fontSize: 11 }}>
               <strong>Key Assumptions:</strong> Terminal year is {new Date().getFullYear() + 5} (5 years out).
               FCF conversion = 85% of EBITDA (asset-light model).
               Coinbase distribution cost is applied to gross yield revenue.
@@ -2542,152 +2550,6 @@ function CRCLModel() {
       return selectedTopics.every(t => entryTopics.includes(t));
     });
 
-  // ===== COMPREHENSIVE COMPS DATA =====
-  
-  // Peer Groups
-  const PEER_GROUPS = {
-    crypto: {
-      name: 'Crypto Infrastructure',
-      description: 'Direct competitors in digital assets',
-      peers: [
-        { name: 'Circle (CRCL)', ticker: 'CRCL', cap: 18.85, rev: 2.96, ebitda: 0.285, netIncome: 0.156, pe: 115, margin: 39, growth: 66, aum: 73.7, takeRate: 4.0, highlight: true },
-        { name: 'Tether', ticker: 'Private', cap: null, rev: 6.2, ebitda: 5.2, netIncome: 5.0, pe: null, margin: 85, growth: 45, aum: 140, takeRate: 4.4 },
-        { name: 'Coinbase', ticker: 'COIN', cap: 67, rev: 5.1, ebitda: 1.2, netIncome: 0.95, pe: 35, margin: 25, growth: 30, aum: null, takeRate: null },
-        { name: 'Galaxy Digital', ticker: 'GLXY', cap: 4.5, rev: 1.8, ebitda: 0.4, netIncome: 0.25, pe: 18, margin: 22, growth: 85, aum: null, takeRate: null },
-        { name: 'Robinhood', ticker: 'HOOD', cap: 32, rev: 2.4, ebitda: 0.45, netIncome: 0.3, pe: 106, margin: 19, growth: 36, aum: null, takeRate: null },
-      ]
-    },
-    networks: {
-      name: 'Card Networks',
-      description: 'Analogous "rails" business model',
-      peers: [
-        { name: 'Visa', ticker: 'V', cap: 580, rev: 35, ebitda: 23, netIncome: 19.5, pe: 31, margin: 67, growth: 10, aum: null, takeRate: null },
-        { name: 'Mastercard', ticker: 'MA', cap: 450, rev: 27, ebitda: 17, netIncome: 12.3, pe: 37, margin: 58, growth: 12, aum: null, takeRate: null },
-        { name: 'American Express', ticker: 'AXP', cap: 190, rev: 60, ebitda: 15, netIncome: 8.4, pe: 20, margin: 25, growth: 8, aum: null, takeRate: null },
-      ]
-    },
-    payments: {
-      name: 'Digital Payments',
-      description: 'Payment infrastructure peers',
-      peers: [
-        { name: 'PayPal', ticker: 'PYPL', cap: 85, rev: 31, ebitda: 6.5, netIncome: 4.2, pe: 20, margin: 18, growth: 8, aum: null, takeRate: null },
-        { name: 'Block', ticker: 'SQ', cap: 45, rev: 21, ebitda: 1.8, netIncome: 0.78, pe: 58, margin: 5, growth: 18, aum: null, takeRate: null },
-        { name: 'Adyen', ticker: 'ADYEN', cap: 45, rev: 2.0, ebitda: 0.9, netIncome: 0.65, pe: 55, margin: 45, growth: 24, aum: null, takeRate: null },
-        { name: 'Stripe', ticker: 'Private', cap: 65, rev: 14, ebitda: 1.5, netIncome: 1.0, pe: null, margin: 11, growth: 25, aum: null, takeRate: null },
-      ]
-    },
-    assetMgrs: {
-      name: 'Asset Managers',
-      description: 'Reserve management parallel (yield on AUM)',
-      peers: [
-        { name: 'BlackRock', ticker: 'BLK', cap: 145, rev: 20, ebitda: 7.8, netIncome: 6.0, pe: 24, margin: 39, growth: 11, aum: 10500, takeRate: 0.19 },
-        { name: 'Schwab', ticker: 'SCHW', cap: 130, rev: 19, ebitda: 8.5, netIncome: 4.7, pe: 28, margin: 45, growth: 5, aum: 8500, takeRate: 0.22 },
-        { name: 'State Street', ticker: 'STT', cap: 28, rev: 12, ebitda: 3.5, netIncome: 2.4, pe: 12, margin: 29, growth: 4, aum: 4100, takeRate: 0.29 },
-      ]
-    },
-    fintech: {
-      name: 'High-Growth Fintech',
-      description: 'Growth-stage fintech multiples',
-      peers: [
-        { name: 'Affirm', ticker: 'AFRM', cap: 18, rev: 2.3, ebitda: -0.1, netIncome: -0.5, pe: null, margin: -22, growth: 46, aum: null, takeRate: null },
-        { name: 'Marqeta', ticker: 'MQ', cap: 4.5, rev: 0.7, ebitda: -0.05, netIncome: -0.12, pe: null, margin: -17, growth: 30, aum: null, takeRate: null },
-        { name: 'Toast', ticker: 'TOST', cap: 18, rev: 4.1, ebitda: 0.15, netIncome: 0.05, pe: 360, margin: 4, growth: 28, aum: null, takeRate: null },
-        { name: 'SoFi', ticker: 'SOFI', cap: 14, rev: 2.5, ebitda: 0.35, netIncome: 0.12, pe: 116, margin: 14, growth: 35, aum: null, takeRate: null },
-      ]
-    }
-  };
-
-  // Business Model Metrics (Circle-specific)
-  const CIRCLE_METRICS = {
-    revenuePerUSDC: (2.96 / 73.7 * 100).toFixed(2), // cents per dollar
-    grossTakeRate: (1.68 / 60.8 * 100).toFixed(2), // reserve income / avg USDC
-    distributionCostPct: (0.908 / 1.68 * 100).toFixed(1), // Coinbase share
-    netTakeRate: ((1.68 - 0.908) / 60.8 * 100).toFixed(2), // after Coinbase
-    rldcMargin: 39,
-    reserveYield: 4.33, // from S-1
-  };
-
-  // Valuation Methodologies
-  const VALUATION_MATRIX = [
-    { method: 'P/S', basis: 'Visa', multiple: 16.6, implied: 2.96 * 16.6, premium: ((2.96 * 16.6) / 18.85 - 1) * 100 },
-    { method: 'P/S', basis: 'Mastercard', multiple: 16.7, implied: 2.96 * 16.7, premium: ((2.96 * 16.7) / 18.85 - 1) * 100 },
-    { method: 'P/S', basis: 'Coinbase', multiple: 13.1, implied: 2.96 * 13.1, premium: ((2.96 * 13.1) / 18.85 - 1) * 100 },
-    { method: 'P/S', basis: 'PayPal', multiple: 2.7, implied: 2.96 * 2.7, premium: ((2.96 * 2.7) / 18.85 - 1) * 100 },
-    { method: 'P/S', basis: 'Adyen', multiple: 22.5, implied: 2.96 * 22.5, premium: ((2.96 * 22.5) / 18.85 - 1) * 100 },
-    { method: 'EV/EBITDA', basis: 'Payments Avg', multiple: 18, implied: 0.285 * 18, premium: ((0.285 * 18) / 18.85 - 1) * 100 },
-    { method: 'EV/EBITDA', basis: 'Networks Avg', multiple: 25, implied: 0.285 * 25, premium: ((0.285 * 25) / 18.85 - 1) * 100 },
-    { method: 'P/E', basis: 'Fintech Avg', multiple: 35, implied: 0.156 * 35, premium: ((0.156 * 35) / 18.85 - 1) * 100 },
-    { method: 'P/E', basis: 'Current', multiple: 115, implied: 0.156 * 115, premium: ((0.156 * 115) / 18.85 - 1) * 100 },
-  ];
-
-  // SOTP Valuation
-  const SOTP = [
-    { segment: 'Reserve Income Business', metric: '$1.68B rev', multiple: '8x', basis: 'Annuity-like', value: 13.4 },
-    { segment: 'Net Reserve (post-Coinbase)', metric: '$0.77B rev', multiple: '12x', basis: 'High-margin', value: 9.2 },
-    { segment: 'Platform/Services', metric: '$50M rev', multiple: '15x', basis: 'SaaS-like', value: 0.75 },
-    { segment: 'USYC/Hashnote', metric: 'Option value', multiple: '—', basis: 'Yield products', valueLow: 1, valueHigh: 3 },
-    { segment: 'Cash & Equivalents', metric: '$1.1B', multiple: '1x', basis: 'Book value', value: 1.1 },
-  ];
-
-  // Transaction Comps
-  const TRANSACTIONS = [
-    { date: 'Mar 2023', target: 'Stripe', acquirer: 'Private Round', value: 50, metric: '3.6x rev', type: 'Funding' },
-    { date: 'Jan 2025', target: 'Hashnote', acquirer: 'Circle', value: null, metric: 'Undisclosed', type: 'M&A', notes: 'USYC yield product' },
-    { date: 'Aug 2023', target: 'Centre Consortium', acquirer: 'Circle', value: null, metric: 'IP acquisition', type: 'M&A', notes: 'Full USDC control from Coinbase' },
-    { date: 'Apr 2022', target: 'Circle SPAC', acquirer: 'Cancelled', value: 9, metric: '—', type: 'SPAC', notes: 'Concord deal terminated' },
-    { date: 'Nov 2023', target: 'FTX/Alameda assets', acquirer: 'Various', value: 0.1, metric: 'Distressed', type: 'Bankruptcy', notes: 'Cautionary' },
-    { date: 'Oct 2023', target: 'Paxos (BUSD)', acquirer: 'Wind-down', value: null, metric: '—', type: 'Regulatory', notes: 'NY DFS order' },
-  ];
-
-  // Historical Multiples (monthly since IPO)
-  const HISTORICAL_MULTIPLES = [
-    { month: 'Jun 25', crcl: 4.0, coinAvg: 12.5, paymentsAvg: 3.8, price: 31 },
-    { month: 'Jul 25', crcl: 5.2, coinAvg: 11.8, paymentsAvg: 3.6, price: 42 },
-    { month: 'Aug 25', crcl: 5.8, coinAvg: 13.1, paymentsAvg: 3.5, price: 48 },
-    { month: 'Sep 25', crcl: 6.1, coinAvg: 12.2, paymentsAvg: 3.4, price: 52 },
-    { month: 'Oct 25', crcl: 6.4, coinAvg: 13.5, paymentsAvg: 3.3, price: 58 },
-    { month: 'Nov 25', crcl: 6.2, coinAvg: 14.1, paymentsAvg: 3.2, price: 62 },
-    { month: 'Dec 25', crcl: 6.4, coinAvg: 13.1, paymentsAvg: 2.9, price: 82.25 },
-  ];
-
-  // Scatter plot data (Growth vs P/S)
-  const SCATTER_DATA = [
-    { name: 'Circle', x: 66, y: 6.4, r: 18.85, group: 'crypto' },
-    { name: 'Coinbase', x: 30, y: 13.1, r: 67, group: 'crypto' },
-    { name: 'Visa', x: 10, y: 16.6, r: 580, group: 'network' },
-    { name: 'Mastercard', x: 12, y: 16.7, r: 450, group: 'network' },
-    { name: 'PayPal', x: 8, y: 2.7, r: 85, group: 'payments' },
-    { name: 'Block', x: 18, y: 2.1, r: 45, group: 'payments' },
-    { name: 'Adyen', x: 24, y: 22.5, r: 45, group: 'payments' },
-    { name: 'Affirm', x: 46, y: 7.8, r: 18, group: 'fintech' },
-    { name: 'Galaxy', x: 85, y: 2.5, r: 4.5, group: 'crypto' },
-  ];
-
-  // Sensitivity Matrix (USDC levels x Rate scenarios)
-  const SENSITIVITY_USDC = [50, 75, 100, 125, 150]; // $B USDC
-  const SENSITIVITY_RATES = [3.0, 3.5, 4.0, 4.5, 5.0]; // Fed funds %
-  
-  const calcSensitivity = (usdc: number, rate: number, multiple: number) => {
-    const reserveIncome = usdc * (rate / 100);
-    const netRevenue = reserveIncome * 0.45; // ~45% net after Coinbase
-    return netRevenue * multiple;
-  };
-
-  // State for peer group selection
-  const [selectedPeerGroup, setSelectedPeerGroup] = useState<string>('crypto');
-  const [compMetric, setCompMetric] = useState<string>('ps');
-
-  const currentPeers = PEER_GROUPS[selectedPeerGroup as keyof typeof PEER_GROUPS];
-
-  // Legacy COMPS for backward compatibility
-  const COMPS = [
-    { name: 'Circle (CRCL)', type: 'Stablecoin', cap: 18.85, rev: 2.96, pe: 115, margin: 39 },
-    { name: 'Tether', type: 'Stablecoin', cap: null, rev: 6.2, pe: null, margin: 85 },
-    { name: 'Coinbase', type: 'Exchange', cap: 67, rev: 5.1, pe: 35, margin: 25 },
-    { name: 'PayPal', type: 'Payments', cap: 85, rev: 31, pe: 20, margin: 18 },
-    { name: 'Block', type: 'Payments', cap: 45, rev: 21, pe: 58, margin: 5 },
-    { name: 'Visa', type: 'Network', cap: 580, rev: 35, pe: 31, margin: 67 },
-  ];
 
   return (
     <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
@@ -2711,22 +2573,22 @@ function CRCLModel() {
               <h1>Circle Internet Group</h1>
               <div className="ticker">◉ NYSE: CRCL</div>
               {/* H4: Data Freshness Timestamp */}
-              <div style={{ 
-                display: 'inline-flex', 
-                alignItems: 'center', 
-                gap: 6, 
-                background: 'rgba(126,231,135,0.1)', 
-                border: '1px solid rgba(126,231,135,0.3)', 
-                borderRadius: 6, 
-                padding: '4px 10px', 
-                fontSize: 11, 
-                color: '#7EE787',
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'rgba(52,211,153,0.1)',
+                border: '1px solid rgba(52,211,153,0.3)',
+                borderRadius: 6,
+                padding: '4px 10px',
+                fontSize: 11,
+                color: '#34d399',
                 marginTop: 8,
                 marginBottom: 16
               }}>
                 <span>📅</span>
                 <span>Data as of: {MODEL_METADATA.priceAsOf}</span>
-                <span style={{ color: 'rgba(126,231,135,0.5)' }}>|</span>
+                <span style={{ color: 'rgba(52,211,153,0.5)' }}>|</span>
                 <span>Source: {MODEL_METADATA.dataSource}</span>
               </div>
               <p className="desc">
@@ -2816,7 +2678,7 @@ function CRCLModel() {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
               <div className="highlight">
                 <h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
-                <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--mint)' }}>Circle:</strong> Building financial infrastructure for the internet economy. USDC enables 24/7 global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of traditional finance and blockchain technology.</p>
+                <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>Circle:</strong> Building financial infrastructure for the internet economy. USDC enables 24/7 global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of traditional finance and blockchain technology.</p>
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
@@ -2858,7 +2720,7 @@ function CRCLModel() {
                     return DATA.map((d, i) => (
                       <div key={i} className="bar-col">
                         <div className="bar-val">${d.totalRevenue}M</div>
-                        <div className="bar" style={{ height: `${maxRevenue > 0 ? (d.totalRevenue / maxRevenue) * 150 : 0}px`, background: 'var(--mint)' }} />
+                        <div className="bar" style={{ height: `${maxRevenue > 0 ? (d.totalRevenue / maxRevenue) * 150 : 0}px`, background: 'var(--accent)' }} />
                         <div className="bar-label">{d.quarter}</div>
                       </div>
                     ));
@@ -4749,9 +4611,9 @@ function CRCLModel() {
                             padding: '12px 16px',
                             borderRadius: 8,
                             textAlign: 'left',
-                            border: `2px solid ${isActive ? 'var(--mint)' : 'transparent'}`,
-                            background: isActive ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
-                            color: isActive ? 'var(--mint)' : 'var(--text)',
+                            border: `2px solid ${isActive ? 'var(--accent)' : 'transparent'}`,
+                            background: isActive ? 'var(--accent-dim)' : 'var(--surface2)',
+                            color: isActive ? 'var(--accent)' : 'var(--text)',
                             cursor: 'pointer',
                             transition: 'all 0.15s'
                           }}
@@ -4780,9 +4642,9 @@ function CRCLModel() {
                             flex: 1,
                             padding: '12px 20px',
                             borderRadius: 8,
-                            border: mcYears === yr ? '2px solid var(--mint)' : '2px solid transparent',
-                            background: mcYears === yr ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
-                            color: mcYears === yr ? 'var(--mint)' : 'var(--text2)',
+                            border: mcYears === yr ? '2px solid var(--accent)' : '2px solid transparent',
+                            background: mcYears === yr ? 'var(--accent-dim)' : 'var(--surface2)',
+                            color: mcYears === yr ? 'var(--accent)' : 'var(--text2)',
                             cursor: 'pointer',
                             fontWeight: mcYears === yr ? 700 : 400,
                             fontFamily: 'Space Mono',
@@ -4806,9 +4668,9 @@ function CRCLModel() {
                             flex: 1,
                             padding: '12px 16px',
                             borderRadius: 8,
-                            border: mcSims === simCount ? '2px solid var(--mint)' : '2px solid transparent',
-                            background: mcSims === simCount ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
-                            color: mcSims === simCount ? 'var(--mint)' : 'var(--text2)',
+                            border: mcSims === simCount ? '2px solid var(--accent)' : '2px solid transparent',
+                            background: mcSims === simCount ? 'var(--accent-dim)' : 'var(--surface2)',
+                            color: mcSims === simCount ? 'var(--accent)' : 'var(--text2)',
                             cursor: 'pointer',
                             fontWeight: mcSims === simCount ? 700 : 400,
                             fontFamily: 'Space Mono',
@@ -4827,7 +4689,7 @@ function CRCLModel() {
               {/* Parameters - Model Tab Style */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
-                <h3 style={{ color: 'var(--mint)', marginBottom: 8, marginTop: 0 }}>USDC Growth Parameters</h3>
+                <h3 style={{ color: 'var(--accent)', marginBottom: 8, marginTop: 0 }}>USDC Growth Parameters</h3>
                 <div className="g2" style={{ marginTop: 0 }}>
                   <div className="card" style={{ marginTop: 0 }}>
                     <div className="card-title">Revenue Growth Min (%)</div>
@@ -5083,7 +4945,7 @@ function CRCLModel() {
 
                 {/* Run Button */}
                 <button onClick={() => setRunKey(k => k + 1)} style={{
-                  marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--mint)', color: 'var(--bg1)',
+                  marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
                   border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
                 }}>🎲 Run Simulation</button>
               </div>
@@ -5102,10 +4964,10 @@ function CRCLModel() {
                     <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${mcSim.p25.toFixed(0)}</div>
                     <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((mcSim.p25 / MARKET.price - 1) * 100).toFixed(0)}%</div>
                   </div>
-                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(52,211,153,0.2)', border: '1px solid rgba(52,211,153,0.4)', textAlign: 'center' }}>
-                    <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>Median</div>
-                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${mcSim.p50.toFixed(0)}</div>
-                    <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((mcSim.p50 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'var(--accent-dim)', border: '1px solid var(--accent)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: 'var(--accent)', marginBottom: 4, opacity: 0.8 }}>Median</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--accent)' }}>${mcSim.p50.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 4, opacity: 0.8 }}>{((mcSim.p50 / MARKET.price - 1) * 100).toFixed(0)}%</div>
                   </div>
                   <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
                     <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
@@ -5150,7 +5012,7 @@ function CRCLModel() {
                         formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
                         labelFormatter={(v) => `$${v.toFixed(0)}`}
                       />
-                      <Bar dataKey="pct" fill="var(--mint)" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
                       <ReferenceLine x={MARKET.price} stroke="#fff" strokeDasharray="5 5" />
                     </BarChart>
                   </ResponsiveContainer>
@@ -5528,379 +5390,7 @@ function CRCLModel() {
             </>
           )}
 
-          {activeTab === 'comps' && (
-            <>
-              <h2 className="section-head">Comparable Companies Analysis<UpdateIndicators sources="MARKET" /></h2>
-
-              {/* Highlight Box */}
-              <div className="highlight">
-                <h3>Peer Analysis Framework</h3>
-                <p>
-                  Circle sits at the intersection of multiple peer groups: crypto infrastructure (Coinbase),
-                  payments networks (Visa, PayPal), and high-growth fintech. Each lens provides different valuation
-                  context. Crypto peers trade at premium P/S; payments peers show margin potential.
-                </p>
-              </div>
-
-              {/* Peer Group Selector */}
-              <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
-                {Object.entries(PEER_GROUPS).map(([key, group]) => (
-                  <button
-                    key={key}
-                    onClick={() => setSelectedPeerGroup(key)}
-                    className={`filter-btn ${selectedPeerGroup === key ? 'active' : ''}`}
-                  >
-                    {group.name}
-                  </button>
-                ))}
-              </div>
-
-              {/* Selected Peer Group Table */}
-              <div className="card">
-                <div className="card-title">{currentPeers.name}</div>
-                <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>{currentPeers.description}</p>
-                <div style={{ overflowX: 'auto' }}>
-                  <table className="tbl">
-                    <thead>
-                      <tr>
-                        <th>Company</th>
-                        <th className="r">Mkt Cap</th>
-                        <th className="r">Revenue</th>
-                        <th className="r">EBITDA</th>
-                        <th className="r">P/E</th>
-                        <th className="r">Margin</th>
-                        <th className="r">Growth</th>
-                        <th className="r">P/S</th>
-                        <th className="r">EV/EBITDA</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {currentPeers.peers.map((p, i) => (
-                        <tr key={i} style={p.highlight ? { background: 'var(--mint-dim)' } : undefined}>
-                          <td>
-                            <div style={{ fontWeight: p.highlight ? 700 : 500 }}>{p.name}</div>
-                            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{p.ticker}</div>
-                          </td>
-                          <td className="r">{p.cap ? `$${p.cap}B` : 'Private'}</td>
-                          <td className="r">${p.rev}B</td>
-                          <td className="r">{p.ebitda > 0 ? `$${p.ebitda}B` : p.ebitda < 0 ? `($${Math.abs(p.ebitda)}B)` : '—'}</td>
-                          <td className="r">{p.pe ? `${p.pe}x` : '—'}</td>
-                          <td className="r" style={{ color: p.margin >= 30 ? 'var(--mint)' : p.margin < 0 ? 'var(--coral)' : 'inherit' }}>{p.margin}%</td>
-                          <td className="r" style={{ color: p.growth >= 30 ? 'var(--mint)' : 'inherit' }}>{p.growth}%</td>
-                          <td className="r mint">{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</td>
-                          <td className="r sky">{p.cap && p.ebitda > 0 ? `${(p.cap / p.ebitda).toFixed(1)}x` : '—'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Circle-Specific Business Model Metrics */}
-              <div className="card" style={{ marginTop: 24 }}>
-                <div className="card-title">Circle Business Model Metrics</div>
-                <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Unique metrics for stablecoin issuers — monetization of reserves</p>
-                <div className="g4">
-                  <div className="big-stat">
-                    <div className="num">{CIRCLE_METRICS.revenuePerUSDC}¢</div>
-                    <div className="lbl">Rev per $1 USDC</div>
-                  </div>
-                  <div className="big-stat">
-                    <div className="num">{CIRCLE_METRICS.grossTakeRate}%</div>
-                    <div className="lbl">Gross Take Rate</div>
-                  </div>
-                  <div className="big-stat">
-                    <div className="num">{CIRCLE_METRICS.distributionCostPct}%</div>
-                    <div className="lbl">Coinbase Share</div>
-                  </div>
-                  <div className="big-stat">
-                    <div className="num">{CIRCLE_METRICS.netTakeRate}%</div>
-                    <div className="lbl">Net Take Rate</div>
-                  </div>
-                </div>
-                <div style={{ marginTop: 20, padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-                    <div>
-                      <span style={{ color: 'var(--text3)', fontSize: 12 }}>Reserve Yield</span>
-                      <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--sky)' }}>{CIRCLE_METRICS.reserveYield}%</div>
-                    </div>
-                    <div>
-                      <span style={{ color: 'var(--text3)', fontSize: 12 }}>RLDC Margin</span>
-                      <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--mint)' }}>{CIRCLE_METRICS.rldcMargin}%</div>
-                    </div>
-                    <div>
-                      <span style={{ color: 'var(--text3)', fontSize: 12 }}>Tether Take Rate</span>
-                      <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--text2)' }}>4.4%</div>
-                    </div>
-                    <div>
-                      <span style={{ color: 'var(--text3)', fontSize: 12 }}>Tether Margin</span>
-                      <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--text2)' }}>85%</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Multi-Methodology Valuation Matrix */}
-              <div className="card" style={{ marginTop: 24 }}>
-                <div className="card-title">Implied Valuation Matrix</div>
-                <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Circle's value under different peer multiples (current: $18.9B)</p>
-                <table className="tbl">
-                  <thead>
-                    <tr>
-                      <th>Method</th>
-                      <th>Peer Basis</th>
-                      <th className="r">Multiple</th>
-                      <th className="r">Implied Value</th>
-                      <th className="r">Premium/(Discount)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {VALUATION_MATRIX.map((v, i) => (
-                      <tr key={i}>
-                        <td style={{ fontWeight: 500 }}>{v.method}</td>
-                        <td>{v.basis}</td>
-                        <td className="r">{v.multiple}x</td>
-                        <td className="r mint">${v.implied.toFixed(1)}B</td>
-                        <td className="r" style={{ color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                          {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Growth vs P/S Scatter Plot */}
-              <div className="card" style={{ marginTop: 24 }}>
-                <div className="card-title">Growth vs. P/S Multiple</div>
-                <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Circle's positioning relative to peers (bubble size = market cap)</p>
-                <div style={{ height: 300 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ScatterChart margin={{ top: 20, right: 30, bottom: 20, left: 20 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                      <XAxis 
-                        type="number" 
-                        dataKey="x" 
-                        name="Revenue Growth" 
-                        unit="%" 
-                        stroke="var(--text3)"
-                        tick={{ fill: 'var(--text3)', fontSize: 11 }}
-                        label={{ value: 'Revenue Growth %', position: 'bottom', fill: 'var(--text3)', fontSize: 12 }}
-                      />
-                      <YAxis 
-                        type="number" 
-                        dataKey="y" 
-                        name="P/S Multiple" 
-                        unit="x" 
-                        stroke="var(--text3)"
-                        tick={{ fill: 'var(--text3)', fontSize: 11 }}
-                        label={{ value: 'P/S Multiple', angle: -90, position: 'insideLeft', fill: 'var(--text3)', fontSize: 12 }}
-                      />
-                      <RechartsTooltip 
-                        contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8 }}
-                        formatter={(value: any, name: string) => [name === 'x' ? `${value}%` : `${value}x`, name === 'x' ? 'Growth' : 'P/S']}
-                        labelFormatter={(label) => SCATTER_DATA.find(d => d.x === label)?.name || ''}
-                      />
-                      <Scatter 
-                        data={SCATTER_DATA.filter(d => d.name !== 'Circle')} 
-                        fill="var(--text3)"
-                      >
-                        {SCATTER_DATA.filter(d => d.name !== 'Circle').map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={entry.group === 'crypto' ? 'var(--sky)' : entry.group === 'network' ? 'var(--violet)' : entry.group === 'payments' ? 'var(--gold)' : 'var(--text3)'}
-                          />
-                        ))}
-                      </Scatter>
-                      <Scatter 
-                        data={SCATTER_DATA.filter(d => d.name === 'Circle')} 
-                        fill="var(--mint)"
-                        shape="star"
-                      />
-                      <ReferenceLine y={6.4} stroke="var(--mint)" strokeDasharray="5 5" label={{ value: 'CRCL', fill: 'var(--mint)', fontSize: 10 }} />
-                    </ScatterChart>
-                  </ResponsiveContainer>
-                </div>
-                <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 12, fontSize: 12 }}>
-                  <span><span style={{ color: 'var(--mint)' }}>★</span> Circle</span>
-                  <span><span style={{ color: 'var(--sky)' }}>●</span> Crypto</span>
-                  <span><span style={{ color: 'var(--violet)' }}>●</span> Networks</span>
-                  <span><span style={{ color: 'var(--gold)' }}>●</span> Payments</span>
-                </div>
-              </div>
-
-              <div className="g2" style={{ marginTop: 24 }}>
-                {/* SOTP Valuation */}
-                <div className="card">
-                  <div className="card-title">Sum-of-the-Parts (SOTP)</div>
-                  <table className="tbl">
-                    <thead>
-                      <tr>
-                        <th>Segment</th>
-                        <th className="r">Metric</th>
-                        <th className="r">Multiple</th>
-                        <th className="r">Value</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {SOTP.map((s, i) => (
-                        <tr key={i}>
-                          <td>
-                            <div style={{ fontWeight: 500 }}>{s.segment}</div>
-                            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
-                          </td>
-                          <td className="r">{s.metric}</td>
-                          <td className="r">{s.multiple}</td>
-                          <td className="r mint">
-                            {s.value ? `$${s.value}B` : s.valueLow && s.valueHigh ? `$${s.valueLow}-${s.valueHigh}B` : '—'}
-                          </td>
-                        </tr>
-                      ))}
-                      <tr style={{ fontWeight: 600 }}>
-                        <td colSpan={3}>SOTP Range</td>
-                        <td className="r mint">$15.5-17.5B</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text3)' }}>
-                    Current market cap: $18.9B ({((18.9 / 16.5 - 1) * 100).toFixed(0)}% premium to midpoint)
-                  </div>
-                </div>
-
-                {/* Transaction Comps */}
-                <div className="card">
-                  <div className="card-title">Transaction Comps</div>
-                  <table className="tbl">
-                    <thead>
-                      <tr>
-                        <th>Date</th>
-                        <th>Target</th>
-                        <th className="r">Value</th>
-                        <th>Type</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {TRANSACTIONS.map((t, i) => (
-                        <tr key={i}>
-                          <td>{t.date}</td>
-                          <td>
-                            <div style={{ fontWeight: 500 }}>{t.target}</div>
-                            {t.notes && <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.notes}</div>}
-                          </td>
-                          <td className="r">{t.value ? `$${t.value}B` : '—'}</td>
-                          <td><span style={{
-                            fontSize: 11,
-                            padding: '2px 6px',
-                            borderRadius: 4,
-                            background: t.type === 'M&A' ? 'var(--mint-dim)' : t.type === 'Funding' ? 'var(--sky-dim)' : 'var(--gold-dim)',
-                            color: t.type === 'M&A' ? 'var(--mint)' : t.type === 'Funding' ? 'var(--sky)' : 'var(--gold)'
-                          }}>{t.type}</span></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Sensitivity Matrix */}
-              <div className="card" style={{ marginTop: 24 }}>
-                <div className="card-title">Valuation Sensitivity: USDC × Interest Rates</div>
-                <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Implied enterprise value at Coinbase P/S multiple (13x net revenue)</p>
-                <div style={{ overflowX: 'auto' }}>
-                  <table className="tbl">
-                    <thead>
-                      <tr>
-                        <th>USDC ($B) ↓ / Rate → </th>
-                        {SENSITIVITY_RATES.map(r => <th key={r} className="r">{r}%</th>)}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {SENSITIVITY_USDC.map(usdc => (
-                        <tr key={usdc}>
-                          <td style={{ fontWeight: 600 }}>${usdc}B</td>
-                          {SENSITIVITY_RATES.map(rate => {
-                            const val = calcSensitivity(usdc, rate, 13);
-                            const isNear = Math.abs(usdc - 73.7) < 15 && Math.abs(rate - 4.0) < 0.5;
-                            return (
-                              <td key={rate} className="r" style={isNear ? {
-                                background: 'var(--mint-dim)',
-                                fontWeight: 600,
-                                color: 'var(--mint)'
-                              } : undefined}>
-                                ${val.toFixed(1)}B
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text3)' }}>
-                  Highlighted: Current USDC (~$74B) × Current rate (~4%). Assumes 45% net revenue margin after Coinbase distribution costs.
-                </div>
-              </div>
-
-              {/* Historical Multiple Tracking */}
-              <div className="card" style={{ marginTop: 24 }}>
-                <div className="card-title">P/S Multiple Since IPO</div>
-                <div style={{ height: 280 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={HISTORICAL_MULTIPLES} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                      <XAxis dataKey="month" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
-                      <YAxis stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} domain={[0, 16]} />
-                      <RechartsTooltip 
-                        contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8 }}
-                        formatter={(value: any) => [`${value}x`, '']}
-                      />
-                      <Line type="monotone" dataKey="crcl" stroke="var(--mint)" strokeWidth={3} dot={{ fill: 'var(--mint)', r: 4 }} name="Circle" />
-                      <Line type="monotone" dataKey="coinAvg" stroke="var(--sky)" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Crypto Avg" />
-                      <Line type="monotone" dataKey="paymentsAvg" stroke="var(--gold)" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Payments Avg" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-                <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 12, fontSize: 12 }}>
-                  <span><span style={{ color: 'var(--mint)' }}>━━</span> Circle P/S</span>
-                  <span><span style={{ color: 'var(--sky)' }}>╌╌</span> Crypto Peer Avg</span>
-                  <span><span style={{ color: 'var(--gold)' }}>╌╌</span> Payments Peer Avg</span>
-                </div>
-              </div>
-
-              {/* Rule of 40 Analysis */}
-              <div className="highlight" style={{ marginTop: 24 }}>
-                <h3>Rule of 40 Analysis</h3>
-                <p style={{ marginBottom: 16 }}>Growth Rate + Profit Margin ≥ 40% indicates healthy SaaS/fintech</p>
-                <div className="g4">
-                  <div className="big-stat">
-                    <div className="num mint">105</div>
-                    <div className="lbl">Circle (66% + 39%)</div>
-                  </div>
-                  <div className="big-stat">
-                    <div className="num">55</div>
-                    <div className="lbl">Coinbase (30% + 25%)</div>
-                  </div>
-                  <div className="big-stat">
-                    <div className="num">26</div>
-                    <div className="lbl">PayPal (8% + 18%)</div>
-                  </div>
-                  <div className="big-stat">
-                    <div className="num">77</div>
-                    <div className="lbl">Visa (10% + 67%)</div>
-                  </div>
-                </div>
-              </div>
-              
-              <CFANotes title="CFA Level III — Comparable Analysis" items={[
-                { term: 'Peer Selection', def: 'Choose comps based on business model similarity, growth profile, and market positioning. No perfect comps for novel businesses like Circle.' },
-                { term: 'P/S (Price/Sales)', def: 'Primary multiple for high-growth, pre-profit companies. Compare Circle to fintech and payments peers.' },
-                { term: 'EV/EBITDA', def: 'Enterprise value relative to operating profit. Better for profitable companies. Removes capital structure differences.' },
-                { term: 'Growth-Adjusted Multiples', def: 'PEG ratio = P/E ÷ Growth Rate. Higher growth justifies higher multiples. Circle\'s growth should command premium.' },
-                { term: 'Sum-of-Parts (SOTP)', def: 'Value each business segment separately and sum. Useful for conglomerates or platform businesses with distinct units.' },
-                { term: 'Relative Valuation Caveats', def: 'Market may misprice entire sector. Use comps for context but anchor to intrinsic value (DCF).' },
-              ]} />
-            </>
-          )}
+          {activeTab === 'comps' && <CompsTab />}
 
           {activeTab === 'wall-street' && (
             <WallStreetTab />
@@ -5912,6 +5402,558 @@ function CRCLModel() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPS TAB - Comparable Companies Analysis
+// Peer group comparisons, valuation matrices, and competitive positioning
+// Unified architecture with ASTS/BMNR - Separate function component
+// ═══════════════════════════════════════════════════════════════════════════════
+const CompsTab = () => {
+  // Peer Groups Data
+  const PEER_GROUPS = {
+    crypto: {
+      name: 'Crypto Infrastructure',
+      description: 'Direct competitors in digital assets',
+      peers: [
+        { name: 'Circle (CRCL)', ticker: 'CRCL', cap: 18.85, rev: 2.96, ebitda: 0.285, netIncome: 0.156, pe: 115, margin: 39, growth: 66, aum: 73.7, takeRate: 4.0, highlight: true },
+        { name: 'Tether', ticker: 'Private', cap: null, rev: 6.2, ebitda: 5.2, netIncome: 5.0, pe: null, margin: 85, growth: 45, aum: 140, takeRate: 4.4 },
+        { name: 'Coinbase', ticker: 'COIN', cap: 67, rev: 5.1, ebitda: 1.2, netIncome: 0.95, pe: 35, margin: 25, growth: 30, aum: null, takeRate: null },
+        { name: 'Galaxy Digital', ticker: 'GLXY', cap: 4.5, rev: 1.8, ebitda: 0.4, netIncome: 0.25, pe: 18, margin: 22, growth: 85, aum: null, takeRate: null },
+        { name: 'Robinhood', ticker: 'HOOD', cap: 32, rev: 2.4, ebitda: 0.45, netIncome: 0.3, pe: 106, margin: 19, growth: 36, aum: null, takeRate: null },
+      ]
+    },
+    networks: {
+      name: 'Card Networks',
+      description: 'Analogous "rails" business model',
+      peers: [
+        { name: 'Visa', ticker: 'V', cap: 580, rev: 35, ebitda: 23, netIncome: 19.5, pe: 31, margin: 67, growth: 10, aum: null, takeRate: null },
+        { name: 'Mastercard', ticker: 'MA', cap: 450, rev: 27, ebitda: 17, netIncome: 12.3, pe: 37, margin: 58, growth: 12, aum: null, takeRate: null },
+        { name: 'American Express', ticker: 'AXP', cap: 190, rev: 60, ebitda: 15, netIncome: 8.4, pe: 20, margin: 25, growth: 8, aum: null, takeRate: null },
+      ]
+    },
+    payments: {
+      name: 'Digital Payments',
+      description: 'Payment infrastructure peers',
+      peers: [
+        { name: 'PayPal', ticker: 'PYPL', cap: 85, rev: 31, ebitda: 6.5, netIncome: 4.2, pe: 20, margin: 18, growth: 8, aum: null, takeRate: null },
+        { name: 'Block', ticker: 'SQ', cap: 45, rev: 21, ebitda: 1.8, netIncome: 0.78, pe: 58, margin: 5, growth: 18, aum: null, takeRate: null },
+        { name: 'Adyen', ticker: 'ADYEN', cap: 45, rev: 2.0, ebitda: 0.9, netIncome: 0.65, pe: 55, margin: 45, growth: 24, aum: null, takeRate: null },
+        { name: 'Stripe', ticker: 'Private', cap: 65, rev: 14, ebitda: 1.5, netIncome: 1.0, pe: null, margin: 11, growth: 25, aum: null, takeRate: null },
+      ]
+    },
+    assetMgrs: {
+      name: 'Asset Managers',
+      description: 'Reserve management parallel (yield on AUM)',
+      peers: [
+        { name: 'BlackRock', ticker: 'BLK', cap: 145, rev: 20, ebitda: 7.8, netIncome: 6.0, pe: 24, margin: 39, growth: 11, aum: 10500, takeRate: 0.19 },
+        { name: 'Schwab', ticker: 'SCHW', cap: 130, rev: 19, ebitda: 8.5, netIncome: 4.7, pe: 28, margin: 45, growth: 5, aum: 8500, takeRate: 0.22 },
+        { name: 'State Street', ticker: 'STT', cap: 28, rev: 12, ebitda: 3.5, netIncome: 2.4, pe: 12, margin: 29, growth: 4, aum: 4100, takeRate: 0.29 },
+      ]
+    },
+    fintech: {
+      name: 'High-Growth Fintech',
+      description: 'Growth-stage fintech multiples',
+      peers: [
+        { name: 'Affirm', ticker: 'AFRM', cap: 18, rev: 2.3, ebitda: -0.1, netIncome: -0.5, pe: null, margin: -22, growth: 46, aum: null, takeRate: null },
+        { name: 'Marqeta', ticker: 'MQ', cap: 4.5, rev: 0.7, ebitda: -0.05, netIncome: -0.12, pe: null, margin: -17, growth: 30, aum: null, takeRate: null },
+        { name: 'Toast', ticker: 'TOST', cap: 18, rev: 4.1, ebitda: 0.15, netIncome: 0.05, pe: 360, margin: 4, growth: 28, aum: null, takeRate: null },
+        { name: 'SoFi', ticker: 'SOFI', cap: 14, rev: 2.5, ebitda: 0.35, netIncome: 0.12, pe: 116, margin: 14, growth: 35, aum: null, takeRate: null },
+      ]
+    }
+  };
+
+  // Business Model Metrics (Circle-specific)
+  const CIRCLE_METRICS = {
+    revenuePerUSDC: (2.96 / 73.7 * 100).toFixed(2),
+    grossTakeRate: (1.68 / 60.8 * 100).toFixed(2),
+    distributionCostPct: (0.908 / 1.68 * 100).toFixed(1),
+    netTakeRate: ((1.68 - 0.908) / 60.8 * 100).toFixed(2),
+    rldcMargin: 39,
+    reserveYield: 4.33,
+  };
+
+  // Valuation Methodologies
+  const VALUATION_MATRIX = [
+    { method: 'P/S', basis: 'Visa', multiple: 16.6, implied: 2.96 * 16.6, premium: ((2.96 * 16.6) / 18.85 - 1) * 100 },
+    { method: 'P/S', basis: 'Mastercard', multiple: 16.7, implied: 2.96 * 16.7, premium: ((2.96 * 16.7) / 18.85 - 1) * 100 },
+    { method: 'P/S', basis: 'Coinbase', multiple: 13.1, implied: 2.96 * 13.1, premium: ((2.96 * 13.1) / 18.85 - 1) * 100 },
+    { method: 'P/S', basis: 'PayPal', multiple: 2.7, implied: 2.96 * 2.7, premium: ((2.96 * 2.7) / 18.85 - 1) * 100 },
+    { method: 'P/S', basis: 'Adyen', multiple: 22.5, implied: 2.96 * 22.5, premium: ((2.96 * 22.5) / 18.85 - 1) * 100 },
+    { method: 'EV/EBITDA', basis: 'Payments Avg', multiple: 18, implied: 0.285 * 18, premium: ((0.285 * 18) / 18.85 - 1) * 100 },
+    { method: 'EV/EBITDA', basis: 'Networks Avg', multiple: 25, implied: 0.285 * 25, premium: ((0.285 * 25) / 18.85 - 1) * 100 },
+    { method: 'P/E', basis: 'Fintech Avg', multiple: 35, implied: 0.156 * 35, premium: ((0.156 * 35) / 18.85 - 1) * 100 },
+    { method: 'P/E', basis: 'Current', multiple: 115, implied: 0.156 * 115, premium: ((0.156 * 115) / 18.85 - 1) * 100 },
+  ];
+
+  // SOTP Valuation
+  const SOTP = [
+    { segment: 'Reserve Income Business', metric: '$1.68B rev', multiple: '8x', basis: 'Annuity-like', value: 13.4 },
+    { segment: 'Net Reserve (post-Coinbase)', metric: '$0.77B rev', multiple: '12x', basis: 'High-margin', value: 9.2 },
+    { segment: 'Platform/Services', metric: '$50M rev', multiple: '15x', basis: 'SaaS-like', value: 0.75 },
+    { segment: 'USYC/Hashnote', metric: 'Option value', multiple: '—', basis: 'Yield products', valueLow: 1, valueHigh: 3 },
+    { segment: 'Cash & Equivalents', metric: '$1.1B', multiple: '1x', basis: 'Book value', value: 1.1 },
+  ];
+
+  // Transaction Comps
+  const TRANSACTIONS = [
+    { date: 'Mar 2023', target: 'Stripe', acquirer: 'Private Round', value: 50, metric: '3.6x rev', type: 'Funding' },
+    { date: 'Jan 2025', target: 'Hashnote', acquirer: 'Circle', value: null, metric: 'Undisclosed', type: 'M&A', notes: 'USYC yield product' },
+    { date: 'Aug 2023', target: 'Centre Consortium', acquirer: 'Circle', value: null, metric: 'IP acquisition', type: 'M&A', notes: 'Full USDC control from Coinbase' },
+    { date: 'Apr 2022', target: 'Circle SPAC', acquirer: 'Cancelled', value: 9, metric: '—', type: 'SPAC', notes: 'Concord deal terminated' },
+    { date: 'Nov 2023', target: 'FTX/Alameda assets', acquirer: 'Various', value: 0.1, metric: 'Distressed', type: 'Bankruptcy', notes: 'Cautionary' },
+    { date: 'Oct 2023', target: 'Paxos (BUSD)', acquirer: 'Wind-down', value: null, metric: '—', type: 'Regulatory', notes: 'NY DFS order' },
+  ];
+
+  // Historical Multiples (monthly since IPO)
+  const HISTORICAL_MULTIPLES = [
+    { month: 'Jun 25', crcl: 4.0, coinAvg: 12.5, paymentsAvg: 3.8, price: 31 },
+    { month: 'Jul 25', crcl: 5.2, coinAvg: 11.8, paymentsAvg: 3.6, price: 42 },
+    { month: 'Aug 25', crcl: 5.8, coinAvg: 13.1, paymentsAvg: 3.5, price: 48 },
+    { month: 'Sep 25', crcl: 6.1, coinAvg: 12.2, paymentsAvg: 3.4, price: 52 },
+    { month: 'Oct 25', crcl: 6.4, coinAvg: 13.5, paymentsAvg: 3.3, price: 58 },
+    { month: 'Nov 25', crcl: 6.2, coinAvg: 14.1, paymentsAvg: 3.2, price: 62 },
+    { month: 'Dec 25', crcl: 6.4, coinAvg: 13.1, paymentsAvg: 2.9, price: 82.25 },
+  ];
+
+  // Scatter plot data (Growth vs P/S)
+  const SCATTER_DATA = [
+    { name: 'Circle', x: 66, y: 6.4, r: 18.85, group: 'crypto' },
+    { name: 'Coinbase', x: 30, y: 13.1, r: 67, group: 'crypto' },
+    { name: 'Visa', x: 10, y: 16.6, r: 580, group: 'network' },
+    { name: 'Mastercard', x: 12, y: 16.7, r: 450, group: 'network' },
+    { name: 'PayPal', x: 8, y: 2.7, r: 85, group: 'payments' },
+    { name: 'Block', x: 18, y: 2.1, r: 45, group: 'payments' },
+    { name: 'Adyen', x: 24, y: 22.5, r: 45, group: 'payments' },
+    { name: 'Affirm', x: 46, y: 7.8, r: 18, group: 'fintech' },
+    { name: 'Galaxy', x: 85, y: 2.5, r: 4.5, group: 'crypto' },
+  ];
+
+  // Sensitivity Matrix (USDC levels x Rate scenarios)
+  const SENSITIVITY_USDC = [50, 75, 100, 125, 150];
+  const SENSITIVITY_RATES = [3.0, 3.5, 4.0, 4.5, 5.0];
+
+  const calcSensitivity = (usdc: number, rate: number, multiple: number) => {
+    const reserveIncome = usdc * (rate / 100);
+    const netRevenue = reserveIncome * 0.45;
+    return netRevenue * multiple;
+  };
+
+  // State for peer group selection
+  const [selectedPeerGroup, setSelectedPeerGroup] = useState<string>('crypto');
+  const currentPeers = PEER_GROUPS[selectedPeerGroup as keyof typeof PEER_GROUPS];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#comparables</div>
+      <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['WS']} /></h2>
+
+      {/* Highlight Box */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#peer-analysis</div>
+      <div className="highlight">
+        <h3>Peer Analysis Framework</h3>
+        <p>
+          Circle sits at the intersection of multiple peer groups: crypto infrastructure (Coinbase),
+          payments networks (Visa, PayPal), and high-growth fintech. Each lens provides different valuation
+          context. Crypto peers trade at premium P/S; payments peers show margin potential.
+        </p>
+      </div>
+
+      {/* Peer Group Selector */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+        {Object.entries(PEER_GROUPS).map(([key, group]) => (
+          <button
+            key={key}
+            onClick={() => setSelectedPeerGroup(key)}
+            className={`filter-btn ${selectedPeerGroup === key ? 'active' : ''}`}
+          >
+            {group.name}
+          </button>
+        ))}
+      </div>
+
+      {/* Selected Peer Group Table */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#peer-group</div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{currentPeers.name}<UpdateIndicators sources={['WS']} /></div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>{currentPeers.description}</p>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th className="r">Mkt Cap</th>
+                <th className="r">Revenue</th>
+                <th className="r">EBITDA</th>
+                <th className="r">P/E</th>
+                <th className="r">Margin</th>
+                <th className="r">Growth</th>
+                <th className="r">P/S</th>
+                <th className="r">EV/EBITDA</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentPeers.peers.map((p, i) => (
+                <tr key={i} style={p.highlight ? { background: 'var(--accent-dim)' } : undefined}>
+                  <td>
+                    <div style={{ fontWeight: p.highlight ? 700 : 500 }}>{p.name}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{p.ticker}</div>
+                  </td>
+                  <td className="r">{p.cap ? `$${p.cap}B` : 'Private'}</td>
+                  <td className="r">${p.rev}B</td>
+                  <td className="r">{p.ebitda > 0 ? `$${p.ebitda}B` : p.ebitda < 0 ? `($${Math.abs(p.ebitda)}B)` : '—'}</td>
+                  <td className="r">{p.pe ? `${p.pe}x` : '—'}</td>
+                  <td className="r" style={{ color: p.margin >= 30 ? 'var(--mint)' : p.margin < 0 ? 'var(--coral)' : 'inherit' }}>{p.margin}%</td>
+                  <td className="r" style={{ color: p.growth >= 30 ? 'var(--mint)' : 'inherit' }}>{p.growth}%</td>
+                  <td className="r mint">{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</td>
+                  <td className="r sky">{p.cap && p.ebitda > 0 ? `${(p.cap / p.ebitda).toFixed(1)}x` : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Circle-Specific Business Model Metrics */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#business-model-metrics</div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Circle Business Model Metrics<UpdateIndicators sources={['WS']} /></div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Unique metrics for stablecoin issuers — monetization of reserves</p>
+        <div className="g4">
+          <div className="big-stat">
+            <div className="num">{CIRCLE_METRICS.revenuePerUSDC}¢</div>
+            <div className="lbl">Rev per $1 USDC</div>
+          </div>
+          <div className="big-stat">
+            <div className="num">{CIRCLE_METRICS.grossTakeRate}%</div>
+            <div className="lbl">Gross Take Rate</div>
+          </div>
+          <div className="big-stat">
+            <div className="num">{CIRCLE_METRICS.distributionCostPct}%</div>
+            <div className="lbl">Coinbase Share</div>
+          </div>
+          <div className="big-stat">
+            <div className="num">{CIRCLE_METRICS.netTakeRate}%</div>
+            <div className="lbl">Net Take Rate</div>
+          </div>
+        </div>
+        <div style={{ marginTop: 20, padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+            <div>
+              <span style={{ color: 'var(--text3)', fontSize: 12 }}>Reserve Yield</span>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--sky)' }}>{CIRCLE_METRICS.reserveYield}%</div>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text3)', fontSize: 12 }}>RLDC Margin</span>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--mint)' }}>{CIRCLE_METRICS.rldcMargin}%</div>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text3)', fontSize: 12 }}>Tether Take Rate</span>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--text2)' }}>4.4%</div>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text3)', fontSize: 12 }}>Tether Margin</span>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--text2)' }}>85%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Multi-Methodology Valuation Matrix */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Circle's value under different peer multiples (current: $18.9B)</p>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Peer Basis</th>
+              <th className="r">Multiple</th>
+              <th className="r">Implied Value</th>
+              <th className="r">Premium/(Discount)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {VALUATION_MATRIX.map((v, i) => (
+              <tr key={i}>
+                <td style={{ fontWeight: 500 }}>{v.method}</td>
+                <td>{v.basis}</td>
+                <td className="r">{v.multiple}x</td>
+                <td className="r mint">${v.implied.toFixed(1)}B</td>
+                <td className="r" style={{ color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Growth vs P/S Scatter Plot */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#growth-vs-ps</div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Growth vs. P/S Multiple<UpdateIndicators sources={['WS']} /></div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Circle's positioning relative to peers (bubble size = market cap)</p>
+        <div style={{ height: 300 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <ScatterChart margin={{ top: 20, right: 30, bottom: 20, left: 20 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis
+                type="number"
+                dataKey="x"
+                name="Revenue Growth"
+                unit="%"
+                stroke="var(--text3)"
+                tick={{ fill: 'var(--text3)', fontSize: 11 }}
+                label={{ value: 'Revenue Growth %', position: 'bottom', fill: 'var(--text3)', fontSize: 12 }}
+              />
+              <YAxis
+                type="number"
+                dataKey="y"
+                name="P/S Multiple"
+                unit="x"
+                stroke="var(--text3)"
+                tick={{ fill: 'var(--text3)', fontSize: 11 }}
+                label={{ value: 'P/S Multiple', angle: -90, position: 'insideLeft', fill: 'var(--text3)', fontSize: 12 }}
+              />
+              <RechartsTooltip
+                contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
+                formatter={(value: any, name: string) => [name === 'x' ? `${value}%` : `${value}x`, name === 'x' ? 'Growth' : 'P/S']}
+                labelFormatter={(label) => SCATTER_DATA.find(d => d.x === label)?.name || ''}
+              />
+              <Scatter
+                data={SCATTER_DATA.filter(d => d.name !== 'Circle')}
+                fill="var(--text3)"
+              >
+                {SCATTER_DATA.filter(d => d.name !== 'Circle').map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.group === 'crypto' ? 'var(--sky)' : entry.group === 'network' ? 'var(--violet)' : entry.group === 'payments' ? 'var(--gold)' : 'var(--text3)'}
+                  />
+                ))}
+              </Scatter>
+              <Scatter
+                data={SCATTER_DATA.filter(d => d.name === 'Circle')}
+                fill="var(--mint)"
+                shape="star"
+              />
+              <ReferenceLine y={6.4} stroke="var(--mint)" strokeDasharray="5 5" label={{ value: 'CRCL', fill: 'var(--mint)', fontSize: 10 }} />
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 12, fontSize: 12 }}>
+          <span><span style={{ color: 'var(--mint)' }}>★</span> Circle</span>
+          <span><span style={{ color: 'var(--sky)' }}>●</span> Crypto</span>
+          <span><span style={{ color: 'var(--violet)' }}>●</span> Networks</span>
+          <span><span style={{ color: 'var(--gold)' }}>●</span> Payments</span>
+        </div>
+      </div>
+
+      <div className="g2" style={{ marginTop: 24 }}>
+        {/* SOTP Valuation */}
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
+          <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Segment</th>
+                <th className="r">Metric</th>
+                <th className="r">Multiple</th>
+                <th className="r">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SOTP.map((s, i) => (
+                <tr key={i}>
+                  <td>
+                    <div style={{ fontWeight: 500 }}>{s.segment}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
+                  </td>
+                  <td className="r">{s.metric}</td>
+                  <td className="r">{s.multiple}</td>
+                  <td className="r mint">
+                    {s.value ? `$${s.value}B` : s.valueLow && s.valueHigh ? `$${s.valueLow}-${s.valueHigh}B` : '—'}
+                  </td>
+                </tr>
+              ))}
+              <tr style={{ fontWeight: 600 }}>
+                <td colSpan={3}>SOTP Range</td>
+                <td className="r mint">$15.5-17.5B</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text3)' }}>
+            Current market cap: $18.9B ({((18.9 / 16.5 - 1) * 100).toFixed(0)}% premium to midpoint)
+          </div>
+          </div>
+        </div>
+
+        {/* Transaction Comps */}
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#transaction-comps</div>
+          <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Transaction Comps<UpdateIndicators sources={['WS']} /></div>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Target</th>
+                <th className="r">Value</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {TRANSACTIONS.map((t, i) => (
+                <tr key={i}>
+                  <td>{t.date}</td>
+                  <td>
+                    <div style={{ fontWeight: 500 }}>{t.target}</div>
+                    {t.notes && <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.notes}</div>}
+                  </td>
+                  <td className="r">{t.value ? `$${t.value}B` : '—'}</td>
+                  <td><span style={{
+                    fontSize: 10,
+                    padding: '3px 8px',
+                    borderRadius: 4,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    fontWeight: 600,
+                    background: t.type === 'M&A' ? 'var(--mint-dim)' : t.type === 'Funding' ? 'var(--sky-dim)' : 'var(--gold-dim)',
+                    color: t.type === 'M&A' ? 'var(--mint)' : t.type === 'Funding' ? 'var(--sky)' : 'var(--gold)'
+                  }}>{t.type}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Sensitivity Matrix */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-sensitivity</div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Valuation Sensitivity: USDC × Interest Rates<UpdateIndicators sources={['WS']} /></div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Implied enterprise value at Coinbase P/S multiple (13x net revenue)</p>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>USDC ($B) ↓ / Rate → </th>
+                {SENSITIVITY_RATES.map(r => <th key={r} className="r">{r}%</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {SENSITIVITY_USDC.map(usdc => (
+                <tr key={usdc}>
+                  <td style={{ fontWeight: 600 }}>${usdc}B</td>
+                  {SENSITIVITY_RATES.map(rate => {
+                    const val = calcSensitivity(usdc, rate, 13);
+                    const isNear = Math.abs(usdc - 73.7) < 15 && Math.abs(rate - 4.0) < 0.5;
+                    return (
+                      <td key={rate} className="r" style={isNear ? {
+                        background: 'var(--accent-dim)',
+                        fontWeight: 600,
+                        color: 'var(--accent)'
+                      } : undefined}>
+                        ${val.toFixed(1)}B
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text3)' }}>
+          Highlighted: Current USDC (~$74B) × Current rate (~4%). Assumes 45% net revenue margin after Coinbase distribution costs.
+        </div>
+      </div>
+
+      {/* Historical Multiple Tracking */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#ps-multiple-history</div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>P/S Multiple Since IPO<UpdateIndicators sources={['WS']} /></div>
+        <div style={{ height: 280 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={HISTORICAL_MULTIPLES} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="month" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+              <YAxis stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} domain={[0, 16]} />
+              <RechartsTooltip
+                contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
+                formatter={(value: any) => [`${value}x`, '']}
+              />
+              <Line type="monotone" dataKey="crcl" stroke="var(--accent)" strokeWidth={3} dot={{ fill: 'var(--accent)', r: 4 }} name="Circle" />
+              <Line type="monotone" dataKey="coinAvg" stroke="var(--sky)" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Crypto Avg" />
+              <Line type="monotone" dataKey="paymentsAvg" stroke="var(--gold)" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Payments Avg" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 12, fontSize: 12 }}>
+          <span><span style={{ color: 'var(--accent)' }}>━━</span> Circle P/S</span>
+          <span><span style={{ color: 'var(--sky)' }}>╌╌</span> Crypto Peer Avg</span>
+          <span><span style={{ color: 'var(--gold)' }}>╌╌</span> Payments Peer Avg</span>
+        </div>
+      </div>
+
+      {/* Rule of 40 Analysis */}
+      <div className="highlight" style={{ marginTop: 24 }}>
+        <h3>Rule of 40 Analysis</h3>
+        <p style={{ marginBottom: 16 }}>Growth Rate + Profit Margin ≥ 40% indicates healthy SaaS/fintech</p>
+        <div className="g4">
+          <div className="big-stat">
+            <div className="num mint">105</div>
+            <div className="lbl">Circle (66% + 39%)</div>
+          </div>
+          <div className="big-stat">
+            <div className="num">55</div>
+            <div className="lbl">Coinbase (30% + 25%)</div>
+          </div>
+          <div className="big-stat">
+            <div className="num">26</div>
+            <div className="lbl">PayPal (8% + 18%)</div>
+          </div>
+          <div className="big-stat">
+            <div className="num">77</div>
+            <div className="lbl">Visa (10% + 67%)</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Competitor Intelligence Placeholder */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-news</div>
+      <div className="highlight">
+        <h3>📰 Competitor Intelligence</h3>
+        <p>Track competitor developments to assess Circle's competitive position in stablecoins and digital payments.</p>
+      </div>
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-filter</div>
+      <div className="card" style={{ padding: 32, textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>🔜</div>
+        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)', marginBottom: 8 }}>Competitor Intelligence Coming Soon</div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, maxWidth: 500, margin: '0 auto' }}>
+          This section will track news and developments from stablecoin and payments competitors including Tether (USDT),
+          PayPal (PYUSD), Coinbase, and traditional payment networks (Visa, Mastercard).
+          <br /><br />
+          Key tracking areas: stablecoin market share, regulatory developments, partnership announcements,
+          yield product launches, and cross-border payment initiatives.
+        </p>
+      </div>
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+      <CFANotes title="CFA Level III — Comparable Analysis" items={[
+        { term: 'Peer Selection', def: 'Choose comps based on business model similarity, growth profile, and market positioning. No perfect comps for novel businesses like Circle.' },
+        { term: 'P/S (Price/Sales)', def: 'Primary multiple for high-growth, pre-profit companies. Compare Circle to fintech and payments peers.' },
+        { term: 'EV/EBITDA', def: 'Enterprise value relative to operating profit. Better for profitable companies. Removes capital structure differences.' },
+        { term: 'Growth-Adjusted Multiples', def: 'PEG ratio = P/E ÷ Growth Rate. Higher growth justifies higher multiples. Circle\'s growth should command premium.' },
+        { term: 'Sum-of-Parts (SOTP)', def: 'Value each business segment separately and sum. Useful for conglomerates or platform businesses with distinct units.' },
+        { term: 'Relative Valuation Caveats', def: 'Market may misprice entire sector. Use comps for context but anchor to intrinsic value (DCF).' },
+      ]} />
+    </div>
+  );
+};
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // WALL STREET TAB - Analyst Coverage & Research Archive

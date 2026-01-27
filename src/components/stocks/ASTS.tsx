@@ -540,7 +540,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
     alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
-    background: highlight ? 'var(--cyan-dim)' : 'transparent',
+    background: highlight ? 'var(--accent-dim)' : 'transparent',
     paddingLeft: highlight ? '12px' : 0,
     paddingRight: highlight ? '12px' : 0,
     marginLeft: highlight ? '-12px' : 0,
@@ -551,7 +551,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
       {label}
       <UpdateIndicators sources={updateSource} />
     </span>
-    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--cyan)' : 'var(--text)' }}>{value}</span>
+    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--accent)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
 Row.displayName = 'Row';
@@ -965,7 +965,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
     <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
-      <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
+      <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
@@ -1012,9 +1012,9 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
               style={{
                 padding: '6px 12px',
                 borderRadius: 6,
-                border: chartType === btn.id ? '1px solid var(--cyan)' : '1px solid var(--border)',
-                background: chartType === btn.id ? 'rgba(34,211,238,0.1)' : 'transparent',
-                color: chartType === btn.id ? 'var(--cyan)' : 'var(--text2)',
+                border: chartType === btn.id ? '1px solid var(--accent)' : '1px solid var(--border)',
+                background: chartType === btn.id ? 'var(--accent-dim)' : 'transparent',
+                color: chartType === btn.id ? 'var(--accent)' : 'var(--text2)',
                 fontSize: 12,
                 cursor: 'pointer',
               }}
@@ -1028,7 +1028,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         {chartData.map((d, i) => (
           <div key={i} className="bar-col">
             <div className="bar-val">{d.display}</div>
-            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--cyan)' }} />
+            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--accent)' }} />
             <div className="bar-label">{d.label}</div>
           </div>
         ))}
@@ -2968,8 +2968,8 @@ const ModelTab = ({
 
           {/* DCF VALUATION OUTPUT - Unified section with consistent styling */}
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
-          <div className="card" style={{ border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
-            <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (2030 Terminal Year)</div>
+          <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
+            <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (2030 Terminal Year)</div>
 
             {/* All cards use consistent grid with same gap */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
@@ -3076,7 +3076,7 @@ const ModelTab = ({
                 </div>
               </div>
 
-              <div style={{ marginTop: 12, padding: 10, background: 'rgba(34,211,238,0.1)', borderRadius: 6, fontSize: 11 }}>
+              <div style={{ marginTop: 12, padding: 10, background: 'var(--accent-dim)', borderRadius: 6, fontSize: 11 }}>
                 <strong>Key Assumptions:</strong> Terminal year is {2025 + discountYears} ({discountYears} years out).
                 FCF margin = EBITDA margin - CapEx (simplified, ignores taxes/WC).
                 Risk factors are multiplicative (independent events).
@@ -3383,9 +3383,9 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                   padding: '12px 16px',
                   borderRadius: 8,
                   textAlign: 'left',
-                  border: `2px solid ${activePreset === key ? 'var(--cyan)' : 'transparent'}`,
-                  background: activePreset === key ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-                  color: activePreset === key ? 'var(--cyan)' : 'var(--text)',
+                  border: `2px solid ${activePreset === key ? 'var(--accent)' : 'transparent'}`,
+                  background: activePreset === key ? 'var(--accent-dim)' : 'var(--surface2)',
+                  color: activePreset === key ? 'var(--accent)' : 'var(--text)',
                   cursor: 'pointer',
                   transition: 'all 0.15s'
                 }}
@@ -3413,9 +3413,9 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                     flex: 1,
                     padding: '12px 20px',
                     borderRadius: 8,
-                    border: years === yr ? '2px solid var(--cyan)' : '2px solid transparent',
-                    background: years === yr ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-                    color: years === yr ? 'var(--cyan)' : 'var(--text2)',
+                    border: years === yr ? '2px solid var(--accent)' : '2px solid transparent',
+                    background: years === yr ? 'var(--accent-dim)' : 'var(--surface2)',
+                    color: years === yr ? 'var(--accent)' : 'var(--text2)',
                     cursor: 'pointer',
                     fontWeight: years === yr ? 700 : 400,
                     fontFamily: 'Space Mono',
@@ -3439,9 +3439,9 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                     flex: 1,
                     padding: '12px 16px',
                     borderRadius: 8,
-                    border: sims === simCount ? '2px solid var(--cyan)' : '2px solid transparent',
-                    background: sims === simCount ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-                    color: sims === simCount ? 'var(--cyan)' : 'var(--text2)',
+                    border: sims === simCount ? '2px solid var(--accent)' : '2px solid transparent',
+                    background: sims === simCount ? 'var(--accent-dim)' : 'var(--surface2)',
+                    color: sims === simCount ? 'var(--accent)' : 'var(--text2)',
                     cursor: 'pointer',
                     fontWeight: sims === simCount ? 700 : 400,
                     fontFamily: 'Space Mono',
@@ -3460,7 +3460,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Parameters - Model Tab Style */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
-        <h3 style={{ color: 'var(--cyan)', marginBottom: 8, marginTop: 0 }}>Revenue Model</h3>
+        <h3 style={{ color: 'var(--accent)', marginBottom: 8, marginTop: 0 }}>Revenue Model</h3>
         <div className="g2" style={{ marginTop: 0 }}>
           <div className="card" style={{ marginTop: 0 }}>
             <div className="card-title">Base Revenue ($B)</div>
@@ -3677,7 +3677,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
         {/* Run Button */}
         <button onClick={() => setRunKey(k => k + 1)} style={{
-          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--cyan)', color: 'var(--bg1)',
+          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
           border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
         }}>🎲 Run Simulation</button>
       </div>
@@ -3696,10 +3696,10 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
             <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${sim.p25.toFixed(0)}</div>
             <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((sim.p25 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
           </div>
-          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,211,238,0.2)', border: '1px solid rgba(34,211,238,0.4)', textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#67e8f9', marginBottom: 4 }}>Median</div>
-            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#22d3ee' }}>${sim.p50.toFixed(0)}</div>
-            <div style={{ fontSize: 11, color: '#67e8f9', marginTop: 4 }}>{((sim.p50 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'var(--accent-dim)', border: '1px solid var(--accent)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: 'var(--accent)', marginBottom: 4, opacity: 0.8 }}>Median</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--accent)' }}>${sim.p50.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 4, opacity: 0.8 }}>{((sim.p50 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
           </div>
           <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
             <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
@@ -3744,7 +3744,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
                 labelFormatter={(v) => `$${v.toFixed(0)}`}
               />
-              <Bar dataKey="pct" fill="var(--cyan)" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
               <ReferenceLine x={currentStockPrice} stroke="#fff" strokeDasharray="5 5" />
             </BarChart>
           </ResponsiveContainer>
@@ -8228,13 +8228,29 @@ const CompsTab = ({ calc, currentStockPrice }) => {
   // ═══════════════════════════════════════════════════════════════════════════
   // VALUATION COMPARABLES - Market metrics comparison
   // ═══════════════════════════════════════════════════════════════════════════
+  const [selectedCompCategory, setSelectedCompCategory] = useState<string>('all');
+
   const comps = [
-    { name: 'ASTS', mc: calc.marketCap, evRev: calc.evToRevFwd, pSub: calc.pricePerSub, subs: calc.potentialSubs },
-    { name: 'Starlink', mc: 175000, evRev: 17, pSub: 43750, subs: 4 },
-    { name: 'Verizon', mc: 175000, evRev: 1.3, pSub: 1520, subs: 115 },
-    { name: 'T-Mobile', mc: 280000, evRev: 3.4, pSub: 2240, subs: 125 },
-    { name: 'AT&T', mc: 165000, evRev: 1.3, pSub: 1500, subs: 110 }
+    { name: 'ASTS SpaceMobile', ticker: 'ASTS', category: 'd2d', mc: calc.marketCap, evRev: calc.evToRevFwd, pSub: calc.pricePerSub, subs: calc.potentialSubs, highlight: true },
+    { name: 'Starlink', ticker: 'Private', category: 'd2c', mc: 175000, evRev: 17, pSub: 43750, subs: 4 },
+    { name: 'Iridium', ticker: 'IRDM', category: 'satcom', mc: 6500, evRev: 3.5, pSub: 3095, subs: 2.1 },
+    { name: 'Globalstar', ticker: 'GSAT', category: 'satcom', mc: 3500, evRev: 4.2, pSub: 2333, subs: 1.5 },
+    { name: 'Verizon', ticker: 'VZ', category: 'telco', mc: 175000, evRev: 1.3, pSub: 1520, subs: 115 },
+    { name: 'T-Mobile', ticker: 'TMUS', category: 'telco', mc: 280000, evRev: 3.4, pSub: 2240, subs: 125 },
+    { name: 'AT&T', ticker: 'T', category: 'telco', mc: 165000, evRev: 1.3, pSub: 1500, subs: 110 },
   ];
+
+  const compCategories = [
+    { key: 'all', label: 'All Peers' },
+    { key: 'd2d', label: 'D2D Satellite' },
+    { key: 'd2c', label: 'D2C Satellite' },
+    { key: 'satcom', label: 'SatCom' },
+    { key: 'telco', label: 'Terrestrial Telco' },
+  ];
+
+  const filteredComps = selectedCompCategory === 'all'
+    ? comps
+    : comps.filter(c => c.category === selectedCompCategory || c.highlight);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // COMPETITOR PROFILES - D2D/Satellite competitors to track
@@ -8994,13 +9010,30 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#comparables</div>
       <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
 
       {/* Valuation Comparables Section */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-comparables</div>
       <div className="highlight"><h3>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
 
+      {/* Peer Group Selector */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+        {compCategories.map(cat => (
+          <button
+            key={cat.key}
+            onClick={() => setSelectedCompCategory(cat.key)}
+            className={`filter-btn ${selectedCompCategory === cat.key ? 'active' : ''}`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#market-comparison</div>
       <div className="card">
         <div className="card-title">Market Comparison<UpdateIndicators sources="WS" /></div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ASTS vs satellite and telco peers — unique D2D positioning between Starlink premium and telco value</p>
         <table className="tbl">
           <thead>
             <tr>
@@ -9012,9 +9045,12 @@ const CompsTab = ({ calc, currentStockPrice }) => {
             </tr>
           </thead>
           <tbody>
-            {comps.map(c => (
-              <tr key={c.name} style={c.name === 'ASTS' ? { background: 'var(--accent-dim)' } : undefined}>
-                <td>{c.name}</td>
+            {filteredComps.map(c => (
+              <tr key={c.ticker} style={c.highlight ? { background: 'var(--accent-dim)' } : undefined}>
+                <td>
+                  <div style={{ fontWeight: c.highlight ? 700 : 500 }}>{c.name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.ticker}</div>
+                </td>
                 <td className="r">${(c.mc / 1000).toFixed(0)}B</td>
                 <td className="r">{c.evRev.toFixed(1)}x</td>
                 <td className="r">${c.pSub.toLocaleString()}</td>
@@ -9026,39 +9062,174 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       <div className="g2">
-        <div className="card">
-          <div className="card-title">EV/Rev Comparison</div>
-          <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={comps} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis type="number" stroke="var(--text3)" />
-              <YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
-              <Bar dataKey="evRev" fill="var(--cyan)">
-                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? 'var(--cyan)' : 'var(--text3)'} />))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#ev-rev-comparison</div>
+          <div className="card">
+            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>EV/Rev Comparison<UpdateIndicators sources="WS" /></div>
+            <ResponsiveContainer width="100%" height={150}>
+              <BarChart data={filteredComps} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+                <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
+                <Bar dataKey="evRev" fill="var(--accent)">
+                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--accent)' : 'var(--text3)'} />))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-        <div className="card">
-          <div className="card-title">$/Subscriber Comparison</div>
-          <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={comps} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis type="number" stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-              <YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
-              <Bar dataKey="pSub" fill="var(--violet)">
-                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? 'var(--violet)' : 'var(--text3)'} />))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#subscriber-comparison</div>
+          <div className="card">
+            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>$/Subscriber Comparison<UpdateIndicators sources="WS" /></div>
+            <ResponsiveContainer width="100%" height={150}>
+              <BarChart data={filteredComps} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+                <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
+                <Bar dataKey="pSub" fill="var(--violet)">
+                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--violet)' : 'var(--text3)'} />))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Advanced Valuation Matrices */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-framework</div>
+      <div className="highlight"><h3>📈 Valuation Framework</h3><p>Multiple methodologies for a pre-revenue, high-growth space company. TAM-based and comparable approaches.</p></div>
+
+      {/* Valuation Methodology Matrix */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Peer Basis</th>
+              <th className="r">Multiple/Metric</th>
+              <th className="r">Implied Value</th>
+              <th className="r">Premium/(Discount)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { method: '$/Subscriber', basis: 'Starlink', metric: '$43,750/sub', implied: calc.potentialSubs * 43750, premium: ((calc.potentialSubs * 43750) / calc.marketCap - 1) * 100 },
+              { method: '$/Subscriber', basis: 'T-Mobile', metric: '$2,240/sub', implied: calc.potentialSubs * 2240, premium: ((calc.potentialSubs * 2240) / calc.marketCap - 1) * 100 },
+              { method: '$/Subscriber', basis: 'Verizon', metric: '$1,520/sub', implied: calc.potentialSubs * 1520, premium: ((calc.potentialSubs * 1520) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'Starlink', metric: '17x', implied: calc.fwdRevenue * 17, premium: ((calc.fwdRevenue * 17) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'High-Growth SaaS', metric: '10x', implied: calc.fwdRevenue * 10, premium: ((calc.fwdRevenue * 10) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
+            ].map((v, i) => (
+              <tr key={i}>
+                <td style={{ fontWeight: 500 }}>{v.method}</td>
+                <td>{v.basis}</td>
+                <td className="r">{v.metric}</td>
+                <td className="r mint">${(v.implied / 1000).toFixed(1)}B</td>
+                <td className="r" style={{ color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="g2" style={{ marginTop: 24 }}>
+        {/* SOTP Valuation */}
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
+          <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
+          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Value each business segment separately</p>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Segment</th>
+                <th className="r">Metric</th>
+                <th className="r">Multiple</th>
+                <th className="r">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { segment: 'US Commercial', basis: 'AT&T/VZ partnership', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$2,000/sub', value: calc.potentialSubs * 0.4 * 2000 },
+                { segment: 'International', basis: 'Global MNO deals', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$1,500/sub', value: calc.potentialSubs * 0.4 * 1500 },
+                { segment: 'Government/Defense', basis: 'DoD contracts', metric: 'Option value', multiple: '—', value: 2000 },
+                { segment: 'Maritime/Aviation', basis: 'Niche verticals', metric: 'Option value', multiple: '—', value: 1000 },
+                { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
+              ].map((s, i) => (
+                <tr key={i}>
+                  <td>
+                    <div style={{ fontWeight: 500 }}>{s.segment}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
+                  </td>
+                  <td className="r">{s.metric}</td>
+                  <td className="r">{s.multiple}</td>
+                  <td className="r mint">${(s.value / 1000).toFixed(1)}B</td>
+                </tr>
+              ))}
+              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                <td colSpan={3}>SOTP Total</td>
+                <td className="r mint">${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        {/* Risk-Adjusted Scenarios */}
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#risk-adjusted-scenarios</div>
+          <div className="card">
+            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
+          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Probability-weighted valuation outcomes</p>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th className="r">Prob.</th>
+                <th className="r">Value</th>
+                <th className="r">Weighted</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { scenario: 'Bull Case', desc: 'Full constellation, global coverage', prob: 25, value: calc.marketCap * 3 },
+                { scenario: 'Base Case', desc: 'Partial success, US + select intl', prob: 45, value: calc.marketCap * 1.5 },
+                { scenario: 'Bear Case', desc: 'Delays, limited commercial traction', prob: 20, value: calc.marketCap * 0.5 },
+                { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
+              ].map((s, i) => (
+                <tr key={i}>
+                  <td>
+                    <div style={{ fontWeight: 500 }}>{s.scenario}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.desc}</div>
+                  </td>
+                  <td className="r">{s.prob}%</td>
+                  <td className="r">${(s.value / 1000).toFixed(1)}B</td>
+                  <td className="r mint">${(s.value * s.prob / 100 / 1000).toFixed(1)}B</td>
+                </tr>
+              ))}
+              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                <td colSpan={3}>Expected Value</td>
+                <td className="r mint">${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
         </div>
       </div>
 
       {/* D2D Competitor Capability Matrix */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-capabilities</div>
       <div className="highlight"><h3>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capability-comparison</div>
       <div className="card">
         <div className="card-title">Capability Comparison<UpdateIndicators sources="PR" /></div>
         <table className="tbl">
@@ -9104,12 +9275,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor News Intelligence Section */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-news</div>
       <div className="highlight">
         <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
         <p>Track competitor developments to assess ASTS competitive position</p>
       </div>
 
       {/* Filter Bar */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-filter</div>
       <div className="card" style={{ padding: '12px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
@@ -9240,7 +9413,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                           width: 24,
                           height: 24,
                           borderRadius: 6,
-                          background: isExpanded ? 'var(--cyan)' : 'var(--surface3)',
+                          background: isExpanded ? 'var(--accent)' : 'var(--surface3)',
                           color: isExpanded ? 'var(--bg)' : 'var(--text3)',
                           display: 'flex',
                           alignItems: 'center',
@@ -9260,14 +9433,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                               <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
                                 {news.details.map((d, i) => (
                                   <li key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, fontSize: 13, color: 'var(--text2)' }}>
-                                    <span style={{ color: 'var(--cyan)' }}>•</span>
+                                    <span style={{ color: 'var(--accent)' }}>•</span>
                                     {d}
                                   </li>
                                 ))}
                               </ul>
                               {news.astsComparison && (
-                                <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--cyan-dim)', borderRadius: 6, borderLeft: '3px solid var(--cyan)' }}>
-                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--cyan)', marginBottom: 4 }}>
+                                <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--accent-dim)', borderRadius: 6, borderLeft: '3px solid var(--accent)' }}>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent)', marginBottom: 4 }}>
                                     ASTS Comparison
                                   </div>
                                   <div style={{ fontSize: 13, color: 'var(--text)' }}>{news.astsComparison}</div>
@@ -9286,7 +9459,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                                   <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Source</div>
                                   <div style={{ fontSize: 11 }}>
                                     {news.sourceUrl ? (
-                                      <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--cyan)' }}>
+                                      <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
                                         {news.source} ↗
                                       </a>
                                     ) : news.source}
@@ -9307,6 +9480,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor Profiles (Collapsible) */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-profiles</div>
       <div className="card">
         <div className="card-title">📋 Competitor Profiles</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -9345,6 +9519,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Competitive Analysis" items={[
         { term: 'No Direct Comps', def: 'ASTS is unique — space-based D2C cellular. Starlink (D2C satellite) and telcos (terrestrial) are imperfect proxies.' },
         { term: 'Competitive Moat', def: 'Track competitor progress to assess durability of ASTS technology lead. 4+ year head start but competitors catching up.' },

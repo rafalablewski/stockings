@@ -68,7 +68,9 @@ export const HISTORICAL_ETH: HistoricalPrices = {
 export const COMPARABLES = [
   {
     name: 'BMNR',
+    fullName: 'Bitmine Immersion',
     crypto: 'ETH',
+    category: 'ETH',
     holdings: 4168000,        // Current ETH holdings (Jan MTD)
     shares: 434e6,            // Shares outstanding
     price: 27.15,             // Stock price
@@ -76,15 +78,59 @@ export const COMPARABLES = [
   },
   {
     name: 'MSTR',
+    fullName: 'MicroStrategy',
     crypto: 'BTC',
+    category: 'BTC',
     holdings: 671268,         // BTC holdings
     shares: 226e6,            // Shares outstanding
     price: 390,               // Stock price
     yield: 0,                 // No yield (BTC)
   },
   {
+    name: 'MARA',
+    fullName: 'Marathon Digital',
+    crypto: 'BTC',
+    category: 'BTC',
+    holdings: 44893,          // BTC holdings
+    shares: 350e6,            // Shares outstanding
+    price: 17.50,             // Stock price
+    yield: 0,                 // No yield (BTC)
+  },
+  {
+    name: 'RIOT',
+    fullName: 'Riot Platforms',
+    crypto: 'BTC',
+    category: 'BTC',
+    holdings: 18221,          // BTC holdings
+    shares: 413e6,            // Shares outstanding
+    price: 11.20,             // Stock price
+    yield: 0,                 // No yield (BTC)
+  },
+  {
+    name: 'CLSK',
+    fullName: 'CleanSpark',
+    crypto: 'BTC',
+    category: 'BTC',
+    holdings: 10000,          // BTC holdings (estimate)
+    shares: 280e6,            // Shares outstanding
+    price: 10.50,             // Stock price
+    yield: 0,                 // No yield (BTC)
+  },
+  {
+    name: 'SMLR',
+    fullName: 'Semler Scientific',
+    crypto: 'BTC',
+    category: 'BTC',
+    holdings: 3192,           // BTC holdings
+    shares: 8e6,              // Shares outstanding
+    price: 52,                // Stock price
+    yield: 0,                 // No yield (BTC)
+  },
+  {
     name: 'COIN',
+    fullName: 'Coinbase',
     crypto: 'BTC+ETH',
+    category: 'Exchange',
     holdings: '14,548 BTC / 148,715 ETH',
     shares: 196e6,            // Shares outstanding
     price: 265,               // Stock price
