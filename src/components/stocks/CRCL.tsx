@@ -5544,6 +5544,7 @@ const CompsTab = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#comparables</div>
       <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['WS']} /></h2>
 
       {/* Highlight Box */}
@@ -5922,13 +5923,13 @@ const CompsTab = () => {
       </div>
 
       {/* Competitor Intelligence Placeholder */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-intelligence</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-news</div>
       <div className="highlight">
         <h3>📰 Competitor Intelligence</h3>
         <p>Track competitor developments to assess Circle's competitive position in stablecoins and digital payments.</p>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-placeholder</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-filter</div>
       <div className="card" style={{ padding: 32, textAlign: 'center' }}>
         <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>🔜</div>
         <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)', marginBottom: 8 }}>Competitor Intelligence Coming Soon</div>
