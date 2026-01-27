@@ -9028,7 +9028,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         ))}
       </div>
 
-      <div className="card" id="asts-market-comparison">
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#market-comparison</div>
+      <div className="card">
         <div className="card-title">Market Comparison<UpdateIndicators sources="WS" /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ASTS vs satellite and telco peers — unique D2D positioning between Starlink premium and telco value</p>
         <table className="tbl">
@@ -9059,7 +9060,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       <div className="g2">
-        <div className="card" id="asts-ev-rev-comparison">
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#ev-rev-comparison</div>
+        <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>EV/Rev Comparison<UpdateIndicators sources="WS" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={filteredComps} layout="vertical">
@@ -9073,7 +9075,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="card" id="asts-subscriber-comparison">
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#subscriber-comparison</div>
+        <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>$/Subscriber Comparison<UpdateIndicators sources="WS" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={filteredComps} layout="vertical">
@@ -9093,7 +9096,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       <div className="highlight" style={{ marginTop: 24 }}><h3>📈 Valuation Framework</h3><p>Multiple methodologies for a pre-revenue, high-growth space company. TAM-based and comparable approaches.</p></div>
 
       {/* Valuation Methodology Matrix */}
-      <div className="card" id="asts-implied-valuation-matrix">
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
+      <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
         <table className="tbl">
@@ -9131,7 +9135,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       <div className="g2" style={{ marginTop: 24 }}>
         {/* SOTP Valuation */}
-        <div className="card" id="asts-sotp">
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
+        <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Value each business segment separately</p>
           <table className="tbl">
@@ -9170,7 +9175,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
 
         {/* Risk-Adjusted Scenarios */}
-        <div className="card" id="asts-risk-adjusted-scenarios">
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#risk-adjusted-scenarios</div>
+        <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Probability-weighted valuation outcomes</p>
           <table className="tbl">
