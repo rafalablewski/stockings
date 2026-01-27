@@ -9060,35 +9060,39 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       <div className="g2">
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#ev-rev-comparison</div>
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>EV/Rev Comparison<UpdateIndicators sources="WS" /></div>
-          <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={filteredComps} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
-              <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
-              <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
-              <Bar dataKey="evRev" fill="var(--accent)">
-                {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--accent)' : 'var(--text3)'} />))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#ev-rev-comparison</div>
+          <div className="card">
+            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>EV/Rev Comparison<UpdateIndicators sources="WS" /></div>
+            <ResponsiveContainer width="100%" height={150}>
+              <BarChart data={filteredComps} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+                <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
+                <Bar dataKey="evRev" fill="var(--accent)">
+                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--accent)' : 'var(--text3)'} />))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#subscriber-comparison</div>
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>$/Subscriber Comparison<UpdateIndicators sources="WS" /></div>
-          <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={filteredComps} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-              <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
-              <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
-              <Bar dataKey="pSub" fill="var(--violet)">
-                {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--violet)' : 'var(--text3)'} />))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#subscriber-comparison</div>
+          <div className="card">
+            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>$/Subscriber Comparison<UpdateIndicators sources="WS" /></div>
+            <ResponsiveContainer width="100%" height={150}>
+              <BarChart data={filteredComps} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+                <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
+                <Bar dataKey="pSub" fill="var(--violet)">
+                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--violet)' : 'var(--text3)'} />))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
@@ -9135,8 +9139,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       <div className="g2" style={{ marginTop: 24 }}>
         {/* SOTP Valuation */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
-        <div className="card">
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
+          <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Value each business segment separately</p>
           <table className="tbl">
@@ -9172,12 +9177,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
 
         {/* Risk-Adjusted Scenarios */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#risk-adjusted-scenarios</div>
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#risk-adjusted-scenarios</div>
+          <div className="card">
+            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Probability-weighted valuation outcomes</p>
           <table className="tbl">
             <thead>
@@ -9211,6 +9218,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 

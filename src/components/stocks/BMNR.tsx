@@ -3045,8 +3045,9 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
       <div className="g2" style={{ marginTop: 24 }}>
         {/* SOTP Valuation */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
-        <div className="card">
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
+          <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Value each component separately</p>
           <table className="tbl">
@@ -3091,11 +3092,13 @@ const CompsTab = ({ comparables, ethPrice }) => {
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
 
         {/* NAV Premium Sensitivity */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#nav-premium-sensitivity</div>
-        <div className="card">
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#nav-premium-sensitivity</div>
+          <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>NAV Premium Sensitivity<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Stock price at different ETH prices × NAV multiples</p>
           <div style={{ overflowX: 'auto' }}>
@@ -3133,6 +3136,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 })}
               </tbody>
             </table>
+          </div>
           </div>
         </div>
       </div>

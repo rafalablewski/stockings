@@ -5749,8 +5749,9 @@ const CompsTab = () => {
 
       <div className="g2" style={{ marginTop: 24 }}>
         {/* SOTP Valuation */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
-        <div className="card">
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
+          <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <table className="tbl">
             <thead>
@@ -5784,11 +5785,13 @@ const CompsTab = () => {
           <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text3)' }}>
             Current market cap: $18.9B ({((18.9 / 16.5 - 1) * 100).toFixed(0)}% premium to midpoint)
           </div>
+          </div>
         </div>
 
         {/* Transaction Comps */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#transaction-comps</div>
-        <div className="card">
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#transaction-comps</div>
+          <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Transaction Comps<UpdateIndicators sources={['WS']} /></div>
           <table className="tbl">
             <thead>
@@ -5822,6 +5825,7 @@ const CompsTab = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 
