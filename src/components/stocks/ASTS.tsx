@@ -114,6 +114,7 @@
  */
 
 import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
+import { getStockModelCSS } from './stock-model-styles';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ComposedChart, Cell, PieChart, Pie, Legend, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -188,7 +189,7 @@ type UpdateSource = 'PR' | 'SEC' | 'WS' | 'MARKET';
 interface StatProps {
   label: string;
   value: string | number;
-  color?: 'white' | 'cyan' | 'mint' | 'coral' | 'sky';
+  color?: 'white' | 'cyan' | 'mint' | 'coral' | 'sky' | 'violet' | 'gold';
   updateSource?: UpdateSource | UpdateSource[];
 }
 
@@ -458,1361 +459,11 @@ const safeDivide = (numerator: number, denominator: number, fallback: number = 0
 const safeNumber = (value: number, fallback: number = 0): number => 
   isFinite(value) ? value : fallback;
 
-const css = `
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
-
-:root {
-  /* ═══ UNIFIED DESIGN TOKENS (shared across ASTS/BMNR/CRCL) ═══ */
-  /* Background & Surfaces */
-  --bg: #05070A;
-  --surface: #0D1117;
-  --surface2: #161B22;
-  --surface3: #21262D;
-  --border: rgba(240,246,252,0.1);
-  
-  /* Typography */
-  --text: #F0F6FC;
-  --text2: #8B949E;
-  --text3: #8B949E;
-  
-  /* Semantic Colors */
-  --cyan: #22D3EE;
-  --cyan-dim: rgba(34,211,238,0.15);
-  --mint: #7EE787;
-  --mint-dim: rgba(126,231,135,0.15);
-  --coral: #FF7B72;
-  --coral-dim: rgba(255,123,114,0.15);
-  --sky: #79C0FF;
-  --sky-dim: rgba(121,192,255,0.15);
-  --gold: #D29922;
-  --gold-dim: rgba(210,153,34,0.15);
-  --violet: #A78BFA;
-  --violet-dim: rgba(167,139,250,0.15);
-  
-  /* ═══ STOCK-SPECIFIC ACCENT (ASTS = cyan) ═══ */
-  --accent: var(--cyan);
-  --accent-dim: var(--cyan-dim);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-.stock-model-app {
-  font-family: 'Outfit', sans-serif;
-  background: var(--bg);
-  min-height: 100vh;
-  color: var(--text);
-  overflow-x: hidden;
-}
-
-/* Hero Header */
-.hero {
-  position: relative;
-  padding: 48px 64px 40px;
-  background: linear-gradient(180deg, #0D1117 0%, var(--bg) 100%);
-  border-bottom: 1px solid var(--border);
-  overflow: hidden;
-}
-
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -200px;
-  right: -100px;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(34,211,238,0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 48px;
-  align-items: start;
-  position: relative;
-  z-index: 1;
-}
-
-.brand-block h1 {
-  font-size: 42px;
-  font-weight: 700;
-  letter-spacing: -1.5px;
-  line-height: 1;
-  margin-bottom: 8px;
-  background: linear-gradient(135deg, #fff 0%, #8B949E 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.brand-block .ticker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: 'Space Mono', monospace;
-  font-size: 14px;
-  color: var(--cyan);
-  background: var(--cyan-dim);
-  padding: 6px 14px;
-  border-radius: 6px;
-  margin-bottom: 24px;
-}
-
-.brand-block .desc {
-  font-size: 16px;
-  color: var(--text2);
-  max-width: 480px;
-  line-height: 1.6;
-}
-
-.price-block {
-  text-align: right;
-}
-
-.price-big {
-  font-family: 'Space Mono', monospace;
-  font-size: 56px;
-  font-weight: 700;
-  letter-spacing: -2px;
-  line-height: 1;
-  margin-bottom: 8px;
-}
-
-.price-badge {
-  display: inline-block;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.price-badge.up { background: var(--mint-dim); color: var(--mint); }
-.price-badge.down { background: var(--coral-dim); color: var(--coral); }
-
-/* Stats Row */
-.stats-row {
-  display: flex;
-  gap: 32px;
-  padding: 32px 64px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-}
-
-.stat-item {
-  flex-shrink: 0;
-}
-
-.stat-item .label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--text3);
-  margin-bottom: 4px;
-}
-
-.stat-item .val {
-  font-family: 'Space Mono', monospace;
-  font-size: 22px;
-  font-weight: 600;
-}
-
-.stat-item .val.cyan { color: var(--cyan); }
-.stat-item .val.mint { color: var(--mint); }
-.stat-item .val.sky { color: var(--sky); }
-.stat-item .val.coral { color: var(--coral); }
-
-/* Navigation */
-.nav {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 64px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(12px);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.nav::-webkit-scrollbar { display: none; }
-
-.nav-btn {
-  padding: 12px 24px;
-  min-width: 100px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text2);
-  background: transparent;
-  border: 1px solid transparent;
-  border-left: 3px solid transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'Outfit', sans-serif;
-  white-space: nowrap;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.nav-btn:hover {
-  color: var(--text);
-  background: var(--surface2);
-}
-
-.nav-btn.active {
-  color: var(--bg);
-  background: var(--cyan);
-  border-color: var(--cyan);
-}
-
-/* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
-/* mint=tracking (actual data), signature color=projection (user models) */
-.nav-btn.tab-tracking {
-  border-left: 3px solid var(--mint);
-}
-.nav-btn.tab-projection {
-  border-left: 3px solid var(--cyan);
-}
-.nav-btn.tab-tracking.active {
-  border-left-color: var(--mint);
-  background: var(--mint);
-  border-color: var(--mint);
-}
-.nav-btn.tab-projection.active {
-  border-left-color: var(--cyan);
-  background: var(--cyan);
-  border-color: var(--cyan);
-}
-
-/* Dropdown Navigation - Stock-specific tabs in expandable menu */
-.nav-dropdown {
-  display: inline-flex;
-}
-.nav-dropdown-trigger {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border-left: 3px solid var(--violet);
-}
-.nav-dropdown-trigger.active {
-  background: var(--violet);
-  color: var(--bg);
-  border-color: var(--violet);
-  border-left: 3px solid var(--violet);
-}
-
-/* Reserved space below nav for dropdown content - always present */
-.nav-dropdown-space {
-  height: 48px;
-  padding: 0 64px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: background 0.2s ease;
-}
-.nav-dropdown-space.open {
-  background: var(--surface);
-}
-.nav-dropdown-menu {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.nav-dropdown-item {
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text2);
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-  white-space: nowrap;
-  font-family: 'Outfit', sans-serif;
-}
-.nav-dropdown-item:hover {
-  color: var(--text);
-  background: var(--surface2);
-}
-.nav-dropdown-item.active {
-  color: var(--cyan);
-  background: var(--cyan-dim);
-}
-
-/* Main Content */
-.main {
-  padding: 48px 64px;
-  max-width: 1400px;
-}
-
-.section-head {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  margin-bottom: 32px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.section-head::before {
-  content: '';
-  width: 6px;
-  height: 32px;
-  background: var(--cyan);
-  border-radius: 3px;
-}
-
-/* Cards */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 28px;
-  margin-bottom: 24px;
-}
-
-.card-title {
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text3);
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-/* Grid Layouts */
-.g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-.g5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
-
-/* Highlight Boxes */
-.highlight {
-  background: linear-gradient(135deg, var(--cyan-dim) 0%, transparent 100%);
-  border: 1px solid rgba(34,211,238,0.2);
-  border-radius: 16px;
-  padding: 28px;
-  margin-bottom: 32px;
-}
-
-.highlight h3 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--cyan);
-  margin-bottom: 12px;
-}
-
-.highlight p {
-  color: var(--text2);
-  line-height: 1.7;
-  font-size: 15px;
-}
-
-/* Thesis Cards */
-.thesis {
-  padding: 28px;
-  border-radius: 16px;
-}
-
-.thesis.bull {
-  background: linear-gradient(135deg, rgba(126,231,135,0.08) 0%, transparent 100%);
-  border: 1px solid rgba(126,231,135,0.15);
-}
-
-.thesis.bear {
-  background: linear-gradient(135deg, rgba(255,123,114,0.08) 0%, transparent 100%);
-  border: 1px solid rgba(255,123,114,0.15);
-}
-
-.thesis h4 {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 16px;
-}
-
-.thesis.bull h4 { color: var(--mint); }
-.thesis.bear h4 { color: var(--coral); }
-
-.thesis ul {
-  list-style: none;
-  font-size: 14px;
-  line-height: 2;
-  color: var(--text2);
-}
-
-.thesis li::before {
-  content: '→';
-  margin-right: 10px;
-  color: var(--text3);
-}
-
-/* Bar Charts */
-.bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  height: 220px;
-  padding: 20px 0;
-}
-
-.bar-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.bar-val {
-  font-family: 'Space Mono', monospace;
-  font-size: 12px;
-  color: var(--text);
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
-.bar {
-  width: 100%;
-  border-radius: 8px 8px 0 0;
-  background: linear-gradient(180deg, var(--cyan) 0%, #06B6D4 100%);
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.bar:hover {
-  filter: brightness(1.15);
-  transform: scaleY(1.02);
-  transform-origin: bottom;
-}
-
-.bar-label {
-  font-size: 11px;
-  color: var(--text3);
-  margin-top: 10px;
-  font-weight: 500;
-}
-
-/* Big Stats */
-.big-stat {
-  background: var(--surface2);
-  border-radius: 12px;
-  padding: 24px;
-  text-align: center;
-}
-
-.big-stat .num {
-  font-family: 'Space Mono', monospace;
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--cyan);
-  margin-bottom: 4px;
-}
-
-.big-stat .lbl {
-  font-size: 13px;
-  color: var(--text3);
-}
-
-/* Tables */
-.tbl {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.tbl th, .tbl td {
-  padding: 14px 16px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-
-.tbl th {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text3);
-  font-weight: 600;
-  background: var(--surface2);
-}
-
-.tbl th:first-child { border-radius: 10px 0 0 0; }
-.tbl th:last-child { border-radius: 0 10px 0 0; }
-
-.tbl td {
-  font-family: 'Space Mono', monospace;
-  font-size: 14px;
-}
-
-.tbl tr:hover td {
-  background: var(--surface2);
-}
-
-.tbl .r { text-align: right; }
-.tbl .cyan { color: var(--cyan); }
-.tbl .mint { color: var(--mint); }
-.tbl .coral { color: var(--coral); }
-.tbl .sky { color: var(--sky); }
-
-/* Pills */
-.pills {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-}
-
-.pill {
-  padding: 10px 20px;
-  font-size: 13px;
-  font-weight: 500;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: var(--text2);
-  font-family: 'Outfit', sans-serif;
-}
-
-.pill:hover, .pill.active {
-  background: var(--cyan);
-  color: var(--bg);
-  border-color: var(--cyan);
-}
-
-/* Range Slider */
-.slider-wrap {
-  margin-bottom: 24px;
-}
-
-.slider-head {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.slider-head span:first-child { color: var(--text2); }
-.slider-head span:last-child { 
-  font-family: 'Space Mono', monospace;
-  color: var(--cyan);
-  font-weight: 600;
-}
-
-input[type="range"] {
-  width: 100%;
-  height: 8px;
-  border-radius: 4px;
-  background: var(--surface3);
-  appearance: none;
-  cursor: pointer;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--cyan);
-  cursor: pointer;
-  box-shadow: 0 0 16px rgba(34,211,238,0.5);
-}
-
-/* Monte Carlo */
-.mc-chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 280px;
-  padding: 20px 0;
-}
-
-.mc-bar {
-  flex: 1;
-  background: var(--cyan);
-  opacity: 0.6;
-  border-radius: 2px 2px 0 0;
-  transition: all 0.2s;
-}
-
-.mc-bar:hover { opacity: 1; }
-.mc-bar.hl { background: var(--gold); opacity: 1; }
-
-/* Legal Disclaimer Banner */
-.disclaimer-banner {
-  background: linear-gradient(135deg, rgba(255,123,114,0.08) 0%, rgba(210,153,34,0.08) 100%);
-  border-bottom: 1px solid rgba(255,123,114,0.2);
-  padding: 12px 64px;
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-.disclaimer-banner .disclaimer-title {
-  color: var(--coral);
-  font-weight: 700;
-  margin-right: 6px;
-}
-
-.disclaimer-banner .disclaimer-text {
-  color: var(--text2);
-}
-
-.disclaimer-banner .disclaimer-divider {
-  margin: 0 12px;
-  color: var(--border);
-}
-
-@media (max-width: 768px) {
-  .disclaimer-banner {
-    padding: 10px 16px;
-    font-size: 10px;
-  }
-  .disclaimer-banner .disclaimer-divider {
-    display: block;
-    margin: 6px 0;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   PROFESSIONAL MOBILE RESPONSIVE STYLES
-   Optimized for touch devices with excellent UX
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Mobile-First Table Wrapper with Scroll Indicator */
-.table-scroll {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: var(--surface3) transparent;
-  position: relative;
-}
-.table-scroll::-webkit-scrollbar { height: 6px; }
-.table-scroll::-webkit-scrollbar-track { background: transparent; }
-.table-scroll::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
-.table-scroll table { min-width: 600px; }
-
-/* Auto-scroll tables in cards on mobile */
-.card, .highlight {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.card table, .highlight table {
-  min-width: max-content;
-}
-
-/* Touch-friendly inputs - Ensure minimum 44px touch targets */
-@media (pointer: coarse) {
-  input[type="range"] { height: 44px; }
-  input[type="range"]::-webkit-slider-thumb { width: 32px; height: 32px; }
-  .nav-btn { min-height: 44px; }
-  button, .btn { min-height: 44px; }
-  .pill { min-height: 44px; padding: 12px 20px; }
-  .nav-dropdown-item { min-height: 44px; padding: 12px 16px; }
-}
-
-/* ═══ RESPONSIVE - DESKTOP (1200px) ═══ */
-@media (max-width: 1200px) {
-  .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 32px; padding-right: 32px; }
-  .g4 { grid-template-columns: repeat(2, 1fr); }
-  .g5 { grid-template-columns: repeat(3, 1fr); }
-}
-
-/* ═══ RESPONSIVE - TABLET (900px) ═══ */
-@media (max-width: 900px) {
-  .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 24px; padding-right: 24px; }
-  .g3 { grid-template-columns: repeat(2, 1fr); }
-  .g4 { grid-template-columns: repeat(2, 1fr); }
-  .g5 { grid-template-columns: repeat(2, 1fr); }
-  .card { padding: 20px; }
-  .highlight { padding: 20px; }
-}
-
-/* ═══ RESPONSIVE - MOBILE (768px) ═══ */
-@media (max-width: 768px) {
-  /* Hero Section - Compact but readable */
-  .hero {
-    padding: 20px 16px 16px;
-  }
-  .hero-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .price-block {
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .price-big {
-    font-size: 40px;
-    letter-spacing: -2px;
-    line-height: 1;
-  }
-  .price-badge {
-    font-size: 12px;
-    padding: 6px 12px;
-  }
-  .brand-block h1 {
-    font-size: 26px;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
-  }
-  .brand-block .desc {
-    font-size: 14px;
-    line-height: 1.5;
-    margin-top: 8px;
-  }
-  .brand-block .ticker {
-    font-size: 11px;
-    padding: 4px 10px;
-    margin-bottom: 12px;
-  }
-
-  /* Grid Layouts - Single column with proper spacing */
-  .g2, .g3, .g4, .g5 {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  /* Stats Row - Horizontal scroll with momentum */
-  .stats-row {
-    padding: 16px;
-    gap: 24px;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    /* Fade indicators for scroll */
-    mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
-  }
-  .stats-row::-webkit-scrollbar { display: none; }
-  .stat-item {
-    flex-shrink: 0;
-    min-width: 80px;
-    text-align: center;
-  }
-  .stat-item .val {
-    font-size: 20px;
-    font-weight: 700;
-  }
-  .stat-item .label {
-    font-size: 9px;
-    letter-spacing: 0.8px;
-  }
-
-  /* Navigation - Horizontal scroll with sticky behavior */
-  .nav {
-    padding: 12px 16px;
-    gap: 8px;
-    /* Fade indicators for scroll */
-    mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
-  }
-  .nav-btn {
-    padding: 10px 16px;
-    font-size: 13px;
-    min-height: 44px;
-    border-radius: 10px;
-  }
-  .nav-dropdown-space {
-    padding: 0 16px;
-    height: 44px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .nav-dropdown-item {
-    font-size: 12px;
-    padding: 6px 12px;
-  }
-
-  /* Main Content Area */
-  .main {
-    padding: 20px 16px;
-  }
-
-  /* Cards - Clean mobile design */
-  .card {
-    padding: 16px;
-    border-radius: 14px;
-    margin-bottom: 16px;
-  }
-  .card-title {
-    font-size: 12px;
-    margin-bottom: 14px;
-    letter-spacing: 1.2px;
-  }
-
-  /* Highlight boxes */
-  .highlight {
-    padding: 16px;
-    border-radius: 14px;
-    margin-bottom: 20px;
-  }
-  .highlight h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
-  }
-  .highlight p {
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  /* Section Headers */
-  .section-head {
-    font-size: 22px;
-    margin-bottom: 20px;
-    gap: 12px;
-  }
-  .section-head::before {
-    width: 4px;
-    height: 24px;
-  }
-
-  /* Tables - Scrollable with visual cues */
-  .table-scroll table { min-width: 480px; }
-  .tbl th, .tbl td {
-    padding: 10px 12px;
-    font-size: 12px;
-  }
-  .tbl th {
-    font-size: 10px;
-    letter-spacing: 0.8px;
-  }
-
-  /* Thesis Cards */
-  .thesis {
-    padding: 16px;
-    border-radius: 14px;
-  }
-  .thesis h4 {
-    font-size: 15px;
-    margin-bottom: 12px;
-  }
-  .thesis ul {
-    font-size: 13px;
-    line-height: 1.8;
-  }
-  .thesis li::before {
-    margin-right: 8px;
-  }
-
-  /* Big Stats */
-  .big-stat {
-    padding: 20px;
-    border-radius: 14px;
-  }
-  .big-stat .num {
-    font-size: 28px;
-  }
-  .big-stat .lbl {
-    font-size: 12px;
-  }
-
-  /* Bar Charts */
-  .bars {
-    height: 180px;
-    gap: 8px;
-    padding: 16px 0;
-  }
-  .bar-val {
-    font-size: 10px;
-  }
-  .bar-label {
-    font-size: 9px;
-  }
-
-  /* Monte Carlo Chart */
-  .mc-chart {
-    height: 200px;
-  }
-
-  /* Pills */
-  .pills {
-    gap: 6px;
-    margin-bottom: 16px;
-  }
-  .pill {
-    padding: 10px 16px;
-    font-size: 12px;
-  }
-
-  /* Sliders */
-  .slider-wrap {
-    margin-bottom: 20px;
-  }
-  .slider-head {
-    font-size: 13px;
-    margin-bottom: 8px;
-  }
-
-  /* Input controls - Prevent iOS zoom */
-  input[type="range"] {
-    height: 44px;
-  }
-  input[type="number"], select {
-    font-size: 16px;
-    padding: 12px 14px;
-    border-radius: 10px;
-    min-height: 44px;
-  }
-
-  /* Input rows */
-  .input-row {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .input-row label {
-    font-size: 13px;
-  }
-
-  /* UpdateIndicators - Smaller on mobile */
-  .update-dot {
-    width: 6px;
-    height: 6px;
-  }
-}
-
-/* ═══ RESPONSIVE - SMALL MOBILE (480px) ═══ */
-@media (max-width: 480px) {
-  /* Hero */
-  .hero {
-    padding: 16px 12px 12px;
-  }
-  .price-big {
-    font-size: 36px;
-  }
-  .brand-block h1 {
-    font-size: 22px;
-  }
-  .brand-block .desc {
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  /* Stats Row */
-  .stats-row {
-    padding: 14px 12px;
-    gap: 20px;
-  }
-  .stat-item .val {
-    font-size: 18px;
-  }
-  .stat-item .label {
-    font-size: 8px;
-    letter-spacing: 0.5px;
-  }
-
-  /* Navigation */
-  .nav {
-    padding: 10px 12px;
-    gap: 6px;
-  }
-  .nav-btn {
-    padding: 8px 12px;
-    font-size: 12px;
-    min-width: auto;
-  }
-  .nav-dropdown-space {
-    padding: 0 12px;
-    height: 40px;
-  }
-  .nav-dropdown-item {
-    font-size: 11px;
-    padding: 5px 8px;
-  }
-
-  /* Main Content */
-  .main {
-    padding: 16px 12px;
-  }
-
-  /* Cards */
-  .card, .highlight {
-    padding: 14px;
-    border-radius: 12px;
-  }
-  .card-title {
-    font-size: 11px;
-  }
-
-  /* Section Headers */
-  .section-head {
-    font-size: 20px;
-    margin-bottom: 16px;
-  }
-
-  /* Tables */
-  .table-scroll table { min-width: 380px; }
-  .tbl th, .tbl td {
-    padding: 8px 10px;
-    font-size: 11px;
-  }
-  .tbl th {
-    font-size: 9px;
-  }
-
-  /* Grids */
-  .g2, .g3, .g4, .g5 { gap: 10px; }
-
-  /* Big Stats */
-  .big-stat .num {
-    font-size: 24px;
-  }
-  .big-stat .lbl {
-    font-size: 11px;
-  }
-
-  /* Thesis */
-  .thesis {
-    padding: 14px;
-  }
-  .thesis h4 {
-    font-size: 14px;
-  }
-  .thesis ul {
-    font-size: 12px;
-  }
-
-  /* Pills */
-  .pill {
-    padding: 8px 14px;
-    font-size: 11px;
-  }
-}
-
-/* ═══ RESPONSIVE - EXTRA SMALL (360px) ═══ */
-@media (max-width: 360px) {
-  .hero { padding: 12px 10px; }
-  .price-big { font-size: 32px; }
-  .brand-block h1 { font-size: 20px; }
-  .brand-block .desc { font-size: 12px; }
-
-  .stats-row { padding: 12px 10px; gap: 16px; }
-  .stat-item .val { font-size: 16px; }
-
-  .nav { padding: 8px 10px; }
-  .nav-btn { padding: 6px 10px; font-size: 11px; }
-
-  .main { padding: 14px 10px; }
-  .card, .highlight { padding: 12px; }
-  .section-head { font-size: 18px; }
-
-  .tbl th, .tbl td { padding: 6px 8px; font-size: 10px; }
-}
-
-/* ═══ LANDSCAPE MOBILE ADJUSTMENTS ═══ */
-@media (max-width: 900px) and (orientation: landscape) {
-  .hero { padding: 16px 24px; }
-  .hero-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-  }
-  .stats-row { padding: 12px 24px; }
-  .g2 { grid-template-columns: repeat(2, 1fr); }
-  .g3 { grid-template-columns: repeat(3, 1fr); }
-  .g4 { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* ═══ HIGH DPI / RETINA ADJUSTMENTS ═══ */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .card, .highlight {
-    border-width: 0.5px;
-  }
-  .nav-btn {
-    border-width: 3px;
-  }
-}
-
-/* ═══ REDUCED MOTION ═══ */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  .bar:hover {
-    transform: none;
-  }
-}
-
-/* ═══ DARK MODE OPTIMIZATION ═══ */
-@media (prefers-color-scheme: dark) {
-  /* Already dark, but ensure proper contrast */
-  .card, .highlight {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  }
-}
-
-/* Timeline - CRCL Unified Style */
-.timeline-item {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  margin-bottom: 12px;
-  overflow: hidden;
-  transition: all 0.2s;
-  background: var(--surface);
-}
-.timeline-item:hover {
-  border-color: rgba(34,211,238,0.3);
-}
-.timeline-item.expanded {
-  border-color: var(--cyan);
-  background: var(--surface2);
-}
-.timeline-header {
-  display: grid;
-  grid-template-columns: 100px 100px 1fr auto auto;
-  gap: 16px;
-  padding: 18px 20px;
-  cursor: pointer;
-  align-items: center;
-  transition: background 0.2s;
-}
-.timeline-header:hover {
-  background: var(--surface2);
-}
-.t-date {
-  font-family: 'Space Mono', monospace;
-  font-size: 13px;
-  color: var(--cyan);
-  font-weight: 600;
-}
-.t-cat {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-weight: 600;
-  background: var(--surface3);
-  color: var(--text3);
-  width: fit-content;
-}
-.t-cat.guidance { background: rgba(168,85,247,0.15); color: #c084fc; }
-.t-cat.data { background: rgba(59,130,246,0.15); color: #60a5fa; }
-.t-cat.event { background: rgba(234,179,8,0.15); color: #facc15; }
-.t-cat.launch { background: rgba(34,197,94,0.15); color: #4ade80; }
-.t-event {
-  font-size: 14px;
-  color: var(--text);
-  font-weight: 500;
-  line-height: 1.5;
-}
-.t-verdict {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 6px 12px;
-  border-radius: 6px;
-}
-.t-verdict.positive { background: rgba(34,197,94,0.15); color: #4ade80; }
-.t-verdict.negative { background: rgba(239,68,68,0.15); color: #f87171; }
-.t-verdict.neutral { background: rgba(148,163,184,0.15); color: #94a3b8; }
-.t-toggle {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: var(--surface3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: var(--text3);
-  transition: all 0.2s;
-}
-.timeline-item.expanded .t-toggle {
-  background: var(--cyan);
-  color: var(--bg);
-  transform: rotate(180deg);
-}
-.timeline-details {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
-  background: var(--surface2);
-  border-top: 1px solid var(--border);
-}
-.timeline-item.expanded .timeline-details {
-  max-height: 500px;
-  padding: 20px;
-}
-.t-details-content {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 24px;
-}
-.t-details-text {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text2);
-}
-.t-details-text ul {
-  margin: 0;
-  padding-left: 0;
-  list-style: none;
-}
-.t-details-text li {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-.t-details-text li::before {
-  content: '•';
-  color: var(--cyan);
-  font-weight: bold;
-}
-.t-details-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 180px;
-}
-.t-meta-item {
-  background: var(--surface3);
-  padding: 12px 16px;
-  border-radius: 8px;
-}
-.t-meta-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text3);
-  margin-bottom: 4px;
-}
-.t-meta-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-}
-.t-meta-value.cyan { color: var(--cyan); }
-.t-meta-value.green { color: #4ade80; }
-.t-meta-value.red { color: #f87171; }
-.t-topic-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-.t-topic-tag {
-  font-size: 10px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-@media (max-width: 900px) {
-  .timeline-header { grid-template-columns: 90px 1fr auto auto; }
-  .timeline-header .t-cat { display: none; }
-}
-@media (max-width: 600px) {
-  .timeline-header { grid-template-columns: 1fr auto; gap: 12px; padding: 14px 16px; }
-  .timeline-header .t-date, .timeline-header .t-cat { display: none; }
-  .t-verdict { padding: 4px 8px; font-size: 10px; }
-  .t-toggle { width: 28px; height: 28px; font-size: 14px; }
-  .t-details-content { grid-template-columns: 1fr; }
-  .t-details-meta { flex-direction: row; flex-wrap: wrap; min-width: auto; }
-}
-
-/* ═══ UPDATE INDICATOR SYSTEM (Ive-inspired minimal design) ═══ */
-/* Tiny, subtle dots - visible but never distracting */
-.update-indicator-wrap {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 4px;
-  gap: 3px;
-  flex-shrink: 0;
-}
-.update-indicator {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  cursor: help;
-  position: relative;
-  flex-shrink: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-.update-indicator.hidden { opacity: 0; transform: scale(0.5); }
-.update-indicator.pr { background: rgba(250, 204, 21, 0.85); }
-.update-indicator.sec { background: rgba(34, 211, 238, 0.85); }
-.update-indicator.ws { background: rgba(167, 139, 250, 0.85); }
-.update-indicator.market { background: rgba(74, 222, 128, 0.85); }
-
-/* Tooltip on hover - refined */
-.update-indicator::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%) scale(0.95);
-  padding: 5px 9px;
-  background: rgba(30, 30, 35, 0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 5px;
-  font-size: 10px;
-  font-weight: 500;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
-  z-index: 1000;
-  color: rgba(255,255,255,0.9);
-  pointer-events: none;
-  letter-spacing: 0.2px;
-}
-.update-indicator:hover::after {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) scale(1);
-}
-
-/* Update Legend - minimal */
-.update-legend {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 10px 16px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 8px;
-  font-size: 11px;
-  margin-bottom: 24px;
-}
-.update-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--text3);
-}
-.update-legend-item .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-.update-legend-item .dot.pr { background: rgba(250, 204, 21, 0.85); }
-.update-legend-item .dot.sec { background: rgba(34, 211, 238, 0.85); }
-.update-legend-item .dot.ws { background: rgba(167, 139, 250, 0.85); }
-.update-legend-item .dot.market { background: rgba(74, 222, 128, 0.85); }
-`;
+// CSS is now imported from shared styles (Golden Standard: ASTS)
+// To modify styles, edit: ./stock-model-styles.ts
+const css = getStockModelCSS('cyan');
+
+/* See stock-model-styles.ts for all CSS */
 
 // ============================================================================
 // UNIFIED UI COMPONENT LIBRARY - Consistent Design System
@@ -2310,11 +961,14 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
 
   return (
   <div style={{ display: 'flex', flexDirection: 'column' }}>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#investment-thesis</div>
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
     <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
       <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--cyan)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
     <div className="g2">
       <div className="thesis bull">
         <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
@@ -2340,7 +994,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
 
-    <div className="card" style={{ marginTop: 32 }}>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#chart</div>
+    <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>
           {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}<UpdateIndicators sources="PR" />
@@ -2380,7 +1035,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
 
-    <div className="card" style={{ marginTop: 32 }}>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-metrics</div>
+    <div className="card">
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <div className="g4">
         <Card label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} sub="Equity value" color="blue" />
@@ -2389,7 +1045,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub="~1 year runway" color="green" />
       </div>
     </div>
-    <div className="card" style={{ marginTop: 32 }}>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#company-snapshot</div>
+    <div className="card">
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <div className="g3">
         <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Equity (Q3 2025)</div>
@@ -2415,7 +1072,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         </div>
       </div>
     </div>
-    <div className="card" style={{ marginTop: 32 }}><div className="card-title">Parameters</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#parameters</div>
+    <div className="card"><div className="card-title">Parameters</div>
       <div className="g4" style={{ marginTop: '16px' }}>
         <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
         <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
@@ -2426,7 +1084,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         <Input label="Debt ($M)" value={totalDebt} onChange={setTotalDebt} />
       </div>
     </div>
-    
+
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — Space-Based Cellular" items={[
       { term: 'Market Cap', def: 'Stock price × shares outstanding. Current equity value assigned by market. Compare to DCF intrinsic value.' },
       { term: 'Enterprise Value (EV)', def: 'Market Cap + Total Debt - Cash. Represents total firm value to all capital providers. Used in EV/Revenue multiples.' },
@@ -2584,10 +1243,10 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
         </div>
       </div>
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl"><thead><tr style={{ borderBottom: '1px solid var(--border)' }}><th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Reach</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name} style={{ borderTop: '1px solid var(--border)' }}><td style={{ padding: 8, color: 'var(--text2)' }}>{p.name}</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{p.subs}M</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text3)' }}>{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
+        <table className="tbl"><thead><tr><th>Partner</th><th className="r">Reach</th><th className="r">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name}><td>{p.name}</td><td className="r">{p.subs}M</td><td className="r">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
       </div>
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl"><thead><tr style={{ borderBottom: '1px solid var(--border)' }}><th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Pen%</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Rev/yr</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={{ borderTop: '1px solid var(--border)', background: s.p === penetrationRate ? 'var(--surface2)' : 'transparent' }}><td style={{ padding: 8, color: 'var(--text2)' }}>{s.p}%</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{s.subs.toFixed(0)}M</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${s.rev.toFixed(1)}B</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
+        <table className="tbl"><thead><tr><th>Pen%</th><th className="r">Subs</th><th className="r">Rev/yr</th><th className="r">$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={s.p === penetrationRate ? { background: 'var(--accent-dim)' } : undefined}><td>{s.p}%</td><td className="r">{s.subs.toFixed(0)}M</td><td className="r">${s.rev.toFixed(1)}B</td><td className="r">${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g3"><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div></div>
       
@@ -2797,33 +1456,33 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th>
-                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Region</th>
-                <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
-                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Spectrum</th>
-                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Term</th>
-                <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Prepayment</th>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
+              <tr>
+                <th>Partner</th>
+                <th className="c">Region</th>
+                <th className="r">Subs</th>
+                <th className="c">Spectrum</th>
+                <th className="c">Term</th>
+                <th className="r">Prepayment</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
               {definitiveAgreements.map(p => (
-                <tr key={p.partner} style={{ borderTop: '1px solid var(--border)' }}>
-                  <td style={{ padding: 8, color: 'var(--text2)' }}>{p.partner}</td>
-                  <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.region}</td>
-                  <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{p.subs}M</td>
-                  <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{p.spectrum}</span></td>
-                  <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.term}</td>
-                  <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${p.prepayment}M</td>
-                  <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{p.prepayStatus}</td>
+                <tr key={p.partner}>
+                  <td>{p.partner}</td>
+                  <td className="c">{p.region}</td>
+                  <td className="r">{p.subs}M</td>
+                  <td className="c"><span className="pill" style={{ fontSize: 11 }}>{p.spectrum}</span></td>
+                  <td className="c">{p.term}</td>
+                  <td className="r">${p.prepayment}M</td>
+                  <td>{p.prepayStatus}</td>
                 </tr>
               ))}
-              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
-                <td style={{ padding: 8, fontWeight: 600, color: 'var(--text2)' }} colSpan={2}>Total Definitive</td>
-                <td style={{ padding: 8, textAlign: 'right', fontWeight: 600, color: 'var(--text2)' }}>{totalDefinitiveSubs}M</td>
+              <tr style={{ background: 'var(--accent-dim)' }}>
+                <td style={{ fontWeight: 600 }} colSpan={2}>Total Definitive</td>
+                <td className="r" style={{ fontWeight: 600 }}>{totalDefinitiveSubs}M</td>
                 <td colSpan={2}></td>
-                <td style={{ padding: 8, textAlign: 'right', fontWeight: 600, color: 'var(--mint)' }}>${totalPrepay}M</td>
+                <td className="r" style={{ fontWeight: 600 }}>${totalPrepay}M</td>
                 <td></td>
               </tr>
             </tbody>
@@ -2851,26 +1510,26 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Asset</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Band</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Size</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Coverage</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Term</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Cost</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
+            <tr>
+              <th>Asset</th>
+              <th className="c">Band</th>
+              <th className="c">Size</th>
+              <th className="c">Coverage</th>
+              <th className="c">Term</th>
+              <th className="r">Cost</th>
+              <th className="c">Status</th>
             </tr>
           </thead>
           <tbody>
             {ownedSpectrum.map(s => (
-              <tr key={s.name} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{s.name}</td>
-                <td style={{ padding: 8, textAlign: 'center', fontSize: 11, color: 'var(--text3)' }}>{s.band}</td>
-                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>{s.size}</td>
-                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{s.coverage}</td>
-                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{s.term}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>{s.cost}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{s.status}</span></td>
+              <tr key={s.name}>
+                <td>{s.name}</td>
+                <td className="c">{s.band}</td>
+                <td className="c">{s.size}</td>
+                <td className="c">{s.coverage}</td>
+                <td className="c">{s.term}</td>
+                <td className="r">{s.cost}</td>
+                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{s.status}</span></td>
               </tr>
             ))}
           </tbody>
@@ -2904,20 +1563,20 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Agency</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Value</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Notes</th>
+            <tr>
+              <th>Agency</th>
+              <th className="r">Value</th>
+              <th className="c">Status</th>
+              <th>Notes</th>
             </tr>
           </thead>
           <tbody>
             {govContracts.map(g => (
-              <tr key={g.agency} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{g.agency}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>{g.value}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{g.status}</span></td>
-                <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{g.notes}</td>
+              <tr key={g.agency}>
+                <td>{g.agency}</td>
+                <td className="r">{g.value}</td>
+                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{g.status}</span></td>
+                <td>{g.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -2931,22 +1590,22 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Region</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Notes</th>
+            <tr>
+              <th>Partner</th>
+              <th className="c">Region</th>
+              <th className="r">Subs</th>
+              <th className="c">Status</th>
+              <th>Notes</th>
             </tr>
           </thead>
           <tbody>
             {otherPartners.map(p => (
-              <tr key={p.partner} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{p.partner}</td>
-                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.region}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{p.subs}M</td>
-                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{p.status}</span></td>
-                <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{p.notes}</td>
+              <tr key={p.partner}>
+                <td>{p.partner}</td>
+                <td className="c">{p.region}</td>
+                <td className="r">{p.subs}M</td>
+                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{p.status}</span></td>
+                <td>{p.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -3126,43 +1785,43 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--gold)', marginBottom: 8 }}>2025 Capital Raises</h4>
         <table className="tbl" style={{ marginBottom: 16 }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Source</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Terms</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status & Notes</th>
+            <tr>
+              <th>Source</th>
+              <th className="r">Amount</th>
+              <th className="c">Terms</th>
+              <th>Status & Notes</th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Jan 2025 Convertible</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$460M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>4.25%, 2032</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>$410M repurchased for equity (shares issued); $50M remains as debt</td>
+            <tr>
+              <td>Jan 2025 Convertible</td>
+              <td className="r">$460M</td>
+              <td className="c">4.25%, 2032</td>
+              <td>$410M repurchased for equity (shares issued); $50M remains as debt</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Jul 2025 Convertible</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$575M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>4.25%, 2032</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>$120.12 effective strike via capped call; outstanding as debt</td>
+            <tr>
+              <td>Jul 2025 Convertible</td>
+              <td className="r">$575M</td>
+              <td className="c">4.25%, 2032</td>
+              <td>$120.12 effective strike via capped call; outstanding as debt</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Oct 2025 Convertible</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$1,000M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>2%, 2036</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>$96.30 strike; 10-year term; outstanding as debt</td>
+            <tr>
+              <td>Oct 2025 Convertible</td>
+              <td className="r">$1,000M</td>
+              <td className="c">2%, 2036</td>
+              <td>$96.30 strike; 10-year term; outstanding as debt</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>ATM Facility (Q3)</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$389M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>At-the-market</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Shares sold at market; facility now terminated</td>
+            <tr>
+              <td>ATM Facility (Q3)</td>
+              <td className="r">$389M</td>
+              <td className="c">At-the-market</td>
+              <td>Shares sold at market; facility now terminated</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Capped Call Unwind</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$74.5M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>—</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Hedge monetized when Jan converts repurchased</td>
+            <tr>
+              <td>Capped Call Unwind</td>
+              <td className="r">$74.5M</td>
+              <td className="c">—</td>
+              <td>Hedge monetized when Jan converts repurchased</td>
             </tr>
           </tbody>
         </table>
@@ -3170,37 +1829,37 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--violet)', marginBottom: 8 }}>2024 Capital Raises</h4>
         <table className="tbl" style={{ marginBottom: 16 }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Source</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Terms</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status & Notes</th>
+            <tr>
+              <th>Source</th>
+              <th className="r">Amount</th>
+              <th className="c">Terms</th>
+              <th>Status & Notes</th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>2034 Strategic Convertibles</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$148.5M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>3.875%, 2034</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>AT&T, Google, Vodafone, Verizon. Force-converted to equity Jan 2025 (25.8M shares)</td>
+            <tr>
+              <td>2034 Strategic Convertibles</td>
+              <td className="r">$148.5M</td>
+              <td className="c">3.875%, 2034</td>
+              <td>AT&T, Google, Vodafone, Verizon. Force-converted to equity Jan 2025 (25.8M shares)</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Public Warrant Exercise</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$153.6M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>$11.50/share</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Warrants redeemed Sept 2024; ~13.4M shares issued</td>
+            <tr>
+              <td>Public Warrant Exercise</td>
+              <td className="r">$153.6M</td>
+              <td className="c">$11.50/share</td>
+              <td>Warrants redeemed Sept 2024; ~13.4M shares issued</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Verizon Strategic Investment</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$100M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Equity + Commitment</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>May 2024; converted to definitive Oct 2025</td>
+            <tr>
+              <td>Verizon Strategic Investment</td>
+              <td className="r">$100M</td>
+              <td className="c">Equity + Commitment</td>
+              <td>May 2024; converted to definitive Oct 2025</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Google Investment</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$100M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Equity + Commitment</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>May 2024; strategic technology partnership</td>
+            <tr>
+              <td>Google Investment</td>
+              <td className="r">$100M</td>
+              <td className="c">Equity + Commitment</td>
+              <td>May 2024; strategic technology partnership</td>
             </tr>
           </tbody>
         </table>
@@ -3208,37 +1867,37 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--sky)', marginBottom: 8 }}>2021-2023 Foundation</h4>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Source</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Terms</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status & Notes</th>
+            <tr>
+              <th>Source</th>
+              <th className="r">Amount</th>
+              <th className="c">Terms</th>
+              <th>Status & Notes</th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>SPAC (April 2021)</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$462M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>SPAC + PIPE</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>IPO via New Providence; $230M PIPE from Vodafone, Rakuten, American Tower</td>
+            <tr>
+              <td>SPAC (April 2021)</td>
+              <td className="r">$462M</td>
+              <td className="c">SPAC + PIPE</td>
+              <td>IPO via New Providence; $230M PIPE from Vodafone, Rakuten, American Tower</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>B. Riley ATM (2022)</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$75M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>ATM facility</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>24-month committed equity; used opportunistically</td>
+            <tr>
+              <td>B. Riley ATM (2022)</td>
+              <td className="r">$75M</td>
+              <td className="c">ATM facility</td>
+              <td>24-month committed equity; used opportunistically</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>NanoAvionics Sale</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$28M net</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Asset sale</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Subsidiary sold to Kongsberg (July 2022); focused ASTS on core mission</td>
+            <tr>
+              <td>NanoAvionics Sale</td>
+              <td className="r">$28M net</td>
+              <td className="c">Asset sale</td>
+              <td>Subsidiary sold to Kongsberg (July 2022); focused ASTS on core mission</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Atlas Facility</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$30M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Secured loan</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Equipment-backed; partially repaid</td>
+            <tr>
+              <td>Atlas Facility</td>
+              <td className="r">$30M</td>
+              <td className="c">Secured loan</td>
+              <td>Equipment-backed; partially repaid</td>
             </tr>
           </tbody>
         </table>
@@ -3258,20 +1917,20 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Raise Amount</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>New Shares</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Dilution</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Extended Runway</th>
+            <tr>
+              <th>Raise Amount</th>
+              <th className="r">New Shares</th>
+              <th className="r">Dilution</th>
+              <th className="r">Extended Runway</th>
             </tr>
           </thead>
           <tbody>
             {dilution.map(d => (
-              <tr key={d.r} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--mint)' }}>${d.r}M</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{d.new.toFixed(1)}M</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{d.dil.toFixed(1)}%</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{d.runway.toFixed(1)}Q</td>
+              <tr key={d.r}>
+                <td>${d.r}M</td>
+                <td className="r">{d.new.toFixed(1)}M</td>
+                <td className="r">{d.dil.toFixed(1)}%</td>
+                <td className="r">{d.runway.toFixed(1)}Q</td>
               </tr>
             ))}
           </tbody>
@@ -3374,52 +2033,52 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Class Structure (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Class</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shares (M)</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>% of Basic</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Voting Rights</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Description</th>
+            <tr>
+              <th>Class</th>
+              <th className="r">Shares (M)</th>
+              <th className="r">% of Basic</th>
+              <th>Voting Rights</th>
+              <th>Description</th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Class A</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{shareClasses[0].shares}</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</td>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>1 vote/share</td>
-              <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Public trading (NASDAQ: ASTS)</td>
+            <tr>
+              <td>Class A</td>
+              <td className="r">{shareClasses[0].shares}</td>
+              <td className="r">{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</td>
+              <td>1 vote/share</td>
+              <td>Public trading (NASDAQ: ASTS)</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Class B</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>11.2</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(11.2 / totalBasic * 100).toFixed(1)}%</td>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>1 vote/share</td>
-              <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Founder/insider shares</td>
+            <tr>
+              <td>Class B</td>
+              <td className="r">11.2</td>
+              <td className="r">{(11.2 / totalBasic * 100).toFixed(1)}%</td>
+              <td>1 vote/share</td>
+              <td>Founder/insider shares</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Class C</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>78.2</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(78.2 / totalBasic * 100).toFixed(1)}%</td>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>10 votes/share</td>
-              <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Abel Avellan (CEO)</td>
+            <tr>
+              <td>Class C</td>
+              <td className="r">78.2</td>
+              <td className="r">{(78.2 / totalBasic * 100).toFixed(1)}%</td>
+              <td>10 votes/share</td>
+              <td>Abel Avellan (CEO)</td>
             </tr>
-            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Total Basic</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{totalBasic.toFixed(1)}</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>100%</td>
+            <tr style={{ background: 'var(--accent-dim)' }}>
+              <td style={{ fontWeight: 600 }}>Total Basic</td>
+              <td className="r" style={{ fontWeight: 600 }}>{totalBasic.toFixed(1)}</td>
+              <td className="r" style={{ fontWeight: 600 }}>100%</td>
               <td colSpan={2}></td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>+ Options/RSUs/Converts</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(fullyDiluted - totalBasic).toFixed(1)}</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</td>
-              <td colSpan={2} style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Remaining converts, options, RSUs</td>
+            <tr>
+              <td>+ Options/RSUs/Converts</td>
+              <td className="r">{(fullyDiluted - totalBasic).toFixed(1)}</td>
+              <td className="r">+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</td>
+              <td colSpan={2}>Remaining converts, options, RSUs</td>
             </tr>
-            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Fully Diluted</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{fullyDiluted.toFixed(1)}</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</td>
+            <tr style={{ background: 'var(--accent-dim)' }}>
+              <td style={{ fontWeight: 600 }}>Fully Diluted</td>
+              <td className="r" style={{ fontWeight: 600 }}>{fullyDiluted.toFixed(1)}</td>
+              <td className="r" style={{ fontWeight: 600 }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</td>
               <td colSpan={2}></td>
             </tr>
           </tbody>
@@ -3473,26 +2132,26 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Major Shareholders (Known from SEC Filings)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shareholder</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Role</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shares (M)</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Class</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>% Own</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>% Vote</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Notes</th>
+            <tr>
+              <th>Shareholder</th>
+              <th>Role</th>
+              <th className="r">Shares (M)</th>
+              <th>Class</th>
+              <th className="r">% Own</th>
+              <th className="r">% Vote</th>
+              <th>Notes</th>
             </tr>
           </thead>
           <tbody>
             {majorShareholders.map((sh, i) => (
-              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{sh.name}</td>
-                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{sh.role}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</td>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{sh.shareClass}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{sh.pct}%</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{sh.votingPct}%</td>
-                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{sh.notes}</td>
+              <tr key={i}>
+                <td>{sh.name}</td>
+                <td>{sh.role}</td>
+                <td className="r">{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</td>
+                <td>{sh.shareClass}</td>
+                <td className="r">{sh.pct}%</td>
+                <td className="r">{sh.votingPct}%</td>
+                <td>{sh.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -3509,29 +2168,29 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Offerings Timeline<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Date</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Event</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Type</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Price</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shares (M)</th>
+            <tr>
+              <th>Date</th>
+              <th>Event</th>
+              <th>Type</th>
+              <th className="r">Amount</th>
+              <th className="r">Price</th>
+              <th className="r">Shares (M)</th>
             </tr>
           </thead>
           <tbody>
             {equityOfferings.map((offering, i) => (
-              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{offering.date}</td>
-                <td style={{ padding: 8, fontWeight: 500 }}>{offering.event}</td>
-                <td style={{ padding: 8 }}><span style={{ color: 'var(--gold)' }}>{offering.type}</span></td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${offering.amount}M</td>
-                <td style={{ padding: 8, textAlign: 'right' }}>{offering.price ? `$${offering.price.toFixed(2)}` : '—'}</td>
-                <td style={{ padding: 8, textAlign: 'right' }}>{offering.shares ? offering.shares.toFixed(1) : '—'}</td>
+              <tr key={i}>
+                <td>{offering.date}</td>
+                <td style={{ fontWeight: 500 }}>{offering.event}</td>
+                <td>{offering.type}</td>
+                <td className="r">${offering.amount}M</td>
+                <td className="r">{offering.price ? `$${offering.price.toFixed(2)}` : '—'}</td>
+                <td className="r">{offering.shares ? offering.shares.toFixed(1) : '—'}</td>
               </tr>
             ))}
-            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td colSpan={3} style={{ padding: 8 }}>Total Capital Raised (2019-2025)</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>~$3.6B</td>
+            <tr style={{ background: 'var(--accent-dim)' }}>
+              <td colSpan={3} style={{ fontWeight: 600 }}>Total Capital Raised (2019-2025)</td>
+              <td className="r" style={{ fontWeight: 600 }}>~$3.6B</td>
               <td colSpan={2}></td>
             </tr>
           </tbody>
@@ -3548,20 +2207,20 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Stock-Based Compensation (SBC)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Quarter</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Total SBC</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Engineering</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>G&A</th>
+            <tr>
+              <th>Quarter</th>
+              <th className="r">Total SBC</th>
+              <th className="r">Engineering</th>
+              <th className="r">G&A</th>
             </tr>
           </thead>
           <tbody>
             {sbcHistory.map((row, i) => (
-              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{row.quarter}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${row.sbc.toFixed(1)}M</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${row.engineering.toFixed(1)}M</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${row.gAndA.toFixed(1)}M</td>
+              <tr key={i}>
+                <td>{row.quarter}</td>
+                <td className="r">${row.sbc.toFixed(1)}M</td>
+                <td className="r">${row.engineering.toFixed(1)}M</td>
+                <td className="r">${row.gAndA.toFixed(1)}M</td>
               </tr>
             ))}
           </tbody>
@@ -3606,22 +2265,22 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Count Evolution<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Quarter</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Class A (M)</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Implied (M)</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Fully Diluted (M)</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Key Event</th>
+            <tr>
+              <th>Quarter</th>
+              <th className="r">Class A (M)</th>
+              <th className="r">Implied (M)</th>
+              <th className="r">Fully Diluted (M)</th>
+              <th>Key Event</th>
             </tr>
           </thead>
           <tbody>
             {dilutionHistory.map((row, i) => (
-              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{row.quarter}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{row.classA.toFixed(1)}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{row.implied.toFixed(1)}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{row.fullyDiluted.toFixed(1)}</td>
-                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{row.event}</td>
+              <tr key={i}>
+                <td>{row.quarter}</td>
+                <td className="r">{row.classA.toFixed(1)}</td>
+                <td className="r">{row.implied.toFixed(1)}</td>
+                <td className="r">{row.fullyDiluted.toFixed(1)}</td>
+                <td>{row.event}</td>
               </tr>
             ))}
           </tbody>
@@ -3667,21 +2326,21 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text2)', marginBottom: 12 }}>Potential Future Dilution</div>
           <table className="tbl">
             <tbody>
-              <tr style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>Jan 2025 Converts (remaining $50M @ $26.58)</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+1.9M</td>
+              <tr>
+                <td>Jan 2025 Converts (remaining $50M @ $26.58)</td>
+                <td className="r">+1.9M</td>
               </tr>
-              <tr style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>Jul 2025 Converts ($575M @ $120.12)</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+4.8M</td>
+              <tr>
+                <td>Jul 2025 Converts ($575M @ $120.12)</td>
+                <td className="r">+4.8M</td>
               </tr>
-              <tr style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>Oct 2025 Converts ($1,150M @ $96.30)</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+11.9M</td>
+              <tr>
+                <td>Oct 2025 Converts ($1,150M @ $96.30)</td>
+                <td className="r">+11.9M</td>
               </tr>
-              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>Maximum Additional Dilution</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+18.6M (~5%)</td>
+              <tr style={{ background: 'var(--accent-dim)' }}>
+                <td style={{ fontWeight: 600 }}>Maximum Additional Dilution</td>
+                <td className="r" style={{ fontWeight: 600 }}>+18.6M (~5%)</td>
               </tr>
             </tbody>
           </table>
@@ -3858,9 +2517,11 @@ const ParameterCard = ({
     { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
   ];
 
+  // Colors map directly to position: idx 0 = red (bearish), idx 5 = green (bullish)
+  // Options arrays are always ordered from bearish to bullish scenarios
+  // (for inverse params like risk/dilution, HIGH values come first since they're bearish)
   const getButtonColor = (idx: number) => {
-    const effectiveIdx = inverse ? 5 - idx : idx;
-    return presetColors[effectiveIdx];
+    return presetColors[idx];
   };
 
   const handleCustomSubmit = () => {
@@ -4104,10 +2765,12 @@ const ModelTab = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#model-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* ASSUMPTIONS SECTION */}
       <>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#scenario</div>
           <div className="highlight">
             <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
             <p style={{ fontSize: 13, color: 'var(--text2)' }}>
@@ -4115,6 +2778,7 @@ const ModelTab = ({
             </p>
           </div>
 
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#scenario-presets</div>
           {/* Scenario Presets - 6 scenarios from Worst to Moon */}
           <div className="card">
             <div className="card-title">Scenario Presets</div>
@@ -4154,7 +2818,8 @@ const ModelTab = ({
           </div>
 
           {/* SUBSCRIBER & REVENUE PARAMETERS */}
-          <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>Subscriber & Revenue Model</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#revenue-model</div>
+          <h3 style={{ color: 'var(--cyan)', marginBottom: 8 }}>Subscriber & Revenue Model</h3>
 
           <div className="g2">
             <ParameterCard
@@ -4196,7 +2861,8 @@ const ModelTab = ({
           </div>
 
           {/* OPERATING PARAMETERS */}
-          <h3 style={{ color: 'var(--mint)', marginTop: 24, marginBottom: 8 }}>Operating Assumptions</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#operating-model</div>
+          <h3 style={{ color: 'var(--mint)', marginBottom: 8 }}>Operating Assumptions</h3>
 
           <div className="g2">
             <ParameterCard
@@ -4240,7 +2906,8 @@ const ModelTab = ({
           </div>
 
           {/* VALUATION PARAMETERS */}
-          <h3 style={{ color: 'var(--violet)', marginTop: 24, marginBottom: 8 }}>Valuation Parameters</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-params</div>
+          <h3 style={{ color: 'var(--violet)', marginBottom: 8 }}>Valuation Parameters</h3>
 
           <div className="g2">
             <ParameterCard
@@ -4263,7 +2930,8 @@ const ModelTab = ({
           </div>
 
           {/* RISK PARAMETERS */}
-          <h3 style={{ color: 'var(--coral)', marginTop: 24, marginBottom: 8 }}>Risk Probability Factors</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#risk-factors</div>
+          <h3 style={{ color: 'var(--coral)', marginBottom: 8 }}>Risk Probability Factors</h3>
           <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>
             Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Tech) × (1-Comp) = {(riskFactor * 100).toFixed(0)}% success probability.
           </p>
@@ -4299,7 +2967,8 @@ const ModelTab = ({
           </div>
 
           {/* DCF VALUATION OUTPUT - Unified section with consistent styling */}
-          <div className="card" style={{ marginTop: 24, border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
+          <div className="card" style={{ border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
             <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (2030 Terminal Year)</div>
 
             {/* All cards use consistent grid with same gap */}
@@ -4346,7 +3015,8 @@ const ModelTab = ({
           </div>
 
           {/* CALCULATION METHODOLOGY - Full explanation */}
-          <div className="card" style={{ marginTop: 16 }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#methodology</div>
+          <div className="card">
             <div className="card-title">Calculation Methodology</div>
             <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
               <p style={{ marginBottom: 12 }}>
@@ -4681,191 +3351,422 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
+        <h2 className="section-head" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      </div>
 
       {/* Highlight Box */}
-      <div className="highlight">
-        <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue-Based Valuation Simulation</h3>
-        <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-          Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
-          and log-normal revenue distribution. Terminal value discounted to present.
-        </p>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-description</div>
+        <div className="highlight" style={{ marginTop: 0 }}>
+          <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue-Based Valuation Simulation</h3>
+          <p style={{ fontSize: 13, color: 'var(--text2)' }}>
+            Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
+            and log-normal revenue distribution. Terminal value discounted to present.
+          </p>
+        </div>
       </div>
 
       {/* Scenario Presets */}
-      <div className="card"><div className="card-title">Select Scenario</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
-          {Object.entries(presets).map(([key, p]) => (
-            <button
-              key={key}
-              onClick={() => loadPreset(key)}
-              style={{
-                padding: '12px 16px',
-                borderRadius: 8,
-                textAlign: 'left',
-                border: `1px solid ${activePreset === key ? 'var(--cyan)' : 'var(--border)'}`,
-                background: activePreset === key ? 'var(--cyan)' : 'var(--surface2)',
-                color: activePreset === key ? 'var(--bg)' : 'var(--text)',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-            >
-              <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
-              <div style={{ fontSize: 11, opacity: 0.8 }}>{p.desc}</div>
-            </button>
-          ))}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
+        <div className="card" style={{ marginTop: 0 }}>
+          <div className="card-title">Select Scenario</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+            {Object.entries(presets).filter(([key]) => key !== 'mgmt').map(([key, p]) => (
+              <button
+                key={key}
+                onClick={() => loadPreset(key)}
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: 8,
+                  textAlign: 'left',
+                  border: `2px solid ${activePreset === key ? 'var(--cyan)' : 'transparent'}`,
+                  background: activePreset === key ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
+                  color: activePreset === key ? 'var(--cyan)' : 'var(--text)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s'
+                }}
+              >
+                <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
+                <div style={{ fontSize: 11, opacity: 0.7 }}>{p.desc}</div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Horizon & Simulation Controls */}
-      <div className="g2">
-        <div className="card">
-          <div className="card-title">Time Horizon</div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {[3, 5, 7].map(yr => (
-              <button
-                key={yr}
-                onClick={() => setYears(yr)}
-                style={{
-                  flex: 1,
-                  padding: '12px 20px',
-                  borderRadius: 8,
-                  border: years === yr ? '2px solid var(--cyan)' : '1px solid var(--border)',
-                  background: years === yr ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-                  color: years === yr ? 'var(--cyan)' : 'var(--text2)',
-                  cursor: 'pointer',
-                  fontWeight: years === yr ? 700 : 400,
-                  fontFamily: 'Space Mono',
-                  fontSize: 16,
-                }}
-              >
-                {yr}Y
-              </button>
-            ))}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
+        <div className="g2" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Time Horizon</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {[3, 5, 7].map(yr => (
+                <button
+                  key={yr}
+                  onClick={() => setYears(yr)}
+                  style={{
+                    flex: 1,
+                    padding: '12px 20px',
+                    borderRadius: 8,
+                    border: years === yr ? '2px solid var(--cyan)' : '2px solid transparent',
+                    background: years === yr ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
+                    color: years === yr ? 'var(--cyan)' : 'var(--text2)',
+                    cursor: 'pointer',
+                    fontWeight: years === yr ? 700 : 400,
+                    fontFamily: 'Space Mono',
+                    fontSize: 16,
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  {yr}Y
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="card">
-          <div className="card-title">Simulations</div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {[1000, 2000, 5000].map(simCount => (
-              <button
-                key={simCount}
-                onClick={() => setSims(simCount)}
-                style={{
-                  flex: 1,
-                  padding: '12px 16px',
-                  borderRadius: 8,
-                  border: sims === simCount ? '2px solid var(--cyan)' : '1px solid var(--border)',
-                  background: sims === simCount ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-                  color: sims === simCount ? 'var(--cyan)' : 'var(--text2)',
-                  cursor: 'pointer',
-                  fontWeight: sims === simCount ? 700 : 400,
-                  fontFamily: 'Space Mono',
-                  fontSize: 14,
-                }}
-              >
-                {simCount.toLocaleString()}
-              </button>
-            ))}
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Simulations</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {[1000, 2000, 5000].map(simCount => (
+                <button
+                  key={simCount}
+                  onClick={() => setSims(simCount)}
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    borderRadius: 8,
+                    border: sims === simCount ? '2px solid var(--cyan)' : '2px solid transparent',
+                    background: sims === simCount ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
+                    color: sims === simCount ? 'var(--cyan)' : 'var(--text2)',
+                    cursor: 'pointer',
+                    fontWeight: sims === simCount ? 700 : 400,
+                    fontFamily: 'Space Mono',
+                    fontSize: 14,
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  {simCount.toLocaleString()}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Parameters Card */}
-      <div className="card"><div className="card-title">Parameters {activePreset === 'custom' ? '(Custom)' : `(${presets[activePreset].label})`}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-          <Input label="Base Rev ($B)" value={baseRev} onChange={updateParam(setBaseRev)} step={0.5} />
-          <Input label="Rev Vol (%)" value={revVol} onChange={updateParam(setRevVol)} />
-          <Input label="EBITDA %" value={margin} onChange={updateParam(setMargin)} />
-          <Input label="EV/EBITDA" value={mult} onChange={updateParam(setMult)} step={0.5} />
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginTop: 16 }}>
-          <Input label="Launch Risk %" value={launchRisk} onChange={updateParam(setLaunchRisk)} />
-          <Input label="Regulatory Risk %" value={regRisk} onChange={updateParam(setRegRisk)} />
-          <Input label="Discount Rate %" value={discountRate} onChange={setDiscountRate} step={0.5} />
-          <div style={{ padding: 8, background: 'var(--surface2)', borderRadius: 6, fontSize: 11, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <span style={{ color: 'var(--text3)' }}>Revenue Check:</span>
-            <span><span style={{ color: 'var(--cyan)' }}>${sim.revStats.p5.toFixed(1)}B</span> → <span style={{ color: 'var(--mint)' }}>${sim.revStats.p50.toFixed(1)}B</span> → <span style={{ color: 'var(--sky)' }}>${sim.revStats.p95.toFixed(1)}B</span></span>
+      {/* Parameters - Model Tab Style */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
+        <h3 style={{ color: 'var(--cyan)', marginBottom: 8, marginTop: 0 }}>Revenue Model</h3>
+        <div className="g2" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Base Revenue ($B)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Expected terminal year revenue. Source: DCF model or analyst estimates.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[1.5, 2.5, 4.0, 5.5, 8.0, 12.0].map((opt, idx) => {
+                const isActive = Math.abs(baseRev - opt) < 0.1;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setBaseRev)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>${opt}</div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Revenue Volatility (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Log-normal std dev. 35% = outcomes range 0.7x-1.4x base revenue.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[50, 45, 40, 35, 30, 25].map((opt, idx) => {
+                const isActive = revVol === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setRevVol)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
           </div>
         </div>
+
+        <h3 style={{ color: 'var(--mint)', marginTop: 16, marginBottom: 8 }}>Operating Model</h3>
+        <div className="g2" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">EBITDA Margin (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Terminal margin at scale. Satellite/telecom: 40-60%. Operating leverage applies.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[25, 35, 40, 45, 52, 58].map((opt, idx) => {
+                const isActive = margin === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setMargin)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">EV/EBITDA Multiple</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Terminal valuation multiple. Growth: 10-15x, Mature telcos: 6-8x.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[6, 8, 10, 12, 14, 16].map((opt, idx) => {
+                const isActive = mult === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setMult)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}x</div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <h3 style={{ color: 'var(--coral)', marginTop: 16, marginBottom: 8 }}>Risk Factors</h3>
+        <div className="g3" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Launch Risk (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Prob. of constellation failure. If triggered: -40% revenue.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[30, 25, 20, 15, 10, 5].map((opt, idx) => {
+                const isActive = launchRisk === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setLaunchRisk)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Regulatory Risk (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Prob. of FCC/spectrum issues. If triggered: -30% revenue.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[25, 20, 15, 10, 8, 5].map((opt, idx) => {
+                const isActive = regRisk === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => updateParam(setRegRisk)(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="card" style={{ marginTop: 0 }}>
+            <div className="card-title">Discount Rate (%)</div>
+            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+              Required return / WACC. Pre-revenue space: 12-18%.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+              {[20, 18, 16, 15, 13, 11].map((opt, idx) => {
+                const isActive = discountRate === opt;
+                const colors = [
+                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                ][idx];
+                return (
+                  <div key={opt} onClick={() => setDiscountRate(opt)} style={{
+                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                    background: isActive ? colors.bg : 'var(--surface2)',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? colors.text : 'var(--text3)',
+                    transition: 'all 0.15s'
+                  }}>{opt}%</div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Run Button */}
         <button onClick={() => setRunKey(k => k + 1)} style={{
-          marginTop: 16, width: '100%', padding: '10px 16px', background: 'var(--cyan)', color: 'var(--bg1)', 
-          border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: 13
+          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--cyan)', color: 'var(--bg1)',
+          border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
         }}>🎲 Run Simulation</button>
       </div>
 
-      {/* Percentile Cards - Unified 5-card layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#f87171' }}>${sim.p5.toFixed(0)}</div>
-          <div style={{ fontSize: 11, color: '#fca5a5', marginTop: 4 }}>{((sim.p5 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#fdba74', marginBottom: 4 }}>P25</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${sim.p25.toFixed(0)}</div>
-          <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((sim.p25 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,211,238,0.2)', border: '1px solid rgba(34,211,238,0.4)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#67e8f9', marginBottom: 4 }}>Median</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#22d3ee' }}>${sim.p50.toFixed(0)}</div>
-          <div style={{ fontSize: 11, color: '#67e8f9', marginTop: 4 }}>{((sim.p50 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#4ade80' }}>${sim.p75.toFixed(0)}</div>
-          <div style={{ fontSize: 11, color: '#86efac', marginTop: 4 }}>{((sim.p75 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
-        </div>
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>P95 (Bull)</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${sim.p95.toFixed(0)}</div>
-          <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((sim.p95 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+      {/* Percentile Cards */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#f87171' }}>${sim.p5.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#fca5a5', marginTop: 4 }}>{((sim.p5 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#fdba74', marginBottom: 4 }}>P25</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${sim.p25.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((sim.p25 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,211,238,0.2)', border: '1px solid rgba(34,211,238,0.4)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#67e8f9', marginBottom: 4 }}>Median</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#22d3ee' }}>${sim.p50.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#67e8f9', marginTop: 4 }}>{((sim.p50 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#4ade80' }}>${sim.p75.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#86efac', marginTop: 4 }}>{((sim.p75 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>P95 (Bull)</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${sim.p95.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((sim.p95 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          </div>
         </div>
       </div>
 
-      {/* Risk Metrics - Unified 2 rows of 3 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-        <Card label="Win Probability" value={`${sim.winProbability.toFixed(0)}%`} sub="> current price" color="blue" />
-        <Card label="Expected Value" value={`$${sim.mean.toFixed(0)}`} sub="Mean fair value" color="cyan" />
-        <Card label="Sharpe Ratio" value={sim.sharpe.toFixed(2)} sub={sim.sharpe > 1 ? 'Excellent' : sim.sharpe > 0.5 ? 'Good' : 'Moderate'} color={sim.sharpe > 0.5 ? 'green' : 'yellow'} />
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-        <Card label="Sortino Ratio" value={sim.sortino.toFixed(2)} sub="Downside-adjusted" color={sim.sortino > 0.7 ? 'green' : 'yellow'} />
-        <Card label="VaR (5%)" value={`${sim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
-        <Card label="CVaR (5%)" value={`${sim.cvar5.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
+      {/* Risk Metrics */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <Card label="Win Probability" value={`${sim.winProbability.toFixed(0)}%`} sub="> current price" color="blue" />
+          <Card label="Expected Value" value={`$${sim.mean.toFixed(0)}`} sub="Mean fair value" color="cyan" />
+          <Card label="Sharpe Ratio" value={sim.sharpe.toFixed(2)} sub={sim.sharpe > 1 ? 'Excellent' : sim.sharpe > 0.5 ? 'Good' : 'Moderate'} color={sim.sharpe > 0.5 ? 'green' : 'yellow'} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
+          <Card label="Sortino Ratio" value={sim.sortino.toFixed(2)} sub="Downside-adjusted" color={sim.sortino > 0.7 ? 'green' : 'yellow'} />
+          <Card label="VaR (5%)" value={`${sim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
+          <Card label="CVaR (5%)" value={`${sim.cvar5.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
+        </div>
       </div>
 
       {/* Distribution Chart */}
-      <div className="card"><div className="card-title">Fair Value Distribution</div>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={sim.histogram}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
-            <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
-            <Tooltip 
-              contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} 
-              formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
-              labelFormatter={(v) => `$${v.toFixed(0)}`}
-            />
-            <Bar dataKey="pct" fill="var(--cyan)" radius={[2, 2, 0, 0]} />
-            <ReferenceLine x={currentStockPrice} stroke="#fff" strokeDasharray="5 5" />
-          </BarChart>
-        </ResponsiveContainer>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
-          <span>White line = current price (${currentStockPrice})</span>
-          <span>Simulations: {sim.n.toLocaleString()}</span>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
+        <div className="card" style={{ marginTop: 0 }}>
+          <div className="card-title">Fair Value Distribution</div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={sim.histogram}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
+              <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
+              <Tooltip
+                contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
+                formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
+                labelFormatter={(v) => `$${v.toFixed(0)}`}
+              />
+              <Bar dataKey="pct" fill="var(--cyan)" radius={[2, 2, 0, 0]} />
+              <ReferenceLine x={currentStockPrice} stroke="#fff" strokeDasharray="5 5" />
+            </BarChart>
+          </ResponsiveContainer>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+            <span>White line = current price (${currentStockPrice})</span>
+            <span>Simulations: {sim.n.toLocaleString()}</span>
+          </div>
         </div>
       </div>
-      
-      <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
-        { term: 'Monte Carlo Method', def: 'Run thousands of random simulations with input volatility. Distribution of outcomes shows probability-weighted fair values.' },
-        { term: 'Revenue Volatility', def: 'Standard deviation of revenue growth assumptions. Higher volatility = wider distribution of outcomes.' },
-        { term: 'Binary Risk Events', def: 'Launch failure, regulatory rejection. Model as probability of total loss in affected scenarios.' },
-        { term: 'Percentile Interpretation', def: 'P5 = 5% chance of being below this. P50 = median. P95 = 5% chance of exceeding.' },
-        { term: 'VaR (Value at Risk)', def: 'The loss level that won\'t be exceeded with 95% confidence. Shows downside risk.' },
-        { term: 'Expected Value', def: 'Probability-weighted average of all outcomes. Compare to current price for buy/sell signal.' },
-      ]} />
+
+      {/* CFA Notes */}
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-notes</div>
+        <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
+          { term: 'Monte Carlo Method', def: 'Run thousands of random simulations with input volatility. Distribution of outcomes shows probability-weighted fair values.' },
+          { term: 'Revenue Volatility', def: 'Standard deviation of revenue growth assumptions. Higher volatility = wider distribution of outcomes.' },
+          { term: 'Binary Risk Events', def: 'Launch failure, regulatory rejection. Model as probability of total loss in affected scenarios.' },
+          { term: 'Percentile Interpretation', def: 'P5 = 5% chance of being below this. P50 = median. P95 = 5% chance of exceeding.' },
+          { term: 'VaR (Value at Risk)', def: 'The loss level that won\'t be exceeded with 95% confidence. Shows downside risk.' },
+          { term: 'Expected Value', def: 'Probability-weighted average of all outcomes. Compare to current price for buy/sell signal.' },
+        ]} />
+      </div>
     </div>
   );
 };
@@ -5680,12 +4581,12 @@ const QuarterlyMetricsPanel = () => {
       
       {/* All Quarters Table */}
       <div style={{ overflowX: 'auto' }}>
-        <table className="tbl" style={{ fontSize: 12 }}>
+        <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: '8px', color: 'var(--text3)', position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
+            <tr>
+              <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
               {displayQuarters.map(q => (
-                <th key={q} style={{ textAlign: 'right', padding: '8px', color: 'var(--text3)', minWidth: 70, whiteSpace: 'nowrap' }}>
+                <th key={q} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap' }}>
                   {q.replace('Q', '').replace(' ', "'")}
                 </th>
               ))}
@@ -5693,8 +4594,8 @@ const QuarterlyMetricsPanel = () => {
           </thead>
           <tbody>
             {metrics.map(metric => (
-              <tr key={metric.label} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: '6px 8px', color: 'var(--text2)', position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
+              <tr key={metric.label}>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
                   {metric.label}
                 </td>
                 {displayQuarters.map(q => {
@@ -5706,7 +4607,7 @@ const QuarterlyMetricsPanel = () => {
                   return (
                     <td
                       key={q}
-                      style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--text2)', fontFamily: 'Space Mono, monospace' }}
+                      className="r"
                       title={tooltip}
                     >
                       {metric.format(val)}
@@ -8952,19 +7853,19 @@ const TimelineTab = () => {
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Date</th>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Type</th>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Description</th>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Period</th>
-                <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Link</th>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Period</th>
+                <th className="r">Link</th>
               </tr>
             </thead>
             <tbody>
               {displayedFilings.map((filing, idx) => (
-                <tr key={idx} style={{ borderTop: '1px solid var(--border)' }}>
-                  <td style={{ padding: 8, whiteSpace: 'nowrap' }}>{filing.date}</td>
-                  <td style={{ padding: 8 }}>
+                <tr key={idx}>
+                  <td style={{ whiteSpace: 'nowrap' }}>{filing.date}</td>
+                  <td>
                     <span style={{
                       background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)',
                       color: secTypeColors[filing.type]?.text || 'var(--text2)',
@@ -8976,9 +7877,9 @@ const TimelineTab = () => {
                       {filing.type}
                     </span>
                   </td>
-                  <td style={{ padding: 8 }}>{filing.description}</td>
-                  <td style={{ padding: 8 }}>{filing.period}</td>
-                  <td style={{ padding: 8, textAlign: 'right' }}>
+                  <td>{filing.description}</td>
+                  <td>{filing.period}</td>
+                  <td className="r">
                     <a
                       href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
                       target="_blank"
@@ -10068,56 +8969,56 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     return profile?.name || id;
   };
 
-  // Implication styling
+  // Implication styling - using design tokens
   const getImplicationStyle = (impl: ASTSImplication) => {
     switch (impl) {
-      case 'positive': return { bg: 'rgba(126,231,135,0.15)', color: '#7EE787', label: '✓ Good for ASTS' };
-      case 'negative': return { bg: 'rgba(255,123,114,0.15)', color: '#FF7B72', label: '⚠ Threat to ASTS' };
-      default: return { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8', label: '○ Neutral' };
+      case 'positive': return { bg: 'var(--mint-dim)', color: 'var(--mint)', label: '✓ Good for ASTS' };
+      case 'negative': return { bg: 'var(--coral-dim)', color: 'var(--coral)', label: '⚠ Threat to ASTS' };
+      default: return { bg: 'var(--surface3)', color: 'var(--text3)', label: '○ Neutral' };
     }
   };
 
-  // Category styling
+  // Category styling - using design tokens
   const getCategoryStyle = (cat: CompetitorNewsCategory) => {
     const styles: Record<CompetitorNewsCategory, { bg: string; color: string }> = {
-      'Launch': { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
-      'Partnership': { bg: 'rgba(59,130,246,0.15)', color: '#60a5fa' },
-      'Technology': { bg: 'rgba(168,85,247,0.15)', color: '#c084fc' },
-      'Regulatory': { bg: 'rgba(234,179,8,0.15)', color: '#facc15' },
-      'Financial': { bg: 'rgba(34,211,238,0.15)', color: '#22d3ee' },
-      'Coverage': { bg: 'rgba(249,115,22,0.15)', color: '#fb923c' },
-      'Product': { bg: 'rgba(236,72,153,0.15)', color: '#f472b6' },
+      'Launch': { bg: 'var(--mint-dim)', color: 'var(--mint)' },
+      'Partnership': { bg: 'var(--sky-dim)', color: 'var(--sky)' },
+      'Technology': { bg: 'var(--violet-dim)', color: 'var(--violet)' },
+      'Regulatory': { bg: 'var(--gold-dim)', color: 'var(--gold)' },
+      'Financial': { bg: 'var(--cyan-dim)', color: 'var(--cyan)' },
+      'Coverage': { bg: 'var(--coral-dim)', color: 'var(--coral)' },
+      'Product': { bg: 'var(--accent-dim)', color: 'var(--accent)' },
     };
     return styles[cat] || { bg: 'var(--surface3)', color: 'var(--text3)' };
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
+      <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
 
       {/* Valuation Comparables Section */}
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
+      <div className="highlight"><h3>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
 
-      <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Market Comparison<UpdateIndicators sources="WS" /></div>
+      <div className="card">
+        <div className="card-title">Market Comparison<UpdateIndicators sources="WS" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Company</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Mkt Cap</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>EV/Rev</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>$/Sub</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
+            <tr>
+              <th>Company</th>
+              <th className="r">Mkt Cap</th>
+              <th className="r">EV/Rev</th>
+              <th className="r">$/Sub</th>
+              <th className="r">Subs</th>
             </tr>
           </thead>
           <tbody>
             {comps.map(c => (
-              <tr key={c.name} style={{ borderTop: '1px solid var(--border)', background: c.name === 'ASTS' ? 'var(--surface2)' : 'transparent' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{c.name}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${(c.mc / 1000).toFixed(0)}B</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{c.evRev.toFixed(1)}x</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${c.pSub.toLocaleString()}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{c.subs.toFixed(0)}M</td>
+              <tr key={c.name} style={c.name === 'ASTS' ? { background: 'var(--accent-dim)' } : undefined}>
+                <td>{c.name}</td>
+                <td className="r">${(c.mc / 1000).toFixed(0)}B</td>
+                <td className="r">{c.evRev.toFixed(1)}x</td>
+                <td className="r">${c.pSub.toLocaleString()}</td>
+                <td className="r">{c.subs.toFixed(0)}M</td>
               </tr>
             ))}
           </tbody>
@@ -10132,9 +9033,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis type="number" stroke="var(--text3)" />
               <YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
               <Bar dataKey="evRev" fill="var(--cyan)">
-                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? '#06b6d4' : '#475569'} />))}
+                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? 'var(--cyan)' : 'var(--text3)'} />))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -10146,9 +9047,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis type="number" stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
               <YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
               <Bar dataKey="pSub" fill="var(--violet)">
-                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? '#8b5cf6' : '#475569'} />))}
+                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? 'var(--violet)' : 'var(--text3)'} />))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -10156,46 +9057,46 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* D2D Competitor Capability Matrix */}
-      <div className="highlight" style={{ marginTop: 32 }}><h3 style={{ display: 'flex', alignItems: 'center' }}>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
+      <div className="highlight"><h3>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
 
-      <div className="card" style={{ marginTop: 32 }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capability Comparison<UpdateIndicators sources="PR" /></div>
+      <div className="card">
+        <div className="card-title">Capability Comparison<UpdateIndicators sources="PR" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Competitor</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Voice</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Text</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Data</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Video</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Unmod. Phones</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Global</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Satellites</th>
+            <tr>
+              <th>Competitor</th>
+              <th className="c">Voice</th>
+              <th className="c">Text</th>
+              <th className="c">Data</th>
+              <th className="c">Video</th>
+              <th className="c">Unmod. Phones</th>
+              <th className="c">Global</th>
+              <th className="r">Satellites</th>
             </tr>
           </thead>
           <tbody>
             {/* ASTS Row - highlighted */}
-            <tr style={{ borderTop: '1px solid var(--border)', background: 'var(--surface2)' }}>
-              <td style={{ padding: 8, fontWeight: 600, color: 'var(--text2)' }}>ASTS SpaceMobile</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>✓</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Building</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>6+</td>
+            <tr style={{ background: 'var(--accent-dim)' }}>
+              <td style={{ fontWeight: 600 }}>ASTS SpaceMobile</td>
+              <td className="c">✓</td>
+              <td className="c">✓</td>
+              <td className="c">✓</td>
+              <td className="c">✓</td>
+              <td className="c">✓</td>
+              <td className="c">Building</td>
+              <td className="r">6+</td>
             </tr>
             {/* Competitor Rows */}
             {COMPETITOR_PROFILES.map(comp => (
-              <tr key={comp.id} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{comp.name}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.voice ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.text ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.data ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.video ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.unmodifiedPhones ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}>{comp.capabilities.globalCoverage ? <span style={{ color: 'var(--text2)' }}>✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text3)' }}>{comp.keyMetrics?.satellites || 'N/A'}</td>
+              <tr key={comp.id}>
+                <td>{comp.name}</td>
+                <td className="c">{comp.capabilities.voice ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="c">{comp.capabilities.text ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="c">{comp.capabilities.data ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="c">{comp.capabilities.video ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="c">{comp.capabilities.unmodifiedPhones ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="c">{comp.capabilities.globalCoverage ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
+                <td className="r" style={{ color: 'var(--text3)' }}>{comp.keyMetrics?.satellites || 'N/A'}</td>
               </tr>
             ))}
           </tbody>
@@ -10203,19 +9104,18 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor News Intelligence Section */}
-      <div className="highlight" style={{ marginTop: 32 }}>
-        <h3 style={{ display: 'flex', alignItems: 'center' }}>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
-        <p style={{ fontSize: 13, color: 'var(--text2)' }}>Track competitor developments to assess ASTS competitive position</p>
+      <div className="highlight">
+        <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
+        <p>Track competitor developments to assess ASTS competitive position</p>
       </div>
 
       {/* Filter Bar */}
-      <div className="card" style={{ marginTop: 32, padding: '12px 16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filter:</span>
+      <div className="card" style={{ padding: '12px 16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
           <button
             onClick={() => setCompetitorFilter('all')}
-            className={`nav-btn ${competitorFilter === 'all' ? 'active' : ''}`}
-            style={{ padding: '6px 12px', fontSize: '12px' }}
+            className={`filter-btn ${competitorFilter === 'all' ? 'active' : ''}`}
           >
             All ({COMPETITOR_NEWS.length})
           </button>
@@ -10226,8 +9126,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <button
                 key={comp.id}
                 onClick={() => setCompetitorFilter(comp.id)}
-                className={`nav-btn ${competitorFilter === comp.id ? 'active' : ''}`}
-                style={{ padding: '6px 12px', fontSize: '12px' }}
+                className={`filter-btn ${competitorFilter === comp.id ? 'active' : ''}`}
               >
                 {comp.name.split('/')[0].trim()} ({count})
               </button>
@@ -13888,24 +12787,24 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                                         <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 4 }}>ESTIMATES</div>
                                         <table className="tbl">
                                           <thead>
-                                            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                                              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Metric</th>
-                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY24</th>
-                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY25</th>
-                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY26</th>
-                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY27</th>
-                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY28</th>
+                                            <tr>
+                                              <th>Metric</th>
+                                              <th className="r">FY24</th>
+                                              <th className="r">FY25</th>
+                                              <th className="r">FY26</th>
+                                              <th className="r">FY27</th>
+                                              <th className="r">FY28</th>
                                             </tr>
                                           </thead>
                                           <tbody>
                                             {report.estimates.map((e, i) => (
-                                              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                                                <td style={{ padding: 8, color: 'var(--text2)' }}>{e.metric}</td>
-                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy24 || '—'}</td>
-                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy25 || '—'}</td>
-                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy26 || '—'}</td>
-                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy27 || '—'}</td>
-                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy28 || '—'}</td>
+                                              <tr key={i}>
+                                                <td>{e.metric}</td>
+                                                <td className="r">{e.fy24 || '—'}</td>
+                                                <td className="r">{e.fy25 || '—'}</td>
+                                                <td className="r">{e.fy26 || '—'}</td>
+                                                <td className="r">{e.fy27 || '—'}</td>
+                                                <td className="r">{e.fy28 || '—'}</td>
                                               </tr>
                                             ))}
                                           </tbody>

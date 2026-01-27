@@ -110,6 +110,7 @@
  */
 
 import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
+import { getStockModelCSS } from './stock-model-styles';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, ScatterChart, Scatter, Cell, ReferenceLine,
@@ -716,1070 +717,9 @@ const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?
   { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
 ];
 
-const css = `
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
-
-:root {
-  /* ═══ UNIFIED DESIGN TOKENS (shared across ASTS/BMNR/CRCL) ═══ */
-  /* Background & Surfaces */
-  --bg: #05070A;
-  --surface: #0D1117;
-  --surface2: #161B22;
-  --surface3: #21262D;
-  --border: rgba(240,246,252,0.1);
-  
-  /* Typography */
-  --text: #F0F6FC;
-  --text2: #8B949E;
-  --text3: #8B949E;
-  
-  /* Semantic Colors */
-  --cyan: #22D3EE;
-  --cyan-dim: rgba(34,211,238,0.15);
-  --mint: #7EE787;
-  --mint-dim: rgba(126,231,135,0.15);
-  --coral: #FF7B72;
-  --coral-dim: rgba(255,123,114,0.15);
-  --sky: #79C0FF;
-  --sky-dim: rgba(121,192,255,0.15);
-  --gold: #D29922;
-  --gold-dim: rgba(210,153,34,0.15);
-  --violet: #A78BFA;
-  --violet-dim: rgba(167,139,250,0.15);
-  
-  /* ═══ STOCK-SPECIFIC ACCENT (CRCL = mint) ═══ */
-  --accent: var(--mint);
-  --accent-dim: var(--mint-dim);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-.stock-model-app {
-  font-family: 'Outfit', sans-serif;
-  background: var(--bg);
-  min-height: 100vh;
-  color: var(--text);
-  overflow-x: hidden;
-}
-
-/* Hero Header */
-.hero {
-  position: relative;
-  padding: 48px 64px 40px;
-  background: linear-gradient(180deg, #0D1117 0%, var(--bg) 100%);
-  border-bottom: 1px solid var(--border);
-  overflow: hidden;
-}
-
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -200px;
-  right: -100px;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(126,231,135,0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 48px;
-  align-items: start;
-  position: relative;
-  z-index: 1;
-}
-
-.brand-block h1 {
-  font-size: 42px;
-  font-weight: 700;
-  letter-spacing: -1.5px;
-  line-height: 1;
-  margin-bottom: 8px;
-  background: linear-gradient(135deg, #fff 0%, #8B949E 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.brand-block .ticker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: 'Space Mono', monospace;
-  font-size: 14px;
-  color: var(--mint);
-  background: var(--mint-dim);
-  padding: 6px 14px;
-  border-radius: 6px;
-  margin-bottom: 24px;
-}
-
-.brand-block .desc {
-  font-size: 16px;
-  color: var(--text2);
-  max-width: 480px;
-  line-height: 1.6;
-}
-
-.price-block {
-  text-align: right;
-}
-
-.price-big {
-  font-family: 'Space Mono', monospace;
-  font-size: 56px;
-  font-weight: 700;
-  letter-spacing: -2px;
-  line-height: 1;
-  margin-bottom: 8px;
-}
-
-.price-badge {
-  display: inline-block;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.price-badge.up { background: var(--mint-dim); color: var(--mint); }
-.price-badge.down { background: var(--coral-dim); color: var(--coral); }
-
-/* Stats Row */
-.stats-row {
-  display: flex;
-  gap: 32px;
-  padding: 32px 64px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-}
-
-.stat-item {
-  flex-shrink: 0;
-}
-
-.stat-item .label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--text3);
-  margin-bottom: 4px;
-}
-
-.stat-item .val {
-  font-family: 'Space Mono', monospace;
-  font-size: 22px;
-  font-weight: 600;
-}
-
-.stat-item .val.mint { color: var(--mint); }
-.stat-item .val.sky { color: var(--sky); }
-
-/* Navigation */
-.nav {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 64px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(12px);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.nav::-webkit-scrollbar { display: none; }
-
-.nav-btn {
-  padding: 12px 24px;
-  min-width: 100px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text2);
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'Outfit', sans-serif;
-  white-space: nowrap;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.nav-btn:hover {
-  color: var(--text);
-  background: var(--surface2);
-}
-
-.nav-btn.active {
-  color: var(--bg);
-  background: var(--mint);
-  border-color: var(--mint);
-}
-
-/* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
-/* mint=tracking (actual data), violet=projection (user models) */
-.nav-btn.tab-tracking {
-  border-left: 3px solid var(--mint);
-}
-.nav-btn.tab-projection {
-  border-left: 3px solid var(--violet);
-}
-.nav-btn.tab-tracking.active {
-  border-left-color: var(--mint);
-  background: var(--mint);
-  border-color: var(--mint);
-}
-.nav-btn.tab-projection.active {
-  border-left-color: var(--violet);
-  background: var(--violet);
-  border-color: var(--violet);
-}
-
-/* Dropdown Navigation - Stock-specific tabs in expandable menu */
-.nav-dropdown {
-  display: inline-flex;
-}
-.nav-dropdown-trigger {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border-left: 3px solid var(--violet);
-}
-.nav-dropdown-trigger.active {
-  background: var(--violet);
-  color: var(--bg);
-  border-color: var(--violet);
-  border-left: 3px solid var(--violet);
-}
-
-/* Reserved space below nav for dropdown content - always present */
-.nav-dropdown-space {
-  height: 52px;
-  padding: 0 64px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.nav-dropdown-menu {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.nav-dropdown-item {
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--muted);
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.15s;
-  white-space: nowrap;
-}
-.nav-dropdown-item:hover {
-  color: var(--text);
-}
-.nav-dropdown-item.active {
-  color: var(--mint);
-}
-
-/* Main Content */
-.main {
-  padding: 48px 64px;
-  max-width: 1400px;
-}
-
-.section-head {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  margin-bottom: 32px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.section-head::before {
-  content: '';
-  width: 6px;
-  height: 32px;
-  background: var(--mint);
-  border-radius: 3px;
-}
-
-/* Cards */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 28px;
-  margin-bottom: 24px;
-}
-
-.card-title {
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text3);
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-/* Grid Layouts */
-.g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-.g5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
-
-/* Highlight Boxes */
-.highlight {
-  background: linear-gradient(135deg, var(--mint-dim) 0%, transparent 100%);
-  border: 1px solid rgba(126,231,135,0.2);
-  border-radius: 16px;
-  padding: 28px;
-  margin-bottom: 32px;
-}
-
-.highlight h3 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--mint);
-  margin-bottom: 12px;
-}
-
-.highlight p {
-  color: var(--text2);
-  line-height: 1.7;
-  font-size: 15px;
-}
-
-/* Thesis Cards */
-.thesis {
-  padding: 28px;
-  border-radius: 16px;
-}
-
-.thesis.bull {
-  background: linear-gradient(135deg, rgba(126,231,135,0.08) 0%, transparent 100%);
-  border: 1px solid rgba(126,231,135,0.15);
-}
-
-.thesis.bear {
-  background: linear-gradient(135deg, rgba(255,123,114,0.08) 0%, transparent 100%);
-  border: 1px solid rgba(255,123,114,0.15);
-}
-
-.thesis h4 {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 16px;
-}
-
-.thesis.bull h4 { color: var(--mint); }
-.thesis.bear h4 { color: var(--coral); }
-
-.thesis ul {
-  list-style: none;
-  font-size: 14px;
-  line-height: 2;
-  color: var(--text2);
-}
-
-.thesis li::before {
-  content: '→';
-  margin-right: 10px;
-  color: var(--text3);
-}
-
-/* Chart Bars */
-.bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  height: 220px;
-  padding: 20px 0;
-}
-
-.bar-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.bar-val {
-  font-family: 'Space Mono', monospace;
-  font-size: 12px;
-  color: var(--text);
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
-.bar {
-  width: 100%;
-  border-radius: 8px 8px 0 0;
-  background: linear-gradient(180deg, var(--mint) 0%, #3FB950 100%);
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.bar:hover {
-  filter: brightness(1.15);
-  transform: scaleY(1.02);
-  transform-origin: bottom;
-}
-
-.bar-label {
-  font-size: 11px;
-  color: var(--text3);
-  margin-top: 10px;
-  font-weight: 500;
-}
-
-/* Big Stats */
-.big-stat {
-  background: var(--surface2);
-  border-radius: 12px;
-  padding: 24px;
-  text-align: center;
-}
-
-.big-stat .num {
-  font-family: 'Space Mono', monospace;
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--mint);
-  margin-bottom: 4px;
-}
-
-.big-stat .lbl {
-  font-size: 13px;
-  color: var(--text3);
-}
-
-/* Tables */
-.tbl {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.tbl th, .tbl td {
-  padding: 14px 16px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-
-.tbl th {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text3);
-  font-weight: 600;
-  background: var(--surface2);
-}
-
-.tbl th:first-child { border-radius: 10px 0 0 0; }
-.tbl th:last-child { border-radius: 0 10px 0 0; }
-
-.tbl td {
-  font-family: 'Space Mono', monospace;
-  font-size: 14px;
-}
-
-.tbl tr:hover td {
-  background: var(--surface2);
-}
-
-.tbl .r { text-align: right; }
-.tbl .mint { color: var(--mint); }
-.tbl .coral { color: var(--coral); }
-.tbl .sky { color: var(--sky); }
-.tbl .cyan { color: var(--cyan); }
-.tbl .violet { color: var(--violet); }
-.tbl .gold { color: var(--gold); }
-
-/* Timeline */
-.timeline-item {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  margin-bottom: 12px;
-  overflow: hidden;
-  transition: all 0.2s;
-  background: var(--surface);
-}
-
-.timeline-item:hover {
-  border-color: rgba(126,231,135,0.3);
-}
-
-.timeline-item.expanded {
-  border-color: var(--mint);
-  background: var(--surface2);
-}
-
-.timeline-header {
-  display: grid;
-  grid-template-columns: 100px 100px 1fr auto auto;
-  gap: 16px;
-  padding: 18px 20px;
-  cursor: pointer;
-  align-items: center;
-  transition: background 0.2s;
-}
-
-.timeline-header:hover {
-  background: var(--surface2);
-}
-
-.t-date {
-  font-family: 'Space Mono', monospace;
-  font-size: 13px;
-  color: var(--mint);
-  font-weight: 600;
-}
-
-.t-cat {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-weight: 600;
-  background: var(--surface3);
-  color: var(--text3);
-  width: fit-content;
-}
-
-.t-event {
-  font-size: 14px;
-  color: var(--text);
-  font-weight: 500;
-  line-height: 1.5;
-}
-
-.t-verdict {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 6px 12px;
-  border-radius: 6px;
-}
-
-.t-verdict.positive {
-  background: var(--mint-dim);
-  color: var(--mint);
-}
-
-.t-verdict.negative {
-  background: var(--coral-dim);
-  color: var(--coral);
-}
-
-.t-verdict.mixed {
-  background: var(--sky-dim);
-  color: var(--sky);
-}
-
-.t-toggle {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: var(--surface3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: var(--text3);
-  transition: all 0.2s;
-}
-
-.timeline-item.expanded .t-toggle {
-  background: var(--mint);
-  color: var(--bg);
-  transform: rotate(180deg);
-}
-
-.timeline-details {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
-  background: var(--surface2);
-  border-top: 1px solid var(--border);
-}
-
-.timeline-item.expanded .timeline-details {
-  max-height: 300px;
-  padding: 20px;
-}
-
-.t-details-content {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 24px;
-}
-
-.t-details-text {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text2);
-}
-
-.t-details-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 180px;
-}
-
-.t-meta-item {
-  background: var(--surface3);
-  padding: 12px 16px;
-  border-radius: 8px;
-}
-
-.t-meta-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text3);
-  margin-bottom: 4px;
-}
-
-.t-meta-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.t-meta-value.mint { color: var(--mint); }
-.t-meta-value.coral { color: var(--coral); }
-.t-meta-value.sky { color: var(--sky); }
-
-.t-impact {
-  font-size: 13px;
-  color: var(--text3);
-  line-height: 1.5;
-}
-
-/* Scenario Cards */
-.scenario {
-  background: var(--surface2);
-  border: 2px solid transparent;
-  border-radius: 16px;
-  padding: 28px;
-  cursor: pointer;
-  transition: all 0.25s;
-  text-align: center;
-}
-
-.scenario:hover {
-  border-color: var(--mint);
-  transform: translateY(-4px);
-}
-
-.scenario.active {
-  border-color: var(--mint);
-  background: var(--mint-dim);
-}
-
-.scenario h4 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 16px;
-}
-
-.scenario.bull h4 { color: var(--mint); }
-.scenario.base h4 { color: var(--sky); }
-.scenario.bear h4 { color: var(--coral); }
-
-.scenario-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.scenario-row:last-child { border: none; }
-.scenario-row span:first-child { color: var(--text3); }
-.scenario-row span:last-child { font-family: 'Space Mono', monospace; }
-
-/* Pills */
-.pills {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-}
-
-.pill {
-  padding: 10px 20px;
-  font-size: 13px;
-  font-weight: 500;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: var(--text2);
-  font-family: 'Outfit', sans-serif;
-}
-
-.pill:hover, .pill.active {
-  background: var(--mint);
-  color: var(--bg);
-  border-color: var(--mint);
-}
-
-/* Range Slider */
-.slider-wrap {
-  margin-bottom: 24px;
-}
-
-.slider-head {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.slider-head span:first-child { color: var(--text2); }
-.slider-head span:last-child { 
-  font-family: 'Space Mono', monospace;
-  color: var(--mint);
-  font-weight: 600;
-}
-
-input[type="range"] {
-  width: 100%;
-  height: 8px;
-  border-radius: 4px;
-  background: var(--surface3);
-  appearance: none;
-  cursor: pointer;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--mint);
-  cursor: pointer;
-  box-shadow: 0 0 16px rgba(126,231,135,0.5);
-}
-
-/* Comp Row */
-.comp-row {
-  display: grid;
-  grid-template-columns: 220px repeat(5, 1fr);
-  gap: 16px;
-  padding: 18px 20px;
-  border-bottom: 1px solid var(--border);
-  align-items: center;
-}
-
-.comp-row:hover {
-  background: var(--surface2);
-}
-
-.comp-row.head {
-  background: var(--surface2);
-  border-radius: 12px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text3);
-  font-weight: 600;
-}
-
-.comp-name {
-  font-weight: 600;
-}
-
-.comp-type {
-  font-size: 12px;
-  color: var(--text3);
-}
-
-.comp-val {
-  font-family: 'Space Mono', monospace;
-  text-align: right;
-}
-
-.comp-val.mint { color: var(--mint); }
-
-/* Matrix */
-.matrix {
-  display: grid;
-  gap: 2px;
-  background: var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  padding: 2px;
-}
-
-.matrix-cell {
-  padding: 14px;
-  text-align: center;
-  font-family: 'Space Mono', monospace;
-  font-size: 13px;
-  background: var(--surface);
-}
-
-.matrix-cell.head {
-  background: var(--surface2);
-  font-weight: 600;
-  color: var(--text3);
-  font-family: 'Outfit', sans-serif;
-}
-
-.matrix-cell.hl {
-  background: var(--mint-dim);
-  color: var(--mint);
-}
-
-/* Button */
-.btn {
-  padding: 14px 32px;
-  background: var(--mint);
-  color: var(--bg);
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-  transition: all 0.2s;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(126,231,135,0.3);
-}
-
-/* Monte Carlo */
-.mc-chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 280px;
-  padding: 20px 0;
-}
-
-.mc-bar {
-  flex: 1;
-  background: var(--mint);
-  opacity: 0.6;
-  border-radius: 2px 2px 0 0;
-  transition: all 0.2s;
-}
-
-.mc-bar:hover { opacity: 1; }
-.mc-bar.hl { background: var(--gold); opacity: 1; }
-
-/* Legal Disclaimer Banner */
-.disclaimer-banner {
-  background: linear-gradient(135deg, rgba(255,123,114,0.08) 0%, rgba(210,153,34,0.08) 100%);
-  border-bottom: 1px solid rgba(255,123,114,0.2);
-  padding: 12px 64px;
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-.disclaimer-banner .disclaimer-title {
-  color: var(--coral);
-  font-weight: 700;
-  margin-right: 6px;
-}
-
-.disclaimer-banner .disclaimer-text {
-  color: var(--text2);
-}
-
-.disclaimer-banner .disclaimer-divider {
-  margin: 0 12px;
-  color: var(--border);
-}
-
-@media (max-width: 768px) {
-  .disclaimer-banner { 
-    padding: 10px 16px; 
-    font-size: 10px;
-  }
-  .disclaimer-banner .disclaimer-divider {
-    display: block;
-    margin: 6px 0;
-  }
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-  .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 32px; padding-right: 32px; }
-  .g4 { grid-template-columns: repeat(2, 1fr); }
-  .g5 { grid-template-columns: repeat(3, 1fr); }
-  .timeline-header { grid-template-columns: 90px 1fr auto auto; }
-  .timeline-header .t-cat { display: none; }
-  .t-details-content { grid-template-columns: 1fr; }
-  .t-details-meta { flex-direction: row; flex-wrap: wrap; }
-  .t-meta-item { flex: 1; min-width: 140px; }
-}
-
-@media (max-width: 900px) {
-  .nav-dropdown-space { padding-left: 24px; padding-right: 24px; }
-  .timeline-header { grid-template-columns: 90px 1fr auto auto; }
-  .timeline-header .t-cat { display: none; }
-}
-
-@media (max-width: 768px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 24px; }
-  .price-block { text-align: left; }
-  .price-big { font-size: 36px; letter-spacing: -1px; }
-  .brand-block h1 { font-size: 32px; }
-  .g2, .g3, .g4, .g5 { grid-template-columns: 1fr; }
-  .stats-row { gap: 24px; }
-  .comp-row { grid-template-columns: 1fr 1fr; }
-  .timeline-header { grid-template-columns: 1fr auto; gap: 12px; padding: 14px 16px; }
-  .timeline-header .t-date, .timeline-header .t-cat { display: none; }
-  .t-verdict { padding: 4px 8px; font-size: 10px; }
-  .t-toggle { width: 28px; height: 28px; font-size: 14px; }
-  .nav { padding: 12px 16px; gap: 6px; }
-  .nav-btn { padding: 10px 16px; font-size: 13px; }
-  .nav-dropdown-space { padding: 0 16px; height: 48px; }
-}
-
-@media (max-width: 600px) {
-  .timeline-header { grid-template-columns: 1fr auto; gap: 12px; padding: 14px 16px; }
-  .timeline-header .t-date, .timeline-header .t-cat { display: none; }
-  .t-verdict { padding: 4px 8px; font-size: 10px; }
-  .t-toggle { width: 28px; height: 28px; font-size: 14px; }
-  .t-details-content { grid-template-columns: 1fr; }
-  .t-details-meta { flex-direction: row; flex-wrap: wrap; min-width: auto; }
-}
-
-/* Extra small mobile - consistent with ASTS/BMNR */
-@media (max-width: 480px) {
-  .hero { padding: 20px 12px 16px; }
-  .price-big { font-size: 32px; }
-  .brand-block h1 { font-size: 24px; }
-  .brand-block .desc { font-size: 13px; line-height: 1.5; }
-
-  .stats-row { padding: 16px 12px; gap: 16px; }
-  .stat-item .val { font-size: 16px; }
-
-  .nav { padding: 8px 10px; }
-  .nav-btn { padding: 6px 10px; font-size: 11px; gap: 4px; }
-  .nav-dropdown-space { padding: 0 10px; height: 40px; }
-
-  .main { padding: 16px 12px; }
-  .card, .highlight { padding: 14px; }
-  .section-head { font-size: 18px; }
-
-  .table-scroll table { min-width: 400px; }
-  table th, table td { padding: 6px 8px; font-size: 11px; }
-
-  .g2, .g3, .g4 { gap: 12px; }
-}
-
-/* ═══ UPDATE INDICATOR SYSTEM (Ive-inspired minimal design) ═══ */
-/* Tiny, subtle dots - visible but never distracting */
-.update-indicator-wrap {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 4px;
-  gap: 3px;
-  flex-shrink: 0;
-}
-.update-indicator {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  cursor: help;
-  position: relative;
-  flex-shrink: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-.update-indicator.hidden { opacity: 0; transform: scale(0.5); }
-.update-indicator.pr { background: rgba(250, 204, 21, 0.85); }
-.update-indicator.sec { background: rgba(34, 211, 238, 0.85); }
-.update-indicator.ws { background: rgba(167, 139, 250, 0.85); }
-.update-indicator.market { background: rgba(74, 222, 128, 0.85); }
-
-/* Tooltip on hover - refined */
-.update-indicator::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%) scale(0.95);
-  padding: 5px 9px;
-  background: rgba(30, 30, 35, 0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 5px;
-  font-size: 10px;
-  font-weight: 500;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
-  z-index: 1000;
-  color: rgba(255,255,255,0.9);
-  pointer-events: none;
-  letter-spacing: 0.2px;
-}
-.update-indicator:hover::after {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) scale(1);
-}
-
-/* Update Legend - minimal */
-.update-legend {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 10px 16px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 8px;
-  font-size: 11px;
-  margin-bottom: 24px;
-}
-.update-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--text3);
-}
-.update-legend-item .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-.update-legend-item .dot.pr { background: rgba(250, 204, 21, 0.85); }
-.update-legend-item .dot.sec { background: rgba(34, 211, 238, 0.85); }
-.update-legend-item .dot.ws { background: rgba(167, 139, 250, 0.85); }
-.update-legend-item .dot.market { background: rgba(74, 222, 128, 0.85); }
-`;
+// CSS is now imported from shared styles (Golden Standard: ASTS)
+// To modify styles, edit: ./stock-model-styles.ts
+const css = getStockModelCSS('mint');
 
 // Card Component for unified risk metrics display
 // N1: Memoized pure components for performance optimization
@@ -1790,7 +730,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
     alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
-    background: highlight ? 'var(--mint-dim)' : 'transparent',
+    background: highlight ? 'var(--cyan-dim)' : 'transparent',
     paddingLeft: highlight ? '12px' : 0,
     paddingRight: highlight ? '12px' : 0,
     marginLeft: highlight ? '-12px' : 0,
@@ -1801,7 +741,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
       {label}
       <UpdateIndicators sources={updateSource} />
     </span>
-    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--mint)' : 'var(--text)' }}>{value}</span>
+    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--cyan)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
 Row.displayName = 'Row';
@@ -1940,6 +880,28 @@ const UpdateLegend = React.memo(() => {
   );
 });
 UpdateLegend.displayName = 'UpdateLegend';
+
+// N1: Memoized pure components for performance optimization
+const Stat = React.memo<StatProps>(({ label, value, color = 'white', updateSource }) => (
+  <div className="stat-item">
+    <div className="label" style={{ display: 'flex', alignItems: 'center' }}>
+      {label}
+      <UpdateIndicators sources={updateSource} />
+    </div>
+    <div className={`val ${color}`}>{value}</div>
+  </div>
+));
+Stat.displayName = 'Stat';
+
+const Guide = React.memo<GuideProps>(({ title, children }) => (
+  <div className="highlight">
+    <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <span>📚</span> {title}
+    </h3>
+    <div style={{ color: 'var(--text2)', lineHeight: 1.7, fontSize: '15px' }}>{children}</div>
+  </div>
+));
+Guide.displayName = 'Guide';
 
 // CFA Level III Educational Notes Component - Subtle footer style
 const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
@@ -2102,9 +1064,11 @@ const CRCLParameterCard = ({
     { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
   ];
 
+  // Colors map directly to position: idx 0 = red (bearish), idx 5 = green (bullish)
+  // Options arrays are always ordered from bearish to bullish scenarios
+  // (for inverse params like risk/costs, HIGH values come first since they're bearish)
   const getButtonColor = (idx: number) => {
-    const effectiveIdx = inverse ? 5 - idx : idx;
-    return presetColors[effectiveIdx];
+    return presetColors[idx];
   };
 
   const handleCustomSubmit = () => {
@@ -2314,18 +1278,21 @@ const CRCLModelTab = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#model-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* ASSUMPTIONS SECTION */}
       <>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#scenario</div>
         <div className="highlight">
-          <h3>{scenario.icon} {scenario.name} Scenario</h3>
-          <p className="text-sm">
+          <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
+          <p style={{ fontSize: 13, color: 'var(--text2)' }}>
             Configure model assumptions for Circle's USDC business. Changes flow to revenue projections and DCF valuation.
             Key drivers: USDC circulation growth, Fed funds rate (reserve yield), and Coinbase distribution cost.
           </p>
         </div>
 
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#scenario-presets</div>
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
         <div className="card">
           <div className="card-title">Scenario Presets</div>
@@ -2365,7 +1332,8 @@ const CRCLModelTab = ({
         </div>
 
         {/* USDC & REVENUE PARAMETERS */}
-        <h3 style={{ color: 'var(--cyan)', marginTop: 24, marginBottom: 8 }}>USDC & Revenue Model</h3>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#revenue-model</div>
+        <h3 style={{ color: 'var(--cyan)', marginBottom: 8 }}>USDC & Revenue Model</h3>
 
         <div className="g2">
           <CRCLParameterCard
@@ -2407,7 +1375,8 @@ const CRCLModelTab = ({
         </div>
 
         {/* OPERATING PARAMETERS */}
-        <h3 style={{ color: 'var(--mint)', marginTop: 24, marginBottom: 8 }}>Operating Model</h3>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#operating-model</div>
+        <h3 style={{ color: 'var(--mint)', marginBottom: 8 }}>Operating Model</h3>
 
         <div className="g2">
           <CRCLParameterCard
@@ -2419,11 +1388,12 @@ const CRCLModelTab = ({
             format="%"
           />
           <div className="card">
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#current-position</div>
             <div className="card-title">Current Position</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               Live data from Circle financials. Used as starting point for projections.
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, fontSize: 12 }}>
               <div><span style={{ color: 'var(--text3)' }}>USDC Circulation:</span> <strong>${currentUSDC}B</strong></div>
               <div><span style={{ color: 'var(--text3)' }}>Market Share:</span> <strong>{currentMarketShare}%</strong></div>
               <div><span style={{ color: 'var(--text3)' }}>Est. Gross Rev:</span> <strong>${currentGrossRevenue.toFixed(2)}B</strong></div>
@@ -2433,7 +1403,8 @@ const CRCLModelTab = ({
         </div>
 
         {/* VALUATION PARAMETERS */}
-        <h3 style={{ color: 'var(--violet)', marginTop: 24, marginBottom: 8 }}>Valuation Parameters</h3>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-params</div>
+        <h3 style={{ color: 'var(--violet)', marginBottom: 8 }}>Valuation Parameters</h3>
 
         <div className="g2">
           <CRCLParameterCard
@@ -2456,7 +1427,8 @@ const CRCLModelTab = ({
         </div>
 
         {/* RISK PARAMETERS */}
-        <h3 style={{ color: 'var(--coral)', marginTop: 24, marginBottom: 8 }}>Risk Probability Factors</h3>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#risk-factors</div>
+        <h3 style={{ color: 'var(--coral)', marginBottom: 8 }}>Risk Probability Factors</h3>
         <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>
           Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Comp) × (1-Rate) = {(riskFactor * 100).toFixed(0)}% success probability.
         </p>
@@ -2492,7 +1464,8 @@ const CRCLModelTab = ({
         </div>
 
         {/* DCF VALUATION OUTPUT */}
-        <div className="card" style={{ marginTop: 24, border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
+        <div className="card" style={{ border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
           <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
 
           {/* Primary metrics */}
@@ -2541,7 +1514,8 @@ const CRCLModelTab = ({
         </div>
 
         {/* CALCULATION METHODOLOGY */}
-        <div className="card" style={{ marginTop: 16 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#methodology</div>
+        <div className="card">
           <div className="card-title">Calculation Methodology</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
             <p style={{ marginBottom: 12 }}>
@@ -2754,7 +1728,7 @@ const ScenariosTab = () => {
                       <th>Metric</th>
                       <th className="r">Today</th>
                       {selected.projections.map(p => (
-                        <th key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <th key={p.year} className="r">
                           {p.year}
                         </th>
                       ))}
@@ -2765,7 +1739,7 @@ const ScenariosTab = () => {
                       <td>USDC Circulation ($B)</td>
                       <td className="r">{CURRENT_METRICS.usdc}</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           {p.usdc}
                         </td>
                       ))}
@@ -2774,7 +1748,7 @@ const ScenariosTab = () => {
                       <td>Market Share (%)</td>
                       <td className="r">29%</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           {p.marketShare}%
                         </td>
                       ))}
@@ -2783,16 +1757,16 @@ const ScenariosTab = () => {
                       <td>Reserve Yield (%)</td>
                       <td className="r">4.33%</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           {p.reserveRate}%
                         </td>
                       ))}
                     </tr>
-                    <tr style={{ borderTop: '1px solid var(--border)' }}>
+                    <tr>
                       <td>Gross Revenue ($B)</td>
                       <td className="r">$2.96</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           ${p.grossRevenue.toFixed(2)}
                         </td>
                       ))}
@@ -2801,7 +1775,7 @@ const ScenariosTab = () => {
                       <td>Distribution Costs ($B)</td>
                       <td className="r">($1.15)</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={{ color: 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           (${p.distributionCost.toFixed(2)})
                         </td>
                       ))}
@@ -2810,7 +1784,7 @@ const ScenariosTab = () => {
                       <td>Net Revenue ($B)</td>
                       <td className="r mint">$1.81</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r mint" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r mint" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           ${p.netRevenue.toFixed(2)}
                         </td>
                       ))}
@@ -2819,16 +1793,16 @@ const ScenariosTab = () => {
                       <td>RLDC Margin (%)</td>
                       <td className="r">39%</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           {p.rldcMargin}%
                         </td>
                       ))}
                     </tr>
-                    <tr style={{ borderTop: '1px solid var(--border)' }}>
+                    <tr>
                       <td>EBITDA ($B)</td>
                       <td className="r">$0.29</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: p.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={{ color: p.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.ebitda >= 0 ? '$' : '($'}{Math.abs(p.ebitda).toFixed(2)}{p.ebitda < 0 ? ')' : ''}
                         </td>
                       ))}
@@ -2837,7 +1811,7 @@ const ScenariosTab = () => {
                       <td>Net Income ($B)</td>
                       <td className="r">$0.16</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: p.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={{ color: p.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.netIncome >= 0 ? '$' : '($'}{Math.abs(p.netIncome).toFixed(2)}{p.netIncome < 0 ? ')' : ''}
                         </td>
                       ))}
@@ -2846,16 +1820,16 @@ const ScenariosTab = () => {
                       <td>Free Cash Flow ($B)</td>
                       <td className="r">$0.14</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: p.fcf >= 0 ? 'var(--sky)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={{ color: p.fcf >= 0 ? 'var(--sky)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.fcf >= 0 ? '$' : '($'}{Math.abs(p.fcf).toFixed(2)}{p.fcf < 0 ? ')' : ''}
                         </td>
                       ))}
                     </tr>
-                    <tr style={{ borderTop: '2px solid var(--border)', fontWeight: 600 }}>
+                    <tr style={{ fontWeight: 600 }}>
                       <td>Exit P/S Multiple</td>
                       <td className="r">6.4x</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           {p.exitMultiple}x
                         </td>
                       ))}
@@ -2864,16 +1838,16 @@ const ScenariosTab = () => {
                       <td>Implied EV ($B)</td>
                       <td className="r">$18.9</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           ${p.evImplied.toFixed(1)}
                         </td>
                       ))}
                     </tr>
-                    <tr style={{ fontWeight: 700, fontSize: 15 }}>
+                    <tr style={{ fontWeight: 700 }}>
                       <td>Share Price ($)</td>
                       <td className="r">${CURRENT_METRICS.sharePrice}</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: selected.color, background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={{ color: selected.color, ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           ${p.sharePrice.toLocaleString()}
                         </td>
                       ))}
@@ -2980,26 +1954,26 @@ const ScenariosTab = () => {
                       const ret = ((p.sharePrice / CURRENT_METRICS.sharePrice) - 1) * 100;
                       const contribution = p.sharePrice * (s.prob / 100);
                       return (
-                        <tr key={key} style={{ background: selectedScenario === key ? `${s.color}11` : 'transparent' }}>
+                        <tr key={key} style={selectedScenario === key ? { background: 'var(--accent-dim)' } : undefined}>
                           <td>
                             <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
                             {s.name}
                           </td>
                           <td className="r">{s.prob}%</td>
-                          <td className="r" style={{ fontFamily: 'Space Mono' }}>${p.sharePrice.toLocaleString()}</td>
+                          <td className="r">${p.sharePrice.toLocaleString()}</td>
                           <td className="r" style={{ color: ret >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                             {ret >= 0 ? '+' : ''}{ret.toFixed(0)}%
                           </td>
-                          <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>${contribution.toFixed(0)}</td>
+                          <td className="r" style={{ color: 'var(--sky)' }}>${contribution.toFixed(0)}</td>
                         </tr>
                       );
                     })}
-                    <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
+                    <tr style={{ fontWeight: 700 }}>
                       <td>Expected Value</td>
                       <td className="r">100%</td>
-                      <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.sharePrice.toFixed(0)}</td>
+                      <td className="r mint">${pwev.sharePrice.toFixed(0)}</td>
                       <td className="r mint">{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</td>
-                      <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.sharePrice.toFixed(0)}</td>
+                      <td className="r mint">${pwev.sharePrice.toFixed(0)}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -3019,7 +1993,7 @@ const ScenariosTab = () => {
                 <th>Metric</th>
                 {SCENARIO_KEYS.map(key => {
                   const s = SCENARIO_SIMULATIONS[key];
-                  return <th key={key} className="r" style={{ color: s.color }}>{s.name}</th>;
+                  return <th key={key} className="r">{s.name}</th>;
                 })}
               </tr>
             </thead>
@@ -3257,7 +2231,7 @@ const DCFTab = () => {
                   <td key={p.year} className="r">${p.rev.toFixed(2)}</td>
                 ))}
               </tr>
-              <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <tr>
                 <td>Net FCF ($B)</td>
                 <td className="r">—</td>
                 {dcf.projections.map(p => (
@@ -3271,7 +2245,7 @@ const DCFTab = () => {
                   <td key={p.year} className="r" style={{ color: 'var(--cyan)' }}>${p.pv.toFixed(2)}</td>
                 ))}
               </tr>
-              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+              <tr style={{ background: 'var(--surface2)' }}>
                 <td colSpan={2} className="r" style={{ fontWeight: 500 }}>Sum PV(FCF)</td>
                 <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.pvFCF.toFixed(2)}B</td>
               </tr>
@@ -3283,7 +2257,7 @@ const DCFTab = () => {
                 <td colSpan={2} className="r" style={{ fontWeight: 500 }}>PV(Terminal Value)</td>
                 <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.pvTV.toFixed(2)}B</td>
               </tr>
-              <tr style={{ background: 'rgba(0,212,170,0.1)' }}>
+              <tr style={{ background: 'var(--accent-dim)' }}>
                 <td colSpan={2} className="r" style={{ fontWeight: 700 }}>Equity Value</td>
                 <td colSpan={5} className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${(dcf.equity / 1000).toFixed(1)}B</td>
               </tr>
@@ -3771,34 +2745,13 @@ function CRCLModel() {
 
         {/* Stats */}
         <div className="stats-row">
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Market Cap<UpdateIndicators sources="MARKET" /></div>
-            <div className="val">${(MARKET.marketCap / 1e9).toFixed(1)}B</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>USDC Circulation<UpdateIndicators sources="PR" /></div>
-            <div className="val mint">${latest.usdcCirculation.toFixed(1)}B</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Q3 Revenue<UpdateIndicators sources="SEC" /></div>
-            <div className="val">${latest.totalRevenue}M</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>RLDC Margin<UpdateIndicators sources="SEC" /></div>
-            <div className="val">{latest.rldcMargin}%</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Market Share<UpdateIndicators sources="PR" /></div>
-            <div className="val sky">{latest.marketShare}%</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>Reserve Rate<UpdateIndicators sources="SEC" /></div>
-            <div className="val">{latest.reserveReturnRate.toFixed(2)}%</div>
-          </div>
-          <div className="stat-item">
-            <div className="label" style={{ display: 'flex', alignItems: 'center' }}>P/E Ratio<UpdateIndicators sources="MARKET" /></div>
-            <div className="val">{MARKET.pe.toFixed(0)}x</div>
-          </div>
+          <Stat label="Market Cap" value={`$${(MARKET.marketCap / 1e9).toFixed(1)}B`} updateSource="MARKET" />
+          <Stat label="USDC Circulation" value={`$${latest.usdcCirculation.toFixed(1)}B`} color="mint" updateSource="PR" />
+          <Stat label="Q3 Revenue" value={`$${latest.totalRevenue}M`} updateSource="SEC" />
+          <Stat label="RLDC Margin" value={`${latest.rldcMargin}%`} updateSource="SEC" />
+          <Stat label="Market Share" value={`${latest.marketShare}%`} color="sky" updateSource="PR" />
+          <Stat label="Reserve Rate" value={`${latest.reserveReturnRate.toFixed(2)}%`} updateSource="SEC" />
+          <Stat label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} updateSource="MARKET" />
         </div>
 
         {/* Nav */}
@@ -3856,22 +2809,20 @@ function CRCLModel() {
           {/* Update Source Legend - Shows what each indicator color means */}
           <UpdateLegend />
           {activeTab === 'overview' && (
-            <>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#investment-thesis</div>
               <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-              
+
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
               <div className="highlight">
-                <h3>The Opportunity</h3>
-                <p style={{ fontSize: '14px' }}>
-                  Circle is building financial infrastructure for the internet economy. USDC enables 24/7
-                  global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share
-                  and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of
-                  traditional finance and blockchain technology.
-                </p>
+                <h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
+                <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--mint)' }}>Circle:</strong> Building financial infrastructure for the internet economy. USDC enables 24/7 global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of traditional finance and blockchain technology.</p>
               </div>
 
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
               <div className="g2">
                 <div className="thesis bull">
-                  <h4>↑ Bull Case</h4>
+                  <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
                   <ul>
                     <li>USDC +{usdcGrowth.toFixed(0)}% YoY, mgmt guides 40% CAGR</li>
                     <li>Market share: 23% → 29% in 12 months</li>
@@ -3883,7 +2834,7 @@ function CRCLModel() {
                   </ul>
                 </div>
                 <div className="thesis bear">
-                  <h4>↓ Bear Case</h4>
+                  <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
                   <ul>
                     <li>96% revenue from reserve income (rate sensitive)</li>
                     <li>~60% of income shared with Coinbase</li>
@@ -3896,51 +2847,65 @@ function CRCLModel() {
                 </div>
               </div>
 
-              <div className="card" style={{ marginTop: 32 }}>
-                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Progression<UpdateIndicators sources="SEC" /></div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#chart</div>
+              <div className="card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Revenue Progression<UpdateIndicators sources="SEC" /></div>
+                </div>
                 <div className="bars">
-                  {DATA.map((d, i) => (
-                    <div key={i} className="bar-col">
-                      <div className="bar-val">${d.totalRevenue}M</div>
-                      <div className="bar" style={{ height: `${(d.totalRevenue / 800) * 180}px` }} />
-                      <div className="bar-label">{d.quarter}</div>
-                    </div>
-                  ))}
+                  {(() => {
+                    const maxRevenue = Math.max(...DATA.map(d => d.totalRevenue));
+                    return DATA.map((d, i) => (
+                      <div key={i} className="bar-col">
+                        <div className="bar-val">${d.totalRevenue}M</div>
+                        <div className="bar" style={{ height: `${maxRevenue > 0 ? (d.totalRevenue / maxRevenue) * 150 : 0}px`, background: 'var(--mint)' }} />
+                        <div className="bar-label">{d.quarter}</div>
+                      </div>
+                    ));
+                  })()}
                 </div>
               </div>
 
-              <div className="g4" style={{ marginTop: 32 }}>
-                <Card label="USDC Growth" value={`+${usdcGrowth.toFixed(0)}%`} sub="Year over year" color="mint" />
-                <Card label="Revenue Growth" value={`+${revGrowth.toFixed(0)}%`} sub="Year over year" color="green" />
-                <Card label="Active Wallets" value={`${latest.meaningfulWallets}M`} sub="Meaningful wallets" color="blue" />
-                <Card label="Arc Partners" value="100+" sub="Platform integrations" color="purple" />
-              </div>
-
-              <div className="g3" style={{ marginTop: 32 }}>
-                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity (Q3 2025)<UpdateIndicators sources="SEC" /></div>
-                  <Row label="Shares Outstanding" value={`${currentShares.toFixed(1)}M`} />
-                  <Row label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} />
-                  <Row label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} highlight />
-                  <Row label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} />
-                  <Row label="Since IPO" value={`+${ipoReturn.toFixed(0)}%`} />
-                </div>
-                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>USDC Metrics<UpdateIndicators sources="SEC" /></div>
-                  <Row label="USDC Circulation" value={`$${currentUSDC.toFixed(1)}B`} />
-                  <Row label="Market Share" value={`${currentMarketShare}%`} highlight />
-                  <Row label="Total Stablecoin Mkt" value={`$${calc.totalStablecoins.toFixed(0)}B`} />
-                  <Row label="YoY Growth" value={`+${usdcGrowth.toFixed(0)}%`} />
-                  <Row label="Active Wallets" value={`${latest.meaningfulWallets}M`} />
-                </div>
-                <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources="SEC" /></div>
-                  <Row label="Q3 Revenue" value={`$${latest.totalRevenue}M`} />
-                  <Row label="RLDC" value={`$${latest.rldc}M`} highlight />
-                  <Row label="RLDC Margin" value={`${latest.rldcMargin}%`} />
-                  <Row label="Adj. EBITDA" value={`$${latest.adjustedEbitda}M`} />
-                  <Row label="Rev/B USDC" value={`$${calc.revenuePerBillionUsdc.toFixed(0)}M`} />
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-metrics</div>
+              <div className="card">
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
+                <div className="g4">
+                  <Card label="USDC Growth" value={`+${usdcGrowth.toFixed(0)}%`} sub="Year over year" color="mint" />
+                  <Card label="Revenue Growth" value={`+${revGrowth.toFixed(0)}%`} sub="Year over year" color="green" />
+                  <Card label="Active Wallets" value={`${latest.meaningfulWallets}M`} sub="Meaningful wallets" color="blue" />
+                  <Card label="Arc Partners" value="100+" sub="Platform integrations" color="purple" />
                 </div>
               </div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#company-snapshot</div>
+              <div className="card">
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
+                <div className="g3">
+                  <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Equity (Q3 2025)</div>
+                    <Row label="Shares Outstanding" value={`${currentShares.toFixed(1)}M`} />
+                    <Row label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} />
+                    <Row label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} highlight />
+                    <Row label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} />
+                    <Row label="Since IPO" value={`+${ipoReturn.toFixed(0)}%`} />
+                  </div>
+                  <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>USDC Metrics</div>
+                    <Row label="USDC Circulation" value={`$${currentUSDC.toFixed(1)}B`} />
+                    <Row label="Market Share" value={`${currentMarketShare}%`} highlight />
+                    <Row label="Total Stablecoin Mkt" value={`$${calc.totalStablecoins.toFixed(0)}B`} />
+                    <Row label="YoY Growth" value={`+${usdcGrowth.toFixed(0)}%`} />
+                    <Row label="Active Wallets" value={`${latest.meaningfulWallets}M`} />
+                  </div>
+                  <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Revenue</div>
+                    <Row label="Q3 Revenue" value={`$${latest.totalRevenue}M`} />
+                    <Row label="RLDC" value={`$${latest.rldc}M`} highlight />
+                    <Row label="RLDC Margin" value={`${latest.rldcMargin}%`} />
+                    <Row label="Adj. EBITDA" value={`$${latest.adjustedEbitda}M`} />
+                    <Row label="Rev/B USDC" value={`$${calc.revenuePerBillionUsdc.toFixed(0)}M`} />
+                  </div>
+                </div>
+              </div>
 
-              <div className="card" style={{ marginTop: 32 }}><div className="card-title">Parameters</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#parameters</div>
+              <div className="card"><div className="card-title">Parameters</div>
                 <div className="g4" style={{ marginTop: '16px' }}>
                   <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} step={0.1} />
                   <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
@@ -3949,6 +2914,7 @@ function CRCLModel() {
                 </div>
               </div>
 
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — Stablecoin Economics" items={[
                 { term: 'USDC Reserve Income', def: 'Circle earns interest on USDC reserves (T-bills, cash). $1 USDC outstanding = $1 in reserves earning ~4-5% in current rate environment.' },
                 { term: 'Revenue = AUM × Rate', def: 'Revenue scales with both USDC circulation and interest rates. Fed rate cuts reduce revenue; USDC growth offsets.' },
@@ -3956,7 +2922,7 @@ function CRCLModel() {
                 { term: 'Network Effects', def: 'More USDC usage → more integrations → more usage. Switching costs increase as ecosystem embeds USDC.' },
                 { term: 'Regulatory Moat', def: 'US money transmitter licenses, potential federal stablecoin regulation creates barriers. Circle positioned for compliance.' },
               ]} />
-            </>
+            </div>
           )}
 
           {activeTab === 'financials' && (
@@ -4005,85 +2971,85 @@ function CRCLModel() {
                 </div>
                 
                 {/* Quarterly Table */}
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs">
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="tbl">
                     <thead>
-                      <tr className="border-b border-slate-700">
-                        <th className="text-left py-2 px-2 text-slate-400 sticky left-0 bg-slate-900 min-w-[120px]">Metric</th>
+                      <tr>
+                        <th>Metric</th>
                         {DATA.map(d => (
-                          <th key={d.quarter} className="text-right py-2 px-2 text-slate-400 min-w-[80px]">
+                          <th key={d.quarter} className="r">
                             {d.quarter}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Total Revenue</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Total Revenue</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-green-400">${d.totalRevenue}M</td>
+                          <td key={d.quarter} className="r" style={{ color: 'var(--mint)' }}>${d.totalRevenue}M</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Reserve Income</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Reserve Income</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-slate-300">${d.reserveIncome}M</td>
+                          <td key={d.quarter} className="r">${d.reserveIncome}M</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Distribution Costs</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Distribution Costs</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-red-400">({d.distributionCosts})</td>
+                          <td key={d.quarter} className="r" style={{ color: 'var(--coral)' }}>({d.distributionCosts})</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">RLDC</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>RLDC</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-slate-300">${d.rldc}M</td>
+                          <td key={d.quarter} className="r">${d.rldc}M</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">RLDC Margin</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>RLDC Margin</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-slate-300">{d.rldcMargin}%</td>
+                          <td key={d.quarter} className="r">{d.rldcMargin}%</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">OpEx</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>OpEx</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-red-400">({d.opex})</td>
+                          <td key={d.quarter} className="r" style={{ color: 'var(--coral)' }}>({d.opex})</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Adj. EBITDA</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Adj. EBITDA</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-cyan-400">${d.adjustedEbitda}M</td>
+                          <td key={d.quarter} className="r" style={{ color: 'var(--sky)' }}>${d.adjustedEbitda}M</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Net Income</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Net Income</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className={`py-1.5 px-2 text-right tabular-nums ${d.netIncome >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          <td key={d.quarter} className="r" style={{ color: d.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                             {d.netIncome >= 0 ? `$${d.netIncome}M` : `($${Math.abs(d.netIncome)}M)`}
                           </td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Cash Position</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Cash Position</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-slate-300">${(d.cashPosition/1000).toFixed(2)}B</td>
+                          <td key={d.quarter} className="r">${(d.cashPosition/1000).toFixed(2)}B</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">USDC Circulation</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>USDC Circulation</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-violet-400">${d.usdcCirculation.toFixed(1)}B</td>
+                          <td key={d.quarter} className="r" style={{ color: 'var(--violet)' }}>${d.usdcCirculation.toFixed(1)}B</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Market Share</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Market Share</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-slate-300">{d.marketShare}%</td>
+                          <td key={d.quarter} className="r">{d.marketShare}%</td>
                         ))}
                       </tr>
                     </tbody>
@@ -5468,7 +4434,7 @@ function CRCLModel() {
                         <td className="r">{(s.authorized / 1000).toLocaleString()}M</td>
                         <td className="r mint">{s.outstanding > 0 ? `${(s.outstanding / 1000).toFixed(1)}M` : '—'}</td>
                         <td className="r">{s.votes}</td>
-                        <td style={{ color: 'var(--text2)', fontSize: 13 }}>{s.description}</td>
+                        <td>{s.description}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -5535,7 +4501,7 @@ function CRCLModel() {
                           <td className="r mint">${o.grossProceeds >= 1000 ? `${(o.grossProceeds / 1000).toFixed(2)}B` : `${o.grossProceeds}M`}</td>
                         </tr>
                       ))}
-                      <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                      <tr style={{ fontWeight: 600 }}>
                         <td colSpan={4}>Total Raised</td>
                         <td className="r mint">$2.5B</td>
                       </tr>
@@ -5572,7 +4538,7 @@ function CRCLModel() {
                         <td className="r">{(EQUITY_AWARDS.rsus.classB / 1000).toFixed(1)}M</td>
                         <td className="r mint">{((EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</td>
                       </tr>
-                      <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                      <tr style={{ fontWeight: 600 }}>
                         <td>Total Outstanding</td>
                         <td className="r">{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.rsus.classA) / 1000).toFixed(1)}M</td>
                         <td className="r">{((EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</td>
@@ -5613,7 +4579,7 @@ function CRCLModel() {
                         <td><span style={{ color: 'var(--gold)' }}>{w.status}</span></td>
                       </tr>
                     ))}
-                    <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                    <tr style={{ fontWeight: 600 }}>
                       <td>Total</td>
                       <td className="r">{(WARRANTS.reduce((a, w) => a + w.shares, 0) / 1000).toFixed(1)}M</td>
                       <td></td>
@@ -5663,13 +4629,13 @@ function CRCLModel() {
                     {PREFERRED_STOCK.map((p, i) => (
                       <tr key={i}>
                         <td>{p.series}</td>
-                        <td className="r" style={{ color: 'var(--text3)' }}>{p.year}</td>
+                        <td className="r">{p.year}</td>
                         <td className="r">{p.shares.toLocaleString()}</td>
                         <td className="r">${(p.liquidation / 1000).toFixed(1)}M</td>
                         <td className="r sky">${p.pricePerShare.toFixed(2)}</td>
                       </tr>
                     ))}
-                    <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                    <tr style={{ fontWeight: 600 }}>
                       <td colSpan={2}>Total</td>
                       <td className="r">{(PREFERRED_STOCK.reduce((a, p) => a + p.shares, 0) / 1000).toFixed(1)}M</td>
                       <td className="r">${(PREFERRED_STOCK.reduce((a, p) => a + p.liquidation, 0) / 1000000).toFixed(2)}B</td>
@@ -5724,7 +4690,7 @@ function CRCLModel() {
                       <td className="r">~1.0</td>
                       <td className="r">0.4%</td>
                     </tr>
-                    <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                    <tr style={{ fontWeight: 600 }}>
                       <td>Fully Diluted</td>
                       <td className="r mint">~276.5</td>
                       <td className="r">100%</td>
@@ -5748,187 +4714,454 @@ function CRCLModel() {
           )}
 
           {activeTab === 'monte-carlo' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-              
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
+                <h2 className="section-head" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+              </div>
+
               {/* Highlight Box */}
-              <div className="highlight">
-                <h3>Stablecoin DCF Simulation</h3>
-                <p className="text-sm">
-                  Runs {mcSim.n.toLocaleString()} simulations over {mcYears} years with randomized inputs (USDC growth, margins, rates, multiples) 
-                  to generate a probability distribution of fair values.
-                </p>
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-description</div>
+                <div className="highlight" style={{ marginTop: 0 }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center' }}>Stablecoin DCF Simulation</h3>
+                  <p style={{ fontSize: 13, color: 'var(--text2)' }}>
+                    Runs {mcSim.n.toLocaleString()} simulations over {mcYears} years with randomized inputs (USDC growth, margins, rates, multiples)
+                    to generate a probability distribution of fair values.
+                  </p>
+                </div>
               </div>
-              
+
               {/* Scenario Presets */}
-              <div className="card">
-                <div className="card-title">Select Scenario</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-                  {(['bear', 'base', 'bull', 'custom'] as const).map(key => {
-                    const p = mcPresets[key];
-                    const isActive = mcPreset === key;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => applyMcPreset(key)}
-                        style={{
-                          padding: '12px 16px',
-                          background: isActive ? 'var(--mint)' : 'var(--surface2)',
-                          color: isActive ? 'var(--bg)' : 'var(--text)',
-                          border: `1px solid ${isActive ? 'var(--mint)' : 'var(--border)'}`,
-                          borderRadius: 8,
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
-                        <div style={{ fontSize: 11, opacity: 0.8 }}>{p.desc}</div>
-                      </button>
-                    );
-                  })}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
+                <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card-title">Select Scenario</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+                    {(['bear', 'base', 'bull', 'custom'] as const).map(key => {
+                      const p = mcPresets[key];
+                      const isActive = mcPreset === key;
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => applyMcPreset(key)}
+                          style={{
+                            padding: '12px 16px',
+                            borderRadius: 8,
+                            textAlign: 'left',
+                            border: `2px solid ${isActive ? 'var(--mint)' : 'transparent'}`,
+                            background: isActive ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
+                            color: isActive ? 'var(--mint)' : 'var(--text)',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s'
+                          }}
+                        >
+                          <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
+                          <div style={{ fontSize: 11, opacity: 0.7 }}>{p.desc}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-              
+
               {/* Horizon & Simulation Controls */}
-              <div className="g2">
-                <div className="card">
-                  <div className="card-title">Time Horizon</div>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    {[3, 5, 7].map(yr => (
-                      <button
-                        key={yr}
-                        onClick={() => { setMcYears(yr); setRunKey(k => k + 1); }}
-                        style={{
-                          flex: 1,
-                          padding: '12px 20px',
-                          borderRadius: 8,
-                          border: mcYears === yr ? '2px solid var(--mint)' : '1px solid var(--border)',
-                          background: mcYears === yr ? 'rgba(126,231,135,0.15)' : 'var(--surface2)',
-                          color: mcYears === yr ? 'var(--mint)' : 'var(--text2)',
-                          cursor: 'pointer',
-                          fontWeight: mcYears === yr ? 700 : 400,
-                          fontFamily: 'Space Mono',
-                          fontSize: 16,
-                        }}
-                      >
-                        {yr}Y
-                      </button>
-                    ))}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
+                <div className="g2" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Time Horizon</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      {[3, 5, 7].map(yr => (
+                        <button
+                          key={yr}
+                          onClick={() => { setMcYears(yr); setRunKey(k => k + 1); }}
+                          style={{
+                            flex: 1,
+                            padding: '12px 20px',
+                            borderRadius: 8,
+                            border: mcYears === yr ? '2px solid var(--mint)' : '2px solid transparent',
+                            background: mcYears === yr ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
+                            color: mcYears === yr ? 'var(--mint)' : 'var(--text2)',
+                            cursor: 'pointer',
+                            fontWeight: mcYears === yr ? 700 : 400,
+                            fontFamily: 'Space Mono',
+                            fontSize: 16,
+                            transition: 'all 0.15s'
+                          }}
+                        >
+                          {yr}Y
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <div className="card">
-                  <div className="card-title">Simulations</div>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    {[1000, 2000, 5000].map(simCount => (
-                      <button
-                        key={simCount}
-                        onClick={() => { setMcSims(simCount); setRunKey(k => k + 1); }}
-                        style={{
-                          flex: 1,
-                          padding: '12px 16px',
-                          borderRadius: 8,
-                          border: mcSims === simCount ? '2px solid var(--mint)' : '1px solid var(--border)',
-                          background: mcSims === simCount ? 'rgba(126,231,135,0.15)' : 'var(--surface2)',
-                          color: mcSims === simCount ? 'var(--mint)' : 'var(--text2)',
-                          cursor: 'pointer',
-                          fontWeight: mcSims === simCount ? 700 : 400,
-                          fontFamily: 'Space Mono',
-                          fontSize: 14,
-                        }}
-                      >
-                        {simCount.toLocaleString()}
-                      </button>
-                    ))}
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Simulations</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      {[1000, 2000, 5000].map(simCount => (
+                        <button
+                          key={simCount}
+                          onClick={() => { setMcSims(simCount); setRunKey(k => k + 1); }}
+                          style={{
+                            flex: 1,
+                            padding: '12px 16px',
+                            borderRadius: 8,
+                            border: mcSims === simCount ? '2px solid var(--mint)' : '2px solid transparent',
+                            background: mcSims === simCount ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
+                            color: mcSims === simCount ? 'var(--mint)' : 'var(--text2)',
+                            cursor: 'pointer',
+                            fontWeight: mcSims === simCount ? 700 : 400,
+                            fontFamily: 'Space Mono',
+                            fontSize: 14,
+                            transition: 'all 0.15s'
+                          }}
+                        >
+                          {simCount.toLocaleString()}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-              
-              {/* Parameters Card with Adjustable Inputs */}
-              <div className="card">
-                <div className="card-title">Parameters {mcPreset === 'custom' ? '(Custom)' : `(${mcPresets[mcPreset].label})`}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-                  <Input label="Revenue Growth Min %" value={mcPreset === 'custom' ? mcRevenueGrowthMin : mcPresets[mcPreset].revMin} onChange={v => { setMcRevenueGrowthMin(v); setMcPreset('custom'); }} min={0} max={50} />
-                  <Input label="Revenue Growth Max %" value={mcPreset === 'custom' ? mcRevenueGrowthMax : mcPresets[mcPreset].revMax} onChange={v => { setMcRevenueGrowthMax(v); setMcPreset('custom'); }} min={0} max={100} />
-                  <Input label="Margin Min %" value={mcPreset === 'custom' ? mcMarginMin : mcPresets[mcPreset].marginMin} onChange={v => { setMcMarginMin(v); setMcPreset('custom'); }} min={20} max={90} />
-                  <Input label="Margin Max %" value={mcPreset === 'custom' ? mcMarginMax : mcPresets[mcPreset].marginMax} onChange={v => { setMcMarginMax(v); setMcPreset('custom'); }} min={20} max={95} />
+
+              {/* Parameters - Model Tab Style */}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
+                <h3 style={{ color: 'var(--mint)', marginBottom: 8, marginTop: 0 }}>USDC Growth Parameters</h3>
+                <div className="g2" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Revenue Growth Min (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Lower bound for annual USDC revenue growth in simulation.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[5, 10, 15, 20, 25, 30].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMin : mcPresets[mcPreset].revMin;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Revenue Growth Max (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Upper bound for annual USDC revenue growth in simulation.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[25, 35, 45, 55, 65, 75].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMax : mcPresets[mcPreset].revMax;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginTop: 16 }}>
-                  <Input label="Discount Min %" value={mcPreset === 'custom' ? mcDiscountMin : mcPresets[mcPreset].discMin} onChange={v => { setMcDiscountMin(v); setMcPreset('custom'); }} min={5} max={25} />
-                  <Input label="Discount Max %" value={mcPreset === 'custom' ? mcDiscountMax : mcPresets[mcPreset].discMax} onChange={v => { setMcDiscountMax(v); setMcPreset('custom'); }} min={5} max={30} />
-                  <Input label="Terminal Mult Min" value={mcPreset === 'custom' ? mcTerminalMultMin : mcPresets[mcPreset].termMin} onChange={v => { setMcTerminalMultMin(v); setMcPreset('custom'); }} min={5} max={30} />
-                  <Input label="Terminal Mult Max" value={mcPreset === 'custom' ? mcTerminalMultMax : mcPresets[mcPreset].termMax} onChange={v => { setMcTerminalMultMax(v); setMcPreset('custom'); }} min={5} max={40} />
+
+                <h3 style={{ color: 'var(--gold)', marginTop: 16, marginBottom: 8 }}>Profitability Parameters</h3>
+                <div className="g2" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Margin Min (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Lower bound for EBITDA margin assumption in DCF model.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[30, 40, 50, 55, 60, 65].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcMarginMin : mcPresets[mcPreset].marginMin;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcMarginMin(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Margin Max (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Upper bound for EBITDA margin assumption in DCF model.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[55, 60, 65, 70, 75, 80].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcMarginMax : mcPresets[mcPreset].marginMax;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcMarginMax(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
+
+                <h3 style={{ color: 'var(--coral)', marginTop: 16, marginBottom: 8 }}>Valuation Parameters</h3>
+                <div className="g2" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Discount Rate Min (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Lower bound for WACC / required return in DCF model.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[8, 10, 12, 14, 16, 18].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcDiscountMin : mcPresets[mcPreset].discMin;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcDiscountMin(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Discount Rate Max (%)</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Upper bound for WACC / required return in DCF model.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[12, 14, 16, 18, 20, 22].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcDiscountMax : mcPresets[mcPreset].discMax;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcDiscountMax(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}%</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                <div className="g2" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Terminal Multiple Min</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Lower bound for exit EV/EBITDA multiple in DCF terminal value.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[8, 10, 12, 15, 18, 20].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcTerminalMultMin : mcPresets[mcPreset].termMin;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcTerminalMultMin(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}x</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="card" style={{ marginTop: 0 }}>
+                    <div className="card-title">Terminal Multiple Max</div>
+                    <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+                      Upper bound for exit EV/EBITDA multiple in DCF terminal value.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                      {[15, 18, 22, 25, 30, 35].map((opt, idx) => {
+                        const currentVal = mcPreset === 'custom' ? mcTerminalMultMax : mcPresets[mcPreset].termMax;
+                        const isActive = currentVal === opt;
+                        const colors = [
+                          { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                          { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                          { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                          { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                          { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                          { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        ][idx];
+                        return (
+                          <div key={opt} onClick={() => { setMcTerminalMultMax(opt); setMcPreset('custom'); }} style={{
+                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                            background: isActive ? colors.bg : 'var(--surface2)',
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? colors.text : 'var(--text3)',
+                            transition: 'all 0.15s'
+                          }}>{opt}x</div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Run Button */}
                 <button onClick={() => setRunKey(k => k + 1)} style={{
-                  marginTop: 16, width: '100%', padding: '10px 16px', background: 'var(--mint)', color: 'var(--bg1)', 
-                  border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: 13
+                  marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--mint)', color: 'var(--bg1)',
+                  border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
                 }}>🎲 Run Simulation</button>
               </div>
 
-              {/* Percentile Cards - Unified 5-card layout */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
-                <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
-                  <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#f87171' }}>${mcSim.p5.toFixed(0)}</div>
-                  <div style={{ fontSize: 11, color: '#fca5a5', marginTop: 4 }}>{((mcSim.p5 / MARKET.price - 1) * 100).toFixed(0)}%</div>
-                </div>
-                <div style={{ padding: 14, borderRadius: 12, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#fdba74', marginBottom: 4 }}>P25</div>
-                  <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${mcSim.p25.toFixed(0)}</div>
-                  <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((mcSim.p25 / MARKET.price - 1) * 100).toFixed(0)}%</div>
-                </div>
-                <div style={{ padding: 14, borderRadius: 12, background: 'rgba(52,211,153,0.2)', border: '1px solid rgba(52,211,153,0.4)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>Median</div>
-                  <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${mcSim.p50.toFixed(0)}</div>
-                  <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((mcSim.p50 / MARKET.price - 1) * 100).toFixed(0)}%</div>
-                </div>
-                <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
-                  <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#4ade80' }}>${mcSim.p75.toFixed(0)}</div>
-                  <div style={{ fontSize: 11, color: '#86efac', marginTop: 4 }}>{((mcSim.p75 / MARKET.price - 1) * 100).toFixed(0)}%</div>
-                </div>
-                <div style={{ padding: 14, borderRadius: 12, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>P95 (Bull)</div>
-                  <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#10b981' }}>${mcSim.p95.toFixed(0)}</div>
-                  <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((mcSim.p95 / MARKET.price - 1) * 100).toFixed(0)}%</div>
-                </div>
-              </div>
-              
-              {/* Risk Metrics - Unified 2 rows of 3 using Card component */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-                <Card label="Win Probability" value={`${mcSim.winProb.toFixed(0)}%`} sub="> current price" color={mcSim.winProb > 50 ? 'green' : 'red'} />
-                <Card label="Expected Value" value={`$${mcSim.mean.toFixed(0)}`} sub="Mean fair value" color="mint" />
-                <Card label="Sharpe Ratio" value={mcSim.sharpe.toFixed(2)} sub={mcSim.sharpe > 1 ? 'Excellent' : mcSim.sharpe > 0.5 ? 'Good' : 'Moderate'} color={mcSim.sharpe > 0.5 ? 'green' : 'yellow'} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-                <Card label="Sortino Ratio" value={mcSim.sortino.toFixed(2)} sub="Downside-adjusted" color={mcSim.sortino > 0.7 ? 'green' : 'yellow'} />
-                <Card label="VaR (5%)" value={`${mcSim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
-                <Card label="CVaR (5%)" value={`${mcSim.cvar5.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
-              </div>
-              
-              {/* Distribution Chart - Unified Recharts BarChart */}
-              <div className="card">
-                <div className="card-title">Fair Value Distribution</div>
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={mcSim.histogram}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                    <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
-                    <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
-                    <RechartsTooltip 
-                      contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} 
-                      formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
-                      labelFormatter={(v) => `$${v.toFixed(0)}`}
-                    />
-                    <Bar dataKey="pct" fill="var(--mint)" radius={[2, 2, 0, 0]} />
-                    <ReferenceLine x={MARKET.price} stroke="#fff" strokeDasharray="5 5" />
-                  </BarChart>
-                </ResponsiveContainer>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
-                  <span>White line = current price (${MARKET.price.toFixed(0)})</span>
-                  <span>Simulations: {mcSim.n.toLocaleString()}</span>
+              {/* Percentile Cards */}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#f87171' }}>${mcSim.p5.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: '#fca5a5', marginTop: 4 }}>{((mcSim.p5 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  </div>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: '#fdba74', marginBottom: 4 }}>P25</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${mcSim.p25.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((mcSim.p25 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  </div>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(52,211,153,0.2)', border: '1px solid rgba(52,211,153,0.4)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>Median</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${mcSim.p50.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((mcSim.p50 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  </div>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#4ade80' }}>${mcSim.p75.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: '#86efac', marginTop: 4 }}>{((mcSim.p75 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  </div>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>P95 (Bull)</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#10b981' }}>${mcSim.p95.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((mcSim.p95 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  </div>
                 </div>
               </div>
-              
+
+              {/* Risk Metrics */}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                  <Card label="Win Probability" value={`${mcSim.winProb.toFixed(0)}%`} sub="> current price" color={mcSim.winProb > 50 ? 'green' : 'red'} />
+                  <Card label="Expected Value" value={`$${mcSim.mean.toFixed(0)}`} sub="Mean fair value" color="mint" />
+                  <Card label="Sharpe Ratio" value={mcSim.sharpe.toFixed(2)} sub={mcSim.sharpe > 1 ? 'Excellent' : mcSim.sharpe > 0.5 ? 'Good' : 'Moderate'} color={mcSim.sharpe > 0.5 ? 'green' : 'yellow'} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
+                  <Card label="Sortino Ratio" value={mcSim.sortino.toFixed(2)} sub="Downside-adjusted" color={mcSim.sortino > 0.7 ? 'green' : 'yellow'} />
+                  <Card label="VaR (5%)" value={`${mcSim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
+                  <Card label="CVaR (5%)" value={`${mcSim.cvar5.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
+                </div>
+              </div>
+
+              {/* Distribution Chart */}
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
+                <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card-title">Fair Value Distribution</div>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={mcSim.histogram}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
+                      <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
+                      <RechartsTooltip
+                        contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
+                        formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
+                        labelFormatter={(v) => `$${v.toFixed(0)}`}
+                      />
+                      <Bar dataKey="pct" fill="var(--mint)" radius={[2, 2, 0, 0]} />
+                      <ReferenceLine x={MARKET.price} stroke="#fff" strokeDasharray="5 5" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+                    <span>White line = current price (${MARKET.price.toFixed(0)})</span>
+                    <span>Simulations: {mcSim.n.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-notes</div>
               <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
                 { term: 'Stochastic Modeling', def: 'Uses random sampling to model uncertainty. Each iteration draws from probability distributions for key inputs.' },
                 { term: 'Input Distributions', def: 'USDC growth, margins, rates, multiples vary within defined ranges. Uniform distributions based on confidence.' },
@@ -5986,7 +5219,7 @@ function CRCLModel() {
                     <tbody>
                       {displayedFilings.map((filing, idx) => (
                         <tr key={idx}>
-                          <td style={{ whiteSpace: 'nowrap' }}>{filing.date}</td>
+                          <td>{filing.date}</td>
                           <td>
                             <span style={{ 
                               background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)', 
@@ -6297,34 +5530,25 @@ function CRCLModel() {
 
           {activeTab === 'comps' && (
             <>
-              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparable Companies Analysis<UpdateIndicators sources="MARKET" /></h2>
-              
+              <h2 className="section-head">Comparable Companies Analysis<UpdateIndicators sources="MARKET" /></h2>
+
               {/* Highlight Box */}
               <div className="highlight">
                 <h3>Peer Analysis Framework</h3>
-                <p className="text-sm">
-                  Circle sits at the intersection of multiple peer groups: crypto infrastructure (Coinbase), 
-                  payments networks (Visa, PayPal), and high-growth fintech. Each lens provides different valuation 
+                <p>
+                  Circle sits at the intersection of multiple peer groups: crypto infrastructure (Coinbase),
+                  payments networks (Visa, PayPal), and high-growth fintech. Each lens provides different valuation
                   context. Crypto peers trade at premium P/S; payments peers show margin potential.
                 </p>
               </div>
-              
+
               {/* Peer Group Selector */}
               <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
                 {Object.entries(PEER_GROUPS).map(([key, group]) => (
                   <button
                     key={key}
                     onClick={() => setSelectedPeerGroup(key)}
-                    style={{
-                      padding: '10px 16px',
-                      borderRadius: 8,
-                      border: selectedPeerGroup === key ? '2px solid var(--mint)' : '1px solid var(--border)',
-                      background: selectedPeerGroup === key ? 'rgba(0,212,170,0.1)' : 'var(--surface2)',
-                      color: selectedPeerGroup === key ? 'var(--mint)' : 'var(--text2)',
-                      cursor: 'pointer',
-                      fontWeight: selectedPeerGroup === key ? 600 : 400,
-                      fontSize: 13,
-                    }}
+                    className={`filter-btn ${selectedPeerGroup === key ? 'active' : ''}`}
                   >
                     {group.name}
                   </button>
@@ -6352,7 +5576,7 @@ function CRCLModel() {
                     </thead>
                     <tbody>
                       {currentPeers.peers.map((p, i) => (
-                        <tr key={i} style={{ background: p.highlight ? 'rgba(0,212,170,0.08)' : 'transparent' }}>
+                        <tr key={i} style={p.highlight ? { background: 'var(--mint-dim)' } : undefined}>
                           <td>
                             <div style={{ fontWeight: p.highlight ? 700 : 500 }}>{p.name}</div>
                             <div style={{ fontSize: 11, color: 'var(--text3)' }}>{p.ticker}</div>
@@ -6532,7 +5756,7 @@ function CRCLModel() {
                           </td>
                         </tr>
                       ))}
-                      <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                      <tr style={{ fontWeight: 600 }}>
                         <td colSpan={3}>SOTP Range</td>
                         <td className="r mint">$15.5-17.5B</td>
                       </tr>
@@ -6558,17 +5782,17 @@ function CRCLModel() {
                     <tbody>
                       {TRANSACTIONS.map((t, i) => (
                         <tr key={i}>
-                          <td style={{ fontSize: 12 }}>{t.date}</td>
+                          <td>{t.date}</td>
                           <td>
                             <div style={{ fontWeight: 500 }}>{t.target}</div>
                             {t.notes && <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.notes}</div>}
                           </td>
                           <td className="r">{t.value ? `$${t.value}B` : '—'}</td>
-                          <td><span style={{ 
-                            fontSize: 11, 
-                            padding: '2px 6px', 
-                            borderRadius: 4, 
-                            background: t.type === 'M&A' ? 'rgba(0,212,170,0.2)' : t.type === 'Funding' ? 'rgba(100,149,237,0.2)' : 'rgba(255,193,7,0.2)',
+                          <td><span style={{
+                            fontSize: 11,
+                            padding: '2px 6px',
+                            borderRadius: 4,
+                            background: t.type === 'M&A' ? 'var(--mint-dim)' : t.type === 'Funding' ? 'var(--sky-dim)' : 'var(--gold-dim)',
                             color: t.type === 'M&A' ? 'var(--mint)' : t.type === 'Funding' ? 'var(--sky)' : 'var(--gold)'
                           }}>{t.type}</span></td>
                         </tr>
@@ -6598,11 +5822,11 @@ function CRCLModel() {
                             const val = calcSensitivity(usdc, rate, 13);
                             const isNear = Math.abs(usdc - 73.7) < 15 && Math.abs(rate - 4.0) < 0.5;
                             return (
-                              <td key={rate} className="r" style={{ 
-                                background: isNear ? 'rgba(0,212,170,0.15)' : 'transparent',
-                                fontWeight: isNear ? 600 : 400,
-                                color: isNear ? 'var(--mint)' : 'inherit'
-                              }}>
+                              <td key={rate} className="r" style={isNear ? {
+                                background: 'var(--mint-dim)',
+                                fontWeight: 600,
+                                color: 'var(--mint)'
+                              } : undefined}>
                                 ${val.toFixed(1)}B
                               </td>
                             );
@@ -7128,26 +6352,26 @@ Source: Example Research`
                                     {report.estimates && report.estimates.length > 0 && (
                                       <div style={{ marginBottom: 12 }}>
                                         <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 4 }}>ESTIMATES</div>
-                                        <table style={{ fontSize: 11, width: '100%' }}>
+                                        <table className="tbl">
                                           <thead>
-                                            <tr style={{ color: 'var(--text3)' }}>
-                                              <th style={{ textAlign: 'left', fontWeight: 500 }}>Metric</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY24</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY25</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY26</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY27</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY28</th>
+                                            <tr>
+                                              <th>Metric</th>
+                                              <th className="r">FY24</th>
+                                              <th className="r">FY25</th>
+                                              <th className="r">FY26</th>
+                                              <th className="r">FY27</th>
+                                              <th className="r">FY28</th>
                                             </tr>
                                           </thead>
                                           <tbody>
                                             {report.estimates.map((e, i) => (
-                                              <tr key={i} style={{ color: 'var(--text2)' }}>
+                                              <tr key={i}>
                                                 <td>{e.metric}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy24 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy25 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy26 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy27 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy28 || '—'}</td>
+                                                <td className="r">{e.fy24 || '—'}</td>
+                                                <td className="r">{e.fy25 || '—'}</td>
+                                                <td className="r">{e.fy26 || '—'}</td>
+                                                <td className="r">{e.fy27 || '—'}</td>
+                                                <td className="r">{e.fy28 || '—'}</td>
                                               </tr>
                                             ))}
                                           </tbody>
