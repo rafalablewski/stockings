@@ -5570,7 +5570,7 @@ const CompsTab = () => {
       </div>
 
       {/* Selected Peer Group Table */}
-      <div className="card">
+      <div className="card" id="crcl-peer-group">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{currentPeers.name}<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>{currentPeers.description}</p>
         <div style={{ overflowX: 'auto' }}>
@@ -5611,7 +5611,7 @@ const CompsTab = () => {
       </div>
 
       {/* Circle-Specific Business Model Metrics */}
-      <div className="card" style={{ marginTop: 24 }}>
+      <div className="card" id="crcl-business-model-metrics" style={{ marginTop: 24 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Circle Business Model Metrics<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Unique metrics for stablecoin issuers — monetization of reserves</p>
         <div className="g4">
@@ -5655,7 +5655,7 @@ const CompsTab = () => {
       </div>
 
       {/* Multi-Methodology Valuation Matrix */}
-      <div className="card" style={{ marginTop: 24 }}>
+      <div className="card" id="crcl-implied-valuation-matrix" style={{ marginTop: 24 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Circle's value under different peer multiples (current: $18.9B)</p>
         <table className="tbl">
@@ -5685,7 +5685,7 @@ const CompsTab = () => {
       </div>
 
       {/* Growth vs P/S Scatter Plot */}
-      <div className="card" style={{ marginTop: 24 }}>
+      <div className="card" id="crcl-growth-vs-ps" style={{ marginTop: 24 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Growth vs. P/S Multiple<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Circle's positioning relative to peers (bubble size = market cap)</p>
         <div style={{ height: 300 }}>
@@ -5745,7 +5745,7 @@ const CompsTab = () => {
 
       <div className="g2" style={{ marginTop: 24 }}>
         {/* SOTP Valuation */}
-        <div className="card">
+        <div className="card" id="crcl-sotp">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <table className="tbl">
             <thead>
@@ -5782,7 +5782,7 @@ const CompsTab = () => {
         </div>
 
         {/* Transaction Comps */}
-        <div className="card">
+        <div className="card" id="crcl-transaction-comps">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Transaction Comps<UpdateIndicators sources={['WS']} /></div>
           <table className="tbl">
             <thead>
@@ -5820,7 +5820,7 @@ const CompsTab = () => {
       </div>
 
       {/* Sensitivity Matrix */}
-      <div className="card" style={{ marginTop: 24 }}>
+      <div className="card" id="crcl-valuation-sensitivity" style={{ marginTop: 24 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Valuation Sensitivity: USDC × Interest Rates<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Implied enterprise value at Coinbase P/S multiple (13x net revenue)</p>
         <div style={{ overflowX: 'auto' }}>
@@ -5859,7 +5859,7 @@ const CompsTab = () => {
       </div>
 
       {/* Historical Multiple Tracking */}
-      <div className="card" style={{ marginTop: 24 }}>
+      <div className="card" id="crcl-ps-multiple-history" style={{ marginTop: 24 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>P/S Multiple Since IPO<UpdateIndicators sources={['WS']} /></div>
         <div style={{ height: 280 }}>
           <ResponsiveContainer width="100%" height="100%">
