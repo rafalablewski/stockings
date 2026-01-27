@@ -1728,7 +1728,7 @@ const ScenariosTab = () => {
                       <th>Metric</th>
                       <th className="r">Today</th>
                       {selected.projections.map(p => (
-                        <th key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <th key={p.year} className="r">
                           {p.year}
                         </th>
                       ))}
@@ -1739,7 +1739,7 @@ const ScenariosTab = () => {
                       <td>USDC Circulation ($B)</td>
                       <td className="r">{CURRENT_METRICS.usdc}</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           {p.usdc}
                         </td>
                       ))}
@@ -1748,7 +1748,7 @@ const ScenariosTab = () => {
                       <td>Market Share (%)</td>
                       <td className="r">29%</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           {p.marketShare}%
                         </td>
                       ))}
@@ -1757,16 +1757,16 @@ const ScenariosTab = () => {
                       <td>Reserve Yield (%)</td>
                       <td className="r">4.33%</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           {p.reserveRate}%
                         </td>
                       ))}
                     </tr>
-                    <tr style={{ borderTop: '1px solid var(--border)' }}>
+                    <tr>
                       <td>Gross Revenue ($B)</td>
                       <td className="r">$2.96</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           ${p.grossRevenue.toFixed(2)}
                         </td>
                       ))}
@@ -1775,7 +1775,7 @@ const ScenariosTab = () => {
                       <td>Distribution Costs ($B)</td>
                       <td className="r">($1.15)</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={{ color: 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           (${p.distributionCost.toFixed(2)})
                         </td>
                       ))}
@@ -1784,7 +1784,7 @@ const ScenariosTab = () => {
                       <td>Net Revenue ($B)</td>
                       <td className="r mint">$1.81</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r mint" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r mint" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           ${p.netRevenue.toFixed(2)}
                         </td>
                       ))}
@@ -1793,16 +1793,16 @@ const ScenariosTab = () => {
                       <td>RLDC Margin (%)</td>
                       <td className="r">39%</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           {p.rldcMargin}%
                         </td>
                       ))}
                     </tr>
-                    <tr style={{ borderTop: '1px solid var(--border)' }}>
+                    <tr>
                       <td>EBITDA ($B)</td>
                       <td className="r">$0.29</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: p.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={{ color: p.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.ebitda >= 0 ? '$' : '($'}{Math.abs(p.ebitda).toFixed(2)}{p.ebitda < 0 ? ')' : ''}
                         </td>
                       ))}
@@ -1811,7 +1811,7 @@ const ScenariosTab = () => {
                       <td>Net Income ($B)</td>
                       <td className="r">$0.16</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: p.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={{ color: p.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.netIncome >= 0 ? '$' : '($'}{Math.abs(p.netIncome).toFixed(2)}{p.netIncome < 0 ? ')' : ''}
                         </td>
                       ))}
@@ -1820,16 +1820,16 @@ const ScenariosTab = () => {
                       <td>Free Cash Flow ($B)</td>
                       <td className="r">$0.14</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: p.fcf >= 0 ? 'var(--sky)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={{ color: p.fcf >= 0 ? 'var(--sky)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.fcf >= 0 ? '$' : '($'}{Math.abs(p.fcf).toFixed(2)}{p.fcf < 0 ? ')' : ''}
                         </td>
                       ))}
                     </tr>
-                    <tr style={{ borderTop: '2px solid var(--border)', fontWeight: 600 }}>
+                    <tr style={{ fontWeight: 600 }}>
                       <td>Exit P/S Multiple</td>
                       <td className="r">6.4x</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           {p.exitMultiple}x
                         </td>
                       ))}
@@ -1838,16 +1838,16 @@ const ScenariosTab = () => {
                       <td>Implied EV ($B)</td>
                       <td className="r">$18.9</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
                           ${p.evImplied.toFixed(1)}
                         </td>
                       ))}
                     </tr>
-                    <tr style={{ fontWeight: 700, fontSize: 15 }}>
+                    <tr style={{ fontWeight: 700 }}>
                       <td>Share Price ($)</td>
                       <td className="r">${CURRENT_METRICS.sharePrice}</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: selected.color, background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                        <td key={p.year} className="r" style={{ color: selected.color, ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           ${p.sharePrice.toLocaleString()}
                         </td>
                       ))}
@@ -1954,26 +1954,26 @@ const ScenariosTab = () => {
                       const ret = ((p.sharePrice / CURRENT_METRICS.sharePrice) - 1) * 100;
                       const contribution = p.sharePrice * (s.prob / 100);
                       return (
-                        <tr key={key} style={{ background: selectedScenario === key ? `${s.color}11` : 'transparent' }}>
+                        <tr key={key} style={selectedScenario === key ? { background: 'var(--accent-dim)' } : undefined}>
                           <td>
                             <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
                             {s.name}
                           </td>
                           <td className="r">{s.prob}%</td>
-                          <td className="r" style={{ fontFamily: 'Space Mono' }}>${p.sharePrice.toLocaleString()}</td>
+                          <td className="r">${p.sharePrice.toLocaleString()}</td>
                           <td className="r" style={{ color: ret >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                             {ret >= 0 ? '+' : ''}{ret.toFixed(0)}%
                           </td>
-                          <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>${contribution.toFixed(0)}</td>
+                          <td className="r" style={{ color: 'var(--sky)' }}>${contribution.toFixed(0)}</td>
                         </tr>
                       );
                     })}
-                    <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
+                    <tr style={{ fontWeight: 700 }}>
                       <td>Expected Value</td>
                       <td className="r">100%</td>
-                      <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.sharePrice.toFixed(0)}</td>
+                      <td className="r mint">${pwev.sharePrice.toFixed(0)}</td>
                       <td className="r mint">{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</td>
-                      <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.sharePrice.toFixed(0)}</td>
+                      <td className="r mint">${pwev.sharePrice.toFixed(0)}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1993,7 +1993,7 @@ const ScenariosTab = () => {
                 <th>Metric</th>
                 {SCENARIO_KEYS.map(key => {
                   const s = SCENARIO_SIMULATIONS[key];
-                  return <th key={key} className="r" style={{ color: s.color }}>{s.name}</th>;
+                  return <th key={key} className="r">{s.name}</th>;
                 })}
               </tr>
             </thead>
@@ -2231,7 +2231,7 @@ const DCFTab = () => {
                   <td key={p.year} className="r">${p.rev.toFixed(2)}</td>
                 ))}
               </tr>
-              <tr style={{ borderTop: '1px solid var(--border)' }}>
+              <tr>
                 <td>Net FCF ($B)</td>
                 <td className="r">—</td>
                 {dcf.projections.map(p => (
@@ -2245,7 +2245,7 @@ const DCFTab = () => {
                   <td key={p.year} className="r" style={{ color: 'var(--cyan)' }}>${p.pv.toFixed(2)}</td>
                 ))}
               </tr>
-              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
+              <tr style={{ background: 'var(--surface2)' }}>
                 <td colSpan={2} className="r" style={{ fontWeight: 500 }}>Sum PV(FCF)</td>
                 <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.pvFCF.toFixed(2)}B</td>
               </tr>
@@ -2257,7 +2257,7 @@ const DCFTab = () => {
                 <td colSpan={2} className="r" style={{ fontWeight: 500 }}>PV(Terminal Value)</td>
                 <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.pvTV.toFixed(2)}B</td>
               </tr>
-              <tr style={{ background: 'rgba(0,212,170,0.1)' }}>
+              <tr style={{ background: 'var(--accent-dim)' }}>
                 <td colSpan={2} className="r" style={{ fontWeight: 700 }}>Equity Value</td>
                 <td colSpan={5} className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${(dcf.equity / 1000).toFixed(1)}B</td>
               </tr>
@@ -2971,85 +2971,85 @@ function CRCLModel() {
                 </div>
                 
                 {/* Quarterly Table */}
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs">
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="tbl">
                     <thead>
-                      <tr className="border-b border-slate-700">
-                        <th className="text-left py-2 px-2 text-slate-400 sticky left-0 bg-slate-900 min-w-[120px]">Metric</th>
+                      <tr>
+                        <th>Metric</th>
                         {DATA.map(d => (
-                          <th key={d.quarter} className="text-right py-2 px-2 text-slate-400 min-w-[80px]">
+                          <th key={d.quarter} className="r">
                             {d.quarter}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Total Revenue</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Total Revenue</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-green-400">${d.totalRevenue}M</td>
+                          <td key={d.quarter} className="r" style={{ color: 'var(--mint)' }}>${d.totalRevenue}M</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Reserve Income</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Reserve Income</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-slate-300">${d.reserveIncome}M</td>
+                          <td key={d.quarter} className="r">${d.reserveIncome}M</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Distribution Costs</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Distribution Costs</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-red-400">({d.distributionCosts})</td>
+                          <td key={d.quarter} className="r" style={{ color: 'var(--coral)' }}>({d.distributionCosts})</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">RLDC</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>RLDC</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-slate-300">${d.rldc}M</td>
+                          <td key={d.quarter} className="r">${d.rldc}M</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">RLDC Margin</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>RLDC Margin</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-slate-300">{d.rldcMargin}%</td>
+                          <td key={d.quarter} className="r">{d.rldcMargin}%</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">OpEx</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>OpEx</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-red-400">({d.opex})</td>
+                          <td key={d.quarter} className="r" style={{ color: 'var(--coral)' }}>({d.opex})</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Adj. EBITDA</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Adj. EBITDA</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-cyan-400">${d.adjustedEbitda}M</td>
+                          <td key={d.quarter} className="r" style={{ color: 'var(--sky)' }}>${d.adjustedEbitda}M</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Net Income</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Net Income</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className={`py-1.5 px-2 text-right tabular-nums ${d.netIncome >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          <td key={d.quarter} className="r" style={{ color: d.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                             {d.netIncome >= 0 ? `$${d.netIncome}M` : `($${Math.abs(d.netIncome)}M)`}
                           </td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Cash Position</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Cash Position</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-slate-300">${(d.cashPosition/1000).toFixed(2)}B</td>
+                          <td key={d.quarter} className="r">${(d.cashPosition/1000).toFixed(2)}B</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">USDC Circulation</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>USDC Circulation</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-violet-400">${d.usdcCirculation.toFixed(1)}B</td>
+                          <td key={d.quarter} className="r" style={{ color: 'var(--violet)' }}>${d.usdcCirculation.toFixed(1)}B</td>
                         ))}
                       </tr>
-                      <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Market Share</td>
+                      <tr>
+                        <td style={{ fontWeight: 500 }}>Market Share</td>
                         {DATA.map(d => (
-                          <td key={d.quarter} className="py-1.5 px-2 text-right tabular-nums text-slate-300">{d.marketShare}%</td>
+                          <td key={d.quarter} className="r">{d.marketShare}%</td>
                         ))}
                       </tr>
                     </tbody>
@@ -4434,7 +4434,7 @@ function CRCLModel() {
                         <td className="r">{(s.authorized / 1000).toLocaleString()}M</td>
                         <td className="r mint">{s.outstanding > 0 ? `${(s.outstanding / 1000).toFixed(1)}M` : '—'}</td>
                         <td className="r">{s.votes}</td>
-                        <td style={{ color: 'var(--text2)', fontSize: 13 }}>{s.description}</td>
+                        <td>{s.description}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -4501,7 +4501,7 @@ function CRCLModel() {
                           <td className="r mint">${o.grossProceeds >= 1000 ? `${(o.grossProceeds / 1000).toFixed(2)}B` : `${o.grossProceeds}M`}</td>
                         </tr>
                       ))}
-                      <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                      <tr style={{ fontWeight: 600 }}>
                         <td colSpan={4}>Total Raised</td>
                         <td className="r mint">$2.5B</td>
                       </tr>
@@ -4538,7 +4538,7 @@ function CRCLModel() {
                         <td className="r">{(EQUITY_AWARDS.rsus.classB / 1000).toFixed(1)}M</td>
                         <td className="r mint">{((EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</td>
                       </tr>
-                      <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                      <tr style={{ fontWeight: 600 }}>
                         <td>Total Outstanding</td>
                         <td className="r">{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.rsus.classA) / 1000).toFixed(1)}M</td>
                         <td className="r">{((EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</td>
@@ -4579,7 +4579,7 @@ function CRCLModel() {
                         <td><span style={{ color: 'var(--gold)' }}>{w.status}</span></td>
                       </tr>
                     ))}
-                    <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                    <tr style={{ fontWeight: 600 }}>
                       <td>Total</td>
                       <td className="r">{(WARRANTS.reduce((a, w) => a + w.shares, 0) / 1000).toFixed(1)}M</td>
                       <td></td>
@@ -4629,13 +4629,13 @@ function CRCLModel() {
                     {PREFERRED_STOCK.map((p, i) => (
                       <tr key={i}>
                         <td>{p.series}</td>
-                        <td className="r" style={{ color: 'var(--text3)' }}>{p.year}</td>
+                        <td className="r">{p.year}</td>
                         <td className="r">{p.shares.toLocaleString()}</td>
                         <td className="r">${(p.liquidation / 1000).toFixed(1)}M</td>
                         <td className="r sky">${p.pricePerShare.toFixed(2)}</td>
                       </tr>
                     ))}
-                    <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                    <tr style={{ fontWeight: 600 }}>
                       <td colSpan={2}>Total</td>
                       <td className="r">{(PREFERRED_STOCK.reduce((a, p) => a + p.shares, 0) / 1000).toFixed(1)}M</td>
                       <td className="r">${(PREFERRED_STOCK.reduce((a, p) => a + p.liquidation, 0) / 1000000).toFixed(2)}B</td>
@@ -4690,7 +4690,7 @@ function CRCLModel() {
                       <td className="r">~1.0</td>
                       <td className="r">0.4%</td>
                     </tr>
-                    <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                    <tr style={{ fontWeight: 600 }}>
                       <td>Fully Diluted</td>
                       <td className="r mint">~276.5</td>
                       <td className="r">100%</td>
@@ -5219,7 +5219,7 @@ function CRCLModel() {
                     <tbody>
                       {displayedFilings.map((filing, idx) => (
                         <tr key={idx}>
-                          <td style={{ whiteSpace: 'nowrap' }}>{filing.date}</td>
+                          <td>{filing.date}</td>
                           <td>
                             <span style={{ 
                               background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)', 
@@ -5756,7 +5756,7 @@ function CRCLModel() {
                           </td>
                         </tr>
                       ))}
-                      <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                      <tr style={{ fontWeight: 600 }}>
                         <td colSpan={3}>SOTP Range</td>
                         <td className="r mint">$15.5-17.5B</td>
                       </tr>
@@ -5782,7 +5782,7 @@ function CRCLModel() {
                     <tbody>
                       {TRANSACTIONS.map((t, i) => (
                         <tr key={i}>
-                          <td style={{ fontSize: 12 }}>{t.date}</td>
+                          <td>{t.date}</td>
                           <td>
                             <div style={{ fontWeight: 500 }}>{t.target}</div>
                             {t.notes && <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.notes}</div>}
@@ -6352,26 +6352,26 @@ Source: Example Research`
                                     {report.estimates && report.estimates.length > 0 && (
                                       <div style={{ marginBottom: 12 }}>
                                         <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 4 }}>ESTIMATES</div>
-                                        <table style={{ fontSize: 11, width: '100%' }}>
+                                        <table className="tbl">
                                           <thead>
-                                            <tr style={{ color: 'var(--text3)' }}>
-                                              <th style={{ textAlign: 'left', fontWeight: 500 }}>Metric</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY24</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY25</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY26</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY27</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY28</th>
+                                            <tr>
+                                              <th>Metric</th>
+                                              <th className="r">FY24</th>
+                                              <th className="r">FY25</th>
+                                              <th className="r">FY26</th>
+                                              <th className="r">FY27</th>
+                                              <th className="r">FY28</th>
                                             </tr>
                                           </thead>
                                           <tbody>
                                             {report.estimates.map((e, i) => (
-                                              <tr key={i} style={{ color: 'var(--text2)' }}>
+                                              <tr key={i}>
                                                 <td>{e.metric}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy24 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy25 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy26 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy27 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy28 || '—'}</td>
+                                                <td className="r">{e.fy24 || '—'}</td>
+                                                <td className="r">{e.fy25 || '—'}</td>
+                                                <td className="r">{e.fy26 || '—'}</td>
+                                                <td className="r">{e.fy27 || '—'}</td>
+                                                <td className="r">{e.fy28 || '—'}</td>
                                               </tr>
                                             ))}
                                           </tbody>

@@ -2477,8 +2477,8 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
         <Card label="Yield Value" value={`$${(calc.annualYieldUSD / 1e6).toFixed(1)}M`} sub="At current price" color="purple" updateSource={['PR', 'MARKET']} />
       </div>
       <div className="card"><div className="card-title">Yield Projections (Compounding)</div>
-        <table className="w-full text-sm"><thead><tr className="text-slate-400 text-xs border-b border-slate-700"><th className="text-left py-2">Year</th><th className="text-right">Yield ETH</th><th className="text-right">Total ETH</th><th className="text-right">NAV/Share</th></tr></thead>
-        <tbody>{projections.map(p => (<tr key={p.year} className="border-t border-slate-800"><td className="py-2">{p.year}Y</td><td className="py-2 text-right text-green-400">+{Math.round(p.yieldETH).toLocaleString()}</td><td className="py-2 text-right">{(p.totalETH / 1e6).toFixed(2)}M</td><td className="py-2 text-right font-medium">${p.nav.toFixed(2)}</td></tr>))}</tbody></table>
+        <table className="tbl"><thead><tr><th>Year</th><th className="r">Yield ETH</th><th className="r">Total ETH</th><th className="r">NAV/Share</th></tr></thead>
+        <tbody>{projections.map(p => (<tr key={p.year}><td>{p.year}Y</td><td className="r mint">+{Math.round(p.yieldETH).toLocaleString()}</td><td className="r">{(p.totalETH / 1e6).toFixed(2)}M</td><td className="r" style={{ fontWeight: 500 }}>${p.nav.toFixed(2)}</td></tr>))}</tbody></table>
       </div>
       
       <CFANotes title="CFA Level III — Staking & Yield" items={[
@@ -2970,8 +2970,8 @@ const SensitivityTab = ({ calc, currentETH, currentShares, ethPrice }) => {
         <p className="text-sm">Two-variable sensitivity showing stock price at different ETH prices and NAV multiples. Tornado chart shows parameter impact ranking.</p>
       </div>
       <div className="card"><div className="card-title">Price Matrix</div>
-        <table className="w-full text-sm"><thead><tr><th className="text-left p-2 text-slate-400">ETH</th>{[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(nm => <th key={nm} className="p-2 text-center text-slate-400">{nm}x NAV</th>)}</tr></thead>
-        <tbody>{matrix.map(row => (<tr key={row.ethMult} className={row.ethMult === 1.0 ? 'bg-violet-900/20' : ''}><td className="p-2 font-medium whitespace-nowrap">${row.ethPrice.toLocaleString()} ({row.ethMult}x)</td>{row.scenarios.map(s => (<td key={s.navMult} className={`p-2 text-center ${row.ethMult === 1.0 && s.navMult === 1.0 ? 'bg-violet-500/30 font-bold' : ''}`}><span className={s.price >= calc.currentNAV ? 'text-green-400' : 'text-red-400'}>${s.price.toFixed(2)}</span></td>))}</tr>))}</tbody></table>
+        <table className="tbl"><thead><tr><th>ETH</th>{[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(nm => <th key={nm} className="c">{nm}x NAV</th>)}</tr></thead>
+        <tbody>{matrix.map(row => (<tr key={row.ethMult} style={row.ethMult === 1.0 ? { background: 'var(--accent-dim)' } : undefined}><td style={{ fontWeight: 500 }}>${row.ethPrice.toLocaleString()} ({row.ethMult}x)</td>{row.scenarios.map(s => (<td key={s.navMult} className="c" style={row.ethMult === 1.0 && s.navMult === 1.0 ? { background: 'var(--accent-dim)', fontWeight: 600 } : undefined}><span style={{ color: s.price >= calc.currentNAV ? 'var(--mint)' : 'var(--coral)' }}>${s.price.toFixed(2)}</span></td>))}</tr>))}</tbody></table>
       </div>
       <div className="card"><div className="card-title">Tornado Chart (±20%)</div>
         <div className="space-y-3">{[{ param: 'ETH Price', down: -20, up: 20 }, { param: 'NAV Multiple', down: -20, up: 20 }, { param: 'ETH Holdings', down: -20, up: 20 }, { param: 'Shares Out', down: 25, up: -17 }].map(t => (<div key={t.param} className="flex items-center gap-4"><div className="w-28 text-sm text-slate-300">{t.param}</div><div className="flex-1 h-8 bg-slate-900 rounded relative"><div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-600" /><div className="absolute h-full bg-red-500/50" style={{ right: '50%', width: `${Math.abs(Math.min(t.down, 0)) * 2}%` }} /><div className="absolute h-full bg-green-500/50" style={{ left: '50%', width: `${Math.max(t.up, 0) * 2}%` }} /><div className="absolute inset-0 flex items-center justify-center text-xs font-medium"><span className="text-red-400 mr-6">{t.down}%</span><span className="text-green-400">{t.up > 0 ? '+' : ''}{t.up}%</span></div></div></div>))}</div>
@@ -4922,94 +4922,94 @@ const SECFilingsTab = () => {
         
         {/* Quarterly Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+          <table className="tbl">
             <thead>
-              <tr className="border-b border-slate-700">
-                <th className="text-left py-2 px-2 text-slate-400 sticky left-0 bg-slate-900 min-w-[120px]">Metric</th>
+              <tr>
+                <th>Metric</th>
                 {quarterlyData.map(q => (
-                  <th key={q.quarter} className={`text-right py-2 px-2 text-slate-400 min-w-[90px] ${q.quarter === 'FY25 10-K' ? 'bg-green-900/20' : ''}`}>
+                  <th key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : undefined}>
                     {q.quarter}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Cash & Equiv</td>
+              <tr>
+                <td style={{ fontWeight: 500 }}>Cash & Equiv</td>
                 {quarterlyData.map(q => (
-                  <td key={q.quarter} className={`py-1.5 px-2 text-right tabular-nums ${q.cash > 100 ? 'text-green-400' : 'text-slate-300'} ${q.quarter === 'FY25 10-K' ? 'bg-green-900/10' : ''}`}>
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cash > 100 ? 'var(--mint)' : undefined } : q.cash > 100 ? { color: 'var(--mint)' } : undefined}>
                     {q.cash >= 100 ? `$${q.cash}M` : `$${(q.cash * 1000).toFixed(0)}K`}
                   </td>
                 ))}
               </tr>
-              <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Crypto Holdings</td>
+              <tr>
+                <td style={{ fontWeight: 500 }}>Crypto Holdings</td>
                 {quarterlyData.map(q => (
-                  <td key={q.quarter} className={`py-1.5 px-2 text-right tabular-nums ${q.cryptoType === 'ETH' ? 'text-violet-400' : 'text-amber-400'} ${q.quarter === 'FY25 10-K' ? 'bg-green-900/10' : ''}`}>
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' } : { color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' }}>
                     {q.crypto >= 1000 ? `$${(q.crypto/1000).toFixed(2)}B` : `$${(q.crypto * 1000).toFixed(0)}K`}
                   </td>
                 ))}
               </tr>
-              <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Crypto Type</td>
+              <tr>
+                <td style={{ fontWeight: 500 }}>Crypto Type</td>
                 {quarterlyData.map(q => (
-                  <td key={q.quarter} className={`py-1.5 px-2 text-right ${q.cryptoType === 'ETH' ? 'text-violet-400' : 'text-amber-400'} ${q.quarter === 'FY25 10-K' ? 'bg-green-900/10' : ''}`}>
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' } : { color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' }}>
                     {q.cryptoType}
                   </td>
                 ))}
               </tr>
-              <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Total Assets</td>
+              <tr>
+                <td style={{ fontWeight: 500 }}>Total Assets</td>
                 {quarterlyData.map(q => (
-                  <td key={q.quarter} className={`py-1.5 px-2 text-right tabular-nums ${q.assets > 100 ? 'text-green-400' : 'text-slate-300'} ${q.quarter === 'FY25 10-K' ? 'bg-green-900/10' : ''}`}>
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.assets > 100 ? 'var(--mint)' : undefined } : q.assets > 100 ? { color: 'var(--mint)' } : undefined}>
                     {q.assets >= 1000 ? `$${(q.assets/1000).toFixed(2)}B` : `$${q.assets.toFixed(2)}M`}
                   </td>
                 ))}
               </tr>
-              <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Total Liabilities</td>
+              <tr>
+                <td style={{ fontWeight: 500 }}>Total Liabilities</td>
                 {quarterlyData.map(q => (
-                  <td key={q.quarter} className={`py-1.5 px-2 text-right tabular-nums text-slate-300 ${q.quarter === 'FY25 10-K' ? 'bg-green-900/10' : ''}`}>
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : undefined}>
                     ${q.liabilities.toFixed(q.liabilities >= 100 ? 0 : 2)}M
                   </td>
                 ))}
               </tr>
-              <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Stockholders' Equity</td>
+              <tr>
+                <td style={{ fontWeight: 500 }}>Stockholders' Equity</td>
                 {quarterlyData.map(q => (
-                  <td key={q.quarter} className={`py-1.5 px-2 text-right tabular-nums ${q.equity > 100 ? 'text-green-400' : 'text-slate-300'} ${q.quarter === 'FY25 10-K' ? 'bg-green-900/10' : ''}`}>
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.equity > 100 ? 'var(--mint)' : undefined } : q.equity > 100 ? { color: 'var(--mint)' } : undefined}>
                     {q.equity >= 1000 ? `$${(q.equity/1000).toFixed(2)}B` : `$${q.equity.toFixed(2)}M`}
                   </td>
                 ))}
               </tr>
-              <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Revenue</td>
+              <tr>
+                <td style={{ fontWeight: 500 }}>Revenue</td>
                 {quarterlyData.map(q => (
-                  <td key={q.quarter} className={`py-1.5 px-2 text-right tabular-nums text-slate-300 ${q.quarter === 'FY25 10-K' ? 'bg-green-900/10' : ''}`}>
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : undefined}>
                     ${q.revenue.toFixed(1)}M
                   </td>
                 ))}
               </tr>
-              <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Net Income/(Loss)</td>
+              <tr>
+                <td style={{ fontWeight: 500 }}>Net Income/(Loss)</td>
                 {quarterlyData.map(q => (
-                  <td key={q.quarter} className={`py-1.5 px-2 text-right tabular-nums ${q.netIncome >= 0 ? 'text-green-400' : 'text-red-400'} ${q.quarter === 'FY25 10-K' ? 'bg-green-900/10' : ''}`}>
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' } : { color: q.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                     {q.netIncome >= 0 ? `+$${q.netIncome}M` : `($${Math.abs(q.netIncome)}M)`}
                   </td>
                 ))}
               </tr>
-              <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Shares Outstanding</td>
+              <tr>
+                <td style={{ fontWeight: 500 }}>Shares Outstanding</td>
                 {quarterlyData.map(q => (
-                  <td key={q.quarter} className={`py-1.5 px-2 text-right tabular-nums ${q.shares > 100 ? 'text-orange-400' : 'text-slate-300'} ${q.quarter === 'FY25 10-K' ? 'bg-green-900/10' : ''}`}>
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.shares > 100 ? 'var(--gold)' : undefined } : q.shares > 100 ? { color: 'var(--gold)' } : undefined}>
                     {q.shares.toFixed(1)}M
                   </td>
                 ))}
               </tr>
-              <tr className="border-t border-slate-800/50 hover:bg-slate-800/30">
-                <td className="py-1.5 px-2 text-slate-300 sticky left-0 bg-slate-900 font-medium">Era</td>
+              <tr>
+                <td style={{ fontWeight: 500 }}>Era</td>
                 {quarterlyData.map(q => (
-                  <td key={q.quarter} className={`py-1.5 px-2 text-right ${q.era.includes('ETH') ? 'text-violet-400' : 'text-amber-400'} ${q.quarter === 'FY25 10-K' ? 'bg-green-900/10' : ''}`}>
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.era.includes('ETH') ? 'var(--violet)' : 'var(--gold)' } : { color: q.era.includes('ETH') ? 'var(--violet)' : 'var(--gold)' }}>
                     {q.era}
                   </td>
                 ))}
@@ -8229,22 +8229,22 @@ const TimelineTab = () => {
                 <div className="t-details-content">
                   <div className="t-details-text">
                     {/* Changes Table */}
-                    <table className="t-changes-table">
+                    <table className="tbl">
                       <thead>
                         <tr>
                           <th>Metric</th>
-                          <th style={{ textAlign: 'right' }}>Previous</th>
-                          <th style={{ textAlign: 'right' }}>New</th>
-                          <th style={{ textAlign: 'right' }}>Change</th>
+                          <th className="r">Previous</th>
+                          <th className="r">New</th>
+                          <th className="r">Change</th>
                         </tr>
                       </thead>
                       <tbody>
                         {entry.changes.map((c, cidx) => (
                           <tr key={cidx}>
-                            <td className="metric">{c.metric}</td>
-                            <td className="prev" style={{ textAlign: 'right' }}>{c.previous}</td>
-                            <td className="new" style={{ textAlign: 'right' }}>{c.new}</td>
-                            <td className={c.change.startsWith('+') ? 'change-pos' : c.change.startsWith('-') ? 'change-neg' : 'change-neutral'} style={{ textAlign: 'right' }}>{c.change}</td>
+                            <td>{c.metric}</td>
+                            <td className="r">{c.previous}</td>
+                            <td className="r">{c.new}</td>
+                            <td className="r" style={{ color: c.change.startsWith('+') ? 'var(--mint)' : c.change.startsWith('-') ? 'var(--coral)' : undefined }}>{c.change}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -8840,26 +8840,26 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                                     {report.estimates && report.estimates.length > 0 && (
                                       <div style={{ marginBottom: 12 }}>
                                         <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 4 }}>ESTIMATES</div>
-                                        <table style={{ fontSize: 11, width: '100%' }}>
+                                        <table className="tbl">
                                           <thead>
-                                            <tr style={{ color: 'var(--text3)' }}>
-                                              <th style={{ textAlign: 'left', fontWeight: 500 }}>Metric</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY24</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY25</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY26</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY27</th>
-                                              <th style={{ textAlign: 'right', fontWeight: 500 }}>FY28</th>
+                                            <tr>
+                                              <th>Metric</th>
+                                              <th className="r">FY24</th>
+                                              <th className="r">FY25</th>
+                                              <th className="r">FY26</th>
+                                              <th className="r">FY27</th>
+                                              <th className="r">FY28</th>
                                             </tr>
                                           </thead>
                                           <tbody>
                                             {report.estimates.map((e, i) => (
-                                              <tr key={i} style={{ color: 'var(--text2)' }}>
+                                              <tr key={i}>
                                                 <td>{e.metric}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy24 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy25 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy26 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy27 || '—'}</td>
-                                                <td style={{ textAlign: 'right', fontFamily: 'Space Mono' }}>{e.fy28 || '—'}</td>
+                                                <td className="r">{e.fy24 || '—'}</td>
+                                                <td className="r">{e.fy25 || '—'}</td>
+                                                <td className="r">{e.fy26 || '—'}</td>
+                                                <td className="r">{e.fy27 || '—'}</td>
+                                                <td className="r">{e.fy28 || '—'}</td>
                                               </tr>
                                             ))}
                                           </tbody>

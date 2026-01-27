@@ -1243,10 +1243,10 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
         </div>
       </div>
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl"><thead><tr style={{ borderBottom: '1px solid var(--border)' }}><th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Reach</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name} style={{ borderTop: '1px solid var(--border)' }}><td style={{ padding: 8, color: 'var(--text2)' }}>{p.name}</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{p.subs}M</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text3)' }}>{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
+        <table className="tbl"><thead><tr><th>Partner</th><th className="r">Reach</th><th className="r">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name}><td>{p.name}</td><td className="r">{p.subs}M</td><td className="r">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
       </div>
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl"><thead><tr style={{ borderBottom: '1px solid var(--border)' }}><th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Pen%</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Rev/yr</th><th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={{ borderTop: '1px solid var(--border)', background: s.p === penetrationRate ? 'var(--surface2)' : 'transparent' }}><td style={{ padding: 8, color: 'var(--text2)' }}>{s.p}%</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{s.subs.toFixed(0)}M</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${s.rev.toFixed(1)}B</td><td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
+        <table className="tbl"><thead><tr><th>Pen%</th><th className="r">Subs</th><th className="r">Rev/yr</th><th className="r">$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={s.p === penetrationRate ? { background: 'var(--accent-dim)' } : undefined}><td>{s.p}%</td><td className="r">{s.subs.toFixed(0)}M</td><td className="r">${s.rev.toFixed(1)}B</td><td className="r">${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g3"><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div></div>
       
@@ -1456,33 +1456,33 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th>
-                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Region</th>
-                <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
-                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Spectrum</th>
-                <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Term</th>
-                <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Prepayment</th>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
+              <tr>
+                <th>Partner</th>
+                <th className="c">Region</th>
+                <th className="r">Subs</th>
+                <th className="c">Spectrum</th>
+                <th className="c">Term</th>
+                <th className="r">Prepayment</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
               {definitiveAgreements.map(p => (
-                <tr key={p.partner} style={{ borderTop: '1px solid var(--border)' }}>
-                  <td style={{ padding: 8, color: 'var(--text2)' }}>{p.partner}</td>
-                  <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.region}</td>
-                  <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{p.subs}M</td>
-                  <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{p.spectrum}</span></td>
-                  <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.term}</td>
-                  <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${p.prepayment}M</td>
-                  <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{p.prepayStatus}</td>
+                <tr key={p.partner}>
+                  <td>{p.partner}</td>
+                  <td className="c">{p.region}</td>
+                  <td className="r">{p.subs}M</td>
+                  <td className="c"><span className="pill" style={{ fontSize: 11 }}>{p.spectrum}</span></td>
+                  <td className="c">{p.term}</td>
+                  <td className="r">${p.prepayment}M</td>
+                  <td>{p.prepayStatus}</td>
                 </tr>
               ))}
-              <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
-                <td style={{ padding: 8, fontWeight: 600, color: 'var(--text2)' }} colSpan={2}>Total Definitive</td>
-                <td style={{ padding: 8, textAlign: 'right', fontWeight: 600, color: 'var(--text2)' }}>{totalDefinitiveSubs}M</td>
+              <tr style={{ background: 'var(--accent-dim)' }}>
+                <td style={{ fontWeight: 600 }} colSpan={2}>Total Definitive</td>
+                <td className="r" style={{ fontWeight: 600 }}>{totalDefinitiveSubs}M</td>
                 <td colSpan={2}></td>
-                <td style={{ padding: 8, textAlign: 'right', fontWeight: 600, color: 'var(--mint)' }}>${totalPrepay}M</td>
+                <td className="r" style={{ fontWeight: 600 }}>${totalPrepay}M</td>
                 <td></td>
               </tr>
             </tbody>
@@ -1510,26 +1510,26 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Asset</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Band</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Size</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Coverage</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Term</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Cost</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
+            <tr>
+              <th>Asset</th>
+              <th className="c">Band</th>
+              <th className="c">Size</th>
+              <th className="c">Coverage</th>
+              <th className="c">Term</th>
+              <th className="r">Cost</th>
+              <th className="c">Status</th>
             </tr>
           </thead>
           <tbody>
             {ownedSpectrum.map(s => (
-              <tr key={s.name} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{s.name}</td>
-                <td style={{ padding: 8, textAlign: 'center', fontSize: 11, color: 'var(--text3)' }}>{s.band}</td>
-                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>{s.size}</td>
-                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{s.coverage}</td>
-                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{s.term}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>{s.cost}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{s.status}</span></td>
+              <tr key={s.name}>
+                <td>{s.name}</td>
+                <td className="c">{s.band}</td>
+                <td className="c">{s.size}</td>
+                <td className="c">{s.coverage}</td>
+                <td className="c">{s.term}</td>
+                <td className="r">{s.cost}</td>
+                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{s.status}</span></td>
               </tr>
             ))}
           </tbody>
@@ -1563,20 +1563,20 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Agency</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Value</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Notes</th>
+            <tr>
+              <th>Agency</th>
+              <th className="r">Value</th>
+              <th className="c">Status</th>
+              <th>Notes</th>
             </tr>
           </thead>
           <tbody>
             {govContracts.map(g => (
-              <tr key={g.agency} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{g.agency}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>{g.value}</td>
-                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{g.status}</span></td>
-                <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{g.notes}</td>
+              <tr key={g.agency}>
+                <td>{g.agency}</td>
+                <td className="r">{g.value}</td>
+                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{g.status}</span></td>
+                <td>{g.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -1590,22 +1590,22 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Partner</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Region</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Subs</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Notes</th>
+            <tr>
+              <th>Partner</th>
+              <th className="c">Region</th>
+              <th className="r">Subs</th>
+              <th className="c">Status</th>
+              <th>Notes</th>
             </tr>
           </thead>
           <tbody>
             {otherPartners.map(p => (
-              <tr key={p.partner} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{p.partner}</td>
-                <td style={{ padding: 8, textAlign: 'center', color: 'var(--text3)' }}>{p.region}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{p.subs}M</td>
-                <td style={{ padding: 8, textAlign: 'center' }}><span className="pill" style={{ fontSize: 11 }}>{p.status}</span></td>
-                <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>{p.notes}</td>
+              <tr key={p.partner}>
+                <td>{p.partner}</td>
+                <td className="c">{p.region}</td>
+                <td className="r">{p.subs}M</td>
+                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{p.status}</span></td>
+                <td>{p.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -1785,43 +1785,43 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--gold)', marginBottom: 8 }}>2025 Capital Raises</h4>
         <table className="tbl" style={{ marginBottom: 16 }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Source</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Terms</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status & Notes</th>
+            <tr>
+              <th>Source</th>
+              <th className="r">Amount</th>
+              <th className="c">Terms</th>
+              <th>Status & Notes</th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Jan 2025 Convertible</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$460M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>4.25%, 2032</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>$410M repurchased for equity (shares issued); $50M remains as debt</td>
+            <tr>
+              <td>Jan 2025 Convertible</td>
+              <td className="r">$460M</td>
+              <td className="c">4.25%, 2032</td>
+              <td>$410M repurchased for equity (shares issued); $50M remains as debt</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Jul 2025 Convertible</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$575M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>4.25%, 2032</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>$120.12 effective strike via capped call; outstanding as debt</td>
+            <tr>
+              <td>Jul 2025 Convertible</td>
+              <td className="r">$575M</td>
+              <td className="c">4.25%, 2032</td>
+              <td>$120.12 effective strike via capped call; outstanding as debt</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Oct 2025 Convertible</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$1,000M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>2%, 2036</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>$96.30 strike; 10-year term; outstanding as debt</td>
+            <tr>
+              <td>Oct 2025 Convertible</td>
+              <td className="r">$1,000M</td>
+              <td className="c">2%, 2036</td>
+              <td>$96.30 strike; 10-year term; outstanding as debt</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>ATM Facility (Q3)</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$389M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>At-the-market</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Shares sold at market; facility now terminated</td>
+            <tr>
+              <td>ATM Facility (Q3)</td>
+              <td className="r">$389M</td>
+              <td className="c">At-the-market</td>
+              <td>Shares sold at market; facility now terminated</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Capped Call Unwind</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$74.5M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>—</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Hedge monetized when Jan converts repurchased</td>
+            <tr>
+              <td>Capped Call Unwind</td>
+              <td className="r">$74.5M</td>
+              <td className="c">—</td>
+              <td>Hedge monetized when Jan converts repurchased</td>
             </tr>
           </tbody>
         </table>
@@ -1829,37 +1829,37 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--violet)', marginBottom: 8 }}>2024 Capital Raises</h4>
         <table className="tbl" style={{ marginBottom: 16 }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Source</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Terms</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status & Notes</th>
+            <tr>
+              <th>Source</th>
+              <th className="r">Amount</th>
+              <th className="c">Terms</th>
+              <th>Status & Notes</th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>2034 Strategic Convertibles</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$148.5M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>3.875%, 2034</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>AT&T, Google, Vodafone, Verizon. Force-converted to equity Jan 2025 (25.8M shares)</td>
+            <tr>
+              <td>2034 Strategic Convertibles</td>
+              <td className="r">$148.5M</td>
+              <td className="c">3.875%, 2034</td>
+              <td>AT&T, Google, Vodafone, Verizon. Force-converted to equity Jan 2025 (25.8M shares)</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Public Warrant Exercise</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$153.6M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>$11.50/share</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Warrants redeemed Sept 2024; ~13.4M shares issued</td>
+            <tr>
+              <td>Public Warrant Exercise</td>
+              <td className="r">$153.6M</td>
+              <td className="c">$11.50/share</td>
+              <td>Warrants redeemed Sept 2024; ~13.4M shares issued</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Verizon Strategic Investment</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$100M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Equity + Commitment</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>May 2024; converted to definitive Oct 2025</td>
+            <tr>
+              <td>Verizon Strategic Investment</td>
+              <td className="r">$100M</td>
+              <td className="c">Equity + Commitment</td>
+              <td>May 2024; converted to definitive Oct 2025</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Google Investment</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$100M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Equity + Commitment</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>May 2024; strategic technology partnership</td>
+            <tr>
+              <td>Google Investment</td>
+              <td className="r">$100M</td>
+              <td className="c">Equity + Commitment</td>
+              <td>May 2024; strategic technology partnership</td>
             </tr>
           </tbody>
         </table>
@@ -1867,37 +1867,37 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--sky)', marginBottom: 8 }}>2021-2023 Foundation</h4>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Source</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
-              <th style={{ textAlign: 'center', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Terms</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Status & Notes</th>
+            <tr>
+              <th>Source</th>
+              <th className="r">Amount</th>
+              <th className="c">Terms</th>
+              <th>Status & Notes</th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>SPAC (April 2021)</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$462M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>SPAC + PIPE</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>IPO via New Providence; $230M PIPE from Vodafone, Rakuten, American Tower</td>
+            <tr>
+              <td>SPAC (April 2021)</td>
+              <td className="r">$462M</td>
+              <td className="c">SPAC + PIPE</td>
+              <td>IPO via New Providence; $230M PIPE from Vodafone, Rakuten, American Tower</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>B. Riley ATM (2022)</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$75M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>ATM facility</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>24-month committed equity; used opportunistically</td>
+            <tr>
+              <td>B. Riley ATM (2022)</td>
+              <td className="r">$75M</td>
+              <td className="c">ATM facility</td>
+              <td>24-month committed equity; used opportunistically</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>NanoAvionics Sale</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$28M net</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Asset sale</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Subsidiary sold to Kongsberg (July 2022); focused ASTS on core mission</td>
+            <tr>
+              <td>NanoAvionics Sale</td>
+              <td className="r">$28M net</td>
+              <td className="c">Asset sale</td>
+              <td>Subsidiary sold to Kongsberg (July 2022); focused ASTS on core mission</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Atlas Facility</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>$30M</td>
-              <td style={{ padding: 8, textAlign: 'center', color: 'var(--text2)' }}>Secured loan</td>
-              <td style={{ padding: 8, fontSize: 11, color: 'var(--text3)' }}>Equipment-backed; partially repaid</td>
+            <tr>
+              <td>Atlas Facility</td>
+              <td className="r">$30M</td>
+              <td className="c">Secured loan</td>
+              <td>Equipment-backed; partially repaid</td>
             </tr>
           </tbody>
         </table>
@@ -1917,20 +1917,20 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Raise Amount</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>New Shares</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Dilution</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Extended Runway</th>
+            <tr>
+              <th>Raise Amount</th>
+              <th className="r">New Shares</th>
+              <th className="r">Dilution</th>
+              <th className="r">Extended Runway</th>
             </tr>
           </thead>
           <tbody>
             {dilution.map(d => (
-              <tr key={d.r} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--mint)' }}>${d.r}M</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{d.new.toFixed(1)}M</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{d.dil.toFixed(1)}%</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{d.runway.toFixed(1)}Q</td>
+              <tr key={d.r}>
+                <td>${d.r}M</td>
+                <td className="r">{d.new.toFixed(1)}M</td>
+                <td className="r">{d.dil.toFixed(1)}%</td>
+                <td className="r">{d.runway.toFixed(1)}Q</td>
               </tr>
             ))}
           </tbody>
@@ -2033,52 +2033,52 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Class Structure (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Class</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shares (M)</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>% of Basic</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Voting Rights</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Description</th>
+            <tr>
+              <th>Class</th>
+              <th className="r">Shares (M)</th>
+              <th className="r">% of Basic</th>
+              <th>Voting Rights</th>
+              <th>Description</th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Class A</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{shareClasses[0].shares}</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</td>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>1 vote/share</td>
-              <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Public trading (NASDAQ: ASTS)</td>
+            <tr>
+              <td>Class A</td>
+              <td className="r">{shareClasses[0].shares}</td>
+              <td className="r">{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</td>
+              <td>1 vote/share</td>
+              <td>Public trading (NASDAQ: ASTS)</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Class B</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>11.2</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(11.2 / totalBasic * 100).toFixed(1)}%</td>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>1 vote/share</td>
-              <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Founder/insider shares</td>
+            <tr>
+              <td>Class B</td>
+              <td className="r">11.2</td>
+              <td className="r">{(11.2 / totalBasic * 100).toFixed(1)}%</td>
+              <td>1 vote/share</td>
+              <td>Founder/insider shares</td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Class C</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>78.2</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(78.2 / totalBasic * 100).toFixed(1)}%</td>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>10 votes/share</td>
-              <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Abel Avellan (CEO)</td>
+            <tr>
+              <td>Class C</td>
+              <td className="r">78.2</td>
+              <td className="r">{(78.2 / totalBasic * 100).toFixed(1)}%</td>
+              <td>10 votes/share</td>
+              <td>Abel Avellan (CEO)</td>
             </tr>
-            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Total Basic</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{totalBasic.toFixed(1)}</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>100%</td>
+            <tr style={{ background: 'var(--accent-dim)' }}>
+              <td style={{ fontWeight: 600 }}>Total Basic</td>
+              <td className="r" style={{ fontWeight: 600 }}>{totalBasic.toFixed(1)}</td>
+              <td className="r" style={{ fontWeight: 600 }}>100%</td>
               <td colSpan={2}></td>
             </tr>
-            <tr style={{ borderTop: '1px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>+ Options/RSUs/Converts</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(fullyDiluted - totalBasic).toFixed(1)}</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</td>
-              <td colSpan={2} style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>Remaining converts, options, RSUs</td>
+            <tr>
+              <td>+ Options/RSUs/Converts</td>
+              <td className="r">{(fullyDiluted - totalBasic).toFixed(1)}</td>
+              <td className="r">+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</td>
+              <td colSpan={2}>Remaining converts, options, RSUs</td>
             </tr>
-            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td style={{ padding: 8, color: 'var(--text2)' }}>Fully Diluted</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{fullyDiluted.toFixed(1)}</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</td>
+            <tr style={{ background: 'var(--accent-dim)' }}>
+              <td style={{ fontWeight: 600 }}>Fully Diluted</td>
+              <td className="r" style={{ fontWeight: 600 }}>{fullyDiluted.toFixed(1)}</td>
+              <td className="r" style={{ fontWeight: 600 }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</td>
               <td colSpan={2}></td>
             </tr>
           </tbody>
@@ -2132,26 +2132,26 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Major Shareholders (Known from SEC Filings)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shareholder</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Role</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shares (M)</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Class</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>% Own</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>% Vote</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Notes</th>
+            <tr>
+              <th>Shareholder</th>
+              <th>Role</th>
+              <th className="r">Shares (M)</th>
+              <th>Class</th>
+              <th className="r">% Own</th>
+              <th className="r">% Vote</th>
+              <th>Notes</th>
             </tr>
           </thead>
           <tbody>
             {majorShareholders.map((sh, i) => (
-              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{sh.name}</td>
-                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{sh.role}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</td>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{sh.shareClass}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{sh.pct}%</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{sh.votingPct}%</td>
-                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{sh.notes}</td>
+              <tr key={i}>
+                <td>{sh.name}</td>
+                <td>{sh.role}</td>
+                <td className="r">{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</td>
+                <td>{sh.shareClass}</td>
+                <td className="r">{sh.pct}%</td>
+                <td className="r">{sh.votingPct}%</td>
+                <td>{sh.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -2168,29 +2168,29 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Offerings Timeline<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Date</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Event</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Type</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Amount</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Price</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Shares (M)</th>
+            <tr>
+              <th>Date</th>
+              <th>Event</th>
+              <th>Type</th>
+              <th className="r">Amount</th>
+              <th className="r">Price</th>
+              <th className="r">Shares (M)</th>
             </tr>
           </thead>
           <tbody>
             {equityOfferings.map((offering, i) => (
-              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{offering.date}</td>
-                <td style={{ padding: 8, fontWeight: 500 }}>{offering.event}</td>
-                <td style={{ padding: 8 }}><span style={{ color: 'var(--gold)' }}>{offering.type}</span></td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${offering.amount}M</td>
-                <td style={{ padding: 8, textAlign: 'right' }}>{offering.price ? `$${offering.price.toFixed(2)}` : '—'}</td>
-                <td style={{ padding: 8, textAlign: 'right' }}>{offering.shares ? offering.shares.toFixed(1) : '—'}</td>
+              <tr key={i}>
+                <td>{offering.date}</td>
+                <td style={{ fontWeight: 500 }}>{offering.event}</td>
+                <td>{offering.type}</td>
+                <td className="r">${offering.amount}M</td>
+                <td className="r">{offering.price ? `$${offering.price.toFixed(2)}` : '—'}</td>
+                <td className="r">{offering.shares ? offering.shares.toFixed(1) : '—'}</td>
               </tr>
             ))}
-            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td colSpan={3} style={{ padding: 8 }}>Total Capital Raised (2019-2025)</td>
-              <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>~$3.6B</td>
+            <tr style={{ background: 'var(--accent-dim)' }}>
+              <td colSpan={3} style={{ fontWeight: 600 }}>Total Capital Raised (2019-2025)</td>
+              <td className="r" style={{ fontWeight: 600 }}>~$3.6B</td>
               <td colSpan={2}></td>
             </tr>
           </tbody>
@@ -2207,20 +2207,20 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Stock-Based Compensation (SBC)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Quarter</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Total SBC</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Engineering</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>G&A</th>
+            <tr>
+              <th>Quarter</th>
+              <th className="r">Total SBC</th>
+              <th className="r">Engineering</th>
+              <th className="r">G&A</th>
             </tr>
           </thead>
           <tbody>
             {sbcHistory.map((row, i) => (
-              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{row.quarter}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${row.sbc.toFixed(1)}M</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${row.engineering.toFixed(1)}M</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--mint)' }}>${row.gAndA.toFixed(1)}M</td>
+              <tr key={i}>
+                <td>{row.quarter}</td>
+                <td className="r">${row.sbc.toFixed(1)}M</td>
+                <td className="r">${row.engineering.toFixed(1)}M</td>
+                <td className="r">${row.gAndA.toFixed(1)}M</td>
               </tr>
             ))}
           </tbody>
@@ -2265,22 +2265,22 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Count Evolution<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Quarter</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Class A (M)</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Implied (M)</th>
-              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Fully Diluted (M)</th>
-              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Key Event</th>
+            <tr>
+              <th>Quarter</th>
+              <th className="r">Class A (M)</th>
+              <th className="r">Implied (M)</th>
+              <th className="r">Fully Diluted (M)</th>
+              <th>Key Event</th>
             </tr>
           </thead>
           <tbody>
             {dilutionHistory.map((row, i) => (
-              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>{row.quarter}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{row.classA.toFixed(1)}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{row.implied.toFixed(1)}</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>{row.fullyDiluted.toFixed(1)}</td>
-                <td style={{ padding: 8, color: 'var(--text3)', fontSize: 13 }}>{row.event}</td>
+              <tr key={i}>
+                <td>{row.quarter}</td>
+                <td className="r">{row.classA.toFixed(1)}</td>
+                <td className="r">{row.implied.toFixed(1)}</td>
+                <td className="r">{row.fullyDiluted.toFixed(1)}</td>
+                <td>{row.event}</td>
               </tr>
             ))}
           </tbody>
@@ -2326,21 +2326,21 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text2)', marginBottom: 12 }}>Potential Future Dilution</div>
           <table className="tbl">
             <tbody>
-              <tr style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>Jan 2025 Converts (remaining $50M @ $26.58)</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+1.9M</td>
+              <tr>
+                <td>Jan 2025 Converts (remaining $50M @ $26.58)</td>
+                <td className="r">+1.9M</td>
               </tr>
-              <tr style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>Jul 2025 Converts ($575M @ $120.12)</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+4.8M</td>
+              <tr>
+                <td>Jul 2025 Converts ($575M @ $120.12)</td>
+                <td className="r">+4.8M</td>
               </tr>
-              <tr style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>Oct 2025 Converts ($1,150M @ $96.30)</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+11.9M</td>
+              <tr>
+                <td>Oct 2025 Converts ($1,150M @ $96.30)</td>
+                <td className="r">+11.9M</td>
               </tr>
-              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-                <td style={{ padding: 8, color: 'var(--text2)' }}>Maximum Additional Dilution</td>
-                <td style={{ padding: 8, textAlign: 'right', color: 'var(--text2)' }}>+18.6M (~5%)</td>
+              <tr style={{ background: 'var(--accent-dim)' }}>
+                <td style={{ fontWeight: 600 }}>Maximum Additional Dilution</td>
+                <td className="r" style={{ fontWeight: 600 }}>+18.6M (~5%)</td>
               </tr>
             </tbody>
           </table>
@@ -4581,12 +4581,12 @@ const QuarterlyMetricsPanel = () => {
       
       {/* All Quarters Table */}
       <div style={{ overflowX: 'auto' }}>
-        <table className="tbl" style={{ fontSize: 12 }}>
+        <table className="tbl">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: '8px', color: 'var(--text3)', position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
+            <tr>
+              <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
               {displayQuarters.map(q => (
-                <th key={q} style={{ textAlign: 'right', padding: '8px', color: 'var(--text3)', minWidth: 70, whiteSpace: 'nowrap' }}>
+                <th key={q} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap' }}>
                   {q.replace('Q', '').replace(' ', "'")}
                 </th>
               ))}
@@ -4594,8 +4594,8 @@ const QuarterlyMetricsPanel = () => {
           </thead>
           <tbody>
             {metrics.map(metric => (
-              <tr key={metric.label} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: '6px 8px', color: 'var(--text2)', position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
+              <tr key={metric.label}>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
                   {metric.label}
                 </td>
                 {displayQuarters.map(q => {
@@ -4607,7 +4607,7 @@ const QuarterlyMetricsPanel = () => {
                   return (
                     <td
                       key={q}
-                      style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--text2)', fontFamily: 'Space Mono, monospace' }}
+                      className="r"
                       title={tooltip}
                     >
                       {metric.format(val)}
@@ -7853,19 +7853,19 @@ const TimelineTab = () => {
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Date</th>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Type</th>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Description</th>
-                <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Period</th>
-                <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Link</th>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Period</th>
+                <th className="r">Link</th>
               </tr>
             </thead>
             <tbody>
               {displayedFilings.map((filing, idx) => (
-                <tr key={idx} style={{ borderTop: '1px solid var(--border)' }}>
-                  <td style={{ padding: 8, whiteSpace: 'nowrap' }}>{filing.date}</td>
-                  <td style={{ padding: 8 }}>
+                <tr key={idx}>
+                  <td style={{ whiteSpace: 'nowrap' }}>{filing.date}</td>
+                  <td>
                     <span style={{
                       background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)',
                       color: secTypeColors[filing.type]?.text || 'var(--text2)',
@@ -7877,9 +7877,9 @@ const TimelineTab = () => {
                       {filing.type}
                     </span>
                   </td>
-                  <td style={{ padding: 8 }}>{filing.description}</td>
-                  <td style={{ padding: 8 }}>{filing.period}</td>
-                  <td style={{ padding: 8, textAlign: 'right' }}>
+                  <td>{filing.description}</td>
+                  <td>{filing.period}</td>
+                  <td className="r">
                     <a
                       href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
                       target="_blank"
@@ -12787,24 +12787,24 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                                         <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 4 }}>ESTIMATES</div>
                                         <table className="tbl">
                                           <thead>
-                                            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                                              <th style={{ textAlign: 'left', padding: 8, color: 'var(--text3)', fontSize: 11 }}>Metric</th>
-                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY24</th>
-                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY25</th>
-                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY26</th>
-                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY27</th>
-                                              <th style={{ textAlign: 'right', padding: 8, color: 'var(--text3)', fontSize: 11 }}>FY28</th>
+                                            <tr>
+                                              <th>Metric</th>
+                                              <th className="r">FY24</th>
+                                              <th className="r">FY25</th>
+                                              <th className="r">FY26</th>
+                                              <th className="r">FY27</th>
+                                              <th className="r">FY28</th>
                                             </tr>
                                           </thead>
                                           <tbody>
                                             {report.estimates.map((e, i) => (
-                                              <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                                                <td style={{ padding: 8, color: 'var(--text2)' }}>{e.metric}</td>
-                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy24 || '—'}</td>
-                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy25 || '—'}</td>
-                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy26 || '—'}</td>
-                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy27 || '—'}</td>
-                                                <td style={{ padding: 8, textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>{e.fy28 || '—'}</td>
+                                              <tr key={i}>
+                                                <td>{e.metric}</td>
+                                                <td className="r">{e.fy24 || '—'}</td>
+                                                <td className="r">{e.fy25 || '—'}</td>
+                                                <td className="r">{e.fy26 || '—'}</td>
+                                                <td className="r">{e.fy27 || '—'}</td>
+                                                <td className="r">{e.fy28 || '—'}</td>
                                               </tr>
                                             ))}
                                           </tbody>
