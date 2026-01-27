@@ -5571,7 +5571,7 @@ const CompsTab = () => {
 
       {/* Selected Peer Group Table */}
       <div className="card">
-        <div className="card-title">{currentPeers.name}</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{currentPeers.name}<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>{currentPeers.description}</p>
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
@@ -5612,7 +5612,7 @@ const CompsTab = () => {
 
       {/* Circle-Specific Business Model Metrics */}
       <div className="card" style={{ marginTop: 24 }}>
-        <div className="card-title">Circle Business Model Metrics</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Circle Business Model Metrics<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Unique metrics for stablecoin issuers — monetization of reserves</p>
         <div className="g4">
           <div className="big-stat">
@@ -5656,7 +5656,7 @@ const CompsTab = () => {
 
       {/* Multi-Methodology Valuation Matrix */}
       <div className="card" style={{ marginTop: 24 }}>
-        <div className="card-title">Implied Valuation Matrix</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Circle's value under different peer multiples (current: $18.9B)</p>
         <table className="tbl">
           <thead>
@@ -5686,7 +5686,7 @@ const CompsTab = () => {
 
       {/* Growth vs P/S Scatter Plot */}
       <div className="card" style={{ marginTop: 24 }}>
-        <div className="card-title">Growth vs. P/S Multiple</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Growth vs. P/S Multiple<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Circle's positioning relative to peers (bubble size = market cap)</p>
         <div style={{ height: 300 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -5746,7 +5746,7 @@ const CompsTab = () => {
       <div className="g2" style={{ marginTop: 24 }}>
         {/* SOTP Valuation */}
         <div className="card">
-          <div className="card-title">Sum-of-the-Parts (SOTP)</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <table className="tbl">
             <thead>
               <tr>
@@ -5783,7 +5783,7 @@ const CompsTab = () => {
 
         {/* Transaction Comps */}
         <div className="card">
-          <div className="card-title">Transaction Comps</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Transaction Comps<UpdateIndicators sources={['WS']} /></div>
           <table className="tbl">
             <thead>
               <tr>
@@ -5821,7 +5821,7 @@ const CompsTab = () => {
 
       {/* Sensitivity Matrix */}
       <div className="card" style={{ marginTop: 24 }}>
-        <div className="card-title">Valuation Sensitivity: USDC × Interest Rates</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Valuation Sensitivity: USDC × Interest Rates<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Implied enterprise value at Coinbase P/S multiple (13x net revenue)</p>
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
@@ -5860,7 +5860,7 @@ const CompsTab = () => {
 
       {/* Historical Multiple Tracking */}
       <div className="card" style={{ marginTop: 24 }}>
-        <div className="card-title">P/S Multiple Since IPO</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>P/S Multiple Since IPO<UpdateIndicators sources={['WS']} /></div>
         <div style={{ height: 280 }}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={HISTORICAL_MULTIPLES} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>

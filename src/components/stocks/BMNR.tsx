@@ -2950,7 +2950,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </div>
 
       <div className="card">
-        <div className="card-title">Crypto Treasury Comparison</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Crypto Treasury Comparison<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>NAV premium/discount analysis — BMNR's ETH staking yield vs BTC treasuries' 0%</p>
         <table className="tbl">
           <thead>
@@ -2985,7 +2985,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
         </table>
       </div>
       <div className="card">
-        <div className="card-title">Yield Advantage</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Yield Advantage<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ETH staking generates yield vs BTC's 0% — structural advantage</p>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <div className="big-stat">
@@ -3000,7 +3000,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
       {/* Valuation Methodology Matrix */}
       <div className="card">
-        <div className="card-title">Implied Valuation Matrix</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>BMNR value under different NAV multiples (current: ${(compsData[0]?.marketCap / 1e9).toFixed(2)}B)</p>
         <table className="tbl">
           <thead>
@@ -3043,7 +3043,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       <div className="g2" style={{ marginTop: 24 }}>
         {/* SOTP Valuation */}
         <div className="card">
-          <div className="card-title">Sum-of-the-Parts (SOTP)</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Value each component separately</p>
           <table className="tbl">
             <thead>
@@ -3091,7 +3091,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
         {/* NAV Premium Sensitivity */}
         <div className="card">
-          <div className="card-title">NAV Premium Sensitivity</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>NAV Premium Sensitivity<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Stock price at different ETH prices × NAV multiples</p>
           <div style={{ overflowX: 'auto' }}>
             <table className="tbl">

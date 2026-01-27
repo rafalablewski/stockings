@@ -9060,7 +9060,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       <div className="g2">
         <div className="card">
-          <div className="card-title">EV/Rev Comparison</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>EV/Rev Comparison<UpdateIndicators sources="WS" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={filteredComps} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -9074,7 +9074,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           </ResponsiveContainer>
         </div>
         <div className="card">
-          <div className="card-title">$/Subscriber Comparison</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>$/Subscriber Comparison<UpdateIndicators sources="WS" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={filteredComps} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -9094,7 +9094,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Valuation Methodology Matrix */}
       <div className="card">
-        <div className="card-title">Implied Valuation Matrix</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
         <table className="tbl">
           <thead>
@@ -9132,7 +9132,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       <div className="g2" style={{ marginTop: 24 }}>
         {/* SOTP Valuation */}
         <div className="card">
-          <div className="card-title">Sum-of-the-Parts (SOTP)</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Value each business segment separately</p>
           <table className="tbl">
             <thead>
@@ -9171,7 +9171,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
         {/* Risk-Adjusted Scenarios */}
         <div className="card">
-          <div className="card-title">Risk-Adjusted Scenarios</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Probability-weighted valuation outcomes</p>
           <table className="tbl">
             <thead>
