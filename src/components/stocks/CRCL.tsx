@@ -4244,7 +4244,7 @@ function CRCLModel() {
               </div>
 
               {/* Key Metrics */}
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-metrics</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#capital-metrics</div>
               <div className="g4">
                 <Card label="Shares Outstanding" value={`${MARKET.shares.toFixed(1)}M`} sub="All classes" color="mint" />
                 <Card label="Market Cap" value={`$${(MARKET.marketCap / 1e9).toFixed(1)}B`} sub="Current valuation" color="blue" />
@@ -5561,7 +5561,7 @@ const CompsTab = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#comparables-header</div>
-      <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['WS']} /></h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['WS']} /></h2>
 
       {/* Highlight Box */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#peer-analysis</div>
@@ -5958,7 +5958,7 @@ const CompsTab = () => {
         </p>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Comparable Analysis" items={[
         { term: 'Peer Selection', def: 'Choose comps based on business model similarity, growth profile, and market positioning. No perfect comps for novel businesses like Circle.' },
         { term: 'P/S (Price/Sales)', def: 'Primary multiple for high-growth, pre-profit companies. Compare Circle to fintech and payments peers.' },

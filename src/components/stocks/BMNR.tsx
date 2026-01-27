@@ -2647,7 +2647,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </div>
 
       {/* Summary Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-metrics</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#capital-metrics</div>
       <div className="g4">
         <Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="violet" updateSource="SEC" />
         <Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="blue" updateSource="SEC" />
@@ -2949,7 +2949,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#comparables-header</div>
-      <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#peer-comparison</div>
       <div className="highlight">
         <h3>Peer Comparison</h3>
@@ -3182,7 +3182,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
         </p>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Comparable Analysis" items={[
         { term: 'Relative Valuation', def: 'Benchmarks BMNR against peers. If MSTR trades at 2x NAV and BMNR at 1.2x, is BMNR undervalued or MSTR overvalued? Context matters.' },
         { term: 'Crypto/Share', def: 'Fundamental backing metric. Higher = more crypto per share of ownership. Affected by dilution and accumulation.' },

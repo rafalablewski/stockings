@@ -9031,7 +9031,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#comparables-header</div>
-      <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
 
       {/* Valuation Comparables Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-comparables</div>
@@ -9539,7 +9539,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Competitive Analysis" items={[
         { term: 'No Direct Comps', def: 'ASTS is unique — space-based D2C cellular. Starlink (D2C satellite) and telcos (terrestrial) are imperfect proxies.' },
         { term: 'Competitive Moat', def: 'Track competitor progress to assess durability of ASTS technology lead. 4+ year head start but competitors catching up.' },
