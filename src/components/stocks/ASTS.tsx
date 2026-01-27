@@ -1980,7 +1980,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-strategy</div>
       <div className="highlight">
         <h3>Share Classes, Offerings & Dilution</h3>
         <p style={{ fontSize: 13, color: 'var(--text2)' }}>
@@ -1991,7 +1993,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </div>
 
       {/* Summary Cards */}
-      <div className="card" style={{ marginTop: 32 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#capital-metrics</div>
+      <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g4">
           <Card label="Class A Shares" value={`${shareClasses[0].shares}M`} sub="Public float" color="sky" />
@@ -2002,7 +2005,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </div>
 
       {/* Navigation Cards */}
-      <div className="g5" style={{ marginTop: 24 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 24 }}>#capital-navigation</div>
+      <div className="g5">
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Strategic + founder' },
@@ -2029,7 +2033,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       
       {/* Share Structure View */}
       {capitalView === 'structure' && (
-      <div className="card" style={{ marginTop: 32 }}>
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#share-classes</div>
+      <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Class Structure (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
@@ -2124,11 +2130,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           </div>
         </div>
       </div>
+      </>
       )}
-      
+
       {/* Major Shareholders View */}
       {capitalView === 'shareholders' && (
-      <div className="card" style={{ marginTop: 32 }}>
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#major-shareholders</div>
+      <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Major Shareholders (Known from SEC Filings)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
@@ -2160,11 +2169,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           Data from 13F (institutional) and DEF 14A (insiders). Strategic shares based on converts and PIPE disclosures.
         </div>
       </div>
+      </>
       )}
-      
+
       {/* Equity Offerings View */}
       {capitalView === 'offerings' && (
-      <div className="card" style={{ marginTop: 32 }}>
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#equity-offerings</div>
+      <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Offerings Timeline<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
@@ -2199,11 +2211,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           Equity + Convertibles + ATM programs. Fully funded for 100+ satellite constellation.
         </div>
       </div>
+      </>
       )}
-      
+
       {/* SBC View */}
       {capitalView === 'incentives' && (
-      <div className="card" style={{ marginTop: 32 }}>
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#equity-plans</div>
+      <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Stock-Based Compensation (SBC)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
@@ -2257,11 +2272,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           SBC consists of RSUs and stock options. Included in GAAP OpEx but excluded from Adjusted OpEx.
         </div>
       </div>
+      </>
       )}
-      
+
       {/* Dilution History View */}
       {capitalView === 'dilution' && (
-      <div className="card" style={{ marginTop: 32 }}>
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#dilution-analysis</div>
+      <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Count Evolution<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
@@ -2349,8 +2367,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           </div>
         </div>
       </div>
+      </>
       )}
-      
+
       <CFANotes title="CFA Level III — Capital Structure" items={[
         { term: 'Share Class Structure', def: 'Class A (public, 1 vote), Class B (insiders, 1 vote), Class C (founder, 10 votes). Dual/triple class gives founders control.' },
         { term: 'Voting vs Economic Rights', def: 'Abel Avellan\'s Class C shares give ~73% voting control despite ~22% economic ownership.' },

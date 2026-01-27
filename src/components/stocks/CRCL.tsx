@@ -4229,9 +4229,11 @@ function CRCLModel() {
 
           {activeTab === 'capital' && (
             <>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-header</div>
               <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
-              
+
               {/* Highlight Box */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-strategy</div>
               <div className="highlight">
                 <h3>Dual-Class Structure</h3>
                 <p className="text-sm">
@@ -4240,8 +4242,9 @@ function CRCLModel() {
                   30% aggregate and sunsets in June 2030 or upon CEO departure.
                 </p>
               </div>
-              
+
               {/* Key Metrics */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-metrics</div>
               <div className="g4">
                 <Card label="Shares Outstanding" value={`${MARKET.shares.toFixed(1)}M`} sub="All classes" color="mint" />
                 <Card label="Market Cap" value={`$${(MARKET.marketCap / 1e9).toFixed(1)}B`} sub="Current valuation" color="blue" />
@@ -4250,7 +4253,8 @@ function CRCLModel() {
               </div>
 
               {/* Navigation Cards */}
-              <div className="g5" style={{ marginTop: 24 }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 24 }}>#capital-navigation</div>
+              <div className="g5">
                 {[
                   { id: 'structure', value: `${SHARE_CLASSES.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
                   { id: 'shareholders', value: `${MAJOR_SHAREHOLDERS.length}`, label: 'Major Holders', sub: 'Insiders + institutions' },
@@ -4277,7 +4281,9 @@ function CRCLModel() {
 
               {/* Share Class Structure */}
               {capitalView === 'structure' && (
-              <div className="card" style={{ marginTop: 32 }}>
+              <>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#share-classes</div>
+              <div className="card">
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Class Structure<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
@@ -4302,11 +4308,14 @@ function CRCLModel() {
                   </tbody>
                 </table>
               </div>
+              </>
               )}
 
               {/* Major Shareholders */}
               {capitalView === 'shareholders' && (
-              <div className="card" style={{ marginTop: 32 }}>
+              <>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#major-shareholders</div>
+              <div className="card">
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Major Shareholders (from Aug 2025 S-1)<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
@@ -4334,12 +4343,14 @@ function CRCLModel() {
                   Note: Class B voting capped at 30% aggregate. Founder shares sunset June 2030 or upon Allaire departure from CEO/Chair.
                 </div>
               </div>
+              </>
               )}
 
               {/* Offerings View: Equity Offerings + Equity Awards + Warrants */}
               {capitalView === 'offerings' && (
               <>
-              <div className="g2" style={{ marginTop: 32 }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#equity-offerings</div>
+              <div className="g2">
                 {/* Equity Offerings */}
                 <div className="card">
                   <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Offerings<UpdateIndicators sources="SEC" /></div>
@@ -4457,7 +4468,8 @@ function CRCLModel() {
               {/* Plans View: Equity Incentive Plans + Pre-IPO Preferred */}
               {capitalView === 'plans' && (
               <>
-              <div className="card" style={{ marginTop: 32 }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#equity-plans</div>
+              <div className="card">
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Incentive Plans (Reserved Shares)<UpdateIndicators sources="SEC" /></div>
                 <div className="g3">
                   {EQUITY_PLANS.map((p, i) => (
@@ -4511,7 +4523,9 @@ function CRCLModel() {
 
               {/* Dilution View */}
               {capitalView === 'dilution' && (
-              <div className="card" style={{ marginTop: 32 }}>
+              <>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#dilution-analysis</div>
+              <div className="card">
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Fully Diluted Share Count<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
@@ -4563,6 +4577,7 @@ function CRCLModel() {
                   Note: Excludes 33.9M shares reserved under Omnibus/ESPP plans not yet granted. Lock-up: ~198M shares restricted until Q3'25 earnings or 180 days post-IPO.
                 </div>
               </div>
+              </>
               )}
 
               <CFANotes title="CFA Level III — Capital Structure" items={[

@@ -2632,9 +2632,11 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
 
       {/* Highlight Box */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-strategy</div>
       <div className="highlight">
         <h3>ETH Treasury Capital Strategy</h3>
         <p className="text-sm">
@@ -2645,6 +2647,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </div>
 
       {/* Summary Cards */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-metrics</div>
       <div className="g4">
         <Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="violet" updateSource="SEC" />
         <Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="blue" updateSource="SEC" />
@@ -2653,7 +2656,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </div>
 
       {/* Navigation Cards */}
-      <div className="g5" style={{ marginTop: 24 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 24 }}>#capital-navigation</div>
+      <div className="g5">
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Common + converted preferred' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Bill Miller + institutions' },
@@ -2680,7 +2684,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Share Class Structure View */}
       {capitalView === 'structure' && (
-      <div className="card" style={{ marginTop: 32 }}>
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#share-classes</div>
+      <div className="card">
         <div className="card-title">Share Class Structure</div>
         <table className="tbl">
           <thead>
@@ -2708,11 +2714,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           Par value: $0.0001. Preferred shares converted to common. NYSE American: BMNR.
         </div>
       </div>
+      </>
       )}
 
       {/* Major Shareholders View */}
       {capitalView === 'shareholders' && (
-      <div className="card" style={{ marginTop: 32 }}>
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#major-shareholders</div>
+      <div className="card">
         <div className="card-title">Major Shareholders</div>
         <table className="tbl">
           <thead>
@@ -2740,12 +2749,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           Update from 13F (institutional) and DEF 14A (insiders) when available.
         </div>
       </div>
+      </>
       )}
 
       {/* Offerings View */}
       {capitalView === 'offerings' && (
       <>
-      <div className="card" style={{ marginTop: 32 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#equity-offerings</div>
+      <div className="card">
         <div className="card-title">Equity Offerings</div>
         <table className="tbl">
           <thead>
@@ -2807,7 +2818,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Plans View */}
       {capitalView === 'plans' && (
-      <div className="card" style={{ marginTop: 32 }}>
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#equity-plans</div>
+      <div className="card">
         <div className="card-title">Equity Incentive Plans</div>
         <table className="tbl">
           <thead>
@@ -2834,11 +2847,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           Data pending from 10-K or DEF 14A proxy filing.
         </div>
       </div>
+      </>
       )}
 
       {/* Dilution View */}
       {capitalView === 'dilution' && (
-      <div className="card" style={{ marginTop: 32 }}>
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#dilution-analysis</div>
+      <div className="card">
         <div className="card-title">Fully Diluted Share Count</div>
         <table className="tbl">
           <thead>
@@ -2886,6 +2902,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           Dilution impact: +{dilutionPct.toFixed(1)}% if all securities exercised.
         </div>
       </div>
+      </>
       )}
 
       <CFANotes title="CFA Level III — Capital Structure" items={[
