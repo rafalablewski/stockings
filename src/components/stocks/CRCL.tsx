@@ -4757,9 +4757,9 @@ function CRCLModel() {
                             padding: '12px 16px',
                             borderRadius: 8,
                             textAlign: 'left',
-                            border: `2px solid ${isActive ? 'var(--mint)' : 'transparent'}`,
-                            background: isActive ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
-                            color: isActive ? 'var(--mint)' : 'var(--text)',
+                            border: `2px solid ${isActive ? 'var(--accent)' : 'transparent'}`,
+                            background: isActive ? 'var(--accent-dim)' : 'var(--surface2)',
+                            color: isActive ? 'var(--accent)' : 'var(--text)',
                             cursor: 'pointer',
                             transition: 'all 0.15s'
                           }}
@@ -4788,9 +4788,9 @@ function CRCLModel() {
                             flex: 1,
                             padding: '12px 20px',
                             borderRadius: 8,
-                            border: mcYears === yr ? '2px solid var(--mint)' : '2px solid transparent',
-                            background: mcYears === yr ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
-                            color: mcYears === yr ? 'var(--mint)' : 'var(--text2)',
+                            border: mcYears === yr ? '2px solid var(--accent)' : '2px solid transparent',
+                            background: mcYears === yr ? 'var(--accent-dim)' : 'var(--surface2)',
+                            color: mcYears === yr ? 'var(--accent)' : 'var(--text2)',
                             cursor: 'pointer',
                             fontWeight: mcYears === yr ? 700 : 400,
                             fontFamily: 'Space Mono',
@@ -4814,9 +4814,9 @@ function CRCLModel() {
                             flex: 1,
                             padding: '12px 16px',
                             borderRadius: 8,
-                            border: mcSims === simCount ? '2px solid var(--mint)' : '2px solid transparent',
-                            background: mcSims === simCount ? 'rgba(52,211,153,0.15)' : 'var(--surface2)',
-                            color: mcSims === simCount ? 'var(--mint)' : 'var(--text2)',
+                            border: mcSims === simCount ? '2px solid var(--accent)' : '2px solid transparent',
+                            background: mcSims === simCount ? 'var(--accent-dim)' : 'var(--surface2)',
+                            color: mcSims === simCount ? 'var(--accent)' : 'var(--text2)',
                             cursor: 'pointer',
                             fontWeight: mcSims === simCount ? 700 : 400,
                             fontFamily: 'Space Mono',
@@ -4835,7 +4835,7 @@ function CRCLModel() {
               {/* Parameters - Model Tab Style */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
-                <h3 style={{ color: 'var(--mint)', marginBottom: 8, marginTop: 0 }}>USDC Growth Parameters</h3>
+                <h3 style={{ color: 'var(--accent)', marginBottom: 8, marginTop: 0 }}>USDC Growth Parameters</h3>
                 <div className="g2" style={{ marginTop: 0 }}>
                   <div className="card" style={{ marginTop: 0 }}>
                     <div className="card-title">Revenue Growth Min (%)</div>
@@ -5091,7 +5091,7 @@ function CRCLModel() {
 
                 {/* Run Button */}
                 <button onClick={() => setRunKey(k => k + 1)} style={{
-                  marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--mint)', color: 'var(--bg1)',
+                  marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
                   border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
                 }}>🎲 Run Simulation</button>
               </div>
@@ -5110,10 +5110,10 @@ function CRCLModel() {
                     <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${mcSim.p25.toFixed(0)}</div>
                     <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((mcSim.p25 / MARKET.price - 1) * 100).toFixed(0)}%</div>
                   </div>
-                  <div style={{ padding: 14, borderRadius: 12, background: 'rgba(52,211,153,0.2)', border: '1px solid rgba(52,211,153,0.4)', textAlign: 'center' }}>
-                    <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>Median</div>
-                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${mcSim.p50.toFixed(0)}</div>
-                    <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((mcSim.p50 / MARKET.price - 1) * 100).toFixed(0)}%</div>
+                  <div style={{ padding: 14, borderRadius: 12, background: 'var(--accent-dim)', border: '1px solid var(--accent)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: 'var(--accent)', marginBottom: 4, opacity: 0.8 }}>Median</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--accent)' }}>${mcSim.p50.toFixed(0)}</div>
+                    <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 4, opacity: 0.8 }}>{((mcSim.p50 / MARKET.price - 1) * 100).toFixed(0)}%</div>
                   </div>
                   <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
                     <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
@@ -5158,7 +5158,7 @@ function CRCLModel() {
                         formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
                         labelFormatter={(v) => `$${v.toFixed(0)}`}
                       />
-                      <Bar dataKey="pct" fill="var(--mint)" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
                       <ReferenceLine x={MARKET.price} stroke="#fff" strokeDasharray="5 5" />
                     </BarChart>
                   </ResponsiveContainer>

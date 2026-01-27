@@ -3383,9 +3383,9 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                   padding: '12px 16px',
                   borderRadius: 8,
                   textAlign: 'left',
-                  border: `2px solid ${activePreset === key ? 'var(--cyan)' : 'transparent'}`,
-                  background: activePreset === key ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-                  color: activePreset === key ? 'var(--cyan)' : 'var(--text)',
+                  border: `2px solid ${activePreset === key ? 'var(--accent)' : 'transparent'}`,
+                  background: activePreset === key ? 'var(--accent-dim)' : 'var(--surface2)',
+                  color: activePreset === key ? 'var(--accent)' : 'var(--text)',
                   cursor: 'pointer',
                   transition: 'all 0.15s'
                 }}
@@ -3413,9 +3413,9 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                     flex: 1,
                     padding: '12px 20px',
                     borderRadius: 8,
-                    border: years === yr ? '2px solid var(--cyan)' : '2px solid transparent',
-                    background: years === yr ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-                    color: years === yr ? 'var(--cyan)' : 'var(--text2)',
+                    border: years === yr ? '2px solid var(--accent)' : '2px solid transparent',
+                    background: years === yr ? 'var(--accent-dim)' : 'var(--surface2)',
+                    color: years === yr ? 'var(--accent)' : 'var(--text2)',
                     cursor: 'pointer',
                     fontWeight: years === yr ? 700 : 400,
                     fontFamily: 'Space Mono',
@@ -3439,9 +3439,9 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                     flex: 1,
                     padding: '12px 16px',
                     borderRadius: 8,
-                    border: sims === simCount ? '2px solid var(--cyan)' : '2px solid transparent',
-                    background: sims === simCount ? 'rgba(34,211,238,0.15)' : 'var(--surface2)',
-                    color: sims === simCount ? 'var(--cyan)' : 'var(--text2)',
+                    border: sims === simCount ? '2px solid var(--accent)' : '2px solid transparent',
+                    background: sims === simCount ? 'var(--accent-dim)' : 'var(--surface2)',
+                    color: sims === simCount ? 'var(--accent)' : 'var(--text2)',
                     cursor: 'pointer',
                     fontWeight: sims === simCount ? 700 : 400,
                     fontFamily: 'Space Mono',
@@ -3460,7 +3460,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Parameters - Model Tab Style */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
-        <h3 style={{ color: 'var(--cyan)', marginBottom: 8, marginTop: 0 }}>Revenue Model</h3>
+        <h3 style={{ color: 'var(--accent)', marginBottom: 8, marginTop: 0 }}>Revenue Model</h3>
         <div className="g2" style={{ marginTop: 0 }}>
           <div className="card" style={{ marginTop: 0 }}>
             <div className="card-title">Base Revenue ($B)</div>
@@ -3677,7 +3677,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
         {/* Run Button */}
         <button onClick={() => setRunKey(k => k + 1)} style={{
-          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--cyan)', color: 'var(--bg1)',
+          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
           border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
         }}>🎲 Run Simulation</button>
       </div>
@@ -3696,10 +3696,10 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
             <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${sim.p25.toFixed(0)}</div>
             <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((sim.p25 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
           </div>
-          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,211,238,0.2)', border: '1px solid rgba(34,211,238,0.4)', textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#67e8f9', marginBottom: 4 }}>Median</div>
-            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#22d3ee' }}>${sim.p50.toFixed(0)}</div>
-            <div style={{ fontSize: 11, color: '#67e8f9', marginTop: 4 }}>{((sim.p50 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'var(--accent-dim)', border: '1px solid var(--accent)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: 'var(--accent)', marginBottom: 4, opacity: 0.8 }}>Median</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--accent)' }}>${sim.p50.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 4, opacity: 0.8 }}>{((sim.p50 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
           </div>
           <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
             <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
@@ -3744,7 +3744,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
                 labelFormatter={(v) => `$${v.toFixed(0)}`}
               />
-              <Bar dataKey="pct" fill="var(--cyan)" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
               <ReferenceLine x={currentStockPrice} stroke="#fff" strokeDasharray="5 5" />
             </BarChart>
           </ResponsiveContainer>

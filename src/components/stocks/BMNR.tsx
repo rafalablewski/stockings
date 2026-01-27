@@ -3499,9 +3499,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                   padding: '12px 16px',
                   borderRadius: 8,
                   textAlign: 'left',
-                  border: `2px solid ${activePreset === key ? 'var(--violet)' : 'transparent'}`,
-                  background: activePreset === key ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
-                  color: activePreset === key ? 'var(--violet)' : 'var(--text)',
+                  border: `2px solid ${activePreset === key ? 'var(--accent)' : 'transparent'}`,
+                  background: activePreset === key ? 'var(--accent-dim)' : 'var(--surface2)',
+                  color: activePreset === key ? 'var(--accent)' : 'var(--text)',
                   cursor: 'pointer',
                   transition: 'all 0.15s'
                 }}
@@ -3529,9 +3529,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                     flex: 1,
                     padding: '12px 20px',
                     borderRadius: 8,
-                    border: years === yr ? '2px solid var(--violet)' : '2px solid transparent',
-                    background: years === yr ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
-                    color: years === yr ? 'var(--violet)' : 'var(--text2)',
+                    border: years === yr ? '2px solid var(--accent)' : '2px solid transparent',
+                    background: years === yr ? 'var(--accent-dim)' : 'var(--surface2)',
+                    color: years === yr ? 'var(--accent)' : 'var(--text2)',
                     cursor: 'pointer',
                     fontWeight: years === yr ? 700 : 400,
                     fontFamily: 'Space Mono',
@@ -3555,9 +3555,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                     flex: 1,
                     padding: '12px 16px',
                     borderRadius: 8,
-                    border: sims === simCount ? '2px solid var(--violet)' : '2px solid transparent',
-                    background: sims === simCount ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
-                    color: sims === simCount ? 'var(--violet)' : 'var(--text2)',
+                    border: sims === simCount ? '2px solid var(--accent)' : '2px solid transparent',
+                    background: sims === simCount ? 'var(--accent-dim)' : 'var(--surface2)',
+                    color: sims === simCount ? 'var(--accent)' : 'var(--text2)',
                     cursor: 'pointer',
                     fontWeight: sims === simCount ? 700 : 400,
                     fontFamily: 'Space Mono',
@@ -3576,7 +3576,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       {/* Parameters - Model Tab Style */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
-        <h3 style={{ color: 'var(--violet)', marginBottom: 8, marginTop: 0 }}>GBM Parameters</h3>
+        <h3 style={{ color: 'var(--accent)', marginBottom: 8, marginTop: 0 }}>GBM Parameters</h3>
         <div className="g2" style={{ marginTop: 0 }}>
           <div className="card" style={{ marginTop: 0 }}>
             <div className="card-title">ETH Drift (%)</div>
@@ -3702,12 +3702,12 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
         {/* Current NAV Info */}
         <div style={{ marginTop: 12, padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 12, color: 'var(--text3)' }}>
-          Current NAV: <strong style={{ color: 'var(--violet)' }}>${currentNAV.toFixed(0)}</strong> | Adjustments: +{stakingYield.toFixed(1)}% yield, -{slashingRisk}% slash, -{liquidityDiscount + regulatoryRisk}% disc
+          Current NAV: <strong style={{ color: 'var(--accent)' }}>${currentNAV.toFixed(0)}</strong> | Adjustments: +{stakingYield.toFixed(1)}% yield, -{slashingRisk}% slash, -{liquidityDiscount + regulatoryRisk}% disc
         </div>
 
         {/* Run Button */}
         <button onClick={() => setRunKey(k => k + 1)} style={{
-          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--violet)', color: 'var(--bg1)',
+          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
           border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
         }}>🎲 Run Simulation</button>
       </div>
@@ -3726,10 +3726,10 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
             <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${sim.p25.toFixed(0)}</div>
             <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((sim.p25 / currentNAV - 1) * 100).toFixed(0)}%</div>
           </div>
-          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.4)', textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#c4b5fd', marginBottom: 4 }}>Median</div>
-            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#a78bfa' }}>${sim.p50.toFixed(0)}</div>
-            <div style={{ fontSize: 11, color: '#c4b5fd', marginTop: 4 }}>{((sim.p50 / currentNAV - 1) * 100).toFixed(0)}%</div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'var(--accent-dim)', border: '1px solid var(--accent)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: 'var(--accent)', marginBottom: 4, opacity: 0.8 }}>Median</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--accent)' }}>${sim.p50.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 4, opacity: 0.8 }}>{((sim.p50 / currentNAV - 1) * 100).toFixed(0)}%</div>
           </div>
           <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
             <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
@@ -3774,7 +3774,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
                 labelFormatter={(v) => `$${v.toFixed(0)}`}
               />
-              <Bar dataKey="pct" fill="var(--violet)" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
               <ReferenceLine x={currentNAV} stroke="#fff" strokeDasharray="5 5" />
             </BarChart>
           </ResponsiveContainer>
