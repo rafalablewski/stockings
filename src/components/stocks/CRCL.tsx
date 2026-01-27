@@ -4580,6 +4580,7 @@ function CRCLModel() {
               </>
               )}
 
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — Capital Structure" items={[
                 { term: 'Share Classes', def: 'Class A (1 vote), Class B (5 votes). Dual-class structure gives founders control. Class B converts to A on transfer.' },
                 { term: 'Convertible Notes', def: 'Debt that converts to equity at holder option. Creates potential dilution. Track conversion price vs stock price.' },

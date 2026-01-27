@@ -2370,6 +2370,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </>
       )}
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Capital Structure" items={[
         { term: 'Share Class Structure', def: 'Class A (public, 1 vote), Class B (insiders, 1 vote), Class C (founder, 10 votes). Dual/triple class gives founders control.' },
         { term: 'Voting vs Economic Rights', def: 'Abel Avellan\'s Class C shares give ~73% voting control despite ~22% economic ownership.' },

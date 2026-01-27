@@ -2905,6 +2905,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </>
       )}
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Capital Structure" items={[
         { term: 'Share Classes', def: 'Common stock trades on NYSE American. Preferred shares (Series A/B) have been converted. Authorized shares cap total issuance capacity.' },
         { term: 'Fully Diluted Shares', def: 'Includes all potential shares: common + warrants + options + RSUs. Used for calculating true per-share ownership.' },
