@@ -5543,8 +5543,8 @@ const CompsTab = () => {
   const currentPeers = PEER_GROUPS[selectedPeerGroup as keyof typeof PEER_GROUPS];
 
   return (
-    <>
-      <h2 className="section-head">Comparable Companies Analysis<UpdateIndicators sources="MARKET" /></h2>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <h2 className="section-head">Comparable Companies Analysis<UpdateIndicators sources={['MARKET']} /></h2>
 
       {/* Highlight Box */}
       <div className="highlight">
@@ -5711,7 +5711,7 @@ const CompsTab = () => {
                 label={{ value: 'P/S Multiple', angle: -90, position: 'insideLeft', fill: 'var(--text3)', fontSize: 12 }}
               />
               <RechartsTooltip
-                contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8 }}
+                contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
                 formatter={(value: any, name: string) => [name === 'x' ? `${value}%` : `${value}x`, name === 'x' ? 'Growth' : 'P/S']}
                 labelFormatter={(label) => SCATTER_DATA.find(d => d.x === label)?.name || ''}
               />
@@ -5803,9 +5803,12 @@ const CompsTab = () => {
                   </td>
                   <td className="r">{t.value ? `$${t.value}B` : '—'}</td>
                   <td><span style={{
-                    fontSize: 11,
-                    padding: '2px 6px',
+                    fontSize: 10,
+                    padding: '3px 8px',
                     borderRadius: 4,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    fontWeight: 600,
                     background: t.type === 'M&A' ? 'var(--mint-dim)' : t.type === 'Funding' ? 'var(--sky-dim)' : 'var(--gold-dim)',
                     color: t.type === 'M&A' ? 'var(--mint)' : t.type === 'Funding' ? 'var(--sky)' : 'var(--gold)'
                   }}>{t.type}</span></td>
@@ -5865,7 +5868,7 @@ const CompsTab = () => {
               <XAxis dataKey="month" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
               <YAxis stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} domain={[0, 16]} />
               <RechartsTooltip
-                contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8 }}
+                contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
                 formatter={(value: any) => [`${value}x`, '']}
               />
               <Line type="monotone" dataKey="crcl" stroke="var(--accent)" strokeWidth={3} dot={{ fill: 'var(--accent)', r: 4 }} name="Circle" />
@@ -5913,7 +5916,7 @@ const CompsTab = () => {
         { term: 'Sum-of-Parts (SOTP)', def: 'Value each business segment separately and sum. Useful for conglomerates or platform businesses with distinct units.' },
         { term: 'Relative Valuation Caveats', def: 'Market may misprice entire sector. Use comps for context but anchor to intrinsic value (DCF).' },
       ]} />
-    </>
+    </div>
   );
 };
 

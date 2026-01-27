@@ -8228,13 +8228,29 @@ const CompsTab = ({ calc, currentStockPrice }) => {
   // ═══════════════════════════════════════════════════════════════════════════
   // VALUATION COMPARABLES - Market metrics comparison
   // ═══════════════════════════════════════════════════════════════════════════
+  const [selectedCompCategory, setSelectedCompCategory] = useState<string>('all');
+
   const comps = [
-    { name: 'ASTS', mc: calc.marketCap, evRev: calc.evToRevFwd, pSub: calc.pricePerSub, subs: calc.potentialSubs },
-    { name: 'Starlink', mc: 175000, evRev: 17, pSub: 43750, subs: 4 },
-    { name: 'Verizon', mc: 175000, evRev: 1.3, pSub: 1520, subs: 115 },
-    { name: 'T-Mobile', mc: 280000, evRev: 3.4, pSub: 2240, subs: 125 },
-    { name: 'AT&T', mc: 165000, evRev: 1.3, pSub: 1500, subs: 110 }
+    { name: 'ASTS SpaceMobile', ticker: 'ASTS', category: 'd2d', mc: calc.marketCap, evRev: calc.evToRevFwd, pSub: calc.pricePerSub, subs: calc.potentialSubs, highlight: true },
+    { name: 'Starlink', ticker: 'Private', category: 'd2c', mc: 175000, evRev: 17, pSub: 43750, subs: 4 },
+    { name: 'Iridium', ticker: 'IRDM', category: 'satcom', mc: 6500, evRev: 3.5, pSub: 3095, subs: 2.1 },
+    { name: 'Globalstar', ticker: 'GSAT', category: 'satcom', mc: 3500, evRev: 4.2, pSub: 2333, subs: 1.5 },
+    { name: 'Verizon', ticker: 'VZ', category: 'telco', mc: 175000, evRev: 1.3, pSub: 1520, subs: 115 },
+    { name: 'T-Mobile', ticker: 'TMUS', category: 'telco', mc: 280000, evRev: 3.4, pSub: 2240, subs: 125 },
+    { name: 'AT&T', ticker: 'T', category: 'telco', mc: 165000, evRev: 1.3, pSub: 1500, subs: 110 },
   ];
+
+  const compCategories = [
+    { key: 'all', label: 'All Peers' },
+    { key: 'd2d', label: 'D2D Satellite' },
+    { key: 'd2c', label: 'D2C Satellite' },
+    { key: 'satcom', label: 'SatCom' },
+    { key: 'telco', label: 'Terrestrial Telco' },
+  ];
+
+  const filteredComps = selectedCompCategory === 'all'
+    ? comps
+    : comps.filter(c => c.category === selectedCompCategory || c.highlight);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // COMPETITOR PROFILES - D2D/Satellite competitors to track
@@ -8999,8 +9015,22 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       {/* Valuation Comparables Section */}
       <div className="highlight"><h3>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
 
+      {/* Peer Group Selector */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+        {compCategories.map(cat => (
+          <button
+            key={cat.key}
+            onClick={() => setSelectedCompCategory(cat.key)}
+            className={`filter-btn ${selectedCompCategory === cat.key ? 'active' : ''}`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
       <div className="card">
         <div className="card-title">Market Comparison<UpdateIndicators sources="WS" /></div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ASTS vs satellite and telco peers — unique D2D positioning between Starlink premium and telco value</p>
         <table className="tbl">
           <thead>
             <tr>
@@ -9012,9 +9042,12 @@ const CompsTab = ({ calc, currentStockPrice }) => {
             </tr>
           </thead>
           <tbody>
-            {comps.map(c => (
-              <tr key={c.name} style={c.name === 'ASTS' ? { background: 'var(--accent-dim)' } : undefined}>
-                <td>{c.name}</td>
+            {filteredComps.map(c => (
+              <tr key={c.ticker} style={c.highlight ? { background: 'var(--accent-dim)' } : undefined}>
+                <td>
+                  <div style={{ fontWeight: c.highlight ? 700 : 500 }}>{c.name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.ticker}</div>
+                </td>
                 <td className="r">${(c.mc / 1000).toFixed(0)}B</td>
                 <td className="r">{c.evRev.toFixed(1)}x</td>
                 <td className="r">${c.pSub.toLocaleString()}</td>
@@ -9029,13 +9062,13 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         <div className="card">
           <div className="card-title">EV/Rev Comparison</div>
           <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={comps} layout="vertical">
+            <BarChart data={filteredComps} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis type="number" stroke="var(--text3)" />
-              <YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
+              <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+              <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+              <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
               <Bar dataKey="evRev" fill="var(--accent)">
-                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? 'var(--accent)' : 'var(--text3)'} />))}
+                {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--accent)' : 'var(--text3)'} />))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -9043,13 +9076,13 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         <div className="card">
           <div className="card-title">$/Subscriber Comparison</div>
           <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={comps} layout="vertical">
+            <BarChart data={filteredComps} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis type="number" stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-              <YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
+              <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+              <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+              <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
               <Bar dataKey="pSub" fill="var(--violet)">
-                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? 'var(--violet)' : 'var(--text3)'} />))}
+                {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--violet)' : 'var(--text3)'} />))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>

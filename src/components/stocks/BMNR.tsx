@@ -2902,7 +2902,32 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 // COMPS TAB
 const CompsTab = ({ comparables, ethPrice }) => {
   const btcPrice = 100000;
-  const compsData = comparables.map(c => { const cryptoPrice = c.crypto === 'BTC' ? btcPrice : ethPrice; const navPerShare = (c.holdings * cryptoPrice) / c.shares; return { ...c, navPerShare, premium: ((c.price / navPerShare) - 1) * 100, marketCap: c.price * c.shares }; });
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  const compsData = comparables.map(c => {
+    // Handle mixed holdings (COIN has string)
+    const cryptoPrice = c.crypto === 'BTC' ? btcPrice : ethPrice;
+    const numericHoldings = typeof c.holdings === 'number' ? c.holdings : 0;
+    const navPerShare = numericHoldings > 0 ? (numericHoldings * cryptoPrice) / c.shares : 0;
+    return {
+      ...c,
+      navPerShare,
+      premium: navPerShare > 0 ? ((c.price / navPerShare) - 1) * 100 : 0,
+      marketCap: c.price * c.shares
+    };
+  });
+
+  const categories = [
+    { key: 'all', label: 'All Peers' },
+    { key: 'ETH', label: 'ETH Treasury' },
+    { key: 'BTC', label: 'BTC Treasury' },
+    { key: 'Exchange', label: 'Exchanges' },
+  ];
+
+  const filteredComps = selectedCategory === 'all'
+    ? compsData
+    : compsData.filter(c => c.category === selectedCategory);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Comparables<UpdateIndicators sources={['PR', 'WS']} /></h2>
@@ -2910,8 +2935,23 @@ const CompsTab = ({ comparables, ethPrice }) => {
         <h3>Peer Comparison</h3>
         <p>Compare BMNR to other crypto treasury companies. Key differentiator: ETH staking yield vs BTC's 0%.</p>
       </div>
+
+      {/* Peer Group Selector */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+        {categories.map(cat => (
+          <button
+            key={cat.key}
+            onClick={() => setSelectedCategory(cat.key)}
+            className={`filter-btn ${selectedCategory === cat.key ? 'active' : ''}`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
       <div className="card">
-        <div className="card-title">Comparison Table</div>
+        <div className="card-title">Crypto Treasury Comparison</div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>NAV premium/discount analysis — BMNR's ETH staking yield vs BTC treasuries' 0%</p>
         <table className="tbl">
           <thead>
             <tr>
@@ -2926,14 +2966,17 @@ const CompsTab = ({ comparables, ethPrice }) => {
             </tr>
           </thead>
           <tbody>
-            {compsData.map(c => (
+            {filteredComps.map(c => (
               <tr key={c.name} style={c.name === 'BMNR' ? { background: 'var(--accent-dim)' } : undefined}>
-                <td style={{ fontWeight: 500 }}>{c.name}</td>
+                <td>
+                  <div style={{ fontWeight: c.name === 'BMNR' ? 700 : 500 }}>{c.fullName || c.name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.name}</div>
+                </td>
                 <td className="c">{c.crypto}</td>
-                <td className="r">{c.holdings.toLocaleString()}</td>
-                <td className="r">${c.navPerShare.toFixed(2)}</td>
+                <td className="r">{typeof c.holdings === 'number' ? c.holdings.toLocaleString() : c.holdings}</td>
+                <td className="r">{c.navPerShare > 0 ? `$${c.navPerShare.toFixed(2)}` : '—'}</td>
                 <td className="r">${c.price}</td>
-                <td className="r" style={{ fontWeight: 500, color: c.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{c.premium >= 0 ? '+' : ''}{c.premium.toFixed(0)}%</td>
+                <td className="r" style={{ fontWeight: 500, color: c.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{c.navPerShare > 0 ? `${c.premium >= 0 ? '+' : ''}${c.premium.toFixed(0)}%` : '—'}</td>
                 <td className="r">{c.yield > 0 ? <span className="mint">{c.yield}%</span> : '—'}</td>
                 <td className="r">${(c.marketCap / 1e9).toFixed(1)}B</td>
               </tr>
@@ -2943,9 +2986,12 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </div>
       <div className="card">
         <div className="card-title">Yield Advantage</div>
-        <div style={{ textAlign: 'center', padding: '32px 0' }}>
-          <div style={{ fontSize: 48, fontWeight: 700, color: 'var(--mint)' }}>+{comparables[0].yield}%</div>
-          <div style={{ fontSize: 16, color: 'var(--text3)', marginTop: 8 }}>Annual staking yield vs BTC (0%)</div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ETH staking generates yield vs BTC's 0% — structural advantage</p>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className="big-stat">
+            <div className="num mint">+{comparables[0].yield}%</div>
+            <div className="lbl">Annual staking yield vs BTC (0%)</div>
+          </div>
         </div>
       </div>
 
