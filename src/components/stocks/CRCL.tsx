@@ -1300,7 +1300,7 @@ const CRCLModelTab = ({
           </p>
         </div>
 
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#scenario-presets</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#scenario-presets</div>
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
         <div className="card">
           <div className="card-title">Scenario Presets</div>
