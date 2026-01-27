@@ -1539,8 +1539,8 @@ const ModelTab = ({
 
         {/* DCF VALUATION OUTPUT */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
-        <div className="card" style={{ border: '2px solid var(--cyan)', background: 'linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0.02) 100%)' }}>
-          <div className="card-title" style={{ color: 'var(--cyan)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
+        <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
+          <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
 
           {/* Primary metrics */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
@@ -1653,7 +1653,7 @@ const ModelTab = ({
               </div>
             </div>
 
-            <div style={{ marginTop: 12, padding: 10, background: 'rgba(34,211,238,0.1)', borderRadius: 6, fontSize: 11 }}>
+            <div style={{ marginTop: 12, padding: 10, background: 'var(--accent-dim)', borderRadius: 6, fontSize: 11 }}>
               <strong>Key Assumptions:</strong> Terminal year is {new Date().getFullYear() + 5} (5 years out).
               Discount rate captures ALL risk in one number (no separate risk factors to avoid double-counting).
               Staking yield compounds ETH holdings; operating costs reduce effective yield.
