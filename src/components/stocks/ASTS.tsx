@@ -3371,10 +3371,10 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
-        <h2 className="section-head" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+        <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       </div>
 
       {/* Highlight Box */}
