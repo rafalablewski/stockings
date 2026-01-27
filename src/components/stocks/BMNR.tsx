@@ -1685,7 +1685,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
     <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
-      <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--violet)' }}>BMNR:</strong> ETH treasury company accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
+      <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>BMNR:</strong> ETH treasury company accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
@@ -1723,7 +1723,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         {holdingsData.map((d, i) => (
           <div key={i} className="bar-col">
             <div className="bar-val">{d.display}</div>
-            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--violet)' }} />
+            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--accent)' }} />
             <div className="bar-label">{d.label}</div>
           </div>
         ))}

@@ -2824,7 +2824,7 @@ function CRCLModel() {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
               <div className="highlight">
                 <h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
-                <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--mint)' }}>Circle:</strong> Building financial infrastructure for the internet economy. USDC enables 24/7 global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of traditional finance and blockchain technology.</p>
+                <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>Circle:</strong> Building financial infrastructure for the internet economy. USDC enables 24/7 global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of traditional finance and blockchain technology.</p>
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
@@ -2866,7 +2866,7 @@ function CRCLModel() {
                     return DATA.map((d, i) => (
                       <div key={i} className="bar-col">
                         <div className="bar-val">${d.totalRevenue}M</div>
-                        <div className="bar" style={{ height: `${maxRevenue > 0 ? (d.totalRevenue / maxRevenue) * 150 : 0}px`, background: 'var(--mint)' }} />
+                        <div className="bar" style={{ height: `${maxRevenue > 0 ? (d.totalRevenue / maxRevenue) * 150 : 0}px`, background: 'var(--accent)' }} />
                         <div className="bar-label">{d.quarter}</div>
                       </div>
                     ));
