@@ -540,7 +540,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
     alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
-    background: highlight ? 'var(--cyan-dim)' : 'transparent',
+    background: highlight ? 'var(--accent-dim)' : 'transparent',
     paddingLeft: highlight ? '12px' : 0,
     paddingRight: highlight ? '12px' : 0,
     marginLeft: highlight ? '-12px' : 0,
@@ -551,7 +551,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
       {label}
       <UpdateIndicators sources={updateSource} />
     </span>
-    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--cyan)' : 'var(--text)' }}>{value}</span>
+    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--accent)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
 Row.displayName = 'Row';
@@ -1012,9 +1012,9 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
               style={{
                 padding: '6px 12px',
                 borderRadius: 6,
-                border: chartType === btn.id ? '1px solid var(--cyan)' : '1px solid var(--border)',
-                background: chartType === btn.id ? 'rgba(34,211,238,0.1)' : 'transparent',
-                color: chartType === btn.id ? 'var(--cyan)' : 'var(--text2)',
+                border: chartType === btn.id ? '1px solid var(--accent)' : '1px solid var(--border)',
+                background: chartType === btn.id ? 'var(--accent-dim)' : 'transparent',
+                color: chartType === btn.id ? 'var(--accent)' : 'var(--text2)',
                 fontSize: 12,
                 cursor: 'pointer',
               }}
@@ -1028,7 +1028,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         {chartData.map((d, i) => (
           <div key={i} className="bar-col">
             <div className="bar-val">{d.display}</div>
-            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--cyan)' }} />
+            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--accent)' }} />
             <div className="bar-label">{d.label}</div>
           </div>
         ))}

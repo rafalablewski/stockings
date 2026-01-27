@@ -336,7 +336,7 @@ class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, ErrorBou
             style={{
               marginTop: '20px',
               padding: '12px 24px',
-              background: '#10B981',
+              background: '#34d399',
               color: '#05070A',
               border: 'none',
               borderRadius: '8px',
@@ -730,7 +730,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
     alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
-    background: highlight ? 'var(--cyan-dim)' : 'transparent',
+    background: highlight ? 'var(--accent-dim)' : 'transparent',
     paddingLeft: highlight ? '12px' : 0,
     paddingRight: highlight ? '12px' : 0,
     marginLeft: highlight ? '-12px' : 0,
@@ -741,7 +741,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
       {label}
       <UpdateIndicators sources={updateSource} />
     </span>
-    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--cyan)' : 'var(--text)' }}>{value}</span>
+    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--accent)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
 Row.displayName = 'Row';
@@ -778,6 +778,14 @@ const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) 
   );
 });
 Card.displayName = 'Card';
+
+const Panel = React.memo<PanelProps>(({ title, children }) => (
+  <div className="card">
+    {title && <div className="card-title">{title}</div>}
+    {children}
+  </div>
+));
+Panel.displayName = 'Panel';
 
 // Input Component for adjustable parameters
 const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, max }) => (
@@ -2711,22 +2719,22 @@ function CRCLModel() {
               <h1>Circle Internet Group</h1>
               <div className="ticker">◉ NYSE: CRCL</div>
               {/* H4: Data Freshness Timestamp */}
-              <div style={{ 
-                display: 'inline-flex', 
-                alignItems: 'center', 
-                gap: 6, 
-                background: 'rgba(126,231,135,0.1)', 
-                border: '1px solid rgba(126,231,135,0.3)', 
-                borderRadius: 6, 
-                padding: '4px 10px', 
-                fontSize: 11, 
-                color: '#7EE787',
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'rgba(52,211,153,0.1)',
+                border: '1px solid rgba(52,211,153,0.3)',
+                borderRadius: 6,
+                padding: '4px 10px',
+                fontSize: 11,
+                color: '#34d399',
                 marginTop: 8,
                 marginBottom: 16
               }}>
                 <span>📅</span>
                 <span>Data as of: {MODEL_METADATA.priceAsOf}</span>
-                <span style={{ color: 'rgba(126,231,135,0.5)' }}>|</span>
+                <span style={{ color: 'rgba(52,211,153,0.5)' }}>|</span>
                 <span>Source: {MODEL_METADATA.dataSource}</span>
               </div>
               <p className="desc">

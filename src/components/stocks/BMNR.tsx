@@ -614,7 +614,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
     alignItems: 'center',
     padding: '12px 0',
     borderBottom: '1px solid var(--border)',
-    background: highlight ? 'var(--cyan-dim)' : 'transparent',
+    background: highlight ? 'var(--accent-dim)' : 'transparent',
     paddingLeft: highlight ? '12px' : 0,
     paddingRight: highlight ? '12px' : 0,
     marginLeft: highlight ? '-12px' : 0,
@@ -625,7 +625,7 @@ const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSourc
       {label}
       <UpdateIndicators sources={updateSource} />
     </span>
-    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--cyan)' : 'var(--text)' }}>{value}</span>
+    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--accent)' : 'var(--text)' }}>{value}</span>
   </div>
 ));
 Row.displayName = 'Row';
