@@ -2930,7 +2930,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Comparables<UpdateIndicators sources={['PR', 'WS']} /></h2>
+      <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#peer-comparison</div>
       <div className="highlight">
         <h3>Peer Comparison</h3>
         <p>Compare BMNR to other crypto treasury companies. Key differentiator: ETH staking yield vs BTC's 0%.</p>
@@ -2998,7 +2999,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </div>
 
       {/* Advanced Valuation Matrices */}
-      <div className="highlight" style={{ marginTop: 24 }}><h3>📈 Valuation Framework</h3><p>NAV-based valuation for crypto treasury companies. Premium/discount analysis vs peers.</p></div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-framework</div>
+      <div className="highlight"><h3>📈 Valuation Framework</h3><p>NAV-based valuation for crypto treasury companies. Premium/discount analysis vs peers.</p></div>
 
       {/* Valuation Methodology Matrix */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
@@ -3142,11 +3144,13 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </div>
 
       {/* Competitor Intelligence Placeholder */}
-      <div className="highlight" style={{ marginTop: 24 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-intelligence</div>
+      <div className="highlight">
         <h3>📰 Competitor Intelligence</h3>
         <p>Track competitor developments to assess BMNR competitive position in the crypto treasury space.</p>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-placeholder</div>
       <div className="card" style={{ padding: 32, textAlign: 'center' }}>
         <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>🔜</div>
         <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)', marginBottom: 8 }}>Competitor Intelligence Coming Soon</div>
@@ -3159,6 +3163,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
         </p>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Comparable Analysis" items={[
         { term: 'Relative Valuation', def: 'Benchmarks BMNR against peers. If MSTR trades at 2x NAV and BMNR at 1.2x, is BMNR undervalued or MSTR overvalued? Context matters.' },
         { term: 'Crypto/Share', def: 'Fundamental backing metric. Higher = more crypto per share of ownership. Affected by dilution and accumulation.' },

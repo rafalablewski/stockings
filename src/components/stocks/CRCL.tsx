@@ -5544,9 +5544,10 @@ const CompsTab = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head">Comparable Companies Analysis<UpdateIndicators sources={['MARKET']} /></h2>
+      <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['WS']} /></h2>
 
       {/* Highlight Box */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#peer-analysis</div>
       <div className="highlight">
         <h3>Peer Analysis Framework</h3>
         <p>
@@ -5921,11 +5922,13 @@ const CompsTab = () => {
       </div>
 
       {/* Competitor Intelligence Placeholder */}
-      <div className="highlight" style={{ marginTop: 24 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-intelligence</div>
+      <div className="highlight">
         <h3>📰 Competitor Intelligence</h3>
         <p>Track competitor developments to assess Circle's competitive position in stablecoins and digital payments.</p>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-placeholder</div>
       <div className="card" style={{ padding: 32, textAlign: 'center' }}>
         <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>🔜</div>
         <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)', marginBottom: 8 }}>Competitor Intelligence Coming Soon</div>
@@ -5938,6 +5941,7 @@ const CompsTab = () => {
         </p>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Comparable Analysis" items={[
         { term: 'Peer Selection', def: 'Choose comps based on business model similarity, growth profile, and market positioning. No perfect comps for novel businesses like Circle.' },
         { term: 'P/S (Price/Sales)', def: 'Primary multiple for high-growth, pre-profit companies. Compare Circle to fintech and payments peers.' },

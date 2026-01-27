@@ -9013,6 +9013,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       <h2 className="section-head">Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
 
       {/* Valuation Comparables Section */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-comparables</div>
       <div className="highlight"><h3>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
 
       {/* Peer Group Selector */}
@@ -9097,7 +9098,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Advanced Valuation Matrices */}
-      <div className="highlight" style={{ marginTop: 24 }}><h3>📈 Valuation Framework</h3><p>Multiple methodologies for a pre-revenue, high-growth space company. TAM-based and comparable approaches.</p></div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-framework</div>
+      <div className="highlight"><h3>📈 Valuation Framework</h3><p>Multiple methodologies for a pre-revenue, high-growth space company. TAM-based and comparable approaches.</p></div>
 
       {/* Valuation Methodology Matrix */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
@@ -9223,8 +9225,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* D2D Competitor Capability Matrix */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-capabilities</div>
       <div className="highlight"><h3>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capability-comparison</div>
       <div className="card">
         <div className="card-title">Capability Comparison<UpdateIndicators sources="PR" /></div>
         <table className="tbl">
@@ -9270,12 +9274,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor News Intelligence Section */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-news</div>
       <div className="highlight">
         <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
         <p>Track competitor developments to assess ASTS competitive position</p>
       </div>
 
       {/* Filter Bar */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-filter</div>
       <div className="card" style={{ padding: '12px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
@@ -9473,6 +9479,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor Profiles (Collapsible) */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-profiles</div>
       <div className="card">
         <div className="card-title">📋 Competitor Profiles</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -9511,6 +9518,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Competitive Analysis" items={[
         { term: 'No Direct Comps', def: 'ASTS is unique — space-based D2C cellular. Starlink (D2C satellite) and telcos (terrestrial) are imperfect proxies.' },
         { term: 'Competitive Moat', def: 'Track competitor progress to assess durability of ASTS technology lead. 4+ year head start but competitors catching up.' },
