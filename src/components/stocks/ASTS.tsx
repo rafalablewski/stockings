@@ -9034,8 +9034,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <XAxis type="number" stroke="var(--text3)" />
               <YAxis dataKey="name" type="category" stroke="var(--text3)" width={60} />
               <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
-              <Bar dataKey="evRev" fill="var(--cyan)">
-                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? 'var(--cyan)' : 'var(--text3)'} />))}
+              <Bar dataKey="evRev" fill="var(--accent)">
+                {comps.map((e, i) => (<Cell key={i} fill={e.name === 'ASTS' ? 'var(--accent)' : 'var(--text3)'} />))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -9240,7 +9240,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                           width: 24,
                           height: 24,
                           borderRadius: 6,
-                          background: isExpanded ? 'var(--cyan)' : 'var(--surface3)',
+                          background: isExpanded ? 'var(--accent)' : 'var(--surface3)',
                           color: isExpanded ? 'var(--bg)' : 'var(--text3)',
                           display: 'flex',
                           alignItems: 'center',
@@ -9260,14 +9260,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                               <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
                                 {news.details.map((d, i) => (
                                   <li key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, fontSize: 13, color: 'var(--text2)' }}>
-                                    <span style={{ color: 'var(--cyan)' }}>•</span>
+                                    <span style={{ color: 'var(--accent)' }}>•</span>
                                     {d}
                                   </li>
                                 ))}
                               </ul>
                               {news.astsComparison && (
-                                <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--cyan-dim)', borderRadius: 6, borderLeft: '3px solid var(--cyan)' }}>
-                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--cyan)', marginBottom: 4 }}>
+                                <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--accent-dim)', borderRadius: 6, borderLeft: '3px solid var(--accent)' }}>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent)', marginBottom: 4 }}>
                                     ASTS Comparison
                                   </div>
                                   <div style={{ fontSize: 13, color: 'var(--text)' }}>{news.astsComparison}</div>
@@ -9286,7 +9286,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                                   <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Source</div>
                                   <div style={{ fontSize: 11 }}>
                                     {news.sourceUrl ? (
-                                      <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--cyan)' }}>
+                                      <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
                                         {news.source} ↗
                                       </a>
                                     ) : news.source}
