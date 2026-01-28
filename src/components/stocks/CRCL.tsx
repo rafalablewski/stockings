@@ -4342,11 +4342,14 @@ function CRCLModel() {
 
               {/* Key Metrics */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#capital-metrics</div>
-              <div className="g4">
-                <Card label="Shares Outstanding" value={`${MARKET.shares.toFixed(1)}M`} sub="All classes" color="mint" />
-                <Card label="Market Cap" value={`$${(MARKET.marketCap / 1e9).toFixed(1)}B`} sub="Current valuation" color="blue" />
-                <Card label="Cash Position" value="$1.1B" sub="Sep 2024" color="green" />
-                <Card label="Convertible Debt" value="$206M" sub="Fair value" color="yellow" />
+              <div className="card">
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['SEC', 'MARKET']} /></div>
+                <div className="g4">
+                  <Card label="Shares Outstanding" value={`${MARKET.shares.toFixed(1)}M`} sub="All classes" color="mint" />
+                  <Card label="Market Cap" value={`$${(MARKET.marketCap / 1e9).toFixed(1)}B`} sub="Current valuation" color="blue" />
+                  <Card label="Cash Position" value="$1.1B" sub="Sep 2024" color="green" />
+                  <Card label="Convertible Debt" value="$206M" sub="Fair value" color="yellow" />
+                </div>
               </div>
 
               {/* Navigation Cards */}
