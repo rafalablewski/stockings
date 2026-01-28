@@ -2141,7 +2141,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             </div>
 
             {/* Financial Projections Table */}
-            <div className="card" style={{ marginTop: 24 }}>
+            <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
               <div className="card-title">Financial Projections — {selected.name} Scenario</div>
             <div style={{ overflowX: 'auto' }}>
               <table className="tbl">
@@ -2345,7 +2345,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* Comparison Table */}
-      <div className="card" style={{ marginTop: 24 }}>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
         <div className="card-title">All Scenarios — {targetYear} Comparison</div>
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
@@ -2416,7 +2416,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* Key Insights */}
-      <div className="card" style={{ marginTop: 24 }}><div className="card-title">Key Insights</div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title">Key Insights</div>
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div className="bg-slate-900/50 rounded-lg p-4">
             <h4 className="font-semibold text-violet-400 mb-2">Leverage Effect</h4>
@@ -2438,7 +2438,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* METHODOLOGY & ASSUMPTIONS */}
-      <div className="card" style={{ marginTop: 24 }}>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
         <div className="card-title">Methodology & Assumptions</div>
         <div className="g2">
           <div>
@@ -2839,7 +2839,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </table>
       </div>
 
-      <div className="card" style={{ marginTop: 24 }}>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
         <div className="card-title">Warrants Outstanding</div>
         <table className="tbl">
           <thead>
@@ -3776,7 +3776,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       {/* Scenario Presets */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
-        <div className="card" style={{ marginTop: 0 }}>
+        <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
           <div className="card-title">Select Scenario</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {Object.entries(presets).map(([key, p]) => (
@@ -3806,7 +3806,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
         <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">Time Horizon</div>
             <div style={{ display: 'flex', gap: 8 }}>
               {[3, 5, 7].map(yr => (
@@ -3832,7 +3832,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
               ))}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">Simulations</div>
             <div style={{ display: 'flex', gap: 8 }}>
               {[1000, 2000, 5000].map(simCount => (
@@ -3866,7 +3866,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
         <h3 style={{ color: 'var(--accent)', marginBottom: 8, marginTop: 0 }}>GBM Parameters</h3>
         <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">ETH Drift (%)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               Expected annual ETH price appreciation. Negative = bear, positive = bull.
@@ -3895,7 +3895,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">ETH Volatility (%)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               Annual volatility. Crypto typically 50-80%. Higher = wider outcomes.
@@ -3928,7 +3928,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
         <h3 style={{ color: 'var(--mint)', marginTop: 16, marginBottom: 8 }}>NAV Multiple Dynamics</h3>
         <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">Multiple Volatility (%)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               How much the NAV multiple (mNAV) varies. Higher = more premium/discount swings.
@@ -3957,7 +3957,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">ETH-Multiple Correlation</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               How NAV multiple moves with ETH. Higher = more correlated swings.
@@ -4083,7 +4083,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       {/* Distribution Chart */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
-        <div className="card" style={{ marginTop: 0 }}>
+        <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
           <div className="card-title">Fair Value Distribution</div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={sim.histogram}>
@@ -4652,7 +4652,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
   // Collapsible section component
   const CollapsibleSection = ({ id, title, children, showIndicators = true }) => (
-    <div className="card" style={{ marginBottom: 16 }}>
+    <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
       <div
         onClick={() => toggleSection(id)}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -4690,7 +4690,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </div>
 
       {/* Rating Header */}
-      <div className="card" style={{ borderLeft: '4px solid var(--mint)', marginBottom: 24 }}>
+      <div className="card" style={{ borderLeft: '4px solid var(--mint)', marginTop: 0, marginBottom: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
@@ -8271,7 +8271,7 @@ const TimelineTab = () => {
 
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#sec-filings</div>
-      <div className="card" style={{ marginBottom: 0 }}>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
         
         {/* Filter Buttons */}

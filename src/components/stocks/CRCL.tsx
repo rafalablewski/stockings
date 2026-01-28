@@ -1756,7 +1756,7 @@ const ScenariosTab = () => {
             </div>
 
             {/* Financial Projections Table */}
-            <div className="card" style={{ marginTop: 24 }}>
+            <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
               <div className="card-title">Financial Projections — {selected.name} Scenario</div>
               <div style={{ overflowX: 'auto' }}>
                 <table className="tbl">
@@ -2021,7 +2021,7 @@ const ScenariosTab = () => {
       </div>
 
       {/* All Scenarios Comparison */}
-      <div className="card" style={{ marginTop: 24 }}>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
         <div className="card-title">All Scenarios — {targetYear} Comparison</div>
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
@@ -2093,7 +2093,7 @@ const ScenariosTab = () => {
       </div>
 
       {/* Key Insights */}
-      <div className="card" style={{ marginTop: 24 }}><div className="card-title">Key Insights</div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title">Key Insights</div>
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div className="bg-slate-900/50 rounded-lg p-4">
             <h4 className="font-semibold text-mint-400 mb-2">Interest Rate Sensitivity</h4>
@@ -2115,7 +2115,7 @@ const ScenariosTab = () => {
       </div>
 
       {/* Methodology & Assumptions */}
-      <div className="card" style={{ marginTop: 24 }}>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
         <div className="card-title">Methodology & Assumptions</div>
         <div className="g2">
           <div>
@@ -3262,7 +3262,7 @@ function CRCLModel() {
               </div>
 
               {/* Sticky Header */}
-                  <div className="card" style={{ borderLeft: '4px solid var(--mint)', marginBottom: 24 }}>
+                  <div className="card" style={{ borderLeft: '4px solid var(--mint)', marginTop: 0, marginBottom: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
@@ -3311,7 +3311,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Investment Scorecard - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('scorecard')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -3351,7 +3351,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Executive Summary - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('summary')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -3391,7 +3391,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Financial Health - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('financial')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -3454,7 +3454,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Unit Economics - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('unit-economics')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -3516,7 +3516,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Growth Drivers - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('growth')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -3598,7 +3598,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Valuation Framework - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('valuation')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -3658,7 +3658,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Rate Sensitivity Calculator - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('sensitivity')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -3798,7 +3798,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Competitive Moat - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('moat')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -3859,7 +3859,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Risk Matrix - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('risks')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -3901,7 +3901,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Catalyst Calendar - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('catalysts')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -3952,7 +3952,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Position Management - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('position')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -4007,7 +4007,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Analysis Archive - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('archive')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -4064,7 +4064,7 @@ function CRCLModel() {
                   </div>
 
                   {/* Risks & Strategic Assessment - Collapsible */}
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div 
                       onClick={() => toggleInvestmentSection('strategic-assessment')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -4307,7 +4307,7 @@ function CRCLModel() {
                 <Card label="On Platform" value={`${latest.platformPct.toFixed(1)}%`} sub="Higher margin" color="purple" />
               </div>
 
-              <div className="card" style={{ marginTop: 32 }}>
+              <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Circulation Growth<UpdateIndicators sources="SEC" /></div>
                 <div className="bars">
                   {DATA.map((d, i) => (
@@ -4577,7 +4577,7 @@ function CRCLModel() {
               </div>
 
               {/* Warrants */}
-              <div className="card" style={{ marginTop: 24 }}>
+              <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Outstanding Warrants (Black-Scholes Valuation)<UpdateIndicators sources="SEC" /></div>
                 <table className="tbl">
                   <thead>
@@ -4764,7 +4764,7 @@ function CRCLModel() {
               {/* Scenario Presets */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
-                <div className="card" style={{ marginTop: 0 }}>
+                <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                   <div className="card-title">Select Scenario</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
                     {(['bear', 'base', 'bull', 'custom'] as const).map(key => {
@@ -4798,7 +4798,7 @@ function CRCLModel() {
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
                 <div className="g2" style={{ marginTop: 0 }}>
-                  <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div className="card-title">Time Horizon</div>
                     <div style={{ display: 'flex', gap: 8 }}>
                       {[3, 5, 7].map(yr => (
@@ -4824,7 +4824,7 @@ function CRCLModel() {
                       ))}
                     </div>
                   </div>
-                  <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div className="card-title">Simulations</div>
                     <div style={{ display: 'flex', gap: 8 }}>
                       {[1000, 2000, 5000].map(simCount => (
@@ -4858,7 +4858,7 @@ function CRCLModel() {
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
                 <h3 style={{ color: 'var(--accent)', marginBottom: 8, marginTop: 0 }}>USDC Growth Parameters</h3>
                 <div className="g2" style={{ marginTop: 0 }}>
-                  <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div className="card-title">Revenue Growth Min (%)</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
                       Lower bound for annual USDC revenue growth in simulation.
@@ -4888,7 +4888,7 @@ function CRCLModel() {
                       })}
                     </div>
                   </div>
-                  <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div className="card-title">Revenue Growth Max (%)</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
                       Upper bound for annual USDC revenue growth in simulation.
@@ -4922,7 +4922,7 @@ function CRCLModel() {
 
                 <h3 style={{ color: 'var(--gold)', marginTop: 16, marginBottom: 8 }}>Profitability Parameters</h3>
                 <div className="g2" style={{ marginTop: 0 }}>
-                  <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div className="card-title">Margin Min (%)</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
                       Lower bound for EBITDA margin assumption in DCF model.
@@ -4952,7 +4952,7 @@ function CRCLModel() {
                       })}
                     </div>
                   </div>
-                  <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div className="card-title">Margin Max (%)</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
                       Upper bound for EBITDA margin assumption in DCF model.
@@ -4986,7 +4986,7 @@ function CRCLModel() {
 
                 <h3 style={{ color: 'var(--coral)', marginTop: 16, marginBottom: 8 }}>Valuation Parameters</h3>
                 <div className="g2" style={{ marginTop: 0 }}>
-                  <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div className="card-title">Discount Rate Min (%)</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
                       Lower bound for WACC / required return in DCF model.
@@ -5016,7 +5016,7 @@ function CRCLModel() {
                       })}
                     </div>
                   </div>
-                  <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div className="card-title">Discount Rate Max (%)</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
                       Upper bound for WACC / required return in DCF model.
@@ -5048,7 +5048,7 @@ function CRCLModel() {
                   </div>
                 </div>
                 <div className="g2" style={{ marginTop: 0 }}>
-                  <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div className="card-title">Terminal Multiple Min</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
                       Lower bound for exit EV/EBITDA multiple in DCF terminal value.
@@ -5078,7 +5078,7 @@ function CRCLModel() {
                       })}
                     </div>
                   </div>
-                  <div className="card" style={{ marginTop: 0 }}>
+                  <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                     <div className="card-title">Terminal Multiple Max</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
                       Upper bound for exit EV/EBITDA multiple in DCF terminal value.
@@ -5200,7 +5200,7 @@ function CRCLModel() {
               {/* Distribution Chart */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
-                <div className="card" style={{ marginTop: 0 }}>
+                <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                   <div className="card-title">Fair Value Distribution</div>
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={mcSim.histogram}>
@@ -5241,7 +5241,7 @@ function CRCLModel() {
 
               {/* Latest SEC Filings - Enhanced with filtering and pagination */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#sec-filings</div>
-              <div className="card" style={{ marginBottom: 0 }}>
+              <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
                 
                 {/* Filter Buttons */}

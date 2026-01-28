@@ -1134,7 +1134,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Catalyst Tracker<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
         <div>{upcomingCatalysts.map((c, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 8, border: '1px solid', marginBottom: 8, background: c.impact === 'Critical' ? 'rgba(34,211,238,0.15)' : 'var(--surface2)', borderColor: c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)' }}>
             <div><div style={{ fontWeight: 500, color: 'var(--text1)' }}>{c.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.timeline}</div></div>
@@ -1143,7 +1143,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
         ))}</div>
       </div>
       {years.map(year => (
-        <div key={year} className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{year} Completed<UpdateIndicators sources="PR" /></div>
+        <div key={year} className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{year} Completed<UpdateIndicators sources="PR" /></div>
           <div className="g2">{milestonesByYear[year].map((m, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 8, borderRadius: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}>
               <span style={{ color: 'var(--mint)' }}>✓</span><div><div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div></div>
@@ -1190,7 +1190,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
           <p><strong style={{ color: 'var(--mint)' }}>Target:</strong> 45-60 satellites by end of 2026 via SpaceX, Blue Origin, and ISRO. Launch cadence: every 1-2 months.</p>
         </div>
       </div>
-      <div className="card" style={{ marginTop: 32 }}>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Deployment Progress<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g5">
           <Card label="Block 1" value={block1Sats} sub="BW3+BB1-5 (693 sq ft)" color="cyan" />
@@ -1202,7 +1202,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
       </div>
       
       {/* Satellite Generations Comparison */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Satellite Generations<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Satellite Generations<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           <div style={{ padding: 16, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8 }}>
             <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Block 1: BW3 + BB1-5</h4>
@@ -1226,13 +1226,13 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         </div>
       </div>
       
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Launch Schedule (Actual + Projected)<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Launch Schedule (Actual + Projected)<UpdateIndicators sources="PR" /></div>
         <ResponsiveContainer width="100%" height={200}><ComposedChart data={schedule}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={(v, name, props) => [name === 'sats' ? `${v} sats (${props.payload.note})` : `${v} cumulative`, name === 'sats' ? 'Launched' : 'Total']} /><Bar dataKey="sats" fill="var(--cyan)" /><Line dataKey="cum" stroke="var(--gold)" strokeWidth={2} /></ComposedChart></ResponsiveContainer>
         <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
           ✓ BW3 Sept 2022 | ✓ BB1-5 Sept 2024 | ✓ BB6 Dec 2025 | BB7 ready, BB8-25 in production
         </div>
       </div>
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage Milestones<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage Milestones<UpdateIndicators sources={['PR', 'SEC']} /></div>
         {coverage.map(c => (<div key={c.r} style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8 }}><div style={{ width: 144, fontSize: 13, color: 'var(--text2)' }}>{c.r}</div><div style={{ flex: 1, height: 20, background: 'var(--surface2)', borderRadius: 9999, overflow: 'hidden' }}><div style={{ height: '100%', width: `${c.pct}%`, background: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)' }} /></div><div style={{ width: 80, textAlign: 'right', fontSize: 13, color: 'var(--text2)' }}>{c.n} sats ({c.pct.toFixed(0)}%)</div></div>))}
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g4"><Input label="Block 1 (BW3+BB1-5)" value={block1Sats} onChange={setBlock1Sats} /><Input label="Block 2 (BB6+)" value={block2Sats} onChange={setBlock2Sats} /><Input label="Target 2026" value={targetSats2026} onChange={setTargetSats2026} /><Input label="Failure %" value={launchFailureRate} onChange={setLaunchFailureRate} /></div></div>
@@ -1255,7 +1255,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Subscribers<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Subscriber Analysis<UpdateIndicators sources="PR" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
-      <div className="card" style={{ marginTop: 32 }}>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g4">
           <Card label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} sub="53+ MNOs" color="blue" />
@@ -1264,10 +1264,10 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
           <Card label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} color="yellow" />
         </div>
       </div>
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl"><thead><tr><th>Partner</th><th className="r">Reach</th><th className="r">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name}><td>{p.name}</td><td className="r">{p.subs}M</td><td className="r">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
       </div>
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl"><thead><tr><th>Pen%</th><th className="r">Subs</th><th className="r">Rev/yr</th><th className="r">$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={s.p === penetrationRate ? { background: 'var(--accent-dim)' } : undefined}><td>{s.p}%</td><td className="r">{s.subs.toFixed(0)}M</td><td className="r">${s.rev.toFixed(1)}B</td><td className="r">${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g3"><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div></div>
@@ -1290,7 +1290,7 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--border)' }}><div><span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{r.source}</span><span style={{ color: 'var(--text3)', fontSize: 13, marginLeft: 8 }}>{r.description}</span></div><span className="pill" style={{ background: r.status.includes('Active') ? 'rgba(16,185,129,0.15)' : 'var(--surface2)', borderColor: r.status.includes('Active') ? 'var(--mint)' : 'var(--border)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{r.status}</span></div>))}</div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--border)' }}><div><span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{r.source}</span><span style={{ color: 'var(--text3)', fontSize: 13, marginLeft: 8 }}>{r.description}</span></div><span className="pill" style={{ background: r.status.includes('Active') ? 'rgba(16,185,129,0.15)' : 'var(--surface2)', borderColor: r.status.includes('Active') ? 'var(--mint)' : 'var(--border)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{r.status}</span></div>))}</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g4">
@@ -1462,7 +1462,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Key Metrics */}
-      <div className="card" style={{ marginTop: 32 }}>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g5">
           <Card label="Contracted Rev" value="$1B+" sub="Commercial commitments" color="green" />
@@ -1474,7 +1474,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Definitive Agreements - Detailed */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Definitive Commercial Agreements (Binding)<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Definitive Commercial Agreements (Binding)<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>
@@ -1529,7 +1529,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Spectrum Holdings */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -1562,7 +1562,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Partner Spectrum */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Partner Spectrum (Shared Access)<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Partner Spectrum (Shared Access)<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           {partnerSpectrum.map(s => (
             <div key={s.partner} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
@@ -1582,7 +1582,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Government Contracts */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -1609,7 +1609,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Other MNO Partners */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -1635,7 +1635,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Revenue Commitment Summary */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Commitment Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Commitment Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g3">
           <div style={{ padding: 16, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, textAlign: 'center' }}>
             <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--mint)' }}>$1B+</div>
@@ -1703,7 +1703,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 32 }}>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g5">
           <Card label="Q3 GAAP Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} sub="~4Q runway at $300M/Q" color="green" />
@@ -1715,7 +1715,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Q3 2025 Financial Summary */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
           <div>
             <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)', marginBottom: 8 }}>Income Statement</h4>
@@ -1735,7 +1735,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Convertible Debt Summary */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <div style={{ marginBottom: 12, padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>
           <strong style={{ color: 'var(--cyan)' }}>Balance Sheet vs Principal:</strong> Convertible notes are reported at net carrying value (gross less debt discounts and issuance costs).
           The $697.6M on the balance sheet represents this accounting value, while $1.625B is the principal that must eventually be repaid or converted.
@@ -1778,7 +1778,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Cash Projection Chart */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
         <ResponsiveContainer width="100%" height={180}>
           <AreaChart data={proj}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -1794,7 +1794,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Funding Sources */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div style={{ marginBottom: 16, padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
           <p style={{ fontSize: 13, color: 'var(--text3)' }}>
             <strong style={{ color: 'var(--cyan)' }}>Understanding ASTS Financing:</strong> As a pre-revenue company building a global satellite constellation,
@@ -1936,7 +1936,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Dilution Analysis */}
-      <div className="card" style={{ marginTop: 32 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -3445,7 +3445,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Scenario Presets */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
-        <div className="card" style={{ marginTop: 0 }}>
+        <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
           <div className="card-title">Select Scenario</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {Object.entries(presets).filter(([key]) => key !== 'mgmt').map(([key, p]) => (
@@ -3475,7 +3475,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
         <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">Time Horizon</div>
             <div style={{ display: 'flex', gap: 8 }}>
               {[3, 5, 7].map(yr => (
@@ -3501,7 +3501,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               ))}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">Simulations</div>
             <div style={{ display: 'flex', gap: 8 }}>
               {[1000, 2000, 5000].map(simCount => (
@@ -3535,7 +3535,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
         <h3 style={{ color: 'var(--accent)', marginBottom: 8, marginTop: 0 }}>Revenue Model</h3>
         <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">Base Revenue ($B)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               Expected terminal year revenue. Source: DCF model or analyst estimates.
@@ -3564,7 +3564,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">Revenue Volatility (%)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               Log-normal std dev. 35% = outcomes range 0.7x-1.4x base revenue.
@@ -3597,7 +3597,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
         <h3 style={{ color: 'var(--mint)', marginTop: 16, marginBottom: 8 }}>Operating Model</h3>
         <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">EBITDA Margin (%)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               Terminal margin at scale. Satellite/telecom: 40-60%. Operating leverage applies.
@@ -3626,7 +3626,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">EV/EBITDA Multiple</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               Terminal valuation multiple. Growth: 10-15x, Mature telcos: 6-8x.
@@ -3659,7 +3659,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
         <h3 style={{ color: 'var(--coral)', marginTop: 16, marginBottom: 8 }}>Risk Factors</h3>
         <div className="g3" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">Launch Risk (%)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               Prob. of constellation failure. If triggered: -40% revenue.
@@ -3688,7 +3688,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">Regulatory Risk (%)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               Prob. of FCC/spectrum issues. If triggered: -30% revenue.
@@ -3717,7 +3717,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0 }}>
+          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
             <div className="card-title">Discount Rate (%)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               Required return / WACC. Pre-revenue space: 12-18%.
@@ -3838,7 +3838,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Distribution Chart */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
-        <div className="card" style={{ marginTop: 0 }}>
+        <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
           <div className="card-title">Fair Value Distribution</div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={sim.histogram}>
@@ -7954,7 +7954,7 @@ const TimelineTab = () => {
 
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#sec-filings</div>
-      <div className="card" style={{ marginBottom: 0 }}>
+      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
         
         {/* Filter Buttons */}
@@ -9947,7 +9947,7 @@ const InvestmentTab = () => {
 
   // Collapsible section component
   const CollapsibleSection = ({ id, title, children, sources }: { id: string; title: string; children: React.ReactNode; sources?: UpdateSource | UpdateSource[] }) => (
-    <div className="card" style={{ marginBottom: 16 }}>
+    <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
       <div
         onClick={() => toggleSection(id)}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -9990,7 +9990,7 @@ const InvestmentTab = () => {
       </div>
 
       {/* Rating Header */}
-      <div className="card" style={{ borderLeft: '4px solid var(--mint)', marginBottom: 24 }}>
+      <div className="card" style={{ borderLeft: '4px solid var(--mint)', marginTop: 0, marginBottom: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
