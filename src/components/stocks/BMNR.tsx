@@ -5114,7 +5114,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                 <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
                 {quarterlyData.map((q, idx) => (
                   <th key={q.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === quarterlyData.length - 1 ? { background: 'var(--accent-dim)' } : {}) }}>
-                    {q.quarter}
+                    {q.quarter.replace('Q', '').replace(' ', "'")}
                   </th>
                 ))}
               </tr>

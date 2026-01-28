@@ -2348,7 +2348,7 @@ const CRCLQuarterlyMetricsPanel = () => {
                 <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
                 {quarterlyData.map((d, idx) => (
                   <th key={d.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === quarterlyData.length - 1 ? { background: 'var(--accent-dim)' } : {}) }}>
-                    {d.quarter}
+                    {d.quarter.replace('Q', '').replace(' ', "'")}
                   </th>
                 ))}
               </tr>
