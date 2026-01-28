@@ -8669,7 +8669,7 @@ const TimelineTab = () => {
         </div>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Timeline Analysis" items={[
         { term: 'Audit Trail', def: 'Chronological record of all official announcements and filings. Essential for tracking management guidance vs actual results over time.' },
         { term: 'Holdings Updates', def: 'Weekly press releases reporting ETH holdings, staking status, and key metrics. BMNR\'s transparency differentiator vs peers.' },
