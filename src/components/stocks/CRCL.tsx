@@ -4077,7 +4077,7 @@ function CRCLModel() {
                     {investmentSections.has('strategic-assessment') && (
                       <div style={{ }}>
                         {/* Section Header */}
-                        <div style={{ fontSize: 12, color: 'var(--text3)'0, fontStyle: 'italic' }}>
+                        <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>
                           Multi-perspective risk evaluation and strategic decision framework
                         </div>
 

@@ -10128,7 +10128,7 @@ const InvestmentTab = () => {
       {/* Risks & Strategic Assessment */}
       <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment" sources={['PR', 'SEC']}>
         {/* Section Header */}
-        <div style={{ fontSize: 12, color: 'var(--text3)'0, fontStyle: 'italic' }}>
+        <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>
           Multi-perspective risk evaluation and strategic decision framework for space-based cellular infrastructure
         </div>
 

@@ -4852,7 +4852,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       {/* Risks & Strategic Assessment */}
       <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment">
         {/* Section Header */}
-        <div style={{ fontSize: 12, color: 'var(--text3)'0, fontStyle: 'italic' }}>
+        <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>
           Multi-perspective risk evaluation and strategic decision framework for ETH treasury exposure
         </div>
 
@@ -6886,7 +6886,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Hero: BMNR-ETH Correlation */}
       <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(59,130,246,0.15))', borderRadius: 16, padding: 24, border: '1px solid rgba(139,92,246,0.3)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>BMNR ↔ ETH Correlation</h3>
             <p style={{ fontSize: 13, color: 'var(--text3)' }}>BMNR functions as a leveraged ETH proxy — tracking Ethereum ecosystem health is essential</p>
