@@ -409,11 +409,11 @@ class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, ErrorBou
           textAlign: 'center',
           margin: '20px'
         }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
-          <h2 style={{ color: '#FF7B72', marginBottom: '12px', fontFamily: 'Outfit, sans-serif' }}>
+          <div style={{ fontSize: '48px' }}>⚠️</div>
+          <h2 style={{ color: '#FF7B72', fontFamily: 'Outfit, sans-serif' }}>
             Calculation Error
           </h2>
-          <p style={{ color: '#8B949E', marginBottom: '20px', fontFamily: 'Outfit, sans-serif' }}>
+          <p style={{ color: '#8B949E', fontFamily: 'Outfit, sans-serif' }}>
             An error occurred in the financial model. This may be due to invalid input parameters.
           </p>
           <p style={{ color: '#8B949E', fontSize: '14px', fontFamily: 'Space Mono, monospace' }}>
@@ -422,8 +422,7 @@ class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, ErrorBou
           <button
             onClick={() => window.location.reload()}
             style={{
-              marginTop: '20px',
-              padding: '12px 24px',
+                            padding: '12px 24px',
               background: '#22D3EE',
               color: '#05070A',
               border: 'none',
@@ -526,8 +525,8 @@ const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) 
         {label}
         <UpdateIndicators sources={updateSource} />
       </div>
-      <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'Space Mono', monospace", color: c.text, marginTop: '4px' }}>{value}</div>
-      {sub && <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '4px' }}>{sub}</div>}
+      <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'Space Mono', monospace", color: c.text }}>{value}</div>
+      {sub && <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{sub}</div>}
     </div>
   );
 });
@@ -558,7 +557,7 @@ Row.displayName = 'Row';
 
 const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, max }) => (
   <div>
-    <label style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600, marginBottom: '8px' }}>{label}</label>
+    <label style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600 }}>{label}</label>
     <input 
       type="number" 
       value={value} 
@@ -659,8 +658,8 @@ UpdateLegend.displayName = 'UpdateLegend';
 
 // CFA Level III Educational Notes Component - Subtle footer style
 const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
-  <div style={{ marginTop: 32, paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+  <div style={{ paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
       <span style={{ fontSize: 12, opacity: 0.7 }}>📚</span>
       <h4 style={{ margin: 0, fontSize: 11, fontWeight: 500, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
     </div>
@@ -796,8 +795,6 @@ const ASTSAnalysis = () => {
                 padding: '4px 10px', 
                 fontSize: 11, 
                 color: '#22d3ee',
-                marginTop: 8,
-                marginBottom: 16
               }}>
                 <span>📅</span>
                 <span>Data as of: {DATA_FRESHNESS.dataAsOf}</span>
@@ -961,14 +958,14 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
 
   return (
   <div style={{ display: 'flex', flexDirection: 'column' }}>
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#investment-thesis</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-thesis</div>
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#opportunity</div>
     <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
       <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
     <div className="g2">
       <div className="thesis bull">
         <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
@@ -994,10 +991,10 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#chart</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart</div>
     <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
           {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}<UpdateIndicators sources="PR" />
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -1035,7 +1032,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-metrics</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-metrics</div>
     <table className="tbl" style={{ width: '100%' }}>
       <thead>
         <tr>
@@ -1067,25 +1064,25 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         </tr>
       </tbody>
     </table>
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#company-snapshot</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-snapshot</div>
     <div className="card">
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <div className="g3">
-        <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Equity (Q3 2025)</div>
+        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Equity (Q3 2025)</div>
           <Row label="Shares" value={`${currentShares}M`} />
           <Row label="Price" value={`$${currentStockPrice}`} />
           <Row label="Mkt Cap" value={`$${(calc.marketCap / 1000).toFixed(2)}B`} highlight />
           <Row label="Debt" value={`$${totalDebt}M`} />
           <Row label="Cash" value={`$${(cashOnHand / 1000).toFixed(2)}B`} />
         </div>
-        <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Subscribers</div>
+        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Subscribers</div>
           <Row label="MNO Partners" value="53+" />
           <Row label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} highlight />
           <Row label={`@ ${penetrationRate}%`} value={`${calc.potentialSubs.toFixed(0)}M`} />
           <Row label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} />
           <Row label="Contracted" value={`$${contractedRevenue}M+`} />
         </div>
-        <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Constellation</div>
+        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Constellation</div>
           <Row label="Block 1 (BW3+BB1-5)" value={`${block1Sats} in orbit`} />
           <Row label="Block 2 (BB6+)" value={`${block2Sats} launched`} highlight />
           <Row label="Total Constellation" value={`${block1Sats + block2Sats} satellites`} />
@@ -1094,20 +1091,20 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         </div>
       </div>
     </div>
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#parameters</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
     <div className="card"><div className="card-title">Parameters</div>
-      <div className="g4" style={{ marginTop: '16px' }}>
+      <div className="g4" style={{ }}>
         <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
         <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
         <Input label="Cash ($M)" value={cashOnHand} onChange={setCashOnHand} />
         <Input label="Burn ($M/Q)" value={quarterlyBurn} onChange={setQuarterlyBurn} />
       </div>
-      <div style={{ marginTop: '16px' }}>
+      <div style={{ }}>
         <Input label="Debt ($M)" value={totalDebt} onChange={setTotalDebt} />
       </div>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — Space-Based Cellular" items={[
       { term: 'Market Cap', def: 'Stock price × shares outstanding. Current equity value assigned by market. Compare to DCF intrinsic value.' },
       { term: 'Enterprise Value (EV)', def: 'Market Cap + Total Debt - Cash. Represents total firm value to all capital providers. Used in EV/Revenue multiples.' },
@@ -1134,16 +1131,16 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Catalyst Tracker<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
         <div>{upcomingCatalysts.map((c, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 8, border: '1px solid', marginBottom: 8, background: c.impact === 'Critical' ? 'rgba(34,211,238,0.15)' : 'var(--surface2)', borderColor: c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)' }}>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 8, border: '1px solid', background: c.impact === 'Critical' ? 'rgba(34,211,238,0.15)' : 'var(--surface2)', borderColor: c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)' }}>
             <div><div style={{ fontWeight: 500, color: 'var(--text1)' }}>{c.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.timeline}</div></div>
             <span className="pill" style={{ background: c.impact === 'Critical' ? 'var(--cyan)' : 'rgba(234,179,8,0.3)', color: c.impact === 'Critical' ? 'var(--bg1)' : 'var(--gold)', fontSize: 11 }}>{c.impact}</span>
           </div>
         ))}</div>
       </div>
       {years.map(year => (
-        <div key={year} className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{year} Completed<UpdateIndicators sources="PR" /></div>
+        <div key={year} className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{year} Completed<UpdateIndicators sources="PR" /></div>
           <div className="g2">{milestonesByYear[year].map((m, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 8, borderRadius: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}>
               <span style={{ color: 'var(--mint)' }}>✓</span><div><div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div></div>
@@ -1185,12 +1182,12 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Constellation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Constellation Status<UpdateIndicators sources="PR" /></h3>
         <div style={{ fontSize: 13, color: 'var(--text2)' }}>
-          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Block 1 (BW3 + BB1-5):</strong> 6 satellites in orbit. BW3 is the 693 sq ft prototype (Sept 2022). BB1-5 are first-generation commercial satellites (Sept 2024).</p>
-          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--gold)' }}>Block 2 (BB6+):</strong> Next-generation satellites with ~2,400 sq ft arrays (3.5x larger), AST5000 ASIC chips, and 10x capacity. BB6 launched Dec 23, 2025 via ISRO.</p>
+          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Block 1 (BW3 + BB1-5):</strong> 6 satellites in orbit. BW3 is the 693 sq ft prototype (Sept 2022). BB1-5 are first-generation commercial satellites (Sept 2024).</p>
+          <p style={{ }}><strong style={{ color: 'var(--gold)' }}>Block 2 (BB6+):</strong> Next-generation satellites with ~2,400 sq ft arrays (3.5x larger), AST5000 ASIC chips, and 10x capacity. BB6 launched Dec 23, 2025 via ISRO.</p>
           <p><strong style={{ color: 'var(--mint)' }}>Target:</strong> 45-60 satellites by end of 2026 via SpaceX, Blue Origin, and ISRO. Launch cadence: every 1-2 months.</p>
         </div>
       </div>
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+      <div className="card" style={{ }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Deployment Progress<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g5">
           <Card label="Block 1" value={block1Sats} sub="BW3+BB1-5 (693 sq ft)" color="cyan" />
@@ -1202,38 +1199,38 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
       </div>
       
       {/* Satellite Generations Comparison */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Satellite Generations<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Satellite Generations<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           <div style={{ padding: 16, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8 }}>
-            <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Block 1: BW3 + BB1-5</h4>
+            <h4 style={{ color: 'var(--cyan)', fontWeight: 500 }}>Block 1: BW3 + BB1-5</h4>
             <ul style={{ fontSize: 13, color: 'var(--text2)' }}>
-              <li style={{ marginBottom: 4 }}>• Array size: 693 sq ft each</li>
-              <li style={{ marginBottom: 4 }}>• Launched: BW3 Sept 2022, BB1-5 Sept 2024</li>
-              <li style={{ marginBottom: 4 }}>• Status: All 6 operational in orbit</li>
+              <li style={{ }}>• Array size: 693 sq ft each</li>
+              <li style={{ }}>• Launched: BW3 Sept 2022, BB1-5 Sept 2024</li>
+              <li style={{ }}>• Status: All 6 operational in orbit</li>
               <li>• Purpose: Technology validation, early service</li>
             </ul>
           </div>
           <div style={{ padding: 16, background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.3)', borderRadius: 8 }}>
-            <h4 style={{ color: 'var(--gold)', fontWeight: 500, marginBottom: 8 }}>Block 2: BB6 onwards</h4>
+            <h4 style={{ color: 'var(--gold)', fontWeight: 500 }}>Block 2: BB6 onwards</h4>
             <ul style={{ fontSize: 13, color: 'var(--text2)' }}>
-              <li style={{ marginBottom: 4 }}>• Array size: ~2,400 sq ft (3.5x larger)</li>
-              <li style={{ marginBottom: 4 }}>• AST5000 ASIC: Custom silicon, 120 Mbps peak</li>
-              <li style={{ marginBottom: 4 }}>• Capacity: 10x improvement over Block 1</li>
-              <li style={{ marginBottom: 4 }}>• BB6 launched Dec 23, 2025 (ISRO)</li>
+              <li style={{ }}>• Array size: ~2,400 sq ft (3.5x larger)</li>
+              <li style={{ }}>• AST5000 ASIC: Custom silicon, 120 Mbps peak</li>
+              <li style={{ }}>• Capacity: 10x improvement over Block 1</li>
+              <li style={{ }}>• BB6 launched Dec 23, 2025 (ISRO)</li>
               <li>• BB7-25: In production, 6/month by Dec 2025</li>
             </ul>
           </div>
         </div>
       </div>
       
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Launch Schedule (Actual + Projected)<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Launch Schedule (Actual + Projected)<UpdateIndicators sources="PR" /></div>
         <ResponsiveContainer width="100%" height={200}><ComposedChart data={schedule}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={(v, name, props) => [name === 'sats' ? `${v} sats (${props.payload.note})` : `${v} cumulative`, name === 'sats' ? 'Launched' : 'Total']} /><Bar dataKey="sats" fill="var(--cyan)" /><Line dataKey="cum" stroke="var(--gold)" strokeWidth={2} /></ComposedChart></ResponsiveContainer>
-        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
           ✓ BW3 Sept 2022 | ✓ BB1-5 Sept 2024 | ✓ BB6 Dec 2025 | BB7 ready, BB8-25 in production
         </div>
       </div>
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage Milestones<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        {coverage.map(c => (<div key={c.r} style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8 }}><div style={{ width: 144, fontSize: 13, color: 'var(--text2)' }}>{c.r}</div><div style={{ flex: 1, height: 20, background: 'var(--surface2)', borderRadius: 9999, overflow: 'hidden' }}><div style={{ height: '100%', width: `${c.pct}%`, background: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)' }} /></div><div style={{ width: 80, textAlign: 'right', fontSize: 13, color: 'var(--text2)' }}>{c.n} sats ({c.pct.toFixed(0)}%)</div></div>))}
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage Milestones<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        {coverage.map(c => (<div key={c.r} style={{ display: 'flex', alignItems: 'center', gap: 16 }}><div style={{ width: 144, fontSize: 13, color: 'var(--text2)' }}>{c.r}</div><div style={{ flex: 1, height: 20, background: 'var(--surface2)', borderRadius: 9999, overflow: 'hidden' }}><div style={{ height: '100%', width: `${c.pct}%`, background: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)' }} /></div><div style={{ width: 80, textAlign: 'right', fontSize: 13, color: 'var(--text2)' }}>{c.n} sats ({c.pct.toFixed(0)}%)</div></div>))}
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g4"><Input label="Block 1 (BW3+BB1-5)" value={block1Sats} onChange={setBlock1Sats} /><Input label="Block 2 (BB6+)" value={block2Sats} onChange={setBlock2Sats} /><Input label="Target 2026" value={targetSats2026} onChange={setTargetSats2026} /><Input label="Failure %" value={launchFailureRate} onChange={setLaunchFailureRate} /></div></div>
       
@@ -1255,7 +1252,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Subscribers<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Subscriber Analysis<UpdateIndicators sources="PR" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+      <div className="card" style={{ }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g4">
           <Card label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} sub="53+ MNOs" color="blue" />
@@ -1264,10 +1261,10 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
           <Card label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} color="yellow" />
         </div>
       </div>
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl"><thead><tr><th>Partner</th><th className="r">Reach</th><th className="r">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name}><td>{p.name}</td><td className="r">{p.subs}M</td><td className="r">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
       </div>
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl"><thead><tr><th>Pen%</th><th className="r">Subs</th><th className="r">Rev/yr</th><th className="r">$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={s.p === penetrationRate ? { background: 'var(--accent-dim)' } : undefined}><td>{s.p}%</td><td className="r">{s.subs.toFixed(0)}M</td><td className="r">${s.rev.toFixed(1)}B</td><td className="r">${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g3"><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div></div>
@@ -1290,7 +1287,7 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--border)' }}><div><span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{r.source}</span><span style={{ color: 'var(--text3)', fontSize: 13, marginLeft: 8 }}>{r.description}</span></div><span className="pill" style={{ background: r.status.includes('Active') ? 'rgba(16,185,129,0.15)' : 'var(--surface2)', borderColor: r.status.includes('Active') ? 'var(--mint)' : 'var(--border)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{r.status}</span></div>))}</div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--border)' }}><div><span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{r.source}</span><span style={{ color: 'var(--text3)', fontSize: 13, marginLeft: 8 }}>{r.description}</span></div><span className="pill" style={{ background: r.status.includes('Active') ? 'rgba(16,185,129,0.15)' : 'var(--surface2)', borderColor: r.status.includes('Active') ? 'var(--mint)' : 'var(--border)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{r.status}</span></div>))}</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g4">
@@ -1456,13 +1453,13 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Partners<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Partner & Spectrum Intelligence<UpdateIndicators sources="PR" /></h3>
         <div style={{ fontSize: 13, color: 'var(--text2)' }}>
-          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
+          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
           <p><strong style={{ color: 'var(--cyan)' }}>Spectrum:</strong> ~80 MHz owned/controlled in US (45 MHz L-band + 5 MHz + partner spectrum). 60 MHz S-band global ITU priority. 1,150 MHz tunable MNO spectrum globally.</p>
         </div>
       </div>
 
       {/* Key Metrics */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+      <div className="card" style={{ }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g5">
           <Card label="Contracted Rev" value="$1B+" sub="Commercial commitments" color="green" />
@@ -1474,7 +1471,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Definitive Agreements - Detailed */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Definitive Commercial Agreements (Binding)<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Definitive Commercial Agreements (Binding)<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>
@@ -1513,7 +1510,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Contract Details Expansion */}
-      <div className="g2" style={{ marginTop: 32 }}>
+      <div className="g2" style={{ }}>
         {definitiveAgreements.map(p => (
           <div key={p.partner} className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{p.partner} Details<UpdateIndicators sources="PR" /></div>
             <div>
@@ -1522,14 +1519,14 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               <Row label="Spectrum" value={`${p.spectrum} (${p.spectrumType})`} />
               <Row label="Prepayment" value={`$${p.prepayment}M - ${p.prepayStatus}`} highlight />
               <Row label="Revenue Commitment" value={p.revenueCommitment} />
-              <div style={{ marginTop: 8, padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>{p.notes}</div>
+              <div style={{ padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>{p.notes}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Spectrum Holdings */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -1556,33 +1553,33 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             ))}
           </tbody>
         </table>
-        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
           Total owned: 45 MHz L-band (US/Canada) + 60 MHz S-band (global ITU priority). $80M/yr ongoing L-band payments.
         </div>
       </div>
 
       {/* Partner Spectrum */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Partner Spectrum (Shared Access)<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Partner Spectrum (Shared Access)<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           {partnerSpectrum.map(s => (
             <div key={s.partner} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{s.partner}</span>
                 <span className="pill" style={{ fontSize: 11 }}>{s.band}</span>
               </div>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.type} • {s.coverage}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>{s.notes}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>{s.notes}</div>
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 12, padding: 8, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8, fontSize: 11 }}>
+        <div style={{ padding: 8, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8, fontSize: 11 }}>
           <strong style={{ color: 'var(--cyan)' }}>Key Insight:</strong> Combined AT&T + Verizon 850 MHz spectrum enables ~100% continental US geographic coverage.
           Platform tunable across 1,150 MHz of global MNO spectrum.
         </div>
       </div>
 
       {/* Government Contracts */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -1603,13 +1600,13 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             ))}
           </tbody>
         </table>
-        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
           Total disclosed government contracts: $63M+ (plus SHIELD IDIQ). Dual-use model validated. MDA prime contractor status enables future task orders.
         </div>
       </div>
 
       {/* Other MNO Partners */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -1635,22 +1632,22 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Revenue Commitment Summary */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Commitment Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Commitment Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g3">
           <div style={{ padding: 16, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, textAlign: 'center' }}>
             <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--mint)' }}>$1B+</div>
             <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Contracted Revenue</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>Hard commitments, not soft MOUs</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Hard commitments, not soft MOUs</div>
           </div>
           <div style={{ padding: 16, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 12, textAlign: 'center' }}>
             <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--cyan)' }}>${totalPrepay}M</div>
             <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Prepayments</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>stc $175M due YE 2025</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>stc $175M due YE 2025</div>
           </div>
           <div style={{ padding: 16, background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.3)', borderRadius: 12, textAlign: 'center' }}>
             <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--violet)' }}>50/50</div>
             <div style={{ fontSize: 13, color: 'var(--text3)' }}>Revenue Share Model</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 4 }}>MNOs handle billing/support</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>MNOs handle billing/support</div>
           </div>
         </div>
       </div>
@@ -1697,13 +1694,13 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Runway<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Cash Runway — Q3 2025 Actuals<UpdateIndicators sources={['PR', 'SEC']} /></h3>
         <div style={{ fontSize: 13, color: 'var(--text2)' }}>
-          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
-          <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--cyan)' }}>Debt (Balance Sheet):</strong> $697.6M net long-term debt (~$724M gross). Principal outstanding: $1.625B ($50M + $575M + $1B converts).</p>
+          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
+          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Debt (Balance Sheet):</strong> $697.6M net long-term debt (~$724M gross). Principal outstanding: $1.625B ($50M + $575M + $1B converts).</p>
           <p><strong style={{ color: 'var(--cyan)' }}>Q4 Guidance:</strong> CapEx $275-325M, OpEx ~$65M. Satellite cost: $21-23M average.</p>
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+      <div className="card" style={{ }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g5">
           <Card label="Q3 GAAP Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} sub="~4Q runway at $300M/Q" color="green" />
@@ -1715,17 +1712,17 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Q3 2025 Financial Summary */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
           <div>
-            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)', marginBottom: 8 }}>Income Statement</h4>
+            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)' }}>Income Statement</h4>
             <Row label="Q3 Revenue" value={`$${financials.q3Revenue}M`} highlight />
             <Row label="H2 2025 Guidance" value={`$${financials.h2Guidance}M`} />
             <Row label="Q3 Adj. OpEx" value={`$${financials.q3AdjOpex}M`} />
             <Row label="Q4 OpEx Guidance" value={financials.q4OpexGuide} />
           </div>
           <div>
-            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)', marginBottom: 8 }}>Capital</h4>
+            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)' }}>Capital</h4>
             <Row label="Q3 CapEx" value={`$${financials.q3Capex}M`} />
             <Row label="Q4 CapEx Guidance" value={`$${financials.q4CapexGuide}M`} />
             <Row label="Satellite Cost (avg)" value={`$${financials.satCost}M`} highlight />
@@ -1735,8 +1732,8 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       </div>
 
       {/* Convertible Debt Summary */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
-        <div style={{ marginBottom: 12, padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
+        <div style={{ padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>
           <strong style={{ color: 'var(--cyan)' }}>Balance Sheet vs Principal:</strong> Convertible notes are reported at net carrying value (gross less debt discounts and issuance costs).
           The $697.6M on the balance sheet represents this accounting value, while $1.625B is the principal that must eventually be repaid or converted.
         </div>
@@ -1772,13 +1769,13 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>~2.8% blended rate</div>
           </div>
         </div>
-        <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
           Jan 2025: $410M converted to equity (17.3M shares). Oct 2025 raised at best terms in years ($96.30 strike, 2% coupon). Large discount on Oct notes due to favorable conversion terms.
         </div>
       </div>
 
       {/* Cash Projection Chart */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
         <ResponsiveContainer width="100%" height={180}>
           <AreaChart data={proj}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -1788,14 +1785,14 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
             <Area dataKey="cash" stroke="var(--mint)" fill="var(--mint)" fillOpacity={0.3} />
           </AreaChart>
         </ResponsiveContainer>
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>
+        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
           Note: Does not include H2 revenue ($50-75M guidance) or future prepayments (stc $175M due YE 2025).
         </div>
       </div>
 
       {/* Funding Sources */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div style={{ marginBottom: 16, padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
           <p style={{ fontSize: 13, color: 'var(--text3)' }}>
             <strong style={{ color: 'var(--cyan)' }}>Understanding ASTS Financing:</strong> As a pre-revenue company building a global satellite constellation,
             ASTS has used various instruments: SPAC, convertibles, equity offerings, and strategic investments.
@@ -1804,8 +1801,8 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
           </p>
         </div>
 
-        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--gold)', marginBottom: 8 }}>2025 Capital Raises</h4>
-        <table className="tbl" style={{ marginBottom: 16 }}>
+        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--gold)' }}>2025 Capital Raises</h4>
+        <table className="tbl" style={{ }}>
           <thead>
             <tr>
               <th>Source</th>
@@ -1848,8 +1845,8 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
           </tbody>
         </table>
 
-        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--violet)', marginBottom: 8 }}>2024 Capital Raises</h4>
-        <table className="tbl" style={{ marginBottom: 16 }}>
+        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--violet)' }}>2024 Capital Raises</h4>
+        <table className="tbl" style={{ }}>
           <thead>
             <tr>
               <th>Source</th>
@@ -1886,7 +1883,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
           </tbody>
         </table>
 
-        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--sky)', marginBottom: 8 }}>2021-2023 Foundation</h4>
+        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--sky)' }}>2021-2023 Foundation</h4>
         <table className="tbl">
           <thead>
             <tr>
@@ -1924,19 +1921,19 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
           </tbody>
         </table>
         
-        <div style={{ marginTop: 16, padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-          <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--mint)', marginBottom: 8 }}>Debt Resolution Summary</h4>
+        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+          <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--mint)' }}>Debt Resolution Summary</h4>
           <ul style={{ fontSize: 11, color: 'var(--text3)' }}>
-            <li style={{ marginBottom: 4 }}>• <strong>2034 Strategic Converts ($148.5M):</strong> Force-converted to equity Jan 2025 when stock price exceeded trigger. Debt eliminated, 25.8M shares issued.</li>
-            <li style={{ marginBottom: 4 }}>• <strong>Jan 2025 Converts ($460M):</strong> $410M repurchased via equity issuance (arbitrage opportunity). $50M still outstanding as 4.25% notes due 2032.</li>
-            <li style={{ marginBottom: 4 }}>• <strong>Jul/Oct 2025 Converts ($1,575M):</strong> Currently outstanding as debt. Will convert to equity if stock exceeds strike prices ($120.12 / $96.30) or at maturity.</li>
+            <li style={{ }}>• <strong>2034 Strategic Converts ($148.5M):</strong> Force-converted to equity Jan 2025 when stock price exceeded trigger. Debt eliminated, 25.8M shares issued.</li>
+            <li style={{ }}>• <strong>Jan 2025 Converts ($460M):</strong> $410M repurchased via equity issuance (arbitrage opportunity). $50M still outstanding as 4.25% notes due 2032.</li>
+            <li style={{ }}>• <strong>Jul/Oct 2025 Converts ($1,575M):</strong> Currently outstanding as debt. Will convert to equity if stock exceeds strike prices ($120.12 / $96.30) or at maturity.</li>
             <li>• <strong>Atlas/Lone Star Loans:</strong> Partially repaid; minimal remaining balance secured by equipment/real estate.</li>
           </ul>
         </div>
       </div>
 
       {/* Dilution Analysis */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
           <thead>
             <tr>
@@ -1957,7 +1954,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
             ))}
           </tbody>
         </table>
-        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
           Note: Company states fully funded for 100+ satellites. Additional raises unlikely in near term.
         </div>
       </div>
@@ -2002,9 +1999,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-header</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-strategy</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-strategy</div>
       <div className="highlight">
         <h3>Share Classes, Offerings & Dilution</h3>
         <p style={{ fontSize: 13, color: 'var(--text2)' }}>
@@ -2015,7 +2012,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </div>
 
       {/* Summary Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#capital-metrics</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-metrics</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g4">
@@ -2027,7 +2024,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </div>
 
       {/* Navigation Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 24 }}>#capital-navigation</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-navigation</div>
       <div className="g5">
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
@@ -2047,8 +2044,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             }}
           >
             <div style={{ fontSize: 24, fontWeight: 600, color: capitalView === nav.id ? 'var(--sky)' : 'var(--text)' }}>{nav.value}</div>
-            <div style={{ fontSize: 14, fontWeight: 500, marginTop: 4 }}>{nav.label}</div>
-            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>{nav.sub}</div>
+            <div style={{ fontSize: 14, fontWeight: 500 }}>{nav.label}</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)' }}>{nav.sub}</div>
           </div>
         ))}
       </div>
@@ -2056,7 +2053,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Share Structure View */}
       {capitalView === 'structure' && (
       <>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#share-classes</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#share-classes</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Class Structure (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
@@ -2113,16 +2110,16 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </table>
 
         {/* Voting Power Analysis */}
-        <div style={{ marginTop: 16, padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)', marginBottom: 12 }}>Voting Power Analysis</div>
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)' }}>Voting Power Analysis</div>
           <div className="g2">
             <div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 8 }}>ECONOMIC OWNERSHIP</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--text3)' }}>ECONOMIC OWNERSHIP</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
                 <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
                 <span style={{ color: 'var(--sky)' }}>{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
                 <span style={{ color: 'var(--text2)' }}>Class B (Insiders)</span>
                 <span style={{ color: 'var(--violet)' }}>{(11.2 / totalBasic * 100).toFixed(1)}%</span>
               </div>
@@ -2132,12 +2129,12 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               </div>
             </div>
             <div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 8 }}>VOTING POWER (C = 10x)</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--text3)' }}>VOTING POWER (C = 10x)</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
                 <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
                 <span style={{ color: 'var(--sky)' }}>{(shareClasses[0].shares / totalVotingShares * 100).toFixed(1)}%</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
                 <span style={{ color: 'var(--text2)' }}>Class B (Insiders)</span>
                 <span style={{ color: 'var(--violet)' }}>{(11.2 / totalVotingShares * 100).toFixed(1)}%</span>
               </div>
@@ -2147,7 +2144,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               </div>
             </div>
           </div>
-          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)', fontSize: 13, color: 'var(--text3)' }}>
+          <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)', fontSize: 13, color: 'var(--text3)' }}>
             <strong style={{ color: 'var(--gold)' }}>Note:</strong> Abel Avellan maintains ~73% voting control despite ~22% economic ownership via Class C super-voting shares.
           </div>
         </div>
@@ -2158,7 +2155,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Major Shareholders View */}
       {capitalView === 'shareholders' && (
       <>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#major-shareholders</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#major-shareholders</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Major Shareholders (Known from SEC Filings)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
@@ -2187,7 +2184,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ))}
           </tbody>
         </table>
-        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 13, color: 'var(--text3)' }}>
           Data from 13F (institutional) and DEF 14A (insiders). Strategic shares based on converts and PIPE disclosures.
         </div>
       </div>
@@ -2197,7 +2194,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Equity Offerings View */}
       {capitalView === 'offerings' && (
       <>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#equity-offerings</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#equity-offerings</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Offerings Timeline<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
@@ -2229,7 +2226,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             </tr>
           </tbody>
         </table>
-        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 13, color: 'var(--text3)' }}>
           Equity + Convertibles + ATM programs. Fully funded for 100+ satellite constellation.
         </div>
       </div>
@@ -2239,7 +2236,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* SBC View */}
       {capitalView === 'incentives' && (
       <>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#equity-plans</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#equity-plans</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Stock-Based Compensation (SBC)<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
@@ -2264,7 +2261,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </table>
 
         {/* SBC Chart */}
-        <div style={{ marginTop: 16, height: 192 }}>
+        <div style={{ height: 192 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={sbcHistory}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -2277,20 +2274,20 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           </ResponsiveContainer>
         </div>
 
-        <div className="g2" style={{ marginTop: 16 }}>
+        <div className="g2" style={{ }}>
           <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
-            <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 4 }}>2025 YTD SBC</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)' }}>2025 YTD SBC</div>
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>$32.3M</div>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>Q1-Q3 2025</div>
           </div>
           <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
-            <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 4 }}>FY2024 Total SBC</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)' }}>FY2024 Total SBC</div>
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>$31.9M</div>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full year</div>
           </div>
         </div>
 
-        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 13, color: 'var(--text3)' }}>
           SBC consists of RSUs and stock options. Included in GAAP OpEx but excluded from Adjusted OpEx.
         </div>
       </div>
@@ -2300,7 +2297,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Dilution History View */}
       {capitalView === 'dilution' && (
       <>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#dilution-analysis</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-analysis</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Count Evolution<UpdateIndicators sources="SEC" /></div>
         <table className="tbl">
@@ -2327,7 +2324,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </table>
 
         {/* Dilution Chart */}
-        <div style={{ marginTop: 16, height: 256 }}>
+        <div style={{ height: 256 }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={dilutionHistory}>
               <defs>
@@ -2350,7 +2347,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           </ResponsiveContainer>
         </div>
 
-        <div style={{ marginTop: 16, display: 'flex', gap: 16, fontSize: 12 }}>
+        <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 4 }}></div>
             <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
@@ -2362,8 +2359,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
 
         {/* Potential Future Dilution */}
-        <div style={{ marginTop: 16, padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text2)', marginBottom: 12 }}>Potential Future Dilution</div>
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text2)' }}>Potential Future Dilution</div>
           <table className="tbl">
             <tbody>
               <tr>
@@ -2384,7 +2381,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               </tr>
             </tbody>
           </table>
-          <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+          <div style={{ fontSize: 13, color: 'var(--text3)' }}>
             Converts only dilute if stock price exceeds strike prices. Company may repurchase for cash.
           </div>
         </div>
@@ -2392,7 +2389,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </>
       )}
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Capital Structure" items={[
         { term: 'Share Class Structure', def: 'Class A (public, 1 vote), Class B (insiders, 1 vote), Class C (founder, 10 votes). Dual/triple class gives founders control.' },
         { term: 'Voting vs Economic Rights', def: 'Abel Avellan\'s Class C shares give ~73% voting control despite ~22% economic ownership.' },
@@ -2578,7 +2575,7 @@ const ParameterCard = ({
   return (
     <div className="card">
       <div className="card-title">{title}</div>
-      <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+      <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
         {explanation}
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
@@ -2656,7 +2653,7 @@ const ParameterCard = ({
           </div>
         )}
       </div>
-      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
+      <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
         ← Bearish | Bullish →
       </div>
     </div>
@@ -2807,12 +2804,12 @@ const ModelTab = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#model-header</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#model-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* ASSUMPTIONS SECTION */}
       <>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#scenario</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario</div>
           <div className="highlight">
             <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
             <p style={{ fontSize: 13, color: 'var(--text2)' }}>
@@ -2820,7 +2817,7 @@ const ModelTab = ({
             </p>
           </div>
 
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#scenario-presets</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-presets</div>
           {/* Scenario Presets - 6 scenarios from Worst to Moon */}
           <div className="card">
             <div className="card-title">Scenario Presets</div>
@@ -2842,8 +2839,8 @@ const ModelTab = ({
                       textAlign: 'center',
                     }}
                   >
-                    <div style={{ fontSize: 20, marginBottom: 4 }}>{preset.icon}</div>
-                    <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)', marginBottom: 4 }}>
+                    <div style={{ fontSize: 20 }}>{preset.icon}</div>
+                    <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)' }}>
                       {preset.label}
                     </div>
                     <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
@@ -2854,14 +2851,14 @@ const ModelTab = ({
               })}
             </div>
             {/* Always show to prevent layout shift */}
-            <div style={{ marginTop: 12, padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
+            <div style={{ padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
               ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
             </div>
           </div>
 
           {/* SUBSCRIBER & REVENUE PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#revenue-model</div>
-          <h3 style={{ color: 'var(--cyan)', marginBottom: 8 }}>Subscriber & Revenue Model</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-model</div>
+          <h3 style={{ color: 'var(--cyan)' }}>Subscriber & Revenue Model</h3>
 
           <div className="g2">
             <ParameterCard
@@ -2903,8 +2900,8 @@ const ModelTab = ({
           </div>
 
           {/* OPERATING PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#operating-model</div>
-          <h3 style={{ color: 'var(--mint)', marginBottom: 8 }}>Operating Assumptions</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#operating-model</div>
+          <h3 style={{ color: 'var(--mint)' }}>Operating Assumptions</h3>
 
           <div className="g2">
             <ParameterCard
@@ -2948,8 +2945,8 @@ const ModelTab = ({
           </div>
 
           {/* VALUATION PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-params</div>
-          <h3 style={{ color: 'var(--violet)', marginBottom: 8 }}>Valuation Parameters</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-params</div>
+          <h3 style={{ color: 'var(--violet)' }}>Valuation Parameters</h3>
 
           <div className="g2">
             <ParameterCard
@@ -2972,9 +2969,9 @@ const ModelTab = ({
           </div>
 
           {/* RISK PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#risk-factors</div>
-          <h3 style={{ color: 'var(--coral)', marginBottom: 8 }}>Risk Probability Factors</h3>
-          <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#risk-factors</div>
+          <h3 style={{ color: 'var(--coral)' }}>Risk Probability Factors</h3>
+          <p style={{ fontSize: 12, color: 'var(--text3)' }}>
             Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Tech) × (1-Comp) = {(riskFactor * 100).toFixed(0)}% success probability.
           </p>
 
@@ -3009,7 +3006,7 @@ const ModelTab = ({
           </div>
 
           {/* DCF VALUATION OUTPUT - Unified section with consistent styling */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-output</div>
           <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
             <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (2030 Terminal Year)</div>
             <table className="tbl" style={{ width: '100%' }}>
@@ -3088,19 +3085,19 @@ const ModelTab = ({
           </div>
 
           {/* CALCULATION METHODOLOGY - Full explanation */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#methodology</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#methodology</div>
           <div className="card">
             <div className="card-title">Calculation Methodology</div>
             <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
-              <p style={{ marginBottom: 12 }}>
+              <p style={{ }}>
                 This DCF model calculates ASTS intrinsic value using a <strong>terminal value approach</strong> with
                 Gordon Growth Model, discounted to present value and adjusted for execution risk.
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div>
-                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 1-5: Terminal Year Metrics (2030)</div>
-                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 1-5: Terminal Year Metrics (2030)</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
                     Subscribers = {(partnerReach/1000).toFixed(1)}B × {penetrationRate}% × (1 - {competitionDiscount}%)<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{terminalSubs.toFixed(0)}M</strong> subscribers<br/><br/>
                     Gross Rev = {terminalSubs.toFixed(0)}M × ${blendedARPU} × 12mo<br/>
@@ -3113,8 +3110,8 @@ const ModelTab = ({
                 </div>
 
                 <div>
-                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 6-7: Terminal Value & Discounting</div>
-                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 6-7: Terminal Value & Discounting</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
                     Gordon Growth: TV = FCF ÷ (r - g)<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalFCF.toFixed(2)}B ÷ ({discountRate}% - {terminalGrowth}%)<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalFCF.toFixed(2)}B ÷ {(spread * 100).toFixed(1)}%<br/>
@@ -3126,8 +3123,8 @@ const ModelTab = ({
                 </div>
 
                 <div>
-                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 8-9: Risk Adjustment</div>
-                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 8-9: Risk Adjustment</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
                     Risk Factor = (1 - {regulatoryRisk}%) × (1 - {techRisk}%) × (1 - {competitionRisk}%)<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= {(100 - regulatoryRisk)}% × {(100 - techRisk)}% × {(100 - competitionRisk)}%<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>{(riskFactor * 100).toFixed(1)}%</strong> probability<br/><br/>
@@ -3137,8 +3134,8 @@ const ModelTab = ({
                 </div>
 
                 <div>
-                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 10-14: Equity Value & Price</div>
-                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 10-14: Equity Value & Price</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
                     Net Debt = ${(totalDebt/1000).toFixed(2)}B - ${(cashOnHand/1000).toFixed(2)}B<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${netDebtB.toFixed(2)}B</strong> {netDebtB < 0 ? '(net cash)' : '(net debt)'}<br/><br/>
                     Equity = ${riskAdjustedEV.toFixed(1)}B - (${netDebtB.toFixed(2)}B)<br/>
@@ -3149,7 +3146,7 @@ const ModelTab = ({
                 </div>
               </div>
 
-              <div style={{ marginTop: 12, padding: 10, background: 'var(--accent-dim)', borderRadius: 6, fontSize: 11 }}>
+              <div style={{ padding: 10, background: 'var(--accent-dim)', borderRadius: 6, fontSize: 11 }}>
                 <strong>Key Assumptions:</strong> Terminal year is {2025 + discountYears} ({discountYears} years out).
                 FCF margin = EBITDA margin - CapEx (simplified, ignores taxes/WC).
                 Risk factors are multiplicative (independent events).
@@ -3426,14 +3423,14 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-header</div>
         <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       </div>
 
       {/* Highlight Box */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-description</div>
-        <div className="highlight" style={{ marginTop: 0 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-description</div>
+        <div className="highlight" style={{ }}>
           <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue-Based Valuation Simulation</h3>
           <p style={{ fontSize: 13, color: 'var(--text2)' }}>
             Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
@@ -3444,8 +3441,8 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
       {/* Scenario Presets */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
-        <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-scenarios</div>
+        <div className="card" style={{ }}>
           <div className="card-title">Select Scenario</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {Object.entries(presets).filter(([key]) => key !== 'mgmt').map(([key, p]) => (
@@ -3463,7 +3460,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                   transition: 'all 0.15s'
                 }}
               >
-                <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
+                <div style={{ fontWeight: 600 }}>{p.label}</div>
                 <div style={{ fontSize: 11, opacity: 0.7 }}>{p.desc}</div>
               </button>
             ))}
@@ -3473,9 +3470,9 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
       {/* Horizon & Simulation Controls */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
-        <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-controls</div>
+        <div className="g2" style={{ }}>
+          <div className="card" style={{ }}>
             <div className="card-title">Time Horizon</div>
             <div style={{ display: 'flex', gap: 8 }}>
               {[3, 5, 7].map(yr => (
@@ -3501,7 +3498,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               ))}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+          <div className="card" style={{ }}>
             <div className="card-title">Simulations</div>
             <div style={{ display: 'flex', gap: 8 }}>
               {[1000, 2000, 5000].map(simCount => (
@@ -3532,12 +3529,12 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
       {/* Parameters - Model Tab Style */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
-        <h3 style={{ color: 'var(--accent)', marginBottom: 8, marginTop: 0 }}>Revenue Model</h3>
-        <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-parameters</div>
+        <h3 style={{ color: 'var(--accent)' }}>Revenue Model</h3>
+        <div className="g2" style={{ }}>
+          <div className="card" style={{ }}>
             <div className="card-title">Base Revenue ($B)</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Expected terminal year revenue. Source: DCF model or analyst estimates.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
@@ -3564,9 +3561,9 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+          <div className="card" style={{ }}>
             <div className="card-title">Revenue Volatility (%)</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Log-normal std dev. 35% = outcomes range 0.7x-1.4x base revenue.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
@@ -3595,11 +3592,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           </div>
         </div>
 
-        <h3 style={{ color: 'var(--mint)', marginTop: 16, marginBottom: 8 }}>Operating Model</h3>
-        <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+        <h3 style={{ color: 'var(--mint)' }}>Operating Model</h3>
+        <div className="g2" style={{ }}>
+          <div className="card" style={{ }}>
             <div className="card-title">EBITDA Margin (%)</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Terminal margin at scale. Satellite/telecom: 40-60%. Operating leverage applies.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
@@ -3626,9 +3623,9 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+          <div className="card" style={{ }}>
             <div className="card-title">EV/EBITDA Multiple</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Terminal valuation multiple. Growth: 10-15x, Mature telcos: 6-8x.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
@@ -3657,11 +3654,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           </div>
         </div>
 
-        <h3 style={{ color: 'var(--coral)', marginTop: 16, marginBottom: 8 }}>Risk Factors</h3>
-        <div className="g3" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+        <h3 style={{ color: 'var(--coral)' }}>Risk Factors</h3>
+        <div className="g3" style={{ }}>
+          <div className="card" style={{ }}>
             <div className="card-title">Launch Risk (%)</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Prob. of constellation failure. If triggered: -40% revenue.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
@@ -3688,9 +3685,9 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+          <div className="card" style={{ }}>
             <div className="card-title">Regulatory Risk (%)</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Prob. of FCC/spectrum issues. If triggered: -30% revenue.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
@@ -3717,9 +3714,9 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+          <div className="card" style={{ }}>
             <div className="card-title">Discount Rate (%)</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Required return / WACC. Pre-revenue space: 12-18%.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
@@ -3750,14 +3747,14 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
         {/* Run Button */}
         <button onClick={() => setRunKey(k => k + 1)} style={{
-          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
+          width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
           border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
         }}>🎲 Run Simulation</button>
       </div>
 
       {/* Percentile Distribution */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-percentiles</div>
         <table className="tbl" style={{ width: '100%' }}>
           <thead>
             <tr>
@@ -3791,7 +3788,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
       {/* Risk Metrics */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
         <table className="tbl" style={{ width: '100%' }}>
           <thead>
             <tr>
@@ -3837,8 +3834,8 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
       {/* Distribution Chart */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
-        <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-distribution</div>
+        <div className="card" style={{ }}>
           <div className="card-title">Fair Value Distribution</div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={sim.histogram}>
@@ -3854,7 +3851,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               <ReferenceLine x={currentStockPrice} stroke="#fff" strokeDasharray="5 5" />
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)' }}>
             <span>White line = current price (${currentStockPrice})</span>
             <span>Simulations: {sim.n.toLocaleString()}</span>
           </div>
@@ -3863,7 +3860,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
       {/* CFA Notes */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-notes</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-notes</div>
         <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
           { term: 'Monte Carlo Method', def: 'Run thousands of random simulations with input volatility. Distribution of outcomes shows probability-weighted fair values.' },
           { term: 'Revenue Volatility', def: 'Standard deviation of revenue growth assumptions. Higher volatility = wider distribution of outcomes.' },
@@ -3966,7 +3963,7 @@ const SECFilingTracker = () => {
           </div>
         </div>
       </div>
-      <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
+      <div style={{ fontSize: 11, color: 'var(--text3)' }}>
         CIK: {filingData.cik} | {filingData.exchange}: {filingData.ticker} | Update dates as new filings are processed
       </div>
     </div>
@@ -4670,10 +4667,10 @@ const QuarterlyMetricsPanel = () => {
   return (
     <>
       {/* #quarterly-metrics */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#quarterly-metrics</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#quarterly-metrics</div>
       <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
       {/* Dynamic Summary Badges */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
           {summaryStats.quarterCount} quarters of data ({summaryStats.firstQuarter} - {summaryStats.lastQuarter})
         </span>
@@ -4736,55 +4733,55 @@ const QuarterlyMetricsPanel = () => {
       </div>
       
       {/* Footnote */}
-      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
-        <p style={{ marginBottom: 4 }}>* Cash & Equiv. includes restricted cash (~$0.7-20M depending on quarter). Other reports might exclude restricted cash, which explains small differences between our values and theirs.</p>
-        <p style={{ marginBottom: 4 }}>* Total Debt shows Long-Term Debt only (balance sheet line item). Other sources may report "Total Debt" which includes current portion, accrued interest, and finance leases—explaining differences of $3-45M. Notable: Q3 2024 shows $156M here vs $201M elsewhere because the $48.5M Atlas Credit Facility was classified as current (due within 12 months) and repaid in Q4 2024.</p>
+      <div style={{ fontSize: 11, color: 'var(--text3)' }}>
+        <p style={{ }}>* Cash & Equiv. includes restricted cash (~$0.7-20M depending on quarter). Other reports might exclude restricted cash, which explains small differences between our values and theirs.</p>
+        <p style={{ }}>* Total Debt shows Long-Term Debt only (balance sheet line item). Other sources may report "Total Debt" which includes current portion, accrued interest, and finance leases—explaining differences of $3-45M. Notable: Q3 2024 shows $156M here vs $201M elsewhere because the $48.5M Atlas Credit Facility was classified as current (due within 12 months) and repaid in Q4 2024.</p>
         <p>* Employees estimates from PRs/filings. Data from SEC filings (10-K, 10-Q).</p>
       </div>
       
       {/* Key Notes from Filing - Matching BMNR style */}
-      <div style={{ marginTop: 16 }}>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#latest-quarter-summary</div>
+      <div style={{ }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#latest-quarter-summary</div>
         <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
           <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Filing Source</div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing Source</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].filing}</div>
           </div>
           <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Satellites in Orbit</div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Satellites in Orbit</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].satellites} (BW3 + BB1-5)</div>
           </div>
           <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>MNO Partnerships</div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>MNO Partnerships</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].definitiveAgreements} definitive, {quarterlyData['Q3 2025'].mous}+ MOUs/LOIs</div>
           </div>
           <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Contracted Revenue</div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Contracted Revenue</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>${quarterlyData['Q3 2025'].contractedRevenue}M+ committed</div>
           </div>
           <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Spectrum Position</div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Spectrum Position</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>
               {quarterlyData['Q3 2025'].spectrumOwned} MHz owned | {quarterlyData['Q3 2025'].spectrumUS}+ MHz US
             </div>
           </div>
           <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Headcount</div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Headcount</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].employees ? quarterlyData['Q3 2025'].employees.toLocaleString() : '—'} employees</div>
           </div>
         </div>
       </div>
       </div>
       
-      <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
+      <div style={{ fontSize: 11, color: 'var(--text3)' }}>
         Data sourced from SEC filings (10-K, 10-K/A, 10-Q). Latest filing: Q3 2025 10-Q (Nov 10, 2025).
       </div>
       </div>
 
       {/* Historical Trend Charts */}
       {/* ROW 1: Cash Position & OpEx */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-1</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-1</div>
       <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
@@ -4803,10 +4800,10 @@ const QuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="cashAndEquiv" stroke="var(--mint)" fill="url(#cashGradient)" />
             </AreaChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Cash & Equivalents</span></div>
           </div>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Major raises: $462M SPAC (Apr'21), $210M equity (Jan'24), $500M ATM (Aug'25). Includes restricted cash.</div>
+          <div style={{ fontSize: 11, color: 'var(--text3)' }}>Major raises: $462M SPAC (Apr'21), $210M equity (Jan'24), $500M ATM (Aug'25). Includes restricted cash.</div>
         </div>
 
         <div className="card">
@@ -4822,8 +4819,8 @@ const QuarterlyMetricsPanel = () => {
           </ResponsiveContainer>
           {/* OpEx Breakdown with quarter selector */}
           {opExQuarters.length > 0 && (
-            <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>OpEx Breakdown</span>
                 <select
                   value={opExQuarter}
@@ -4869,19 +4866,19 @@ const QuarterlyMetricsPanel = () => {
                       </div>
                     )}
                   </div>
-                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 500 }}>
                       <span style={{ color: 'var(--text2)' }}>Total OpEx (GAAP):</span>
                       <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opEx}M</span>
                     </div>
                     {quarterlyData[opExQuarter].adjOpEx && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginTop: 4 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
                         <span style={{ color: 'var(--text3)' }}>Adj. OpEx (ex D&A, SBC):</span>
                         <span style={{ color: 'var(--cyan)' }}>${quarterlyData[opExQuarter].adjOpEx}M</span>
                       </div>
                     )}
                     {(quarterlyData[opExQuarter].capEx || quarterlyData[opExQuarter].capExTotal) && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginTop: 4 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
                         <span style={{ color: 'var(--text3)' }}>CapEx:</span>
                         <span style={{ color: 'var(--gold)' }}>${quarterlyData[opExQuarter].capEx || quarterlyData[opExQuarter].capExTotal}M</span>
                       </div>
@@ -4895,7 +4892,7 @@ const QuarterlyMetricsPanel = () => {
       </div>
       
       {/* ROW 2: Share Count & Market Cap */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-2</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-2</div>
       <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></div>
@@ -4910,12 +4907,12 @@ const QuarterlyMetricsPanel = () => {
               <Bar dataKey="fullyDiluted" fill="var(--sand)" name="fullyDiluted" />
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--coral)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Outstanding (Class A)</span></div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--gold)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Implied (A+B+C)</span></div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sand)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Fully Diluted</span></div>
           </div>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Class B (founders) + Class C (strategic partners) convert to Class A over time. Dilution from ATM, converts, RSUs.</div>
+          <div style={{ fontSize: 11, color: 'var(--text3)' }}>Class B (founders) + Class C (strategic partners) convert to Class A over time. Dilution from ATM, converts, RSUs.</div>
         </div>
 
         <div className="card">
@@ -4936,16 +4933,16 @@ const QuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="marketCap" stroke="#3b82f6" fill="url(#mcapGradient)" />
             </AreaChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap (Outstanding)</span></div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 24, height: 2, background: 'var(--sky)', opacity: 0.6 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap (Implied)</span></div>
           </div>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Price × shares. Rally post Block 1 launch (Sep'24). Peak ~$78 (Oct'25). Implied includes Class B/C.</div>
+          <div style={{ fontSize: 11, color: 'var(--text3)' }}>Price × shares. Rally post Block 1 launch (Sep'24). Peak ~$78 (Oct'25). Implied includes Class B/C.</div>
         </div>
       </div>
 
       {/* ROW 3: Company-Specific (Satellites) */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-3</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-3</div>
       <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Satellites Deployed<UpdateIndicators sources="PR" /></div>
@@ -4958,10 +4955,10 @@ const QuarterlyMetricsPanel = () => {
               <Bar dataKey="satellites" fill="var(--cyan)" />
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--cyan)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Satellites Deployed</span></div>
           </div>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>BW3 (test, Sep'22) → BB1-5 (Block 1, Sep'24) → BB6 (Block 2, Dec'25). Target: 168 sats for global coverage.</div>
+          <div style={{ fontSize: 11, color: 'var(--text3)' }}>BW3 (test, Sep'22) → BB1-5 (Block 1, Sep'24) → BB6 (Block 2, Dec'25). Target: 168 sats for global coverage.</div>
         </div>
       </div>
     </>
@@ -7953,12 +7950,12 @@ const TimelineTab = () => {
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Timeline<UpdateIndicators sources="PR" /></h2>
 
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#sec-filings</div>
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sec-filings</div>
+      <div className="card" style={{ }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
         
         {/* Filter Buttons */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {secFilterTypes.map(type => (
             <button
               key={type}
@@ -8033,7 +8030,6 @@ const TimelineTab = () => {
             style={{
               width: '100%',
               padding: '8px',
-              marginTop: 12,
               background: 'var(--surface2)',
               border: '1px solid var(--border)',
               borderRadius: 6,
@@ -8048,8 +8044,8 @@ const TimelineTab = () => {
         )}
         
         {/* Footer with metadata and Last PR marker */}
-        <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 12, marginBottom: 8 }}>
+        <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 12 }}>
             <div>
               <span style={{ color: 'var(--text3)' }}>CIK:</span>
               <span style={{ color: 'var(--text2)', marginLeft: 6, fontFamily: 'Space Mono' }}>{secMeta.cik}</span>
@@ -8079,9 +8075,9 @@ const TimelineTab = () => {
       </div>
 
       {/* Upcoming Events + Recent Press Releases */}
-      <div className="g2" style={{ marginTop: 24 }}>
+      <div className="g2" style={{ }}>
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#upcoming-events</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#upcoming-events</div>
           <div className="card">
             <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -8130,40 +8126,40 @@ const TimelineTab = () => {
         </div>
 
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#recent-press-releases</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#recent-press-releases</div>
           <div className="card">
             <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 22, 2026</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Launch</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>BlueBird 7 Launch Timing — Late Feb on New Glenn</div>
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 16, 2026</span>
                 <span style={{ fontSize: 11, color: 'var(--gold)' }}>Government</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>MDA SHIELD Prime Contract Award — Golden Dome Program</div>
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Dec 24, 2025</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Launch</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>BlueBird 6 Successfully Deployed — First Block 2 Satellite in Orbit</div>
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Nov 2025</span>
                 <span style={{ fontSize: 11, color: 'var(--gold)' }}>Earnings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Q3 2025 Results: $1.22B Cash, 6 Satellites Operational</div>
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Oct 2025</span>
                 <span style={{ fontSize: 11, color: 'var(--cyan)' }}>Partnership</span>
               </div>
@@ -8175,16 +8171,16 @@ const TimelineTab = () => {
       </div>
 
       {/* Event Timeline Section - CRCL Style */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#event-timeline</div>
-      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#event-timeline</div>
+      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 12 }}>
         <span>Event Timeline</span>
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredEntries.length} events)</span>
         <UpdateIndicators sources="PR" />
       </h3>
 
       {/* Topic Filters (AND logic multi-select) */}
-      <div className="highlight" style={{ padding: 16, marginBottom: 16 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+      <div className="highlight" style={{ padding: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button 
@@ -8213,14 +8209,14 @@ const TimelineTab = () => {
           })}
         </div>
         {selectedTopics.length > 0 && (
-          <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text3)' }}>
+          <div style={{ fontSize: 12, color: 'var(--text3)' }}>
             {selectedTopics.map(t => topicTags[t].label).join(' + ')} → {filteredEntries.length} results
           </div>
         )}
       </div>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div className="pills" style={{ marginBottom: 0 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="pills" style={{ }}>
           <button className={`pill ${filterCategory === 'ALL' ? 'active' : ''}`} onClick={() => setFilterCategory('ALL')}>
             All ({timelineEvents.length})
           </button>
@@ -8274,7 +8270,7 @@ const TimelineTab = () => {
               <div className="timeline-details">
                 <div className="t-details-content">
                   <div className="t-details-text">
-                    <p style={{ marginBottom: 12, color: 'var(--text2)' }}>{entry.summary}</p>
+                    <p style={{ color: 'var(--text2)' }}>{entry.summary}</p>
                     <ul>
                       {entry.details.map((detail, j) => (
                         <li key={j}>{detail}</li>
@@ -8292,7 +8288,7 @@ const TimelineTab = () => {
                     )}
                     {/* Change indicator */}
                     {entry.prevValue && (
-                      <div style={{ marginTop: 12, fontSize: 13 }}>
+                      <div style={{ fontSize: 13 }}>
                         <span style={{ color: '#f87171', textDecoration: 'line-through' }}>{entry.prevValue}</span>
                         <span style={{ color: 'var(--text3)', margin: '0 8px' }}>→</span>
                         <span style={{ color: '#4ade80' }}>{entry.newValue}</span>
@@ -8325,7 +8321,7 @@ const TimelineTab = () => {
       <div className="card"><div className="card-title">How to Use This Log</div>
         <div className="g2" style={{ fontSize: 13 }}>
           <div>
-            <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Categories Explained</h4>
+            <h4 style={{ color: 'var(--cyan)', fontWeight: 500 }}>Categories Explained</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--text2)' }}>
               <li><span style={{ color: 'var(--gold)' }}>Partnership:</span> Commercial agreements, MNO deals, government contracts</li>
               <li><span style={{ color: 'var(--mint)' }}>Product:</span> Satellite launches, tech milestones, deployments</li>
@@ -8336,7 +8332,7 @@ const TimelineTab = () => {
             </ul>
           </div>
           <div>
-            <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Updating This Log</h4>
+            <h4 style={{ color: 'var(--cyan)', fontWeight: 500 }}>Updating This Log</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 4, color: 'var(--text2)' }}>
               <li>• Add new entries chronologically at the top</li>
               <li>• Include sources for traceability</li>
@@ -8347,7 +8343,7 @@ const TimelineTab = () => {
         </div>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa</div>
       <CFANotes title="CFA Level III — Timeline Analysis" items={[
         { term: 'Audit Trail', def: 'Chronological record of all guidance changes, data updates, and material events. Never delete historical entries.' },
         { term: 'Category Types', def: 'Guidance (management projections), Data (SEC verified), Event (catalysts). Filter by type for focused analysis.' },
@@ -9149,15 +9145,15 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#comparables-header</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
 
       {/* Valuation Comparables Section */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-comparables</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-comparables</div>
       <div className="highlight"><h3>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
 
       {/* Peer Group Selector */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {compCategories.map(cat => (
           <button
             key={cat.key}
@@ -9169,10 +9165,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         ))}
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#market-comparison</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#market-comparison</div>
       <div className="card">
         <div className="card-title">Market Comparison<UpdateIndicators sources="WS" /></div>
-        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ASTS vs satellite and telco peers — unique D2D positioning between Starlink premium and telco value</p>
+        <p style={{ color: 'var(--text3)', fontSize: 13 }}>ASTS vs satellite and telco peers — unique D2D positioning between Starlink premium and telco value</p>
         <table className="tbl">
           <thead>
             <tr>
@@ -9202,7 +9198,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       <div className="g2">
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#ev-rev-comparison</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ev-rev-comparison</div>
           <div className="card">
             <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>EV/Rev Comparison<UpdateIndicators sources="WS" /></div>
             <ResponsiveContainer width="100%" height={150}>
@@ -9219,7 +9215,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           </div>
         </div>
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#subscriber-comparison</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#subscriber-comparison</div>
           <div className="card">
             <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>$/Subscriber Comparison<UpdateIndicators sources="WS" /></div>
             <ResponsiveContainer width="100%" height={150}>
@@ -9238,14 +9234,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Advanced Valuation Matrices */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-framework</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-framework</div>
       <div className="highlight"><h3>📈 Valuation Framework</h3><p>Multiple methodologies for a pre-revenue, high-growth space company. TAM-based and comparable approaches.</p></div>
 
       {/* Valuation Methodology Matrix */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
-        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
+        <p style={{ color: 'var(--text3)', fontSize: 13 }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
         <table className="tbl">
           <thead>
             <tr>
@@ -9279,13 +9275,13 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </table>
       </div>
 
-      <div className="g2" style={{ marginTop: 24 }}>
+      <div className="g2" style={{ }}>
         {/* SOTP Valuation */}
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sotp</div>
           <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
-          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Value each business segment separately</p>
+          <p style={{ color: 'var(--text3)', fontSize: 13 }}>Value each business segment separately</p>
           <table className="tbl">
             <thead>
               <tr>
@@ -9324,10 +9320,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
         {/* Risk-Adjusted Scenarios */}
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#risk-adjusted-scenarios</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#risk-adjusted-scenarios</div>
           <div className="card">
             <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
-          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Probability-weighted valuation outcomes</p>
+          <p style={{ color: 'var(--text3)', fontSize: 13 }}>Probability-weighted valuation outcomes</p>
           <table className="tbl">
             <thead>
               <tr>
@@ -9365,10 +9361,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* D2D Competitor Capability Matrix */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-capabilities</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-capabilities</div>
       <div className="highlight"><h3>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capability-comparison</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capability-comparison</div>
       <div className="card">
         <div className="card-title">Capability Comparison<UpdateIndicators sources="PR" /></div>
         <table className="tbl">
@@ -9414,14 +9410,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor News Intelligence Section */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-news</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
       <div className="highlight">
         <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
         <p>Track competitor developments to assess ASTS competitive position</p>
       </div>
 
       {/* Filter Bar */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-filter</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
       <div className="card" style={{ padding: '12px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
@@ -9467,7 +9463,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               }}>
                 <div>
                   <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{story.title}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+                  <div style={{ fontSize: 12, color: 'var(--text3)' }}>
                     {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[0]?.date} → {story.entries[story.entries.length - 1]?.date}
                   </div>
                 </div>
@@ -9571,15 +9567,15 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                             <div>
                               <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
                                 {news.details.map((d, i) => (
-                                  <li key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, fontSize: 13, color: 'var(--text2)' }}>
+                                  <li key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: 'var(--text2)' }}>
                                     <span style={{ color: 'var(--accent)' }}>•</span>
                                     {d}
                                   </li>
                                 ))}
                               </ul>
                               {news.astsComparison && (
-                                <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--accent-dim)', borderRadius: 6, borderLeft: '3px solid var(--accent)' }}>
-                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent)', marginBottom: 4 }}>
+                                <div style={{ padding: '10px 14px', background: 'var(--accent-dim)', borderRadius: 6, borderLeft: '3px solid var(--accent)' }}>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent)' }}>
                                     ASTS Comparison
                                   </div>
                                   <div style={{ fontSize: 13, color: 'var(--text)' }}>{news.astsComparison}</div>
@@ -9588,14 +9584,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 140 }}>
                               <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
-                                <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Impact</div>
+                                <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Impact</div>
                                 <div style={{ fontSize: 12, fontWeight: 600, color: implStyle.color }}>
                                   {news.implication === 'positive' ? 'Favorable' : news.implication === 'negative' ? 'Threat' : 'Neutral'}
                                 </div>
                               </div>
                               {news.source && (
                                 <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
-                                  <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Source</div>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Source</div>
                                   <div style={{ fontSize: 11 }}>
                                     {news.sourceUrl ? (
                                       <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
@@ -9619,36 +9615,36 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor Profiles (Collapsible) */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-profiles</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-profiles</div>
       <div className="card">
         <div className="card-title">📋 Competitor Profiles</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {COMPETITOR_PROFILES.map(comp => (
             <div key={comp.id} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--text)' }}>{comp.name}</div>
-                  <div style={{ fontSize: 13, color: 'var(--text2)', marginTop: 4 }}>{comp.description}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text2)' }}>{comp.description}</div>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginTop: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
                 <div>
-                  <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Technology</div>
+                  <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Technology</div>
                   <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.technology}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Status</div>
+                  <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Status</div>
                   <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.currentStatus}</div>
                 </div>
                 {comp.keyMetrics?.coverage && (
                   <div>
-                    <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Coverage</div>
+                    <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Coverage</div>
                     <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.keyMetrics.coverage}</div>
                   </div>
                 )}
                 {comp.keyMetrics?.funding && (
                   <div>
-                    <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 2 }}>Funding</div>
+                    <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Funding</div>
                     <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.keyMetrics.funding}</div>
                   </div>
                 )}
@@ -9658,7 +9654,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Competitive Analysis" items={[
         { term: 'No Direct Comps', def: 'ASTS is unique — space-based D2C cellular. Starlink (D2C satellite) and telcos (terrestrial) are imperfect proxies.' },
         { term: 'Competitive Moat', def: 'Track competitor progress to assess durability of ASTS technology lead. 4+ year head start but competitors catching up.' },
@@ -9947,7 +9943,7 @@ const InvestmentTab = () => {
 
   // Collapsible section component
   const CollapsibleSection = ({ id, title, children, sources }: { id: string; title: string; children: React.ReactNode; sources?: UpdateSource | UpdateSource[] }) => (
-    <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+    <div className="card" style={{ }}>
       <div
         onClick={() => toggleSection(id)}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -9956,10 +9952,10 @@ const InvestmentTab = () => {
         aria-expanded={investmentSections.has(id)}
         onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
       >
-        <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>{title}{sources && <UpdateIndicators sources={sources} />}</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{title}{sources && <UpdateIndicators sources={sources} />}</div>
         <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
-      {investmentSections.has(id) && <div style={{ marginTop: 16 }}>{children}</div>}
+      {investmentSections.has(id) && <div style={{ }}>{children}</div>}
     </div>
   );
 
@@ -9975,7 +9971,7 @@ const InvestmentTab = () => {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 className="section-head" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+        <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
           <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
@@ -9983,24 +9979,24 @@ const InvestmentTab = () => {
       </div>
 
       {/* Data Refresh Indicator */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, marginBottom: 16, fontSize: 11, color: 'var(--text3)' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, fontSize: 11, color: 'var(--text3)' }}>
         <span>Data as of: <strong style={{ color: 'var(--text2)' }}>{current.date}</strong></span>
         <span>•</span>
         <span>Source: <strong style={{ color: 'var(--text2)' }}>{current.source}</strong></span>
       </div>
 
       {/* Rating Header */}
-      <div className="card" style={{ borderLeft: '4px solid var(--mint)', marginTop: 0, marginBottom: 0 }}>
+      <div className="card" style={{ borderLeft: '4px solid var(--mint)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 6, fontWeight: 700, fontSize: 18 }}>CONSTRUCTIVE</span>
               <span style={{ background: 'rgba(126,231,135,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>TECHNOLOGY PROVEN</span>
             </div>
             <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>
               {current.executiveSummary.thesis}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>
               Last Updated: {current.date} • Trigger: {current.source}
             </div>
           </div>
@@ -10041,8 +10037,8 @@ const InvestmentTab = () => {
 
       {/* Summary */}
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
-        <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)', marginBottom: 16 }}>
-          <div style={{ fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>What's New ({current.source})</div>
+        <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)' }}>
+          <div style={{ fontWeight: 600, color: 'var(--mint)' }}>What's New ({current.source})</div>
           <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
             {current.executiveSummary.whatsNew.map((item, i) => (
               <li key={i}>{item}</li>
@@ -10050,13 +10046,13 @@ const InvestmentTab = () => {
           </ul>
         </div>
         <div style={{ color: 'var(--text2)', lineHeight: 1.8, fontSize: 14 }}>
-          <p style={{ marginBottom: 12 }}>
+          <p style={{ }}>
             <strong>Thesis:</strong> {current.executiveSummary.thesis}
           </p>
-          <p style={{ marginBottom: 12, fontStyle: 'italic', color: 'var(--cyan)' }}>
+          <p style={{ fontStyle: 'italic', color: 'var(--cyan)' }}>
             "{current.executiveSummary.keyPoint}"
           </p>
-          <p style={{ marginBottom: 0 }}>
+          <p style={{ }}>
             <strong>Position Sizing:</strong> 3-5% for growth portfolios • 1-2% for balanced • Speculative allocation for conservative
           </p>
         </div>
@@ -10081,9 +10077,9 @@ const InvestmentTab = () => {
       <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
         <div className="g2">
           <div>
-            <h4 style={{ color: 'var(--mint)', marginBottom: 12 }}>Moat Sources</h4>
+            <h4 style={{ color: 'var(--mint)' }}>Moat Sources</h4>
             {current.moatSources.map((m, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6, marginBottom: 8 }}>
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
                 <div>
                   <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{m.source}</div>
                   <div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.detail}</div>
@@ -10093,9 +10089,9 @@ const InvestmentTab = () => {
             ))}
           </div>
           <div>
-            <h4 style={{ color: 'var(--coral)', marginBottom: 12 }}>Competitive Threats</h4>
+            <h4 style={{ color: 'var(--coral)' }}>Competitive Threats</h4>
             {current.moatThreats.map((t, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6, marginBottom: 8 }}>
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
                 <div>
                   <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{t.threat}</div>
                   <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.detail}</div>
@@ -10105,7 +10101,7 @@ const InvestmentTab = () => {
             ))}
           </div>
         </div>
-        <div style={{ marginTop: 16, padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 13, color: 'var(--text2)' }}>
+        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 13, color: 'var(--text2)' }}>
           <strong>Moat Durability:</strong> A- (Strong). Spectrum + patents + manufacturing scale create defensible position. 4+ year technology lead is substantial. Key risk is well-funded competitors (Starlink) accelerating D2D efforts.
         </div>
       </CollapsibleSection>
@@ -10115,14 +10111,14 @@ const InvestmentTab = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {current.risks.map((r, i) => (
             <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text)' }}>{r.risk}</span>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: r.severity === 'Critical' ? 'rgba(255,107,107,0.2)' : r.severity === 'High' ? 'rgba(210,153,34,0.2)' : 'rgba(100,149,237,0.2)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
                   <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
                 </div>
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 8 }}>{r.detail}</div>
+              <div style={{ fontSize: 13, color: 'var(--text2)' }}>{r.detail}</div>
               <div style={{ fontSize: 12, color: 'var(--text3)' }}><strong style={{ color: 'var(--mint)' }}>Mitigation:</strong> {r.mitigation}</div>
             </div>
           ))}
@@ -10132,110 +10128,110 @@ const InvestmentTab = () => {
       {/* Risks & Strategic Assessment */}
       <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment" sources={['PR', 'SEC']}>
         {/* Section Header */}
-        <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 20, fontStyle: 'italic' }}>
+        <div style={{ fontSize: 12, color: 'var(--text3)'0, fontStyle: 'italic' }}>
           Multi-perspective risk evaluation and strategic decision framework for space-based cellular infrastructure
         </div>
 
         {/* Part 1: Multi-Perspective Risk Evaluation */}
-        <h4 style={{ color: 'var(--text)', marginBottom: 16, fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Three Perspectives</h4>
+        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Three Perspectives</h4>
         
         {/* CFA Level III Perspective */}
-        <div style={{ background: 'rgba(6,182,212,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(6,182,212,0.2)', marginBottom: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ background: 'rgba(6,182,212,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(6,182,212,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--cyan)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Portfolio Construction & Factor Analysis</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Factor Exposures:</strong> ASTS exhibits high beta (~1.8-2.2) to growth/momentum factors with significant idiosyncratic risk from execution milestones. Low correlation to traditional telcos (~0.2) and satellite peers (~0.4). This is a binary outcome investment — success yields 5-10x, failure yields 80%+ loss. Standard MPT optimization doesn't apply; treat as venture-like allocation within public markets sleeve.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Liquidity Analysis:</strong> Average daily volume ~$100-200M provides excellent liquidity for most institutional positions. Options market active with reasonable spreads. Convertible bonds provide additional hedging/exposure vehicles. Short interest ~15% creates squeeze potential but also overhang. Position sizing up to 3-5% of portfolio feasible without market impact.
             </p>
-            <p style={{ marginBottom: 0 }}>
+            <p style={{ }}>
               <strong>Governance & ESG:</strong> Founder Abel Avellan controls ~73% voting via Class C shares — concentration risk but also alignment. Board includes telecom veterans. ESG profile positive: enabling connectivity for underserved populations, reducing need for physical infrastructure. Space debris concerns manageable with LEO orbit decay. Spectrum rights secured through MNO partnerships — regulatory moat.
             </p>
           </div>
         </div>
 
         {/* Hedge Fund Manager Perspective */}
-        <div style={{ background: 'rgba(234,179,8,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(234,179,8,0.2)', marginBottom: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ background: 'rgba(234,179,8,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(234,179,8,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Alpha Generation & Event Catalysts</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Event Calendar Alpha:</strong> ASTS is a catalyst machine — launches, FCC approvals, MNO activations, revenue recognition events provide defined trading opportunities. Strategy: size up 2-3 weeks before known catalysts, trim 50% into strength on positive outcomes, add on "sell the news" weakness if thesis intact. Each successful launch de-risks the next.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Short Squeeze Dynamics:</strong> ~15% short interest with high conviction longs creates squeeze potential on positive catalysts. Days to cover ~3-4. Monitor borrow rates for squeeze signals. Historical pattern: 20-40% moves on successful launches. Position accordingly — don't short this name, and size longs to benefit from squeezes.
             </p>
-            <p style={{ marginBottom: 0 }}>
+            <p style={{ }}>
               <strong>Convertible Arbitrage:</strong> $1.625B in converts outstanding at various strikes ($80-$180+). As stock approaches conversion prices, arbitrage flows create support. Monitor convert pricing vs equity for relative value opportunities. Converts provide downside cushion narrative but also overhang concerns — net neutral to slightly positive for equity.
             </p>
           </div>
         </div>
 
         {/* CIO/CIS Institutional Perspective */}
-        <div style={{ background: 'rgba(100,149,237,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(100,149,237,0.2)', marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ background: 'rgba(100,149,237,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(100,149,237,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Strategic Allocation & Fiduciary Considerations</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Strategic Thesis:</strong> ASTS represents "infrastructure for the next billion connected users" — a thematic play on global connectivity megatrend. Unlike Starlink (D2C, new devices), ASTS works with existing phones via MNO partnerships. This is picks-and-shovels for mobile connectivity expansion. The 50/50 revenue share model means MNOs are incentivized to push adoption.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Portfolio Fit:</strong> Classify as "thematic/disruptive innovation" allocation, not traditional telecom. Appropriate for growth portfolios with 5-10 year horizons. Do not benchmark against telco index — this is a pre-revenue infrastructure buildout. Comparable to early-stage cloud or fiber investments. Size as venture-like position (1-3% max) given binary risk profile.
             </p>
-            <p style={{ marginBottom: 0 }}>
+            <p style={{ }}>
               <strong>Fiduciary Narrative:</strong> If questioned by stakeholders: "We own the infrastructure layer enabling mobile operators to extend coverage without building towers — backed by AT&T, Verizon, Vodafone partnerships and $1B+ in contracted revenue." The blue-chip MNO partnerships provide institutional credibility. Comparable thesis to early investments in cell tower REITs.
             </p>
           </div>
         </div>
 
         {/* Part 2: Key Strategic Questions */}
-        <h4 style={{ color: 'var(--text)', marginBottom: 16, fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Key Strategic Questions</h4>
+        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Key Strategic Questions</h4>
 
         {/* Would I Buy Now? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, marginBottom: 12 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>Would I Buy Now?</span>
             <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '6px 16px', borderRadius: 6, fontWeight: 700, fontSize: 13 }}>YES — HIGH CONVICTION</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>The Case:</strong> Constellation deployment is accelerating (6 sats/month production), commercial service imminent in 2026, $1B+ contracted revenue provides visibility, and MNO partnerships de-risk go-to-market. The technology works (BW3 proved it). Valuation at ~$300/potential subscriber is cheap vs telco M&A comps ($500+). Risk/reward is asymmetric to the upside.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>The Hesitation:</strong> Still pre-revenue with $300M+ annual burn. Execution risk on 40+ satellite launches. FCC/regulatory uncertainty in some markets. Starlink competition narrative (though different model). Stock has run significantly — buying at highs feels uncomfortable.
             </p>
-            <p style={{ marginBottom: 0 }}>
+            <p style={{ }}>
               <strong>The Verdict:</strong> Yes, initiate or add to position. The de-risking from successful launches justifies higher prices. Use pullbacks on "sell the news" events to add. This is a 3-5 year hold — don't trade around short-term volatility. Size appropriately for binary outcome profile (1-3% of portfolio).
             </p>
           </div>
         </div>
 
         {/* What Can I Expect? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, marginBottom: 12 }}>
-          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15, marginBottom: 12 }}>What Can I Expect?</div>
-          <div className="g3" style={{ marginBottom: 16 }}>
+        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>What Can I Expect?</div>
+          <div className="g3" style={{ }}>
             <div style={{ background: 'rgba(234,179,8,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(234,179,8,0.2)' }}>
-              <div style={{ fontWeight: 600, color: 'var(--gold)', marginBottom: 8, fontSize: 13 }}>Short-Term (0-6 months)</div>
+              <div style={{ fontWeight: 600, color: 'var(--gold)', fontSize: 13 }}>Short-Term (0-6 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 Catalyst-rich period: BB7-13 launches, US commercial service initiation, Q4 earnings. Expect 30-50% swings around events. Successful launches = 10-20% pops, then consolidation. Trading range likely $20-45 depending on execution. Volatility is your friend if sized correctly.
               </div>
             </div>
             <div style={{ background: 'rgba(100,149,237,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(100,149,237,0.2)' }}>
-              <div style={{ fontWeight: 600, color: 'var(--sky)', marginBottom: 8, fontSize: 13 }}>Mid-Term (6-18 months)</div>
+              <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13 }}>Mid-Term (6-18 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 Revenue recognition begins — first real P&L validation. If penetration tracks to 1%+, narrative shifts from "will it work?" to "how big can it get?" Multiple expansion potential. Target range: $50-100 if execution continues. This is where the thesis gets proven or broken.
               </div>
             </div>
             <div style={{ background: 'rgba(6,182,212,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(6,182,212,0.2)' }}>
-              <div style={{ fontWeight: 600, color: 'var(--cyan)', marginBottom: 8, fontSize: 13 }}>Long-Term (3-5 years)</div>
+              <div style={{ fontWeight: 600, color: 'var(--cyan)', fontSize: 13 }}>Long-Term (3-5 years)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 At scale (2%+ penetration, 60M+ subs), ASTS could generate $5-10B revenue at 50%+ EBITDA margins. At telco multiples (8-12x EBITDA), that's $40-120B EV vs ~$12B today. 3-10x return potential. But crypto-like volatility along the way — expect multiple 40%+ drawdowns.
               </div>
@@ -10244,19 +10240,19 @@ const InvestmentTab = () => {
         </div>
 
         {/* What's My Strategy? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, marginBottom: 12 }}>
-          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15, marginBottom: 12 }}>What's My Strategy?</div>
+        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>What's My Strategy?</div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong style={{ color: 'var(--cyan)' }}>Position Sizing:</strong> 2-4% for aggressive growth portfolios, 1-2% for balanced growth, avoid for conservative/income. This is a high-conviction, high-volatility position. Size so you can hold through 50% drawdowns without losing sleep. Never bet the farm on binary outcomes.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong style={{ color: 'var(--sky)' }}>Entry Approach:</strong> Accumulate on pullbacks, especially "sell the news" events after successful launches. Add on 15-20% dips from local highs. Don't chase parabolic moves. Use 4-8 week DCA for new positions. Options strategies (selling puts, bull call spreads) can enhance entry.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong style={{ color: 'var(--gold)' }}>Exit Strategy:</strong> Trim 20% at 2x, another 20% at 3x, let 60% ride as "house money." Full exit triggers: (1) launch failure pattern (2+ consecutive), (2) major MNO partnership cancellation, (3) competitive moat erosion, (4) management credibility issues. Take profits into strength, not weakness.
             </p>
-            <p style={{ marginBottom: 0 }}>
+            <p style={{ }}>
               <strong style={{ color: 'var(--coral)' }}>Risk Management:</strong> No hard stop-losses — volatility will trigger them inappropriately. Instead, thesis-based exits: reassess on any launch failure, regulatory setback, or competitive threat. Maintain conviction through normal volatility. If thesis breaks, exit regardless of price. Time stops: if no commercial traction by end of 2026, reassess entire position.
             </p>
           </div>
@@ -10265,9 +10261,9 @@ const InvestmentTab = () => {
 
       {/* Position Sizing */}
       <CollapsibleSection id="position" title="Position Sizing & Price Targets" sources="WS">
-        <div className="g2" style={{ marginBottom: 16 }}>
+        <div className="g2" style={{ }}>
           <div>
-            <h4 style={{ color: 'var(--text)', marginBottom: 12, fontSize: 14 }}>Recommended Allocation</h4>
+            <h4 style={{ color: 'var(--text)', fontSize: 14 }}>Recommended Allocation</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {Object.entries(current.positionSizing).map(([key, val]) => (
                 <div key={key} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}>
@@ -10278,11 +10274,11 @@ const InvestmentTab = () => {
             </div>
           </div>
           <div>
-            <h4 style={{ color: 'var(--text)', marginBottom: 12, fontSize: 14 }}>Price Targets by Timeframe</h4>
+            <h4 style={{ color: 'var(--text)', fontSize: 14 }}>Price Targets by Timeframe</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {current.priceTargets.map((t, i) => (
                 <div key={i} style={{ padding: '8px 12px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: 'var(--text2)' }}>{t.period}</span>
                     <span style={{ color: 'var(--mint)', fontWeight: 600 }}>{t.range}</span>
                   </div>
@@ -10296,38 +10292,38 @@ const InvestmentTab = () => {
 
       {/* Analysis Archive */}
       <CollapsibleSection id="archive" title="Analysis Archive — Complete History" sources={['PR', 'SEC']}>
-        <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>Full record of all investment thesis updates. Never deleted. Tracking since Q3 2022.</div>
+        <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full record of all investment thesis updates. Never deleted. Tracking since Q3 2022.</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
             <div key={i} style={{ background: i === 0 ? 'rgba(126,231,135,0.05)' : 'var(--surface2)', padding: 16, borderRadius: 8, border: i === 0 ? '1px solid rgba(126,231,135,0.2)' : '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontWeight: 600, color: 'var(--text)' }}>{a.date}</span>
                   {i === 0 && <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600 }}>CURRENT</span>}
                 </div>
                 <span style={{ color: getVerdictColor(a.verdict), fontWeight: 600, fontSize: 13 }}>{a.verdict}</span>
               </div>
-              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14, marginBottom: 4 }}>{a.headline}</div>
-              <div style={{ color: 'var(--text2)', fontSize: 13, marginBottom: 8 }}>{a.summary}</div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>{a.headline}</div>
+              <div style={{ color: 'var(--text2)', fontSize: 13 }}>{a.summary}</div>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Filing: {a.filing}</div>
               
               {expandedArchive === i && (
-                <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                  <div style={{ marginBottom: 8 }}>
-                    <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 12, marginBottom: 4 }}>Key Developments</div>
+                <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ }}>
+                    <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 12 }}>Key Developments</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                       {a.keyDevelopments.map((d, j) => (
                         <span key={j} style={{ padding: '4px 8px', background: 'var(--surface)', borderRadius: 4, fontSize: 11, color: 'var(--text3)' }}>• {d}</span>
                       ))}
                     </div>
                   </div>
-                  <div className="g2" style={{ marginTop: 12 }}>
+                  <div className="g2" style={{ }}>
                     <div style={{ padding: 12, background: 'rgba(126,231,135,0.1)', borderRadius: 6 }}>
-                      <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 11, marginBottom: 4 }}>Why It Mattered</div>
+                      <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 11 }}>Why It Mattered</div>
                       <div style={{ fontSize: 12, color: 'var(--text2)' }}>{a.whyItMatters}</div>
                     </div>
                     <div style={{ padding: 12, background: 'rgba(139,92,246,0.1)', borderRadius: 6 }}>
-                      <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 11, marginBottom: 4 }}>Looking Ahead (at the time)</div>
+                      <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 11 }}>Looking Ahead (at the time)</div>
                       <div style={{ fontSize: 12, color: 'var(--text2)' }}>{a.lookingAhead}</div>
                     </div>
                   </div>
@@ -10336,7 +10332,7 @@ const InvestmentTab = () => {
               
               <button 
                 onClick={() => setExpandedArchive(expandedArchive === i ? null : i)}
-                style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', background: 'none', border: 'none', cursor: 'pointer' }}
+                style={{ fontSize: 11, color: 'var(--text3)', background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 {expandedArchive === i ? '▼ Less' : '▶ More details'}
               </button>
@@ -12811,19 +12807,19 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
               <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>AVG PT</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>AVG PT</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--cyan)', fontFamily: 'Space Mono' }}>
                   {avgPT ? `$${avgPT.toFixed(0)}` : '—'}
                 </div>
               </div>
               <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>MEDIAN PT</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>MEDIAN PT</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--sky)', fontFamily: 'Space Mono' }}>
                   {medianPT ? `$${medianPT.toFixed(0)}` : '—'}
                 </div>
               </div>
               <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>HIGH / LOW</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>HIGH / LOW</div>
                 <div style={{ fontSize: 18, fontWeight: 700, fontFamily: 'Space Mono' }}>
                   <span style={{ color: 'var(--mint)' }}>${highPT}</span>
                   <span style={{ color: 'var(--text3)' }}> / </span>
@@ -12831,7 +12827,7 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                 </div>
               </div>
               <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>ANALYSTS</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>ANALYSTS</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text)', fontFamily: 'Space Mono' }}>
                   {totalAnalysts}
                 </div>
@@ -12841,10 +12837,10 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
           
           {/* Ratings Distribution */}
           <div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>RATINGS DISTRIBUTION</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>RATINGS DISTRIBUTION</div>
             {totalAnalysts > 0 ? (
               <>
-                <div style={{ display: 'flex', height: 24, borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
+                <div style={{ display: 'flex', height: 24, borderRadius: 6, overflow: 'hidden' }}>
                   {ratingCounts.bullish > 0 && (
                     <div style={{ width: `${(ratingCounts.bullish / totalAnalysts) * 100}%`, background: 'var(--mint)' }} />
                   )}
@@ -12945,7 +12941,7 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                 {/* Expanded History */}
                 {isExpanded && (
                   <div style={{ borderTop: '1px solid var(--border)', padding: 16, background: 'var(--surface)' }}>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 12 }}>COVERAGE HISTORY ({coverage.reports.length} entries)</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>COVERAGE HISTORY ({coverage.reports.length} entries)</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {coverage.reports.map((report, idx) => {
                         const reportKey = `${coverage.firm}-${idx}`;
@@ -13003,7 +12999,7 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                             
                             {/* Report Title if exists */}
                             {report.reportTitle && (
-                              <div style={{ color: 'var(--text2)', fontSize: 12, marginTop: 6, fontStyle: 'italic' }}>
+                              <div style={{ color: 'var(--text2)', fontSize: 12, fontStyle: 'italic' }}>
                                 "{report.reportTitle}"
                               </div>
                             )}
@@ -13011,7 +13007,7 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                             {/* Full report content (expandable) */}
                             {report.isFullReport && report.thesis && (
                               <>
-                                <div style={{ color: 'var(--text2)', fontSize: 12, marginTop: 8, lineHeight: 1.5 }}>
+                                <div style={{ color: 'var(--text2)', fontSize: 12, lineHeight: 1.5 }}>
                                   {report.thesis}
                                 </div>
                                 
@@ -13027,8 +13023,7 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                                       color: 'var(--cyan)',
                                       fontSize: 11,
                                       cursor: 'pointer',
-                                      padding: '4px 0',
-                                      marginTop: 8
+                                      padding: '4px 0'
                                     }}
                                   >
                                     {isReportExpanded ? '▼ Less details' : '▶ Full report details'}
@@ -13036,13 +13031,12 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                                 )}
                                 
                                 {isReportExpanded && (
-                                  <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+                                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
                                     {report.reportSummary && (
                                       <div style={{ 
                                         background: 'var(--surface)', 
                                         padding: 12, 
-                                        borderRadius: 6, 
-                                        marginBottom: 12,
+                                        borderRadius: 6,
                                         fontSize: 12,
                                         color: 'var(--text2)',
                                         lineHeight: 1.6,
@@ -13054,20 +13048,20 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                                             const header = headerMatch[1];
                                             const rest = paragraph.replace(/^\*\*.+?\*\*\s*/, '');
                                             return (
-                                              <div key={pIdx} style={{ marginBottom: 10 }}>
-                                                <div style={{ color: 'var(--text)', fontWeight: 600, fontSize: 11, marginBottom: 4 }}>{header}</div>
+                                              <div key={pIdx} style={{ }}>
+                                                <div style={{ color: 'var(--text)', fontWeight: 600, fontSize: 11 }}>{header}</div>
                                                 <div>{rest}</div>
                                               </div>
                                             );
                                           }
-                                          return <div key={pIdx} style={{ marginBottom: 8 }}>{paragraph}</div>;
+                                          return <div key={pIdx} style={{ }}>{paragraph}</div>;
                                         })}
                                       </div>
                                     )}
                                     
                                     {report.assumptions && report.assumptions.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 6 }}>KEY ASSUMPTIONS</div>
+                                      <div style={{ }}>
+                                        <div style={{ fontSize: 10, color: 'var(--text3)' }}>KEY ASSUMPTIONS</div>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                                           {report.assumptions.map((a, i) => (
                                             <span key={i} style={{ padding: '3px 8px', background: 'var(--surface)', borderRadius: 4, fontSize: 11, color: 'var(--text2)' }}>
@@ -13079,8 +13073,8 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                                     )}
                                     
                                     {report.catalysts && report.catalysts.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--mint)', marginBottom: 4 }}>CATALYSTS</div>
+                                      <div style={{ }}>
+                                        <div style={{ fontSize: 10, color: 'var(--mint)' }}>CATALYSTS</div>
                                         <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
                                           {report.catalysts.map((c, i) => <li key={i}>{c}</li>)}
                                         </ul>
@@ -13088,8 +13082,8 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                                     )}
                                     
                                     {report.risks && report.risks.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--coral)', marginBottom: 4 }}>RISKS</div>
+                                      <div style={{ }}>
+                                        <div style={{ fontSize: 10, color: 'var(--coral)' }}>RISKS</div>
                                         <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
                                           {report.risks.map((r, i) => <li key={i}>{r}</li>)}
                                         </ul>
@@ -13097,8 +13091,8 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                                     )}
                                     
                                     {report.estimates && report.estimates.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 4 }}>ESTIMATES</div>
+                                      <div style={{ }}>
+                                        <div style={{ fontSize: 10, color: 'var(--sky)' }}>ESTIMATES</div>
                                         <table className="tbl">
                                           <thead>
                                             <tr>
@@ -13134,7 +13128,7 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
                                     )}
                                     
                                     {report.fullNotes && (
-                                      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                                      <div style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
                                         {report.fullNotes}
                                       </div>
                                     )}
@@ -13229,13 +13223,13 @@ const FinancialsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HEADER                                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#financials-header</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#financials-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: HIGHLIGHT BOX                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#financials-overview</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#financials-overview</div>
       <div className="highlight">
         <h3 style={{ display: 'flex', alignItems: 'center' }}>{config.highlightTitle}<UpdateIndicators sources="SEC" /></h3>
         <p style={{ fontSize: 14, color: 'var(--text2)' }}>{config.highlightText}</p>
@@ -13249,7 +13243,7 @@ const FinancialsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-financial-milestones</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-financial-milestones</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></div>
         <div className="g4">
@@ -13265,7 +13259,7 @@ const FinancialsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 9: CFA NOTES                                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Financial Analysis" items={config.cfaNotes} />
     </div>
   );

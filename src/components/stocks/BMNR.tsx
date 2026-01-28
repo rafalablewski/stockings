@@ -410,11 +410,11 @@ class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, ErrorBou
           textAlign: 'center',
           margin: '20px'
         }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
-          <h2 style={{ color: '#FF7B72', marginBottom: '12px', fontFamily: 'Outfit, sans-serif' }}>
+          <div style={{ fontSize: '48px' }}>⚠️</div>
+          <h2 style={{ color: '#FF7B72', fontFamily: 'Outfit, sans-serif' }}>
             Calculation Error
           </h2>
-          <p style={{ color: '#8B949E', marginBottom: '20px', fontFamily: 'Outfit, sans-serif' }}>
+          <p style={{ color: '#8B949E', fontFamily: 'Outfit, sans-serif' }}>
             An error occurred in the financial model. This may be due to invalid input parameters.
           </p>
           <p style={{ color: '#8B949E', fontSize: '14px', fontFamily: 'Space Mono, monospace' }}>
@@ -423,8 +423,7 @@ class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, ErrorBou
           <button
             onClick={() => window.location.reload()}
             style={{
-              marginTop: '20px',
-              padding: '12px 24px',
+                            padding: '12px 24px',
               background: '#A78BFA',
               color: '#05070A',
               border: 'none',
@@ -600,8 +599,8 @@ const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) 
         {label}
         <UpdateIndicators sources={updateSource} />
       </div>
-      <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'Space Mono', monospace", color: c.text, marginTop: '4px' }}>{value}</div>
-      {sub && <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '4px' }}>{sub}</div>}
+      <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'Space Mono', monospace", color: c.text }}>{value}</div>
+      {sub && <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{sub}</div>}
     </div>
   );
 });
@@ -632,7 +631,7 @@ Row.displayName = 'Row';
 
 const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, max }) => (
   <div>
-    <label style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600, marginBottom: '8px' }}>{label}</label>
+    <label style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600 }}>{label}</label>
     <input 
       type="number" 
       value={value} 
@@ -658,8 +657,8 @@ Input.displayName = 'Input';
 
 // CFA Level III Educational Notes Component - Subtle footer style
 const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
-  <div style={{ marginTop: 32, paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+  <div style={{ paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
       <span style={{ fontSize: 12, opacity: 0.7 }}>📚</span>
       <h4 style={{ margin: 0, fontSize: 11, fontWeight: 500, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
     </div>
@@ -836,8 +835,6 @@ const BMNRDilutionAnalysis = () => {
                 padding: '4px 10px', 
                 fontSize: 11, 
                 color: '#a78bfa',
-                marginTop: 8,
-                marginBottom: 16
               }}>
                 <span>📅</span>
                 <span>Data as of: {DATA_FRESHNESS.dataAsOf}</span>
@@ -1084,7 +1081,7 @@ const BMNRParameterCard = ({
   return (
     <div className="card" style={{ opacity: disabled ? 0.6 : 1 }}>
       <div className="card-title">{title}</div>
-      <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+      <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
         {explanation}
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6, pointerEvents: disabled ? 'none' : 'auto' }}>
@@ -1162,7 +1159,7 @@ const BMNRParameterCard = ({
           </div>
         )}
       </div>
-      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
+      <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
         ← Bearish | Bullish →
       </div>
     </div>
@@ -1295,12 +1292,12 @@ const ModelTab = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#model-header</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#model-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* ASSUMPTIONS SECTION */}
       <>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#scenario</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario</div>
         <div className="highlight">
           <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
           <p style={{ fontSize: 13, color: 'var(--text2)' }}>
@@ -1308,7 +1305,7 @@ const ModelTab = ({
           </p>
         </div>
 
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#scenario-presets</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-presets</div>
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
         <div className="card">
           <div className="card-title">Scenario Presets</div>
@@ -1330,8 +1327,8 @@ const ModelTab = ({
                     textAlign: 'center',
                   }}
                 >
-                  <div style={{ fontSize: 20, marginBottom: 4 }}>{preset.icon}</div>
-                  <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)', marginBottom: 4 }}>
+                  <div style={{ fontSize: 20 }}>{preset.icon}</div>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)' }}>
                     {preset.label}
                   </div>
                   <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
@@ -1342,14 +1339,14 @@ const ModelTab = ({
             })}
           </div>
           {/* Always show to prevent layout shift */}
-          <div style={{ marginTop: 12, padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
+          <div style={{ padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
             ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
           </div>
         </div>
 
         {/* ETH HOLDINGS ASSUMPTION */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#eth-holdings</div>
-        <h3 style={{ color: 'var(--cyan)', marginBottom: 8 }}>ETH Holdings</h3>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-holdings</div>
+        <h3 style={{ color: 'var(--cyan)' }}>ETH Holdings</h3>
         <div className="g2">
           <BMNRParameterCard
             title="ETH Holdings (M)"
@@ -1362,9 +1359,9 @@ const ModelTab = ({
         </div>
 
         {/* ETH & YIELD PARAMETERS */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#eth-price</div>
-        <h3 style={{ color: 'var(--cyan)', marginBottom: 8 }}>ETH Price Projection</h3>
-        <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-price</div>
+        <h3 style={{ color: 'var(--cyan)' }}>ETH Price Projection</h3>
+        <p style={{ fontSize: 12, color: 'var(--text3)' }}>
           Choose ONE method to project terminal ETH price. Click on a card to activate it.
         </p>
 
@@ -1443,8 +1440,6 @@ const ModelTab = ({
 
         {/* Active method indicator */}
         <div style={{
-          marginTop: 8,
-          marginBottom: 16,
           padding: '8px 12px',
           background: ethInputMode === 'target' ? 'rgba(126,231,135,0.1)' : 'rgba(34,211,238,0.1)',
           borderRadius: 6,
@@ -1464,8 +1459,8 @@ const ModelTab = ({
           </span>
         </div>
 
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#operating-model</div>
-        <h3 style={{ color: 'var(--mint)', marginBottom: 8 }}>Yield & Costs</h3>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#operating-model</div>
+        <h3 style={{ color: 'var(--mint)' }}>Yield & Costs</h3>
 
         <div className="g2">
           <BMNRParameterCard
@@ -1499,8 +1494,8 @@ const ModelTab = ({
         </div>
 
         {/* CAPITAL STRUCTURE PARAMETERS */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-params</div>
-        <h3 style={{ color: 'var(--violet)', marginBottom: 8 }}>Valuation Parameters</h3>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-params</div>
+        <h3 style={{ color: 'var(--violet)' }}>Valuation Parameters</h3>
 
         <div className="g2">
           <BMNRParameterCard
@@ -1523,10 +1518,10 @@ const ModelTab = ({
           />
         </div>
 
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#current-position</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#current-position</div>
         <div className="card">
           <div className="card-title">Current Position</div>
-          <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+          <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
             Live data from BMNR holdings. Used as starting point for projections.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, fontSize: 12 }}>
@@ -1538,7 +1533,7 @@ const ModelTab = ({
         </div>
 
         {/* DCF VALUATION OUTPUT */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-output</div>
         <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
           <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
           <table className="tbl" style={{ width: '100%' }}>
@@ -1617,19 +1612,19 @@ const ModelTab = ({
         </div>
 
         {/* CALCULATION METHODOLOGY */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#methodology</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#methodology</div>
         <div className="card">
           <div className="card-title">Calculation Methodology</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>NAV-based valuation</strong> for ETH treasury companies. Formula: Target = Terminal NAV/Share ÷ Discount.
               Discount rate captures ALL risk (regulatory, liquidity, tech, execution) in one number - no double-counting.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 1-4: Terminal Year NAV</div>
-                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 1-4: Terminal Year NAV</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
                   {ethInputMode === 'growth' ? (
                     <>ETH Price = ${ethPrice.toLocaleString()} × (1 + {ethGrowthRate}%)^5<br/></>
                   ) : (
@@ -1645,8 +1640,8 @@ const ModelTab = ({
               </div>
 
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 5-7: NAV Per Share</div>
-                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 5-7: NAV Per Share</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
                   Diluted Shares = {currentShares}M × (1 + {dilutionRate}%)^5<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{terminalShares.toFixed(0)}M</strong><br/><br/>
                   Terminal NAV/Share = ${(terminalNAV / 1000).toFixed(2)}B ÷ {terminalShares.toFixed(0)}M<br/>
@@ -1657,8 +1652,8 @@ const ModelTab = ({
               </div>
 
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 8: Discount Factor</div>
-                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 8: Discount Factor</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
                   Discount Rate = <strong>{discountRate}%</strong><br/>
                   (captures time value + ALL risk)<br/><br/>
                   Discount Factor = (1 + {discountRate}%)^5<br/>
@@ -1671,8 +1666,8 @@ const ModelTab = ({
               </div>
 
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Step 9-10: Target Price</div>
-                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 9-10: Target Price</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
                   Target = Terminal NAV ÷ Discount<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalPriceAtNav.toFixed(2)} ÷ {discountFactor.toFixed(2)}<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${targetStockPrice.toFixed(2)}</strong><br/><br/>
@@ -1682,7 +1677,7 @@ const ModelTab = ({
               </div>
             </div>
 
-            <div style={{ marginTop: 12, padding: 10, background: 'var(--accent-dim)', borderRadius: 6, fontSize: 11 }}>
+            <div style={{ padding: 10, background: 'var(--accent-dim)', borderRadius: 6, fontSize: 11 }}>
               <strong>Key Assumptions:</strong> Terminal year is {new Date().getFullYear() + 5} (5 years out).
               Discount rate captures ALL risk in one number (no separate risk factors to avoid double-counting).
               Staking yield compounds ETH holdings; operating costs reduce effective yield.
@@ -1710,14 +1705,14 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
 
   return (
   <div style={{ display: 'flex', flexDirection: 'column' }}>
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#investment-thesis</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-thesis</div>
     <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#opportunity</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#opportunity</div>
     <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
       <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>BMNR:</strong> ETH treasury company accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
     <div className="g2">
       <div className="thesis bull">
         <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
@@ -1743,10 +1738,10 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       </div>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#chart</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart</div>
     <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>ETH Holdings Growth<UpdateIndicators sources="PR" /></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ETH Holdings Growth<UpdateIndicators sources="PR" /></div>
       </div>
       <div className="bars">
         {holdingsData.map((d, i) => (
@@ -1759,7 +1754,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       </div>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-metrics</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-metrics</div>
     <table className="tbl" style={{ width: '100%' }}>
       <thead>
         <tr>
@@ -1791,23 +1786,23 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         </tr>
       </tbody>
     </table>
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#company-snapshot</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-snapshot</div>
     <div className="card">
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <div className="g3">
-        <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>ETH Holdings</div>
+        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>ETH Holdings</div>
           <Row label="Total ETH" value={currentETH.toLocaleString()} />
           <Row label="ETH Price" value={`$${ethPrice.toLocaleString()}`} />
           <Row label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`} highlight />
           <Row label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} />
         </div>
-        <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Share Structure</div>
+        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Share Structure</div>
           <Row label="Shares Outstanding" value={`${currentShares}M`} />
           <Row label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(2)}B`} />
           <Row label="NAV Multiple" value={`${(currentStockPrice / calc.currentNAV).toFixed(2)}x`} highlight />
           <Row label="ETH/Share" value={calc.ethPerShare.toFixed(6)} />
         </div>
-        <div><div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>Dividend</div>
+        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Dividend</div>
           <Row label="Quarterly Dividend" value={`$${quarterlyDividend.toFixed(2)}`} />
           <Row label="Annual Dividend" value={`$${calc.annualDividend.toFixed(2)}`} />
           <Row label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} highlight />
@@ -1817,20 +1812,20 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       </div>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#parameters</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
     <div className="card"><div className="card-title">Parameters</div>
-      <div className="g4" style={{ marginTop: '16px' }}>
+      <div className="g4" style={{ }}>
         <Input label="ETH Holdings" value={currentETH} onChange={setCurrentETH} />
         <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
         <Input label="Stock Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} />
         <Input label="ETH Price ($)" value={ethPrice} onChange={setEthPrice} />
       </div>
-      <div style={{ marginTop: '16px' }}>
+      <div style={{ }}>
         <Input label="Qtr Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} />
       </div>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — ETH Treasury Fundamentals" items={[
       { term: 'Net Asset Value (NAV)', def: 'The per-share intrinsic value = (Total ETH Holdings × ETH Price) ÷ Shares Outstanding. Represents liquidation value — what each share would be worth if all ETH were sold today. This is the fundamental anchor for valuation.' },
       { term: 'Premium/Discount to NAV', def: 'The % difference between stock price and NAV. Premium (positive) means market prices in future appreciation, management alpha, or scarcity. Discount (negative) suggests market doubts or liquidity concerns. MSTR historically trades 1.5-2.5x NAV.' },
@@ -2026,7 +2021,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* Controls - Target Year and Scenario Selector */}
-      <div className="g2" style={{ marginBottom: 24 }}>
+      <div className="g2" style={{ }}>
         <div className="card">
           <div className="card-title">Target Year</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -2092,7 +2087,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             <div className="card" style={{ borderLeft: `4px solid ${selected.color}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                 <div>
-                  <h3 style={{ color: selected.color, marginBottom: 8 }}>
+                  <h3 style={{ color: selected.color }}>
                     {selected.name} Case — {targetYear}
                   </h3>
                   <p style={{ color: 'var(--text2)', maxWidth: 600 }}>{selected.description}</p>
@@ -2107,25 +2102,25 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             </div>
 
             {/* Key Metrics */}
-            <div className="g4" style={{ marginTop: 24 }}>
+            <div className="g4" style={{ }}>
               <div className="big-stat">
                 <div className="num" style={{ color: selected.color }}>${targetProjection.stockPrice.toFixed(0)}</div>
                 <div className="lbl">Stock Price</div>
-                <div style={{ fontSize: 12, color: priceReturn >= 0 ? 'var(--mint)' : 'var(--coral)', marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: priceReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {priceReturn >= 0 ? '+' : ''}{priceReturn.toFixed(0)}% from ${currentStockPrice.toFixed(0)}
                 </div>
               </div>
               <div className="big-stat">
                 <div className="num">${targetProjection.ethPrice.toLocaleString()}</div>
                 <div className="lbl">ETH Price</div>
-                <div style={{ fontSize: 12, color: ethReturn >= 0 ? 'var(--mint)' : 'var(--coral)', marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: ethReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {ethReturn >= 0 ? '+' : ''}{ethReturn.toFixed(0)}% from ${ethPrice.toLocaleString()}
                 </div>
               </div>
               <div className="big-stat">
                 <div className="num">${targetProjection.nav.toFixed(2)}</div>
                 <div className="lbl">NAV/Share</div>
-                <div style={{ fontSize: 12, color: 'var(--sky)', marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: 'var(--sky)' }}>
                   {selected.navMultiple.toFixed(2)}x mNAV
                 </div>
               </div>
@@ -2134,14 +2129,14 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                   {targetProjection.totalReturn >= 0 ? '+' : ''}{targetProjection.totalReturn.toFixed(0)}%
                 </div>
                 <div className="lbl">Total Return</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: 'var(--text3)' }}>
                   incl. ${targetProjection.cumDividends.toFixed(2)} dividends
                 </div>
               </div>
             </div>
 
             {/* Financial Projections Table */}
-            <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+            <div className="card" style={{ }}>
               <div className="card-title">Financial Projections — {selected.name} Scenario</div>
             <div style={{ overflowX: 'auto' }}>
               <table className="tbl">
@@ -2238,12 +2233,12 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       })()}
 
       {/* KEY ASSUMPTIONS & CATALYSTS */}
-      <div className="g2" style={{ marginTop: 24 }}>
+      <div className="g2" style={{ }}>
         <div className="card">
           <div className="card-title">Key Assumptions</div>
           <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
             {scenarios.find(s => s.id === selectedScenario)?.assumptions.map((a, i) => (
-              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{a}</li>
+              <li key={i} style={{ lineHeight: 1.5 }}>{a}</li>
             ))}
           </ul>
         </div>
@@ -2251,15 +2246,15 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
           <div className="card-title">{scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</div>
           <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
             {(scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 ? scenarios.find(s => s.id === selectedScenario)?.catalysts : scenarios.find(s => s.id === selectedScenario)?.risks)?.map((item, i) => (
-              <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{item}</li>
+              <li key={i} style={{ lineHeight: 1.5 }}>{item}</li>
             ))}
           </ul>
           {scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 && scenarios.find(s => s.id === selectedScenario)?.risks.length > 0 && (
             <>
-              <div className="card-title" style={{ marginTop: 16 }}>Risks</div>
+              <div className="card-title" style={{ }}>Risks</div>
               <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
                 {scenarios.find(s => s.id === selectedScenario)?.risks.map((r, i) => (
-                  <li key={i} style={{ marginBottom: 8, lineHeight: 1.5 }}>{r}</li>
+                  <li key={i} style={{ lineHeight: 1.5 }}>{r}</li>
                 ))}
               </ul>
             </>
@@ -2268,9 +2263,9 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* PROBABILITY-WEIGHTED EXPECTED VALUE */}
-      <div className="highlight" style={{ marginTop: 32 }}>
+      <div className="highlight" style={{ }}>
         <h3>Probability-Weighted Expected Value — {targetYear}</h3>
-        <p style={{ marginBottom: 20, color: 'var(--text2)' }}>
+        <p style={{ color: 'var(--text2)' }}>
           Weighted average across all scenarios based on assigned probabilities
         </p>
         {(() => {
@@ -2302,7 +2297,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                   <div className="lbl">Current Price</div>
                 </div>
               </div>
-              <table className="tbl" style={{ marginTop: 24 }}>
+              <table className="tbl" style={{ }}>
                 <thead>
                   <tr>
                     <th>Scenario</th>
@@ -2345,7 +2340,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* Comparison Table */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+      <div className="card" style={{ }}>
         <div className="card-title">All Scenarios — {targetYear} Comparison</div>
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
@@ -2416,7 +2411,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* Key Insights */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}><div className="card-title">Key Insights</div>
+      <div className="card" style={{ }}><div className="card-title">Key Insights</div>
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div className="bg-slate-900/50 rounded-lg p-4">
             <h4 className="font-semibold text-violet-400 mb-2">Leverage Effect</h4>
@@ -2438,11 +2433,11 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* METHODOLOGY & ASSUMPTIONS */}
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+      <div className="card" style={{ }}>
         <div className="card-title">Methodology & Assumptions</div>
         <div className="g2">
           <div>
-            <h4 style={{ color: 'var(--mint)', marginBottom: 12 }}>Valuation Framework</h4>
+            <h4 style={{ color: 'var(--mint)' }}>Valuation Framework</h4>
             <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
               <li><strong>ETH Price:</strong> Future ETH = Current ETH × (1 + CAGR)^Years</li>
               <li><strong>Staking Yield:</strong> ETH Holdings compound at scenario-specific APY</li>
@@ -2453,7 +2448,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             </ul>
           </div>
           <div>
-            <h4 style={{ color: 'var(--sky)', marginBottom: 12 }}>Key Model Inputs</h4>
+            <h4 style={{ color: 'var(--sky)' }}>Key Model Inputs</h4>
             <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
               <li><strong>Current ETH Holdings:</strong> {(currentETH / 1e6).toFixed(2)}M ETH</li>
               <li><strong>ETH Price Range:</strong> ${scenarios[0].ethPrice.toLocaleString()} to ${scenarios[5].ethPrice.toLocaleString()} ({timeHorizon}Y)</li>
@@ -2464,8 +2459,8 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             </ul>
           </div>
         </div>
-        <div style={{ marginTop: 24, padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
-          <h4 style={{ color: 'var(--gold)', marginBottom: 12 }}>Important Caveats</h4>
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
+          <h4 style={{ color: 'var(--gold)' }}>Important Caveats</h4>
           <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text3)', lineHeight: 1.8, fontSize: 13 }}>
             <li>Projections are illustrative scenarios, not forecasts. Actual results may differ materially.</li>
             <li>ETH price assumptions are highly speculative; cryptocurrency markets are extremely volatile.</li>
@@ -2683,11 +2678,11 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-header</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
 
       {/* Highlight Box */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#capital-strategy</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-strategy</div>
       <div className="highlight">
         <h3>ETH Treasury Capital Strategy</h3>
         <p className="text-sm">
@@ -2698,7 +2693,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </div>
 
       {/* Summary Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#capital-metrics</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-metrics</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['SEC', 'MARKET']} /></div>
         <div className="g4">
@@ -2710,7 +2705,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </div>
 
       {/* Navigation Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 24 }}>#capital-navigation</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-navigation</div>
       <div className="g5">
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Common + converted preferred' },
@@ -2730,8 +2725,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             }}
           >
             <div style={{ fontSize: 24, fontWeight: 600, color: capitalView === nav.id ? 'var(--violet)' : 'var(--text)' }}>{nav.value}</div>
-            <div style={{ fontSize: 14, fontWeight: 500, marginTop: 4 }}>{nav.label}</div>
-            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>{nav.sub}</div>
+            <div style={{ fontSize: 14, fontWeight: 500 }}>{nav.label}</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)' }}>{nav.sub}</div>
           </div>
         ))}
       </div>
@@ -2739,7 +2734,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Share Class Structure View */}
       {capitalView === 'structure' && (
       <>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#share-classes</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#share-classes</div>
       <div className="card">
         <div className="card-title">Share Class Structure</div>
         <table className="tbl">
@@ -2764,7 +2759,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ))}
           </tbody>
         </table>
-        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 13, color: 'var(--text3)' }}>
           Par value: $0.0001. Preferred shares converted to common. NYSE American: BMNR.
         </div>
       </div>
@@ -2774,7 +2769,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Major Shareholders View */}
       {capitalView === 'shareholders' && (
       <>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#major-shareholders</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#major-shareholders</div>
       <div className="card">
         <div className="card-title">Major Shareholders</div>
         <table className="tbl">
@@ -2799,7 +2794,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ))}
           </tbody>
         </table>
-        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 13, color: 'var(--text3)' }}>
           Update from 13F (institutional) and DEF 14A (insiders) when available.
         </div>
       </div>
@@ -2809,7 +2804,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Offerings View */}
       {capitalView === 'offerings' && (
       <>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#equity-offerings</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#equity-offerings</div>
       <div className="card">
         <div className="card-title">Equity Offerings</div>
         <table className="tbl">
@@ -2839,7 +2834,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </table>
       </div>
 
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+      <div className="card" style={{ }}>
         <div className="card-title">Warrants Outstanding</div>
         <table className="tbl">
           <thead>
@@ -2873,7 +2868,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Plans View */}
       {capitalView === 'plans' && (
       <>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#equity-plans</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#equity-plans</div>
       <div className="card">
         <div className="card-title">Equity Incentive Plans</div>
         <table className="tbl">
@@ -2897,7 +2892,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             </tr>
           </tbody>
         </table>
-        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 13, color: 'var(--text3)' }}>
           Data pending from 10-K or DEF 14A proxy filing.
         </div>
       </div>
@@ -2907,7 +2902,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Dilution View */}
       {capitalView === 'dilution' && (
       <>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace', marginTop: 32 }}>#dilution-analysis</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-analysis</div>
       <div className="card">
         <div className="card-title">Fully Diluted Share Count</div>
         <table className="tbl">
@@ -2951,7 +2946,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             </tr>
           </tbody>
         </table>
-        <div style={{ marginTop: 16, fontSize: 13, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 13, color: 'var(--text3)' }}>
           Note: Jul 29, 2025 PR reported 121.7M fully diluted. Current calc uses known warrants only.
           Dilution impact: +{dilutionPct.toFixed(1)}% if all securities exercised.
         </div>
@@ -2959,7 +2954,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </>
       )}
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Capital Structure" items={[
         { term: 'Share Classes', def: 'Common stock trades on NYSE American. Preferred shares (Series A/B) have been converted. Authorized shares cap total issuance capacity.' },
         { term: 'Fully Diluted Shares', def: 'Includes all potential shares: common + warrants + options + RSUs. Used for calculating true per-share ownership.' },
@@ -3002,16 +2997,16 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#comparables-header</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#peer-comparison</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#peer-comparison</div>
       <div className="highlight">
         <h3>Peer Comparison</h3>
         <p>Compare BMNR to other crypto treasury companies. Key differentiator: ETH staking yield vs BTC's 0%.</p>
       </div>
 
       {/* Peer Group Selector */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {categories.map(cat => (
           <button
             key={cat.key}
@@ -3023,10 +3018,10 @@ const CompsTab = ({ comparables, ethPrice }) => {
         ))}
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#crypto-treasury-comparison</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#crypto-treasury-comparison</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Crypto Treasury Comparison<UpdateIndicators sources={['WS']} /></div>
-        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>NAV premium/discount analysis — BMNR's ETH staking yield vs BTC treasuries' 0%</p>
+        <p style={{ color: 'var(--text3)', fontSize: 13 }}>NAV premium/discount analysis — BMNR's ETH staking yield vs BTC treasuries' 0%</p>
         <table className="tbl">
           <thead>
             <tr>
@@ -3059,10 +3054,10 @@ const CompsTab = ({ comparables, ethPrice }) => {
           </tbody>
         </table>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#yield-advantage</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#yield-advantage</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Yield Advantage<UpdateIndicators sources={['WS']} /></div>
-        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>ETH staking generates yield vs BTC's 0% — structural advantage</p>
+        <p style={{ color: 'var(--text3)', fontSize: 13 }}>ETH staking generates yield vs BTC's 0% — structural advantage</p>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <div className="big-stat">
             <div className="num mint">+{comparables[0].yield}%</div>
@@ -3072,14 +3067,14 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </div>
 
       {/* Advanced Valuation Matrices */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#valuation-framework</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-framework</div>
       <div className="highlight"><h3>📈 Valuation Framework</h3><p>NAV-based valuation for crypto treasury companies. Premium/discount analysis vs peers.</p></div>
 
       {/* Valuation Methodology Matrix */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
-        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>BMNR value under different NAV multiples (current: ${(compsData[0]?.marketCap / 1e9).toFixed(2)}B)</p>
+        <p style={{ color: 'var(--text3)', fontSize: 13 }}>BMNR value under different NAV multiples (current: ${(compsData[0]?.marketCap / 1e9).toFixed(2)}B)</p>
         <table className="tbl">
           <thead>
             <tr>
@@ -3118,13 +3113,13 @@ const CompsTab = ({ comparables, ethPrice }) => {
         </table>
       </div>
 
-      <div className="g2" style={{ marginTop: 24 }}>
+      <div className="g2" style={{ }}>
         {/* SOTP Valuation */}
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#sotp</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sotp</div>
           <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
-          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Value each component separately</p>
+          <p style={{ color: 'var(--text3)', fontSize: 13 }}>Value each component separately</p>
           <table className="tbl">
             <thead>
               <tr>
@@ -3172,10 +3167,10 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
         {/* NAV Premium Sensitivity */}
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#nav-premium-sensitivity</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#nav-premium-sensitivity</div>
           <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>NAV Premium Sensitivity<UpdateIndicators sources={['WS']} /></div>
-          <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Stock price at different ETH prices × NAV multiples</p>
+          <p style={{ color: 'var(--text3)', fontSize: 13 }}>Stock price at different ETH prices × NAV multiples</p>
           <div style={{ overflowX: 'auto' }}>
             <table className="tbl">
               <thead>
@@ -3217,16 +3212,16 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </div>
 
       {/* Competitor Intelligence Placeholder */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-news</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
       <div className="highlight">
         <h3>📰 Competitor Intelligence</h3>
         <p>Track competitor developments to assess BMNR competitive position in the crypto treasury space.</p>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#competitor-filter</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
       <div className="card" style={{ padding: 32, textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>🔜</div>
-        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)', marginBottom: 8 }}>Competitor Intelligence Coming Soon</div>
+        <div style={{ fontSize: 48, opacity: 0.3 }}>🔜</div>
+        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)' }}>Competitor Intelligence Coming Soon</div>
         <p style={{ color: 'var(--text3)', fontSize: 13, maxWidth: 500, margin: '0 auto' }}>
           This section will track news and developments from crypto treasury competitors including MicroStrategy (MSTR),
           Marathon Digital (MARA), Riot Platforms (RIOT), and other BTC/ETH treasury companies.
@@ -3236,7 +3231,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
         </p>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Comparable Analysis" items={[
         { term: 'Relative Valuation', def: 'Benchmarks BMNR against peers. If MSTR trades at 2x NAV and BMNR at 1.2x, is BMNR undervalued or MSTR overvalued? Context matters.' },
         { term: 'Crypto/Share', def: 'Fundamental backing metric. Higher = more crypto per share of ownership. Affected by dilution and accumulation.' },
@@ -3396,7 +3391,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
       
       {/* DCF Method Selector */}
       <div className="card"><div className="card-title">DCF Method</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           <button
             onClick={() => setDcfMethod('terminal')}
             style={{
@@ -3444,7 +3439,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
           </button>
         </div>
         {dcfMethod === 'intermediate' && (
-          <div style={{ background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.3)', borderRadius: 8, padding: 12, marginBottom: 16 }}>
+          <div style={{ background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.3)', borderRadius: 8, padding: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <span style={{ fontSize: 14, color: 'var(--sky)' }}>Yield Payout Ratio:</span>
               <input
@@ -3457,11 +3452,11 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
               />
               <span style={{ fontSize: 14, fontFamily: "'Space Mono', monospace", color: 'var(--sky)', width: 48 }}>{yieldPayout}%</span>
             </div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8 }}>% of annual staking yield treated as distributed cash flow</p>
+            <p style={{ fontSize: 12, color: 'var(--text3)' }}>% of annual staking yield treated as distributed cash flow</p>
           </div>
         )}
         {dcfMethod === 'dividend' && (
-          <div style={{ background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.3)', borderRadius: 8, padding: 12, marginBottom: 16 }}>
+          <div style={{ background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.3)', borderRadius: 8, padding: 12 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, fontSize: 14 }}>
               <div>
                 <span style={{ color: 'var(--mint)' }}>Current Quarterly Dividend:</span>
@@ -3480,7 +3475,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
                 <span style={{ fontFamily: "'Space Mono', monospace", color: 'var(--mint)', marginLeft: 8 }}>{calc.dividendYield.toFixed(2)}%</span>
               </div>
             </div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8 }}>Based on declared $0.01/qtr dividend (first payment Dec 29, 2025). Adjust growth rate in Overview tab.</p>
+            <p style={{ fontSize: 12, color: 'var(--text3)' }}>Based on declared $0.01/qtr dividend (first payment Dec 29, 2025). Adjust growth rate in Overview tab.</p>
           </div>
         )}
       </div>
@@ -3492,7 +3487,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
             <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
             <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} />
           </div>
-          <div className="g2" style={{ marginTop: 16 }}>
+          <div className="g2" style={{ }}>
             <Input label="Terminal Multiple" value={terminalMult} onChange={setTerminalMult} step={0.1} />
             <Input label="Years" value={years} onChange={setYears} min={1} max={10} />
           </div>
@@ -3503,18 +3498,18 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
             <Card label="Implied Value" value={`$${dcf.impliedValue.toFixed(2)}`} sub={dcfMethod === 'intermediate' ? 'CFs + Terminal' : dcfMethod === 'dividend' ? 'Divs + Terminal' : 'Terminal only'} color="mint" />
             <Card label="Current NAV" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value" />
           </div>
-          <div className="g2" style={{ marginTop: 16 }}>
+          <div className="g2" style={{ }}>
             <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs NAV" color={dcf.upside >= 0 ? 'green' : 'red'} />
             <Card label="Implied IRR" value={`${irr.toFixed(1)}%`} sub="Annualized" />
           </div>
           {dcfMethod === 'intermediate' && (
-            <div className="g2" style={{ marginTop: 16 }}>
+            <div className="g2" style={{ }}>
               <Card label="PV of Cash Flows" value={`$${dcf.sumIntermediatePV.toFixed(2)}`} sub={`${years}yr yield @ ${yieldPayout}% payout`} color="cyan" />
               <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
             </div>
           )}
           {dcfMethod === 'dividend' && (
-            <div className="g2" style={{ marginTop: 16 }}>
+            <div className="g2" style={{ }}>
               <Card label="PV of Dividends" value={`$${dcf.sumDividendPV.toFixed(2)}`} sub={`${years}yr @ ${dividendGrowthRate}% growth`} color="mint" />
               <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
             </div>
@@ -3757,14 +3752,14 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-header</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-header</div>
         <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       </div>
 
       {/* Highlight Box */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-description</div>
-        <div className="highlight" style={{ marginTop: 0 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-description</div>
+        <div className="highlight" style={{ }}>
           <h3 style={{ display: 'flex', alignItems: 'center' }}>GBM Price Path Simulation</h3>
           <p style={{ fontSize: 13, color: 'var(--text2)' }}>
             Runs {sims.toLocaleString()} simulations over {years} years using Geometric Brownian Motion for ETH price
@@ -3775,8 +3770,8 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
       {/* Scenario Presets */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-scenarios</div>
-        <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-scenarios</div>
+        <div className="card" style={{ }}>
           <div className="card-title">Select Scenario</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {Object.entries(presets).map(([key, p]) => (
@@ -3794,7 +3789,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                   transition: 'all 0.15s'
                 }}
               >
-                <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.label}</div>
+                <div style={{ fontWeight: 600 }}>{p.label}</div>
                 <div style={{ fontSize: 11, opacity: 0.7 }}>{p.desc}</div>
               </button>
             ))}
@@ -3804,9 +3799,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
       {/* Horizon & Simulation Controls */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-controls</div>
-        <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-controls</div>
+        <div className="g2" style={{ }}>
+          <div className="card" style={{ }}>
             <div className="card-title">Time Horizon</div>
             <div style={{ display: 'flex', gap: 8 }}>
               {[3, 5, 7].map(yr => (
@@ -3832,7 +3827,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
               ))}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+          <div className="card" style={{ }}>
             <div className="card-title">Simulations</div>
             <div style={{ display: 'flex', gap: 8 }}>
               {[1000, 2000, 5000].map(simCount => (
@@ -3863,12 +3858,12 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
       {/* Parameters - Model Tab Style */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-parameters</div>
-        <h3 style={{ color: 'var(--accent)', marginBottom: 8, marginTop: 0 }}>GBM Parameters</h3>
-        <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-parameters</div>
+        <h3 style={{ color: 'var(--accent)' }}>GBM Parameters</h3>
+        <div className="g2" style={{ }}>
+          <div className="card" style={{ }}>
             <div className="card-title">ETH Drift (%)</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Expected annual ETH price appreciation. Negative = bear, positive = bull.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
@@ -3895,9 +3890,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+          <div className="card" style={{ }}>
             <div className="card-title">ETH Volatility (%)</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Annual volatility. Crypto typically 50-80%. Higher = wider outcomes.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
@@ -3926,11 +3921,11 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           </div>
         </div>
 
-        <h3 style={{ color: 'var(--mint)', marginTop: 16, marginBottom: 8 }}>NAV Multiple Dynamics</h3>
-        <div className="g2" style={{ marginTop: 0 }}>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+        <h3 style={{ color: 'var(--mint)' }}>NAV Multiple Dynamics</h3>
+        <div className="g2" style={{ }}>
+          <div className="card" style={{ }}>
             <div className="card-title">Multiple Volatility (%)</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               How much the NAV multiple (mNAV) varies. Higher = more premium/discount swings.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
@@ -3957,9 +3952,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
               })}
             </div>
           </div>
-          <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+          <div className="card" style={{ }}>
             <div className="card-title">ETH-Multiple Correlation</div>
-            <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               How NAV multiple moves with ETH. Higher = more correlated swings.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
@@ -3989,20 +3984,20 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
         </div>
 
         {/* Current NAV Info */}
-        <div style={{ marginTop: 12, padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 12, color: 'var(--text3)' }}>
+        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 12, color: 'var(--text3)' }}>
           Current NAV: <strong style={{ color: 'var(--accent)' }}>${currentNAV.toFixed(0)}</strong> | Adjustments: +{stakingYield.toFixed(1)}% yield, -{slashingRisk}% slash, -{liquidityDiscount + regulatoryRisk}% disc
         </div>
 
         {/* Run Button */}
         <button onClick={() => setRunKey(k => k + 1)} style={{
-          marginTop: 16, width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
+          width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
           border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
         }}>🎲 Run Simulation</button>
       </div>
 
       {/* Percentile Distribution */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-percentiles</div>
         <table className="tbl" style={{ width: '100%' }}>
           <thead>
             <tr>
@@ -4036,7 +4031,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
       {/* Risk Metrics */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
         <table className="tbl" style={{ width: '100%' }}>
           <thead>
             <tr>
@@ -4082,8 +4077,8 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
       {/* Distribution Chart */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-distribution</div>
-        <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-distribution</div>
+        <div className="card" style={{ }}>
           <div className="card-title">Fair Value Distribution</div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={sim.histogram}>
@@ -4099,7 +4094,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
               <ReferenceLine x={currentNAV} stroke="#fff" strokeDasharray="5 5" />
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)' }}>
             <span>White line = current NAV (${currentNAV.toFixed(0)})</span>
             <span>Simulations: {sims.toLocaleString()}</span>
           </div>
@@ -4108,7 +4103,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
       {/* CFA Notes */}
       <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-notes</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-notes</div>
         <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
           { term: 'Geometric Brownian Motion (GBM)', def: 'dS = S(μdt + σdW). Standard model for equity/crypto. Log-normal returns ensure prices stay positive. ETH price and NAV multiple are correlated.' },
           { term: 'Sharpe Ratio', def: '(Return - Risk-Free) / Volatility. Measures risk-adjusted return. >0.5 decent, >1.0 good, >2.0 excellent. Uses 4% risk-free rate.' },
@@ -4652,7 +4647,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
   // Collapsible section component
   const CollapsibleSection = ({ id, title, children, showIndicators = true }) => (
-    <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+    <div className="card" style={{ }}>
       <div
         onClick={() => toggleSection(id)}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -4661,21 +4656,21 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         aria-expanded={investmentSections.has(id)}
         onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
       >
-        <div className="card-title" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
           {title}
           {showIndicators && <UpdateIndicators sources={['PR', 'SEC']} />}
         </div>
         <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
-      {investmentSections.has(id) && <div style={{ marginTop: 16 }}>{children}</div>}
+      {investmentSections.has(id) && <div style={{ }}>{children}</div>}
     </div>
   );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 className="section-head" style={{ marginBottom: 0, display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
           <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
@@ -4683,17 +4678,17 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </div>
 
       {/* Data Refresh Indicator */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, marginBottom: 16, fontSize: 11, color: 'var(--text3)' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, fontSize: 11, color: 'var(--text3)' }}>
         <span>Data as of: <strong style={{ color: 'var(--text2)' }}>{current.date}</strong></span>
         <span>•</span>
         <span>Source: <strong style={{ color: 'var(--text2)' }}>{current.source}</strong></span>
       </div>
 
       {/* Rating Header */}
-      <div className="card" style={{ borderLeft: '4px solid var(--mint)', marginTop: 0, marginBottom: 0 }}>
+      <div className="card" style={{ borderLeft: '4px solid var(--mint)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 6, fontWeight: 700, fontSize: 18 }}>BUY</span>
               <span style={{ background: 'rgba(126,231,135,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>HIGH CONVICTION</span>
               <UpdateIndicators sources={['PR', 'SEC']} />
@@ -4701,7 +4696,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>
               {current.executiveSummary.oneLiner}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>
               Last Updated: {current.date} • Trigger: {current.source}
             </div>
           </div>
@@ -4741,8 +4736,8 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
         
         {/* Ecosystem Health Rating */}
-        <div style={{ marginTop: 20, padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(0,212,170,0.08))', borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(0,212,170,0.08))', borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Ecosystem Health</div>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Ethereum network fundamentals (see Ethereum tab for details)</div>
@@ -4751,12 +4746,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
               <div style={{ fontFamily: 'Space Mono', fontSize: 28, fontWeight: 700, color: current.ecosystemHealth.overallColor }}>{current.ecosystemHealth.overallGrade}</div>
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
             {current.ecosystemHealth.metrics.map((m, i) => (
               <div key={i} style={{ background: 'var(--surface)', padding: 10, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 4 }}>{m.metric}</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)' }}>{m.metric}</div>
                 <div style={{ fontSize: 13, fontFamily: 'Space Mono', color: m.color, fontWeight: 600 }}>{m.value}</div>
-                <div style={{ fontSize: 10, color: m.color, marginTop: 2 }}>✓ {m.signal}</div>
+                <div style={{ fontSize: 10, color: m.color }}>✓ {m.signal}</div>
               </div>
             ))}
           </div>
@@ -4766,12 +4761,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
       {/* Summary */}
       <CollapsibleSection id="summary" title="Investment Summary">
-        <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)', marginBottom: 16 }}>
-          <div style={{ fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>Thesis</div>
+        <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)' }}>
+          <div style={{ fontWeight: 600, color: 'var(--mint)' }}>Thesis</div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8, whiteSpace: 'pre-line' }}>{current.executiveSummary.thesis}</div>
         </div>
         <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-          <div style={{ fontWeight: 600, color: 'var(--sky)', marginBottom: 8 }}>Bottom Line</div>
+          <div style={{ fontWeight: 600, color: 'var(--sky)' }}>Bottom Line</div>
           <div style={{ color: 'var(--text2)', fontSize: 14 }}>{current.executiveSummary.bottomLine}</div>
         </div>
       </CollapsibleSection>
@@ -4791,12 +4786,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
         
         {/* Ethereum Ecosystem Catalyst */}
-        <div style={{ marginTop: 16, padding: 12, background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,212,170,0.1))', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13, color: 'var(--text2)' }}>
-          <div style={{ fontWeight: 600, color: 'var(--violet)', marginBottom: 8 }}>🔗 Ethereum Ecosystem Catalyst</div>
-          <p style={{ marginBottom: 8 }}>
+        <div style={{ padding: 12, background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,212,170,0.1))', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13, color: 'var(--text2)' }}>
+          <div style={{ fontWeight: 600, color: 'var(--violet)' }}>🔗 Ethereum Ecosystem Catalyst</div>
+          <p style={{ }}>
             <strong style={{ color: 'var(--mint)' }}>Adoption Thesis:</strong> As more companies build on Ethereum (DeFi protocols, tokenized assets, on-chain payments, gaming), network activity and transaction fees increase. Greater Ethereum utility drives fundamental demand for ETH, directly benefiting BMNR's treasury holdings.
           </p>
-          <p style={{ marginBottom: 0 }}>
+          <p style={{ }}>
             <strong style={{ color: 'var(--sky)' }}>Cross-Portfolio Note:</strong> This thesis is doubly bullish for portfolios holding both BMNR and CRCL — Ethereum adoption drives ETH price appreciation (BMNR NAV) and increases USDC demand for on-chain settlement (CRCL revenue). The positions are positively correlated through Ethereum ecosystem growth.
           </p>
         </div>
@@ -4806,9 +4801,9 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       <CollapsibleSection id="moat" title="Competitive Moat">
         <div className="g2">
           <div>
-            <h4 style={{ color: 'var(--mint)', marginBottom: 12 }}>Moat Sources</h4>
+            <h4 style={{ color: 'var(--mint)' }}>Moat Sources</h4>
             {current.moatSources.map((m, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6, marginBottom: 8 }}>
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
                 <div>
                   <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{m.source}</div>
                   <div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.detail}</div>
@@ -4818,9 +4813,9 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             ))}
           </div>
           <div>
-            <h4 style={{ color: 'var(--coral)', marginBottom: 12 }}>Competitive Threats</h4>
+            <h4 style={{ color: 'var(--coral)' }}>Competitive Threats</h4>
             {current.moatThreats.map((t, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6, marginBottom: 8 }}>
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
                 <div>
                   <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{t.threat}</div>
                   <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.detail}</div>
@@ -4830,7 +4825,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             ))}
           </div>
         </div>
-        <div style={{ marginTop: 16, padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 13, color: 'var(--text2)' }}>
+        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 13, color: 'var(--text2)' }}>
           <strong>Moat Durability:</strong> A- (Strong). Scale advantage is nearly unassailable — would take years and billions for competitors to catch up. Yield advantage over BTC treasuries is permanent. Key risk is ETH price, not competitive dynamics.
         </div>
       </CollapsibleSection>
@@ -4840,14 +4835,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {current.risks.map((r, i) => (
             <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text)' }}>{r.risk}</span>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: r.severity === 'Critical' ? 'rgba(255,107,107,0.2)' : r.severity === 'High' ? 'rgba(210,153,34,0.2)' : 'rgba(100,149,237,0.2)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
                   <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
                 </div>
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 8 }}>{r.detail}</div>
+              <div style={{ fontSize: 13, color: 'var(--text2)' }}>{r.detail}</div>
               <div style={{ fontSize: 12, color: 'var(--text3)' }}><strong style={{ color: 'var(--mint)' }}>Mitigation:</strong> {r.mitigation}</div>
             </div>
           ))}
@@ -4857,119 +4852,119 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       {/* Risks & Strategic Assessment */}
       <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment">
         {/* Section Header */}
-        <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 20, fontStyle: 'italic' }}>
+        <div style={{ fontSize: 12, color: 'var(--text3)'0, fontStyle: 'italic' }}>
           Multi-perspective risk evaluation and strategic decision framework for ETH treasury exposure
         </div>
 
         {/* Part 1: Multi-Perspective Risk Evaluation */}
-        <h4 style={{ color: 'var(--text)', marginBottom: 16, fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Three Perspectives</h4>
+        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Three Perspectives</h4>
         
         {/* CFA Level III Perspective */}
-        <div style={{ background: 'rgba(139,92,246,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)', marginBottom: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ background: 'rgba(139,92,246,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--violet)', color: 'white', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Portfolio Construction & Factor Analysis</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Factor Exposures:</strong> BMNR exhibits ~0.85 beta to ETH with additional equity volatility from NAV premium fluctuations. Correlation to BTC ~0.7, SPY ~0.3. This is levered crypto exposure — expect 1.2-1.5x ETH moves in both directions. The staking yield (3-5% APY on ETH) provides modest carry but doesn't materially reduce volatility. Position sizing must account for crypto-like drawdowns (50-80% peak-to-trough historically).
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Liquidity Analysis:</strong> Average daily volume ~$2-5M — adequate for retail but challenging for institutional blocks &gt;$500K without market impact. Bid-ask spreads can widen to 1-2% in volatility. This is a small-cap ($50-150M market cap) with corresponding liquidity constraints. Consider multi-day accumulation for positions &gt;1% of portfolio.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Governance & ESG:</strong> Founder-controlled via Class B shares. Management pivoted successfully from BTC mining — demonstrates adaptability but also thesis drift risk. ESG profile mixed: PoS staking is energy-efficient, but crypto association carries headline risk. No dividend history despite recent announcement — track record TBD.
             </p>
-            <p style={{ marginBottom: 0, padding: 10, background: 'rgba(139,92,246,0.1)', borderRadius: 6, borderLeft: '3px solid var(--violet)' }}>
+            <p style={{ padding: 10, background: 'rgba(139,92,246,0.1)', borderRadius: 6, borderLeft: '3px solid var(--violet)' }}>
               <strong style={{ color: 'var(--violet)' }}>📊 Ecosystem Assessment:</strong> {current.perspectives.cfa.ecosystemView}
             </p>
           </div>
         </div>
 
         {/* Hedge Fund Manager Perspective */}
-        <div style={{ background: 'rgba(210,153,34,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(210,153,34,0.2)', marginBottom: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ background: 'rgba(210,153,34,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(210,153,34,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Alpha Generation & Event Catalysts</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>NAV Arbitrage:</strong> BMNR trades at varying premiums/discounts to NAV. When premium compresses to &lt;10%, accumulate. When premium expands to &gt;50%, trim. This is the core tactical playbook. Track ETH price × holdings ÷ shares = NAV per share, compare to stock price daily. Premium mean-reverts over 30-60 day windows.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Catalyst Stacking:</strong> Key events: (1) MAVAN infrastructure launch — validates yield thesis, (2) ETH ETF approval/flows — institutional demand driver, (3) Quarterly ETH accumulation PRs — shows execution, (4) Staking deployment milestones — unlocks yield narrative. Each positive catalyst builds momentum. Position into catalysts, trim into strength.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Cycle Positioning:</strong> ETH treasury equities are leveraged bets on crypto cycles. In bull markets, NAV premiums expand and stock outperforms ETH. In bear markets, premiums compress and stock underperforms ETH. We're in early-to-mid cycle based on halving timing. Aggressive accumulation phase, but maintain stop-losses for cycle turn protection.
             </p>
-            <p style={{ marginBottom: 0, padding: 10, background: 'rgba(210,153,34,0.1)', borderRadius: 6, borderLeft: '3px solid var(--gold)' }}>
+            <p style={{ padding: 10, background: 'rgba(210,153,34,0.1)', borderRadius: 6, borderLeft: '3px solid var(--gold)' }}>
               <strong style={{ color: 'var(--gold)' }}>📊 Ecosystem Assessment:</strong> {current.perspectives.hedgeFund.ecosystemView}
             </p>
           </div>
         </div>
 
         {/* CIO/CIS Institutional Perspective */}
-        <div style={{ background: 'rgba(100,149,237,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(100,149,237,0.2)', marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ background: 'rgba(100,149,237,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(100,149,237,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Strategic Allocation & Fiduciary Considerations</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Strategic Thesis:</strong> BMNR offers "yield-bearing ETH exposure in equity wrapper" — the only way to get staking yield through traditional brokerage accounts. For investors who can't or won't hold ETH directly, this provides compliant exposure to ETH + staking yield. Think of it as the "MSTR for ETH" with added yield kicker.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Portfolio Fit:</strong> Classify as "alternative/crypto allocation" not "equity." Size within crypto bucket (typically 1-5% of portfolio for aggressive investors, 0% for conservative). Do not benchmark against S&P — this will underperform in risk-off environments. Appropriate for investors with 3-5 year horizons who can stomach 50%+ drawdowns.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>Reputational Risk:</strong> Small-cap crypto equity carries headline risk. However, the pivot from BTC mining to ETH treasury is defensible ("we followed the yield opportunity"). If questioned: "It's a regulated equity providing exposure to Ethereum staking infrastructure, not speculative tokens." The yield narrative differentiates from pure crypto speculation.
             </p>
-            <p style={{ marginBottom: 0, padding: 10, background: 'rgba(100,149,237,0.1)', borderRadius: 6, borderLeft: '3px solid var(--sky)' }}>
+            <p style={{ padding: 10, background: 'rgba(100,149,237,0.1)', borderRadius: 6, borderLeft: '3px solid var(--sky)' }}>
               <strong style={{ color: 'var(--sky)' }}>📊 Ecosystem Assessment:</strong> {current.perspectives.cio.ecosystemView}
             </p>
           </div>
         </div>
 
         {/* Part 2: Key Strategic Questions */}
-        <h4 style={{ color: 'var(--text)', marginBottom: 16, fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Key Strategic Questions</h4>
+        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Key Strategic Questions</h4>
 
         {/* Would I Buy Now? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, marginBottom: 12 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>Would I Buy Now?</span>
             <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '6px 16px', borderRadius: 6, fontWeight: 700, fontSize: 13 }}>YES — ACCUMULATE ON DIPS</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>The Case:</strong> At current NAV premium levels, you're getting ETH exposure + staking yield + management execution at a reasonable markup. The "Alchemy of 5%" thesis (premium issuance → NAV accretion) is mathematically sound and management is executing. First-mover advantage in ETH treasury space creates optionality.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong>The Hesitation:</strong> This is highly correlated to ETH — if ETH drops 50%, expect BMNR to drop 50-70%. Small-cap liquidity means exits can be painful. Management track record is short (pivot was recent). NAV premium can compress rapidly in risk-off environments.
             </p>
-            <p style={{ marginBottom: 0 }}>
+            <p style={{ }}>
               <strong>The Verdict:</strong> Yes, but size appropriately and accumulate on weakness. Don't chase NAV premiums &gt;40%. Build position over 4-6 weeks using NAV discount as entry signal. This is a high-conviction, high-volatility position — treat it as levered ETH, not a stock.
             </p>
           </div>
         </div>
 
         {/* What Can I Expect? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, marginBottom: 12 }}>
-          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15, marginBottom: 12 }}>What Can I Expect?</div>
-          <div className="g3" style={{ marginBottom: 16 }}>
+        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>What Can I Expect?</div>
+          <div className="g3" style={{ }}>
             <div style={{ background: 'rgba(255,193,7,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(255,193,7,0.2)' }}>
-              <div style={{ fontWeight: 600, color: 'var(--gold)', marginBottom: 8, fontSize: 13 }}>Short-Term (0-6 months)</div>
+              <div style={{ fontWeight: 600, color: 'var(--gold)', fontSize: 13 }}>Short-Term (0-6 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 Expect ETH-correlated volatility ±30-50%. NAV premium will fluctuate with sentiment. Key catalysts: MAVAN progress, ETH accumulation PRs, staking deployment updates. Trading range tied to ETH — if ETH $3-5K, expect BMNR $3-8 range (rough).
               </div>
             </div>
             <div style={{ background: 'rgba(100,149,237,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(100,149,237,0.2)' }}>
-              <div style={{ fontWeight: 600, color: 'var(--sky)', marginBottom: 8, fontSize: 13 }}>Mid-Term (6-18 months)</div>
+              <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13 }}>Mid-Term (6-18 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 If ETH cycle continues upward, NAV premium expansion drives outsized returns. Target: 2-4x from entry if ETH doubles and premium expands. Risk: cycle reversal could mean 60-80% drawdown. MAVAN fully operational should validate yield thesis.
               </div>
             </div>
             <div style={{ background: 'rgba(139,92,246,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
-              <div style={{ fontWeight: 600, color: 'var(--violet)', marginBottom: 8, fontSize: 13 }}>Long-Term (3-5 years)</div>
+              <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 13 }}>Long-Term (3-5 years)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 If ETH reaches $10-20K cycle highs and BMNR executes on accumulation, this could be a 5-10x from current levels. But crypto cycles are brutal — expect at least one 70%+ drawdown along the way. Diamond hands required. Position size must allow holding through drawdowns.
               </div>
@@ -4978,33 +4973,33 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* What's My Strategy? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, marginBottom: 12 }}>
-          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15, marginBottom: 12 }}>What's My Strategy?</div>
+        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>What's My Strategy?</div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong style={{ color: 'var(--violet)' }}>Position Sizing:</strong> 1-3% for aggressive crypto-tolerant portfolios, 0.5-1% for growth-oriented, avoid for balanced/conservative. This is your "high-octane ETH exposure" position. Never more than you can watch drop 70% without panic selling.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong style={{ color: 'var(--sky)' }}>Entry Approach:</strong> Accumulate when NAV premium &lt;20%. Add aggressively when premium &lt;10% or at discount. Reduce when premium &gt;50%. Use 4-6 week DCA to avoid catching falling knives. Set limit orders at target NAV premium levels.
             </p>
-            <p style={{ marginBottom: 12 }}>
+            <p style={{ }}>
               <strong style={{ color: 'var(--gold)' }}>Exit Strategy:</strong> Trim 25% at 2x, another 25% at 3x. Let remaining 50% ride with trailing stop at -30% from highs. Full exit if thesis breaks (management stops accumulating, yield thesis fails, competitive moat erodes).
             </p>
-            <p style={{ marginBottom: 0 }}>
+            <p style={{ }}>
               <strong style={{ color: 'var(--coral)' }}>Risk Management:</strong> Set mental stop at -50% from entry (not hard stop — liquidity issues). If ETH enters confirmed bear market (below 200-day MA for 60+ days), reduce position by 50%. Re-enter when cycle turns. Don't try to catch the exact bottom.
             </p>
           </div>
         </div>
         
         {/* Ecosystem-Based Triggers */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(0,212,170,0.08))', padding: 16, borderRadius: 8, marginBottom: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
-          <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 15, marginBottom: 12 }}>📊 Ecosystem-Based Triggers</div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 16, fontStyle: 'italic' }}>Monitor these Ethereum ecosystem signals (see Ethereum tab) alongside BMNR-specific metrics</div>
+        <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(0,212,170,0.08))', padding: 16, borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
+          <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 15 }}>📊 Ecosystem-Based Triggers</div>
+          <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>Monitor these Ethereum ecosystem signals (see Ethereum tab) alongside BMNR-specific metrics</div>
           
           <div className="g3">
             {/* Entry Signals */}
             <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 8 }}>
-              <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 13, marginBottom: 10 }}>✅ Entry Signals (Consider Adding)</div>
+              <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 13 }}>✅ Entry Signals (Consider Adding)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {[
                   'ETF net flows positive 3+ weeks',
@@ -5022,7 +5017,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             
             {/* Exit Signals */}
             <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 8 }}>
-              <div style={{ fontWeight: 600, color: 'var(--coral)', fontSize: 13, marginBottom: 10 }}>⚠️ Exit Signals (Consider Reducing)</div>
+              <div style={{ fontWeight: 600, color: 'var(--coral)', fontSize: 13 }}>⚠️ Exit Signals (Consider Reducing)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {[
                   'ETF outflows >$500M for 2+ weeks',
@@ -5040,7 +5035,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             
             {/* Hold Signals */}
             <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 8 }}>
-              <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13, marginBottom: 10 }}>⏸️ Hold Signals (Stay Course)</div>
+              <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13 }}>⏸️ Hold Signals (Stay Course)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {[
                   'Mixed or flat ETF flows',
@@ -5061,9 +5056,9 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
       {/* Position Sizing */}
       <CollapsibleSection id="position" title="Position Sizing">
-        <div className="g2" style={{ marginBottom: 16 }}>
+        <div className="g2" style={{ }}>
           <div>
-            <h4 style={{ color: 'var(--text)', marginBottom: 12, fontSize: 14 }}>Recommended Allocation</h4>
+            <h4 style={{ color: 'var(--text)', fontSize: 14 }}>Recommended Allocation</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {Object.entries(current.positionSizing).map(([key, val]) => (
                 <div key={key} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}>
@@ -5074,7 +5069,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             </div>
           </div>
           <div>
-            <h4 style={{ color: 'var(--text)', marginBottom: 12, fontSize: 14 }}>Accumulation Zones</h4>
+            <h4 style={{ color: 'var(--text)', fontSize: 14 }}>Accumulation Zones</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {current.accumulation.map((z, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}>
@@ -5089,23 +5084,23 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
       {/* Analysis Archive */}
       <CollapsibleSection id="archive" title="Analysis Archive — Complete History">
-        <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12 }}>Full record of all investment thesis updates. Never deleted.</div>
+        <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full record of all investment thesis updates. Never deleted.</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
             <div key={i} style={{ background: i === 0 ? 'rgba(126,231,135,0.05)' : 'var(--surface2)', padding: 16, borderRadius: 8, border: i === 0 ? '1px solid rgba(126,231,135,0.2)' : '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontWeight: 600, color: 'var(--text)' }}>{a.date}</span>
                   {i === 0 && <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600 }}>CURRENT</span>}
                 </div>
                 <span style={{ color: a.verdictColor === 'green' ? 'var(--mint)' : a.verdictColor === 'yellow' ? 'var(--gold)' : 'var(--coral)', fontWeight: 600, fontSize: 13 }}>{a.verdict}</span>
               </div>
-              <div style={{ color: 'var(--text2)', fontSize: 13, marginBottom: 8 }}>{a.summary}</div>
+              <div style={{ color: 'var(--text2)', fontSize: 13 }}>{a.summary}</div>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Source: {a.source}</div>
               
               {expandedArchive === i && a.fullAnalysis && (
-                <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 8 }}>{a.fullAnalysis.context}</div>
+                <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 13, color: 'var(--text2)' }}>{a.fullAnalysis.context}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {a.fullAnalysis.keyHighlights.map((h, j) => (
                       <span key={j} style={{ padding: '4px 8px', background: 'var(--surface)', borderRadius: 4, fontSize: 11, color: 'var(--text3)' }}>• {h}</span>
@@ -5116,7 +5111,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
               
               <button 
                 onClick={() => setExpandedArchive(expandedArchive === i ? null : i)}
-                style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', background: 'none', border: 'none', cursor: 'pointer' }}
+                style={{ fontSize: 11, color: 'var(--text3)', background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 {expandedArchive === i ? '▼ Less' : '▶ More details'}
               </button>
@@ -5172,10 +5167,10 @@ const BMNRQuarterlyMetricsPanel = () => {
   return (
     <>
       {/* #quarterly-metrics */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#quarterly-metrics</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#quarterly-metrics</div>
       <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
         {/* Summary Badges - ASTS pattern */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
             {quarterlyData.length} quarters of data ({quarterlyData[0].quarter} - {quarterlyData[quarterlyData.length-1].quarter})
           </span>
@@ -5233,52 +5228,52 @@ const BMNRQuarterlyMetricsPanel = () => {
         </div>
 
         {/* Footnotes - ASTS pattern */}
-        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
-          <p style={{ marginBottom: 4 }}>* Q3 shares corrected in 10-Q/A amendment due to reverse stock split accounting error.</p>
-          <p style={{ marginBottom: 4 }}>* FY 2025 reflects post-pivot ETH treasury company. Pre-pivot quarters show BTC mining operations with going concern warning.</p>
+        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
+          <p style={{ }}>* Q3 shares corrected in 10-Q/A amendment due to reverse stock split accounting error.</p>
+          <p style={{ }}>* FY 2025 reflects post-pivot ETH treasury company. Pre-pivot quarters show BTC mining operations with going concern warning.</p>
           <p>* Data from SEC filings (10-K, 10-Q, 8-K). Q1 2026 net loss of ($5.2B) reflects unrealized ETH mark-to-market decline.</p>
         </div>
 
         {/* Latest Quarter Summary - ASTS pattern */}
-        <div style={{ marginTop: 16 }}>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#latest-quarter-summary</div>
+        <div style={{ }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#latest-quarter-summary</div>
           <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary ({latestQuarter.quarter})<UpdateIndicators sources="SEC" /></div>
             <div className="g2">
               <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Filing Source</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing Source</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.filing}</div>
               </div>
               <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>ETH Holdings</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ETH Holdings</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.ethHoldings?.toLocaleString() || '—'} ETH</div>
               </div>
               <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Staking Deployed</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Staking Deployed</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.stakingDeployed?.toLocaleString() || '—'} ETH ({latestQuarter.stakingYield}% yield)</div>
               </div>
               <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Treasury Value</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Treasury Value</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>${(latestQuarter.crypto/1000).toFixed(2)}B</div>
               </div>
               <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Cash Position</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cash Position</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>${latestQuarter.cash}M</div>
               </div>
               <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
-                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Total Assets</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Assets</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>${(latestQuarter.assets/1000).toFixed(2)}B</div>
               </div>
             </div>
           </div>
         </div>
 
-        <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
+        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
           Data sourced from SEC filings (10-K, 10-Q). Latest filing: {latestQuarter.filing}.
         </div>
       </div>
 
       {/* ROW 1: Cash Position & OpEx - ASTS pattern */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-1</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-1</div>
       <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
@@ -5297,10 +5292,10 @@ const BMNRQuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="cash" stroke="var(--mint)" fill="url(#cashGradientBMNR)" />
             </AreaChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Cash & Equivalents</span></div>
           </div>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Post-pivot: $250M PIPE + subsequent ATM raises</div>
+          <div style={{ fontSize: 11, color: 'var(--text3)' }}>Post-pivot: $250M PIPE + subsequent ATM raises</div>
         </div>
 
         <div className="card">
@@ -5315,8 +5310,8 @@ const BMNRQuarterlyMetricsPanel = () => {
             </LineChart>
           </ResponsiveContainer>
           {/* OpEx Breakdown with quarter selector - ASTS pattern */}
-          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+          <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontSize: 11, color: 'var(--text3)' }}>OpEx Breakdown</span>
               <select
                 value={opExQuarter}
@@ -5349,7 +5344,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                       <span style={{ color: 'var(--violet)' }}>${q.opExOther}M</span>
                     </div>
                   </div>
-                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 500 }}>
                       <span style={{ color: 'var(--text2)' }}>Total OpEx:</span>
                       <span style={{ color: 'var(--violet)' }}>${q.opEx}M</span>
@@ -5363,7 +5358,7 @@ const BMNRQuarterlyMetricsPanel = () => {
       </div>
 
       {/* ROW 2: Share Count & Market Cap - ASTS pattern */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-2</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-2</div>
       <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>Share Count (Outstanding)<UpdateIndicators sources="SEC" /></div>
@@ -5376,7 +5371,7 @@ const BMNRQuarterlyMetricsPanel = () => {
               <Bar dataKey="shares" fill="var(--coral)" />
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--coral)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Outstanding Shares</span></div>
           </div>
         </div>
@@ -5404,14 +5399,14 @@ const BMNRQuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="mktCap" stroke="var(--sky)" fill="url(#mcapGradientBMNR)" />
             </AreaChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap</span></div>
           </div>
         </div>
       </div>
 
       {/* ROW 3: Company Specific (Crypto Holdings & NI) - ASTS pattern */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-3</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-3</div>
       <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Crypto Holdings Evolution<UpdateIndicators sources="SEC" /></div>
@@ -5424,7 +5419,7 @@ const BMNRQuarterlyMetricsPanel = () => {
               <Bar dataKey="crypto" fill="var(--violet)" />
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--gold)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Pre-pivot: BTC</span></div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--violet)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Post-pivot: ETH</span></div>
           </div>
@@ -5441,7 +5436,7 @@ const BMNRQuarterlyMetricsPanel = () => {
               <Bar dataKey="income" fill="var(--mint)" />
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Net Income</span></div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--coral)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Net Loss</span></div>
           </div>
@@ -5487,13 +5482,13 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HEADER                                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#financials-header</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#financials-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: HIGHLIGHT BOX                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#financials-overview</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#financials-overview</div>
       <div className="highlight">
         <h3 style={{ display: 'flex', alignItems: 'center' }}>{config.highlightTitle}<UpdateIndicators sources="SEC" /></h3>
         <p style={{ fontSize: 14, color: 'var(--text2)' }}>{config.highlightText}</p>
@@ -5507,7 +5502,7 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-financial-milestones</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-financial-milestones</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></div>
         <div className="g4">
@@ -5523,7 +5518,7 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 9: CFA NOTES                                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Financial Analysis" items={config.cfaNotes} />
     </div>
   );
@@ -6891,9 +6886,9 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Hero: BMNR-ETH Correlation */}
       <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(59,130,246,0.15))', borderRadius: 16, padding: 24, border: '1px solid rgba(139,92,246,0.3)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'0 }}>
           <div>
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>BMNR ↔ ETH Correlation</h3>
+            <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>BMNR ↔ ETH Correlation</h3>
             <p style={{ fontSize: 13, color: 'var(--text3)' }}>BMNR functions as a leveraged ETH proxy — tracking Ethereum ecosystem health is essential</p>
           </div>
           <div style={{ textAlign: 'right' }}>
@@ -6904,28 +6899,28 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         
         <div className="g4">
           <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12 }}>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>NAV per Share</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>NAV per Share</div>
             <div style={{ fontSize: 22, fontFamily: 'Space Mono', color: 'var(--mint)' }}>${navPerShare.toFixed(2)}</div>
-            <div style={{ fontSize: 11, color: navPremium >= 0 ? 'var(--mint)' : 'var(--coral)', marginTop: 4 }}>
+            <div style={{ fontSize: 11, color: navPremium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
               {navPremium >= 0 ? '+' : ''}{navPremium.toFixed(1)}% {navPremium >= 0 ? 'premium' : 'discount'}
             </div>
           </div>
           <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12 }}>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>ETH per Share</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>ETH per Share</div>
             <div style={{ fontSize: 22, fontFamily: 'Space Mono', color: 'var(--sky)' }}>{ethPerShare.toFixed(4)}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Your fractional ETH</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Your fractional ETH</div>
           </div>
           <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12 }}>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Implied ETH Price</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Implied ETH Price</div>
             <div style={{ fontSize: 22, fontFamily: 'Space Mono', color: 'var(--gold)' }}>${impliedEthPrice.toFixed(0)}</div>
-            <div style={{ fontSize: 11, color: impliedEthPrice > ethPrice ? 'var(--mint)' : 'var(--coral)', marginTop: 4 }}>
+            <div style={{ fontSize: 11, color: impliedEthPrice > ethPrice ? 'var(--mint)' : 'var(--coral)' }}>
               vs ${ethPrice.toLocaleString()} spot
             </div>
           </div>
           <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12 }}>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>NAV Sensitivity</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>NAV Sensitivity</div>
             <div style={{ fontSize: 22, fontFamily: 'Space Mono', color: 'var(--violet)' }}>${navSensitivity.toFixed(2)}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>per $100 ETH move</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>per $100 ETH move</div>
           </div>
         </div>
       </div>
@@ -6933,7 +6928,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       {/* Ecosystem Metrics */}
       <div className="card">
         <div className="card-title">Ethereum Network Metrics</div>
-        <div className="g4" style={{ marginBottom: 16 }}>
+        <div className="g4" style={{ }}>
           <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
             <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--mint)', fontWeight: 600 }}>{ecosystemMetrics.stakingRate}%</div>
             <div style={{ fontSize: 11, color: 'var(--text3)' }}>ETH Staked</div>
@@ -6953,11 +6948,11 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         </div>
         <div className="g3">
           <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ fontSize: 12, color: 'var(--text3)' }}>Validators</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>{(ecosystemMetrics.validatorCount / 1000).toFixed(0)}K</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ fontSize: 12, color: 'var(--text3)' }}>Daily Active Addresses</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>{(ecosystemMetrics.dailyActiveAddresses / 1000).toFixed(0)}K</span>
             </div>
@@ -6967,11 +6962,11 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
             </div>
           </div>
           <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ fontSize: 12, color: 'var(--text3)' }}>Network Revenue (24h)</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--mint)' }}>${ecosystemMetrics.networkRevenue24h}M</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ fontSize: 12, color: 'var(--text3)' }}>ETH Burned (24h)</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--coral)' }}>{ecosystemMetrics.burnRate24h}K ETH</span>
             </div>
@@ -6981,7 +6976,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
             </div>
           </div>
           <div style={{ padding: 12, background: 'linear-gradient(135deg, rgba(0,212,170,0.1), rgba(139,92,246,0.1))', borderRadius: 8, border: '1px solid var(--border)' }}>
-            <div style={{ fontSize: 12, color: 'var(--mint)', fontWeight: 600, marginBottom: 8 }}>Why This Matters for BMNR</div>
+            <div style={{ fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>Why This Matters for BMNR</div>
             <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.5 }}>
               Higher network activity → More fees → More ETH burned → Deflationary pressure → ETH price appreciation → BMNR NAV growth
             </div>
@@ -6992,7 +6987,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       {/* ETF Flows */}
       <div className="card">
         <div className="card-title">Institutional Flows (ETH ETFs)</div>
-        <div className="g2" style={{ marginBottom: 16 }}>
+        <div className="g2" style={{ }}>
           <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
             <div style={{ fontSize: 24, fontFamily: 'Space Mono', color: 'var(--mint)', fontWeight: 600 }}>${etfData.totalAUM}B</div>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>Total ETF AUM</div>
@@ -7025,7 +7020,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {protocolRoadmap.map((item, i) => (
             <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: `3px solid ${item.impact === 'Very High' ? 'var(--violet)' : item.impact === 'High' ? 'var(--mint)' : 'var(--sky)'}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{item.name}</span>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: item.status === 'Testing' ? 'rgba(0,212,170,0.2)' : item.status === 'Development' ? 'rgba(100,149,237,0.2)' : 'rgba(139,92,246,0.2)', color: item.status === 'Testing' ? 'var(--mint)' : item.status === 'Development' ? 'var(--sky)' : 'var(--violet)' }}>{item.status}</span>
@@ -7039,14 +7034,14 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       </div>
       
       {/* Ethereum Adoption Timeline - matches Timeline tab structure */}
-      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 12 }}>
         <span>Ethereum Adoption Timeline</span>
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredNews.length} events)</span>
       </h3>
 
       {/* Company Filter (like Topic filter in Timeline tab) */}
-      <div className="highlight" style={{ padding: 16, marginBottom: 16 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+      <div className="highlight" style={{ padding: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Company</span>
           {companyFilter !== 'All' && (
             <button 
@@ -7074,15 +7069,15 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
           })}
         </div>
         {companyFilter !== 'All' && (
-          <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text3)' }}>
+          <div style={{ fontSize: 12, color: 'var(--text3)' }}>
             {companyFilter} → {filteredNews.length} results
           </div>
         )}
       </div>
       
       {/* Category pills row with Expand All button (like Timeline tab) */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div className="pills" style={{ marginBottom: 0 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="pills" style={{ }}>
           {categories.map(cat => (
             <button key={cat} className={`pill ${timelineFilter === cat ? 'active' : ''}`} onClick={() => setTimelineFilter(cat)}>
               {cat === 'All' ? `All (${adoptionTimeline.length})` : `${cat} (${adoptionTimeline.filter(n => n.category === cat).length})`}
@@ -7118,9 +7113,9 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
                   setExpandedNews(next);
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 6 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                       <span style={{ fontSize: 11, color: 'var(--text3)' }}>{news.date}</span>
                       <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(139,92,246,0.2)', color: 'var(--violet)' }}>{news.category}</span>
                       <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(59,130,246,0.2)', color: 'var(--sky)' }}>{news.company}</span>
@@ -7132,22 +7127,22 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
                   </span>
                 </div>
                 {isExpanded && (
-                  <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
                     {/* Summary */}
-                    <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 16, lineHeight: 1.6 }}>{news.summary}</div>
+                    <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>{news.summary}</div>
                     
                     {/* Significance */}
                     {news.significance && (
-                      <div style={{ marginBottom: 12, padding: 12, background: 'var(--surface)', borderRadius: 8, borderLeft: '3px solid var(--violet)' }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--violet)', marginBottom: 4 }}>📊 SIGNIFICANCE FOR ETHEREUM</div>
+                      <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 8, borderLeft: '3px solid var(--violet)' }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--violet)' }}>📊 SIGNIFICANCE FOR ETHEREUM</div>
                         <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.significance}</div>
                       </div>
                     )}
                     
                     {/* BMNR Implication */}
                     {news.bmnrImplication && (
-                      <div style={{ marginBottom: 12, padding: 12, background: 'var(--surface)', borderRadius: 8, borderLeft: '3px solid var(--mint)' }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--mint)', marginBottom: 4 }}>💰 BMNR IMPLICATION</div>
+                      <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 8, borderLeft: '3px solid var(--mint)' }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--mint)' }}>💰 BMNR IMPLICATION</div>
                         <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.bmnrImplication}</div>
                       </div>
                     )}
@@ -8270,12 +8265,12 @@ const TimelineTab = () => {
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Timeline<UpdateIndicators sources="PR" /></h2>
 
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#sec-filings</div>
-      <div className="card" style={{ marginTop: 0, marginBottom: 0 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sec-filings</div>
+      <div className="card" style={{ }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
         
         {/* Filter Buttons */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {secFilterTypes.map(type => (
             <button
               key={type}
@@ -8350,7 +8345,6 @@ const TimelineTab = () => {
             style={{
               width: '100%',
               padding: '8px',
-              marginTop: 12,
               background: 'var(--surface2)',
               border: '1px solid var(--border)',
               borderRadius: 6,
@@ -8365,8 +8359,8 @@ const TimelineTab = () => {
         )}
         
         {/* Footer with metadata and Last PR marker */}
-        <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 12, marginBottom: 8 }}>
+        <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 12 }}>
             <div>
               <span style={{ color: 'var(--text3)' }}>CIK:</span>
               <span style={{ color: 'var(--text2)', marginLeft: 6, fontFamily: 'Space Mono' }}>{secMeta.cik}</span>
@@ -8396,9 +8390,9 @@ const TimelineTab = () => {
       </div>
 
       {/* Upcoming Events + Recent Press Releases */}
-      <div className="g2" style={{ marginTop: 24 }}>
+      <div className="g2" style={{ }}>
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#upcoming-events</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#upcoming-events</div>
           <div className="card">
             <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -8447,48 +8441,48 @@ const TimelineTab = () => {
         </div>
 
         <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#recent-press-releases</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#recent-press-releases</div>
           <div className="card">
             {/* [PR_CHECKLIST_RECENT_PRESS_RELEASES] - Add new PR at top! */}
             <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 20, 2026</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,203,036 — 3.48% of Supply, $14.5B, 81% YES Vote</div>
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 12, 2026</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,167,768 — 3.45% of Total Supply, $14.0B</div>
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 9, 2026</span>
                 <span style={{ fontSize: 11, color: 'var(--mint)' }}>Leadership</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>CFO/COO Appointed: Young Kim (MIT/HBS, Columbia Threadneedle)</div>
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 2, 2026</span>
                 <span style={{ fontSize: 11, color: 'var(--gold)' }}>Proxy</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Chairman's Message: Vote YES on Auth Shares (500M→50B)</div>
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Dec 29, 2025</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,110,525 — 3.41% of Total Supply</div>
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Nov 21, 2025</span>
                 <span style={{ fontSize: 11, color: 'var(--violet)' }}>SEC Filing</span>
               </div>
@@ -8500,16 +8494,16 @@ const TimelineTab = () => {
       </div>
 
       {/* Event Timeline Section - CRCL Style */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#event-timeline</div>
-      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#event-timeline</div>
+      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 12 }}>
         <span>Event Timeline</span>
         <UpdateIndicators sources="PR" />
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredEntries.length} events)</span>
       </h3>
 
       {/* Topic Filters (AND logic multi-select) */}
-      <div className="highlight" style={{ padding: 16, marginBottom: 16 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+      <div className="highlight" style={{ padding: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button 
@@ -8538,14 +8532,14 @@ const TimelineTab = () => {
           })}
         </div>
         {selectedTopics.length > 0 && (
-          <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text3)' }}>
+          <div style={{ fontSize: 12, color: 'var(--text3)' }}>
             {selectedTopics.map(t => topicTags[t].label).join(' + ')} → {filteredEntries.length} results
           </div>
         )}
       </div>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div className="pills" style={{ marginBottom: 0 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="pills" style={{ }}>
           {categories.map(cat => (
             <button key={cat} className={`pill ${filterCategory === cat ? 'active' : ''}`} onClick={() => setFilterCategory(cat)}>
               {cat === 'all' ? `All (${timelineEvents.length})` : `${cat} (${timelineEvents.filter(p => p.category === cat).length})`}
@@ -8617,7 +8611,7 @@ const TimelineTab = () => {
                       </tbody>
                     </table>
                     {/* Notes */}
-                    <div style={{ marginTop: 16, padding: 12, background: 'var(--surface3)', borderRadius: 8, fontStyle: 'italic', color: 'var(--text3)' }}>
+                    <div style={{ padding: 12, background: 'var(--surface3)', borderRadius: 8, fontStyle: 'italic', color: 'var(--text3)' }}>
                       💡 {entry.notes}
                     </div>
                   </div>
@@ -8700,7 +8694,7 @@ const TimelineTab = () => {
         </div>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa</div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa</div>
       <CFANotes title="CFA Level III — Timeline Analysis" items={[
         { term: 'Audit Trail', def: 'Chronological record of all official announcements and filings. Essential for tracking management guidance vs actual results over time.' },
         { term: 'Holdings Updates', def: 'Weekly press releases reporting ETH holdings, staking status, and key metrics. BMNR\'s transparency differentiator vs peers.' },
@@ -8917,19 +8911,19 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
               <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>AVG PT</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>AVG PT</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--violet)', fontFamily: 'Space Mono' }}>
                   {avgPT ? `$${avgPT.toFixed(0)}` : '—'}
                 </div>
               </div>
               <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>MEDIAN PT</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>MEDIAN PT</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--sky)', fontFamily: 'Space Mono' }}>
                   {medianPT ? `$${medianPT.toFixed(0)}` : '—'}
                 </div>
               </div>
               <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>HIGH / LOW</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>HIGH / LOW</div>
                 <div style={{ fontSize: 18, fontWeight: 700, fontFamily: 'Space Mono' }}>
                   <span style={{ color: 'var(--mint)' }}>{highPT ? `$${highPT}` : '—'}</span>
                   <span style={{ color: 'var(--text3)' }}> / </span>
@@ -8937,7 +8931,7 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                 </div>
               </div>
               <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>ANALYSTS</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>ANALYSTS</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text)', fontFamily: 'Space Mono' }}>
                   {totalAnalysts}
                 </div>
@@ -8947,10 +8941,10 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
           
           {/* Ratings Distribution */}
           <div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>RATINGS DISTRIBUTION</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>RATINGS DISTRIBUTION</div>
             {totalAnalysts > 0 ? (
               <>
-                <div style={{ display: 'flex', height: 24, borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
+                <div style={{ display: 'flex', height: 24, borderRadius: 6, overflow: 'hidden' }}>
                   {ratingCounts.bullish > 0 && (
                     <div style={{ width: `${(ratingCounts.bullish / totalAnalysts) * 100}%`, background: 'var(--mint)' }} />
                   )}
@@ -9053,7 +9047,7 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                 {/* Expanded History */}
                 {isExpanded && (
                   <div style={{ borderTop: '1px solid var(--border)', padding: 16, background: 'var(--surface)' }}>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 12 }}>COVERAGE HISTORY ({coverage.reports.length} entr{coverage.reports.length !== 1 ? 'ies' : 'y'})</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>COVERAGE HISTORY ({coverage.reports.length} entr{coverage.reports.length !== 1 ? 'ies' : 'y'})</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {coverage.reports.map((report, idx) => {
                         const reportKey = `${coverage.firm}-${idx}`;
@@ -9112,7 +9106,7 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                             
                             {/* Report Title if exists */}
                             {report.reportTitle && (
-                              <div style={{ color: 'var(--text2)', fontSize: 12, marginTop: 6, fontStyle: 'italic' }}>
+                              <div style={{ color: 'var(--text2)', fontSize: 12, fontStyle: 'italic' }}>
                                 "{report.reportTitle}"
                               </div>
                             )}
@@ -9120,7 +9114,7 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                             {/* Full report content (expandable) */}
                             {report.isFullReport && report.thesis && (
                               <>
-                                <div style={{ color: 'var(--text2)', fontSize: 12, marginTop: 8, lineHeight: 1.5 }}>
+                                <div style={{ color: 'var(--text2)', fontSize: 12, lineHeight: 1.5 }}>
                                   {report.thesis}
                                 </div>
                                 
@@ -9136,8 +9130,7 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                                       color: 'var(--violet)',
                                       fontSize: 11,
                                       cursor: 'pointer',
-                                      padding: '4px 0',
-                                      marginTop: 8
+                                      padding: '4px 0'
                                     }}
                                   >
                                     {isReportExpanded ? '▼ Less details' : '▶ Full report details'}
@@ -9145,13 +9138,12 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                                 )}
                                 
                                 {isReportExpanded && (
-                                  <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+                                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
                                     {report.reportSummary && (
                                       <div style={{ 
                                         background: 'var(--surface)', 
                                         padding: 12, 
-                                        borderRadius: 6, 
-                                        marginBottom: 12,
+                                        borderRadius: 6,
                                         fontSize: 12,
                                         color: 'var(--text2)',
                                         lineHeight: 1.6,
@@ -9163,20 +9155,20 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                                             const header = headerMatch[1];
                                             const rest = paragraph.replace(/^\*\*.+?\*\*\s*/, '');
                                             return (
-                                              <div key={pIdx} style={{ marginBottom: 10 }}>
-                                                <div style={{ color: 'var(--text)', fontWeight: 600, fontSize: 11, marginBottom: 4 }}>{header}</div>
+                                              <div key={pIdx} style={{ }}>
+                                                <div style={{ color: 'var(--text)', fontWeight: 600, fontSize: 11 }}>{header}</div>
                                                 <div>{rest}</div>
                                               </div>
                                             );
                                           }
-                                          return <div key={pIdx} style={{ marginBottom: 8 }}>{paragraph}</div>;
+                                          return <div key={pIdx} style={{ }}>{paragraph}</div>;
                                         })}
                                       </div>
                                     )}
                                     
                                     {report.assumptions && report.assumptions.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 6 }}>KEY ASSUMPTIONS</div>
+                                      <div style={{ }}>
+                                        <div style={{ fontSize: 10, color: 'var(--text3)' }}>KEY ASSUMPTIONS</div>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                                           {report.assumptions.map((a, i) => (
                                             <span key={i} style={{ padding: '3px 8px', background: 'var(--surface)', borderRadius: 4, fontSize: 11, color: 'var(--text2)' }}>
@@ -9188,8 +9180,8 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                                     )}
                                     
                                     {report.catalysts && report.catalysts.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--mint)', marginBottom: 4 }}>CATALYSTS</div>
+                                      <div style={{ }}>
+                                        <div style={{ fontSize: 10, color: 'var(--mint)' }}>CATALYSTS</div>
                                         <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
                                           {report.catalysts.map((c, i) => <li key={i}>{c}</li>)}
                                         </ul>
@@ -9197,8 +9189,8 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                                     )}
                                     
                                     {report.risks && report.risks.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--coral)', marginBottom: 4 }}>RISKS</div>
+                                      <div style={{ }}>
+                                        <div style={{ fontSize: 10, color: 'var(--coral)' }}>RISKS</div>
                                         <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
                                           {report.risks.map((r, i) => <li key={i}>{r}</li>)}
                                         </ul>
@@ -9206,8 +9198,8 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                                     )}
                                     
                                     {report.estimates && report.estimates.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 4 }}>ESTIMATES</div>
+                                      <div style={{ }}>
+                                        <div style={{ fontSize: 10, color: 'var(--sky)' }}>ESTIMATES</div>
                                         <table className="tbl">
                                           <thead>
                                             <tr>
@@ -9243,7 +9235,7 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
                                     )}
                                     
                                     {report.fullNotes && (
-                                      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                                      <div style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
                                         {report.fullNotes}
                                       </div>
                                     )}
