@@ -2433,7 +2433,7 @@ const CRCLQuarterlyMetricsPanel = () => {
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <AreaChart data={quarterlyData.map(d => ({ quarter: d.quarter, cash: d.cashPosition }))}>
+            <AreaChart data={quarterlyData.slice().reverse().map(d => ({ quarter: d.quarter, cash: d.cashPosition }))}>
               <defs>
                 <linearGradient id="cashGradientCRCL" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
@@ -2456,7 +2456,7 @@ const CRCLQuarterlyMetricsPanel = () => {
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <LineChart data={quarterlyData.map(d => ({ quarter: d.quarter, opEx: d.opex }))}>
+            <LineChart data={quarterlyData.slice().reverse().map(d => ({ quarter: d.quarter, opEx: d.opex }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
@@ -2578,7 +2578,7 @@ const CRCLQuarterlyMetricsPanel = () => {
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>USDC Circulation ($B)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <AreaChart data={quarterlyData.map(d => ({ quarter: d.quarter, usdc: d.usdcCirculation }))}>
+            <AreaChart data={quarterlyData.slice().reverse().map(d => ({ quarter: d.quarter, usdc: d.usdcCirculation }))}>
               <defs>
                 <linearGradient id="usdcGradientCRCL" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
@@ -2600,7 +2600,7 @@ const CRCLQuarterlyMetricsPanel = () => {
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Adjusted EBITDA ($M)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={quarterlyData.map(d => ({ quarter: d.quarter, ebitda: d.adjustedEbitda }))}>
+            <BarChart data={quarterlyData.slice().reverse().map(d => ({ quarter: d.quarter, ebitda: d.adjustedEbitda }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />

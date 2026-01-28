@@ -5199,7 +5199,7 @@ const BMNRQuarterlyMetricsPanel = () => {
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <AreaChart data={quarterlyData.map(q => ({ quarter: q.quarter, cash: q.cash }))}>
+            <AreaChart data={quarterlyData.slice().reverse().map(q => ({ quarter: q.quarter, cash: q.cash }))}>
               <defs>
                 <linearGradient id="cashGradientBMNR" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
@@ -5222,7 +5222,7 @@ const BMNRQuarterlyMetricsPanel = () => {
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <LineChart data={quarterlyData.filter(q => q.opEx).map(q => ({ quarter: q.quarter, opEx: q.opEx }))}>
+            <LineChart data={quarterlyData.slice().reverse().filter(q => q.opEx).map(q => ({ quarter: q.quarter, opEx: q.opEx }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
@@ -5284,7 +5284,7 @@ const BMNRQuarterlyMetricsPanel = () => {
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>Share Count (Outstanding)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={quarterlyData.map(q => ({ quarter: q.quarter, shares: q.shares }))}>
+            <BarChart data={quarterlyData.slice().reverse().map(q => ({ quarter: q.quarter, shares: q.shares }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `${v}M`} />
@@ -5332,7 +5332,7 @@ const BMNRQuarterlyMetricsPanel = () => {
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Crypto Holdings Evolution<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={quarterlyData.map(q => ({ quarter: q.quarter, crypto: q.crypto }))}>
+            <BarChart data={quarterlyData.slice().reverse().map(q => ({ quarter: q.quarter, crypto: q.crypto }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => v >= 1000 ? `$${(v/1000).toFixed(1)}B` : `$${v}M`} />
@@ -5349,7 +5349,7 @@ const BMNRQuarterlyMetricsPanel = () => {
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--mint)' }}>Net Income/(Loss)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={quarterlyData.map(q => ({ quarter: q.quarter, income: q.netIncome }))}>
+            <BarChart data={quarterlyData.slice().reverse().map(q => ({ quarter: q.quarter, income: q.netIncome }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => v >= 1000 ? `$${(v/1000).toFixed(1)}B` : v <= -1000 ? `($${(Math.abs(v)/1000).toFixed(1)}B)` : `$${v}M`} />
