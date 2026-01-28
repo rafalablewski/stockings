@@ -8319,6 +8319,7 @@ const TimelineTab = () => {
       </div>
 
       {/* How to Use */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#timeline-header</div>
       <div className="card"><div className="card-title">How to Use This Log</div>
         <div className="g2" style={{ fontSize: 13 }}>
           <div>

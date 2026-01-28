@@ -8643,34 +8643,8 @@ const TimelineTab = () => {
         })}
       </div>
 
-      {/* Key Milestones - Unified styling */}
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Milestones Tracker<UpdateIndicators sources="PR" /></div>
-        <div className="g2">
-          <div className="bg-slate-900/60 border border-slate-700/40 rounded-xl p-4 backdrop-blur-sm">
-            <h4 className="font-semibold text-violet-400 mb-3 text-sm uppercase tracking-wider">Alchemy of 5% Progress</h4>
-            <div className="mb-3">
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-slate-400">Current: <span className="text-white font-medium">3.45%</span></span>
-                <span className="text-slate-400">Target: <span className="text-violet-400 font-medium">5.00%</span></span>
-              </div>
-              <div className="h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700/40">
-                <div className="h-full bg-gradient-to-r from-violet-600 to-violet-400 rounded-full transition-all" style={{ width: '69%' }} />
-              </div>
-              <div className="text-xs text-slate-500 mt-2">69% achieved (70% per PR) • 1.55% of supply remaining to reach 5%</div>
-            </div>
-          </div>
-          <div className="bg-slate-900/60 border border-slate-700/40 rounded-xl p-4 backdrop-blur-sm">
-            <h4 className="font-semibold text-violet-400 mb-3 text-sm uppercase tracking-wider">ETH Accumulation Rate</h4>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between py-1"><span className="text-slate-400">Latest increase:</span><span className="text-green-400 font-medium tabular-nums">+24,266 ETH</span></div>
-              <div className="flex justify-between py-1"><span className="text-slate-400">Period:</span><span className="text-white tabular-nums">~1 week</span></div>
-              <div className="flex justify-between py-1"><span className="text-slate-400">Run rate:</span><span className="text-white tabular-nums">~3,467 ETH/day</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* How to Use - Unified styling */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#timeline-header</div>
       <div className="card"><div className="card-title">How to Use This Log</div>
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div>
