@@ -4535,17 +4535,17 @@ const QuarterlyMetricsPanel = () => {
   const opExQuarters = quarters.filter(q => quarterlyData[q].opExEngineering);
   
   const metrics = [
-    { label: 'Cash & Equiv.*', key: 'cashAndEquiv', tooltipKey: 'cashOnly', format: v => v === null ? '—' : `$${v.toFixed(0)}M`, unit: '$M' },
-    { label: 'Total Debt*', key: 'totalDebt', format: v => v === null ? '—' : `$${v.toFixed(0)}M`, unit: '$M' },
-    { label: 'Revenue', key: 'revenue', format: v => v === null ? '—' : v === 0 ? '$0' : `$${v.toFixed(1)}M`, unit: '$M' },
-    { label: 'OpEx', key: 'opEx', format: v => v === null ? '—' : `$${v.toFixed(0)}M`, unit: '$M' },
-    { label: 'Net Income', key: 'netLoss', format: v => v === null ? '—' : v >= 0 ? `$${v.toFixed(0)}M` : `-$${Math.abs(v).toFixed(0)}M`, unit: '$M' },
-    { label: 'Stock Price', key: 'stockPrice', format: v => v === null ? '—' : v === 0 ? 'Private' : `$${v.toFixed(2)}`, unit: '$' },
-    { label: 'Shares (A)', key: 'sharesOutstanding', format: v => v === null ? '—' : v === 0 ? 'Private' : `${v.toFixed(0)}M`, unit: 'M' },
-    { label: 'Satellites', key: 'satellites', format: v => v === null ? '—' : v, unit: '' },
-    { label: 'Employees*', key: 'employees', format: v => v === null ? '—' : v === 0 ? '—' : v.toLocaleString(), unit: '' },
-    { label: 'Agreements', key: 'definitiveAgreements', format: v => v === null ? '—' : v, unit: '' },
-    { label: 'MOUs', key: 'mous', format: v => v === null ? '—' : v, unit: '' },
+    { label: 'Cash & Equiv.*', key: 'cashAndEquiv', tooltipKey: 'cashOnly', format: v => v === null ? '—' : `$${v.toFixed(0)}M`, color: v => v === null ? undefined : 'var(--mint)', unit: '$M' },
+    { label: 'Total Debt*', key: 'totalDebt', format: v => v === null ? '—' : `$${v.toFixed(0)}M`, color: () => undefined, unit: '$M' },
+    { label: 'Revenue', key: 'revenue', format: v => v === null ? '—' : v === 0 ? '$0' : `$${v.toFixed(1)}M`, color: v => v === null ? undefined : 'var(--mint)', unit: '$M' },
+    { label: 'OpEx', key: 'opEx', format: v => v === null ? '—' : `$${v.toFixed(0)}M`, color: v => v === null ? undefined : 'var(--coral)', unit: '$M' },
+    { label: 'Net Income', key: 'netLoss', format: v => v === null ? '—' : v >= 0 ? `$${v.toFixed(0)}M` : `-$${Math.abs(v).toFixed(0)}M`, color: v => v === null ? undefined : v >= 0 ? 'var(--mint)' : 'var(--coral)', unit: '$M' },
+    { label: 'Stock Price', key: 'stockPrice', format: v => v === null ? '—' : v === 0 ? 'Private' : `$${v.toFixed(2)}`, color: () => undefined, unit: '$' },
+    { label: 'Shares (A)', key: 'sharesOutstanding', format: v => v === null ? '—' : v === 0 ? 'Private' : `${v.toFixed(0)}M`, color: v => v === null || v === 0 ? undefined : 'var(--gold)', unit: 'M' },
+    { label: 'Satellites', key: 'satellites', format: v => v === null ? '—' : v, color: v => v === null ? undefined : 'var(--cyan)', unit: '' },
+    { label: 'Employees*', key: 'employees', format: v => v === null ? '—' : v === 0 ? '—' : v.toLocaleString(), color: () => undefined, unit: '' },
+    { label: 'Agreements', key: 'definitiveAgreements', format: v => v === null ? '—' : v, color: () => undefined, unit: '' },
+    { label: 'MOUs', key: 'mous', format: v => v === null ? '—' : v, color: () => undefined, unit: '' },
   ];
   
   const getValue = (data, metric) => {
@@ -4582,7 +4582,10 @@ const QuarterlyMetricsPanel = () => {
   }, [quarterlyData, displayQuarters]);
 
   return (
-    <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
+    <>
+      {/* #quarterly-metrics */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#quarterly-metrics</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
       {/* Dynamic Summary Badges */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
         <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
@@ -4605,8 +4608,8 @@ const QuarterlyMetricsPanel = () => {
           <thead>
             <tr>
               <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
-              {displayQuarters.map(q => (
-                <th key={q} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap' }}>
+              {displayQuarters.map((q, idx) => (
+                <th key={q} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === 0 ? { background: 'var(--accent-dim)' } : {}) }}>
                   {q.replace('Q', '').replace(' ', "'")}
                 </th>
               ))}
@@ -4624,11 +4627,17 @@ const QuarterlyMetricsPanel = () => {
                   const tooltip = metric.tooltipKey && data[metric.tooltipKey] !== undefined
                     ? `Cash only: $${data[metric.tooltipKey].toFixed(1)}M`
                     : null;
+                  const cellColor = metric.color ? metric.color(val) : undefined;
+                  const isLatestQuarter = q === displayQuarters[0];
                   return (
                     <td
                       key={q}
                       className="r"
                       title={tooltip}
+                      style={{
+                        ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
+                        ...(cellColor ? { color: cellColor } : {})
+                      }}
                     >
                       {metric.format(val)}
                     </td>
@@ -4649,6 +4658,7 @@ const QuarterlyMetricsPanel = () => {
       
       {/* Key Notes from Filing - Matching BMNR style */}
       <div style={{ marginTop: 16 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#latest-quarter-summary</div>
         <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary (Q3 2025)<UpdateIndicators sources="SEC" /></div>
         <div className="g2">
           <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
@@ -4687,7 +4697,8 @@ const QuarterlyMetricsPanel = () => {
 
       {/* Historical Trend Charts */}
       {/* ROW 1: Cash Position & OpEx */}
-      <div className="g2" style={{ marginTop: 24 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-1</div>
+      <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
@@ -4705,6 +4716,9 @@ const QuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="cashAndEquiv" stroke="var(--mint)" fill="url(#cashGradient)" />
             </AreaChart>
           </ResponsiveContainer>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Cash & Equivalents</span></div>
+          </div>
         </div>
 
         <div className="card">
@@ -4793,7 +4807,8 @@ const QuarterlyMetricsPanel = () => {
       </div>
       
       {/* ROW 2: Share Count & Market Cap */}
-      <div className="g2" style={{ marginTop: 16 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-2</div>
+      <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
@@ -4840,7 +4855,8 @@ const QuarterlyMetricsPanel = () => {
       </div>
 
       {/* ROW 3: Company-Specific (Satellites) */}
-      <div className="g2" style={{ marginTop: 16 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-3</div>
+      <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Satellites Deployed<UpdateIndicators sources="PR" /></div>
           <ResponsiveContainer width="100%" height={150}>
@@ -4852,9 +4868,12 @@ const QuarterlyMetricsPanel = () => {
               <Bar dataKey="satellites" fill="var(--cyan)" />
             </BarChart>
           </ResponsiveContainer>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--cyan)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Satellites Deployed</span></div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
