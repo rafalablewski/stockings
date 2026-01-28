@@ -8360,6 +8360,7 @@ const TimelineTab = () => {
           </div>
         </div>
 
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#recent-press-releases</div>
         <div className="card">
           {/* [PR_CHECKLIST_RECENT_PRESS_RELEASES] - Add new PR at top! */}
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
@@ -8610,7 +8611,8 @@ const TimelineTab = () => {
           </div>
         </div>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa</div>
       <CFANotes title="CFA Level III — Timeline Analysis" items={[
         { term: 'Audit Trail', def: 'Chronological record of all official announcements and filings. Essential for tracking management guidance vs actual results over time.' },
         { term: 'Holdings Updates', def: 'Weekly press releases reporting ETH holdings, staking status, and key metrics. BMNR\'s transparency differentiator vs peers.' },

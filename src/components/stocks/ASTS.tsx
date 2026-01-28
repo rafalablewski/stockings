@@ -8041,6 +8041,7 @@ const TimelineTab = () => {
           </div>
         </div>
 
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#recent-press-releases</div>
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -8255,7 +8256,8 @@ const TimelineTab = () => {
           </div>
         </div>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa</div>
       <CFANotes title="CFA Level III — Timeline Analysis" items={[
         { term: 'Audit Trail', def: 'Chronological record of all guidance changes, data updates, and material events. Never delete historical entries.' },
         { term: 'Category Types', def: 'Guidance (management projections), Data (SEC verified), Event (catalysts). Filter by type for focused analysis.' },

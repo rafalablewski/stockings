@@ -5320,6 +5320,7 @@ function CRCLModel() {
                   </div>
                 </div>
 
+                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#recent-press-releases</div>
                 <div className="card">
                   <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -5499,7 +5500,8 @@ function CRCLModel() {
                   </div>
                 </div>
               </div>
-              
+
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#cfa</div>
               <CFANotes title="CFA Level III — Timeline Analysis" items={[
                 { term: 'SEC Filing Types', def: '10-K (annual), 10-Q (quarterly), 8-K (material events), S-1 (IPO registration), S-3 (shelf registration). Each serves different disclosure purpose.' },
                 { term: 'Material Events', def: 'Earnings, major contracts, management changes, M&A. 8-K filings required within 4 business days.' },
