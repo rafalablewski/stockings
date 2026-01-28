@@ -5103,16 +5103,47 @@ function CRCLModel() {
               {/* Risk Metrics */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-                  <Card label="Win Probability" value={`${mcSim.winProb.toFixed(0)}%`} sub="> current price" color={mcSim.winProb > 50 ? 'green' : 'red'} />
-                  <Card label="Expected Value" value={`$${mcSim.mean.toFixed(0)}`} sub="Mean fair value" color="mint" />
-                  <Card label="Sharpe Ratio" value={mcSim.sharpe.toFixed(2)} sub={mcSim.sharpe > 1 ? 'Excellent' : mcSim.sharpe > 0.5 ? 'Good' : 'Moderate'} color={mcSim.sharpe > 0.5 ? 'green' : 'yellow'} />
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
-                  <Card label="Sortino Ratio" value={mcSim.sortino.toFixed(2)} sub="Downside-adjusted" color={mcSim.sortino > 0.7 ? 'green' : 'yellow'} />
-                  <Card label="VaR (5%)" value={`${mcSim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
-                  <Card label="CVaR (5%)" value={`${mcSim.cvar5.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
-                </div>
+                <table className="tbl" style={{ width: '100%' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: 'left' }}>Risk Metric</th>
+                      <th className="r">Value</th>
+                      <th style={{ textAlign: 'left' }}>Interpretation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Win Probability</td>
+                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.winProb > 50 ? 'var(--mint)' : 'var(--red)' }}>{mcSim.winProb.toFixed(1)}%</td>
+                      <td style={{ color: 'var(--text3)' }}>Prob. of exceeding current price</td>
+                    </tr>
+                    <tr>
+                      <td>Expected Value</td>
+                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${mcSim.mean.toFixed(2)}</td>
+                      <td style={{ color: 'var(--text3)' }}>Mean simulated fair value</td>
+                    </tr>
+                    <tr>
+                      <td>Sharpe Ratio</td>
+                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.sharpe > 1 ? 'var(--mint)' : mcSim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sharpe.toFixed(2)}</td>
+                      <td style={{ color: 'var(--text3)' }}>{mcSim.sharpe > 1 ? 'Excellent risk-adj return' : mcSim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return'}</td>
+                    </tr>
+                    <tr>
+                      <td>Sortino Ratio</td>
+                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.sortino > 1 ? 'var(--mint)' : mcSim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sortino.toFixed(2)}</td>
+                      <td style={{ color: 'var(--text3)' }}>Downside-adjusted return</td>
+                    </tr>
+                    <tr>
+                      <td>VaR (5%)</td>
+                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{mcSim.var5.toFixed(1)}%</td>
+                      <td style={{ color: 'var(--text3)' }}>95% confidence floor</td>
+                    </tr>
+                    <tr>
+                      <td>CVaR (5%)</td>
+                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{mcSim.cvar5.toFixed(1)}%</td>
+                      <td style={{ color: 'var(--text3)' }}>Expected tail loss</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
 
               {/* Distribution Chart */}

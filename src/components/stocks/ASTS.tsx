@@ -3739,16 +3739,47 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Risk Metrics */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-          <Card label="Win Probability" value={`${sim.winProbability.toFixed(0)}%`} sub="> current price" color="blue" />
-          <Card label="Expected Value" value={`$${sim.mean.toFixed(0)}`} sub="Mean fair value" color="cyan" />
-          <Card label="Sharpe Ratio" value={sim.sharpe.toFixed(2)} sub={sim.sharpe > 1 ? 'Excellent' : sim.sharpe > 0.5 ? 'Good' : 'Moderate'} color={sim.sharpe > 0.5 ? 'green' : 'yellow'} />
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
-          <Card label="Sortino Ratio" value={sim.sortino.toFixed(2)} sub="Downside-adjusted" color={sim.sortino > 0.7 ? 'green' : 'yellow'} />
-          <Card label="VaR (5%)" value={`${sim.var5.toFixed(0)}%`} sub="95% conf floor" color="red" />
-          <Card label="CVaR (5%)" value={`${sim.cvar5.toFixed(0)}%`} sub="Exp. tail loss" color="red" />
-        </div>
+        <table className="tbl" style={{ width: '100%' }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left' }}>Risk Metric</th>
+              <th className="r">Value</th>
+              <th style={{ textAlign: 'left' }}>Interpretation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Win Probability</td>
+              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.winProbability > 50 ? 'var(--mint)' : 'var(--red)' }}>{sim.winProbability.toFixed(1)}%</td>
+              <td style={{ color: 'var(--text3)' }}>Prob. of exceeding current price</td>
+            </tr>
+            <tr>
+              <td>Expected Value</td>
+              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${sim.mean.toFixed(2)}</td>
+              <td style={{ color: 'var(--text3)' }}>Mean simulated fair value</td>
+            </tr>
+            <tr>
+              <td>Sharpe Ratio</td>
+              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sharpe > 1 ? 'var(--mint)' : sim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sharpe.toFixed(2)}</td>
+              <td style={{ color: 'var(--text3)' }}>{sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return'}</td>
+            </tr>
+            <tr>
+              <td>Sortino Ratio</td>
+              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sortino > 1 ? 'var(--mint)' : sim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sortino.toFixed(2)}</td>
+              <td style={{ color: 'var(--text3)' }}>Downside-adjusted return</td>
+            </tr>
+            <tr>
+              <td>VaR (5%)</td>
+              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</td>
+              <td style={{ color: 'var(--text3)' }}>95% confidence floor</td>
+            </tr>
+            <tr>
+              <td>CVaR (5%)</td>
+              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.cvar5.toFixed(1)}%</td>
+              <td style={{ color: 'var(--text3)' }}>Expected tail loss</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       {/* Distribution Chart */}
