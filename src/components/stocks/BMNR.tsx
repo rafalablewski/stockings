@@ -5132,7 +5132,7 @@ const SECFilingsTab = () => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#financials-overview</div>
       <div className="highlight">
         <h3 style={{ display: 'flex', alignItems: 'center' }}>{config.highlightTitle}<UpdateIndicators sources="SEC" /></h3>
-        <p className="text-sm text-slate-300">{config.highlightText}</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>{config.highlightText}</p>
       </div>
       
       {/* ═══════════════════════════════════════════════════════════════════ */}
@@ -5385,13 +5385,13 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-        <h4 className="text-sm font-medium text-yellow-400 mb-3" style={{ display: 'flex', alignItems: 'center' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+      <div className="card" style={{ marginTop: 32 }}>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></div>
+        <div className="g4">
           {config.milestones.map((m, i) => (
-            <div key={i} className="p-2 bg-slate-800/50 rounded">
-              <div className="text-slate-500">{m.date}</div>
-              <div className="text-slate-300">{m.event}</div>
+            <div key={i} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div>
+              <div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div>
             </div>
           ))}
         </div>

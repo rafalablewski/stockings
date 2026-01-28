@@ -2805,10 +2805,10 @@ function CRCLModel() {
               {/* ═══════════════════════════════════════════════════════════════════ */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#financials-overview</div>
               <div className="highlight">
-                <h3>Revenue Growth Story</h3>
-                <p className="text-sm text-slate-300">
+                <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue Growth Story<UpdateIndicators sources="SEC" /></h3>
+                <p style={{ fontSize: 14, color: 'var(--text2)' }}>
                   Circle's revenue is driven by reserve income (96%) from USDC holdings invested in T-bills and repos.
-                  Distribution costs (~54%) go to Coinbase under the USDC consortium agreement. RLDC (Revenue Less 
+                  Distribution costs (~54%) go to Coinbase under the USDC consortium agreement. RLDC (Revenue Less
                   Distribution Costs) represents true gross profit. Watch for margin expansion as Platform % grows.
                 </p>
               </div>
@@ -3060,9 +3060,9 @@ function CRCLModel() {
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
-              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-                <h4 className="text-sm font-medium text-yellow-400 mb-3">📅 Key Financial Milestones</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div className="card" style={{ marginTop: 32 }}>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></div>
+                <div className="g4">
                   {[
                     { date: 'Jul 2021', event: 'SPAC Announced' },
                     { date: 'Dec 2022', event: 'SPAC Terminated' },
@@ -3073,9 +3073,9 @@ function CRCLModel() {
                     { date: 'Dec 2025', event: 'OCC Charter' },
                     { date: 'YE 2025', event: 'ATH: $299' },
                   ].map((m, i) => (
-                    <div key={i} className="p-2 bg-slate-800/50 rounded">
-                      <div className="text-slate-500">{m.date}</div>
-                      <div className="text-slate-300">{m.event}</div>
+                    <div key={i} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+                      <div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div>
+                      <div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div>
                     </div>
                   ))}
                 </div>
