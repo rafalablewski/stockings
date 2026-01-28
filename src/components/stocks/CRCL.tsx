@@ -2289,7 +2289,7 @@ const DCFTab = () => {
 // QUARTERLY METRICS PANEL - Unified pattern matching ASTS QuarterlyMetricsPanel
 // ═══════════════════════════════════════════════════════════════════════════════
 const CRCLQuarterlyMetricsPanel = () => {
-  const [opExQuarter, setOpExQuarter] = useState("Q3'25");
+  const [opExQuarter, setOpExQuarter] = useState("Q3 2025");
 
   // Extended quarterlyData with OpEx breakdown - matches ASTS pattern
   const quarterlyData = DATA.map(d => ({
@@ -2384,9 +2384,9 @@ const CRCLQuarterlyMetricsPanel = () => {
 
         {/* Footnotes - ASTS pattern */}
         <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
-          <p style={{ marginBottom: 4 }}>* Q2'25 net loss includes $660M IPO-related stock-based compensation acceleration. Normalized EPS was positive.</p>
+          <p style={{ marginBottom: 4 }}>* Q2 2025 net loss includes $660M IPO-related stock-based compensation acceleration. Normalized EPS was positive.</p>
           <p style={{ marginBottom: 4 }}>* RLDC (Revenue Less Distribution Costs) is Circle's key profitability metric. Distribution costs are payments to exchange partners (Coinbase, Binance).</p>
-          <p>* Data from SEC filings (10-K, 10-Q, S-1). Circle went public via IPO in Q2'25 at $31/share.</p>
+          <p>* Data from SEC filings (10-K, 10-Q, S-1). Circle went public via IPO in Q2 2025 at $31/share.</p>
         </div>
 
         {/* Latest Quarter Summary - ASTS pattern */}
@@ -2450,7 +2450,7 @@ const CRCLQuarterlyMetricsPanel = () => {
           <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Cash & Equivalents</span></div>
           </div>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Strong cash position from IPO proceeds ($500M+ raised Q2'25). Includes treasury, short-term investments, and money market funds.</div>
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Strong cash position from IPO proceeds ($500M+ raised Q2 2025). Includes treasury, short-term investments, and money market funds.</div>
         </div>
 
         <div className="card">
@@ -2522,12 +2522,12 @@ const CRCLQuarterlyMetricsPanel = () => {
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={[
               { quarter: 'IPO', shares: 200 },
-              { quarter: "Q2'24", shares: 205 },
-              { quarter: "Q3'24", shares: 210 },
-              { quarter: "Q4'24", shares: 215 },
-              { quarter: "Q1'25", shares: 220 },
-              { quarter: "Q2'25", shares: 225 },
-              { quarter: "Q3'25", shares: 230 },
+              { quarter: "Q2 2024", shares: 205 },
+              { quarter: "Q3 2024", shares: 210 },
+              { quarter: "Q4 2024", shares: 215 },
+              { quarter: "Q1 2025", shares: 220 },
+              { quarter: "Q2 2025", shares: 225 },
+              { quarter: "Q3 2025", shares: 230 },
             ]}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
@@ -2546,12 +2546,12 @@ const CRCLQuarterlyMetricsPanel = () => {
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={[
               { quarter: 'IPO', mktCap: 7.1 },
-              { quarter: "Q2'24", mktCap: 8.2 },
-              { quarter: "Q3'24", mktCap: 10.5 },
-              { quarter: "Q4'24", mktCap: 12.8 },
-              { quarter: "Q1'25", mktCap: 15.2 },
-              { quarter: "Q2'25", mktCap: 14.1 },
-              { quarter: "Q3'25", mktCap: 18.8 },
+              { quarter: "Q2 2024", mktCap: 8.2 },
+              { quarter: "Q3 2024", mktCap: 10.5 },
+              { quarter: "Q4 2024", mktCap: 12.8 },
+              { quarter: "Q1 2025", mktCap: 15.2 },
+              { quarter: "Q2 2025", mktCap: 14.1 },
+              { quarter: "Q3 2025", mktCap: 18.8 },
             ]}>
               <defs>
                 <linearGradient id="mcapGradientCRCL" x1="0" y1="0" x2="0" y2="1">
@@ -2714,7 +2714,7 @@ function CRCLModel() {
   // Overview Tab Parameters - Unified with ASTS/BMNR structure
   const [currentShares, setCurrentShares] = useState(MARKET.shares);  // Millions (Class A + Class B)
   const [currentStockPrice, setCurrentStockPrice] = useState(MARKET.price);  // ⚠️ UPDATE REGULARLY
-  const [currentUSDC, setCurrentUSDC] = useState(62.5);  // USDC Circulation $B - from Q3'25 10-Q
+  const [currentUSDC, setCurrentUSDC] = useState(62.5);  // USDC Circulation $B - from Q3 2025 10-Q
   const [currentMarketShare, setCurrentMarketShare] = useState(29);  // USDC market share %
 
   const toggleInvestmentSection = (section: string) => {
@@ -2778,7 +2778,7 @@ function CRCLModel() {
   };
 
   const latest = DATA[DATA.length - 1];
-  const prevYear = DATA.find(d => d.quarter === "Q3'24");
+  const prevYear = DATA.find(d => d.quarter === "Q3 2024");
   const revGrowth = prevYear && prevYear.totalRevenue > 0 ? ((latest.totalRevenue - prevYear.totalRevenue) / prevYear.totalRevenue * 100) : 0;
   const usdcGrowth = prevYear && prevYear.usdcCirculation > 0 ? ((latest.usdcCirculation - prevYear.usdcCirculation) / prevYear.usdcCirculation * 100) : 0;
   const ipoReturn = MARKET.ipo > 0 ? ((MARKET.price - MARKET.ipo) / MARKET.ipo * 100) : 0;
@@ -3236,7 +3236,7 @@ function CRCLModel() {
                           Regulated stablecoin infrastructure play with TradFi optionality, trading at 50% discount to payment network peers
                         </div>
                         <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
-                          Last Updated: Dec 31, 2025 • Trigger: Q3'25 10-Q, OCC Charter Approval
+                          Last Updated: Dec 31, 2025 • Trigger: Q3 2025 10-Q, OCC Charter Approval
                         </div>
                       </div>
                       <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
@@ -3319,7 +3319,7 @@ function CRCLModel() {
                           <div style={{ fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>What's New (Dec 2025)</div>
                           <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
                             <li>OCC conditional approval for National Trust Charter — first digital currency bank</li>
-                            <li>Q3'25 beat: Revenue +66% YoY, USDC $73.7B (+108%), raised RLDC guidance to 38-40%</li>
+                            <li>Q3 2025 beat: Revenue +66% YoY, USDC $73.7B (+108%), raised RLDC guidance to 38-40%</li>
                             <li>Intuit partnership announced — potential ~100M user distribution</li>
                             <li>Lock-up expiry imminent (~198M shares) — monitoring insider behavior</li>
                           </ul>
@@ -3483,7 +3483,7 @@ function CRCLModel() {
                         {/* Summary */}
                         <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8, marginBottom: 16 }}>
                           <p style={{ marginBottom: 12 }}>
-                            <strong style={{ color: 'var(--mint)' }}>USDC Momentum:</strong> Circulation grew from $32.3B (Q2'24) to $73.7B (Q3'25) — a 128% increase in 18 months. Growth is accelerating: +20% QoQ in Q3'25 vs +18% in Q2'25. The flywheel is working as more integrations drive more use cases drive more circulation.
+                            <strong style={{ color: 'var(--mint)' }}>USDC Momentum:</strong> Circulation grew from $32.3B (Q2 2024) to $73.7B (Q3 2025) — a 128% increase in 18 months. Growth is accelerating: +20% QoQ in Q3 2025 vs +18% in Q2 2025. The flywheel is working as more integrations drive more use cases drive more circulation.
                           </p>
                           <p style={{ marginBottom: 0 }}>
                             <strong style={{ color: 'var(--sky)' }}>Geographic Diversification:</strong> Circle is methodically obtaining licenses globally to reduce US concentration risk. MiCA compliance in Europe, FSA registration in Japan, and partnerships in LatAm (Nubank 100M+ users) and MENA create multiple growth vectors.
@@ -3582,7 +3582,7 @@ function CRCLModel() {
                           </div>
                         </div>
                         <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 16, fontStyle: 'italic' }}>
-                          * P/S based on Q3'25 annualized run-rate revenue ($2.96B). TTM P/S (Q4'24–Q3'25) is 7.8x.
+                          * P/S based on Q3 2025 annualized run-rate revenue ($2.96B). TTM P/S (Q4 2024–Q3 2025) is 7.8x.
                         </div>
 
                         {/* Summary */}
@@ -3983,9 +3983,9 @@ function CRCLModel() {
                               <span style={{ color: 'var(--mint)', fontWeight: 600, fontSize: 13 }}>OVERWEIGHT</span>
                             </div>
                             <div style={{ color: 'var(--text2)', fontSize: 13 }}>
-                              Post-Q3'25: Upgraded conviction on execution. USDC at $73.7B validates network effects thesis. OCC charter approval removes key regulatory overhang. Maintaining overweight despite lock-up supply risk given fundamental momentum.
+                              Post-Q3 2025: Upgraded conviction on execution. USDC at $73.7B validates network effects thesis. OCC charter approval removes key regulatory overhang. Maintaining overweight despite lock-up supply risk given fundamental momentum.
                             </div>
-                            <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Trigger: Q3'25 10-Q, OCC Charter Approval (Dec 12)</div>
+                            <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Trigger: Q3 2025 10-Q, OCC Charter Approval (Dec 12)</div>
                           </div>
 
                           {[
@@ -4674,7 +4674,7 @@ function CRCLModel() {
                   </tbody>
                 </table>
                 <div style={{ marginTop: 16, fontSize: 13, color: 'var(--text3)' }}>
-                  Note: Excludes 33.9M shares reserved under Omnibus/ESPP plans not yet granted. Lock-up: ~198M shares restricted until Q3'25 earnings or 180 days post-IPO.
+                  Note: Excludes 33.9M shares reserved under Omnibus/ESPP plans not yet granted. Lock-up: ~198M shares restricted until Q3 2025 earnings or 180 days post-IPO.
                 </div>
               </div>
               </>

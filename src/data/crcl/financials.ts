@@ -82,7 +82,7 @@ export interface CRCLQuarterlyData {
 
 export const QUARTERLY_DATA: CRCLQuarterlyData[] = [
   {
-    quarter: "Q3'25",
+    quarter: "Q3 2025",
     totalRevenue: 740,
     reserveIncome: 711,
     otherRevenue: 29,
@@ -104,7 +104,7 @@ export const QUARTERLY_DATA: CRCLQuarterlyData[] = [
     sbc: 55,
   },
   {
-    quarter: "Q2'25",
+    quarter: "Q2 2025",
     totalRevenue: 658,
     reserveIncome: 634,
     otherRevenue: 24,
@@ -126,7 +126,7 @@ export const QUARTERLY_DATA: CRCLQuarterlyData[] = [
     sbc: 660,   // IPO-related SBC vesting
   },
   {
-    quarter: "Q1'25",
+    quarter: "Q1 2025",
     totalRevenue: 579,
     reserveIncome: 558,
     otherRevenue: 21,
@@ -148,7 +148,7 @@ export const QUARTERLY_DATA: CRCLQuarterlyData[] = [
     sbc: 92,
   },
   {
-    quarter: "Q4'24",
+    quarter: "Q4 2024",
     totalRevenue: 435,
     reserveIncome: 433,
     otherRevenue: 2,
@@ -170,7 +170,7 @@ export const QUARTERLY_DATA: CRCLQuarterlyData[] = [
     sbc: 85,
   },
   {
-    quarter: "Q3'24",
+    quarter: "Q3 2024",
     totalRevenue: 446,
     reserveIncome: 445,
     otherRevenue: 1,
@@ -192,7 +192,7 @@ export const QUARTERLY_DATA: CRCLQuarterlyData[] = [
     sbc: 72,
   },
   {
-    quarter: "Q2'24",
+    quarter: "Q2 2024",
     totalRevenue: 430,
     reserveIncome: 423,
     otherRevenue: 7,

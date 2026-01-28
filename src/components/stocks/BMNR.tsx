@@ -5057,15 +5057,15 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 // QUARTERLY METRICS PANEL - Unified pattern matching ASTS QuarterlyMetricsPanel
 // ═══════════════════════════════════════════════════════════════════════════════
 const BMNRQuarterlyMetricsPanel = () => {
-  const [opExQuarter, setOpExQuarter] = useState('FY25 10-K');
+  const [opExQuarter, setOpExQuarter] = useState('FY 2025');
 
   // === QUARTERLY DATA (transformed from original filings) ===
   const quarterlyData = [
-    { quarter: 'Q1 FY25', cash: 0.8, crypto: 0.15, cryptoType: 'BTC', assets: 7.93, liabilities: 4.47, equity: 3.47, revenue: 1.2, netIncome: -0.975, shares: 39.7, era: '⛏️ BTC', opEx: 2.2, opExGandA: 1.8, opExOther: 0.4, filing: '10-Q (Aug 2024)' },
-    { quarter: 'Q2 FY25', cash: 0.5, crypto: 0.25, cryptoType: 'BTC', assets: 7.50, liabilities: 4.82, equity: 2.68, revenue: 1.5, netIncome: -1.15, shares: 39.7, era: '⛏️ BTC', opEx: 2.5, opExGandA: 2.0, opExOther: 0.5, filing: '10-Q (Nov 2024)' },
-    { quarter: 'Q3 FY25', cash: 1.5, crypto: 0.17, cryptoType: 'BTC', assets: 8.27, liabilities: 5.39, equity: 2.88, revenue: 2.1, netIncome: -0.62, shares: 6.2, era: '⛏️ BTC', opEx: 2.8, opExGandA: 2.2, opExOther: 0.6, filing: '10-Q/A (Feb 2025)' },
-    { quarter: 'FY25 10-K', cash: 512, crypto: 8260, cryptoType: 'ETH', assets: 8800, liabilities: 102, equity: 8690, revenue: 5.8, netIncome: 328, shares: 384, era: '💎 ETH', opEx: 15, opExGandA: 10, opExTreasury: 3, opExOther: 2, filing: '10-K (Nov 2025)', ethHoldings: 4110000, stakingYield: 3.5, stakingDeployed: 409000 },
-    { quarter: 'Q1 FY26', cash: 888, crypto: 10562, cryptoType: 'ETH', assets: 11487, liabilities: 236, equity: 11252, revenue: 2.3, netIncome: -5204, shares: 409, era: '💎 ETH', opEx: 18, opExGandA: 12, opExTreasury: 4, opExOther: 2, filing: '10-Q (Jan 2026)', ethHoldings: 4500000, stakingYield: 3.5, stakingDeployed: 450000 },
+    { quarter: 'Q1 2025', cash: 0.8, crypto: 0.15, cryptoType: 'BTC', assets: 7.93, liabilities: 4.47, equity: 3.47, revenue: 1.2, netIncome: -0.975, shares: 39.7, era: '⛏️ BTC', opEx: 2.2, opExGandA: 1.8, opExOther: 0.4, filing: '10-Q (Aug 2024)' },
+    { quarter: 'Q2 2025', cash: 0.5, crypto: 0.25, cryptoType: 'BTC', assets: 7.50, liabilities: 4.82, equity: 2.68, revenue: 1.5, netIncome: -1.15, shares: 39.7, era: '⛏️ BTC', opEx: 2.5, opExGandA: 2.0, opExOther: 0.5, filing: '10-Q (Nov 2024)' },
+    { quarter: 'Q3 2025', cash: 1.5, crypto: 0.17, cryptoType: 'BTC', assets: 8.27, liabilities: 5.39, equity: 2.88, revenue: 2.1, netIncome: -0.62, shares: 6.2, era: '⛏️ BTC', opEx: 2.8, opExGandA: 2.2, opExOther: 0.6, filing: '10-Q/A (Feb 2025)' },
+    { quarter: 'FY 2025', cash: 512, crypto: 8260, cryptoType: 'ETH', assets: 8800, liabilities: 102, equity: 8690, revenue: 5.8, netIncome: 328, shares: 384, era: '💎 ETH', opEx: 15, opExGandA: 10, opExTreasury: 3, opExOther: 2, filing: '10-K (Nov 2025)', ethHoldings: 4110000, stakingYield: 3.5, stakingDeployed: 409000 },
+    { quarter: 'Q1 2026', cash: 888, crypto: 10562, cryptoType: 'ETH', assets: 11487, liabilities: 236, equity: 11252, revenue: 2.3, netIncome: -5204, shares: 409, era: '💎 ETH', opEx: 18, opExGandA: 12, opExTreasury: 4, opExOther: 2, filing: '10-Q (Jan 2026)', ethHoldings: 4500000, stakingYield: 3.5, stakingDeployed: 450000 },
   ];
 
   const latestQuarter = quarterlyData[quarterlyData.length - 1];
@@ -5151,8 +5151,8 @@ const BMNRQuarterlyMetricsPanel = () => {
         {/* Footnotes - ASTS pattern */}
         <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
           <p style={{ marginBottom: 4 }}>* Q3 shares corrected in 10-Q/A amendment due to reverse stock split accounting error.</p>
-          <p style={{ marginBottom: 4 }}>* FY25 10-K reflects post-pivot ETH treasury company. Pre-pivot quarters show BTC mining operations with going concern warning.</p>
-          <p>* Data from SEC filings (10-K, 10-Q, 8-K). Q1 FY26 net loss of ($5.2B) reflects unrealized ETH mark-to-market decline.</p>
+          <p style={{ marginBottom: 4 }}>* FY 2025 reflects post-pivot ETH treasury company. Pre-pivot quarters show BTC mining operations with going concern warning.</p>
+          <p>* Data from SEC filings (10-K, 10-Q, 8-K). Q1 2026 net loss of ($5.2B) reflects unrealized ETH mark-to-market decline.</p>
         </div>
 
         {/* Latest Quarter Summary - ASTS pattern */}
@@ -5301,11 +5301,11 @@ const BMNRQuarterlyMetricsPanel = () => {
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--sky)' }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={[
-              { quarter: 'Q1 FY25', mktCap: 40 },
-              { quarter: 'Q2 FY25', mktCap: 35 },
-              { quarter: 'Q3 FY25', mktCap: 50 },
-              { quarter: 'FY25 10-K', mktCap: 8800 },
-              { quarter: 'Q1 FY26', mktCap: 7200 },
+              { quarter: 'Q1 2025', mktCap: 40 },
+              { quarter: 'Q2 2025', mktCap: 35 },
+              { quarter: 'Q3 2025', mktCap: 50 },
+              { quarter: 'FY 2025', mktCap: 8800 },
+              { quarter: 'Q1 2026', mktCap: 7200 },
             ]}>
               <defs>
                 <linearGradient id="mcapGradientBMNR" x1="0" y1="0" x2="0" y2="1">
@@ -5383,10 +5383,10 @@ const SECFilingsTab = () => {
       { date: 'Aug 10, 2025', event: '1M ETH Milestone' },
       { date: 'Sep 2025', event: '2M ETH Milestone' },
       { date: 'Oct 2025', event: '3M ETH Milestone' },
-      { date: 'Nov 21, 2025', event: 'FY25 10-K: $349M NI' },
+      { date: 'Nov 21, 2025', event: 'FY 2025: $349M NI' },
       { date: 'Dec 21, 2025', event: '4M ETH Milestone' },
       { date: 'Dec 29, 2025', event: 'Staking: 409K ETH' },
-      { date: 'Jan 13, 2026', event: 'Q1 FY26 10-Q: First Staking Rev' },
+      { date: 'Jan 13, 2026', event: 'Q1 2026 10-Q: First Staking Rev' },
     ],
     cfaNotes: [
       { term: '10-K (Annual Report)', def: 'Comprehensive annual filing with audited financials, MD&A, risk factors. Most detailed disclosure. Filed within 60-90 days of fiscal year end.' },
@@ -7107,18 +7107,18 @@ const TimelineTab = () => {
   // SEC Filings data - update when new filings are processed
   const secFilings = [
     { date: 'Jan 15, 2026', type: '8-K', description: '2026 Annual Stockholder Meeting + Investor Presentation', period: '—', color: 'yellow' },
-    { date: 'Jan 13, 2026', type: '10-Q', description: 'Quarterly Report (Q1 FY2026) - First Staking Revenue', period: 'Q1 FY26', color: 'purple' },
+    { date: 'Jan 13, 2026', type: '10-Q', description: 'Quarterly Report (Q1 FY2026) - First Staking Revenue', period: 'Q1 2026', color: 'purple' },
     { date: 'Jan 2, 2026', type: 'DEFA14A', description: 'Proxy Solicitation - Chairman\'s Message', period: '—', color: 'cyan' },
     { date: 'Jan 2, 2026', type: '8-K', description: 'Vote YES on Auth Shares (500M→50B)', period: '—', color: 'yellow' },
     { date: 'Nov 21, 2025', type: '10-K', description: 'Annual Report (First Post-Pivot)', period: 'FY 2025', color: 'blue' },
     { date: 'Sep 22, 2025', type: '424B5', description: '$365M Registered Direct @ $70 + Warrants', period: '—', color: 'orange' },
     { date: 'Jul 9, 2025', type: 'S-3', description: '$2B ATM Shelf Registration', period: '—', color: 'green' },
-    { date: 'Jul 3, 2025', type: '10-Q', description: 'Quarterly Report (Q3 FY2025)', period: 'Q3 FY25', color: 'purple' },
+    { date: 'Jul 3, 2025', type: '10-Q', description: 'Quarterly Report (Q3 FY2025)', period: 'Q3 2025', color: 'purple' },
     { date: 'Jun 30, 2025', type: '8-K', description: 'ETH Treasury Strategy Announced', period: '—', color: 'yellow' },
     { date: 'Jun 20, 2025', type: 'S-8', description: '2025 Equity Incentive Plan (3.75M shares)', period: '—', color: 'cyan' },
     { date: 'Jun 4, 2025', type: '424B5', description: 'IPO Prospectus ($18M @ $8/share)', period: '—', color: 'orange' },
     { date: 'May 27, 2025', type: 'S-1', description: 'IPO Registration Statement', period: '—', color: 'violet' },
-    { date: 'Apr 14, 2025', type: '10-Q', description: 'Quarterly Report (Q2 FY2025)', period: 'Q2 FY25', color: 'purple' },
+    { date: 'Apr 14, 2025', type: '10-Q', description: 'Quarterly Report (Q2 FY2025)', period: 'Q2 2025', color: 'purple' },
   ];
   
   // [PR_CHECKLIST_SECMETA] - Update lastPR with every PR!
@@ -7222,14 +7222,14 @@ const TimelineTab = () => {
       notes: '$200M equity investment into Beast Industries (MrBeast - 450M+ YouTube subscribers, 5B monthly views). CEO Jeff Housenbold: "Their support is a strong validation of our vision." Tom Lee: "Beast Industries is the leading content creator of our generation with reach and engagement unmatched with GenZ, GenAlpha and Millennials." Exploring DeFi integration into Beast\'s upcoming financial services platform. Premier institutional investors reaffirmed: ARK (Cathie Wood), MOZAYYX, Founders Fund, Bill Miller III, Pantera, Kraken, DCG, Galaxy Digital, and Tom Lee. Annual Meeting livestreamed on X @bitmnr. Goal: acquiring 5% of ETH.',
       impact: 'positive'
     },
-    // === JANUARY 13, 2026 - Q1 FY26 10-Q FILING ===
+    // === JANUARY 13, 2026 - Q1 2026 10-Q FILING ===
     {
       date: '2026-01-13',
       source: 'SEC Filing (10-Q)',
       category: 'SEC Filing',
-      title: '📋 Q1 FY26 10-Q: $10.6B Digital Assets, First Staking Revenue',
+      title: '📋 Q1 2026 10-Q: $10.6B Digital Assets, First Staking Revenue',
       changes: [
-        { metric: 'Period Covered', previous: '—', new: 'Nov 30, 2025', change: 'Q1 FY26' },
+        { metric: 'Period Covered', previous: '—', new: 'Nov 30, 2025', change: 'Q1 2026' },
         { metric: 'Digital Assets', previous: '$8.26B (FY25)', new: '$10.56B', change: '+$2.3B (+28%)' },
         { metric: 'ETH Holdings', previous: '2.38M (FY25)', new: '3,737,140', change: '+1.36M (+57%)' },
         { metric: 'Cash', previous: '$512M', new: '$888M', change: '+$376M (+73%)' },
@@ -8328,7 +8328,7 @@ const TimelineTab = () => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)' }}>Q1 FY26 Earnings</div>
+                <div style={{ fontWeight: 600, color: 'var(--text)' }}>Q1 2026 Earnings</div>
                 <div style={{ fontSize: 12, color: 'var(--text3)' }}>10-Q Quarterly Report</div>
               </div>
               <div style={{ textAlign: 'right' }}>
