@@ -1475,50 +1475,79 @@ const CRCLModelTab = ({
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
         <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
           <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
-
-          {/* Primary metrics */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
-            <Card
-              label="Target Stock Price"
-              value={targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}
-              sub={`vs $${currentStockPrice.toFixed(0)} current`}
-              color="cyan"
-            />
-            <Card
-              label="Implied Upside"
-              value={targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}
-              sub={impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}
-              color={impliedUpside > 50 ? 'mint' : impliedUpside > 0 ? 'yellow' : 'red'}
-            />
-            <Card
-              label="Present Value"
-              value={`$${riskAdjustedEV.toFixed(1)}B`}
-              sub={`${(riskFactor * 100).toFixed(0)}% prob × $${presentValueEV.toFixed(1)}B`}
-              color="violet"
-            />
-            <Card
-              label="Market Cap"
-              value={`$${currentMarketCap.toFixed(1)}B`}
-              sub={`${currentPSRatio.toFixed(1)}x Net Revenue`}
-              color="green"
-            />
-          </div>
-
-          {/* Terminal year metrics */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
-            <Card label="Terminal USDC" value={`$${terminalUSDC.toFixed(0)}B`} sub={`${usdcGrowthRate > 0 ? '+' : ''}${usdcGrowthRate}%/yr × 5yrs`} color="blue" />
-            <Card label="Terminal Gross Rev" value={`$${terminalGrossRevenue.toFixed(2)}B`} sub={`$${terminalUSDC.toFixed(0)}B × ${reserveYield}%`} color="blue" />
-            <Card label="Terminal Net Rev" value={`$${terminalNetRevenue.toFixed(2)}B`} sub={`After ${distributionCost}% dist.`} color="blue" />
-            <Card label="Terminal EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${operatingMargin}% margin`} color="blue" />
-          </div>
-
-          {/* Additional metrics */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-            <Card label="Terminal EV/Rev" value={`${terminalEVperRev.toFixed(1)}x`} sub={`$${terminalEV.toFixed(1)}B EV`} color="purple" />
-            <Card label="Terminal EV/EBITDA" value={`${terminalEVperEBITDA.toFixed(1)}x`} sub="Terminal multiple" color="purple" />
-            <Card label="Terminal FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${(fcfConversion * 100).toFixed(0)}% conversion`} color="purple" />
-            <Card label="Diluted Shares" value={`${terminalShares.toFixed(0)}M`} sub={`+${((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution`} color="purple" />
-          </div>
+          <table className="tbl" style={{ width: '100%' }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: 'left' }}>Metric</th>
+                <th className="r">Value</th>
+                <th style={{ textAlign: 'left' }}>Detail</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ background: 'var(--accent-dim)' }}>
+                <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Target Stock Price</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: 'var(--accent)' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</td>
+                <td style={{ color: 'var(--text3)' }}>vs ${currentStockPrice.toFixed(0)} current</td>
+              </tr>
+              <tr style={{ background: 'var(--accent-dim)' }}>
+                <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Implied Upside</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</td>
+                <td style={{ color: 'var(--text3)' }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Present Value</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${riskAdjustedEV.toFixed(1)}B</td>
+                <td style={{ color: 'var(--text3)' }}>{(riskFactor * 100).toFixed(0)}% prob × ${presentValueEV.toFixed(1)}B</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Market Cap</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${currentMarketCap.toFixed(1)}B</td>
+                <td style={{ color: 'var(--text3)' }}>{currentPSRatio.toFixed(1)}x Net Revenue</td>
+              </tr>
+              <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal USDC</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalUSDC.toFixed(0)}B</td>
+                <td style={{ color: 'var(--text3)' }}>{usdcGrowthRate > 0 ? '+' : ''}{usdcGrowthRate}%/yr × 5yrs</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal Gross Rev</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalGrossRevenue.toFixed(2)}B</td>
+                <td style={{ color: 'var(--text3)' }}>${terminalUSDC.toFixed(0)}B × {reserveYield}%</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal Net Rev</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalNetRevenue.toFixed(2)}B</td>
+                <td style={{ color: 'var(--text3)' }}>After {distributionCost}% dist.</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal EBITDA</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalEBITDA.toFixed(2)}B</td>
+                <td style={{ color: 'var(--text3)' }}>{operatingMargin}% margin</td>
+              </tr>
+              <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal EV/Rev</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalEVperRev.toFixed(1)}x</td>
+                <td style={{ color: 'var(--text3)' }}>${terminalEV.toFixed(1)}B EV</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal EV/EBITDA</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalEVperEBITDA.toFixed(1)}x</td>
+                <td style={{ color: 'var(--text3)' }}>Terminal multiple</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal FCF</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalFCF.toFixed(2)}B</td>
+                <td style={{ color: 'var(--text3)' }}>{(fcfConversion * 100).toFixed(0)}% conversion</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Diluted Shares</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalShares.toFixed(0)}M</td>
+                <td style={{ color: 'var(--text3)' }}>+{((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         {/* CALCULATION METHODOLOGY */}
@@ -3061,15 +3090,37 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-metrics</div>
-              <div className="card">
-                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-                <div className="g4">
-                  <Card label="USDC Growth" value={`+${usdcGrowth.toFixed(0)}%`} sub="Year over year" color="mint" />
-                  <Card label="Revenue Growth" value={`+${revGrowth.toFixed(0)}%`} sub="Year over year" color="green" />
-                  <Card label="Active Wallets" value={`${latest.meaningfulWallets}M`} sub="Meaningful wallets" color="blue" />
-                  <Card label="Arc Partners" value="100+" sub="Platform integrations" color="purple" />
-                </div>
-              </div>
+              <table className="tbl" style={{ width: '100%' }}>
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: 'left' }}>Metric</th>
+                    <th className="r">Value</th>
+                    <th style={{ textAlign: 'left' }}>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>USDC Circulation Growth</td>
+                    <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--mint)' }}>+{usdcGrowth.toFixed(0)}%</td>
+                    <td style={{ color: 'var(--text3)' }}>Year over year</td>
+                  </tr>
+                  <tr>
+                    <td>Revenue Growth</td>
+                    <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--mint)' }}>+{revGrowth.toFixed(0)}%</td>
+                    <td style={{ color: 'var(--text3)' }}>Year over year</td>
+                  </tr>
+                  <tr>
+                    <td>Active Wallets</td>
+                    <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>{latest.meaningfulWallets}M</td>
+                    <td style={{ color: 'var(--text3)' }}>Meaningful wallets</td>
+                  </tr>
+                  <tr>
+                    <td>Arc Partners</td>
+                    <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>100+</td>
+                    <td style={{ color: 'var(--text3)' }}>Platform integrations</td>
+                  </tr>
+                </tbody>
+              </table>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#company-snapshot</div>
               <div className="card">
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>

@@ -1541,50 +1541,79 @@ const ModelTab = ({
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
         <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
           <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
-
-          {/* Primary metrics */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
-            <Card
-              label="Target Stock Price"
-              value={targetStockPrice > 0 ? `$${targetStockPrice.toFixed(2)}` : 'N/A'}
-              sub={`vs $${currentStockPrice.toFixed(2)} current`}
-              color="cyan"
-            />
-            <Card
-              label="Implied Upside"
-              value={targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}
-              sub={impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}
-              color={impliedUpside > 50 ? 'mint' : impliedUpside > 0 ? 'yellow' : 'red'}
-            />
-            <Card
-              label="Present Value"
-              value={`$${(presentValueEV / 1000).toFixed(2)}B`}
-              sub={`Terminal ÷ ${discountFactor.toFixed(2)}x discount`}
-              color="violet"
-            />
-            <Card
-              label="Market Cap"
-              value={`$${((currentShares * currentStockPrice) / 1000).toFixed(2)}B`}
-              sub={`${currentPriceToNAV.toFixed(2)}x current NAV`}
-              color="green"
-            />
-          </div>
-
-          {/* Terminal year metrics */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
-            <Card label="Terminal ETH Price" value={`$${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} sub={`${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}%/yr × 5yrs`} color="blue" />
-            <Card label="Terminal ETH Holdings" value={`${(terminalETH / 1_000_000).toFixed(2)}M`} sub={`+${((terminalETH / currentETH - 1) * 100).toFixed(1)}% from yield`} color="blue" />
-            <Card label="Terminal NAV" value={`$${(terminalNAV / 1000).toFixed(2)}B`} sub={`${(terminalNAV / currentNAV).toFixed(1)}x current`} color="blue" />
-            <Card label="Terminal Shares" value={`${terminalShares.toFixed(0)}M`} sub={`+${((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution`} color="blue" />
-          </div>
-
-          {/* Additional metrics */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-            <Card label="Current P/NAV" value={`${currentPriceToNAV.toFixed(2)}x`} sub={currentPriceToNAV > 1 ? 'Premium' : 'Discount'} color="purple" />
-            <Card label="Implied Yield" value={`${impliedDividendYield.toFixed(2)}%`} sub="Net staking / Mkt Cap" color="purple" />
-            <Card label="Annual Staking Rev" value={`$${annualStakingRevenue.toFixed(1)}M`} sub={`${stakingYield}% × ${(currentETH * ethPrice / 1_000_000).toFixed(0)}M`} color="purple" />
-            <Card label="Terminal NAV/Share" value={`$${terminalNavPerShare.toFixed(2)}`} sub={`at ${navPremium}x = $${terminalPriceAtNav.toFixed(0)}`} color="purple" />
-          </div>
+          <table className="tbl" style={{ width: '100%' }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: 'left' }}>Metric</th>
+                <th className="r">Value</th>
+                <th style={{ textAlign: 'left' }}>Detail</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ background: 'var(--accent-dim)' }}>
+                <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Target Stock Price</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: 'var(--accent)' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(2)}` : 'N/A'}</td>
+                <td style={{ color: 'var(--text3)' }}>vs ${currentStockPrice.toFixed(2)} current</td>
+              </tr>
+              <tr style={{ background: 'var(--accent-dim)' }}>
+                <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Implied Upside</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</td>
+                <td style={{ color: 'var(--text3)' }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Present Value</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${(presentValueEV / 1000).toFixed(2)}B</td>
+                <td style={{ color: 'var(--text3)' }}>Terminal ÷ {discountFactor.toFixed(2)}x discount</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Market Cap</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${((currentShares * currentStockPrice) / 1000).toFixed(2)}B</td>
+                <td style={{ color: 'var(--text3)' }}>{currentPriceToNAV.toFixed(2)}x current NAV</td>
+              </tr>
+              <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal ETH Price</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                <td style={{ color: 'var(--text3)' }}>{impliedGrowthRate > 0 ? '+' : ''}{impliedGrowthRate.toFixed(1)}%/yr × 5yrs</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal ETH Holdings</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{(terminalETH / 1_000_000).toFixed(2)}M</td>
+                <td style={{ color: 'var(--text3)' }}>+{((terminalETH / currentETH - 1) * 100).toFixed(1)}% from yield</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal NAV</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${(terminalNAV / 1000).toFixed(2)}B</td>
+                <td style={{ color: 'var(--text3)' }}>{(terminalNAV / currentNAV).toFixed(1)}x current</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal Shares</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalShares.toFixed(0)}M</td>
+                <td style={{ color: 'var(--text3)' }}>+{((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution</td>
+              </tr>
+              <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Current P/NAV</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{currentPriceToNAV.toFixed(2)}x</td>
+                <td style={{ color: 'var(--text3)' }}>{currentPriceToNAV > 1 ? 'Premium' : 'Discount'}</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Implied Yield</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{impliedDividendYield.toFixed(2)}%</td>
+                <td style={{ color: 'var(--text3)' }}>Net staking / Mkt Cap</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Annual Staking Rev</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${annualStakingRevenue.toFixed(1)}M</td>
+                <td style={{ color: 'var(--text3)' }}>{stakingYield}% × ${(currentETH * ethPrice / 1_000_000).toFixed(0)}M</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--text2)' }}>Terminal NAV/Share</td>
+                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalNavPerShare.toFixed(2)}</td>
+                <td style={{ color: 'var(--text3)' }}>at {navPremium}x = ${terminalPriceAtNav.toFixed(0)}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         {/* CALCULATION METHODOLOGY */}
@@ -1731,15 +1760,37 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-metrics</div>
-    <div className="card">
-      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-      <div className="g4">
-        <Card label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value per share" color="blue" />
-        <Card label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} sub="Market price" color="green" />
-        <Card label="Premium/Discount" value={`${calc.navPremium >= 0 ? '+' : ''}${calc.navPremium.toFixed(1)}%`} sub={calc.navPremium >= 0 ? 'Above NAV' : 'Below NAV'} color={calc.navPremium >= 0 ? 'green' : 'red'} />
-        <Card label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} sub={`$${calc.annualDividend.toFixed(2)}/yr`} color="emerald" />
-      </div>
-    </div>
+    <table className="tbl" style={{ width: '100%' }}>
+      <thead>
+        <tr>
+          <th style={{ textAlign: 'left' }}>Metric</th>
+          <th className="r">Value</th>
+          <th style={{ textAlign: 'left' }}>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>NAV/Share</td>
+          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${calc.currentNAV.toFixed(2)}</td>
+          <td style={{ color: 'var(--text3)' }}>Book value per share</td>
+        </tr>
+        <tr>
+          <td>Stock Price</td>
+          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${currentStockPrice.toFixed(2)}</td>
+          <td style={{ color: 'var(--text3)' }}>Market price</td>
+        </tr>
+        <tr>
+          <td>Premium/Discount</td>
+          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: calc.navPremium >= 0 ? 'var(--mint)' : 'var(--red)' }}>{calc.navPremium >= 0 ? '+' : ''}{calc.navPremium.toFixed(1)}%</td>
+          <td style={{ color: 'var(--text3)' }}>{calc.navPremium >= 0 ? 'Trading above NAV' : 'Trading below NAV'}</td>
+        </tr>
+        <tr>
+          <td>Dividend Yield</td>
+          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--mint)' }}>{calc.dividendYield.toFixed(2)}%</td>
+          <td style={{ color: 'var(--text3)' }}>${calc.annualDividend.toFixed(2)}/share annually</td>
+        </tr>
+      </tbody>
+    </table>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#company-snapshot</div>
     <div className="card">
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>

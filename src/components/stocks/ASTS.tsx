@@ -1036,15 +1036,37 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-metrics</div>
-    <div className="card">
-      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-      <div className="g4">
-        <Card label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} sub="Equity value" color="blue" />
-        <Card label="EV" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} sub="MC + Debt - Cash" color="purple" />
-        <Card label="Constellation" value={`${calc.totalSats}/${targetSats2026}`} sub={`${calc.constellationProgress.toFixed(0)}%`} color="cyan" />
-        <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub="~1 year runway" color="green" />
-      </div>
-    </div>
+    <table className="tbl" style={{ width: '100%' }}>
+      <thead>
+        <tr>
+          <th style={{ textAlign: 'left' }}>Metric</th>
+          <th className="r">Value</th>
+          <th style={{ textAlign: 'left' }}>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Market Cap</td>
+          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${(calc.marketCap / 1000).toFixed(2)}B</td>
+          <td style={{ color: 'var(--text3)' }}>Equity value</td>
+        </tr>
+        <tr>
+          <td>Enterprise Value</td>
+          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${(calc.enterpriseValue / 1000).toFixed(2)}B</td>
+          <td style={{ color: 'var(--text3)' }}>MC + Debt - Cash</td>
+        </tr>
+        <tr>
+          <td>Constellation</td>
+          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--cyan)' }}>{calc.totalSats}/{targetSats2026}</td>
+          <td style={{ color: 'var(--text3)' }}>{calc.constellationProgress.toFixed(0)}% complete</td>
+        </tr>
+        <tr>
+          <td>Cash Runway</td>
+          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: calc.cashRunwayQuarters > 4 ? 'var(--mint)' : 'var(--gold)' }}>{calc.cashRunwayQuarters.toFixed(1)} quarters</td>
+          <td style={{ color: 'var(--text3)' }}>~{(calc.cashRunwayQuarters / 4).toFixed(1)} year runway</td>
+        </tr>
+      </tbody>
+    </table>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#company-snapshot</div>
     <div className="card">
       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
@@ -2990,48 +3012,79 @@ const ModelTab = ({
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#dcf-output</div>
           <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
             <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (2030 Terminal Year)</div>
-
-            {/* All cards use consistent grid with same gap */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
-              <Card
-                label="Target Stock Price"
-                value={targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}
-                sub={`vs $${currentStockPrice} current`}
-                color="cyan"
-              />
-              <Card
-                label="Implied Upside"
-                value={targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}
-                sub={impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}
-                color={impliedUpside > 50 ? 'mint' : impliedUpside > 0 ? 'yellow' : 'red'}
-              />
-              <Card
-                label="Present Value EV"
-                value={`$${riskAdjustedEV.toFixed(1)}B`}
-                sub={`${(riskFactor * 100).toFixed(0)}% prob × $${presentValueEV.toFixed(1)}B`}
-                color="violet"
-              />
-              <Card
-                label="Equity Value"
-                value={`$${equityValue.toFixed(1)}B`}
-                sub={netDebtB < 0 ? `+ $${Math.abs(netDebtB).toFixed(2)}B net cash` : `- $${netDebtB.toFixed(2)}B net debt`}
-                color="green"
-              />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12 }}>
-              <Card label="2030 Subscribers" value={`${terminalSubs.toFixed(0)}M`} sub={`${penetrationRate}% × ${(partnerReach/1000).toFixed(1)}B × ${100 - competitionDiscount}%`} color="blue" />
-              <Card label="2030 Revenue" value={`$${terminalRev.toFixed(2)}B`} sub={`${revenueShare}% of $${terminalGrossRev.toFixed(2)}B`} color="blue" />
-              <Card label="2030 EBITDA" value={`$${terminalEBITDA.toFixed(2)}B`} sub={`${terminalMargin}% margin`} color="blue" />
-              <Card label="2030 FCF" value={`$${terminalFCF.toFixed(2)}B`} sub={`${terminalMargin - terminalCapex}% FCF margin`} color="blue" />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-              <Card label="2030 EV/Revenue" value={`${terminalEVperRev.toFixed(1)}x`} sub={`$${terminalEV.toFixed(1)}B EV`} color="purple" />
-              <Card label="2030 EV/EBITDA" value={`${terminalEVperEBITDA.toFixed(1)}x`} sub="Terminal multiple" color="purple" />
-              <Card label="2030 FCF Yield" value={`${terminalFCFyield.toFixed(1)}%`} sub="FCF / Terminal EV" color="purple" />
-              <Card label="Diluted Shares" value={`${finalDilutedShares.toFixed(0)}M`} sub={`${dilutionRate}%/yr × ${discountYears}yrs`} color="purple" />
-            </div>
+            <table className="tbl" style={{ width: '100%' }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'left' }}>Metric</th>
+                  <th className="r">Value</th>
+                  <th style={{ textAlign: 'left' }}>Detail</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={{ background: 'var(--accent-dim)' }}>
+                  <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Target Stock Price</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: 'var(--accent)' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</td>
+                  <td style={{ color: 'var(--text3)' }}>vs ${currentStockPrice} current</td>
+                </tr>
+                <tr style={{ background: 'var(--accent-dim)' }}>
+                  <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Implied Upside</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</td>
+                  <td style={{ color: 'var(--text3)' }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</td>
+                </tr>
+                <tr>
+                  <td style={{ color: 'var(--text2)' }}>Present Value EV</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${riskAdjustedEV.toFixed(1)}B</td>
+                  <td style={{ color: 'var(--text3)' }}>{(riskFactor * 100).toFixed(0)}% prob × ${presentValueEV.toFixed(1)}B</td>
+                </tr>
+                <tr>
+                  <td style={{ color: 'var(--text2)' }}>Equity Value</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${equityValue.toFixed(1)}B</td>
+                  <td style={{ color: 'var(--text3)' }}>{netDebtB < 0 ? `+ $${Math.abs(netDebtB).toFixed(2)}B net cash` : `- $${netDebtB.toFixed(2)}B net debt`}</td>
+                </tr>
+                <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
+                <tr>
+                  <td style={{ color: 'var(--text2)' }}>2030 Subscribers</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalSubs.toFixed(0)}M</td>
+                  <td style={{ color: 'var(--text3)' }}>{penetrationRate}% × {(partnerReach/1000).toFixed(1)}B × {100 - competitionDiscount}%</td>
+                </tr>
+                <tr>
+                  <td style={{ color: 'var(--text2)' }}>2030 Revenue</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalRev.toFixed(2)}B</td>
+                  <td style={{ color: 'var(--text3)' }}>{revenueShare}% of ${terminalGrossRev.toFixed(2)}B</td>
+                </tr>
+                <tr>
+                  <td style={{ color: 'var(--text2)' }}>2030 EBITDA</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalEBITDA.toFixed(2)}B</td>
+                  <td style={{ color: 'var(--text3)' }}>{terminalMargin}% margin</td>
+                </tr>
+                <tr>
+                  <td style={{ color: 'var(--text2)' }}>2030 FCF</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalFCF.toFixed(2)}B</td>
+                  <td style={{ color: 'var(--text3)' }}>{terminalMargin - terminalCapex}% FCF margin</td>
+                </tr>
+                <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
+                <tr>
+                  <td style={{ color: 'var(--text2)' }}>2030 EV/Revenue</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalEVperRev.toFixed(1)}x</td>
+                  <td style={{ color: 'var(--text3)' }}>${terminalEV.toFixed(1)}B EV</td>
+                </tr>
+                <tr>
+                  <td style={{ color: 'var(--text2)' }}>2030 EV/EBITDA</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalEVperEBITDA.toFixed(1)}x</td>
+                  <td style={{ color: 'var(--text3)' }}>Terminal multiple</td>
+                </tr>
+                <tr>
+                  <td style={{ color: 'var(--text2)' }}>2030 FCF Yield</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalFCFyield.toFixed(1)}%</td>
+                  <td style={{ color: 'var(--text3)' }}>FCF / Terminal EV</td>
+                </tr>
+                <tr>
+                  <td style={{ color: 'var(--text2)' }}>Diluted Shares</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{finalDilutedShares.toFixed(0)}M</td>
+                  <td style={{ color: 'var(--text3)' }}>{dilutionRate}%/yr × {discountYears}yrs</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           {/* CALCULATION METHODOLOGY - Full explanation */}
