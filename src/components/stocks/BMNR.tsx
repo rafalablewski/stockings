@@ -5420,7 +5420,8 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div className="card" style={{ marginTop: 32 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#key-financial-milestones</div>
+      <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></div>
         <div className="g4">
           {config.milestones.map((m, i) => (
