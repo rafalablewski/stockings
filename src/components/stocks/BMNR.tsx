@@ -5054,136 +5054,187 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 // QUARTERLY METRICS PANEL - Unified pattern matching ASTS QuarterlyMetricsPanel
 // ═══════════════════════════════════════════════════════════════════════════════
 const BMNRQuarterlyMetricsPanel = () => {
+  const [opExQuarter, setOpExQuarter] = useState('FY25 10-K');
+
   // === QUARTERLY DATA (transformed from original filings) ===
   const quarterlyData = [
-    { quarter: 'Q1 FY25', cash: 0.8, crypto: 0.15, cryptoType: 'BTC', assets: 7.93, liabilities: 4.47, equity: 3.47, revenue: 1.2, netIncome: -0.975, shares: 39.7, era: '⛏️ BTC' },
-    { quarter: 'Q2 FY25', cash: 0.5, crypto: 0.25, cryptoType: 'BTC', assets: 7.50, liabilities: 4.82, equity: 2.68, revenue: 1.5, netIncome: -1.15, shares: 39.7, era: '⛏️ BTC' },
-    { quarter: 'Q3 FY25', cash: 1.5, crypto: 0.17, cryptoType: 'BTC', assets: 8.27, liabilities: 5.39, equity: 2.88, revenue: 2.1, netIncome: -0.62, shares: 6.2, era: '⛏️ BTC' },
-    { quarter: 'FY25 10-K', cash: 512, crypto: 8260, cryptoType: 'ETH', assets: 8800, liabilities: 102, equity: 8690, revenue: 5.8, netIncome: 328, shares: 384, era: '💎 ETH' },
-    { quarter: 'Q1 FY26', cash: 888, crypto: 10562, cryptoType: 'ETH', assets: 11487, liabilities: 236, equity: 11252, revenue: 2.3, netIncome: -5204, shares: 409, era: '💎 ETH' },
+    { quarter: 'Q1 FY25', cash: 0.8, crypto: 0.15, cryptoType: 'BTC', assets: 7.93, liabilities: 4.47, equity: 3.47, revenue: 1.2, netIncome: -0.975, shares: 39.7, era: '⛏️ BTC', opEx: 2.2, opExGandA: 1.8, opExOther: 0.4, filing: '10-Q (Aug 2024)' },
+    { quarter: 'Q2 FY25', cash: 0.5, crypto: 0.25, cryptoType: 'BTC', assets: 7.50, liabilities: 4.82, equity: 2.68, revenue: 1.5, netIncome: -1.15, shares: 39.7, era: '⛏️ BTC', opEx: 2.5, opExGandA: 2.0, opExOther: 0.5, filing: '10-Q (Nov 2024)' },
+    { quarter: 'Q3 FY25', cash: 1.5, crypto: 0.17, cryptoType: 'BTC', assets: 8.27, liabilities: 5.39, equity: 2.88, revenue: 2.1, netIncome: -0.62, shares: 6.2, era: '⛏️ BTC', opEx: 2.8, opExGandA: 2.2, opExOther: 0.6, filing: '10-Q/A (Feb 2025)' },
+    { quarter: 'FY25 10-K', cash: 512, crypto: 8260, cryptoType: 'ETH', assets: 8800, liabilities: 102, equity: 8690, revenue: 5.8, netIncome: 328, shares: 384, era: '💎 ETH', opEx: 15, opExGandA: 10, opExTreasury: 3, opExOther: 2, filing: '10-K (Nov 2025)', ethHoldings: 4110000, stakingYield: 3.5, stakingDeployed: 409000 },
+    { quarter: 'Q1 FY26', cash: 888, crypto: 10562, cryptoType: 'ETH', assets: 11487, liabilities: 236, equity: 11252, revenue: 2.3, netIncome: -5204, shares: 409, era: '💎 ETH', opEx: 18, opExGandA: 12, opExTreasury: 4, opExOther: 2, filing: '10-Q (Jan 2026)', ethHoldings: 4500000, stakingYield: 3.5, stakingDeployed: 450000 },
   ];
 
-  return (
-    <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
-      {/* Summary Badges - ASTS pattern */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-        <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
-          {quarterlyData.length} quarters of data ({quarterlyData[0].quarter} - {quarterlyData[quarterlyData.length-1].quarter})
-        </span>
-        <span className="pill" style={{ background: 'rgba(34,197,94,0.15)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
-          Assets: ${quarterlyData[0].assets}M → ${(quarterlyData[quarterlyData.length-1].assets/1000).toFixed(1)}B
-        </span>
-        <span className="pill" style={{ background: 'rgba(139,92,246,0.15)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
-          Crypto: ${quarterlyData[0].crypto}M ({quarterlyData[0].cryptoType}) → ${(quarterlyData[quarterlyData.length-1].crypto/1000).toFixed(2)}B ({quarterlyData[quarterlyData.length-1].cryptoType})
-        </span>
-        <span className="pill" style={{ background: 'rgba(168,85,247,0.15)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
-          Era: ⛏️ BTC Mining → 💎 ETH Treasury
-        </span>
-      </div>
+  const latestQuarter = quarterlyData[quarterlyData.length - 1];
+  const opExQuarters = quarterlyData.filter(q => q.opEx).map(q => q.quarter);
 
-      {/* Quarterly Table */}
-      <div style={{ overflowX: 'auto' }}>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Metric</th>
-              {quarterlyData.map(q => (
-                <th key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : undefined}>
-                  {q.quarter}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Cash & Equiv</td>
-              {quarterlyData.map(q => (
-                <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cash > 100 ? 'var(--mint)' : undefined } : q.cash > 100 ? { color: 'var(--mint)' } : undefined}>
-                  {q.cash >= 100 ? `$${q.cash}M` : `$${(q.cash * 1000).toFixed(0)}K`}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Crypto Holdings</td>
-              {quarterlyData.map(q => (
-                <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' } : { color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' }}>
-                  {q.crypto >= 1000 ? `$${(q.crypto/1000).toFixed(2)}B` : `$${(q.crypto * 1000).toFixed(0)}K`}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Crypto Type</td>
-              {quarterlyData.map(q => (
-                <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' } : { color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' }}>
-                  {q.cryptoType}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Total Assets</td>
-              {quarterlyData.map(q => (
-                <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.assets > 100 ? 'var(--mint)' : undefined } : q.assets > 100 ? { color: 'var(--mint)' } : undefined}>
-                  {q.assets >= 1000 ? `$${(q.assets/1000).toFixed(2)}B` : `$${q.assets.toFixed(2)}M`}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Total Liabilities</td>
-              {quarterlyData.map(q => (
-                <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : undefined}>
-                  ${q.liabilities.toFixed(q.liabilities >= 100 ? 0 : 2)}M
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Stockholders' Equity</td>
-              {quarterlyData.map(q => (
-                <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.equity > 100 ? 'var(--mint)' : undefined } : q.equity > 100 ? { color: 'var(--mint)' } : undefined}>
-                  {q.equity >= 1000 ? `$${(q.equity/1000).toFixed(2)}B` : `$${q.equity.toFixed(2)}M`}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Revenue</td>
-              {quarterlyData.map(q => (
-                <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : undefined}>
-                  ${q.revenue.toFixed(1)}M
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Net Income/(Loss)</td>
-              {quarterlyData.map(q => (
-                <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' } : { color: q.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                  {q.netIncome >= 0 ? `+$${q.netIncome}M` : `($${Math.abs(q.netIncome)}M)`}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Shares Outstanding</td>
-              {quarterlyData.map(q => (
-                <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.shares > 100 ? 'var(--gold)' : undefined } : q.shares > 100 ? { color: 'var(--gold)' } : undefined}>
-                  {q.shares.toFixed(1)}M
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Era</td>
-              {quarterlyData.map(q => (
-                <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.era.includes('ETH') ? 'var(--violet)' : 'var(--gold)' } : { color: q.era.includes('ETH') ? 'var(--violet)' : 'var(--gold)' }}>
-                  {q.era}
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
-        * Q3 shares corrected in 10-Q/A amendment. FY25 10-K reflects post-pivot ETH treasury company.
+  return (
+    <>
+      {/* #quarterly-metrics */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#quarterly-metrics</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
+        {/* Summary Badges - ASTS pattern */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+          <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
+            {quarterlyData.length} quarters of data ({quarterlyData[0].quarter} - {quarterlyData[quarterlyData.length-1].quarter})
+          </span>
+          <span className="pill" style={{ background: 'rgba(34,197,94,0.15)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
+            Assets: ${quarterlyData[0].assets}M → ${(quarterlyData[quarterlyData.length-1].assets/1000).toFixed(1)}B
+          </span>
+          <span className="pill" style={{ background: 'rgba(251,146,60,0.15)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>
+            Shares: {quarterlyData[0].shares.toFixed(0)}M → {quarterlyData[quarterlyData.length-1].shares.toFixed(0)}M
+          </span>
+          <span className="pill" style={{ background: 'rgba(139,92,246,0.15)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
+            Era: ⛏️ BTC Mining → 💎 ETH Treasury
+          </span>
+        </div>
+
+        {/* Quarterly Table - ASTS sticky column pattern */}
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
+                {quarterlyData.map(q => (
+                  <th key={q.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : {}) }}>
+                    {q.quarter}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Cash & Equiv</td>
+                {quarterlyData.map(q => (
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cash > 100 ? 'var(--mint)' : undefined } : q.cash > 100 ? { color: 'var(--mint)' } : undefined}>
+                    {q.cash >= 100 ? `$${q.cash}M` : `$${(q.cash * 1000).toFixed(0)}K`}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Crypto Holdings</td>
+                {quarterlyData.map(q => (
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' } : { color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' }}>
+                    {q.crypto >= 1000 ? `$${(q.crypto/1000).toFixed(2)}B` : `$${(q.crypto * 1000).toFixed(0)}K`}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Crypto Type</td>
+                {quarterlyData.map(q => (
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' } : { color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' }}>
+                    {q.cryptoType}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Total Assets</td>
+                {quarterlyData.map(q => (
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.assets > 100 ? 'var(--mint)' : undefined } : q.assets > 100 ? { color: 'var(--mint)' } : undefined}>
+                    {q.assets >= 1000 ? `$${(q.assets/1000).toFixed(2)}B` : `$${q.assets.toFixed(2)}M`}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Total Liabilities</td>
+                {quarterlyData.map(q => (
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : undefined}>
+                    ${q.liabilities.toFixed(q.liabilities >= 100 ? 0 : 2)}M
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Stockholders' Equity</td>
+                {quarterlyData.map(q => (
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.equity > 100 ? 'var(--mint)' : undefined } : q.equity > 100 ? { color: 'var(--mint)' } : undefined}>
+                    {q.equity >= 1000 ? `$${(q.equity/1000).toFixed(2)}B` : `$${q.equity.toFixed(2)}M`}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Revenue</td>
+                {quarterlyData.map(q => (
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : undefined}>
+                    ${q.revenue.toFixed(1)}M
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Net Income/(Loss)</td>
+                {quarterlyData.map(q => (
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' } : { color: q.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                    {q.netIncome >= 0 ? `+$${q.netIncome}M` : `($${Math.abs(q.netIncome)}M)`}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Shares Outstanding</td>
+                {quarterlyData.map(q => (
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.shares > 100 ? 'var(--gold)' : undefined } : q.shares > 100 ? { color: 'var(--gold)' } : undefined}>
+                    {q.shares.toFixed(1)}M
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Era</td>
+                {quarterlyData.map(q => (
+                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.era.includes('ETH') ? 'var(--violet)' : 'var(--gold)' } : { color: q.era.includes('ETH') ? 'var(--violet)' : 'var(--gold)' }}>
+                    {q.era}
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footnotes - ASTS pattern */}
+        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
+          <p style={{ marginBottom: 4 }}>* Q3 shares corrected in 10-Q/A amendment due to reverse stock split accounting error.</p>
+          <p style={{ marginBottom: 4 }}>* FY25 10-K reflects post-pivot ETH treasury company. Pre-pivot quarters show BTC mining operations with going concern warning.</p>
+          <p>* Data from SEC filings (10-K, 10-Q, 8-K). Q1 FY26 net loss of ($5.2B) reflects unrealized ETH mark-to-market decline.</p>
+        </div>
+
+        {/* Latest Quarter Summary - ASTS pattern */}
+        <div style={{ marginTop: 16 }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#latest-quarter-summary</div>
+          <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary ({latestQuarter.quarter})<UpdateIndicators sources="SEC" /></div>
+            <div className="g2">
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Filing Source</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.filing}</div>
+              </div>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>ETH Holdings</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.ethHoldings?.toLocaleString() || '—'} ETH</div>
+              </div>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Staking Deployed</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.stakingDeployed?.toLocaleString() || '—'} ETH ({latestQuarter.stakingYield}% yield)</div>
+              </div>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Treasury Value</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>${(latestQuarter.crypto/1000).toFixed(2)}B</div>
+              </div>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Cash Position</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>${latestQuarter.cash}M</div>
+              </div>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Total Assets</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>${(latestQuarter.assets/1000).toFixed(2)}B</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
+          Data sourced from SEC filings (10-K, 10-Q). Latest filing: {latestQuarter.filing}.
+        </div>
       </div>
 
       {/* ROW 1: Cash Position & OpEx - ASTS pattern */}
-      <div className="g2" style={{ marginTop: 24 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-1</div>
+      <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
@@ -5201,18 +5252,13 @@ const BMNRQuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="cash" stroke="var(--mint)" fill="url(#cashGradientBMNR)" />
             </AreaChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Post-pivot: $250M PIPE + subsequent raises</div>
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Post-pivot: $250M PIPE + subsequent ATM raises</div>
         </div>
 
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <LineChart data={[
-              { quarter: 'Q1 FY25', opEx: 2.2 },
-              { quarter: 'Q2 FY25', opEx: 2.5 },
-              { quarter: 'Q3 FY25', opEx: 2.8 },
-              { quarter: 'FY25 10-K', opEx: 15 },
-            ]}>
+            <LineChart data={quarterlyData.filter(q => q.opEx).map(q => ({ quarter: q.quarter, opEx: q.opEx }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
@@ -5220,12 +5266,57 @@ const BMNRQuarterlyMetricsPanel = () => {
               <Line type="monotone" dataKey="opEx" stroke="var(--violet)" strokeWidth={2} dot={{ fill: 'var(--violet)' }} />
             </LineChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>FY25 includes transition costs and new treasury operations</div>
+          {/* OpEx Breakdown with quarter selector - ASTS pattern */}
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>OpEx Breakdown</span>
+              <select
+                value={opExQuarter}
+                onChange={(e) => setOpExQuarter(e.target.value)}
+                style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 4, padding: '2px 8px', fontSize: 11, color: 'var(--text1)' }}
+              >
+                {opExQuarters.map(q => (
+                  <option key={q} value={q}>{q}</option>
+                ))}
+              </select>
+            </div>
+            {(() => {
+              const q = quarterlyData.find(d => d.quarter === opExQuarter);
+              if (!q) return null;
+              return (
+                <>
+                  <div className="g2" style={{ fontSize: 11 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>G&A:</span>
+                      <span style={{ color: 'var(--violet)' }}>${q.opExGandA}M</span>
+                    </div>
+                    {q.opExTreasury && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text3)' }}>Treasury Ops:</span>
+                        <span style={{ color: 'var(--violet)' }}>${q.opExTreasury}M</span>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>Other:</span>
+                      <span style={{ color: 'var(--violet)' }}>${q.opExOther}M</span>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 500 }}>
+                      <span style={{ color: 'var(--text2)' }}>Total OpEx:</span>
+                      <span style={{ color: 'var(--violet)' }}>${q.opEx}M</span>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
         </div>
       </div>
 
       {/* ROW 2: Share Count & Market Cap - ASTS pattern */}
-      <div className="g2" style={{ marginTop: 16 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-2</div>
+      <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>Share Count (Outstanding)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
@@ -5237,7 +5328,9 @@ const BMNRQuarterlyMetricsPanel = () => {
               <Bar dataKey="shares" fill="var(--coral)" />
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Q3 reverse split + massive dilution for ETH purchases</div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--coral)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Outstanding Shares</span></div>
+          </div>
         </div>
 
         <div className="card">
@@ -5248,6 +5341,7 @@ const BMNRQuarterlyMetricsPanel = () => {
               { quarter: 'Q2 FY25', mktCap: 35 },
               { quarter: 'Q3 FY25', mktCap: 50 },
               { quarter: 'FY25 10-K', mktCap: 8800 },
+              { quarter: 'Q1 FY26', mktCap: 7200 },
             ]}>
               <defs>
                 <linearGradient id="mcapGradientBMNR" x1="0" y1="0" x2="0" y2="1">
@@ -5262,12 +5356,15 @@ const BMNRQuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="mktCap" stroke="var(--sky)" fill="url(#mcapGradientBMNR)" />
             </AreaChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>220x increase from pre-pivot to post-pivot</div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap</span></div>
+          </div>
         </div>
       </div>
 
       {/* ROW 3: Company Specific (Crypto Holdings & NI) - ASTS pattern */}
-      <div className="g2" style={{ marginTop: 16 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-3</div>
+      <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Crypto Holdings Evolution<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
@@ -5291,15 +5388,18 @@ const BMNRQuarterlyMetricsPanel = () => {
             <BarChart data={quarterlyData.map(q => ({ quarter: q.quarter, income: q.netIncome }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
-              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${v}M`, v >= 0 ? 'Net Income' : 'Net Loss']} />
+              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => v >= 1000 ? `$${(v/1000).toFixed(1)}B` : v <= -1000 ? `($${(Math.abs(v)/1000).toFixed(1)}B)` : `$${v}M`} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [v >= 0 ? `$${v}M` : `($${Math.abs(Number(v))}M)`, v >= 0 ? 'Net Income' : 'Net Loss']} />
               <Bar dataKey="income" fill="var(--mint)" />
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>First profitable year: $349M (crypto appreciation + staking)</div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Net Income</span></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--coral)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Net Loss</span></div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

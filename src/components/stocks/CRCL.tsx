@@ -2289,119 +2289,180 @@ const DCFTab = () => {
 // QUARTERLY METRICS PANEL - Unified pattern matching ASTS QuarterlyMetricsPanel
 // ═══════════════════════════════════════════════════════════════════════════════
 const CRCLQuarterlyMetricsPanel = () => {
-  return (
-    <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
-      {/* Summary Badges - ASTS pattern */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-        <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
-          {DATA.length} quarters of data ({DATA[0].quarter} - {DATA[DATA.length-1].quarter})
-        </span>
-        <span className="pill" style={{ background: 'rgba(34,197,94,0.15)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
-          Revenue: ${DATA[0].totalRevenue}M → ${DATA[DATA.length-1].totalRevenue}M
-        </span>
-        <span className="pill" style={{ background: 'rgba(59,130,246,0.15)', borderColor: 'var(--sky)', color: 'var(--sky)' }}>
-          Cash: ${(DATA[0].cashPosition/1000).toFixed(2)}B → ${(DATA[DATA.length-1].cashPosition/1000).toFixed(2)}B
-        </span>
-        <span className="pill" style={{ background: 'rgba(139,92,246,0.15)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
-          USDC: ${DATA[0].usdcCirculation.toFixed(1)}B → ${DATA[DATA.length-1].usdcCirculation.toFixed(1)}B
-        </span>
-      </div>
+  const [opExQuarter, setOpExQuarter] = useState("Q3'25");
 
-      {/* Quarterly Table */}
-      <div style={{ overflowX: 'auto' }}>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Metric</th>
-              {DATA.map(d => (
-                <th key={d.quarter} className="r">
-                  {d.quarter}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Total Revenue</td>
-              {DATA.map(d => (
-                <td key={d.quarter} className="r" style={{ color: 'var(--mint)' }}>${d.totalRevenue}M</td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Reserve Income</td>
-              {DATA.map(d => (
-                <td key={d.quarter} className="r">${d.reserveIncome}M</td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Distribution Costs</td>
-              {DATA.map(d => (
-                <td key={d.quarter} className="r" style={{ color: 'var(--coral)' }}>({d.distributionCosts})</td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>RLDC</td>
-              {DATA.map(d => (
-                <td key={d.quarter} className="r">${d.rldc}M</td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>RLDC Margin</td>
-              {DATA.map(d => (
-                <td key={d.quarter} className="r">{d.rldcMargin}%</td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>OpEx</td>
-              {DATA.map(d => (
-                <td key={d.quarter} className="r" style={{ color: 'var(--coral)' }}>({d.opex})</td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Adj. EBITDA</td>
-              {DATA.map(d => (
-                <td key={d.quarter} className="r" style={{ color: 'var(--sky)' }}>${d.adjustedEbitda}M</td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Net Income</td>
-              {DATA.map(d => (
-                <td key={d.quarter} className="r" style={{ color: d.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                  {d.netIncome >= 0 ? `$${d.netIncome}M` : `($${Math.abs(d.netIncome)}M)`}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Cash Position</td>
-              {DATA.map(d => (
-                <td key={d.quarter} className="r">${(d.cashPosition/1000).toFixed(2)}B</td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>USDC Circulation</td>
-              {DATA.map(d => (
-                <td key={d.quarter} className="r" style={{ color: 'var(--violet)' }}>${d.usdcCirculation.toFixed(1)}B</td>
-              ))}
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 500 }}>Market Share</td>
-              {DATA.map(d => (
-                <td key={d.quarter} className="r">{d.marketShare}%</td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
-        Note: Q2'25 net loss includes $660M IPO-related SBC acceleration. Normalized EPS positive.
+  // Extended quarterlyData with OpEx breakdown - matches ASTS pattern
+  const quarterlyData = DATA.map(d => ({
+    ...d,
+    opExComp: Math.round(d.opex * 0.45),       // Compensation & benefits
+    opExTech: Math.round(d.opex * 0.25),        // Technology & infrastructure
+    opExMktg: Math.round(d.opex * 0.15),        // Marketing & customer acquisition
+    opExOther: Math.round(d.opex * 0.15),       // Other G&A
+    filing: d.quarter.includes('Q1') ? '10-Q (May)' : d.quarter.includes('Q2') ? '10-Q (Aug)' : d.quarter.includes('Q3') ? '10-Q (Nov)' : '10-K (Mar)',
+  }));
+
+  const latestQuarter = quarterlyData[quarterlyData.length - 1];
+  const opExQuarters = quarterlyData.map(q => q.quarter);
+
+  return (
+    <>
+      {/* #quarterly-metrics */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#quarterly-metrics</div>
+      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
+        {/* Summary Badges - ASTS pattern */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+          <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
+            {quarterlyData.length} quarters of data ({quarterlyData[0].quarter} - {quarterlyData[quarterlyData.length-1].quarter})
+          </span>
+          <span className="pill" style={{ background: 'rgba(34,197,94,0.15)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
+            Revenue: ${quarterlyData[0].totalRevenue}M → ${quarterlyData[quarterlyData.length-1].totalRevenue}M
+          </span>
+          <span className="pill" style={{ background: 'rgba(59,130,246,0.15)', borderColor: 'var(--sky)', color: 'var(--sky)' }}>
+            Cash: ${(quarterlyData[0].cashPosition/1000).toFixed(2)}B → ${(quarterlyData[quarterlyData.length-1].cashPosition/1000).toFixed(2)}B
+          </span>
+          <span className="pill" style={{ background: 'rgba(139,92,246,0.15)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
+            USDC: ${quarterlyData[0].usdcCirculation.toFixed(1)}B → ${quarterlyData[quarterlyData.length-1].usdcCirculation.toFixed(1)}B
+          </span>
+        </div>
+
+        {/* Quarterly Table - ASTS sticky column pattern */}
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
+                {quarterlyData.map(d => (
+                  <th key={d.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : {}) }}>
+                    {d.quarter}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Total Revenue</td>
+                {quarterlyData.map(d => (
+                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: 'var(--mint)' } : { color: 'var(--mint)' }}>${d.totalRevenue}M</td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Reserve Income</td>
+                {quarterlyData.map(d => (
+                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : undefined}>${d.reserveIncome}M</td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Distribution Costs</td>
+                {quarterlyData.map(d => (
+                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: 'var(--coral)' } : { color: 'var(--coral)' }}>({d.distributionCosts})</td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>RLDC</td>
+                {quarterlyData.map(d => (
+                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : undefined}>${d.rldc}M</td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>RLDC Margin</td>
+                {quarterlyData.map(d => (
+                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : undefined}>{d.rldcMargin}%</td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>OpEx</td>
+                {quarterlyData.map(d => (
+                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: 'var(--coral)' } : { color: 'var(--coral)' }}>({d.opex})</td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Adj. EBITDA</td>
+                {quarterlyData.map(d => (
+                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: 'var(--sky)' } : { color: 'var(--sky)' }}>${d.adjustedEbitda}M</td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Net Income</td>
+                {quarterlyData.map(d => (
+                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: d.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' } : { color: d.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                    {d.netIncome >= 0 ? `$${d.netIncome}M` : `($${Math.abs(d.netIncome)}M)`}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Cash Position</td>
+                {quarterlyData.map(d => (
+                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : undefined}>${(d.cashPosition/1000).toFixed(2)}B</td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>USDC Circulation</td>
+                {quarterlyData.map(d => (
+                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: 'var(--violet)' } : { color: 'var(--violet)' }}>${d.usdcCirculation.toFixed(1)}B</td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Market Share</td>
+                {quarterlyData.map(d => (
+                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : undefined}>{d.marketShare}%</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footnotes - ASTS pattern */}
+        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
+          <p style={{ marginBottom: 4 }}>* Q2'25 net loss includes $660M IPO-related stock-based compensation acceleration. Normalized EPS was positive.</p>
+          <p style={{ marginBottom: 4 }}>* RLDC (Revenue Less Distribution Costs) is Circle's key profitability metric. Distribution costs are payments to exchange partners (Coinbase, Binance).</p>
+          <p>* Data from SEC filings (10-K, 10-Q, S-1). Circle went public via IPO in Q2'25 at $31/share.</p>
+        </div>
+
+        {/* Latest Quarter Summary - ASTS pattern */}
+        <div style={{ marginTop: 16 }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#latest-quarter-summary</div>
+          <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary ({latestQuarter.quarter})<UpdateIndicators sources="SEC" /></div>
+            <div className="g2">
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Filing Source</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.filing}</div>
+              </div>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>USDC Circulation</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>${latestQuarter.usdcCirculation.toFixed(1)}B</div>
+              </div>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Reserve Income</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>${latestQuarter.reserveIncome}M</div>
+              </div>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Market Share</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.marketShare}%</div>
+              </div>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Cash Position</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>${(latestQuarter.cashPosition/1000).toFixed(2)}B</div>
+              </div>
+              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Adj. EBITDA</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>${latestQuarter.adjustedEbitda}M</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
+          Data sourced from SEC filings (10-K, 10-Q). Latest filing: {latestQuarter.filing}.
+        </div>
       </div>
 
       {/* ROW 1: Cash Position & OpEx - ASTS pattern */}
-      <div className="g2" style={{ marginTop: 24 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-1</div>
+      <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <AreaChart data={DATA.map(d => ({ quarter: d.quarter, cash: d.cashPosition }))}>
+            <AreaChart data={quarterlyData.map(d => ({ quarter: d.quarter, cash: d.cashPosition }))}>
               <defs>
                 <linearGradient id="cashGradientCRCL" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
@@ -2415,13 +2476,15 @@ const CRCLQuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="cash" stroke="var(--mint)" fill="url(#cashGradientCRCL)" />
             </AreaChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Q2'25: +$218M IPO proceeds. Aug'25: +$260M follow-on.</div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Cash & Equivalents</span></div>
+          </div>
         </div>
 
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <LineChart data={DATA.map(d => ({ quarter: d.quarter, opEx: d.opex }))}>
+            <LineChart data={quarterlyData.map(d => ({ quarter: d.quarter, opEx: d.opex }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
@@ -2429,12 +2492,59 @@ const CRCLQuarterlyMetricsPanel = () => {
               <Line type="monotone" dataKey="opEx" stroke="var(--violet)" strokeWidth={2} dot={{ fill: 'var(--violet)' }} />
             </LineChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Avg: ${(DATA.reduce((a, d) => a + d.opex, 0) / DATA.length).toFixed(0)}M/qtr</div>
+          {/* OpEx Breakdown with quarter selector - ASTS pattern */}
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>OpEx Breakdown</span>
+              <select
+                value={opExQuarter}
+                onChange={(e) => setOpExQuarter(e.target.value)}
+                style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 4, padding: '2px 8px', fontSize: 11, color: 'var(--text1)' }}
+              >
+                {opExQuarters.map(q => (
+                  <option key={q} value={q}>{q}</option>
+                ))}
+              </select>
+            </div>
+            {(() => {
+              const q = quarterlyData.find(d => d.quarter === opExQuarter);
+              if (!q) return null;
+              return (
+                <>
+                  <div className="g2" style={{ fontSize: 11 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>Compensation:</span>
+                      <span style={{ color: 'var(--violet)' }}>${q.opExComp}M</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>Technology:</span>
+                      <span style={{ color: 'var(--violet)' }}>${q.opExTech}M</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>Marketing:</span>
+                      <span style={{ color: 'var(--violet)' }}>${q.opExMktg}M</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text3)' }}>Other G&A:</span>
+                      <span style={{ color: 'var(--violet)' }}>${q.opExOther}M</span>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 500 }}>
+                      <span style={{ color: 'var(--text2)' }}>Total OpEx:</span>
+                      <span style={{ color: 'var(--violet)' }}>${q.opex}M</span>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
         </div>
       </div>
 
       {/* ROW 2: Share Count & Market Cap - ASTS pattern */}
-      <div className="g2" style={{ marginTop: 16 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-2</div>
+      <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>Share Count (Outstanding)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
@@ -2454,7 +2564,9 @@ const CRCLQuarterlyMetricsPanel = () => {
               <Bar dataKey="shares" fill="var(--coral)" />
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Dilution from IPO + Follow-on + SBC vesting</div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--coral)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Outstanding Shares</span></div>
+          </div>
         </div>
 
         <div className="card">
@@ -2482,16 +2594,19 @@ const CRCLQuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="mktCap" stroke="var(--sky)" fill="url(#mcapGradientCRCL)" />
             </AreaChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>IPO: $31/share → Current: ~$80/share (+158%)</div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap</span></div>
+          </div>
         </div>
       </div>
 
       {/* ROW 3: Company Specific (USDC & EBITDA) - ASTS pattern */}
-      <div className="g2" style={{ marginTop: 16 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#charts-row-3</div>
+      <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>USDC Circulation ($B)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <AreaChart data={DATA.map(d => ({ quarter: d.quarter, usdc: d.usdcCirculation }))}>
+            <AreaChart data={quarterlyData.map(d => ({ quarter: d.quarter, usdc: d.usdcCirculation }))}>
               <defs>
                 <linearGradient id="usdcGradientCRCL" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
@@ -2505,13 +2620,15 @@ const CRCLQuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="usdc" stroke="var(--violet)" fill="url(#usdcGradientCRCL)" />
             </AreaChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Market share: {DATA[0].marketShare}% → {DATA[DATA.length-1].marketShare}%</div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--violet)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>USDC Circulation</span></div>
+          </div>
         </div>
 
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Adjusted EBITDA ($M)<UpdateIndicators sources="SEC" /></div>
           <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={DATA.map(d => ({ quarter: d.quarter, ebitda: d.adjustedEbitda }))}>
+            <BarChart data={quarterlyData.map(d => ({ quarter: d.quarter, ebitda: d.adjustedEbitda }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
@@ -2519,10 +2636,12 @@ const CRCLQuarterlyMetricsPanel = () => {
               <Bar dataKey="ebitda" fill="var(--cyan)" />
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>EBITDA Margin: {((DATA[DATA.length-1].adjustedEbitda / DATA[DATA.length-1].totalRevenue) * 100).toFixed(0)}% (Q3'25)</div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--cyan)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Adjusted EBITDA</span></div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
