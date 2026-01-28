@@ -5153,7 +5153,7 @@ function CRCLModel() {
 
           {activeTab === 'timeline' && (
             <>
-              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Company Timeline<UpdateIndicators sources="PR" /></h2>
+              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Timeline<UpdateIndicators sources="PR" /></h2>
 
               {/* Latest SEC Filings - Enhanced with filtering and pagination */}
               <div className="card" style={{ marginBottom: 32 }}>

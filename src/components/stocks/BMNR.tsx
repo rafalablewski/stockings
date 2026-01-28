@@ -8202,7 +8202,7 @@ const TimelineTab = () => {
                 fontWeight: 500,
                 border: 'none',
                 cursor: 'pointer',
-                background: secFilter === type ? 'var(--violet)' : 'var(--surface3)',
+                background: secFilter === type ? 'var(--mint)' : 'var(--surface3)',
                 color: secFilter === type ? 'white' : 'var(--text2)',
                 transition: 'all 0.15s ease'
               }}
