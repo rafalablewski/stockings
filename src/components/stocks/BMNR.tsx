@@ -3949,61 +3949,38 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
         }}>🎲 Run Simulation</button>
       </div>
 
-      {/* Percentile Range */}
+      {/* Percentile Distribution */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
-        <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 20 }}>
-          {/* Range visualization */}
-          <div style={{ position: 'relative', height: 40, marginBottom: 24 }}>
-            {/* Base track */}
-            <div style={{ position: 'absolute', top: 18, left: 0, right: 0, height: 4, background: 'var(--border)', borderRadius: 2 }} />
-            {/* Interquartile range (P25-P75) */}
-            <div style={{ position: 'absolute', top: 14, left: '20%', width: '60%', height: 12, background: 'var(--accent-dim)', borderRadius: 6 }} />
-            {/* Percentile markers */}
+        <table className="tbl" style={{ width: '100%' }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left' }}>Percentile</th>
+              <th className="r">Price Target</th>
+              <th className="r">vs Current</th>
+              <th className="r">Implied Return</th>
+            </tr>
+          </thead>
+          <tbody>
             {[
-              { pct: 0, label: 'P5', value: sim.p5 },
-              { pct: 20, label: 'P25', value: sim.p25 },
-              { pct: 50, label: 'P50', value: sim.p50 },
-              { pct: 80, label: 'P75', value: sim.p75 },
-              { pct: 100, label: 'P95', value: sim.p95 },
-            ].map((p, i) => (
-              <div key={i} style={{ position: 'absolute', left: `${p.pct}%`, transform: 'translateX(-50%)' }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: p.label === 'P50' ? 'var(--accent)' : 'var(--text3)', margin: '0 auto 4px' }} />
-              </div>
-            ))}
-            {/* Current price marker */}
-            <div style={{
-              position: 'absolute',
-              left: `${Math.min(100, Math.max(0, ((currentNAV - sim.p5) / (sim.p95 - sim.p5)) * 100))}%`,
-              transform: 'translateX(-50%)',
-              top: -8
-            }}>
-              <div style={{ fontSize: 10, color: 'var(--text)', fontWeight: 600, textAlign: 'center', whiteSpace: 'nowrap' }}>NOW</div>
-              <div style={{ width: 2, height: 24, background: 'var(--text)', margin: '2px auto 0' }} />
-            </div>
-          </div>
-          {/* Values row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'Space Mono' }}>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text2)' }}>${sim.p5.toFixed(0)}</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>P5 · {((sim.p5 / currentNAV - 1) * 100).toFixed(0)}%</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 2 }}>${sim.p25.toFixed(0)}</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--accent)' }}>${sim.p50.toFixed(0)}</div>
-              <div style={{ fontSize: 10, color: 'var(--accent)' }}>Median · {((sim.p50 / currentNAV - 1) * 100).toFixed(0)}%</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 2 }}>${sim.p75.toFixed(0)}</div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text2)' }}>${sim.p95.toFixed(0)}</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>P95 · +{((sim.p95 / currentNAV - 1) * 100).toFixed(0)}%</div>
-            </div>
-          </div>
-        </div>
+              { label: 'P5 (Bear Case)', value: sim.p5 },
+              { label: 'P25', value: sim.p25 },
+              { label: 'P50 (Median)', value: sim.p50, highlight: true },
+              { label: 'P75', value: sim.p75 },
+              { label: 'P95 (Bull Case)', value: sim.p95 },
+            ].map((row, i) => {
+              const pctChange = ((row.value / currentNAV - 1) * 100);
+              return (
+                <tr key={i} style={row.highlight ? { background: 'var(--accent-dim)' } : {}}>
+                  <td style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--text2)' }}>${(row.value - currentNAV).toFixed(2)}</td>
+                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
 
       {/* Risk Metrics */}
