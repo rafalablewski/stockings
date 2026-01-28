@@ -2332,7 +2332,7 @@ const CRCLQuarterlyMetricsPanel = () => {
           <span className="pill" style={{ background: 'rgba(34,197,94,0.15)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
             Revenue: ${quarterlyData[0].totalRevenue}M → ${quarterlyData[quarterlyData.length-1].totalRevenue}M
           </span>
-          <span className="pill" style={{ background: 'rgba(59,130,246,0.15)', borderColor: 'var(--sky)', color: 'var(--sky)' }}>
+          <span className="pill" style={{ background: 'rgba(251,146,60,0.15)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>
             Cash: ${(quarterlyData[0].cashPosition/1000).toFixed(2)}B → ${(quarterlyData[quarterlyData.length-1].cashPosition/1000).toFixed(2)}B
           </span>
           <span className="pill" style={{ background: 'rgba(139,92,246,0.15)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
@@ -2450,6 +2450,7 @@ const CRCLQuarterlyMetricsPanel = () => {
           <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Cash & Equivalents</span></div>
           </div>
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Strong cash position from IPO proceeds ($500M+ raised Q2'25). Includes treasury, short-term investments, and money market funds.</div>
         </div>
 
         <div className="card">

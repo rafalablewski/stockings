@@ -5210,6 +5210,9 @@ const BMNRQuarterlyMetricsPanel = () => {
               <Area type="monotone" dataKey="cash" stroke="var(--mint)" fill="url(#cashGradientBMNR)" />
             </AreaChart>
           </ResponsiveContainer>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Cash & Equivalents</span></div>
+          </div>
           <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Post-pivot: $250M PIPE + subsequent ATM raises</div>
         </div>
 
