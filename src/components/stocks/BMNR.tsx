@@ -5119,15 +5119,17 @@ const SECFilingsTab = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HEADER                                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#financials-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: HIGHLIGHT BOX                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#financials-overview</div>
       <div className="highlight">
         <h3 style={{ display: 'flex', alignItems: 'center' }}>{config.highlightTitle}<UpdateIndicators sources="SEC" /></h3>
         <p className="text-sm text-slate-300">{config.highlightText}</p>
@@ -5398,6 +5400,7 @@ const SECFilingsTab = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 9: CFA NOTES                                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Financial Analysis" items={config.cfaNotes} />
     </div>
   );

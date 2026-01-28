@@ -2788,20 +2788,22 @@ function CRCLModel() {
           )}
 
           {activeTab === 'financials' && (
-            <div className="flex flex-col gap-6">
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* UNIFIED FINANCIALS TAB - Canonical structure shared across all models */}
               {/* Only data and labels differ between ASTS, BMNR, and CRCL              */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
-              
+
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 1: HEADER                                                   */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#financials-header</div>
               <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
-              
+
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 2: HIGHLIGHT BOX                                            */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#financials-overview</div>
               <div className="highlight">
                 <h3>Revenue Growth Story</h3>
                 <p className="text-sm text-slate-300">
@@ -3082,6 +3084,7 @@ function CRCLModel() {
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 9: CFA NOTES                                                */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 32, marginBottom: 4, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — Financial Analysis" items={[
                 { term: 'Revenue Growth', def: 'Track YoY and QoQ trends. High growth justifies premium multiples. Deceleration is a key risk signal.' },
                 { term: 'Gross Margin', def: 'Revenue minus direct costs. Circle\'s stablecoin business has near-100% gross margin on interest income.' },
