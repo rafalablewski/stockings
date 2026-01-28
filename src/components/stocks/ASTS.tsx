@@ -3706,30 +3706,30 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#mc-percentiles</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
-          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#fca5a5', marginBottom: 4 }}>P5 (Bear)</div>
-            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#f87171' }}>${sim.p5.toFixed(0)}</div>
-            <div style={{ fontSize: 11, color: '#fca5a5', marginTop: 4 }}>{((sim.p5 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'var(--red-dim)', border: '1px solid var(--red)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: 'var(--red)', marginBottom: 4, opacity: 0.8 }}>P5 (Bear)</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--red)' }}>${sim.p5.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4, opacity: 0.8 }}>{((sim.p5 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
           </div>
-          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#fdba74', marginBottom: 4 }}>P25</div>
-            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#fb923c' }}>${sim.p25.toFixed(0)}</div>
-            <div style={{ fontSize: 11, color: '#fdba74', marginTop: 4 }}>{((sim.p25 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'var(--surface2)', border: '1px solid var(--border)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>P25</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--text2)' }}>${sim.p25.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>{((sim.p25 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
           </div>
           <div style={{ padding: 14, borderRadius: 12, background: 'var(--accent-dim)', border: '1px solid var(--accent)', textAlign: 'center' }}>
             <div style={{ fontSize: 11, color: 'var(--accent)', marginBottom: 4, opacity: 0.8 }}>Median</div>
             <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--accent)' }}>${sim.p50.toFixed(0)}</div>
             <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 4, opacity: 0.8 }}>{((sim.p50 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
           </div>
-          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>P75</div>
-            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#4ade80' }}>${sim.p75.toFixed(0)}</div>
-            <div style={{ fontSize: 11, color: '#86efac', marginTop: 4 }}>{((sim.p75 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'var(--surface2)', border: '1px solid var(--border)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>P75</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--text2)' }}>${sim.p75.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>{((sim.p75 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
           </div>
-          <div style={{ padding: 14, borderRadius: 12, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#6ee7b7', marginBottom: 4 }}>P95 (Bull)</div>
-            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: '#34d399' }}>${sim.p95.toFixed(0)}</div>
-            <div style={{ fontSize: 11, color: '#6ee7b7', marginTop: 4 }}>{((sim.p95 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'var(--mint-dim)', border: '1px solid var(--mint)', textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: 'var(--mint)', marginBottom: 4, opacity: 0.8 }}>P95 (Bull)</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--mint)' }}>${sim.p95.toFixed(0)}</div>
+            <div style={{ fontSize: 11, color: 'var(--mint)', marginTop: 4, opacity: 0.8 }}>{((sim.p95 / currentStockPrice - 1) * 100).toFixed(0)}%</div>
           </div>
         </div>
       </div>
