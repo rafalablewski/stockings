@@ -8360,7 +8360,6 @@ const TimelineTab = () => {
           </div>
         </div>
 
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#recent-press-releases</div>
         <div className="card">
           {/* [PR_CHECKLIST_RECENT_PRESS_RELEASES] - Add new PR at top! */}
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
