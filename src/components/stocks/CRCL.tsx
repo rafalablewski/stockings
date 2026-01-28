@@ -2304,6 +2304,21 @@ const CRCLQuarterlyMetricsPanel = () => {
   const latestQuarter = quarterlyData[quarterlyData.length - 1];
   const opExQuarters = quarterlyData.map(q => q.quarter);
 
+  // Dynamic metrics array - ASTS pattern
+  const metrics = [
+    { label: 'Total Revenue', key: 'totalRevenue', format: (v: number) => `$${v}M`, color: () => 'var(--mint)' },
+    { label: 'Reserve Income', key: 'reserveIncome', format: (v: number) => `$${v}M`, color: () => undefined },
+    { label: 'Distribution Costs', key: 'distributionCosts', format: (v: number) => `-$${v}M`, color: () => 'var(--coral)' },
+    { label: 'RLDC', key: 'rldc', format: (v: number) => `$${v}M`, color: () => undefined },
+    { label: 'RLDC Margin', key: 'rldcMargin', format: (v: number) => `${v}%`, color: () => undefined },
+    { label: 'OpEx', key: 'opex', format: (v: number) => `-$${v}M`, color: () => 'var(--coral)' },
+    { label: 'Adj. EBITDA', key: 'adjustedEbitda', format: (v: number) => `$${v}M`, color: () => 'var(--sky)' },
+    { label: 'Net Income', key: 'netIncome', format: (v: number) => v >= 0 ? `$${v}M` : `-$${Math.abs(v)}M`, color: (v: number) => v >= 0 ? 'var(--mint)' : 'var(--coral)' },
+    { label: 'Cash Position', key: 'cashPosition', format: (v: number) => `$${(v/1000).toFixed(2)}B`, color: () => undefined },
+    { label: 'USDC Circulation', key: 'usdcCirculation', format: (v: number) => `$${v.toFixed(1)}B`, color: () => 'var(--violet)' },
+    { label: 'Market Share', key: 'marketShare', format: (v: number) => `${v}%`, color: () => undefined },
+  ];
+
   return (
     <>
       {/* #quarterly-metrics */}
@@ -2325,88 +2340,44 @@ const CRCLQuarterlyMetricsPanel = () => {
           </span>
         </div>
 
-        {/* Quarterly Table - ASTS sticky column pattern */}
+        {/* Quarterly Table - ASTS dynamic pattern */}
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>
               <tr>
                 <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
-                {quarterlyData.map(d => (
-                  <th key={d.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : {}) }}>
+                {quarterlyData.map((d, idx) => (
+                  <th key={d.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === quarterlyData.length - 1 ? { background: 'var(--accent-dim)' } : {}) }}>
                     {d.quarter}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Total Revenue</td>
-                {quarterlyData.map(d => (
-                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: 'var(--mint)' } : { color: 'var(--mint)' }}>${d.totalRevenue}M</td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Reserve Income</td>
-                {quarterlyData.map(d => (
-                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : undefined}>${d.reserveIncome}M</td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Distribution Costs</td>
-                {quarterlyData.map(d => (
-                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: 'var(--coral)' } : { color: 'var(--coral)' }}>({d.distributionCosts})</td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>RLDC</td>
-                {quarterlyData.map(d => (
-                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : undefined}>${d.rldc}M</td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>RLDC Margin</td>
-                {quarterlyData.map(d => (
-                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : undefined}>{d.rldcMargin}%</td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>OpEx</td>
-                {quarterlyData.map(d => (
-                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: 'var(--coral)' } : { color: 'var(--coral)' }}>({d.opex})</td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Adj. EBITDA</td>
-                {quarterlyData.map(d => (
-                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: 'var(--sky)' } : { color: 'var(--sky)' }}>${d.adjustedEbitda}M</td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Net Income</td>
-                {quarterlyData.map(d => (
-                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: d.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' } : { color: d.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                    {d.netIncome >= 0 ? `$${d.netIncome}M` : `($${Math.abs(d.netIncome)}M)`}
+              {metrics.map(metric => (
+                <tr key={metric.label}>
+                  <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
+                    {metric.label}
                   </td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Cash Position</td>
-                {quarterlyData.map(d => (
-                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : undefined}>${(d.cashPosition/1000).toFixed(2)}B</td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>USDC Circulation</td>
-                {quarterlyData.map(d => (
-                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)', color: 'var(--violet)' } : { color: 'var(--violet)' }}>${d.usdcCirculation.toFixed(1)}B</td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Market Share</td>
-                {quarterlyData.map(d => (
-                  <td key={d.quarter} className="r" style={d.quarter === "Q3'25" ? { background: 'var(--accent-dim)' } : undefined}>{d.marketShare}%</td>
-                ))}
-              </tr>
+                  {quarterlyData.map((d, idx) => {
+                    const val = d[metric.key as keyof typeof d] as number;
+                    const cellColor = metric.color(val);
+                    const isLatestQuarter = idx === quarterlyData.length - 1;
+                    return (
+                      <td
+                        key={d.quarter}
+                        className="r"
+                        style={{
+                          ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
+                          ...(cellColor ? { color: cellColor } : {})
+                        }}
+                      >
+                        {metric.format(val)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

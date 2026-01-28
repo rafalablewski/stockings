@@ -5068,6 +5068,20 @@ const BMNRQuarterlyMetricsPanel = () => {
   const latestQuarter = quarterlyData[quarterlyData.length - 1];
   const opExQuarters = quarterlyData.filter(q => q.opEx).map(q => q.quarter);
 
+  // Dynamic metrics array - ASTS pattern
+  const metrics = [
+    { label: 'Cash & Equiv', key: 'cash', format: (v: number) => v >= 100 ? `$${v}M` : `$${(v * 1000).toFixed(0)}K`, color: (v: number) => v > 100 ? 'var(--mint)' : undefined },
+    { label: 'Crypto Holdings', key: 'crypto', format: (v: number, q: typeof quarterlyData[0]) => v >= 1000 ? `$${(v/1000).toFixed(2)}B` : `$${(v * 1000).toFixed(0)}K`, color: (_v: number, q: typeof quarterlyData[0]) => q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' },
+    { label: 'Crypto Type', key: 'cryptoType', format: (v: string) => v, color: (v: string) => v === 'ETH' ? 'var(--violet)' : 'var(--gold)' },
+    { label: 'Total Assets', key: 'assets', format: (v: number) => v >= 1000 ? `$${(v/1000).toFixed(2)}B` : `$${v.toFixed(2)}M`, color: (v: number) => v > 100 ? 'var(--mint)' : undefined },
+    { label: 'Total Liabilities', key: 'liabilities', format: (v: number) => `$${v.toFixed(v >= 100 ? 0 : 2)}M`, color: () => undefined },
+    { label: "Stockholders' Equity", key: 'equity', format: (v: number) => v >= 1000 ? `$${(v/1000).toFixed(2)}B` : `$${v.toFixed(2)}M`, color: (v: number) => v > 100 ? 'var(--mint)' : undefined },
+    { label: 'Revenue', key: 'revenue', format: (v: number) => `$${v.toFixed(1)}M`, color: () => undefined },
+    { label: 'Net Income', key: 'netIncome', format: (v: number) => v >= 0 ? `$${v}M` : `-$${Math.abs(v)}M`, color: (v: number) => v >= 0 ? 'var(--mint)' : 'var(--coral)' },
+    { label: 'Shares Outstanding', key: 'shares', format: (v: number) => `${v.toFixed(1)}M`, color: (v: number) => v > 100 ? 'var(--gold)' : undefined },
+    { label: 'Era', key: 'era', format: (v: string) => v, color: (v: string) => v.includes('ETH') ? 'var(--violet)' : 'var(--gold)' },
+  ];
+
   return (
     <>
       {/* #quarterly-metrics */}
@@ -5089,100 +5103,44 @@ const BMNRQuarterlyMetricsPanel = () => {
           </span>
         </div>
 
-        {/* Quarterly Table - ASTS sticky column pattern */}
+        {/* Quarterly Table - ASTS dynamic pattern */}
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
             <thead>
               <tr>
                 <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
-                {quarterlyData.map(q => (
-                  <th key={q.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : {}) }}>
+                {quarterlyData.map((q, idx) => (
+                  <th key={q.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === quarterlyData.length - 1 ? { background: 'var(--accent-dim)' } : {}) }}>
                     {q.quarter}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Cash & Equiv</td>
-                {quarterlyData.map(q => (
-                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cash > 100 ? 'var(--mint)' : undefined } : q.cash > 100 ? { color: 'var(--mint)' } : undefined}>
-                    {q.cash >= 100 ? `$${q.cash}M` : `$${(q.cash * 1000).toFixed(0)}K`}
+              {metrics.map(metric => (
+                <tr key={metric.label}>
+                  <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
+                    {metric.label}
                   </td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Crypto Holdings</td>
-                {quarterlyData.map(q => (
-                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' } : { color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' }}>
-                    {q.crypto >= 1000 ? `$${(q.crypto/1000).toFixed(2)}B` : `$${(q.crypto * 1000).toFixed(0)}K`}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Crypto Type</td>
-                {quarterlyData.map(q => (
-                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' } : { color: q.cryptoType === 'ETH' ? 'var(--violet)' : 'var(--gold)' }}>
-                    {q.cryptoType}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Total Assets</td>
-                {quarterlyData.map(q => (
-                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.assets > 100 ? 'var(--mint)' : undefined } : q.assets > 100 ? { color: 'var(--mint)' } : undefined}>
-                    {q.assets >= 1000 ? `$${(q.assets/1000).toFixed(2)}B` : `$${q.assets.toFixed(2)}M`}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Total Liabilities</td>
-                {quarterlyData.map(q => (
-                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : undefined}>
-                    ${q.liabilities.toFixed(q.liabilities >= 100 ? 0 : 2)}M
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Stockholders' Equity</td>
-                {quarterlyData.map(q => (
-                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.equity > 100 ? 'var(--mint)' : undefined } : q.equity > 100 ? { color: 'var(--mint)' } : undefined}>
-                    {q.equity >= 1000 ? `$${(q.equity/1000).toFixed(2)}B` : `$${q.equity.toFixed(2)}M`}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Revenue</td>
-                {quarterlyData.map(q => (
-                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)' } : undefined}>
-                    ${q.revenue.toFixed(1)}M
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Net Income/(Loss)</td>
-                {quarterlyData.map(q => (
-                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' } : { color: q.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                    {q.netIncome >= 0 ? `+$${q.netIncome}M` : `($${Math.abs(q.netIncome)}M)`}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Shares Outstanding</td>
-                {quarterlyData.map(q => (
-                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.shares > 100 ? 'var(--gold)' : undefined } : q.shares > 100 ? { color: 'var(--gold)' } : undefined}>
-                    {q.shares.toFixed(1)}M
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>Era</td>
-                {quarterlyData.map(q => (
-                  <td key={q.quarter} className="r" style={q.quarter === 'FY25 10-K' ? { background: 'var(--accent-dim)', color: q.era.includes('ETH') ? 'var(--violet)' : 'var(--gold)' } : { color: q.era.includes('ETH') ? 'var(--violet)' : 'var(--gold)' }}>
-                    {q.era}
-                  </td>
-                ))}
-              </tr>
+                  {quarterlyData.map((q, idx) => {
+                    const val = q[metric.key as keyof typeof q];
+                    const cellColor = metric.color(val as never, q as never);
+                    const isLatestQuarter = idx === quarterlyData.length - 1;
+                    return (
+                      <td
+                        key={q.quarter}
+                        className="r"
+                        style={{
+                          ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
+                          ...(cellColor ? { color: cellColor } : {})
+                        }}
+                      >
+                        {metric.format(val as never, q as never)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
