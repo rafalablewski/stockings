@@ -98,7 +98,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   font-weight: 700;
   letter-spacing: -1.5px;
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 0;
   background: linear-gradient(135deg, #fff 0%, #8B949E 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -115,7 +115,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   background: var(--accent-dim);
   padding: 6px 14px;
   border-radius: 6px;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 .brand-block .desc {
@@ -135,7 +135,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   font-weight: 700;
   letter-spacing: -2px;
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .price-badge {
@@ -168,7 +168,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   text-transform: uppercase;
   letter-spacing: 1.2px;
   color: var(--text3);
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .stat-item .val {
@@ -347,7 +347,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  margin-bottom: 32px;
+  margin-bottom: 0;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -367,7 +367,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 28px;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 .card-title {
@@ -375,7 +375,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--text3);
-  margin-bottom: 20px;
+  margin-bottom: 0;
   font-weight: 600;
 }
 
@@ -391,14 +391,14 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
   border-radius: 16px;
   padding: 28px;
-  margin-bottom: 32px;
+  margin-bottom: 0;
 }
 
 .highlight h3 {
   font-size: 18px;
   font-weight: 700;
   color: var(--accent);
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .highlight p {
@@ -426,7 +426,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 .thesis h4 {
   font-size: 16px;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 0;
 }
 
 .thesis.bull h4 { color: var(--mint); }
@@ -465,7 +465,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   font-family: 'Space Mono', monospace;
   font-size: 12px;
   color: var(--text);
-  margin-bottom: 8px;
+  margin-bottom: 0;
   font-weight: 600;
 }
 
@@ -503,7 +503,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   font-size: 36px;
   font-weight: 700;
   color: var(--accent);
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .big-stat .lbl {
@@ -557,7 +557,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 .pill {
@@ -581,13 +581,13 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 
 /* Range Slider */
 .slider-wrap {
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 .slider-head {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   font-size: 14px;
 }
 
@@ -766,7 +766,7 @@ input[type="range"]::-webkit-slider-thumb {
   .brand-block .ticker {
     font-size: 11px;
     padding: 4px 10px;
-    margin-bottom: 12px;
+    margin-bottom: 0;
   }
 
   /* Grid Layouts - Single column with proper spacing */
@@ -837,11 +837,11 @@ input[type="range"]::-webkit-slider-thumb {
   .card {
     padding: 16px;
     border-radius: 14px;
-    margin-bottom: 16px;
+    margin-bottom: 0;
   }
   .card-title {
     font-size: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 0;
     letter-spacing: 1.2px;
   }
 
@@ -849,11 +849,11 @@ input[type="range"]::-webkit-slider-thumb {
   .highlight {
     padding: 16px;
     border-radius: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
   }
   .highlight h3 {
     font-size: 16px;
-    margin-bottom: 10px;
+    margin-bottom: 0;
   }
   .highlight p {
     font-size: 14px;
@@ -863,7 +863,7 @@ input[type="range"]::-webkit-slider-thumb {
   /* Section Headers */
   .section-head {
     font-size: 22px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
     gap: 12px;
   }
   .section-head::before {
@@ -889,7 +889,7 @@ input[type="range"]::-webkit-slider-thumb {
   }
   .thesis h4 {
     font-size: 15px;
-    margin-bottom: 12px;
+    margin-bottom: 0;
   }
   .thesis ul {
     font-size: 13px;
@@ -932,7 +932,7 @@ input[type="range"]::-webkit-slider-thumb {
   /* Pills */
   .pills {
     gap: 6px;
-    margin-bottom: 16px;
+    margin-bottom: 0;
   }
   .pill {
     padding: 10px 16px;
@@ -941,11 +941,11 @@ input[type="range"]::-webkit-slider-thumb {
 
   /* Sliders */
   .slider-wrap {
-    margin-bottom: 20px;
+    margin-bottom: 0;
   }
   .slider-head {
     font-size: 13px;
-    margin-bottom: 8px;
+    margin-bottom: 0;
   }
 
   /* Input controls - Prevent iOS zoom */
@@ -1041,7 +1041,7 @@ input[type="range"]::-webkit-slider-thumb {
   /* Section Headers */
   .section-head {
     font-size: 20px;
-    margin-bottom: 16px;
+    margin-bottom: 0;
   }
 
   /* Tables */
@@ -1150,7 +1150,7 @@ input[type="range"]::-webkit-slider-thumb {
 .timeline-item {
   border: 1px solid var(--border);
   border-radius: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 0;
   overflow: hidden;
   transition: all 0.2s;
   background: var(--surface);
@@ -1261,7 +1261,7 @@ input[type="range"]::-webkit-slider-thumb {
 .t-details-text li {
   display: flex;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 .t-details-text li::before {
   content: '•';
@@ -1284,7 +1284,7 @@ input[type="range"]::-webkit-slider-thumb {
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--text3);
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 .t-meta-value {
   font-size: 13px;
@@ -1385,7 +1385,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 8px;
   font-size: 11px;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 .update-legend-item {
   display: flex;
