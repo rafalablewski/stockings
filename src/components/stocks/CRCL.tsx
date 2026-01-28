@@ -5156,7 +5156,8 @@ function CRCLModel() {
               <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Timeline<UpdateIndicators sources="PR" /></h2>
 
               {/* Latest SEC Filings - Enhanced with filtering and pagination */}
-              <div className="card" style={{ marginBottom: 32 }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#sec-filings</div>
+              <div className="card" style={{ marginBottom: 0 }}>
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
                 
                 {/* Filter Buttons */}
@@ -5172,7 +5173,7 @@ function CRCLModel() {
                         fontWeight: 500,
                         border: 'none',
                         cursor: 'pointer',
-                        background: secFilter === type ? 'var(--mint)' : 'var(--surface3)',
+                        background: secFilter === type ? 'var(--cyan)' : 'var(--surface3)',
                         color: secFilter === type ? 'white' : 'var(--text2)',
                         transition: 'all 0.15s ease'
                       }}
@@ -5197,7 +5198,7 @@ function CRCLModel() {
                     <tbody>
                       {displayedFilings.map((filing, idx) => (
                         <tr key={idx}>
-                          <td>{filing.date}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{filing.date}</td>
                           <td>
                             <span style={{ 
                               background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)', 
@@ -5281,6 +5282,7 @@ function CRCLModel() {
               </div>
 
               {/* Upcoming Events */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#upcoming-events</div>
               <div className="g2" style={{ marginBottom: 32 }}>
                 <div className="card">
                   <div className="card-title">Upcoming Events</div>
@@ -5354,6 +5356,7 @@ function CRCLModel() {
               </div>
               
               {/* Event Timeline Section */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#event-timeline</div>
               <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span>Event Timeline</span>
                 <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredEvents.length} events)</span>

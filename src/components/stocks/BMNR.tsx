@@ -8186,6 +8186,7 @@ const TimelineTab = () => {
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Timeline<UpdateIndicators sources="PR" /></h2>
 
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 16, marginBottom: 4, fontFamily: 'monospace' }}>#sec-filings</div>
       <div className="card" style={{ marginBottom: 0 }}>
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
         
@@ -8202,7 +8203,7 @@ const TimelineTab = () => {
                 fontWeight: 500,
                 border: 'none',
                 cursor: 'pointer',
-                background: secFilter === type ? 'var(--mint)' : 'var(--surface3)',
+                background: secFilter === type ? 'var(--cyan)' : 'var(--surface3)',
                 color: secFilter === type ? 'white' : 'var(--text2)',
                 transition: 'all 0.15s ease'
               }}
@@ -8312,6 +8313,7 @@ const TimelineTab = () => {
       </div>
 
       {/* Upcoming Events + Recent Press Releases */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#upcoming-events</div>
       <div className="g2">
         <div className="card">
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
@@ -8410,6 +8412,7 @@ const TimelineTab = () => {
       </div>
 
       {/* Event Timeline Section - CRCL Style */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#event-timeline</div>
       <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span>Event Timeline</span>
         <UpdateIndicators sources="PR" />
