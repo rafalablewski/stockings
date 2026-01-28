@@ -4694,6 +4694,7 @@ const QuarterlyMetricsPanel = () => {
       <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
         Data sourced from SEC filings (10-K, 10-K/A, 10-Q). Latest filing: Q3 2025 10-Q (Nov 10, 2025).
       </div>
+      </div>
 
       {/* Historical Trend Charts */}
       {/* ROW 1: Cash Position & OpEx */}
