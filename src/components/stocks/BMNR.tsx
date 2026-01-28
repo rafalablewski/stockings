@@ -5057,18 +5057,18 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 // QUARTERLY METRICS PANEL - Unified pattern matching ASTS QuarterlyMetricsPanel
 // ═══════════════════════════════════════════════════════════════════════════════
 const BMNRQuarterlyMetricsPanel = () => {
-  const [opExQuarter, setOpExQuarter] = useState('Q4 2025');
+  const [opExQuarter, setOpExQuarter] = useState('Q1 2026');
 
-  // === QUARTERLY DATA (transformed from original filings) ===
+  // === QUARTERLY DATA (transformed from original filings) - newest first ===
   const quarterlyData = [
-    { quarter: 'Q1 2025', cash: 0.8, crypto: 0.15, cryptoType: 'BTC', assets: 7.93, liabilities: 4.47, equity: 3.47, revenue: 1.2, netIncome: -0.975, shares: 39.7, era: '⛏️ BTC', opEx: 2.2, opExGandA: 1.8, opExOther: 0.4, filing: '10-Q (Aug 2024)' },
-    { quarter: 'Q2 2025', cash: 0.5, crypto: 0.25, cryptoType: 'BTC', assets: 7.50, liabilities: 4.82, equity: 2.68, revenue: 1.5, netIncome: -1.15, shares: 39.7, era: '⛏️ BTC', opEx: 2.5, opExGandA: 2.0, opExOther: 0.5, filing: '10-Q (Nov 2024)' },
-    { quarter: 'Q3 2025', cash: 1.5, crypto: 0.17, cryptoType: 'BTC', assets: 8.27, liabilities: 5.39, equity: 2.88, revenue: 2.1, netIncome: -0.62, shares: 6.2, era: '⛏️ BTC', opEx: 2.8, opExGandA: 2.2, opExOther: 0.6, filing: '10-Q/A (Feb 2025)' },
-    { quarter: 'Q4 2025', cash: 512, crypto: 8260, cryptoType: 'ETH', assets: 8800, liabilities: 102, equity: 8690, revenue: 5.8, netIncome: 328, shares: 384, era: '💎 ETH', opEx: 15, opExGandA: 10, opExTreasury: 3, opExOther: 2, filing: '10-K (Nov 2025)', ethHoldings: 4110000, stakingYield: 3.5, stakingDeployed: 409000 },
     { quarter: 'Q1 2026', cash: 888, crypto: 10562, cryptoType: 'ETH', assets: 11487, liabilities: 236, equity: 11252, revenue: 2.3, netIncome: -5204, shares: 409, era: '💎 ETH', opEx: 18, opExGandA: 12, opExTreasury: 4, opExOther: 2, filing: '10-Q (Jan 2026)', ethHoldings: 4500000, stakingYield: 3.5, stakingDeployed: 450000 },
+    { quarter: 'Q4 2025', cash: 512, crypto: 8260, cryptoType: 'ETH', assets: 8800, liabilities: 102, equity: 8690, revenue: 5.8, netIncome: 328, shares: 384, era: '💎 ETH', opEx: 15, opExGandA: 10, opExTreasury: 3, opExOther: 2, filing: '10-K (Nov 2025)', ethHoldings: 4110000, stakingYield: 3.5, stakingDeployed: 409000 },
+    { quarter: 'Q3 2025', cash: 1.5, crypto: 0.17, cryptoType: 'BTC', assets: 8.27, liabilities: 5.39, equity: 2.88, revenue: 2.1, netIncome: -0.62, shares: 6.2, era: '⛏️ BTC', opEx: 2.8, opExGandA: 2.2, opExOther: 0.6, filing: '10-Q/A (Feb 2025)' },
+    { quarter: 'Q2 2025', cash: 0.5, crypto: 0.25, cryptoType: 'BTC', assets: 7.50, liabilities: 4.82, equity: 2.68, revenue: 1.5, netIncome: -1.15, shares: 39.7, era: '⛏️ BTC', opEx: 2.5, opExGandA: 2.0, opExOther: 0.5, filing: '10-Q (Nov 2024)' },
+    { quarter: 'Q1 2025', cash: 0.8, crypto: 0.15, cryptoType: 'BTC', assets: 7.93, liabilities: 4.47, equity: 3.47, revenue: 1.2, netIncome: -0.975, shares: 39.7, era: '⛏️ BTC', opEx: 2.2, opExGandA: 1.8, opExOther: 0.4, filing: '10-Q (Aug 2024)' },
   ];
 
-  const latestQuarter = quarterlyData[quarterlyData.length - 1];
+  const latestQuarter = quarterlyData[0];
   const opExQuarters = quarterlyData.filter(q => q.opEx).map(q => q.quarter);
 
   // Dynamic metrics array - ASTS pattern
@@ -5113,7 +5113,7 @@ const BMNRQuarterlyMetricsPanel = () => {
               <tr>
                 <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
                 {quarterlyData.map((q, idx) => (
-                  <th key={q.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === quarterlyData.length - 1 ? { background: 'var(--accent-dim)' } : {}) }}>
+                  <th key={q.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === 0 ? { background: 'var(--accent-dim)' } : {}) }}>
                     {q.quarter.replace('Q', '').replace(' ', "'")}
                   </th>
                 ))}
@@ -5128,7 +5128,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                   {quarterlyData.map((q, idx) => {
                     const val = q[metric.key as keyof typeof q];
                     const cellColor = metric.color(val as never, q as never);
-                    const isLatestQuarter = idx === quarterlyData.length - 1;
+                    const isLatestQuarter = idx === 0;
                     return (
                       <td
                         key={q.quarter}

@@ -2301,7 +2301,7 @@ const CRCLQuarterlyMetricsPanel = () => {
     filing: d.quarter.includes('Q1') ? '10-Q (May)' : d.quarter.includes('Q2') ? '10-Q (Aug)' : d.quarter.includes('Q3') ? '10-Q (Nov)' : '10-K (Mar)',
   }));
 
-  const latestQuarter = quarterlyData[quarterlyData.length - 1];
+  const latestQuarter = quarterlyData[0];
   const opExQuarters = quarterlyData.map(q => q.quarter);
 
   // Dynamic metrics array - ASTS pattern
@@ -2347,7 +2347,7 @@ const CRCLQuarterlyMetricsPanel = () => {
               <tr>
                 <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
                 {quarterlyData.map((d, idx) => (
-                  <th key={d.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === quarterlyData.length - 1 ? { background: 'var(--accent-dim)' } : {}) }}>
+                  <th key={d.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === 0 ? { background: 'var(--accent-dim)' } : {}) }}>
                     {d.quarter.replace('Q', '').replace(' ', "'")}
                   </th>
                 ))}
@@ -2362,7 +2362,7 @@ const CRCLQuarterlyMetricsPanel = () => {
                   {quarterlyData.map((d, idx) => {
                     const val = d[metric.key as keyof typeof d] as number;
                     const cellColor = metric.color(val);
-                    const isLatestQuarter = idx === quarterlyData.length - 1;
+                    const isLatestQuarter = idx === 0;
                     return (
                       <td
                         key={d.quarter}
