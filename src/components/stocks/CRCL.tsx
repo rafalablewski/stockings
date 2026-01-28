@@ -2285,6 +2285,247 @@ const DCFTab = () => {
   );
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// QUARTERLY METRICS PANEL - Unified pattern matching ASTS QuarterlyMetricsPanel
+// ═══════════════════════════════════════════════════════════════════════════════
+const CRCLQuarterlyMetricsPanel = () => {
+  return (
+    <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
+      {/* Summary Badges - ASTS pattern */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+        <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
+          {DATA.length} quarters of data ({DATA[0].quarter} - {DATA[DATA.length-1].quarter})
+        </span>
+        <span className="pill" style={{ background: 'rgba(34,197,94,0.15)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
+          Revenue: ${DATA[0].totalRevenue}M → ${DATA[DATA.length-1].totalRevenue}M
+        </span>
+        <span className="pill" style={{ background: 'rgba(59,130,246,0.15)', borderColor: 'var(--sky)', color: 'var(--sky)' }}>
+          Cash: ${(DATA[0].cashPosition/1000).toFixed(2)}B → ${(DATA[DATA.length-1].cashPosition/1000).toFixed(2)}B
+        </span>
+        <span className="pill" style={{ background: 'rgba(139,92,246,0.15)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
+          USDC: ${DATA[0].usdcCirculation.toFixed(1)}B → ${DATA[DATA.length-1].usdcCirculation.toFixed(1)}B
+        </span>
+      </div>
+
+      {/* Quarterly Table */}
+      <div style={{ overflowX: 'auto' }}>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              {DATA.map(d => (
+                <th key={d.quarter} className="r">
+                  {d.quarter}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style={{ fontWeight: 500 }}>Total Revenue</td>
+              {DATA.map(d => (
+                <td key={d.quarter} className="r" style={{ color: 'var(--mint)' }}>${d.totalRevenue}M</td>
+              ))}
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 500 }}>Reserve Income</td>
+              {DATA.map(d => (
+                <td key={d.quarter} className="r">${d.reserveIncome}M</td>
+              ))}
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 500 }}>Distribution Costs</td>
+              {DATA.map(d => (
+                <td key={d.quarter} className="r" style={{ color: 'var(--coral)' }}>({d.distributionCosts})</td>
+              ))}
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 500 }}>RLDC</td>
+              {DATA.map(d => (
+                <td key={d.quarter} className="r">${d.rldc}M</td>
+              ))}
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 500 }}>RLDC Margin</td>
+              {DATA.map(d => (
+                <td key={d.quarter} className="r">{d.rldcMargin}%</td>
+              ))}
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 500 }}>OpEx</td>
+              {DATA.map(d => (
+                <td key={d.quarter} className="r" style={{ color: 'var(--coral)' }}>({d.opex})</td>
+              ))}
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 500 }}>Adj. EBITDA</td>
+              {DATA.map(d => (
+                <td key={d.quarter} className="r" style={{ color: 'var(--sky)' }}>${d.adjustedEbitda}M</td>
+              ))}
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 500 }}>Net Income</td>
+              {DATA.map(d => (
+                <td key={d.quarter} className="r" style={{ color: d.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  {d.netIncome >= 0 ? `$${d.netIncome}M` : `($${Math.abs(d.netIncome)}M)`}
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 500 }}>Cash Position</td>
+              {DATA.map(d => (
+                <td key={d.quarter} className="r">${(d.cashPosition/1000).toFixed(2)}B</td>
+              ))}
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 500 }}>USDC Circulation</td>
+              {DATA.map(d => (
+                <td key={d.quarter} className="r" style={{ color: 'var(--violet)' }}>${d.usdcCirculation.toFixed(1)}B</td>
+              ))}
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 500 }}>Market Share</td>
+              {DATA.map(d => (
+                <td key={d.quarter} className="r">{d.marketShare}%</td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
+        Note: Q2'25 net loss includes $660M IPO-related SBC acceleration. Normalized EPS positive.
+      </div>
+
+      {/* ROW 1: Cash Position & OpEx - ASTS pattern */}
+      <div className="g2" style={{ marginTop: 24 }}>
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
+          <ResponsiveContainer width="100%" height={150}>
+            <AreaChart data={DATA.map(d => ({ quarter: d.quarter, cash: d.cashPosition }))}>
+              <defs>
+                <linearGradient id="cashGradientCRCL" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
+              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${(v/1000).toFixed(1)}B`} />
+              <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${(Number(v)/1000).toFixed(2)}B`, 'Cash']} />
+              <Area type="monotone" dataKey="cash" stroke="var(--mint)" fill="url(#cashGradientCRCL)" />
+            </AreaChart>
+          </ResponsiveContainer>
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Q2'25: +$218M IPO proceeds. Aug'25: +$260M follow-on.</div>
+        </div>
+
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></div>
+          <ResponsiveContainer width="100%" height={150}>
+            <LineChart data={DATA.map(d => ({ quarter: d.quarter, opEx: d.opex }))}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
+              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
+              <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${v}M`, 'OpEx']} />
+              <Line type="monotone" dataKey="opEx" stroke="var(--violet)" strokeWidth={2} dot={{ fill: 'var(--violet)' }} />
+            </LineChart>
+          </ResponsiveContainer>
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Avg: ${(DATA.reduce((a, d) => a + d.opex, 0) / DATA.length).toFixed(0)}M/qtr</div>
+        </div>
+      </div>
+
+      {/* ROW 2: Share Count & Market Cap - ASTS pattern */}
+      <div className="g2" style={{ marginTop: 16 }}>
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>Share Count (Outstanding)<UpdateIndicators sources="SEC" /></div>
+          <ResponsiveContainer width="100%" height={150}>
+            <BarChart data={[
+              { quarter: 'IPO', shares: 200 },
+              { quarter: "Q2'24", shares: 205 },
+              { quarter: "Q3'24", shares: 210 },
+              { quarter: "Q4'24", shares: 215 },
+              { quarter: "Q1'25", shares: 220 },
+              { quarter: "Q2'25", shares: 225 },
+              { quarter: "Q3'25", shares: 230 },
+            ]}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
+              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `${v}M`} />
+              <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`${v}M shares`, 'Outstanding']} />
+              <Bar dataKey="shares" fill="var(--coral)" />
+            </BarChart>
+          </ResponsiveContainer>
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Dilution from IPO + Follow-on + SBC vesting</div>
+        </div>
+
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--sky)' }}>Market Cap Evolution ($B)<UpdateIndicators sources="SEC" /></div>
+          <ResponsiveContainer width="100%" height={150}>
+            <AreaChart data={[
+              { quarter: 'IPO', mktCap: 7.1 },
+              { quarter: "Q2'24", mktCap: 8.2 },
+              { quarter: "Q3'24", mktCap: 10.5 },
+              { quarter: "Q4'24", mktCap: 12.8 },
+              { quarter: "Q1'25", mktCap: 15.2 },
+              { quarter: "Q2'25", mktCap: 14.1 },
+              { quarter: "Q3'25", mktCap: 18.8 },
+            ]}>
+              <defs>
+                <linearGradient id="mcapGradientCRCL" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
+              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}B`} />
+              <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${Number(v).toFixed(1)}B`, 'Market Cap']} />
+              <Area type="monotone" dataKey="mktCap" stroke="var(--sky)" fill="url(#mcapGradientCRCL)" />
+            </AreaChart>
+          </ResponsiveContainer>
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>IPO: $31/share → Current: ~$80/share (+158%)</div>
+        </div>
+      </div>
+
+      {/* ROW 3: Company Specific (USDC & EBITDA) - ASTS pattern */}
+      <div className="g2" style={{ marginTop: 16 }}>
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>USDC Circulation ($B)<UpdateIndicators sources="SEC" /></div>
+          <ResponsiveContainer width="100%" height={150}>
+            <AreaChart data={DATA.map(d => ({ quarter: d.quarter, usdc: d.usdcCirculation }))}>
+              <defs>
+                <linearGradient id="usdcGradientCRCL" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
+              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}B`} />
+              <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${Number(v).toFixed(1)}B`, 'USDC']} />
+              <Area type="monotone" dataKey="usdc" stroke="var(--violet)" fill="url(#usdcGradientCRCL)" />
+            </AreaChart>
+          </ResponsiveContainer>
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>Market share: {DATA[0].marketShare}% → {DATA[DATA.length-1].marketShare}%</div>
+        </div>
+
+        <div className="card">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Adjusted EBITDA ($M)<UpdateIndicators sources="SEC" /></div>
+          <ResponsiveContainer width="100%" height={150}>
+            <BarChart data={DATA.map(d => ({ quarter: d.quarter, ebitda: d.adjustedEbitda }))}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
+              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
+              <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${v}M`, 'Adj. EBITDA']} />
+              <Bar dataKey="ebitda" fill="var(--cyan)" />
+            </BarChart>
+          </ResponsiveContainer>
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>EBITDA Margin: {((DATA[DATA.length-1].adjustedEbitda / DATA[DATA.length-1].totalRevenue) * 100).toFixed(0)}% (Q3'25)</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function CRCLModel() {
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
@@ -2814,249 +3055,10 @@ function CRCLModel() {
               </div>
               
               {/* ═══════════════════════════════════════════════════════════════════ */}
-              {/* SECTION 3: KEY METRICS EVOLUTION                                    */}
+              {/* SECTION 3-7: QUARTERLY METRICS PANEL (Unified Component)           */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
-              <div className="card">
-                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
-                {/* Summary Badges */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-cyan-900/30 border-cyan-600/40 border text-cyan-400">
-                    {DATA.length} quarters of data ({DATA[0].quarter} - {DATA[DATA.length-1].quarter})
-                  </span>
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-green-900/30 border-green-600/40 border text-green-400">
-                    Revenue: ${DATA[0].totalRevenue}M → ${DATA[DATA.length-1].totalRevenue}M
-                  </span>
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-900/30 border-blue-600/40 border text-blue-400">
-                    Cash: ${(DATA[0].cashPosition/1000).toFixed(2)}B → ${(DATA[DATA.length-1].cashPosition/1000).toFixed(2)}B
-                  </span>
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-violet-900/30 border-violet-600/40 border text-violet-400">
-                    USDC: ${DATA[0].usdcCirculation.toFixed(1)}B → ${DATA[DATA.length-1].usdcCirculation.toFixed(1)}B
-                  </span>
-                </div>
-                
-                {/* Quarterly Table */}
-                <div style={{ overflowX: 'auto' }}>
-                  <table className="tbl">
-                    <thead>
-                      <tr>
-                        <th>Metric</th>
-                        {DATA.map(d => (
-                          <th key={d.quarter} className="r">
-                            {d.quarter}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td style={{ fontWeight: 500 }}>Total Revenue</td>
-                        {DATA.map(d => (
-                          <td key={d.quarter} className="r" style={{ color: 'var(--mint)' }}>${d.totalRevenue}M</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td style={{ fontWeight: 500 }}>Reserve Income</td>
-                        {DATA.map(d => (
-                          <td key={d.quarter} className="r">${d.reserveIncome}M</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td style={{ fontWeight: 500 }}>Distribution Costs</td>
-                        {DATA.map(d => (
-                          <td key={d.quarter} className="r" style={{ color: 'var(--coral)' }}>({d.distributionCosts})</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td style={{ fontWeight: 500 }}>RLDC</td>
-                        {DATA.map(d => (
-                          <td key={d.quarter} className="r">${d.rldc}M</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td style={{ fontWeight: 500 }}>RLDC Margin</td>
-                        {DATA.map(d => (
-                          <td key={d.quarter} className="r">{d.rldcMargin}%</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td style={{ fontWeight: 500 }}>OpEx</td>
-                        {DATA.map(d => (
-                          <td key={d.quarter} className="r" style={{ color: 'var(--coral)' }}>({d.opex})</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td style={{ fontWeight: 500 }}>Adj. EBITDA</td>
-                        {DATA.map(d => (
-                          <td key={d.quarter} className="r" style={{ color: 'var(--sky)' }}>${d.adjustedEbitda}M</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td style={{ fontWeight: 500 }}>Net Income</td>
-                        {DATA.map(d => (
-                          <td key={d.quarter} className="r" style={{ color: d.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                            {d.netIncome >= 0 ? `$${d.netIncome}M` : `($${Math.abs(d.netIncome)}M)`}
-                          </td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td style={{ fontWeight: 500 }}>Cash Position</td>
-                        {DATA.map(d => (
-                          <td key={d.quarter} className="r">${(d.cashPosition/1000).toFixed(2)}B</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td style={{ fontWeight: 500 }}>USDC Circulation</td>
-                        {DATA.map(d => (
-                          <td key={d.quarter} className="r" style={{ color: 'var(--violet)' }}>${d.usdcCirculation.toFixed(1)}B</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td style={{ fontWeight: 500 }}>Market Share</td>
-                        {DATA.map(d => (
-                          <td key={d.quarter} className="r">{d.marketShare}%</td>
-                        ))}
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div className="mt-2 text-xs text-slate-500">
-                  Note: Q2'25 net loss includes $660M IPO-related SBC acceleration. Normalized EPS positive.
-                </div>
-              </div>
-              
-              {/* ═══════════════════════════════════════════════════════════════════ */}
-              {/* SECTION 5: CHARTS ROW 1 - Cash Position & OpEx                      */}
-              {/* ═══════════════════════════════════════════════════════════════════ */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-                  <h4 className="text-sm font-medium text-cyan-400 mb-3">Cash Position Evolution</h4>
-                  <ResponsiveContainer width="100%" height={150}>
-                    <AreaChart data={DATA.map(d => ({ quarter: d.quarter, cash: d.cashPosition }))}>
-                      <defs>
-                        <linearGradient id="cashGradientCRCL" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                      <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
-                      <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${(v/1000).toFixed(1)}B`} />
-                      <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${(Number(v)/1000).toFixed(2)}B`, 'Cash']} />
-                      <Area type="monotone" dataKey="cash" stroke="var(--mint)" fill="url(#cashGradientCRCL)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                  <div className="text-xs text-slate-500 mt-2">Q2'25: +$218M IPO proceeds. Aug'25: +$260M follow-on.</div>
-                </div>
-                
-                <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-                  <h4 className="text-sm font-medium text-purple-400 mb-3">Quarterly Burn Rate (OpEx)</h4>
-                  <ResponsiveContainer width="100%" height={150}>
-                    <LineChart data={DATA.map(d => ({ quarter: d.quarter, opEx: d.opex }))}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                      <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
-                      <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
-                      <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${v}M`, 'OpEx']} />
-                      <Line type="monotone" dataKey="opEx" stroke="#a855f7" strokeWidth={2} dot={{ fill: '#a855f7' }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                  <div className="text-xs text-slate-500 mt-2">Avg: ${(DATA.reduce((a, d) => a + d.opex, 0) / DATA.length).toFixed(0)}M/qtr</div>
-                </div>
-              </div>
-              
-              {/* ═══════════════════════════════════════════════════════════════════ */}
-              {/* SECTION 6: CHARTS ROW 2 - Share Count & Market Cap                  */}
-              {/* ═══════════════════════════════════════════════════════════════════ */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-                  <h4 className="text-sm font-medium text-orange-400 mb-3">Share Count (Outstanding)</h4>
-                  <ResponsiveContainer width="100%" height={150}>
-                    <BarChart data={[
-                      { quarter: 'IPO', shares: 200 },
-                      { quarter: "Q2'24", shares: 205 },
-                      { quarter: "Q3'24", shares: 210 },
-                      { quarter: "Q4'24", shares: 215 },
-                      { quarter: "Q1'25", shares: 220 },
-                      { quarter: "Q2'25", shares: 225 },
-                      { quarter: "Q3'25", shares: 230 },
-                    ]}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                      <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
-                      <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `${v}M`} />
-                      <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`${v}M shares`, 'Outstanding']} />
-                      <Bar dataKey="shares" fill="#ea580c" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                  <div className="text-xs text-slate-500 mt-2">Dilution from IPO + Follow-on + SBC vesting</div>
-                </div>
-                
-                <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-                  <h4 className="text-sm font-medium text-blue-400 mb-3">Market Cap Evolution ($B)</h4>
-                  <ResponsiveContainer width="100%" height={150}>
-                    <AreaChart data={[
-                      { quarter: 'IPO', mktCap: 7.1 },
-                      { quarter: "Q2'24", mktCap: 8.2 },
-                      { quarter: "Q3'24", mktCap: 10.5 },
-                      { quarter: "Q4'24", mktCap: 12.8 },
-                      { quarter: "Q1'25", mktCap: 15.2 },
-                      { quarter: "Q2'25", mktCap: 14.1 },
-                      { quarter: "Q3'25", mktCap: 18.8 },
-                    ]}>
-                      <defs>
-                        <linearGradient id="mcapGradientCRCL" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                      <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
-                      <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}B`} />
-                      <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${Number(v).toFixed(1)}B`, 'Market Cap']} />
-                      <Area type="monotone" dataKey="mktCap" stroke="#3b82f6" fill="url(#mcapGradientCRCL)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                  <div className="text-xs text-slate-500 mt-2">IPO: $31/share → Current: ~$80/share (+158%)</div>
-                </div>
-              </div>
-              
-              {/* ═══════════════════════════════════════════════════════════════════ */}
-              {/* SECTION 7: CHARTS ROW 3 - Company Specific (USDC & EBITDA)          */}
-              {/* ═══════════════════════════════════════════════════════════════════ */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-                  <h4 className="text-sm font-medium text-violet-400 mb-3">USDC Circulation ($B)</h4>
-                  <ResponsiveContainer width="100%" height={150}>
-                    <AreaChart data={DATA.map(d => ({ quarter: d.quarter, usdc: d.usdcCirculation }))}>
-                      <defs>
-                        <linearGradient id="usdcGradientCRCL" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                      <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
-                      <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}B`} />
-                      <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${Number(v).toFixed(1)}B`, 'USDC']} />
-                      <Area type="monotone" dataKey="usdc" stroke="#8b5cf6" fill="url(#usdcGradientCRCL)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                  <div className="text-xs text-slate-500 mt-2">Market share: {DATA[0].marketShare}% → {DATA[DATA.length-1].marketShare}%</div>
-                </div>
-                
-                <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-                  <h4 className="text-sm font-medium text-cyan-400 mb-3">Adjusted EBITDA ($M)</h4>
-                  <ResponsiveContainer width="100%" height={150}>
-                    <BarChart data={DATA.map(d => ({ quarter: d.quarter, ebitda: d.adjustedEbitda }))}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                      <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
-                      <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
-                      <RechartsTooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${v}M`, 'Adj. EBITDA']} />
-                      <Bar dataKey="ebitda" fill="#22d3ee" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                  <div className="text-xs text-slate-500 mt-2">EBITDA Margin: {((DATA[DATA.length-1].adjustedEbitda / DATA[DATA.length-1].totalRevenue) * 100).toFixed(0)}% (Q3'25)</div>
-                </div>
-              </div>
-              
+              <CRCLQuarterlyMetricsPanel />
+
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
