@@ -8312,10 +8312,11 @@ const TimelineTab = () => {
       </div>
 
       {/* Upcoming Events + Recent Press Releases */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#upcoming-events</div>
-      <div className="g2">
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
+      <div className="g2" style={{ marginTop: 24 }}>
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#upcoming-events</div>
+          <div className="card">
+            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(74,222,128,0.1)', borderRadius: 8, border: '1px solid rgba(74,222,128,0.4)' }}>
               <div>
@@ -8358,11 +8359,14 @@ const TimelineTab = () => {
               </div>
             </div>
           </div>
+          </div>
         </div>
 
-        <div className="card">
-          {/* [PR_CHECKLIST_RECENT_PRESS_RELEASES] - Add new PR at top! */}
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#recent-press-releases</div>
+          <div className="card">
+            {/* [PR_CHECKLIST_RECENT_PRESS_RELEASES] - Add new PR at top! */}
+            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -8406,6 +8410,7 @@ const TimelineTab = () => {
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>10-K Annual Report: $805M Unrealized Gain, $349M Net Income</div>
             </div>
+          </div>
           </div>
         </div>
       </div>

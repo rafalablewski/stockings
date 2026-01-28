@@ -5282,10 +5282,11 @@ function CRCLModel() {
               </div>
 
               {/* Upcoming Events */}
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#upcoming-events</div>
-              <div className="g2">
-                <div className="card">
-                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
+              <div className="g2" style={{ marginTop: 24 }}>
+                <div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#upcoming-events</div>
+                  <div className="card">
+                    <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
                       <div>
@@ -5318,10 +5319,13 @@ function CRCLModel() {
                       </div>
                     </div>
                   </div>
+                  </div>
                 </div>
 
-                <div className="card">
-                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
+                <div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginBottom: 4, fontFamily: 'monospace' }}>#recent-press-releases</div>
+                  <div className="card">
+                    <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -5352,9 +5356,10 @@ function CRCLModel() {
                       <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Circle Launches Follow-on Offering (10M shares)</div>
                     </div>
                   </div>
+                  </div>
                 </div>
               </div>
-              
+
               {/* Event Timeline Section */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, marginTop: 24, marginBottom: 4, fontFamily: 'monospace' }}>#event-timeline</div>
               <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
