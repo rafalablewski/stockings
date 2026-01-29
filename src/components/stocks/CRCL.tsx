@@ -3400,6 +3400,7 @@ function CRCLModel() {
           {activeTab === 'investment' && (
             <>
               {/* Controls */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-header</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -3416,7 +3417,6 @@ function CRCLModel() {
               </div>
 
               {/* Rating Header */}
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-header</div>
               <div className="card" style={{ borderLeft: `4px solid var(--${investmentCurrent.verdictColor})` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                   <div>
@@ -3679,7 +3679,7 @@ function CRCLModel() {
 
                         {/* Expansion Vectors */}
                         <h4 style={{ color: 'var(--sky)' }}>Expansion Vectors</h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
                           {[
                             { region: 'US (Core)', status: 'Dominant', color: 'var(--mint)' },
                             { region: 'Europe (MiCA)', status: 'Growing', color: 'var(--mint)' },
@@ -4192,7 +4192,7 @@ function CRCLModel() {
                     {investmentSections.has('archive') && (
                       <div style={{ }}>
                         <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full record of all investment thesis updates. Never deleted.</div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 500, overflowY: 'auto' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 500, overflowY: 'auto' }}>
                           {/* Current */}
                           <div style={{ background: 'rgba(0,212,170,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(0,212,170,0.2)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
