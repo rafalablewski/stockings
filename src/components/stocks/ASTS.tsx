@@ -9674,20 +9674,22 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 // INVESTMENT TAB - Visual Investment Analysis
 // Updated after each PR/SEC filing - MUST MAINTAIN ARCHIVE
 // ============================================================================
-// 
+//
 // ⚠️  UPDATE CHECKLIST AFTER EACH PR/SEC FILING:
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 1. lastUpdate & lastFiling - Change date and filing reference
-// 2. executiveSummary - Update headline, thesis, keyPoint, verdict
-// 3. scorecard - Re-evaluate all 6 scores (0-100)
-// 4. growthDrivers - Update status, progress %, descriptions
-// 5. moatFactors - Adjust strength scores if competitive position changed
-// 6. predictions - Update timeframes and confidence levels
-// 7. archive - ADD NEW ENTRY AT TOP with full details:
-//    { date, filing, verdict, headline, summary, keyDevelopments[], 
-//      whyItMatters, lookingAhead }
-// 8. Risk Assessment - Re-evaluate probabilities and impacts
-// 9. Strategy section - Update price targets and recommendations
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 1. current.date, current.source - Change date and filing reference
+// 2. executiveSummary - Update headline, thesis, bottomLine, whatsNew[]
+// 3. scorecard - Re-evaluate all 8 unified categories (A-F grades)
+//    Categories: Financial Strength, Profitability, Growth, Valuation,
+//                Competitive Position, Execution, Regulatory/External, Capital Structure
+// 4. growthDrivers - Update impact levels and descriptions
+// 5. moatSources/moatThreats - Adjust strength/risk if competitive position changed
+// 6. risks - Re-evaluate severity, likelihood, impact
+// 7. perspectives - Update CFA/HedgeFund/CIO assessments and recommendations
+// 8. archive - ADD NEW ENTRY AT TOP with unified schema:
+//    { date, trigger, verdict, priorVerdict, headline, rationale,
+//      keyDevelopments[], forwardView }
+// 9. Rating Header - Update verdict badge, price target, key metrics
 //
 // NEVER DELETE ARCHIVE ENTRIES - This is the historical record!
 // ============================================================================
@@ -9716,23 +9718,23 @@ const InvestmentTab = () => {
     verdictColor: 'mint',
     tagline: "Technology Proven. Now It's About Execution.",
     
-    // Investment Scorecard (letter grades)
+    // Investment Scorecard — Unified 8-category framework (matches BMNR/CRCL)
     scorecard: [
-      { category: 'Technology Validation', rating: 'A', color: 'var(--mint)', detail: 'Block 1 operational, ASIC proven at 10 GHz' },
-      { category: 'Financial Strength', rating: 'A-', color: 'var(--mint)', detail: '$760M cash, runway to profitability' },
-      { category: 'Competitive Position', rating: 'A-', color: 'var(--mint)', detail: '3,000+ patents, licensed spectrum, 4yr lead' },
-      { category: 'Execution Progress', rating: 'B+', color: 'var(--sky)', detail: '6 sats/month target, 40+ in production' },
-      { category: 'MNO Partnerships', rating: 'B+', color: 'var(--sky)', detail: '6 signed, 50+ in pipeline' },
-      { category: 'Market Timing', rating: 'B', color: 'var(--sky)', detail: 'First mover but competition emerging' },
-      { category: 'Regulatory Risk', rating: 'B', color: 'var(--sky)', detail: 'FCC approved, international pending' },
-      { category: 'Dilution Risk', rating: 'B-', color: 'var(--gold)', detail: '$707M converts, potential future raises' },
+      { category: 'Financial Strength', rating: 'A-', color: 'var(--mint)', detail: '$760M cash, runway to profitability secured' },
+      { category: 'Profitability', rating: 'C+', color: 'var(--gold)', detail: 'Pre-revenue; $50-75M H2 guidance, path to FCF by 2026' },
+      { category: 'Growth', rating: 'A', color: 'var(--mint)', detail: '$1B+ contracted revenue, 6 MNOs signed, 50+ pipeline' },
+      { category: 'Valuation', rating: 'B', color: 'var(--sky)', detail: 'Pre-revenue multiple; execution-dependent upside' },
+      { category: 'Competitive Position', rating: 'A', color: 'var(--mint)', detail: '3,000+ patents, licensed spectrum, 4yr lead, 95% vertical' },
+      { category: 'Execution', rating: 'A-', color: 'var(--mint)', detail: 'Block 1 operational, ASIC proven, 6 sats/month target' },
+      { category: 'Regulatory/External', rating: 'B', color: 'var(--sky)', detail: 'FCC approved, international pending, aviation concerns' },
+      { category: 'Capital Structure', rating: 'B-', color: 'var(--gold)', detail: '$707M converts outstanding, potential future dilution' },
     ],
     
-    // Executive Summary
+    // Executive Summary — Unified schema (matches BMNR/CRCL)
     executiveSummary: {
       headline: "Technology Proven. Now It's About Execution.",
       thesis: "ASTS has crossed the Rubicon. The technology works. Block 1 satellites are beaming real broadband to real phones. The only question now: can they build and launch fast enough?",
-      keyPoint: "This is no longer a science experiment. It's an industrial scaling challenge—and they're winning.",
+      bottomLine: "This is no longer a science experiment. It's an industrial scaling challenge—and they're winning.",
       whatsNew: [
         '$1B+ contracted revenue milestone reached',
         'BB6 launched successfully with fleet operational',
@@ -9774,13 +9776,14 @@ const InvestmentTab = () => {
       { risk: 'Regulatory Delays', severity: 'Medium', likelihood: 'Low-Medium', impact: 'Moderate', detail: 'FCC approvals, international spectrum coordination, and aviation interference concerns could slow geographic expansion and limit addressable markets.', mitigation: 'Proactive engagement with regulators, experienced spectrum team.' },
     ],
     
-    // Three Perspectives
+    // Three Perspectives — Unified schema (matches BMNR/CRCL)
     perspectives: {
       cfa: {
         title: 'CFA Analyst',
         assessment: 'CONSTRUCTIVE WITH VOLATILITY',
         color: 'var(--sky)',
         summary: 'Pre-revenue technology company transitioning to commercial operations. Strong balance sheet ($760M cash) and de-risked technology, but valuation assumes significant execution. Best suited for growth-oriented portfolios with 2-3 year horizon. High volatility expected.',
+        ecosystemView: 'LEO satellite connectivity market inflecting. 5B people lack reliable mobile coverage. MNO economics favor wholesale spectrum leasing over CAPEX. Government/defense spending on space communications accelerating. First-mover with working technology creates optionality.',
         recommendation: 'Allocate 2-4% of growth portfolio. Rebalance on 30%+ moves.',
       },
       hedgeFund: {
@@ -9788,6 +9791,7 @@ const InvestmentTab = () => {
         assessment: 'HIGH CONVICTION LONG',
         color: 'var(--mint)',
         summary: 'Asymmetric setup: technology proven, binary execution risk remains. Event calendar stacked with launches, MNO announcements, and revenue recognition. Stock trades on sentiment — volatile but predictable patterns around catalysts.',
+        ecosystemView: 'Starlink/T-Mobile partnership validates D2D market. Apple Emergency SOS adoption proves consumer demand. MNO consolidation trends favor infrastructure partners. ASTS spectrum holdings are strategic assets in capacity-constrained environment.',
         recommendation: 'Size 4-6% of book. Add on pullbacks to 50-day MA. Trim on 30%+ rips.',
       },
       cio: {
@@ -9795,6 +9799,7 @@ const InvestmentTab = () => {
         assessment: 'SATELLITE POSITION',
         color: 'var(--violet)',
         summary: 'This is venture-style risk in a public equity wrapper. The market opportunity is massive (5B people), the technology works, and the team has executed through near-death experiences. Multi-bagger potential if thesis plays out, but size accordingly.',
+        ecosystemView: 'Telecom infrastructure is a multi-decade investment theme. ASTS addresses fundamental gap in global coverage. Strategic investors (AT&T, Verizon, Vodafone, Google) validate market opportunity. Defense applications provide revenue diversification and strategic importance.',
         recommendation: '3-5% max portfolio weight. Hold for 2-3 year thesis.',
       },
     },
@@ -10052,7 +10057,7 @@ const InvestmentTab = () => {
             <strong>Thesis:</strong> {current.executiveSummary.thesis}
           </p>
           <p style={{ fontStyle: 'italic', color: 'var(--cyan)' }}>
-            "{current.executiveSummary.keyPoint}"
+            "{current.executiveSummary.bottomLine}"
           </p>
           <p style={{ }}>
             <strong>Position Sizing:</strong> 3-5% for growth portfolios • 1-2% for balanced • Speculative allocation for conservative
@@ -10288,6 +10293,32 @@ const InvestmentTab = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* Portfolio Context — Unified framework for multi-asset allocation */}
+        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(100,149,237,0.08))', borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
+          <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 14 }}>Portfolio Construction Context</div>
+          <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>For multi-asset portfolios holding ASTS alongside other positions</div>
+          <div className="g3" style={{ marginTop: 12 }}>
+            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Asset Class Bucket</div>
+              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Growth / Technology</div>
+              <div style={{ fontSize: 11, color: 'var(--gold)' }}>Limit: 15-25% of portfolio</div>
+            </div>
+            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Single-Name Limit</div>
+              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>3-6% max</div>
+              <div style={{ fontSize: 11, color: 'var(--coral)' }}>Pre-revenue, high volatility</div>
+            </div>
+            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Correlation Note</div>
+              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Low correlation</div>
+              <div style={{ fontSize: 11, color: 'var(--mint)' }}>Unique D2D space exposure</div>
+            </div>
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 8 }}>
+            <strong>Sector Exposure:</strong> ASTS is uncorrelated to other model positions (BMNR, CRCL). Provides telecom infrastructure / space tech exposure. Can be sized independently within growth allocation, but account for total tech concentration if holding other growth names.
           </div>
         </div>
       </CollapsibleSection>

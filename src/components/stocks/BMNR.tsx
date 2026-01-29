@@ -4252,16 +4252,16 @@ const InvestmentTab = () => {
     verdictColor: 'green',
     tagline: 'The ETH Supercycle Play',
 
-    // Investment Scorecard (letter grades like CRCL)
+    // Investment Scorecard — Unified 8-category framework (matches ASTS/CRCL)
     scorecard: [
-      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Flawless pivot: #1 ETH treasury, $14.5B total holdings, 4.203M ETH' },
-      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Fortress: $13.5B ETH + $979M cash + $200M Beast Industries + $22M moonshots' },
-      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Leadership: Young Kim (MIT/HBS, Columbia Threadneedle) as CFO+COO' },
-      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: '$200M Beast Industries CLOSED: GenZ/Millennial reach + DeFi platform integration' },
-      { category: 'Corporate', rating: 'A', color: 'var(--mint)', detail: '3.48% ETH supply — 70% of the way to "Alchemy of 5%" target' },
-      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Staking exploded: 1.84M ETH staked (43.7%), MAVAN Q1 2026' },
-      { category: 'Corporate', rating: 'A+', color: 'var(--mint)', detail: 'Shareholder vote: 81% YES on Proposal 2 (52.2% turnout)' },
-      { category: 'Corporate', rating: 'A-', color: 'var(--mint)', detail: '500K+ individual stockholders, #60 most traded US stock ($1.5B/day)' },
+      { category: 'Financial Strength', rating: 'A+', color: 'var(--mint)', detail: 'Fortress: $14.5B total holdings, $979M cash, zero debt' },
+      { category: 'Profitability', rating: 'A', color: 'var(--mint)', detail: 'Staking yield: $518M/yr run rate (43.7% deployed), dividend initiated' },
+      { category: 'Growth', rating: 'A+', color: 'var(--mint)', detail: '3.48% ETH supply, 70% to "Alchemy of 5%", $24.5B ATM capacity' },
+      { category: 'Valuation', rating: 'B+', color: 'var(--sky)', detail: 'Near NAV (~1.0x), MSTR trades 2-3x — gap closure = significant upside' },
+      { category: 'Competitive Position', rating: 'A+', color: 'var(--mint)', detail: '#1 ETH treasury globally, 4yr+ head start, scale nearly unassailable' },
+      { category: 'Execution', rating: 'A+', color: 'var(--mint)', detail: 'Flawless pivot, Young Kim CFO/COO, 81% YES shareholder vote' },
+      { category: 'Regulatory/External', rating: 'B+', color: 'var(--sky)', detail: 'Pro-crypto admin, but SEC/staking risk persists; GENIUS Act tailwind' },
+      { category: 'Capital Structure', rating: 'A', color: 'var(--mint)', detail: '500K+ stockholders, #60 most traded, $200M Beast Industries closed' },
     ],
     
     // Ecosystem Health Rating (summarizes Ethereum tab metrics)
@@ -4278,15 +4278,21 @@ const InvestmentTab = () => {
       summary: 'Strong ecosystem tailwinds. Beast Industries ($200M investment) expands reach to GenZ/Millennials via MrBeast (450M+ subscribers). Tom Lee cites: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication demand, younger generation adoption. Metals correlation bullish for 2026.',
     },
     
-    // Executive Summary - Bold and Direct
+    // Executive Summary — Unified schema (matches ASTS/CRCL)
     executiveSummary: {
-      oneLiner: `BMNR is the single best way to play the Ethereum supercycle with downside protection.`,
+      headline: `BMNR is the single best way to play the Ethereum supercycle with downside protection.`,
       thesis: `This is not just another crypto stock. BMNR has created something unprecedented: a yield-generating, dividend-paying, institutionally-accessible vehicle for leveraged ETH exposure.
 
 They own 3.48% of all Ethereum in existence — 4.203 million tokens. They're 70% of the way to 5%. No one else is even close.
 
 The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset — and paying you to wait. With $979M cash and $24.5B ATM capacity, the accumulation machine keeps running. Staking exploded to 1.84M ETH (43.7% of holdings). 81% shareholder YES vote just unlocked massive share authorization.`,
       bottomLine: `If you believe ETH goes higher, BMNR is the trade. If you're wrong, $14.5B in assets, staking income ($518M/yr at current 43.7% staked), and NAV floor limit your downside. Asymmetric.`,
+      whatsNew: [
+        '81% shareholder YES vote on Proposal 2 (share authorization)',
+        '$200M Beast Industries investment CLOSED (Jan 17)',
+        'Staking surged to 1.84M ETH (43.7% of holdings)',
+        '500K+ individual stockholders, #60 most traded US stock',
+      ],
     },
     
     // Growth Drivers (CRCL-style)
@@ -4645,8 +4651,8 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
     },
   ];
 
-  // Collapsible section component
-  const CollapsibleSection = ({ id, title, children, showIndicators = true }) => (
+  // Collapsible section component — Unified pattern (matches ASTS/CRCL)
+  const CollapsibleSection = ({ id, title, children, sources }: { id: string; title: string; children: React.ReactNode; sources?: UpdateSource | UpdateSource[] }) => (
     <div className="card" style={{ }}>
       <div
         onClick={() => toggleSection(id)}
@@ -4658,7 +4664,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       >
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
           {title}
-          {showIndicators && <UpdateIndicators sources={['PR', 'SEC']} />}
+          {sources && <UpdateIndicators sources={sources} />}
         </div>
         <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
@@ -4694,7 +4700,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
               <UpdateIndicators sources={['PR', 'SEC']} />
             </div>
             <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>
-              {current.executiveSummary.oneLiner}
+              {current.executiveSummary.headline}
             </div>
             <div style={{ fontSize: 11, color: 'var(--text3)' }}>
               Last Updated: {current.date} • Trigger: {current.source}
@@ -4722,7 +4728,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </div>
 
       {/* Investment Scorecard */}
-      <CollapsibleSection id="scorecard" title="Investment Scorecard">
+      <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
           {current.scorecard.map((item, i) => (
             <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -4760,7 +4766,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Summary */}
-      <CollapsibleSection id="summary" title="Investment Summary">
+      <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
         <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)' }}>
           <div style={{ fontWeight: 600, color: 'var(--mint)' }}>Thesis</div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8, whiteSpace: 'pre-line' }}>{current.executiveSummary.thesis}</div>
@@ -4772,7 +4778,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Growth Drivers */}
-      <CollapsibleSection id="growth" title="Growth Drivers">
+      <CollapsibleSection id="growth" title="Growth Drivers" sources="PR">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {current.growthDrivers.map((d, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
@@ -4798,7 +4804,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Competitive Moat */}
-      <CollapsibleSection id="moat" title="Competitive Moat">
+      <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
         <div className="g2">
           <div>
             <h4 style={{ color: 'var(--mint)' }}>Moat Sources</h4>
@@ -4831,7 +4837,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Risk Matrix */}
-      <CollapsibleSection id="risks" title="Risk Matrix">
+      <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {current.risks.map((r, i) => (
             <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
@@ -4850,7 +4856,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Risks & Strategic Assessment */}
-      <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment">
+      <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment" sources={['PR', 'SEC']}>
         {/* Section Header */}
         <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>
           Multi-perspective risk evaluation and strategic decision framework for ETH treasury exposure
@@ -5055,7 +5061,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Position Sizing */}
-      <CollapsibleSection id="position" title="Position Sizing">
+      <CollapsibleSection id="position" title="Position Sizing" sources="WS">
         <div className="g2" style={{ }}>
           <div>
             <h4 style={{ color: 'var(--text)', fontSize: 14 }}>Recommended Allocation</h4>
@@ -5080,10 +5086,36 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             </div>
           </div>
         </div>
+
+        {/* Portfolio Context — Unified framework for multi-asset allocation */}
+        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(100,149,237,0.08))', borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
+          <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 14 }}>Portfolio Construction Context</div>
+          <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>For multi-asset portfolios holding BMNR alongside other positions</div>
+          <div className="g3" style={{ marginTop: 12 }}>
+            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Asset Class Bucket</div>
+              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Alternatives / Crypto</div>
+              <div style={{ fontSize: 11, color: 'var(--gold)' }}>Limit: 10-20% of portfolio</div>
+            </div>
+            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Single-Name Limit</div>
+              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>5-10% max</div>
+              <div style={{ fontSize: 11, color: 'var(--coral)' }}>High volatility asset</div>
+            </div>
+            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Correlation Note</div>
+              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>BMNR + CRCL</div>
+              <div style={{ fontSize: 11, color: 'var(--sky)' }}>Both ETH-correlated; size combined</div>
+            </div>
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 8 }}>
+            <strong>Combined Crypto Allocation:</strong> If holding both BMNR and CRCL, treat as a single "Ethereum ecosystem" allocation. Combined weight should not exceed alternatives bucket limit. BMNR provides NAV/yield exposure; CRCL provides infrastructure/revenue exposure.
+          </div>
+        </div>
       </CollapsibleSection>
 
       {/* Analysis Archive */}
-      <CollapsibleSection id="archive" title="Analysis Archive — Complete History">
+      <CollapsibleSection id="archive" title="Analysis Archive — Complete History" sources={['PR', 'SEC']}>
         <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full record of all investment thesis updates. Never deleted.</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (

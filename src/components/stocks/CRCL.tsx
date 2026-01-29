@@ -2730,14 +2730,173 @@ function CRCLModel() {
     setRunKey(k => k + 1);
   };
 
+  // ============================================================================
+  //
+  // ⚠️  UPDATE CHECKLIST AFTER EACH PR/SEC FILING:
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 1. investmentCurrent.date, investmentCurrent.source - Change date and filing reference
+  // 2. executiveSummary - Update headline, thesis, bottomLine, whatsNew[]
+  // 3. scorecard - Re-evaluate all 8 unified categories (A-F grades)
+  //    Categories: Financial Strength, Profitability, Growth, Valuation,
+  //                Competitive Position, Execution, Regulatory/External, Capital Structure
+  // 4. growthDrivers - Update impact levels and descriptions
+  // 5. moatSources/moatThreats - Adjust strength/risk if competitive position changed
+  // 6. risks - Re-evaluate severity, likelihood, impact
+  // 7. perspectives - Update CFA/HedgeFund/CIO assessments and recommendations
+  // 8. archive - ADD NEW ENTRY AT TOP with unified schema
+  // 9. Rating Header - Update verdict badge, price target, key metrics
+  //
+  // NEVER DELETE ARCHIVE ENTRIES - This is the historical record!
+  // ============================================================================
+
   // Investment Tab State
   const [investmentSections, setInvestmentSections] = useState<Set<string>>(new Set(['summary', 'scorecard']));
   const [expandedArchive, setExpandedArchive] = useState<number | null>(null);
-  
+
   // Rate Sensitivity Calculator State
   const [sensRate, setSensRate] = useState(4.0);  // Fed Funds Rate %
   const [sensUsdc, setSensUsdc] = useState(75);   // USDC Circulation $B
   const [sensDist, setSensDist] = useState(54);   // Coinbase Distribution %
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CURRENT ASSESSMENT - UPDATE THIS OBJECT AFTER EACH FILING
+  // All current investment data consolidated here (unified with ASTS/BMNR)
+  // ═══════════════════════════════════════════════════════════════════════════
+  const investmentCurrent = {
+    date: '2025-12-31',
+    source: 'Q3 2025 10-Q, OCC Charter Approval',
+    verdict: 'OVERWEIGHT',
+    verdictColor: 'mint',
+    tagline: 'Regulated stablecoin infrastructure play with TradFi optionality',
+
+    // Investment Scorecard — Unified 8-category framework (matches ASTS/BMNR)
+    scorecard: [
+      { category: 'Financial Strength', rating: 'A+', color: 'var(--mint)', detail: '$1.15B cash, zero debt, FCF positive' },
+      { category: 'Profitability', rating: 'B+', color: 'var(--sky)', detail: '39% RLDC margin, Coinbase cost overhang (54%)' },
+      { category: 'Growth', rating: 'A', color: 'var(--mint)', detail: '66% rev YoY, 108% USDC YoY, Rule of 40: 105' },
+      { category: 'Valuation', rating: 'A-', color: 'var(--mint)', detail: '6.4x P/S vs 16x peers, 50%+ discount to payment networks' },
+      { category: 'Competitive Position', rating: 'B+', color: 'var(--sky)', detail: 'Regulatory moat, but Tether 65% share; OCC charter pending' },
+      { category: 'Execution', rating: 'A', color: 'var(--mint)', detail: 'Strong board (ex-Goldman, ex-CFTC), founder-led, CPN/Arc scaling' },
+      { category: 'Regulatory/External', rating: 'B', color: 'var(--sky)', detail: 'GENIUS Act tailwind, OCC pending; rate sensitivity risk' },
+      { category: 'Capital Structure', rating: 'A-', color: 'var(--mint)', detail: 'Class B founders, Coinbase equity stake, no dilution needed' },
+    ],
+
+    // Executive Summary — Unified schema (matches ASTS/BMNR)
+    executiveSummary: {
+      headline: 'Regulated stablecoin infrastructure play with TradFi optionality',
+      thesis: 'Circle is building the dominant compliant stablecoin infrastructure for the digital dollar economy. USDC is the only institutional-grade stablecoin with full regulatory transparency, and Circle is positioning to capture TradFi adoption via OCC bank charter and GENIUS Act compliance.',
+      bottomLine: 'Best-in-class regulatory positioning trading at a crypto discount. The market is pricing the past (crypto winter, SVB crisis) while ignoring the future (payment network economics, regulatory moat).',
+      whatsNew: [
+        'Q3 2025: 66% YoY revenue growth, $62.5B USDC circulation',
+        'OCC bank charter application advancing',
+        'GENIUS Act provides regulatory clarity tailwind',
+        'Arc/CPN network scaling, cross-border settlement growing',
+      ],
+    },
+
+    // Growth Drivers
+    growthDrivers: [
+      { driver: 'USDC Circulation Growth', impact: 'Critical', description: '108% YoY growth in Q3. Every $10B USDC adds ~$400M annual revenue at current rates.', color: 'var(--mint)' },
+      { driver: 'Rate Environment', impact: 'High', description: '~4% reserve yield on $62.5B = $2.5B potential revenue. Rates staying higher for longer is bullish.', color: 'var(--mint)' },
+      { driver: 'TradFi Adoption', impact: 'High', description: 'OCC charter enables bank-level partnerships. GENIUS Act creates compliance moat vs offshore competitors.', color: 'var(--sky)' },
+      { driver: 'Cross-Border Settlement', impact: 'Medium', description: 'Arc/CPN network for B2B payments. Faster, cheaper than SWIFT. Growing adoption in LatAm, APAC.', color: 'var(--sky)' },
+      { driver: 'Coinbase Renegotiation', impact: 'Medium', description: '54% RLDC drag. Every 10% reduction = ~$200M margin improvement. Leverage increases as Circle scales.', color: 'var(--gold)' },
+    ],
+
+    // Competitive Moat
+    moatSources: [
+      { source: 'Regulatory Compliance', strength: 'Strong', detail: 'Only fully transparent stablecoin. Monthly attestations, SEC-registered, OCC charter pending.', color: 'var(--mint)' },
+      { source: 'TradFi Relationships', strength: 'Strong', detail: 'BlackRock reserve management, BNY Mellon custody, major bank partnerships.', color: 'var(--mint)' },
+      { source: 'Multi-Chain Infrastructure', strength: 'Building', detail: 'Native USDC on 15+ chains. CCTP enables seamless cross-chain transfers.', color: 'var(--sky)' },
+      { source: 'Developer Ecosystem', strength: 'Building', detail: 'Programmable Wallets, Circle Mint APIs, embedded finance toolkit.', color: 'var(--sky)' },
+    ],
+    moatThreats: [
+      { threat: 'Tether (USDT)', risk: 'High', detail: '65% market share. If Tether achieves full transparency, regulatory gap closes.', color: 'var(--coral)' },
+      { threat: 'Bank Stablecoins', risk: 'Medium', detail: 'JPM Coin, PayPal USD emerging. Banks have distribution advantage.', color: 'var(--gold)' },
+      { threat: 'Rate Sensitivity', risk: 'Medium', detail: 'Revenue directly tied to Fed Funds. 100bps cut = ~$625M revenue impact.', color: 'var(--gold)' },
+      { threat: 'Coinbase Dependency', risk: 'Medium', detail: '54% RLDC share, 20% equity stake. Coinbase has leverage in negotiations.', color: 'var(--gold)' },
+    ],
+
+    // Risk Matrix
+    risks: [
+      { risk: 'Interest Rate Decline', severity: 'High', likelihood: 'Medium', impact: 'High', detail: 'Revenue directly tied to Fed Funds Rate. Each 100bps cut costs ~$625M annually at current USDC levels.', mitigation: 'USDC growth can offset rate cuts; transaction fees less rate-sensitive.' },
+      { risk: 'Coinbase Renegotiation Failure', severity: 'High', likelihood: 'Low', impact: 'High', detail: '54% RLDC share significantly impacts margins. Failed renegotiation would cap margin expansion.', mitigation: 'Contract expires 2027; Circle leverage increasing as network grows.' },
+      { risk: 'Tether Transparency', severity: 'Medium', likelihood: 'Medium', impact: 'Medium', detail: 'If Tether achieves full transparency/compliance, regulatory moat weakens significantly.', mitigation: 'First-mover advantage in TradFi; relationships take years to build.' },
+      { risk: 'Regulatory Reversal', severity: 'Medium', likelihood: 'Low', impact: 'High', detail: 'GENIUS Act failure or hostile regulatory shift could impact growth trajectory.', mitigation: 'Bipartisan support; multiple jurisdictional licenses provide optionality.' },
+      { risk: 'Lock-up Expiry', severity: 'Low', likelihood: 'High', impact: 'Medium', detail: 'December 2025 lock-up expiry creates near-term supply overhang.', mitigation: 'Strong fundamentals typically absorb lock-up selling; use as entry opportunity.' },
+    ],
+
+    // Three Perspectives — Unified schema (matches ASTS/BMNR)
+    perspectives: {
+      cfa: {
+        title: 'CFA Analyst',
+        assessment: 'FAVORABLE',
+        color: 'var(--mint)',
+        summary: 'High-quality fintech with unique regulatory positioning. Strong balance sheet, positive FCF, and clear path to margin expansion. Best suited for growth portfolios with 2-3 year horizon.',
+        ecosystemView: 'Stablecoin TAM expanding rapidly. Institutional adoption accelerating post-GENIUS Act. Circle positioned as "safe" choice for regulated entities entering digital assets.',
+        recommendation: 'Allocate 2-4% of growth portfolio. Use lock-up weakness as entry opportunity.',
+      },
+      hedgeFund: {
+        title: 'Hedge Fund PM',
+        assessment: 'HIGH CONVICTION LONG',
+        color: 'var(--mint)',
+        summary: 'Asymmetric setup: regulated monopoly position trading at crypto discount. Event calendar stacked: lock-up, OCC charter, Coinbase renegotiation. Defined entry/exit framework.',
+        ecosystemView: 'Crypto/TradFi convergence is a multi-year theme. Circle is the picks-and-shovels play. ETF approvals and bank adoption drive incremental USDC demand.',
+        recommendation: 'Size 3-5% of book. Scale in on lock-up. Trim on 50%+ gains.',
+      },
+      cio: {
+        title: 'Family Office CIO',
+        assessment: 'CORE POSITION',
+        color: 'var(--violet)',
+        summary: 'Clean way to gain stablecoin/crypto infrastructure exposure without direct token risk. Regulatory moat creates defensible position. Multi-bagger potential if TradFi adoption accelerates.',
+        ecosystemView: 'Digital dollar infrastructure is a generational investment theme. Circle is the most investable pure-play. BlackRock/Fidelity ownership validates institutional acceptability.',
+        recommendation: '3-5% of alternatives allocation. Multi-year hold.',
+      },
+    },
+
+    // Position Sizing
+    positionSizing: {
+      aggressive: { range: '4-5%', description: 'High-conviction fintech/crypto exposure' },
+      growth: { range: '2-4%', description: 'Growth-oriented with digital assets exposure' },
+      balanced: { range: '1-2%', description: 'Diversified portfolios seeking fintech optionality' },
+      conservative: { range: '0-1%', description: 'Risk-averse (speculative allocation only)' },
+    },
+
+    // Price Targets
+    priceTargets: [
+      { period: '0-6 months', range: '$65-95', outlook: 'Volatile', detail: 'Lock-up expiry Dec 2025 creates near-term pressure. Q4 earnings catalyst.' },
+      { period: '6-18 months', range: '$90-130', outlook: 'Bullish', detail: 'OCC charter, Coinbase renegotiation progress, continued USDC growth.' },
+      { period: '18-36 months', range: '$130-200+', outlook: 'Very Bullish', detail: '$100B+ USDC, margin expansion, payment network multiple re-rate.' },
+    ],
+  };
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ARCHIVE - NEVER DELETE! ADD NEW ENTRIES AT TOP AFTER EACH FILING
+  // This is the permanent historical record of investment thesis evolution
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const investmentArchive = [
+    // ⬇️ ADD NEW ENTRIES HERE (most recent first) ⬇️
+    {
+      date: '2025-12-31',
+      trigger: 'Q3 2025 10-Q, OCC Charter Progress',
+      verdict: 'OVERWEIGHT',
+      verdictColor: 'mint',
+      headline: 'Regulatory Moat Strengthening',
+      summary: 'Q3 delivered 66% revenue growth, USDC hit $62.5B. OCC charter advancing. GENIUS Act provides tailwind. Lock-up expiry creates entry opportunity.',
+      keyDevelopments: ['66% YoY revenue growth', '$62.5B USDC circulation', 'OCC charter application advancing', 'GENIUS Act regulatory clarity'],
+      forwardView: 'Lock-up Dec 2025 — use weakness as entry. Watch OCC charter timeline and Coinbase renegotiation progress.',
+    },
+    {
+      date: '2025-09-30',
+      trigger: 'Q2 2025 10-Q',
+      verdict: 'OVERWEIGHT',
+      verdictColor: 'mint',
+      headline: 'IPO Momentum Continues',
+      summary: 'Strong post-IPO execution. USDC growth accelerating. TradFi partnerships expanding.',
+      keyDevelopments: ['Successful NYSE listing', 'USDC growth re-accelerating', 'BlackRock/Fidelity cornerstone investors'],
+      forwardView: 'Focus on USDC growth trajectory and margin expansion path.',
+    },
+  ];
 
   // Overview Tab Parameters - Unified with ASTS/BMNR structure
   const [currentShares, setCurrentShares] = useState(MARKET.shares);  // Millions (Class A + Class B)
@@ -2745,18 +2904,18 @@ function CRCLModel() {
   const [currentUSDC, setCurrentUSDC] = useState(62.5);  // USDC Circulation $B - from Q3 2025 10-Q
   const [currentMarketShare, setCurrentMarketShare] = useState(29);  // USDC market share %
 
-  const toggleInvestmentSection = (section: string) => {
+  const toggleSection = (section: string) => {
     const next = new Set(investmentSections);
     if (next.has(section)) next.delete(section);
     else next.add(section);
     setInvestmentSections(next);
   };
   
-  const expandAllInvestment = () => {
+  const expandAll = () => {
     setInvestmentSections(new Set(['summary', 'scorecard', 'financial', 'unit-economics', 'growth', 'valuation', 'sensitivity', 'moat', 'risks', 'catalysts', 'position', 'archive', 'strategic-assessment', 'methodology']));
   };
   
-  const collapseAllInvestment = () => {
+  const collapseAll = () => {
     setInvestmentSections(new Set(['summary']));
   };
 
@@ -3244,8 +3403,8 @@ function CRCLModel() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h2 className="section-head" style={{ }}>Investment Analysis</h2>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                  <button onClick={expandAllInvestment} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
-                  <button onClick={collapseAllInvestment} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
+                  <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
+                  <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
                 </div>
               </div>
 
@@ -3310,13 +3469,13 @@ function CRCLModel() {
                   {/* Investment Scorecard - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('scorecard')}
+                      onClick={() => toggleSection('scorecard')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('scorecard')}
                       aria-label="Toggle Investment Scorecard"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('scorecard')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('scorecard')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Investment Scorecard<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('scorecard') ? '−' : '+'}</span>
@@ -3324,15 +3483,16 @@ function CRCLModel() {
                     {investmentSections.has('scorecard') && (
                       <div style={{ }}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                          {/* Unified 8-category framework (matches ASTS/BMNR) */}
                           {[
-                            { category: 'Balance Sheet', rating: 'A+', color: 'var(--mint)', detail: 'Net cash, zero debt, FCF+' },
-                            { category: 'Profitability', rating: 'B+', color: 'var(--sky)', detail: '39% RLDC, Coinbase overhang' },
-                            { category: 'Growth', rating: 'A', color: 'var(--mint)', detail: '66% rev, 108% USDC YoY' },
-                            { category: 'Valuation', rating: 'A-', color: 'var(--mint)', detail: '6.4x P/S, Rule of 40: 105' },
-                            { category: 'Competitive Moat', rating: 'B+', color: 'var(--sky)', detail: 'Regulatory edge, Tether leads' },
-                            { category: 'Management', rating: 'A', color: 'var(--mint)', detail: 'Strong board, founder-led' },
-                            { category: 'Regulatory Risk', rating: 'B', color: 'var(--sky)', detail: 'GENIUS Act +, OCC pending' },
-                            { category: 'Shareholder Align', rating: 'A-', color: 'var(--mint)', detail: 'Class B founders, CB stake' },
+                            { category: 'Financial Strength', rating: 'A+', color: 'var(--mint)', detail: '$1.15B cash, zero debt, FCF positive' },
+                            { category: 'Profitability', rating: 'B+', color: 'var(--sky)', detail: '39% RLDC margin, Coinbase cost overhang (54%)' },
+                            { category: 'Growth', rating: 'A', color: 'var(--mint)', detail: '66% rev YoY, 108% USDC YoY, Rule of 40: 105' },
+                            { category: 'Valuation', rating: 'A-', color: 'var(--mint)', detail: '6.4x P/S vs 16x peers, 50%+ discount to payment networks' },
+                            { category: 'Competitive Position', rating: 'B+', color: 'var(--sky)', detail: 'Regulatory moat, but Tether 65% share; OCC charter pending' },
+                            { category: 'Execution', rating: 'A', color: 'var(--mint)', detail: 'Strong board (ex-Goldman, ex-CFTC), founder-led, CPN/Arc scaling' },
+                            { category: 'Regulatory/External', rating: 'B', color: 'var(--sky)', detail: 'GENIUS Act tailwind, OCC pending; rate sensitivity risk' },
+                            { category: 'Capital Structure', rating: 'A-', color: 'var(--mint)', detail: 'Class B founders, Coinbase equity stake, no dilution needed' },
                           ].map((item, i) => (
                             <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <div>
@@ -3350,13 +3510,13 @@ function CRCLModel() {
                   {/* Executive Summary - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('summary')}
+                      onClick={() => toggleSection('summary')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('summary')}
                       aria-label="Toggle Executive Summary"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('summary')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('summary')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Executive Summary<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('summary') ? '−' : '+'}</span>
@@ -3390,13 +3550,13 @@ function CRCLModel() {
                   {/* Financial Health - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('financial')}
+                      onClick={() => toggleSection('financial')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('financial')}
                       aria-label="Toggle Financial Health"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('financial')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('financial')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Financial Health<UpdateIndicators sources="SEC" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('financial') ? '−' : '+'}</span>
@@ -3453,13 +3613,13 @@ function CRCLModel() {
                   {/* Unit Economics - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('unit-economics')}
+                      onClick={() => toggleSection('unit-economics')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('unit-economics')}
                       aria-label="Toggle Unit Economics"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('unit-economics')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('unit-economics')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Unit Economics & Margins<UpdateIndicators sources="SEC" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('unit-economics') ? '−' : '+'}</span>
@@ -3515,13 +3675,13 @@ function CRCLModel() {
                   {/* Growth Drivers - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('growth')}
+                      onClick={() => toggleSection('growth')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('growth')}
                       aria-label="Toggle Growth Drivers"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('growth')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('growth')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Growth Drivers<UpdateIndicators sources="PR" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('growth') ? '−' : '+'}</span>
@@ -3597,13 +3757,13 @@ function CRCLModel() {
                   {/* Valuation Framework - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('valuation')}
+                      onClick={() => toggleSection('valuation')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('valuation')}
                       aria-label="Toggle Valuation Framework"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('valuation')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('valuation')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Valuation Framework<UpdateIndicators sources="WS" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('valuation') ? '−' : '+'}</span>
@@ -3657,13 +3817,13 @@ function CRCLModel() {
                   {/* Rate Sensitivity Calculator - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('sensitivity')}
+                      onClick={() => toggleSection('sensitivity')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('sensitivity')}
                       aria-label="Toggle Rate Sensitivity Calculator"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('sensitivity')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('sensitivity')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Rate Sensitivity Calculator<UpdateIndicators sources="MARKET" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('sensitivity') ? '−' : '+'}</span>
@@ -3797,13 +3957,13 @@ function CRCLModel() {
                   {/* Competitive Moat - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('moat')}
+                      onClick={() => toggleSection('moat')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('moat')}
                       aria-label="Toggle Competitive Moat"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('moat')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('moat')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Competitive Moat<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('moat') ? '−' : '+'}</span>
@@ -3858,13 +4018,13 @@ function CRCLModel() {
                   {/* Risk Matrix - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('risks')}
+                      onClick={() => toggleSection('risks')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('risks')}
                       aria-label="Toggle Risk Matrix"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('risks')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('risks')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Risk Matrix<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('risks') ? '−' : '+'}</span>
@@ -3900,13 +4060,13 @@ function CRCLModel() {
                   {/* Catalyst Calendar - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('catalysts')}
+                      onClick={() => toggleSection('catalysts')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('catalysts')}
                       aria-label="Toggle Catalyst Calendar"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('catalysts')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('catalysts')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Catalyst Calendar<UpdateIndicators sources="PR" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('catalysts') ? '−' : '+'}</span>
@@ -3951,13 +4111,13 @@ function CRCLModel() {
                   {/* Position Management - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('position')}
+                      onClick={() => toggleSection('position')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('position')}
                       aria-label="Toggle Position Management"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('position')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('position')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Position Management<UpdateIndicators sources="WS" /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('position') ? '−' : '+'}</span>
@@ -3999,6 +4159,32 @@ function CRCLModel() {
                             <div style={{ fontSize: 13 }}><span style={{ color: 'var(--coral)' }}>Conservative:</span> <span style={{ color: 'var(--text2)' }}>0-1%</span></div>
                           </div>
                         </div>
+
+                        {/* Portfolio Context — Unified framework for multi-asset allocation */}
+                        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(100,149,237,0.08))', borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
+                          <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 14 }}>Portfolio Construction Context</div>
+                          <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>For multi-asset portfolios holding CRCL alongside other positions</div>
+                          <div className="g3" style={{ marginTop: 12 }}>
+                            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
+                              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Asset Class Bucket</div>
+                              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Alternatives / Fintech</div>
+                              <div style={{ fontSize: 11, color: 'var(--gold)' }}>Limit: 10-20% of portfolio</div>
+                            </div>
+                            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
+                              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Single-Name Limit</div>
+                              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>3-5% max</div>
+                              <div style={{ fontSize: 11, color: 'var(--coral)' }}>Rate sensitive, crypto adjacent</div>
+                            </div>
+                            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
+                              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Correlation Note</div>
+                              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>CRCL + BMNR</div>
+                              <div style={{ fontSize: 11, color: 'var(--sky)' }}>Both ETH-correlated; size combined</div>
+                            </div>
+                          </div>
+                          <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 8 }}>
+                            <strong>Combined Crypto Allocation:</strong> If holding both CRCL and BMNR, treat as a single "Ethereum ecosystem" allocation. Combined weight should not exceed alternatives bucket limit. CRCL provides infrastructure/revenue exposure; BMNR provides NAV/yield exposure.
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -4006,13 +4192,13 @@ function CRCLModel() {
                   {/* Analysis Archive - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('archive')}
+                      onClick={() => toggleSection('archive')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('archive')}
                       aria-label="Toggle Analysis Archive"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('archive')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('archive')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Analysis Archive — Complete History<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('archive') ? '−' : '+'}</span>
@@ -4063,13 +4249,13 @@ function CRCLModel() {
                   {/* Risks & Strategic Assessment - Collapsible */}
                   <div className="card" style={{ }}>
                     <div 
-                      onClick={() => toggleInvestmentSection('strategic-assessment')}
+                      onClick={() => toggleSection('strategic-assessment')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('strategic-assessment')}
                       aria-label="Toggle Risks and Strategic Assessment"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('strategic-assessment')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('strategic-assessment')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Risks & Strategic Assessment<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('strategic-assessment') ? '−' : '+'}</span>
@@ -4242,13 +4428,13 @@ function CRCLModel() {
                   {/* Methodology - Collapsible */}
                   <div className="card">
                     <div 
-                      onClick={() => toggleInvestmentSection('methodology')}
+                      onClick={() => toggleSection('methodology')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('methodology')}
                       aria-label="Toggle Methodology and Disclosures"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleInvestmentSection('methodology')}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('methodology')}
                     >
                       <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Methodology & Disclosures<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('methodology') ? '−' : '+'}</span>
