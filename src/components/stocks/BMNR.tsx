@@ -5171,7 +5171,8 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
           ))}
         </div>
       </CollapsibleSection>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Investment Framework" items={[
         { term: 'Letter Grade Scorecard', def: 'A-F ratings across dimensions: Growth (ETH accumulation), Profitability (staking yield), Moat (first-mover ETH treasury), Execution (management track record), Valuation (NAV premium).' },
         { term: 'Three Perspectives', def: 'CFA Analyst (NAV fundamentals), Hedge Fund (crypto cycles and catalysts), CIO (portfolio crypto allocation). Different time horizons and risk tolerances.' },
@@ -8928,11 +8929,13 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Wall Street Coverage<UpdateIndicators sources="WS" /></h2>
 
       {/* Consensus Snapshot */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-consensus</div>
       <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📊 Consensus Snapshot<UpdateIndicators sources="WS" /></div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Consensus Snapshot<UpdateIndicators sources="WS" /></div>
         <div className="g2">
           {/* Price Target Summary */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -8996,8 +8999,9 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
       </div>
       
       {/* Coverage by Firm - Grouped Cards */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-coverage</div>
       <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>🏦 Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})<UpdateIndicator source="WS" /></div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})<UpdateIndicator source="WS" /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {ANALYST_COVERAGE.map((coverage) => {
             const isExpanded = expandedFirm === coverage.firm;
@@ -9281,8 +9285,9 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
           })}
         </div>
       </div>
-      
+
       {/* CFA Notes */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Sell-Side Research" items={[
         { term: 'Price Target (PT)', def: 'Analyst\'s 12-month fair value estimate. Compare to current price for implied upside/downside. PTs cluster around consensus — outliers may have differentiated views or different assumptions.' },
         { term: 'Ratings Scale', def: 'Strong Buy (>20% upside), Buy/Overweight (10-20%), Hold/Neutral (±10%), Underperform/Underweight (-10-20%), Sell (>20% downside). Distribution skews bullish due to banking relationships.' },

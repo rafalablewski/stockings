@@ -10382,7 +10382,8 @@ const InvestmentTab = () => {
           ))}
         </div>
       </CollapsibleSection>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Investment Framework" items={[
         { term: 'Letter Grade Scorecard', def: 'A-F ratings across dimensions: Growth (revenue trajectory), Profitability (margin path), Moat (competitive position), Execution (management track record), Valuation (vs DCF and peers).' },
         { term: 'Three Perspectives', def: 'CFA Analyst (fundamentals), Hedge Fund (catalysts/technicals), CIO (portfolio construction). Different horizons and risk tolerances.' },
@@ -12839,11 +12840,13 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Wall Street Coverage<UpdateIndicators sources="WS" /></h2>
-      
+
       {/* Consensus Snapshot */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-consensus</div>
       <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📊 Consensus Snapshot<UpdateIndicators sources="WS" /></div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Consensus Snapshot<UpdateIndicators sources="WS" /></div>
         <div className="g2">
           {/* Price Target Summary */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -12907,8 +12910,9 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
       </div>
       
       {/* Coverage by Firm - Grouped Cards */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-coverage</div>
       <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>🏦 Coverage by Firm ({totalAnalysts} Analysts)<UpdateIndicators sources="WS" /></div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage by Firm ({totalAnalysts} Analysts)<UpdateIndicators sources="WS" /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {ANALYST_COVERAGE.map((coverage) => {
             const isExpanded = expandedFirm === coverage.firm;
@@ -13189,8 +13193,9 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
           })}
         </div>
       </div>
-      
+
       {/* CFA Notes */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Sell-Side Research" items={[
         { term: 'Price Target (PT)', def: 'Analyst\'s 12-month fair value estimate. Compare to current price for implied upside/downside. PTs cluster around consensus — outliers may have differentiated views or different assumptions.' },
         { term: 'Ratings Scale', def: 'Strong Buy (>20% upside), Buy/Overweight (10-20%), Hold/Neutral (±10%), Underperform/Underweight (-10-20%), Sell (>20% downside). Distribution skews bullish due to banking relationships.' },
