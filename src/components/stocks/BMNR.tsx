@@ -4691,6 +4691,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </div>
 
       {/* Rating Header */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-header</div>
       <div className="card" style={{ borderLeft: '4px solid var(--mint)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
@@ -4728,6 +4729,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </div>
 
       {/* Investment Scorecard */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-scorecard</div>
       <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
           {current.scorecard.map((item, i) => (
@@ -4766,18 +4768,31 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Summary */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-summary</div>
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
         <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)' }}>
-          <div style={{ fontWeight: 600, color: 'var(--mint)' }}>Thesis</div>
-          <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8, whiteSpace: 'pre-line' }}>{current.executiveSummary.thesis}</div>
+          <div style={{ fontWeight: 600, color: 'var(--mint)' }}>What's New ({current.source})</div>
+          <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
+            {current.executiveSummary.whatsNew.map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
         </div>
-        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-          <div style={{ fontWeight: 600, color: 'var(--sky)' }}>Bottom Line</div>
-          <div style={{ color: 'var(--text2)', fontSize: 14 }}>{current.executiveSummary.bottomLine}</div>
+        <div style={{ color: 'var(--text2)', lineHeight: 1.8, fontSize: 14 }}>
+          <p style={{ }}>
+            <strong>Thesis:</strong> {current.executiveSummary.thesis}
+          </p>
+          <p style={{ fontStyle: 'italic', color: 'var(--cyan)' }}>
+            "{current.executiveSummary.bottomLine}"
+          </p>
+          <p style={{ }}>
+            <strong>Position Sizing:</strong> 5-10% for aggressive portfolios • 2-5% for growth • Alternatives allocation for balanced
+          </p>
         </div>
       </CollapsibleSection>
 
       {/* Growth Drivers */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-growth</div>
       <CollapsibleSection id="growth" title="Growth Drivers" sources="PR">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {current.growthDrivers.map((d, i) => (
@@ -4804,6 +4819,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Competitive Moat */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-moat</div>
       <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
         <div className="g2">
           <div>
@@ -4837,6 +4853,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Risk Matrix */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-risks</div>
       <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {current.risks.map((r, i) => (
@@ -4856,6 +4873,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Risks & Strategic Assessment */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-strategic</div>
       <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment" sources={['PR', 'SEC']}>
         {/* Section Header */}
         <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>
@@ -5061,6 +5079,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Position Sizing */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-position</div>
       <CollapsibleSection id="position" title="Position Sizing" sources="WS">
         <div className="g2" style={{ }}>
           <div>
@@ -5115,6 +5134,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Analysis Archive */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-archive</div>
       <CollapsibleSection id="archive" title="Analysis Archive — Complete History" sources={['PR', 'SEC']}>
         <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full record of all investment thesis updates. Never deleted.</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 500, overflowY: 'auto' }}>

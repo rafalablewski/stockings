@@ -9993,6 +9993,7 @@ const InvestmentTab = () => {
       </div>
 
       {/* Rating Header */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-header</div>
       <div className="card" style={{ borderLeft: '4px solid var(--mint)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
@@ -10028,6 +10029,7 @@ const InvestmentTab = () => {
       </div>
 
       {/* Investment Scorecard */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-scorecard</div>
       <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
           {current.scorecard.map((item, i) => (
@@ -10043,6 +10045,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Summary */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-summary</div>
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
         <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)' }}>
           <div style={{ fontWeight: 600, color: 'var(--mint)' }}>What's New ({current.source})</div>
@@ -10066,6 +10069,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Growth Drivers */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-growth</div>
       <CollapsibleSection id="growth" title="Growth Drivers" sources="PR">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {current.growthDrivers.map((d, i) => (
@@ -10081,6 +10085,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Competitive Moat */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-moat</div>
       <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
         <div className="g2">
           <div>
@@ -10114,6 +10119,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Risk Matrix */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-risks</div>
       <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {current.risks.map((r, i) => (
@@ -10133,6 +10139,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Risks & Strategic Assessment */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-strategic</div>
       <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment" sources={['PR', 'SEC']}>
         {/* Section Header */}
         <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>
@@ -10267,6 +10274,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Position Sizing */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-position</div>
       <CollapsibleSection id="position" title="Position Sizing & Price Targets" sources="WS">
         <div className="g2" style={{ }}>
           <div>
@@ -10324,6 +10332,7 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       {/* Analysis Archive */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-archive</div>
       <CollapsibleSection id="archive" title="Analysis Archive — Complete History" sources={['PR', 'SEC']}>
         <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full record of all investment thesis updates. Never deleted. Tracking since Q3 2022.</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 500, overflowY: 'auto' }}>

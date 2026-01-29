@@ -3401,7 +3401,7 @@ function CRCLModel() {
             <>
               {/* Controls */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h2 className="section-head" style={{ }}>Investment Analysis</h2>
+                <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                   <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
                   <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
@@ -3410,65 +3410,51 @@ function CRCLModel() {
 
               {/* Data Refresh Indicator */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, fontSize: 11, color: 'var(--text3)' }}>
-                <span>Data as of: <strong style={{ color: 'var(--text2)' }}>{MODEL_METADATA.lastUpdated}</strong></span>
+                <span>Data as of: <strong style={{ color: 'var(--text2)' }}>{investmentCurrent.date}</strong></span>
                 <span>•</span>
-                <span>Source: <strong style={{ color: 'var(--text2)' }}>{MODEL_METADATA.dataSource}</strong></span>
-                <span>•</span>
-                <span>Latest Filing: <strong style={{ color: 'var(--text2)' }}>{MODEL_METADATA.latestFiling}</strong></span>
+                <span>Source: <strong style={{ color: 'var(--text2)' }}>{investmentCurrent.source}</strong></span>
               </div>
 
-              {/* Sticky Header */}
-                  <div className="card" style={{ borderLeft: '4px solid var(--mint)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <span style={{ 
-                            background: 'var(--mint)', 
-                            color: 'var(--bg)', 
-                            padding: '8px 20px', 
-                            borderRadius: 6, 
-                            fontWeight: 700,
-                            fontSize: 18 
-                          }}>OVERWEIGHT</span>
-                          <span style={{ 
-                            background: 'rgba(0,212,170,0.15)', 
-                            color: 'var(--mint)', 
-                            padding: '6px 12px', 
-                            borderRadius: 4, 
-                            fontSize: 12,
-                            fontWeight: 600
-                          }}>HIGH CONVICTION</span>
-                        </div>
-                        <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>
-                          Regulated stablecoin infrastructure play with TradFi optionality, trading at 50% discount to payment network peers
-                        </div>
-                        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-                          Last Updated: Dec 31, 2025 • Trigger: Q3 2025 10-Q, OCC Charter Approval
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: 11, color: 'var(--text3)' }}>Price Target</div>
-                          <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$90-150</div>
-                          <div style={{ fontSize: 10, color: 'var(--text3)' }}>12-month</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: 11, color: 'var(--text3)' }}>Risk/Reward</div>
-                          <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>3.2:1</div>
-                          <div style={{ fontSize: 10, color: 'var(--text3)' }}>Asymmetric</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: 11, color: 'var(--text3)' }}>Current</div>
-                          <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--text)', fontWeight: 700 }}>${MARKET.price}</div>
-                          <div style={{ fontSize: 10, color: 'var(--mint)' }}>+165% since IPO</div>
-                        </div>
-                      </div>
+              {/* Rating Header */}
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-header</div>
+              <div className="card" style={{ borderLeft: `4px solid var(--${investmentCurrent.verdictColor})` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <span style={{ background: `var(--${investmentCurrent.verdictColor})`, color: 'var(--bg)', padding: '8px 20px', borderRadius: 6, fontWeight: 700, fontSize: 18 }}>{investmentCurrent.verdict}</span>
+                      <span style={{ background: 'rgba(0,212,170,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>HIGH CONVICTION</span>
+                    </div>
+                    <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>
+                      {investmentCurrent.executiveSummary.thesis}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>
+                      Last Updated: {investmentCurrent.date} • Trigger: {investmentCurrent.source}
                     </div>
                   </div>
+                  <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: 11, color: 'var(--text3)' }}>Price Target</div>
+                      <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$100-150</div>
+                      <div style={{ fontSize: 10, color: 'var(--text3)' }}>12-month</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: 11, color: 'var(--text3)' }}>Risk/Reward</div>
+                      <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>3.2:1</div>
+                      <div style={{ fontSize: 10, color: 'var(--text3)' }}>Asymmetric</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: 11, color: 'var(--text3)' }}>Current</div>
+                      <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--text)', fontWeight: 700 }}>${MARKET.price}</div>
+                      <div style={{ fontSize: 10, color: 'var(--mint)' }}>+165% since IPO</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                  {/* Investment Scorecard - Collapsible */}
+                  {/* Investment Scorecard */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-scorecard</div>
                   <div className="card" style={{ }}>
-                    <div 
+                    <div
                       onClick={() => toggleSection('scorecard')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
@@ -3483,17 +3469,7 @@ function CRCLModel() {
                     {investmentSections.has('scorecard') && (
                       <div style={{ }}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
-                          {/* Unified 8-category framework (matches ASTS/BMNR) */}
-                          {[
-                            { category: 'Financial Strength', rating: 'A+', color: 'var(--mint)', detail: '$1.15B cash, zero debt, FCF positive' },
-                            { category: 'Profitability', rating: 'B+', color: 'var(--sky)', detail: '39% RLDC margin, Coinbase cost overhang (54%)' },
-                            { category: 'Growth', rating: 'A', color: 'var(--mint)', detail: '66% rev YoY, 108% USDC YoY, Rule of 40: 105' },
-                            { category: 'Valuation', rating: 'A-', color: 'var(--mint)', detail: '6.4x P/S vs 16x peers, 50%+ discount to payment networks' },
-                            { category: 'Competitive Position', rating: 'B+', color: 'var(--sky)', detail: 'Regulatory moat, but Tether 65% share; OCC charter pending' },
-                            { category: 'Execution', rating: 'A', color: 'var(--mint)', detail: 'Strong board (ex-Goldman, ex-CFTC), founder-led, CPN/Arc scaling' },
-                            { category: 'Regulatory/External', rating: 'B', color: 'var(--sky)', detail: 'GENIUS Act tailwind, OCC pending; rate sensitivity risk' },
-                            { category: 'Capital Structure', rating: 'A-', color: 'var(--mint)', detail: 'Class B founders, Coinbase equity stake, no dilution needed' },
-                          ].map((item, i) => (
+                          {investmentCurrent.scorecard.map((item, i) => (
                             <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <div>
                                 <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{item.category}</div>
@@ -3507,49 +3483,50 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Executive Summary - Collapsible */}
+                  {/* Investment Summary */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-summary</div>
                   <div className="card" style={{ }}>
-                    <div 
+                    <div
                       onClick={() => toggleSection('summary')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('summary')}
-                      aria-label="Toggle Executive Summary"
+                      aria-label="Toggle Investment Summary"
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('summary')}
                     >
-                      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Executive Summary<UpdateIndicators sources={['PR', 'SEC']} /></div>
+                      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Investment Summary<UpdateIndicators sources={['PR', 'SEC']} /></div>
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('summary') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('summary') && (
                       <div style={{ }}>
-                        <div style={{ background: 'rgba(0,212,170,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(0,212,170,0.2)' }}>
-                          <div style={{ fontWeight: 600, color: 'var(--mint)' }}>What's New (Dec 2025)</div>
+                        <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)' }}>
+                          <div style={{ fontWeight: 600, color: 'var(--mint)' }}>What's New ({investmentCurrent.source})</div>
                           <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
-                            <li>OCC conditional approval for National Trust Charter — first digital currency bank</li>
-                            <li>Q3 2025 beat: Revenue +66% YoY, USDC $73.7B (+108%), raised RLDC guidance to 38-40%</li>
-                            <li>Intuit partnership announced — potential ~100M user distribution</li>
-                            <li>Lock-up expiry imminent (~198M shares) — monitoring insider behavior</li>
+                            {investmentCurrent.executiveSummary.whatsNew.map((item, i) => (
+                              <li key={i}>{item}</li>
+                            ))}
                           </ul>
                         </div>
                         <div style={{ color: 'var(--text2)', lineHeight: 1.8, fontSize: 14 }}>
                           <p style={{ }}>
-                            <strong>Thesis:</strong> Circle has successfully transitioned from crypto infrastructure to TradFi-adjacent payments network. The combination of regulatory moat (GENIUS Act + OCC charter), accelerating USDC adoption, and platform expansion (CPN with 29 FIs, Arc with 100+ testnet partners) creates asymmetric upside.
+                            <strong>Thesis:</strong> {investmentCurrent.executiveSummary.thesis}
+                          </p>
+                          <p style={{ fontStyle: 'italic', color: 'var(--cyan)' }}>
+                            "{investmentCurrent.executiveSummary.bottomLine}"
                           </p>
                           <p style={{ }}>
-                            <strong>Key Numbers:</strong> $2.96B TTM revenue (+66% YoY) • $73.7B USDC (+108% YoY) • 39% RLDC margin • $1.15B cash • Zero debt • FCF positive
-                          </p>
-                          <p style={{ }}>
-                            <strong>Position Sizing:</strong> 3-5% for growth portfolios • 1-2% for balanced • Avoid for income-focused (no dividend)
+                            <strong>Position Sizing:</strong> 3-5% for growth portfolios • 1-2% for balanced • Speculative allocation for conservative
                           </p>
                         </div>
                       </div>
                     )}
                   </div>
 
-                  {/* Financial Health - Collapsible */}
+                  {/* Financial Health */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-financial</div>
                   <div className="card" style={{ }}>
-                    <div 
+                    <div
                       onClick={() => toggleSection('financial')}
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
@@ -3610,7 +3587,8 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Unit Economics - Collapsible */}
+                  {/* Unit Economics */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-unit-economics</div>
                   <div className="card" style={{ }}>
                     <div 
                       onClick={() => toggleSection('unit-economics')}
@@ -3672,7 +3650,8 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Growth Drivers - Collapsible */}
+                  {/* Growth Drivers */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-growth</div>
                   <div className="card" style={{ }}>
                     <div 
                       onClick={() => toggleSection('growth')}
@@ -3754,7 +3733,8 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Valuation Framework - Collapsible */}
+                  {/* Valuation Framework */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-valuation</div>
                   <div className="card" style={{ }}>
                     <div 
                       onClick={() => toggleSection('valuation')}
@@ -3814,7 +3794,8 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Rate Sensitivity Calculator - Collapsible */}
+                  {/* Rate Sensitivity Calculator */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-sensitivity</div>
                   <div className="card" style={{ }}>
                     <div 
                       onClick={() => toggleSection('sensitivity')}
@@ -3954,7 +3935,8 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Competitive Moat - Collapsible */}
+                  {/* Competitive Moat */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-moat</div>
                   <div className="card" style={{ }}>
                     <div 
                       onClick={() => toggleSection('moat')}
@@ -4015,7 +3997,8 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Risk Matrix - Collapsible */}
+                  {/* Risk Matrix */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-risks</div>
                   <div className="card" style={{ }}>
                     <div 
                       onClick={() => toggleSection('risks')}
@@ -4057,7 +4040,8 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Catalyst Calendar - Collapsible */}
+                  {/* Catalyst Calendar */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-catalysts</div>
                   <div className="card" style={{ }}>
                     <div 
                       onClick={() => toggleSection('catalysts')}
@@ -4108,7 +4092,8 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Position Management - Collapsible */}
+                  {/* Position Management */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-position</div>
                   <div className="card" style={{ }}>
                     <div 
                       onClick={() => toggleSection('position')}
@@ -4189,7 +4174,8 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Analysis Archive - Collapsible */}
+                  {/* Analysis Archive */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-archive</div>
                   <div className="card" style={{ }}>
                     <div 
                       onClick={() => toggleSection('archive')}
@@ -4246,7 +4232,8 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Risks & Strategic Assessment - Collapsible */}
+                  {/* Risks & Strategic Assessment */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-strategic</div>
                   <div className="card" style={{ }}>
                     <div 
                       onClick={() => toggleSection('strategic-assessment')}
@@ -4425,7 +4412,8 @@ function CRCLModel() {
                     )}
                   </div>
 
-                  {/* Methodology - Collapsible */}
+                  {/* Methodology */}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-methodology</div>
                   <div className="card">
                     <div 
                       onClick={() => toggleSection('methodology')}
