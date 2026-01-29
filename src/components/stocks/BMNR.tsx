@@ -4673,7 +4673,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
