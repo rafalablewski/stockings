@@ -5632,6 +5632,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   const adoptionTimeline = [
     // === JANUARY 2026 ===
     {
+      date: '2026-01-28',
+      category: 'Enterprise',
+      company: 'Fidelity',
+      title: 'Fidelity to Launch Dollar-Backed Stablecoin FIDD on Ethereum',
+      summary: 'Fidelity Investments announces its first stablecoin, the Fidelity Digital Dollar (FIDD), will launch on Ethereum in coming weeks. FIDD will be issued by Fidelity Digital Assets\' national trust bank and will be redeemable 1:1 for U.S. dollars through Fidelity platforms. Fidelity Management & Research Company LLC will handle reserve assets. Available to both retail and institutional customers through Fidelity Digital Assets, Fidelity Crypto, and Fidelity Crypto for Wealth Managers. FIDD will be transferable to any Ethereum mainnet address and available on major crypto exchanges. Mike O\'Reilly, President of Fidelity Digital Assets: "At Fidelity, we have a long-standing belief in the transformative power of the digital assets ecosystem and have spent years researching and advocating for the benefits of stablecoins. The recent passage of the GENIUS Act was a significant milestone for the industry in providing clear regulatory guardrails for payment stablecoins." Fidelity began building digital asset infrastructure in 2014, formally launched Fidelity Digital Assets in 2019, and first disclosed stablecoin testing in early 2025. Stablecoin market has grown to ~$300B in total supply.',
+      significance: 'Major asset manager ($5.8T AUM) entering stablecoin market with institutional-grade offering on Ethereum. First TradFi giant to launch own-branded stablecoin. GENIUS Act compliance positions FIDD for regulated payment use cases. Follows years of Fidelity digital asset infrastructure development since 2014.',
+      bmnrImplication: 'Fidelity launching FIDD on Ethereum validates network as primary settlement layer for institutional stablecoins. Major TradFi firm choosing Ethereum over alternatives reinforces network effect. More institutional stablecoins on Ethereum = more on-chain settlement = ETH ecosystem value growth.',
+      impact: 'Bullish',
+      source: 'The Block'
+    },
+    {
       date: '2026-01-13',
       category: 'Institutional',
       company: 'Franklin Templeton',
