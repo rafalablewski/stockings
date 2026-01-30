@@ -5632,6 +5632,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   const adoptionTimeline = [
     // === JANUARY 2026 ===
     {
+      date: '2026-01-30',
+      category: 'Institutional',
+      company: 'Naviator Global',
+      title: 'Abu Dhabi Family Office Naviator Global Appoints Ethereum Foundation Policy Advisor',
+      summary: 'Abu Dhabi-based investment and family office Naviator Global appoints Steven Nam, policy and legal advisor at the Ethereum Foundation, as advisor. Nam specializes in legal and policy dimensions of decentralized technologies, advises Ethereum Foundation on global policy and regulatory matters including South Korea, and leads governance initiatives at Stanford Cyber Policy Center. Also serves as editor-in-chief of academic journal on blockchain law and digital asset policy. Appointment signals Naviator Global\'s intention to strengthen strategic focus on areas where technology, public policy, and governance intersect. Representative stated: "We recognized the need to bring in expertise that can support long-term, structured decision-making amid a rapidly changing global environment. Steven Nam\'s experience will play an important role in shaping Naviator Global\'s direction in areas where technology and institutional frameworks meet." Abu Dhabi has emerged as global hub for family offices supported by regulatory environment encouraging convergence of finance, technology, and policy experimentation.',
+      significance: 'Ethereum Foundation policy expertise entering Abu Dhabi family office ecosystem. Signals institutional interest in Ethereum governance and policy dimensions beyond pure investment. Aligns with Abu Dhabi\'s emergence as global hub for digital asset regulation and infrastructure (ADGM, ADI Chain).',
+      bmnrImplication: 'Ethereum Foundation advisor joining Abu Dhabi family office reinforces MENA region\'s growing institutional commitment to Ethereum ecosystem. Policy expertise integration suggests long-term strategic positioning around Ethereum governance. Complements ADI Chain and ADGM institutional activity in the region.',
+      impact: 'Bullish',
+      source: 'ACCESS Newswire'
+    },
+    {
       date: '2026-01-28',
       category: 'Enterprise',
       company: 'Fidelity',
