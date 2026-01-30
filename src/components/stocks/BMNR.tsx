@@ -5630,6 +5630,18 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   // Ethereum Adoption Timeline - Institutional & Enterprise adoption events
   // Each entry includes: date, category, company, title, summary (detailed), significance, bmnrImplication, impact, source
   const adoptionTimeline = [
+    // === JANUARY 2026 ===
+    {
+      date: '2026-01-13',
+      category: 'Institutional',
+      company: 'Franklin Templeton',
+      title: 'Franklin Templeton Prepares Institutional Money Market Funds for Tokenized Finance',
+      summary: 'Franklin Templeton announces two institutional money market funds managed by Western Asset Management are now eligible for tokenized finance: one supporting stablecoin reserves under the GENIUS Act, and another for blockchain-enabled distribution. Western Asset Institutional Treasury Obligations Fund ($LUIXX) updated to align with GENIUS Act reserve requirements, investing exclusively in U.S. Treasuries with maturities of 93 days or less. Western Asset Institutional Treasury Reserves Fund introduced new Digital Institutional Share Class ($DIGXX) for distribution through blockchain-enabled intermediary platforms. Roger Bayston, Head of Digital Assets: "Traditional funds are already beginning to move on-chain, so rather than question their ability, our focus is to make them more accessible and useful by many. By prioritizing interoperability and flexibility, we\'re opening more ways for clients to access and deploy regulated funds across the platforms they rely on." Matt Jones, Head of Institutional Liquidity: "Being early only matters if you do it responsibly, and these updates prove how we can help institutions adopt tokenized infrastructure with products they already know." Stablecoin market surpassed $310B in total supply, projecting ~$2T by 2030.',
+      significance: 'Major global asset manager ($1.67T AUM) retrofitting traditional Rule 2a-7 government money market funds for GENIUS Act compliance and blockchain distribution. First mover positioning institutional funds for regulated stablecoin reserve management and tokenized distribution infrastructure.',
+      bmnrImplication: 'Franklin Templeton (already operates BENJI tokenized fund on Ethereum) now preparing institutional money market funds for tokenized finance ecosystem. GENIUS Act-compliant reserves + blockchain distribution validates Ethereum infrastructure for institutional treasury products. Growing tokenized fund market supports BMNR\'s Ethereum ecosystem thesis.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
     // === DECEMBER 2025 ===
     {
       date: '2025-12-24',
