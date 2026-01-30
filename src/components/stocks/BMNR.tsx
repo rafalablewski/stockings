@@ -6337,12 +6337,23 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Deutsche Bank, Axelar Network (Interop Labs), and Memento Blockchain publish litepaper for Digital Asset Management Access (DAMA) 2 platform — a next-generation tokenization platform built on public blockchains with regulatory alignment and privacy as core design principles. Key features: Blockchain-as-a-Service model minimizing upfront investment, privacy-enabled Layer 2 using zkSync ZK Chain technology, managed token issuance across multiple blockchains via Axelar, and app store for fund smart contract designs. Platform targets tokenized funds, stablecoins, and RWAs for asset managers, wealth managers, and investment advisors. Innovation Lead Boon-Hiong Chan: "DAMA 2 represents how public chains have evolved for institutional finance\'s use." MVP launch targeted H2 2025. Context: $84T in global wealth shifting to digital-native generations by 2045 (Cerulli Associates).',
       significance: 'Major European bank ($1.4T assets) publishing blueprint for institutional tokenization on Ethereum L2. Privacy-preserving ZK technology addresses compliance concerns. Blockchain-as-a-Service model lowers barrier for traditional asset managers. Project won Global Custodian 2025 Innovation in Smart Contract Technology award.',
       bmnrImplication: 'Deutsche Bank building tokenization infrastructure on Ethereum ecosystem validates network for European institutional finance. Privacy-enabled L2 addresses regulatory requirements that blocked enterprise adoption. More institutional activity on Ethereum L2s = more settlement to Ethereum L1.',
-      impact: 'Bullish', 
-      source: 'Deutsche Bank / Axelar / Memento Press Release' 
+      impact: 'Bullish',
+      source: 'Deutsche Bank / Axelar / Memento Press Release'
     },
-    { 
-      date: '2025-03-26', 
-      category: 'Institutional', 
+    {
+      date: '2025-04-03',
+      category: 'Institutional',
+      company: 'WisdomTree',
+      title: 'WisdomTree Connect Now Offers 13 Tokenized Funds Across Ethereum, Arbitrum, Avalanche, Base and Optimism',
+      summary: 'WisdomTree announces significant enhancements to WisdomTree Connect, its institutional platform for tokenized real world assets (RWA). Platform now offers 13 SEC-registered tokenized funds under the Investment Company Act of 1940 — the largest collection of tokenized funds in the market, including money market, equities, fixed income and asset allocation funds. Funds available: WTGXX (Government Money Market), SPXUX (S&P 500), TECHX (Technology & Innovation 100), TWLGX (Long Term Treasury), WTSTX (7-10 Year Treasury), WTTSX (3-7 Year Treasury), TIPSX (TIPS), FLTTX (Floating Rate Treasury), WTSIX (Short-Duration Income), WTSYX (Short-Term Treasury), EQTYX (Siegel Global Equity), LNGVX (Siegel Longevity), MODRX (Siegel Moderate). Platform expands beyond Ethereum to Arbitrum, Avalanche, Base, and Optimism\'s OP Mainnet. Users can hold tokenized funds directly on these chains via fiat (USD) or USDC through WisdomTree\'s stablecoin conversion service. Maredith Hannon, Head of Business Development, Digital Assets: "These product suite and blockchain coverage expansions underscore our dedication to providing diverse and innovative solutions to meet the evolving needs of our clients. With access to our comprehensive suite of tokenized funds and the ability to interact with them directly across these newly supported blockchains, our tokens are able to be held in third-party and self-custodial wallets, providing users with greater choice in how they access tokenized RWA." WisdomTree has ~$116.2B in AUM globally.',
+      significance: 'Largest suite of SEC-registered tokenized funds (13 total) now available across Ethereum and major L2s. Multi-chain deployment (Ethereum, Arbitrum, Avalanche, Base, Optimism) demonstrates institutional commitment to Ethereum ecosystem. Full product spectrum: money market, equities, fixed income, asset allocation — covering all major institutional fund categories.',
+      bmnrImplication: 'WisdomTree expanding to 13 tokenized funds across 5 Ethereum ecosystem chains validates network for comprehensive institutional fund distribution. Multi-asset tokenization (equities, fixed income, money market) on Ethereum proves network can handle diverse institutional use cases. More tokenized fund AUM on Ethereum = more on-chain value = ETH ecosystem growth.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
+    {
+      date: '2025-03-26',
+      category: 'Institutional',
       company: 'Interactive Brokers',
       title: 'Interactive Brokers Expands Crypto Trading with SOL, ADA, XRP, DOGE', 
       summary: 'Interactive Brokers (Nasdaq: IBKR), automated global electronic broker, expands cryptocurrency offerings with Solana (SOL), Cardano (ADA), Ripple (XRP), and Dogecoin (DOGE). These join existing BTC, ETH, LTC, and BCH. Trading via Zero Hash LLC (FinCEN-registered MSB, NY DFS licensed) and Paxos Trust Company. Platform enables crypto trading alongside stocks, options, futures, currencies, and bonds across 160+ global markets. Features include: 24/7 trading, USD/crypto account balances, non-marketable limit orders, and external wallet withdrawals. Commissions: 0.12-0.18% of trade value, $1.75 minimum, no spreads/markups/custody fees. EVP Steve Sanders: "Adding these new tokens gives our clients even more flexibility to diversify their portfolios."',
