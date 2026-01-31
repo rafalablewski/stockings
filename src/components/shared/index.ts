@@ -11,3 +11,9 @@ export { SharedInvestmentTab } from './SharedInvestmentTab';
 // Wall Street Tab
 export * from './wallStreetTypes';
 export { SharedWallStreetTab } from './SharedWallStreetTab';
+
+// Capital Structure Types
+export * from './capitalTypes';
+
+// Timeline/SEC Filings Types
+export * from './timelineTypes';
