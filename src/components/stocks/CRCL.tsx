@@ -3281,12 +3281,29 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-              <div className="card"><div className="card-title">Parameters</div>
-                <div className="g4" style={{ }}>
+              <h3 className="section-head">Parameters</h3>
+              <div className="g2">
+                <div className="card">
+                  <div className="card-title">Shares Outstanding</div>
                   <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} step={0.1} />
+                  <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Total diluted shares. Affects market cap and per-share metrics.</div>
+                </div>
+                <div className="card">
+                  <div className="card-title">Stock Price</div>
                   <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
-                  <Input label="USDC Circ ($B)" value={currentUSDC} onChange={setCurrentUSDC} step={0.5} />
-                  <Input label="Market Share (%)" value={currentMarketShare} onChange={setCurrentMarketShare} step={1} />
+                  <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Current market price. Updates valuation ratios.</div>
+                </div>
+              </div>
+              <div className="g2">
+                <div className="card">
+                  <div className="card-title">USDC Circulation</div>
+                  <Input label="USDC ($B)" value={currentUSDC} onChange={setCurrentUSDC} step={0.5} />
+                  <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Total USDC in circulation. Drives reserve income.</div>
+                </div>
+                <div className="card">
+                  <div className="card-title">Market Share</div>
+                  <Input label="Share (%)" value={currentMarketShare} onChange={setCurrentMarketShare} step={1} />
+                  <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Circle's share of stablecoin market vs Tether.</div>
                 </div>
               </div>
 

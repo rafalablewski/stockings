@@ -1788,15 +1788,34 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-    <div className="card"><div className="card-title">Parameters</div>
-      <div className="g4" style={{ }}>
-        <Input label="ETH Holdings" value={currentETH} onChange={setCurrentETH} />
-        <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
-        <Input label="Stock Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} />
-        <Input label="ETH Price ($)" value={ethPrice} onChange={setEthPrice} />
+    <h3 className="section-head">Parameters</h3>
+    <div className="g2">
+      <div className="card">
+        <div className="card-title">ETH Holdings</div>
+        <Input label="Total ETH" value={currentETH} onChange={setCurrentETH} />
+        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Total ETH in treasury. Drives NAV calculation.</div>
       </div>
-      <div style={{ }}>
-        <Input label="Qtr Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} />
+      <div className="card">
+        <div className="card-title">ETH Price</div>
+        <Input label="Price ($)" value={ethPrice} onChange={setEthPrice} />
+        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Current ETH spot price. Affects NAV and yield metrics.</div>
+      </div>
+    </div>
+    <div className="g3">
+      <div className="card">
+        <div className="card-title">Shares Outstanding</div>
+        <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
+        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Total diluted shares for per-share metrics.</div>
+      </div>
+      <div className="card">
+        <div className="card-title">Stock Price</div>
+        <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} />
+        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Current market price. Updates premium/discount.</div>
+      </div>
+      <div className="card">
+        <div className="card-title">Quarterly Dividend</div>
+        <Input label="Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} />
+        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Per-share quarterly dividend amount.</div>
       </div>
     </div>
 
