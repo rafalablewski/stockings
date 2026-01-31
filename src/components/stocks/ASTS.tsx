@@ -936,29 +936,33 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     </div>
 
     <div className="g2">
-      <div className="thesis bull">
+      <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
-        <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
-        <ul>
-          <li>BB6 proving D2D technology works at scale</li>
-          <li>53+ MNO partners with 3.2B addressable subscribers</li>
-          <li>$1B+ contracted revenue locked in</li>
-          <li>First-mover advantage in direct-to-phone satellite</li>
-          <li>MDA SHIELD prime contractor + DoD/SDA contracts</li>
-          <li>Regulatory moat — licensed spectrum agreements</li>
-        </ul>
+        <div className="thesis bull">
+          <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
+          <ul>
+            <li>BB6 proving D2D technology works at scale</li>
+            <li>53+ MNO partners with 3.2B addressable subscribers</li>
+            <li>$1B+ contracted revenue locked in</li>
+            <li>First-mover advantage in direct-to-phone satellite</li>
+            <li>MDA SHIELD prime contractor + DoD/SDA contracts</li>
+            <li>Regulatory moat — licensed spectrum agreements</li>
+          </ul>
+        </div>
       </div>
-      <div className="thesis bear">
+      <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
-        <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
-        <ul>
-          <li>Pre-revenue company, high execution risk</li>
-          <li>Dilution risk — $3.2B raised, may need more</li>
-          <li>Competition: Starlink/T-Mobile D2D partnership</li>
-          <li>Satellite launch/technology failure risk</li>
-          <li>Slow subscriber adoption by MNO partners</li>
-          <li>MNO partnership revenue share negotiations</li>
-        </ul>
+        <div className="thesis bear">
+          <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
+          <ul>
+            <li>Pre-revenue company, high execution risk</li>
+            <li>Dilution risk — $3.2B raised, may need more</li>
+            <li>Competition: Starlink/T-Mobile D2D partnership</li>
+            <li>Satellite launch/technology failure risk</li>
+            <li>Slow subscriber adoption by MNO partners</li>
+            <li>MNO partnership revenue share negotiations</li>
+          </ul>
+        </div>
       </div>
     </div>
 

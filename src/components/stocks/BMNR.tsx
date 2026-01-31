@@ -1683,29 +1683,33 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div className="g2">
-      <div className="thesis bull">
+      <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
-        <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
-        <ul>
-          <li>ETH price appreciation — Cycle targets $10K-$15K+</li>
-          <li>NAV premium expansion — MSTR trades 2-3x; BMNR could follow</li>
-          <li>ETF/index inclusion — Forces passive buying, liquidity premium</li>
-          <li>Dividend growth — Staking scales → higher payouts</li>
-          <li>MAVAN launch — Proprietary staking = higher yields</li>
-          <li>Regulatory clarity — ETH not a security, staking approved</li>
-        </ul>
+        <div className="thesis bull">
+          <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
+          <ul>
+            <li>ETH price appreciation — Cycle targets $10K-$15K+</li>
+            <li>NAV premium expansion — MSTR trades 2-3x; BMNR could follow</li>
+            <li>ETF/index inclusion — Forces passive buying, liquidity premium</li>
+            <li>Dividend growth — Staking scales → higher payouts</li>
+            <li>MAVAN launch — Proprietary staking = higher yields</li>
+            <li>Regulatory clarity — ETH not a security, staking approved</li>
+          </ul>
+        </div>
       </div>
-      <div className="thesis bear">
+      <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
-        <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
-        <ul>
-          <li>ETH price crash — Crypto winter, -70% drawdowns possible</li>
-          <li>NAV discount — Premium compresses or inverts</li>
-          <li>Dilution risk — Aggressive ATM erodes ETH/share</li>
-          <li>Slashing events — Validator penalties reduce holdings</li>
-          <li>Regulatory action — SEC deems ETH a security</li>
-          <li>Execution risk — MAVAN delays, competition</li>
-        </ul>
+        <div className="thesis bear">
+          <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
+          <ul>
+            <li>ETH price crash — Crypto winter, -70% drawdowns possible</li>
+            <li>NAV discount — Premium compresses or inverts</li>
+            <li>Dilution risk — Aggressive ATM erodes ETH/share</li>
+            <li>Slashing events — Validator penalties reduce holdings</li>
+            <li>Regulatory action — SEC deems ETH a security</li>
+            <li>Execution risk — MAVAN delays, competition</li>
+          </ul>
+        </div>
       </div>
     </div>
 

@@ -3169,31 +3169,35 @@ function CRCLModel() {
               </div>
 
               <div className="g2">
-                <div className="thesis bull">
+                <div>
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
-                  <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
-                  <ul>
-                    <li>USDC +{usdcGrowth.toFixed(0)}% YoY, mgmt guides 40% CAGR</li>
-                    <li>Market share: 23% → 29% in 12 months</li>
-                    <li>Platform % at 13.5% (was 2%) improves unit economics</li>
-                    <li>Intuit partnership brings ~100M user distribution</li>
-                    <li>OCC National Trust Charter approval</li>
-                    <li>GENIUS Act provides regulatory clarity</li>
-                    <li>Arc + CPN creating new revenue verticals</li>
-                  </ul>
+                  <div className="thesis bull">
+                    <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
+                    <ul>
+                      <li>USDC +{usdcGrowth.toFixed(0)}% YoY, mgmt guides 40% CAGR</li>
+                      <li>Market share: 23% → 29% in 12 months</li>
+                      <li>Platform % at 13.5% (was 2%) improves unit economics</li>
+                      <li>Intuit partnership brings ~100M user distribution</li>
+                      <li>OCC National Trust Charter approval</li>
+                      <li>GENIUS Act provides regulatory clarity</li>
+                      <li>Arc + CPN creating new revenue verticals</li>
+                    </ul>
+                  </div>
                 </div>
-                <div className="thesis bear">
+                <div>
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
-                  <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
-                  <ul>
-                    <li>96% revenue from reserve income (rate sensitive)</li>
-                    <li>~60% of income shared with Coinbase</li>
-                    <li>Tether dominant: 65% share, 85% margins</li>
-                    <li>P/E of {MARKET.pe}x prices in substantial growth</li>
-                    <li>Stock -73% from $299 peak</li>
-                    <li>Bank stablecoins, PayPal competition</li>
-                    <li>Fed rate cuts compress revenue</li>
-                  </ul>
+                  <div className="thesis bear">
+                    <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
+                    <ul>
+                      <li>96% revenue from reserve income (rate sensitive)</li>
+                      <li>~60% of income shared with Coinbase</li>
+                      <li>Tether dominant: 65% share, 85% margins</li>
+                      <li>P/E of {MARKET.pe}x prices in substantial growth</li>
+                      <li>Stock -73% from $299 peak</li>
+                      <li>Bank stablecoins, PayPal competition</li>
+                      <li>Fed rate cuts compress revenue</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 
