@@ -1067,47 +1067,123 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-    <div className="card"><div className="card-title">Parameters</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Shares (M)</div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {[350, 400, 450, 500, 550, 600].map(v => (
-              <button key={v} onClick={() => setCurrentShares(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentShares === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentShares === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentShares === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentShares === v ? 600 : 400 }}>{v}</button>
-            ))}
-          </div>
+    <h3 className="section-head">Parameters</h3>
+    <div className="g2">
+      {/* Shares Outstanding */}
+      <div className="card">
+        <div className="card-title">Shares Outstanding (M)</div>
+        <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+          Total diluted shares outstanding. Higher share count = lower per-share metrics. Increases with equity raises, stock comp, warrant exercises.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+          {[350, 400, 450, 500, 550, 600].map((v, idx) => {
+            const isActive = currentShares === v;
+            const colors = [
+              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+              { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+            ][idx];
+            return (
+              <div key={v} onClick={() => setCurrentShares(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v}</div>
+            );
+          })}
         </div>
-        <div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Price ($)</div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {[15, 20, 25, 30, 35, 40].map(v => (
-              <button key={v} onClick={() => setCurrentStockPrice(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentStockPrice === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentStockPrice === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentStockPrice === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentStockPrice === v ? 600 : 400 }}>${v}</button>
-            ))}
-          </div>
+      </div>
+      {/* Stock Price */}
+      <div className="card">
+        <div className="card-title">Stock Price ($)</div>
+        <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+          Current market price per share. Determines market cap and valuation multiples. Compare to DCF intrinsic value for upside/downside.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+          {[15, 20, 25, 30, 35, 40].map((v, idx) => {
+            const isActive = currentStockPrice === v;
+            const colors = [
+              { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+            ][idx];
+            return (
+              <div key={v} onClick={() => setCurrentStockPrice(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>${v}</div>
+            );
+          })}
         </div>
-        <div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Cash ($M)</div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {[2000, 2500, 3000, 3200, 3500, 4000].map(v => (
-              <button key={v} onClick={() => setCashOnHand(v)} style={{ padding: '4px 10px', borderRadius: 6, border: cashOnHand === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: cashOnHand === v ? 'var(--accent-bg)' : 'var(--surface2)', color: cashOnHand === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: cashOnHand === v ? 600 : 400 }}>{v >= 1000 ? `${(v/1000).toFixed(1)}B` : v}</button>
-            ))}
-          </div>
+      </div>
+    </div>
+    <div className="g3">
+      {/* Cash Position */}
+      <div className="card">
+        <div className="card-title">Cash ($M)</div>
+        <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+          Cash & equivalents. Determines runway = Cash ÷ Burn. Critical for pre-revenue companies.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+          {[2000, 2500, 3000, 3200, 3500, 4000].map((v, idx) => {
+            const isActive = cashOnHand === v;
+            const colors = [
+              { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+            ][idx];
+            return (
+              <div key={v} onClick={() => setCashOnHand(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{(v/1000).toFixed(1)}B</div>
+            );
+          })}
         </div>
-        <div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Burn ($M/Q)</div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {[100, 125, 150, 175, 200, 250].map(v => (
-              <button key={v} onClick={() => setQuarterlyBurn(v)} style={{ padding: '4px 10px', borderRadius: 6, border: quarterlyBurn === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: quarterlyBurn === v ? 'var(--accent-bg)' : 'var(--surface2)', color: quarterlyBurn === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: quarterlyBurn === v ? 600 : 400 }}>{v}</button>
-            ))}
-          </div>
+      </div>
+      {/* Burn Rate */}
+      <div className="card">
+        <div className="card-title">Burn ($M/Q)</div>
+        <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+          Quarterly cash consumption. Lower burn extends runway and reduces dilution risk.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+          {[100, 125, 150, 175, 200, 250].map((v, idx) => {
+            const isActive = quarterlyBurn === v;
+            const colors = [
+              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+              { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+            ][idx];
+            return (
+              <div key={v} onClick={() => setQuarterlyBurn(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v}</div>
+            );
+          })}
         </div>
-        <div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Debt ($M)</div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {[0, 100, 200, 300, 400, 500].map(v => (
-              <button key={v} onClick={() => setTotalDebt(v)} style={{ padding: '4px 10px', borderRadius: 6, border: totalDebt === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: totalDebt === v ? 'var(--accent-bg)' : 'var(--surface2)', color: totalDebt === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: totalDebt === v ? 600 : 400 }}>{v}</button>
-            ))}
-          </div>
+      </div>
+      {/* Debt */}
+      <div className="card">
+        <div className="card-title">Debt ($M)</div>
+        <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+          Long-term debt obligations. Affects EV and adds financial risk. Lower is safer.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+          {[0, 100, 200, 300, 400, 500].map((v, idx) => {
+            const isActive = totalDebt === v;
+            const colors = [
+              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+              { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+            ][idx];
+            return (
+              <div key={v} onClick={() => setTotalDebt(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v}</div>
+            );
+          })}
         </div>
       </div>
     </div>

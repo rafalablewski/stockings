@@ -3281,39 +3281,100 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-              <div className="card"><div className="card-title">Parameters</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Shares (M)</div>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {[500, 550, 600, 650, 700, 750].map(v => (
-                        <button key={v} onClick={() => setCurrentShares(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentShares === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentShares === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentShares === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentShares === v ? 600 : 400 }}>{v}</button>
-                      ))}
-                    </div>
+              <h3 className="section-head">Parameters</h3>
+              <div className="g2">
+                {/* Shares Outstanding */}
+                <div className="card">
+                  <div className="card-title">Shares Outstanding (M)</div>
+                  <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+                    Total diluted shares. Higher share count = lower per-share metrics. Increases with equity raises and stock comp.
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                    {[500, 550, 600, 650, 700, 750].map((v, idx) => {
+                      const isActive = currentShares === v;
+                      const colors = [
+                        { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                        { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                        { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                        { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                        { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                        { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                      ][idx];
+                      return (
+                        <div key={v} onClick={() => setCurrentShares(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v}</div>
+                      );
+                    })}
                   </div>
-                  <div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Price ($)</div>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {[50, 60, 70, 80, 90, 100].map(v => (
-                        <button key={v} onClick={() => setCurrentStockPrice(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentStockPrice === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentStockPrice === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentStockPrice === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentStockPrice === v ? 600 : 400 }}>${v}</button>
-                      ))}
-                    </div>
+                </div>
+                {/* Stock Price */}
+                <div className="card">
+                  <div className="card-title">Stock Price ($)</div>
+                  <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+                    Current market price per share. Determines market cap and valuation multiples like P/E and EV/Revenue.
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                    {[50, 60, 70, 80, 90, 100].map((v, idx) => {
+                      const isActive = currentStockPrice === v;
+                      const colors = [
+                        { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                        { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                        { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                        { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                        { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                        { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                      ][idx];
+                      return (
+                        <div key={v} onClick={() => setCurrentStockPrice(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>${v}</div>
+                      );
+                    })}
                   </div>
-                  <div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>USDC Circ ($B)</div>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {[40, 50, 60, 70, 80, 100].map(v => (
-                        <button key={v} onClick={() => setCurrentUSDC(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentUSDC === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentUSDC === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentUSDC === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentUSDC === v ? 600 : 400 }}>{v}B</button>
-                      ))}
-                    </div>
+                </div>
+              </div>
+              <div className="g2">
+                {/* USDC Circulation */}
+                <div className="card">
+                  <div className="card-title">USDC Circulation ($B)</div>
+                  <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+                    Total USDC in circulation. Primary revenue driver. More USDC = more reserves = more interest income.
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                    {[40, 50, 60, 70, 80, 100].map((v, idx) => {
+                      const isActive = currentUSDC === v;
+                      const colors = [
+                        { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                        { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                        { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                        { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                        { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                        { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                      ][idx];
+                      return (
+                        <div key={v} onClick={() => setCurrentUSDC(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v}B</div>
+                      );
+                    })}
                   </div>
-                  <div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Market Share (%)</div>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {[20, 25, 29, 33, 40, 50].map(v => (
-                        <button key={v} onClick={() => setCurrentMarketShare(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentMarketShare === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentMarketShare === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentMarketShare === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentMarketShare === v ? 600 : 400 }}>{v}%</button>
-                      ))}
-                    </div>
+                </div>
+                {/* Market Share */}
+                <div className="card">
+                  <div className="card-title">Market Share (%)</div>
+                  <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+                    USDC share of stablecoin market vs Tether. Higher share = stronger competitive position and pricing power.
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+                    {[20, 25, 29, 33, 40, 50].map((v, idx) => {
+                      const isActive = currentMarketShare === v;
+                      const colors = [
+                        { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                        { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                        { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                        { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                        { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                        { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                      ][idx];
+                      return (
+                        <div key={v} onClick={() => setCurrentMarketShare(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v}%</div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
