@@ -1788,34 +1788,48 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-    <h3 className="section-head">Parameters</h3>
-    <div className="g2">
-      <div className="card">
-        <div className="card-title">ETH Holdings</div>
-        <Input label="Total ETH" value={currentETH} onChange={setCurrentETH} />
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Total ETH in treasury. Drives NAV calculation.</div>
-      </div>
-      <div className="card">
-        <div className="card-title">ETH Price</div>
-        <Input label="Price ($)" value={ethPrice} onChange={setEthPrice} />
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Current ETH spot price. Affects NAV and yield metrics.</div>
-      </div>
-    </div>
-    <div className="g3">
-      <div className="card">
-        <div className="card-title">Shares Outstanding</div>
-        <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Total diluted shares for per-share metrics.</div>
-      </div>
-      <div className="card">
-        <div className="card-title">Stock Price</div>
-        <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} />
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Current market price. Updates premium/discount.</div>
-      </div>
-      <div className="card">
-        <div className="card-title">Quarterly Dividend</div>
-        <Input label="Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} />
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Per-share quarterly dividend amount.</div>
+    <div className="card"><div className="card-title">Parameters</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>ETH Holdings</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[3000000, 4000000, 5000000, 6000000, 7000000, 8000000].map(v => (
+              <button key={v} onClick={() => setCurrentETH(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentETH === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentETH === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentETH === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentETH === v ? 600 : 400 }}>{(v/1000000).toFixed(0)}M</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>ETH Price ($)</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[2500, 3000, 3500, 4000, 5000, 6000].map(v => (
+              <button key={v} onClick={() => setEthPrice(v)} style={{ padding: '4px 10px', borderRadius: 6, border: ethPrice === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: ethPrice === v ? 'var(--accent-bg)' : 'var(--surface2)', color: ethPrice === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: ethPrice === v ? 600 : 400 }}>${v.toLocaleString()}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Shares (M)</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[200, 250, 300, 350, 400, 450].map(v => (
+              <button key={v} onClick={() => setCurrentShares(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentShares === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentShares === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentShares === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentShares === v ? 600 : 400 }}>{v}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Stock Price ($)</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[30, 40, 50, 60, 70, 80].map(v => (
+              <button key={v} onClick={() => setCurrentStockPrice(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentStockPrice === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentStockPrice === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentStockPrice === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentStockPrice === v ? 600 : 400 }}>${v}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Qtr Dividend ($)</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[0.01, 0.02, 0.03, 0.04, 0.05, 0.10].map(v => (
+              <button key={v} onClick={() => setQuarterlyDividend(v)} style={{ padding: '4px 10px', borderRadius: 6, border: quarterlyDividend === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: quarterlyDividend === v ? 'var(--accent-bg)' : 'var(--surface2)', color: quarterlyDividend === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: quarterlyDividend === v ? 600 : 400 }}>${v.toFixed(2)}</button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
 

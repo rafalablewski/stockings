@@ -3281,29 +3281,40 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-              <h3 className="section-head">Parameters</h3>
-              <div className="g2">
-                <div className="card">
-                  <div className="card-title">Shares Outstanding</div>
-                  <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} step={0.1} />
-                  <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Total diluted shares. Affects market cap and per-share metrics.</div>
-                </div>
-                <div className="card">
-                  <div className="card-title">Stock Price</div>
-                  <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
-                  <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Current market price. Updates valuation ratios.</div>
-                </div>
-              </div>
-              <div className="g2">
-                <div className="card">
-                  <div className="card-title">USDC Circulation</div>
-                  <Input label="USDC ($B)" value={currentUSDC} onChange={setCurrentUSDC} step={0.5} />
-                  <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Total USDC in circulation. Drives reserve income.</div>
-                </div>
-                <div className="card">
-                  <div className="card-title">Market Share</div>
-                  <Input label="Share (%)" value={currentMarketShare} onChange={setCurrentMarketShare} step={1} />
-                  <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Circle's share of stablecoin market vs Tether.</div>
+              <div className="card"><div className="card-title">Parameters</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Shares (M)</div>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {[500, 550, 600, 650, 700, 750].map(v => (
+                        <button key={v} onClick={() => setCurrentShares(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentShares === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentShares === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentShares === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentShares === v ? 600 : 400 }}>{v}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Price ($)</div>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {[50, 60, 70, 80, 90, 100].map(v => (
+                        <button key={v} onClick={() => setCurrentStockPrice(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentStockPrice === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentStockPrice === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentStockPrice === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentStockPrice === v ? 600 : 400 }}>${v}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>USDC Circ ($B)</div>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {[40, 50, 60, 70, 80, 100].map(v => (
+                        <button key={v} onClick={() => setCurrentUSDC(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentUSDC === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentUSDC === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentUSDC === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentUSDC === v ? 600 : 400 }}>{v}B</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Market Share (%)</div>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {[20, 25, 29, 33, 40, 50].map(v => (
+                        <button key={v} onClick={() => setCurrentMarketShare(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentMarketShare === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentMarketShare === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentMarketShare === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentMarketShare === v ? 600 : 400 }}>{v}%</button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 

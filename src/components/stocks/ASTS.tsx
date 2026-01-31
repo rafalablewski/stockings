@@ -1067,34 +1067,48 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-    <h3 className="section-head">Parameters</h3>
-    <div className="g2">
-      <div className="card">
-        <div className="card-title">Shares Outstanding</div>
-        <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Total diluted shares. Affects market cap and per-share metrics.</div>
-      </div>
-      <div className="card">
-        <div className="card-title">Stock Price</div>
-        <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Current market price. Updates market cap and valuation ratios.</div>
-      </div>
-    </div>
-    <div className="g3">
-      <div className="card">
-        <div className="card-title">Cash Position</div>
-        <Input label="Cash ($M)" value={cashOnHand} onChange={setCashOnHand} />
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Cash & equivalents for runway calculation.</div>
-      </div>
-      <div className="card">
-        <div className="card-title">Cash Burn Rate</div>
-        <Input label="Burn ($M/Q)" value={quarterlyBurn} onChange={setQuarterlyBurn} />
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Quarterly operating cash consumption.</div>
-      </div>
-      <div className="card">
-        <div className="card-title">Total Debt</div>
-        <Input label="Debt ($M)" value={totalDebt} onChange={setTotalDebt} />
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Long-term debt for EV calculation.</div>
+    <div className="card"><div className="card-title">Parameters</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Shares (M)</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[350, 400, 450, 500, 550, 600].map(v => (
+              <button key={v} onClick={() => setCurrentShares(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentShares === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentShares === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentShares === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentShares === v ? 600 : 400 }}>{v}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Price ($)</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[15, 20, 25, 30, 35, 40].map(v => (
+              <button key={v} onClick={() => setCurrentStockPrice(v)} style={{ padding: '4px 10px', borderRadius: 6, border: currentStockPrice === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: currentStockPrice === v ? 'var(--accent-bg)' : 'var(--surface2)', color: currentStockPrice === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: currentStockPrice === v ? 600 : 400 }}>${v}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Cash ($M)</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[2000, 2500, 3000, 3200, 3500, 4000].map(v => (
+              <button key={v} onClick={() => setCashOnHand(v)} style={{ padding: '4px 10px', borderRadius: 6, border: cashOnHand === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: cashOnHand === v ? 'var(--accent-bg)' : 'var(--surface2)', color: cashOnHand === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: cashOnHand === v ? 600 : 400 }}>{v >= 1000 ? `${(v/1000).toFixed(1)}B` : v}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Burn ($M/Q)</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[100, 125, 150, 175, 200, 250].map(v => (
+              <button key={v} onClick={() => setQuarterlyBurn(v)} style={{ padding: '4px 10px', borderRadius: 6, border: quarterlyBurn === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: quarterlyBurn === v ? 'var(--accent-bg)' : 'var(--surface2)', color: quarterlyBurn === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: quarterlyBurn === v ? 600 : 400 }}>{v}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Debt ($M)</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[0, 100, 200, 300, 400, 500].map(v => (
+              <button key={v} onClick={() => setTotalDebt(v)} style={{ padding: '4px 10px', borderRadius: 6, border: totalDebt === v ? '2px solid var(--accent)' : '1px solid var(--border)', background: totalDebt === v ? 'var(--accent-bg)' : 'var(--surface2)', color: totalDebt === v ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', fontSize: 12, fontWeight: totalDebt === v ? 600 : 400 }}>{v}</button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
 
