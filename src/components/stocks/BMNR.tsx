@@ -14,16 +14,16 @@
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
  * ║  BMNR (BitMine Immersion Technologies) Financial Analysis Model               ║
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
- * ║  Version: 2.4.8                                                               ║
- * ║  Last Updated: January 20, 2026                                               ║
+ * ║  Version: 2.4.9                                                               ║
+ * ║  Last Updated: January 26, 2026                                               ║
  * ║  Maintainer: Rafal (via Claude AI)                                            ║
  * ║                                                                               ║
- * ║  CHANGELOG v2.4.8:                                                            ║
- * ║  - Jan 20, 2026 PR: 4.203M ETH, $14.5B total, 81% shareholder vote YES        ║
- * ║  - Staked ETH surged to 1.838M (43.7%), $374M/yr at scale                     ║
- * ║  - Beast Industries $200M closed, 3.48% ETH supply (70% to Alchemy of 5%)     ║
+ * ║  CHANGELOG v2.4.9:                                                            ║
+ * ║  - Jan 26, 2026 PR: 4.243M ETH, $12.8B total, staking hits 2.009M (47.4%)     ║
+ * ║  - Acquired 40,302 ETH in past week, now 3.52% of supply (~70% to 5%)         ║
+ * ║  - Cash: $682M, Beast $200M closed, #91 most traded ($1.2B/day)               ║
  * ║                                                                               ║
- * ║  CHANGELOG v2.4.7:                                                            ║
+ * ║  CHANGELOG v2.4.8:                                                            ║
  * ║  - Added $200M Beast Industries investment PR (Jan 15, 2026)                   ║
  * ║                                                                               ║
  * ║  CHANGELOG v2.4.6:                                                            ║
@@ -674,21 +674,21 @@ const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
 CFANotes.displayName = 'CFANotes';
 
 /*
- * DEFAULT PARAMETERS - Based on latest official data (Jan 20, 2026 PR)
+ * DEFAULT PARAMETERS - Based on latest official data (Jan 26, 2026 PR)
  * Update these when new weekly holdings PRs are released
  *
  * Current defaults reflect:
- * - ETH Holdings: 4,203,036 (Jan 20, 2026 PR - 3.48% of 120.7M ETH supply)
- * - Shares Outstanding: 434M fully diluted (Jan 20, 2026 PR)
- * - Stock Price: ~$27.15 (Jan 20, 2026)
- * - ETH Price: $3,211 (Jan 19, 2026 Coinbase)
- * - Staking Ratio: 43.73% (1,838,003 ETH staked via 3 providers, Jan 19)
+ * - ETH Holdings: 4,243,338 (Jan 26, 2026 PR - 3.52% of 120.7M ETH supply)
+ * - Shares Outstanding: 434M fully diluted (Jan 26, 2026 PR)
+ * - Stock Price: ~$27.15 (Jan 26, 2026) - UPDATE REGULARLY
+ * - ETH Price: $2,839 (Jan 25, 2026 Coinbase)
+ * - Staking Ratio: 47.36% (2,009,267 ETH staked via 3 providers, Jan 25)
  * - Base Staking APY: 2.81% (CESR rate)
- * - Total Cash: $979M (post Beast Industries closing)
+ * - Total Cash: $682M
  * - BTC Holdings: 193 BTC
- * - Moonshots: $22M (Eightco ORBS stake)
+ * - Moonshots: $19M (Eightco ORBS stake)
  * - Strategic Investments: $200M (Beast Industries - MrBeast, CLOSED Jan 17)
- * - Total Holdings: $14.5B (crypto + cash + moonshots + strategic investments)
+ * - Total Holdings: $12.8B (crypto + cash + moonshots + strategic investments)
  *
  * COMPANY INFO (SEC EDGAR):
  * - CIK: 0001829311
@@ -698,12 +698,12 @@ CFANotes.displayName = 'CFANotes';
  * - Fiscal Year End: August 31
  */
 const BMNRDilutionAnalysis = () => {
-  // === DATA FRESHNESS: Last updated Jan 20, 2026 ===
+  // === DATA FRESHNESS: Last updated Jan 26, 2026 ===
   // Update prices regularly - stale data affects all NAV calculations
-  const [currentETH, setCurrentETH] = useState(4203036);  // Jan 20, 2026 PR - 3.48% of ETH supply
+  const [currentETH, setCurrentETH] = useState(4243338);  // Jan 26, 2026 PR - 3.52% of ETH supply
   const [currentShares, setCurrentShares] = useState(434);
-  const [currentStockPrice, setCurrentStockPrice] = useState(27.15);  // ⚠️ UPDATE REGULARLY - Last: Jan 20, 2026
-  const [ethPrice, setEthPrice] = useState(3211);  // ⚠️ UPDATE REGULARLY - Last: Jan 19, 2026 (Coinbase)
+  const [currentStockPrice, setCurrentStockPrice] = useState(27.15);  // ⚠️ UPDATE REGULARLY - Last: Jan 26, 2026
+  const [ethPrice, setEthPrice] = useState(2839);  // ⚠️ UPDATE REGULARLY - Last: Jan 25, 2026 (Coinbase)
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
   const [dilutionPercent, setDilutionPercent] = useState(5);
@@ -723,7 +723,7 @@ const BMNRDilutionAnalysis = () => {
   const [stakingType, setStakingType] = useState('liquid');
   const [baseStakingAPY, setBaseStakingAPY] = useState(2.81);
   const [restakingBonus, setRestakingBonus] = useState(2.0);
-  const [stakingRatio, setStakingRatio] = useState(43.73);  // 1,838,003 / 4,203,036 = 43.73% (Jan 20, 2026 PR)
+  const [stakingRatio, setStakingRatio] = useState(47.36);  // 2,009,267 / 4,243,338 = 47.36% (Jan 26, 2026 PR)
   const [useDebt, setUseDebt] = useState(false);
   const [debtAmount, setDebtAmount] = useState(100);
   const [debtRate, setDebtRate] = useState(2.5);
@@ -4135,18 +4135,18 @@ const SECFilingTracker = () => {
     // Key dates
     firstFiling: 'October 27, 2020',
     firstFilingNote: 'As Sandy Springs Holdings (renamed Jul 2021)',
-    latestEvent: '4.203M ETH Holdings — $14.5B Total',
-    latestEventDate: 'Jan 20, 2026',
+    latestEvent: '4.243M ETH Holdings — $12.8B Total',
+    latestEventDate: 'Jan 26, 2026',
 
     // Last press release processed (for tracking)
-    lastPressRelease: 'January 20, 2026',
-    lastPressReleaseTitle: '4,203,036 ETH Holdings Update — $14.5B Total',
+    lastPressRelease: 'January 26, 2026',
+    lastPressReleaseTitle: '4,243,338 ETH Holdings Update — $12.8B Total',
 
     // Latest filings by type
     filings: {
       '10-K': { date: 'Nov 21, 2025', description: 'FY 2025', color: 'blue' },
       '10-Q': { date: 'Jan 13, 2026', description: 'Q1 FY2026', color: 'purple' },
-      '8-K': { date: 'Jan 20, 2026', description: '4.203M ETH Holdings', color: 'yellow' },
+      '8-K': { date: 'Jan 26, 2026', description: '4.243M ETH Holdings', color: 'yellow' },
       'S-3ASR': { date: 'Jul 9, 2025', description: '$2B ATM Shelf', color: 'green' },
       '424B5': { date: 'Sep 22, 2025', description: '$365M @ $70 + Warrants', color: 'orange' },
       'DEF 14A': { date: '—', description: 'Proxy (Annual)', color: 'cyan' },
@@ -4246,22 +4246,22 @@ const InvestmentTab = () => {
   
   // Current Investment Summary
   const current = {
-    date: '2026-01-20',
-    source: 'January 20, 2026 — PR: 4.203M ETH Holdings + 81% Shareholder Vote YES',
+    date: '2026-01-26',
+    source: 'January 26, 2026 — PR: 4.243M ETH Holdings + $12.8B Total',
     verdict: 'STRONG BUY',
     verdictColor: 'green',
     tagline: 'The ETH Supercycle Play',
 
     // Investment Scorecard — Unified 8-category framework (matches ASTS/CRCL)
     scorecard: [
-      { category: 'Financial Strength', rating: 'A+', color: 'var(--mint)', detail: 'Fortress: $14.5B total holdings, $979M cash, zero debt' },
-      { category: 'Profitability', rating: 'A', color: 'var(--mint)', detail: 'Staking yield: $518M/yr run rate (43.7% deployed), dividend initiated' },
-      { category: 'Growth', rating: 'A+', color: 'var(--mint)', detail: '3.48% ETH supply, 70% to "Alchemy of 5%", $24.5B ATM capacity' },
+      { category: 'Financial Strength', rating: 'A+', color: 'var(--mint)', detail: 'Fortress: $12.8B total holdings, $682M cash, zero debt' },
+      { category: 'Profitability', rating: 'A', color: 'var(--mint)', detail: 'Staking yield: $566M/yr run rate (47.4% deployed), dividend initiated' },
+      { category: 'Growth', rating: 'A+', color: 'var(--mint)', detail: '3.52% ETH supply, ~70% to "Alchemy of 5%", $24.5B ATM capacity' },
       { category: 'Valuation', rating: 'B+', color: 'var(--sky)', detail: 'Near NAV (~1.0x), MSTR trades 2-3x — gap closure = significant upside' },
       { category: 'Competitive Position', rating: 'A+', color: 'var(--mint)', detail: '#1 ETH treasury globally, 4yr+ head start, scale nearly unassailable' },
       { category: 'Execution', rating: 'A+', color: 'var(--mint)', detail: 'Flawless pivot, Young Kim CFO/COO, 81% YES shareholder vote' },
       { category: 'Regulatory/External', rating: 'B+', color: 'var(--sky)', detail: 'Pro-crypto admin, but SEC/staking risk persists; GENIUS Act tailwind' },
-      { category: 'Capital Structure', rating: 'A', color: 'var(--mint)', detail: '500K+ stockholders, #60 most traded, $200M Beast Industries closed' },
+      { category: 'Capital Structure', rating: 'A', color: 'var(--mint)', detail: '500K+ stockholders, #91 most traded, $200M Beast Industries closed' },
     ],
     
     // Ecosystem Health Rating (summarizes Ethereum tab metrics)
@@ -4275,42 +4275,42 @@ const InvestmentTab = () => {
         { metric: 'Supply Growth', value: '-0.2%', signal: 'Deflationary', weight: '15%', color: 'var(--mint)' },
         { metric: 'Protocol Progress', value: 'Fusaka Live', signal: 'Upgraded', weight: '20%', color: 'var(--mint)' },
       ],
-      summary: 'Strong ecosystem tailwinds. Beast Industries ($200M investment) expands reach to GenZ/Millennials via MrBeast (450M+ subscribers). Tom Lee cites: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication demand, younger generation adoption. Metals correlation bullish for 2026.',
+      summary: 'Strong ecosystem tailwinds. Beast Industries ($200M investment) expands reach to GenZ/Millennials via MrBeast (450M+ subscribers). Tom Lee cites: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication demand, younger generation adoption. Davos 2026 consensus: digital assets central to future of financial system.',
     },
-    
+
     // Executive Summary — Unified schema (matches ASTS/CRCL)
     executiveSummary: {
       headline: `BMNR is the single best way to play the Ethereum supercycle with downside protection.`,
       thesis: `This is not just another crypto stock. BMNR has created something unprecedented: a yield-generating, dividend-paying, institutionally-accessible vehicle for leveraged ETH exposure.
 
-They own 3.48% of all Ethereum in existence — 4.203 million tokens. They're 70% of the way to 5%. No one else is even close.
+They own 3.52% of all Ethereum in existence — 4.243 million tokens. They're nearly 70% of the way to 5%. No one else is even close.
 
-The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset — and paying you to wait. With $979M cash and $24.5B ATM capacity, the accumulation machine keeps running. Staking exploded to 1.84M ETH (43.7% of holdings). 81% shareholder YES vote just unlocked massive share authorization.`,
-      bottomLine: `If you believe ETH goes higher, BMNR is the trade. If you're wrong, $14.5B in assets, staking income ($518M/yr at current 43.7% staked), and NAV floor limit your downside. Asymmetric.`,
+The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset — and paying you to wait. With $682M cash and $24.5B ATM capacity, the accumulation machine keeps running. Staking surged to 2.0M ETH (47.4% of holdings). Davos 2026: Wall Street has embraced crypto — Larry Fink, David Sacks, Bill Winters all bullish on tokenization and blockchain convergence.`,
+      bottomLine: `If you believe ETH goes higher, BMNR is the trade. If you're wrong, $12.8B in assets, staking income ($566M/yr at current 47.4% staked), and NAV floor limit your downside. Asymmetric.`,
       whatsNew: [
-        '81% shareholder YES vote on Proposal 2 (share authorization)',
-        '$200M Beast Industries investment CLOSED (Jan 17)',
-        'Staking surged to 1.84M ETH (43.7% of holdings)',
-        '500K+ individual stockholders, #60 most traded US stock',
+        'Acquired 40,302 ETH in past week — now 3.52% of supply',
+        'Staking surged to 2.0M ETH (47.4% of holdings, +171K in one week)',
+        'Davos 2026: Larry Fink, David Sacks, Bill Winters all bullish on blockchain/tokenization',
+        '#91 most traded US stock ($1.2B/day), ahead of PepsiCo',
       ],
     },
     
     // Growth Drivers (CRCL-style)
     growthDrivers: [
       { driver: 'ETH Price Appreciation', impact: 'Critical', description: 'Every $1,000 ETH move = $4.2B NAV change. At $10K ETH, NAV/share hits $96+.', color: 'var(--mint)' },
-      { driver: 'Staking Income Scale', impact: 'High', description: '1.84M ETH staked ($5.9B, 43.7% of holdings). Current run rate: $518M/yr (>$1.4M/day).', color: 'var(--mint)' },
+      { driver: 'Staking Income Scale', impact: 'High', description: '2.0M ETH staked ($5.7B, 47.4% of holdings). Current run rate: $566M/yr (>$1.5M/day).', color: 'var(--mint)' },
       { driver: 'NAV Premium Expansion', impact: 'High', description: 'Currently near NAV. MSTR trades 2-3x. Gap closure = 2-3x upside.', color: 'var(--sky)' },
-      { driver: 'Continued Accumulation', impact: 'High', description: '$979M cash + $24.5B ATM capacity. 81% YES vote unlocks massive share authorization.', color: 'var(--sky)' },
+      { driver: 'Continued Accumulation', impact: 'High', description: '$682M cash + $24.5B ATM capacity. 81% YES vote unlocks massive share authorization.', color: 'var(--sky)' },
       { driver: 'Dividend Growth', impact: 'Medium', description: 'Started at $0.04/yr. As staking scales, expect 10-20% annual dividend growth.', color: 'var(--gold)' },
     ],
     
     // Competitive Moat (CRCL-style with sources and threats)
     moatSources: [
-      { source: 'Scale Dominance', strength: 'Strong', detail: '4.203M ETH = 3.48% of total supply. #1 ETH treasury, #2 global crypto treasury behind MSTR.', color: 'var(--mint)' },
-      { source: 'Yield Advantage', strength: 'Strong', detail: 'Only ETH treasury generating staking yield AND paying dividends. 1.84M ETH staked, $518M/yr run rate.', color: 'var(--mint)' },
-      { source: 'Capital Access', strength: 'Strong', detail: '$979M cash + $24.5B ATM + 81% shareholder YES vote unlocks massive issuance capacity.', color: 'var(--mint)' },
+      { source: 'Scale Dominance', strength: 'Strong', detail: '4.243M ETH = 3.52% of total supply. #1 ETH treasury, #2 global crypto treasury behind MSTR.', color: 'var(--mint)' },
+      { source: 'Yield Advantage', strength: 'Strong', detail: 'Only ETH treasury generating staking yield AND paying dividends. 2.0M ETH staked, $566M/yr run rate.', color: 'var(--mint)' },
+      { source: 'Capital Access', strength: 'Strong', detail: '$682M cash + $24.5B ATM + 81% shareholder YES vote unlocks massive issuance capacity.', color: 'var(--mint)' },
       { source: 'Management Depth', strength: 'Strong', detail: 'Tom Lee (Chairman) + Young Kim CFO/COO (MIT/HBS, 20yr institutional PM). Backed by ARK, Founders Fund, Pantera, Galaxy, Bill Miller III.', color: 'var(--mint)' },
-      { source: 'Retail Base', strength: 'Strong', detail: '500K+ individual stockholders. #60 most traded US stock ($1.5B/day). Deep liquidity.', color: 'var(--mint)' },
+      { source: 'Retail Base', strength: 'Strong', detail: '500K+ individual stockholders. #91 most traded US stock ($1.2B/day). Deep liquidity.', color: 'var(--mint)' },
     ],
     moatThreats: [
       { threat: 'ETH Price Collapse', risk: 'Critical', detail: '-70% drawdown would devastate NAV. At $1K ETH, NAV/share drops to ~$9.70.', color: 'var(--coral)' },
@@ -4334,8 +4334,8 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       { risk: 'ETH Price Collapse', severity: 'Critical', likelihood: 'Low', impact: 'High', detail: 'The existential risk. A -70% drawdown would devastate NAV. At $1,000 ETH, NAV/share drops to ~$9.60. This is a leveraged ETH bet.', mitigation: 'Staking income ($374M/yr at scale) provides cushion; NAV floor via $1B buyback authorization.' },
       { risk: 'NAV Premium Evaporation', severity: 'High', likelihood: 'Medium', impact: 'High', detail: 'Currently near NAV. If sentiment shifts, could drop to 0.5x. GBTC traded at -40% discount for years.', mitigation: '$1B buyback at discount provides floor; dividend yield supports valuation.' },
       { risk: 'Regulatory Crackdown', severity: 'Medium', likelihood: 'Low', impact: 'High', detail: 'SEC declares ETH a security, bans staking, or targets crypto treasuries. Current environment favorable but politics change.', mitigation: 'Diversified staking providers; compliance-first approach; MAVAN US-based.' },
-      { risk: 'MAVAN Execution Failure', severity: 'Medium', likelihood: 'Low', impact: 'Medium', detail: 'Delays or technical issues with proprietary staking. On track for Q1 2026 launch.', mitigation: 'Third-party providers already operational (1.84M staked); upside risk, not existential.' },
-      { risk: 'Dilution Fatigue', severity: 'Low', likelihood: 'Low', impact: 'Medium', detail: 'Market stops funding ATMs at premium. Would slow accumulation but not fatal.', mitigation: '$979M cash + staking income ($518M/yr run rate) provides runway without issuance.' },
+      { risk: 'MAVAN Execution Failure', severity: 'Medium', likelihood: 'Low', impact: 'Medium', detail: 'Delays or technical issues with proprietary staking. On track for Q1 2026 launch.', mitigation: 'Third-party providers already operational (2.0M staked); upside risk, not existential.' },
+      { risk: 'Dilution Fatigue', severity: 'Low', likelihood: 'Low', impact: 'Medium', detail: 'Market stops funding ATMs at premium. Would slow accumulation but not fatal.', mitigation: '$682M cash + staking income ($566M/yr run rate) provides runway without issuance.' },
     ],
     
     // Three Perspectives (CRCL-style)
@@ -4386,6 +4386,35 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   
   // Archive - Full historical investment summaries (generous detail for each period)
   const archive = [
+    {
+      date: '2026-01-26',
+      source: 'PR: 4.243M ETH Holdings + $12.8B Total + Davos 2026',
+      verdict: 'STRONG BUY',
+      verdictColor: 'green',
+      summary: '4.243M ETH ($12.0B @ $2,839). 2.0M ETH staked (47.4%). +40,302 ETH acquired. 3.52% of supply. $682M cash. #91 most traded US stock ($1.2B/day). Davos: Wall Street embraces crypto.',
+      fullAnalysis: {
+        context: 'January 26, 2026 PR shows continued aggressive ETH accumulation (+40,302 ETH in one week) and staking expansion (now 2.0M ETH, 47.4%). Davos 2026 featured overwhelming bullish sentiment on crypto from Larry Fink (BlackRock), David Sacks (White House AI/Crypto), Bill Winters (Standard Chartered), and others. Tom Lee: "2026 is the year policymakers and world leaders now view digital assets as central to the future of the financial system."',
+        keyHighlights: [
+          'ETH holdings: 4,243,338 ETH @ $2,839 = $12.0B (3.52% of 120.7M supply)',
+          'Total holdings: $12.8B (ETH + cash + BTC + moonshots + Beast Industries)',
+          'Cash position: $682M',
+          'Staked ETH: 2,009,267 ($5.7B) — up 171,264 in one week',
+          'Staking ratio: 47.36% of holdings now staked (was 43.7%)',
+          'Staking income: $374M/yr at scale (2.81% CESR)',
+          'Acquired 40,302 ETH in past week',
+          '#91 most traded US stock ($1.2B/day, behind Accenture, ahead of PepsiCo)',
+          'MAVAN launch on track for Q1 2026',
+          'Davos 2026: Larry Fink — "Tokenization is necessary... if we have one common blockchain, we could reduce corruption"',
+          'Davos 2026: David Sacks — "Banking and crypto will transform into a single digital asset industry"',
+          'Davos 2026: Bill Winters — "Most things will settle in digital form... this is the year when this is happening in scale"',
+          'ETHBTC ratio climbing since mid-October — investors recognizing Wall Street building on Ethereum',
+        ],
+        verdict: 'Accumulation machine running smoothly. Staking approaching 50% of holdings. Davos 2026 sentiment shift validates institutional thesis. ETH price weakness ($2,839) is buying opportunity for long-term holders.',
+        scorecard: 9.6,
+        risks: 'ETH price declined from $3,211 to $2,839 (-11.6%). Total holdings down from $14.5B to $12.8B. Price volatility remains key risk.',
+        strategy: 'STRONG BUY. ETH weakness = accumulation opportunity. Davos consensus validates long-term thesis. MAVAN launch imminent.'
+      }
+    },
     {
       date: '2026-01-20',
       source: 'PR: 4.203M ETH Holdings + 81% Shareholder Vote YES + Beast CLOSED',
@@ -7303,7 +7332,7 @@ const TimelineTab = () => {
     cik: '0001829311',
     ticker: 'BMNR',
     exchange: 'NYSE American',
-    lastPR: { date: 'January 20, 2026', title: '4.203M ETH Holdings + 81% Shareholder Vote YES' }
+    lastPR: { date: 'January 26, 2026', title: '4.243M ETH Holdings + $12.8B Total + Davos 2026' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {
@@ -8528,11 +8557,11 @@ const TimelineTab = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>5% ETH Supply Target</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.45% (~6.04M ETH needed)</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.52% (~6.04M ETH needed)</div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>70%</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~1.87M ETH to go</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~1.79M ETH to go</div>
               </div>
             </div>
           </div>
