@@ -3290,7 +3290,7 @@ function CRCLModel() {
                     Total diluted shares. Higher share count = lower per-share metrics. Increases with equity raises and stock comp.
                   </p>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                    {[750, 700, 650, 600, 550, 500].map((v, idx) => {
+                    {[350, 300, 250, 229.9, 200, 175].map((v, idx) => {
                       const isActive = currentShares === v;
                       const colors = [
                         { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
@@ -3314,7 +3314,7 @@ function CRCLModel() {
                     Current market price per share. Determines market cap and valuation multiples like P/E and EV/Revenue.
                   </p>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                    {[50, 60, 70, 80, 90, 100].map((v, idx) => {
+                    {[50, 65, 80.05, 95, 110, 130].map((v, idx) => {
                       const isActive = currentStockPrice === v;
                       const colors = [
                         { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
@@ -3340,7 +3340,7 @@ function CRCLModel() {
                     Total USDC in circulation. Primary revenue driver. More USDC = more reserves = more interest income.
                   </p>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                    {[40, 50, 60, 70, 80, 100].map((v, idx) => {
+                    {[40, 50, 62.5, 75, 90, 110].map((v, idx) => {
                       const isActive = currentUSDC === v;
                       const colors = [
                         { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },

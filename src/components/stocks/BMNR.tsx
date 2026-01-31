@@ -1797,7 +1797,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
           Total ETH in treasury. Primary driver of NAV. Higher holdings = more intrinsic value per share assuming no dilution.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[3000000, 4000000, 5000000, 6000000, 7000000, 8000000].map((v, idx) => {
+          {[3000000, 4000000, 4243338, 5000000, 6000000, 7000000].map((v, idx) => {
             const isActive = currentETH === v;
             const colors = [
               { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
@@ -1808,7 +1808,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
               { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
             ][idx];
             return (
-              <div key={v} onClick={() => setCurrentETH(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{(v/1000000).toFixed(0)}M</div>
+              <div key={v} onClick={() => setCurrentETH(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{(v/1000000).toFixed(v === 4243338 ? 2 : 0)}M</div>
             );
           })}
         </div>
@@ -1821,7 +1821,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
           Current ETH spot price. Drives NAV calculation. Higher ETH price = higher NAV/share and staking income.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[2500, 3000, 3500, 4000, 5000, 6000].map((v, idx) => {
+          {[2000, 2500, 2839, 3500, 4000, 5000].map((v, idx) => {
             const isActive = ethPrice === v;
             const colors = [
               { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
@@ -1847,7 +1847,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
           Total diluted shares. Higher count dilutes ETH/share and NAV/share.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[450, 400, 350, 300, 250, 200].map((v, idx) => {
+          {[500, 450, 434, 400, 350, 300].map((v, idx) => {
             const isActive = currentShares === v;
             const colors = [
               { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
@@ -1871,7 +1871,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
           Current market price. Compare to NAV for premium/discount analysis.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[30, 40, 50, 60, 70, 80].map((v, idx) => {
+          {[15, 20, 27.15, 40, 55, 70].map((v, idx) => {
             const isActive = currentStockPrice === v;
             const colors = [
               { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },

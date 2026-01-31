@@ -1076,7 +1076,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           Total diluted shares outstanding. Higher share count = lower per-share metrics. Increases with equity raises, stock comp, warrant exercises.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[600, 550, 500, 450, 400, 350].map((v, idx) => {
+          {[450, 400, 380, 361, 350, 330].map((v, idx) => {
             const isActive = currentShares === v;
             const colors = [
               { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
@@ -1100,7 +1100,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           Current market price per share. Determines market cap and valuation multiples. Compare to DCF intrinsic value for upside/downside.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[15, 20, 25, 30, 35, 40].map((v, idx) => {
+          {[40, 55, 65, 71, 85, 100].map((v, idx) => {
             const isActive = currentStockPrice === v;
             const colors = [
               { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
@@ -1126,7 +1126,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           Cash & equivalents. Determines runway = Cash ÷ Burn. Critical for pre-revenue companies.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[2000, 2500, 3000, 3200, 3500, 4000].map((v, idx) => {
+          {[800, 1000, 1220, 1500, 2000, 2500].map((v, idx) => {
             const isActive = cashOnHand === v;
             const colors = [
               { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
@@ -1137,7 +1137,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
               { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
             ][idx];
             return (
-              <div key={v} onClick={() => setCashOnHand(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{(v/1000).toFixed(1)}B</div>
+              <div key={v} onClick={() => setCashOnHand(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v >= 1000 ? `${(v/1000).toFixed(1)}B` : v}</div>
             );
           })}
         </div>
@@ -1150,7 +1150,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           Quarterly cash consumption. Lower burn extends runway and reduces dilution risk.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[250, 200, 175, 150, 125, 100].map((v, idx) => {
+          {[400, 350, 300, 250, 200, 150].map((v, idx) => {
             const isActive = quarterlyBurn === v;
             const colors = [
               { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
@@ -1174,7 +1174,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           Long-term debt obligations. Affects EV and adds financial risk. Lower is safer.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[500, 400, 300, 200, 100, 0].map((v, idx) => {
+          {[900, 800, 698, 600, 500, 400].map((v, idx) => {
             const isActive = totalDebt === v;
             const colors = [
               { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
