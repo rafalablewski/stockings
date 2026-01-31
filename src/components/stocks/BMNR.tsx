@@ -933,7 +933,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'backtest' && <BacktestTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} historicalETH={historicalETH} baseStakingAPY={baseStakingAPY} navMultiple={currentStockPrice / calc.currentNAV} />}
         {activeTab === 'monte-carlo' && <MonteCarloTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} stakingYield={calc.effectiveAPY} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} operatingCosts={operatingCosts} regulatoryRisk={regulatoryRisk} />}
         {activeTab === 'investment' && <InvestmentTab />}
-        {activeTab === 'financials' && <SECFilingsTab />}
+        {activeTab === 'financials' && <FinancialsTab />}
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
         </main>
@@ -5529,7 +5529,7 @@ const BMNRQuarterlyMetricsPanel = () => {
   );
 };
 
-const SECFilingsTab = () => {
+const FinancialsTab = () => {
   // ═══════════════════════════════════════════════════════════════════════════
   // UNIFIED FINANCIALS TAB - Canonical structure shared across all models
   // Only data and labels differ between ASTS, BMNR, and CRCL
