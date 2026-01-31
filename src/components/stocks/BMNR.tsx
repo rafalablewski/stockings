@@ -4740,18 +4740,18 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>NAV/Share</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$33.41</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>@ $3,211 ETH</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$29.49</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)' }}>@ $2,839 ETH</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Total Holdings</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$14.5B</div>
-              <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.203M ETH + $979M Cash</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$12.8B</div>
+              <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.243M ETH + $682M Cash</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Staked ETH</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>1.84M</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>$5.9B Value (43.7%)</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>2.01M</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)' }}>$5.7B Value (47.4%)</div>
             </div>
           </div>
         </div>
@@ -7392,6 +7392,25 @@ const TimelineTab = () => {
   // NEWEST ENTRIES AT TOP - maintain descending chronological order
   const timelineEvents = [
     // [PR_CHECKLIST_EVENT_TIMELINE] - Add new PR entry here at top!
+    // === JANUARY 26, 2026 - ETH HOLDINGS + DAVOS 2026 ===
+    {
+      date: '2026-01-26',
+      source: 'PRNewswire',
+      category: 'Holdings',
+      title: '📊 ETH Holdings Reach 4.243M — $12.8B Total, Davos 2026 Bullish',
+      changes: [
+        { metric: 'ETH Holdings', previous: '4,203,036', new: '4,243,338', change: '+40,302 (+1.0%)' },
+        { metric: 'ETH Price', previous: '$3,211', new: '$2,839', change: '-11.6% (Coinbase)' },
+        { metric: 'ETH Supply %', previous: '3.48%', new: '3.52%', change: '+0.04pp' },
+        { metric: 'Staked ETH', previous: '1,838,003', new: '2,009,267', change: '+171,264 (+9.3%)' },
+        { metric: 'Total Cash', previous: '$979M', new: '$682M', change: '-$297M' },
+        { metric: 'Eightco (ORBS)', previous: '$22M', new: '$19M', change: '-$3M' },
+        { metric: 'Trading Rank', previous: '#60', new: '#91', change: '-31 ($1.2B/day)' },
+        { metric: 'Total Holdings', previous: '$14.5B', new: '$12.8B', change: '-$1.7B (ETH price)' },
+      ],
+      notes: 'Davos 2026 sentiment strongly bullish on crypto/blockchain. Larry Fink (BlackRock): "Tokenization is necessary... if we have one common blockchain, we could reduce corruption." David Sacks (White House): "Banking and crypto will transform into a single digital asset industry." Bill Winters (Standard Chartered): "Most things will settle in digital form... this is the year when this is happening in scale." ETHBTC ratio climbing since mid-October as investors recognize Wall Street building on Ethereum. Staking income: $374M/yr at scale (2.81% CESR). MAVAN on track Q1 2026. Beast Industries $200M closed.',
+      impact: 'positive'
+    },
     // === JANUARY 20, 2026 - ETH HOLDINGS + SHAREHOLDER VOTE ===
     {
       date: '2026-01-20',
@@ -8574,6 +8593,13 @@ const TimelineTab = () => {
             {/* [PR_CHECKLIST_RECENT_PRESS_RELEASES] - Add new PR at top! */}
             <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 26, 2026</span>
+                <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,243,338 — 3.52% of Supply, $12.8B, Davos 2026</div>
+            </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 20, 2026</span>
