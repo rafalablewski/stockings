@@ -647,11 +647,11 @@ CFANotes.displayName = 'CFANotes';
 const ASTSAnalysis = () => {
   // === DATA FRESHNESS: Last updated Dec 30, 2025 ===
   // Update stock prices regularly - stale data affects all calculations
-  const [currentShares, setCurrentShares] = useState(361);  // Q3 10-Q: 272M Class A + 11.2M Class B + 78.2M Class C
-  const [currentStockPrice, setCurrentStockPrice] = useState(71);  // ⚠️ UPDATE REGULARLY - Last: Dec 30, 2025
-  const [cashOnHand, setCashOnHand] = useState(1220);  // Q3 10-Q: $1,220,123K
-  const [quarterlyBurn, setQuarterlyBurn] = useState(300);  // Q3 10-Q: CapEx + OpEx guidance
-  const [totalDebt, setTotalDebt] = useState(698);  // Q3 10-Q: $697.6M net long-term debt (convertibles net of discounts)
+  const [currentShares, setCurrentShares] = useState(DEFAULTS.currentShares);  // From @/data/asts/company.ts
+  const [currentStockPrice, setCurrentStockPrice] = useState(DEFAULTS.currentStockPrice);  // From @/data/asts/company.ts
+  const [cashOnHand, setCashOnHand] = useState(DEFAULTS.cashOnHand);  // From @/data/asts/company.ts
+  const [quarterlyBurn, setQuarterlyBurn] = useState(DEFAULTS.quarterlyBurn);  // From @/data/asts/company.ts
+  const [totalDebt, setTotalDebt] = useState(DEFAULTS.totalDebt);  // From @/data/asts/company.ts
   const [debtRate, setDebtRate] = useState(4.25);  // Q3 10-Q: Converts at 4.25%
   const [block1Sats, setBlock1Sats] = useState(6);  // BW3 + BB1-5 (Block 1)
   const [block2Sats, setBlock2Sats] = useState(1);  // BB6 launched Dec 23, 2025 (first Block 2)
@@ -1206,7 +1206,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       <OverviewParameterCard
         title="Shares Outstanding (M)"
         explanation="Total diluted shares outstanding. Higher share count = lower per-share metrics. Increases with equity raises, stock comp, warrant exercises."
-        options={[450, 400, 380, 361, 350, 330]}
+        options={[450, 400, 380, DEFAULTS.currentShares, 350, 330]}
         value={currentShares}
         onChange={setCurrentShares}
         format="M"
@@ -1214,7 +1214,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       <OverviewParameterCard
         title="Stock Price ($)"
         explanation="Current market price per share. Determines market cap and valuation multiples. Compare to DCF intrinsic value for upside/downside."
-        options={[40, 55, 65, 71, 85, 100]}
+        options={[40, 55, 65, DEFAULTS.currentStockPrice, 85, 100]}
         value={currentStockPrice}
         onChange={setCurrentStockPrice}
         format="$"
@@ -1224,7 +1224,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       <OverviewParameterCard
         title="Cash ($M)"
         explanation="Cash & equivalents. Determines runway = Cash ÷ Burn. Critical for pre-revenue companies."
-        options={[800, 1000, 1220, 1500, 2000, 2500]}
+        options={[800, 1000, DEFAULTS.cashOnHand, 1500, 2000, 2500]}
         value={cashOnHand}
         onChange={setCashOnHand}
         format="B"
@@ -1232,14 +1232,14 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       <OverviewParameterCard
         title="Burn ($M/Q)"
         explanation="Quarterly cash consumption. Lower burn extends runway and reduces dilution risk."
-        options={[400, 350, 300, 250, 200, 150]}
+        options={[400, 350, DEFAULTS.quarterlyBurn, 250, 200, 150]}
         value={quarterlyBurn}
         onChange={setQuarterlyBurn}
       />
       <OverviewParameterCard
         title="Debt ($M)"
         explanation="Long-term debt obligations. Affects EV and adds financial risk. Lower is safer."
-        options={[900, 800, 698, 600, 500, 400]}
+        options={[900, 800, DEFAULTS.totalDebt, 600, 500, 400]}
         value={totalDebt}
         onChange={setTotalDebt}
       />

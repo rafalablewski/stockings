@@ -121,6 +121,7 @@ import {
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
 import {
   MARKET,
+  USDC_DATA,
   MODEL_METADATA,
   DATA_FRESHNESS,
   QUARTERLY_DATA,
@@ -3003,10 +3004,10 @@ function CRCLModel() {
   ];
 
   // Overview Tab Parameters - Unified with ASTS/BMNR structure
-  const [currentShares, setCurrentShares] = useState(MARKET.shares);  // Millions (Class A + Class B)
-  const [currentStockPrice, setCurrentStockPrice] = useState(MARKET.price);  // ⚠️ UPDATE REGULARLY
-  const [currentUSDC, setCurrentUSDC] = useState(62.5);  // USDC Circulation $B - from Q3 2025 10-Q
-  const [currentMarketShare, setCurrentMarketShare] = useState(29);  // USDC market share %
+  const [currentShares, setCurrentShares] = useState(MARKET.shares);  // From @/data/crcl/company.ts
+  const [currentStockPrice, setCurrentStockPrice] = useState(MARKET.price);  // From @/data/crcl/company.ts
+  const [currentUSDC, setCurrentUSDC] = useState(USDC_DATA.usdcCirculation);  // From @/data/crcl/company.ts
+  const [currentMarketShare, setCurrentMarketShare] = useState(USDC_DATA.marketShare);  // From @/data/crcl/company.ts
 
   const toggleSection = (section: string) => {
     const next = new Set(investmentSections);
@@ -3420,7 +3421,7 @@ function CRCLModel() {
                 <OverviewParameterCard
                   title="Shares Outstanding (M)"
                   explanation="Total diluted shares. Higher share count = lower per-share metrics. Increases with equity raises and stock comp."
-                  options={[350, 300, 250, 229.9, 200, 175]}
+                  options={[350, 300, 250, MARKET.shares, 200, 175]}
                   value={currentShares}
                   onChange={setCurrentShares}
                   format="M"
@@ -3428,7 +3429,7 @@ function CRCLModel() {
                 <OverviewParameterCard
                   title="Stock Price ($)"
                   explanation="Current market price per share. Determines market cap and valuation multiples like P/E and EV/Revenue."
-                  options={[50, 65, 80.05, 95, 110, 130]}
+                  options={[50, 65, MARKET.price, 95, 110, 130]}
                   value={currentStockPrice}
                   onChange={setCurrentStockPrice}
                   format="$"
@@ -3438,7 +3439,7 @@ function CRCLModel() {
                 <OverviewParameterCard
                   title="USDC Circulation ($B)"
                   explanation="Total USDC in circulation. Primary revenue driver. More USDC = more reserves = more interest income."
-                  options={[40, 50, 62.5, 75, 90, 110]}
+                  options={[40, 50, USDC_DATA.usdcCirculation, 75, 90, 110]}
                   value={currentUSDC}
                   onChange={setCurrentUSDC}
                   format="B"
@@ -3446,7 +3447,7 @@ function CRCLModel() {
                 <OverviewParameterCard
                   title="Market Share (%)"
                   explanation="USDC share of stablecoin market vs Tether. Higher share = stronger competitive position and pricing power."
-                  options={[20, 25, 29, 33, 40, 50]}
+                  options={[20, 25, USDC_DATA.marketShare, 33, 40, 50]}
                   value={currentMarketShare}
                   onChange={setCurrentMarketShare}
                   format="%"

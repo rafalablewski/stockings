@@ -670,10 +670,10 @@ CFANotes.displayName = 'CFANotes';
 const BMNRDilutionAnalysis = () => {
   // === DATA FRESHNESS: Last updated Jan 26, 2026 ===
   // Update prices regularly - stale data affects all NAV calculations
-  const [currentETH, setCurrentETH] = useState(4243338);  // Jan 26, 2026 PR - 3.52% of ETH supply
-  const [currentShares, setCurrentShares] = useState(434);
-  const [currentStockPrice, setCurrentStockPrice] = useState(27.15);  // ⚠️ UPDATE REGULARLY - Last: Jan 26, 2026
-  const [ethPrice, setEthPrice] = useState(2839);  // ⚠️ UPDATE REGULARLY - Last: Jan 25, 2026 (Coinbase)
+  const [currentETH, setCurrentETH] = useState(DEFAULTS.currentETH);  // From @/data/bmnr/company.ts
+  const [currentShares, setCurrentShares] = useState(DEFAULTS.currentShares);  // From @/data/bmnr/company.ts
+  const [currentStockPrice, setCurrentStockPrice] = useState(DEFAULTS.currentStockPrice);  // From @/data/bmnr/company.ts
+  const [ethPrice, setEthPrice] = useState(DEFAULTS.ethPrice);  // From @/data/bmnr/company.ts
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
   const [dilutionPercent, setDilutionPercent] = useState(5);
@@ -701,7 +701,7 @@ const BMNRDilutionAnalysis = () => {
   const [conversionPremium, setConversionPremium] = useState(50);
   const [debtCovenantLTV, setDebtCovenantLTV] = useState(50);
   // Dividend parameters - First dividend announced Nov 24, 2025 ($0.01/share)
-  const [quarterlyDividend, setQuarterlyDividend] = useState(0.01);
+  const [quarterlyDividend, setQuarterlyDividend] = useState(DIVIDEND_DATA.quarterlyDividend);  // From @/data/bmnr/company.ts
   const [dividendGrowthRate, setDividendGrowthRate] = useState(10); // % annual growth
 
   // Update indicator visibility toggle
@@ -1928,7 +1928,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       <OverviewParameterCard
         title="ETH Holdings"
         explanation="Total ETH in treasury. Primary driver of NAV. Higher holdings = more intrinsic value per share assuming no dilution."
-        options={[3000000, 4000000, 4243338, 5000000, 6000000, 7000000]}
+        options={[3000000, 4000000, DEFAULTS.currentETH, 5000000, 6000000, 7000000]}
         value={currentETH}
         onChange={setCurrentETH}
         format="ETH"
@@ -1936,7 +1936,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       <OverviewParameterCard
         title="ETH Price ($)"
         explanation="Current ETH spot price. Drives NAV calculation. Higher ETH price = higher NAV/share and staking income."
-        options={[2000, 2500, 2839, 3500, 4000, 5000]}
+        options={[2000, 2500, DEFAULTS.ethPrice, 3500, 4000, 5000]}
         value={ethPrice}
         onChange={setEthPrice}
         format="$"
@@ -1946,14 +1946,14 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       <OverviewParameterCard
         title="Shares (M)"
         explanation="Total diluted shares. Higher count dilutes ETH/share and NAV/share."
-        options={[500, 450, 434, 400, 350, 300]}
+        options={[500, 450, DEFAULTS.currentShares, 400, 350, 300]}
         value={currentShares}
         onChange={setCurrentShares}
       />
       <OverviewParameterCard
         title="Stock Price ($)"
         explanation="Current market price. Compare to NAV for premium/discount analysis."
-        options={[15, 20, 27.15, 40, 55, 70]}
+        options={[15, 20, DEFAULTS.currentStockPrice, 40, 55, 70]}
         value={currentStockPrice}
         onChange={setCurrentStockPrice}
         format="$"
@@ -1961,7 +1961,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       <OverviewParameterCard
         title="Qtr Dividend ($)"
         explanation="Per-share quarterly dividend. Higher dividend = better yield for income investors."
-        options={[0.01, 0.02, 0.03, 0.04, 0.05, 0.10]}
+        options={[DIVIDEND_DATA.quarterlyDividend, 0.02, 0.03, 0.04, 0.05, 0.10]}
         value={quarterlyDividend}
         onChange={setQuarterlyDividend}
         format="$"
