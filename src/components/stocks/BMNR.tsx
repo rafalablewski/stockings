@@ -1790,7 +1790,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
     <h3 className="section-head">Parameters</h3>
     <div className="g2">
-      {/* ETH Holdings */}
+      {/* ETH Holdings - higher is bullish */}
       <div className="card">
         <div className="card-title">ETH Holdings</div>
         <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -1812,8 +1812,9 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
             );
           })}
         </div>
+        <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
       </div>
-      {/* ETH Price */}
+      {/* ETH Price - higher is bullish */}
       <div className="card">
         <div className="card-title">ETH Price ($)</div>
         <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -1835,33 +1836,35 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
             );
           })}
         </div>
+        <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
       </div>
     </div>
     <div className="g3">
-      {/* Shares Outstanding */}
+      {/* Shares Outstanding - inverse: lower is bullish */}
       <div className="card">
         <div className="card-title">Shares (M)</div>
         <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
           Total diluted shares. Higher count dilutes ETH/share and NAV/share.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[200, 250, 300, 350, 400, 450].map((v, idx) => {
+          {[450, 400, 350, 300, 250, 200].map((v, idx) => {
             const isActive = currentShares === v;
             const colors = [
-              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
               { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
             ][idx];
             return (
               <div key={v} onClick={() => setCurrentShares(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v}</div>
             );
           })}
         </div>
+        <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
       </div>
-      {/* Stock Price */}
+      {/* Stock Price - higher is bullish */}
       <div className="card">
         <div className="card-title">Stock Price ($)</div>
         <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -1883,8 +1886,9 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
             );
           })}
         </div>
+        <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
       </div>
-      {/* Quarterly Dividend */}
+      {/* Quarterly Dividend - higher is bullish */}
       <div className="card">
         <div className="card-title">Qtr Dividend ($)</div>
         <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -1906,6 +1910,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
             );
           })}
         </div>
+        <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
       </div>
     </div>
 
