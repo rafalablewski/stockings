@@ -3168,9 +3168,9 @@ function CRCLModel() {
                 <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>Circle:</strong> Building financial infrastructure for the internet economy. USDC enables 24/7 global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of traditional finance and blockchain technology.</p>
               </div>
 
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
               <div className="g2">
                 <div className="thesis bull">
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
                   <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
                   <ul>
                     <li>USDC +{usdcGrowth.toFixed(0)}% YoY, mgmt guides 40% CAGR</li>
@@ -3183,6 +3183,7 @@ function CRCLModel() {
                   </ul>
                 </div>
                 <div className="thesis bear">
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
                   <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
                   <ul>
                     <li>96% revenue from reserve income (rate sensitive)</li>

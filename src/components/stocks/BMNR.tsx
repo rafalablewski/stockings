@@ -1682,9 +1682,9 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>BMNR:</strong> ETH treasury company accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
     <div className="g2">
       <div className="thesis bull">
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
         <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
         <ul>
           <li>ETH price appreciation — Cycle targets $10K-$15K+</li>
@@ -1696,6 +1696,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         </ul>
       </div>
       <div className="thesis bear">
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
         <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
         <ul>
           <li>ETH price crash — Crypto winter, -70% drawdowns possible</li>

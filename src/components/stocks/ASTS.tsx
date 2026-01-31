@@ -935,9 +935,9 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
     <div className="g2">
       <div className="thesis bull">
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
         <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
         <ul>
           <li>BB6 proving D2D technology works at scale</li>
@@ -949,6 +949,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         </ul>
       </div>
       <div className="thesis bear">
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
         <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
         <ul>
           <li>Pre-revenue company, high execution risk</li>
