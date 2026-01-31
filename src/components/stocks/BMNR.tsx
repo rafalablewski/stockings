@@ -1659,6 +1659,141 @@ const ModelTab = ({
   );
 };
 
+// Overview Parameter Card - matches Model tab ParameterCard styling with custom input support
+const OverviewParameterCard = ({
+  title,
+  explanation,
+  options,
+  value,
+  onChange,
+  format = '',
+}: {
+  title: string;
+  explanation: string;
+  options: number[];
+  value: number;
+  onChange: (v: number) => void;
+  format?: string;
+}) => {
+  const [customMode, setCustomMode] = useState(false);
+  const [customInput, setCustomInput] = useState('');
+  const isCustomValue = !options.includes(value);
+
+  const formatValue = (v: number) => {
+    if (format === '$') return `$${v}`;
+    if (format === '%') return `${v}%`;
+    if (format === 'B') return v >= 1000 ? `${(v/1000).toFixed(1)}B` : `${v}`;
+    if (format === 'M') return v >= 1000000 ? `${(v/1000000).toFixed(2)}M` : `${(v/1000).toFixed(0)}K`;
+    if (format === 'ETH') return v >= 1000000 ? `${(v/1000000).toFixed(2)}M` : `${(v/1000).toFixed(0)}K`;
+    return String(v);
+  };
+
+  const presetColors = [
+    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+  ];
+
+  const handleCustomSubmit = () => {
+    const num = parseFloat(customInput);
+    if (!isNaN(num)) {
+      onChange(num);
+      setCustomMode(false);
+      setCustomInput('');
+    }
+  };
+
+  return (
+    <div className="card">
+      <div className="card-title">{title}</div>
+      <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+        {explanation}
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+        {options.slice(0, 6).map((opt, idx) => {
+          const isActive = value === opt;
+          const colors = presetColors[idx];
+          return (
+            <div
+              key={opt}
+              onClick={() => { onChange(opt); setCustomMode(false); }}
+              style={{
+                padding: '10px 4px',
+                borderRadius: 8,
+                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                background: isActive ? colors.bg : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? colors.text : 'var(--text3)',
+              }}
+            >
+              {formatValue(opt)}
+            </div>
+          );
+        })}
+        {/* Custom input button/field */}
+        {customMode ? (
+          <div style={{
+            display: 'flex',
+            borderRadius: 8,
+            border: '2px solid var(--violet)',
+            background: 'rgba(167,139,250,0.15)',
+            overflow: 'hidden',
+          }}>
+            <input
+              type="text"
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
+              placeholder="..."
+              autoFocus
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: '8px 4px',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--violet)',
+                fontSize: 12,
+                fontWeight: 600,
+                textAlign: 'center',
+                outline: 'none',
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            onClick={() => setCustomMode(true)}
+            style={{
+              padding: '10px 4px',
+              borderRadius: 8,
+              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
+              background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              textAlign: 'center',
+              fontSize: 12,
+              fontWeight: isCustomValue ? 600 : 400,
+              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
+            }}
+          >
+            {isCustomValue ? formatValue(value) : '...'}
+          </div>
+        )}
+      </div>
+      <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>
+        ← Bearish | Bullish →
+      </div>
+    </div>
+  );
+};
+
 // OVERVIEW TAB with CFA Guide
 const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend }) => {
   // Chart data - HISTORICAL ONLY
@@ -1790,128 +1925,47 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
     <h3 className="section-head">Parameters</h3>
     <div className="g2">
-      {/* ETH Holdings - higher is bullish */}
-      <div className="card">
-        <div className="card-title">ETH Holdings</div>
-        <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
-          Total ETH in treasury. Primary driver of NAV. Higher holdings = more intrinsic value per share assuming no dilution.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[3000000, 4000000, 4243338, 5000000, 6000000, 7000000].map((v, idx) => {
-            const isActive = currentETH === v;
-            const colors = [
-              { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-            ][idx];
-            return (
-              <div key={v} onClick={() => setCurrentETH(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{(v/1000000).toFixed(v === 4243338 ? 2 : 0)}M</div>
-            );
-          })}
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
-      </div>
-      {/* ETH Price - higher is bullish */}
-      <div className="card">
-        <div className="card-title">ETH Price ($)</div>
-        <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
-          Current ETH spot price. Drives NAV calculation. Higher ETH price = higher NAV/share and staking income.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[2000, 2500, 2839, 3500, 4000, 5000].map((v, idx) => {
-            const isActive = ethPrice === v;
-            const colors = [
-              { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-            ][idx];
-            return (
-              <div key={v} onClick={() => setEthPrice(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>${v.toLocaleString()}</div>
-            );
-          })}
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
-      </div>
+      <OverviewParameterCard
+        title="ETH Holdings"
+        explanation="Total ETH in treasury. Primary driver of NAV. Higher holdings = more intrinsic value per share assuming no dilution."
+        options={[3000000, 4000000, 4243338, 5000000, 6000000, 7000000]}
+        value={currentETH}
+        onChange={setCurrentETH}
+        format="ETH"
+      />
+      <OverviewParameterCard
+        title="ETH Price ($)"
+        explanation="Current ETH spot price. Drives NAV calculation. Higher ETH price = higher NAV/share and staking income."
+        options={[2000, 2500, 2839, 3500, 4000, 5000]}
+        value={ethPrice}
+        onChange={setEthPrice}
+        format="$"
+      />
     </div>
     <div className="g3">
-      {/* Shares Outstanding - inverse: lower is bullish */}
-      <div className="card">
-        <div className="card-title">Shares (M)</div>
-        <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
-          Total diluted shares. Higher count dilutes ETH/share and NAV/share.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[500, 450, 434, 400, 350, 300].map((v, idx) => {
-            const isActive = currentShares === v;
-            const colors = [
-              { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-            ][idx];
-            return (
-              <div key={v} onClick={() => setCurrentShares(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v}</div>
-            );
-          })}
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
-      </div>
-      {/* Stock Price - higher is bullish */}
-      <div className="card">
-        <div className="card-title">Stock Price ($)</div>
-        <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
-          Current market price. Compare to NAV for premium/discount analysis.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[15, 20, 27.15, 40, 55, 70].map((v, idx) => {
-            const isActive = currentStockPrice === v;
-            const colors = [
-              { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-            ][idx];
-            return (
-              <div key={v} onClick={() => setCurrentStockPrice(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>${v}</div>
-            );
-          })}
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
-      </div>
-      {/* Quarterly Dividend - higher is bullish */}
-      <div className="card">
-        <div className="card-title">Qtr Dividend ($)</div>
-        <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
-          Per-share quarterly dividend. Higher dividend = better yield for income investors.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-          {[0.01, 0.02, 0.03, 0.04, 0.05, 0.10].map((v, idx) => {
-            const isActive = quarterlyDividend === v;
-            const colors = [
-              { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-              { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-              { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-              { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-              { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-              { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-            ][idx];
-            return (
-              <div key={v} onClick={() => setQuarterlyDividend(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>${v.toFixed(2)}</div>
-            );
-          })}
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
-      </div>
+      <OverviewParameterCard
+        title="Shares (M)"
+        explanation="Total diluted shares. Higher count dilutes ETH/share and NAV/share."
+        options={[500, 450, 434, 400, 350, 300]}
+        value={currentShares}
+        onChange={setCurrentShares}
+      />
+      <OverviewParameterCard
+        title="Stock Price ($)"
+        explanation="Current market price. Compare to NAV for premium/discount analysis."
+        options={[15, 20, 27.15, 40, 55, 70]}
+        value={currentStockPrice}
+        onChange={setCurrentStockPrice}
+        format="$"
+      />
+      <OverviewParameterCard
+        title="Qtr Dividend ($)"
+        explanation="Per-share quarterly dividend. Higher dividend = better yield for income investors."
+        options={[0.01, 0.02, 0.03, 0.04, 0.05, 0.10]}
+        value={quarterlyDividend}
+        onChange={setQuarterlyDividend}
+        format="$"
+      />
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>

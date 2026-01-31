@@ -1145,6 +1145,140 @@ const CRCLParameterCard = ({
   );
 };
 
+// Overview Parameter Card - matches Model tab ParameterCard styling with custom input support
+const OverviewParameterCard = ({
+  title,
+  explanation,
+  options,
+  value,
+  onChange,
+  format = '',
+}: {
+  title: string;
+  explanation: string;
+  options: number[];
+  value: number;
+  onChange: (v: number) => void;
+  format?: string;
+}) => {
+  const [customMode, setCustomMode] = useState(false);
+  const [customInput, setCustomInput] = useState('');
+  const isCustomValue = !options.includes(value);
+
+  const formatValue = (v: number) => {
+    if (format === '$') return `$${v}`;
+    if (format === '%') return `${v}%`;
+    if (format === 'B') return `${v}B`;
+    if (format === 'M') return `${v}M`;
+    return String(v);
+  };
+
+  const presetColors = [
+    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+  ];
+
+  const handleCustomSubmit = () => {
+    const num = parseFloat(customInput);
+    if (!isNaN(num)) {
+      onChange(num);
+      setCustomMode(false);
+      setCustomInput('');
+    }
+  };
+
+  return (
+    <div className="card">
+      <div className="card-title">{title}</div>
+      <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+        {explanation}
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+        {options.slice(0, 6).map((opt, idx) => {
+          const isActive = value === opt;
+          const colors = presetColors[idx];
+          return (
+            <div
+              key={opt}
+              onClick={() => { onChange(opt); setCustomMode(false); }}
+              style={{
+                padding: '10px 4px',
+                borderRadius: 8,
+                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                background: isActive ? colors.bg : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? colors.text : 'var(--text3)',
+              }}
+            >
+              {formatValue(opt)}
+            </div>
+          );
+        })}
+        {/* Custom input button/field */}
+        {customMode ? (
+          <div style={{
+            display: 'flex',
+            borderRadius: 8,
+            border: '2px solid var(--violet)',
+            background: 'rgba(167,139,250,0.15)',
+            overflow: 'hidden',
+          }}>
+            <input
+              type="text"
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
+              placeholder="..."
+              autoFocus
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: '8px 4px',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--violet)',
+                fontSize: 12,
+                fontWeight: 600,
+                textAlign: 'center',
+                outline: 'none',
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            onClick={() => setCustomMode(true)}
+            style={{
+              padding: '10px 4px',
+              borderRadius: 8,
+              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
+              background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              textAlign: 'center',
+              fontSize: 12,
+              fontWeight: isCustomValue ? 600 : 400,
+              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
+            }}
+          >
+            {isCustomValue ? formatValue(value) : '...'}
+          </div>
+        )}
+      </div>
+      <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>
+        ← Bearish | Bullish →
+      </div>
+    </div>
+  );
+};
+
 // ModelTab component for CRCL - USDC/Reserve yield DCF valuation
 const CRCLModelTab = ({
   currentUSDC,
@@ -3283,104 +3417,40 @@ function CRCLModel() {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
               <h3 className="section-head">Parameters</h3>
               <div className="g2">
-                {/* Shares Outstanding - inverse: lower is bullish */}
-                <div className="card">
-                  <div className="card-title">Shares Outstanding (M)</div>
-                  <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
-                    Total diluted shares. Higher share count = lower per-share metrics. Increases with equity raises and stock comp.
-                  </p>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                    {[350, 300, 250, 229.9, 200, 175].map((v, idx) => {
-                      const isActive = currentShares === v;
-                      const colors = [
-                        { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                        { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                        { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                        { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                        { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                        { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                      ][idx];
-                      return (
-                        <div key={v} onClick={() => setCurrentShares(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v}</div>
-                      );
-                    })}
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
-                </div>
-                {/* Stock Price - higher is bullish */}
-                <div className="card">
-                  <div className="card-title">Stock Price ($)</div>
-                  <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
-                    Current market price per share. Determines market cap and valuation multiples like P/E and EV/Revenue.
-                  </p>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                    {[50, 65, 80.05, 95, 110, 130].map((v, idx) => {
-                      const isActive = currentStockPrice === v;
-                      const colors = [
-                        { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                        { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                        { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                        { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                        { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                        { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                      ][idx];
-                      return (
-                        <div key={v} onClick={() => setCurrentStockPrice(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>${v}</div>
-                      );
-                    })}
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
-                </div>
+                <OverviewParameterCard
+                  title="Shares Outstanding (M)"
+                  explanation="Total diluted shares. Higher share count = lower per-share metrics. Increases with equity raises and stock comp."
+                  options={[350, 300, 250, 229.9, 200, 175]}
+                  value={currentShares}
+                  onChange={setCurrentShares}
+                  format="M"
+                />
+                <OverviewParameterCard
+                  title="Stock Price ($)"
+                  explanation="Current market price per share. Determines market cap and valuation multiples like P/E and EV/Revenue."
+                  options={[50, 65, 80.05, 95, 110, 130]}
+                  value={currentStockPrice}
+                  onChange={setCurrentStockPrice}
+                  format="$"
+                />
               </div>
               <div className="g2">
-                {/* USDC Circulation - higher is bullish */}
-                <div className="card">
-                  <div className="card-title">USDC Circulation ($B)</div>
-                  <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
-                    Total USDC in circulation. Primary revenue driver. More USDC = more reserves = more interest income.
-                  </p>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                    {[40, 50, 62.5, 75, 90, 110].map((v, idx) => {
-                      const isActive = currentUSDC === v;
-                      const colors = [
-                        { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                        { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                        { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                        { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                        { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                        { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                      ][idx];
-                      return (
-                        <div key={v} onClick={() => setCurrentUSDC(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v}B</div>
-                      );
-                    })}
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
-                </div>
-                {/* Market Share - higher is bullish */}
-                <div className="card">
-                  <div className="card-title">Market Share (%)</div>
-                  <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
-                    USDC share of stablecoin market vs Tether. Higher share = stronger competitive position and pricing power.
-                  </p>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                    {[20, 25, 29, 33, 40, 50].map((v, idx) => {
-                      const isActive = currentMarketShare === v;
-                      const colors = [
-                        { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                        { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                        { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                        { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                        { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                        { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                      ][idx];
-                      return (
-                        <div key={v} onClick={() => setCurrentMarketShare(v)} style={{ padding: '10px 4px', borderRadius: 8, border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)', background: isActive ? colors.bg : 'var(--surface2)', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', fontSize: 12, fontWeight: isActive ? 600 : 400, color: isActive ? colors.text : 'var(--text3)' }}>{v}%</div>
-                      );
-                    })}
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>← Bearish | Bullish →</div>
-                </div>
+                <OverviewParameterCard
+                  title="USDC Circulation ($B)"
+                  explanation="Total USDC in circulation. Primary revenue driver. More USDC = more reserves = more interest income."
+                  options={[40, 50, 62.5, 75, 90, 110]}
+                  value={currentUSDC}
+                  onChange={setCurrentUSDC}
+                  format="B"
+                />
+                <OverviewParameterCard
+                  title="Market Share (%)"
+                  explanation="USDC share of stablecoin market vs Tether. Higher share = stronger competitive position and pricing power."
+                  options={[20, 25, 29, 33, 40, 50]}
+                  value={currentMarketShare}
+                  onChange={setCurrentMarketShare}
+                  format="%"
+                />
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
