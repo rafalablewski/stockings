@@ -798,11 +798,11 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
       }
     };
 
-    fetchComparisonData('SPY', setSpyData, showSPY);
-    fetchComparisonData('QQQ', setQqqData, showQQQ);
-    fetchComparisonData('GLD', setGoldData, showGold);
-    fetchComparisonData('BTC-USD', setBtcData, showBTC);
-  }, [showSPY, showQQQ, showGold, showBTC, range]);
+    fetchComparisonData('SPY', setSpyData, showSPY || showCorrelation || showRiskMetrics);
+    fetchComparisonData('QQQ', setQqqData, showQQQ || showCorrelation);
+    fetchComparisonData('GLD', setGoldData, showGold || showCorrelation);
+    fetchComparisonData('BTC-USD', setBtcData, showBTC || showCorrelation);
+  }, [showSPY, showQQQ, showGold, showBTC, showCorrelation, showRiskMetrics, range]);
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -1817,7 +1817,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
       )}
 
       {/* Correlation Matrix */}
-      {!loading && !error && chartData.length > 0 && showCorrelation && (showSPY || showQQQ || showGold || showBTC) && (
+      {!loading && !error && chartData.length > 0 && showCorrelation && (
         <div style={{
           marginTop: 12,
           padding: '12px 14px',
@@ -1827,7 +1827,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         }}>
           <div style={{ color: 'var(--text)', marginBottom: 10, fontWeight: 600 }}>Correlation Matrix</div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            {showSPY && correlations.spy !== null && (
+            {correlations.spy !== null && (
               <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
                 <div style={{ color: COLORS.spy, fontSize: 10, marginBottom: 2 }}>vs SPY</div>
                 <div style={{
@@ -1839,7 +1839,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                 </div>
               </div>
             )}
-            {showQQQ && correlations.qqq !== null && (
+            {correlations.qqq !== null && (
               <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
                 <div style={{ color: COLORS.qqq, fontSize: 10, marginBottom: 2 }}>vs QQQ</div>
                 <div style={{
@@ -1851,7 +1851,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                 </div>
               </div>
             )}
-            {showGold && correlations.gold !== null && (
+            {correlations.gold !== null && (
               <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
                 <div style={{ color: COLORS.gold, fontSize: 10, marginBottom: 2 }}>vs Gold</div>
                 <div style={{
@@ -1863,7 +1863,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                 </div>
               </div>
             )}
-            {showBTC && correlations.btc !== null && (
+            {correlations.btc !== null && (
               <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
                 <div style={{ color: COLORS.btc, fontSize: 10, marginBottom: 2 }}>vs BTC</div>
                 <div style={{
