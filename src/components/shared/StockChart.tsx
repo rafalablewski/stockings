@@ -96,7 +96,7 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
   const priceChangePercent = firstPrice > 0 ? (priceChange / firstPrice) * 100 : 0;
   const isPositive = priceChange >= 0;
 
-  const chartColor = isPositive ? 'var(--mint)' : 'var(--red)';
+  const chartColor = isPositive ? '#34d399' : '#f87171'; // Bright mint / bright red
 
   return (
     <div className="card">
