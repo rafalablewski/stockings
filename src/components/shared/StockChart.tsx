@@ -412,6 +412,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
+    if (range === '1d') {
+      return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    }
     if (range === '5d') {
       return date.toLocaleDateString('en-US', { weekday: 'short', hour: 'numeric' });
     }
