@@ -970,12 +970,13 @@ const OverviewParameterCard = ({
               {isCurrent && (
                 <div style={{
                   position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  width: 0,
-                  height: 0,
-                  borderTop: '10px solid var(--accent)',
-                  borderLeft: '10px solid transparent',
+                  top: 4,
+                  right: 4,
+                  width: 4,
+                  height: 4,
+                  borderRadius: '50%',
+                  background: 'var(--text3)',
+                  opacity: 0.4,
                 }} />
               )}
               {formatValue(opt)}
