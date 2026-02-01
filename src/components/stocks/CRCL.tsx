@@ -1211,7 +1211,6 @@ const OverviewParameterCard = ({
               onClick={() => { onChange(opt); setCustomMode(false); }}
               style={{
                 padding: '10px 4px',
-                paddingTop: isCurrent ? 6 : 10,
                 borderRadius: 8,
                 border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                 background: isActive ? colors.bg : 'var(--surface2)',
@@ -1222,10 +1221,19 @@ const OverviewParameterCard = ({
                 fontWeight: isActive ? 600 : 400,
                 color: isActive ? colors.text : 'var(--text3)',
                 position: 'relative',
+                overflow: 'hidden',
               }}
             >
               {isCurrent && (
-                <div style={{ fontSize: 8, color: 'var(--text3)', marginBottom: 2, letterSpacing: 0.5 }}>current</div>
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  width: 0,
+                  height: 0,
+                  borderTop: '10px solid var(--accent)',
+                  borderLeft: '10px solid transparent',
+                }} />
               )}
               {formatValue(opt)}
             </div>
