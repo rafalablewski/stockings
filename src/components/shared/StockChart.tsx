@@ -460,14 +460,21 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   }, [chartData]);
 
   // Calculate comparison data (normalize to percentage change)
-  const normalizeComparison = (compData: ChartDataPoint[] | null): Map<number, number> | null => {
+  const normalizeComparison = (compData: ChartDataPoint[] | null, matchByDay = false): Map<number, number> | null => {
     if (!compData || compData.length === 0) return null;
     const basePrice = compData[0]?.close;
     if (!basePrice) return null;
     const compMap = new Map<number, number>();
     compData.forEach(d => {
       const pctChange = ((d.close - basePrice) / basePrice) * 100;
-      compMap.set(d.date, pctChange);
+      if (matchByDay) {
+        // For assets like BTC that trade 24/7, match by calendar day
+        const dayStart = new Date(d.date);
+        dayStart.setHours(0, 0, 0, 0);
+        compMap.set(dayStart.getTime(), pctChange);
+      } else {
+        compMap.set(d.date, pctChange);
+      }
     });
     return compMap;
   };
@@ -475,36 +482,43 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const spyNormalized = useMemo(() => normalizeComparison(spyData), [spyData]);
   const qqqNormalized = useMemo(() => normalizeComparison(qqqData), [qqqData]);
   const goldNormalized = useMemo(() => normalizeComparison(goldData), [goldData]);
-  const btcNormalized = useMemo(() => normalizeComparison(btcData), [btcData]);
+  const btcNormalized = useMemo(() => normalizeComparison(btcData, true), [btcData]); // BTC trades 24/7, match by day
 
   const showAnyComparison = showSPY || showQQQ || showGold || showBTC;
 
   // Prepare chart data with all indicators
   const enrichedData = useMemo(() => {
     const stockBasePrice = chartData[0]?.close || 1;
-    return chartData.map((d, i) => ({
-      ...d,
-      sma20: sma20[i],
-      sma50: sma50[i],
-      sma200: sma200[i],
-      rsi: rsi[i],
-      bbUpper: bollinger.upper[i],
-      bbMiddle: bollinger.middle[i],
-      bbLower: bollinger.lower[i],
-      vwap: vwap[i],
-      macdLine: macd.macd[i],
-      macdSignal: macd.signal[i],
-      macdHistogram: macd.histogram[i],
-      atr: atr[i],
-      priceRange: [d.low, d.high],
-      // For comparison chart: stock's percentage change
-      stockPctChange: ((d.close - stockBasePrice) / stockBasePrice) * 100,
-      // Comparison percentage changes
-      spyPctChange: spyNormalized?.get(d.date) ?? null,
-      qqqPctChange: qqqNormalized?.get(d.date) ?? null,
-      goldPctChange: goldNormalized?.get(d.date) ?? null,
-      btcPctChange: btcNormalized?.get(d.date) ?? null,
-    }));
+    return chartData.map((d, i) => {
+      // For BTC, look up by day start since it trades 24/7
+      const dayStart = new Date(d.date);
+      dayStart.setHours(0, 0, 0, 0);
+      const btcPct = btcNormalized?.get(dayStart.getTime()) ?? null;
+
+      return {
+        ...d,
+        sma20: sma20[i],
+        sma50: sma50[i],
+        sma200: sma200[i],
+        rsi: rsi[i],
+        bbUpper: bollinger.upper[i],
+        bbMiddle: bollinger.middle[i],
+        bbLower: bollinger.lower[i],
+        vwap: vwap[i],
+        macdLine: macd.macd[i],
+        macdSignal: macd.signal[i],
+        macdHistogram: macd.histogram[i],
+        atr: atr[i],
+        priceRange: [d.low, d.high],
+        // For comparison chart: stock's percentage change
+        stockPctChange: ((d.close - stockBasePrice) / stockBasePrice) * 100,
+        // Comparison percentage changes
+        spyPctChange: spyNormalized?.get(d.date) ?? null,
+        qqqPctChange: qqqNormalized?.get(d.date) ?? null,
+        goldPctChange: goldNormalized?.get(d.date) ?? null,
+        btcPctChange: btcPct,
+      };
+    });
   }, [chartData, sma20, sma50, sma200, rsi, bollinger, vwap, macd, atr, spyNormalized, qqqNormalized, goldNormalized, btcNormalized]);
 
   // Colors
