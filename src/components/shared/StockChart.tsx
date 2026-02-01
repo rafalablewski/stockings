@@ -1121,11 +1121,14 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         <IndicatorToggle label="ATR" active={showATR} onClick={() => setShowATR(!showATR)} color={COLORS.atr} />
       </div>
 
-      {/* Scale & Comparison toggles */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+      {/* Scale toggle */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 6, flexWrap: 'wrap', alignItems: 'center' }}>
         <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Scale:</span>
         <IndicatorToggle label="Log" active={logScale} onClick={() => setLogScale(!logScale)} />
-        <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 6px' }} />
+      </div>
+
+      {/* Comparison toggles */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 6, flexWrap: 'wrap', alignItems: 'center' }}>
         <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Compare:</span>
         <IndicatorToggle label="vs. SPY" active={showSPY} onClick={() => setShowSPY(!showSPY)} color={COLORS.spy} />
         <IndicatorToggle label="vs. QQQ" active={showQQQ} onClick={() => setShowQQQ(!showQQQ)} color={COLORS.qqq} />
@@ -1911,9 +1914,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         </div>
       )}
 
-      {/* Indicator Guide */}
+      {/* Chart Guide */}
       {!loading && !error && chartData.length > 0 && (
-        <details open style={{ marginTop: 12 }}>
+        <details style={{ marginTop: 12 }}>
           <summary style={{
             cursor: 'pointer',
             fontSize: 11,
@@ -1921,7 +1924,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
             userSelect: 'none',
             padding: '4px 0',
           }}>
-            Indicator Guide
+            Chart Guide
           </summary>
           <div style={{
             marginTop: 8,
@@ -1931,147 +1934,195 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
             fontSize: 11,
             lineHeight: 1.6,
           }}>
-            <div style={{ display: 'grid', gap: 12 }}>
-              {/* Moving Averages */}
+            <div style={{ display: 'grid', gap: 16 }}>
+
+              {/* INDICATORS SECTION */}
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.sma20, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.sma50, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.sma200, borderRadius: 1 }} />
-                  Simple Moving Averages (SMA)
+                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 8, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 4 }}>
+                  Indicators
                 </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  <strong>SMA 20</strong> (short-term): Captures recent momentum. Price above = bullish short-term trend.
-                  <strong> SMA 50</strong> (medium-term): Institutional benchmark for intermediate trend.
-                  <strong> SMA 200</strong> (long-term): Defines secular bull/bear markets.
-                  <em> Golden Cross</em> (50 crosses above 200) signals bullish reversal; <em>Death Cross</em> (50 below 200) signals bearish reversal.
-                  Widely watched by funds for trend confirmation and mean-reversion entries.
+                <div style={{ display: 'grid', gap: 10 }}>
+                  {/* SMA 20/50/200 */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.sma20, borderRadius: 1 }} />
+                      <span style={{ width: 10, height: 2, background: COLORS.sma50, borderRadius: 1 }} />
+                      <span style={{ width: 10, height: 2, background: COLORS.sma200, borderRadius: 1 }} />
+                      SMA 20 / SMA 50 / SMA 200
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Simple Moving Averages for short, medium, and long-term trends. <em>Golden Cross</em> (50 above 200) = bullish; <em>Death Cross</em> = bearish.
+                    </div>
+                  </div>
+                  {/* Bollinger */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.bbUpper, borderRadius: 1 }} />
+                      Bollinger
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Bollinger Bands (20-period, 2σ). Band squeeze = low volatility, breakout imminent. Price at upper band = overbought; lower = oversold.
+                    </div>
+                  </div>
+                  {/* VWAP */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.vwap, borderRadius: 1 }} />
+                      VWAP
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Volume Weighted Average Price. Institutional benchmark. Above VWAP = bullish, below = bearish. Key for intraday trading.
+                    </div>
+                  </div>
+                  {/* Volume */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>Volume</div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Shows trading activity. High volume confirms moves; low volume breakouts often fail. Spikes indicate institutional activity.
+                    </div>
+                  </div>
+                  {/* RSI */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.rsi, borderRadius: 1 }} />
+                      RSI
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Relative Strength Index (14-period). Above 70 = overbought, below 30 = oversold. Divergences predict reversals.
+                    </div>
+                  </div>
+                  {/* MACD */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.macd, borderRadius: 1 }} />
+                      <span style={{ width: 10, height: 2, background: COLORS.macdSignal, borderRadius: 1 }} />
+                      MACD
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Moving Average Convergence Divergence. MACD crossing above signal = bullish, below = bearish. Histogram shows momentum strength.
+                    </div>
+                  </div>
+                  {/* ATR */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.atr, borderRadius: 1 }} />
+                      ATR
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Average True Range (14-period). Measures volatility. Use for stop-loss placement (2× ATR) and position sizing.
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Bollinger Bands */}
+              {/* SCALE SECTION */}
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.bbUpper, borderRadius: 1 }} />
-                  Bollinger Bands (20, 2σ)
+                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 8, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 4 }}>
+                  Scale
                 </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Volatility envelope: middle band = 20-day SMA, upper/lower bands = ±2 standard deviations.
-                  <strong> Band squeeze</strong> (narrow bands) indicates low volatility, often preceding breakouts.
-                  <strong> Band expansion</strong> signals increased volatility. Price touching upper band suggests overbought conditions (mean reversion likely);
-                  lower band suggests oversold. <em>Walk the band</em>: trending markets can ride upper/lower band for extended periods.
-                  Use with RSI for confirmation.
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>Log</div>
+                  <div style={{ color: 'var(--text3)' }}>
+                    Logarithmic Y-axis. Shows percentage changes equally (100% gain looks same at any price level). Essential for long-term charts.
+                  </div>
                 </div>
               </div>
 
-              {/* VWAP */}
+              {/* COMPARE SECTION */}
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.vwap, borderRadius: 1, borderStyle: 'dashed' }} />
-                  VWAP (Volume Weighted Average Price)
+                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 8, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 4 }}>
+                  Compare
                 </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Institutional execution benchmark. Calculated as cumulative (price × volume) ÷ cumulative volume.
-                  <strong> Price above VWAP</strong>: buyers in control, institutions likely accumulated at favorable prices.
-                  <strong> Price below VWAP</strong>: sellers dominating, distribution phase.
-                  Algorithms target VWAP for order execution. Intraday traders use as dynamic support/resistance.
-                  Most relevant on shorter timeframes (1W, 1M); loses significance on longer periods.
+                <div style={{ display: 'grid', gap: 10 }}>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.spy, borderRadius: 1 }} />
+                      vs. SPY
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>S&P 500 ETF. Broad market benchmark — outperformance = generating alpha.</div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.qqq, borderRadius: 1 }} />
+                      vs. QQQ
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>NASDAQ-100 ETF. Tech-heavy benchmark for growth stock comparison.</div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.gold, borderRadius: 1 }} />
+                      vs. Gold
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>Gold ETF (GLD). Safe-haven asset — inverse correlation indicates risk-on behavior.</div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.btc, borderRadius: 1 }} />
+                      vs. BTC
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>Bitcoin. Crypto benchmark — useful for crypto-correlated equities.</div>
+                  </div>
                 </div>
               </div>
 
-              {/* Volume */}
+              {/* PRO SECTION */}
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
-                  Volume
+                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 8, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 4 }}>
+                  Pro (Professional Analysis)
                 </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Confirms price moves. <strong>Rising price + high volume</strong> = strong conviction, sustainable trend.
-                  <strong> Rising price + declining volume</strong> = weakening momentum, potential reversal.
-                  <strong> Breakout on high volume</strong> validates the move; low volume breakouts often fail.
-                  Volume spikes indicate institutional activity or news-driven events.
-                  Compare current volume to 20-day average for relative significance.
+                <div style={{ display: 'grid', gap: 10 }}>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.fibonacci, borderRadius: 1 }} />
+                      Fib
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Fibonacci retracement levels (23.6%, 38.2%, 50%, 61.8%, 78.6%). Key psychological levels where price often reverses. The 61.8% (golden ratio) is most significant.
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.vwapBand1, borderRadius: 1 }} />
+                      VWAP±σ
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      VWAP with standard deviation bands (1σ, 2σ, 3σ). Statistical price zones. 68% of price action within 1σ, 95% within 2σ, 99% within 3σ.
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.support, borderRadius: 1 }} />
+                      <span style={{ width: 10, height: 2, background: COLORS.resistance, borderRadius: 1 }} />
+                      S/R
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Auto-detected support (green) and resistance (red) levels. Key price zones where buying/selling pressure historically emerged. S1/S2/S3 and R1/R2/R3.
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 10, height: 2, background: COLORS.volumeProfile, borderRadius: 1 }} />
+                      Vol Profile
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Volume Profile showing price levels with highest trading activity. High-volume nodes act as magnets; low-volume areas get passed quickly.
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>Risk Metrics</div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Professional risk analytics: <strong>Sharpe Ratio</strong> (risk-adjusted return), <strong>Sortino</strong> (downside-only), <strong>Max Drawdown</strong> (largest peak-to-trough), <strong>VaR</strong> (worst daily loss at 95% confidence), <strong>Beta</strong> (market correlation), <strong>Volatility</strong> (annualized).
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>Correlation</div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Shows correlation coefficient (-1 to +1) with enabled comparisons. High correlation (&gt;0.7) = moves together; low (&lt;0.3) = diversification benefit; negative = inverse relationship.
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* RSI */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.rsi, borderRadius: 1 }} />
-                  RSI (Relative Strength Index, 14-period)
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Momentum oscillator (0-100). <strong>Above 70</strong>: overbought—price extended, pullback likely but not guaranteed in strong trends.
-                  <strong> Below 30</strong>: oversold—potential bounce, but can stay oversold in downtrends.
-                  <strong> Divergence</strong>: price makes new high but RSI doesn't = bearish divergence (momentum weakening);
-                  price makes new low but RSI doesn't = bullish divergence (selling exhaustion).
-                  Most effective in range-bound markets; use trend filters in trending markets.
-                </div>
-              </div>
-
-              {/* MACD */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.macd, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.macdSignal, borderRadius: 1 }} />
-                  MACD (12, 26, 9)
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Trend-following momentum indicator. <strong>MACD line</strong> (blue) = 12-day EMA − 26-day EMA.
-                  <strong> Signal line</strong> (red) = 9-day EMA of MACD. <strong>Histogram</strong> = MACD − Signal (momentum strength).
-                  <em>Bullish signal</em>: MACD crosses above signal line, histogram turns positive.
-                  <em>Bearish signal</em>: MACD crosses below signal, histogram turns negative.
-                  <strong>Zero-line crossover</strong>: MACD above zero = bullish trend, below = bearish.
-                  Divergences between MACD and price predict reversals. Lagging indicator—confirms trends rather than predicting them.
-                </div>
-              </div>
-
-              {/* ATR */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.atr, borderRadius: 1 }} />
-                  ATR (Average True Range, 14-period)
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Volatility indicator measuring the average range between high and low prices.
-                  <strong> Higher ATR</strong> = greater volatility, wider price swings. <strong>Lower ATR</strong> = calmer market, tighter ranges.
-                  <strong> Position sizing</strong>: use ATR to set stop-losses (e.g., 2× ATR below entry) and calculate position size for consistent risk.
-                  <strong> Breakout confirmation</strong>: ATR expansion during breakout confirms genuine move; contraction suggests false break.
-                  Not directional—shows magnitude of moves, not direction. Often used with trend indicators for complete picture.
-                </div>
-              </div>
-
-              {/* Comparison */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.spy, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.qqq, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.gold, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.btc, borderRadius: 1 }} />
-                  Relative Performance Comparison
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Compare stock performance against major benchmarks. Shows percentage change from period start.
-                  <strong> SPY</strong> (S&P 500): broad market benchmark — outperformance = generating alpha.
-                  <strong> QQQ</strong> (NASDAQ-100): tech-heavy benchmark — useful for growth stocks comparison.
-                  <strong> Gold</strong> (GLD): safe-haven asset — inverse correlation indicates risk-on behavior.
-                  <strong> BTC</strong> (Bitcoin): crypto benchmark — useful for crypto-correlated equities like BMNR.
-                  Overlaying multiple comparisons reveals correlation patterns and relative strength across asset classes.
-                </div>
-              </div>
-
-              {/* Log Scale */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
-                  Log Scale
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Logarithmic Y-axis scale. Shows percentage changes equally regardless of price level.
-                  <strong> Linear scale</strong>: $10 → $20 move looks same as $100 → $110 (same dollar amount).
-                  <strong> Log scale</strong>: $10 → $20 (100% gain) looks same as $100 → $200 (100% gain).
-                  Essential for long-term charts or comparing stocks at different price levels.
-                  Reveals true return patterns and makes trend channels more consistent over time.
-                </div>
-              </div>
             </div>
           </div>
         </details>
