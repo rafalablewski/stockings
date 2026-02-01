@@ -460,29 +460,42 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   }, [chartData]);
 
   // Calculate comparison data (normalize to percentage change)
-  const normalizeComparison = (compData: ChartDataPoint[] | null, matchByDay = false): Map<number, number> | null => {
+  const normalizeComparison = (compData: ChartDataPoint[] | null): Map<number, number> | null => {
     if (!compData || compData.length === 0) return null;
     const basePrice = compData[0]?.close;
     if (!basePrice) return null;
     const compMap = new Map<number, number>();
     compData.forEach(d => {
       const pctChange = ((d.close - basePrice) / basePrice) * 100;
-      if (matchByDay) {
-        // For assets like BTC that trade 24/7, match by calendar day
-        const dayStart = new Date(d.date);
-        dayStart.setHours(0, 0, 0, 0);
-        compMap.set(dayStart.getTime(), pctChange);
-      } else {
-        compMap.set(d.date, pctChange);
-      }
+      compMap.set(d.date, pctChange);
     });
     return compMap;
+  };
+
+  // For BTC (trades 24/7), normalize by calendar day in UTC
+  const normalizeBtcComparison = (compData: ChartDataPoint[] | null): Map<string, number> | null => {
+    if (!compData || compData.length === 0) return null;
+    const basePrice = compData[0]?.close;
+    if (!basePrice) return null;
+    const compMap = new Map<string, number>();
+    compData.forEach(d => {
+      const pctChange = ((d.close - basePrice) / basePrice) * 100;
+      const date = new Date(d.date);
+      const dayKey = `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`;
+      compMap.set(dayKey, pctChange);
+    });
+    return compMap;
+  };
+
+  const getDayKey = (timestamp: number): string => {
+    const date = new Date(timestamp);
+    return `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`;
   };
 
   const spyNormalized = useMemo(() => normalizeComparison(spyData), [spyData]);
   const qqqNormalized = useMemo(() => normalizeComparison(qqqData), [qqqData]);
   const goldNormalized = useMemo(() => normalizeComparison(goldData), [goldData]);
-  const btcNormalized = useMemo(() => normalizeComparison(btcData, true), [btcData]); // BTC trades 24/7, match by day
+  const btcNormalized = useMemo(() => normalizeBtcComparison(btcData), [btcData]);
 
   const showAnyComparison = showSPY || showQQQ || showGold || showBTC;
 
@@ -490,10 +503,8 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const enrichedData = useMemo(() => {
     const stockBasePrice = chartData[0]?.close || 1;
     return chartData.map((d, i) => {
-      // For BTC, look up by day start since it trades 24/7
-      const dayStart = new Date(d.date);
-      dayStart.setHours(0, 0, 0, 0);
-      const btcPct = btcNormalized?.get(dayStart.getTime()) ?? null;
+      // For BTC, look up by day key (UTC) since it trades 24/7
+      const btcPct = btcNormalized?.get(getDayKey(d.date)) ?? null;
 
       return {
         ...d,
