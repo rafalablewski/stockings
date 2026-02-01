@@ -337,11 +337,21 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const [showMACD, setShowMACD] = useState(false);
   const [showATR, setShowATR] = useState(false);
   const [show52WeekHL, setShow52WeekHL] = useState(false);
-  const [showComparison, setShowComparison] = useState(false);
+
+  // Scale toggle
   const [logScale, setLogScale] = useState(false);
 
-  // Comparison data (SPY)
-  const [comparisonData, setComparisonData] = useState<ChartDataPoint[] | null>(null);
+  // Comparison toggles
+  const [showSPY, setShowSPY] = useState(false);
+  const [showQQQ, setShowQQQ] = useState(false);
+  const [showGold, setShowGold] = useState(false);
+  const [showBTC, setShowBTC] = useState(false);
+
+  // Comparison data
+  const [spyData, setSpyData] = useState<ChartDataPoint[] | null>(null);
+  const [qqqData, setQqqData] = useState<ChartDataPoint[] | null>(null);
+  const [goldData, setGoldData] = useState<ChartDataPoint[] | null>(null);
+  const [btcData, setBtcData] = useState<ChartDataPoint[] | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -369,30 +379,36 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     fetchData();
   }, [symbol, range]);
 
-  // Fetch comparison data (SPY) when enabled
+  // Fetch comparison data when enabled
   useEffect(() => {
-    if (!showComparison) {
-      setComparisonData(null);
-      return;
-    }
+    const selectedRange = RANGES.find(r => r.value === range);
+    const interval = selectedRange?.interval || '1d';
 
-    const fetchComparison = async () => {
-      const selectedRange = RANGES.find(r => r.value === range);
-      const interval = selectedRange?.interval || '1d';
-
+    const fetchComparisonData = async (
+      ticker: string,
+      setData: (data: ChartDataPoint[] | null) => void,
+      enabled: boolean
+    ) => {
+      if (!enabled) {
+        setData(null);
+        return;
+      }
       try {
-        const res = await fetch(`/api/stock/SPY?range=${range}&interval=${interval}`);
+        const res = await fetch(`/api/stock/${ticker}?range=${range}&interval=${interval}`);
         if (res.ok) {
           const json = await res.json();
-          setComparisonData(json.data);
+          setData(json.data);
         }
       } catch (err) {
-        console.error('Failed to fetch comparison data:', err);
+        console.error(`Failed to fetch ${ticker} data:`, err);
       }
     };
 
-    fetchComparison();
-  }, [showComparison, range]);
+    fetchComparisonData('SPY', setSpyData, showSPY);
+    fetchComparisonData('QQQ', setQqqData, showQQQ);
+    fetchComparisonData('GLD', setGoldData, showGold);
+    fetchComparisonData('BTC-USD', setBtcData, showBTC);
+  }, [showSPY, showQQQ, showGold, showBTC, range]);
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -444,22 +460,24 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   }, [chartData]);
 
   // Calculate comparison data (normalize to percentage change)
-  const comparisonNormalized = useMemo(() => {
-    if (!comparisonData || comparisonData.length === 0 || chartData.length === 0) return null;
-    const basePrice = comparisonData[0]?.close;
-    const stockBasePrice = chartData[0]?.close;
-    if (!basePrice || !stockBasePrice) return null;
-
-    // Create a map of timestamps to comparison prices
+  const normalizeComparison = (compData: ChartDataPoint[] | null): Map<number, number> | null => {
+    if (!compData || compData.length === 0) return null;
+    const basePrice = compData[0]?.close;
+    if (!basePrice) return null;
     const compMap = new Map<number, number>();
-    comparisonData.forEach(d => {
-      // Normalize: percentage change from start
+    compData.forEach(d => {
       const pctChange = ((d.close - basePrice) / basePrice) * 100;
       compMap.set(d.date, pctChange);
     });
+    return compMap;
+  };
 
-    return { compMap, stockBasePrice };
-  }, [comparisonData, chartData]);
+  const spyNormalized = useMemo(() => normalizeComparison(spyData), [spyData]);
+  const qqqNormalized = useMemo(() => normalizeComparison(qqqData), [qqqData]);
+  const goldNormalized = useMemo(() => normalizeComparison(goldData), [goldData]);
+  const btcNormalized = useMemo(() => normalizeComparison(btcData), [btcData]);
+
+  const showAnyComparison = showSPY || showQQQ || showGold || showBTC;
 
   // Prepare chart data with all indicators
   const enrichedData = useMemo(() => {
@@ -481,10 +499,13 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
       priceRange: [d.low, d.high],
       // For comparison chart: stock's percentage change
       stockPctChange: ((d.close - stockBasePrice) / stockBasePrice) * 100,
-      // SPY comparison percentage change
-      spyPctChange: comparisonNormalized?.compMap.get(d.date) ?? null,
+      // Comparison percentage changes
+      spyPctChange: spyNormalized?.get(d.date) ?? null,
+      qqqPctChange: qqqNormalized?.get(d.date) ?? null,
+      goldPctChange: goldNormalized?.get(d.date) ?? null,
+      btcPctChange: btcNormalized?.get(d.date) ?? null,
     }));
-  }, [chartData, sma20, sma50, sma200, rsi, bollinger, vwap, macd, atr, comparisonNormalized]);
+  }, [chartData, sma20, sma50, sma200, rsi, bollinger, vwap, macd, atr, spyNormalized, qqqNormalized, goldNormalized, btcNormalized]);
 
   // Colors
   const COLORS = {
@@ -503,7 +524,10 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     atr: '#14b8a6',      // Teal
     high52Week: '#22c55e', // Green
     low52Week: '#ef4444',  // Red
-    comparison: '#a855f7', // Purple for SPY
+    spy: '#a855f7',        // Purple
+    qqq: '#06b6d4',        // Cyan
+    gold: '#eab308',       // Yellow/Gold
+    btc: '#f97316',        // Orange
   };
 
   // Calculate heights - main chart stays fixed, sub-panels add to total
@@ -600,7 +624,8 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
       </div>
 
       {/* Indicator toggles */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Indicators:</span>
         <IndicatorToggle label="SMA 20" active={showSMA20} onClick={() => setShowSMA20(!showSMA20)} color={COLORS.sma20} />
         <IndicatorToggle label="SMA 50" active={showSMA50} onClick={() => setShowSMA50(!showSMA50)} color={COLORS.sma50} />
         <IndicatorToggle label="SMA 200" active={showSMA200} onClick={() => setShowSMA200(!showSMA200)} color={COLORS.sma200} />
@@ -612,9 +637,18 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         <IndicatorToggle label="RSI" active={showRSI} onClick={() => setShowRSI(!showRSI)} color={COLORS.rsi} />
         <IndicatorToggle label="MACD" active={showMACD} onClick={() => setShowMACD(!showMACD)} color={COLORS.macd} />
         <IndicatorToggle label="ATR" active={showATR} onClick={() => setShowATR(!showATR)} color={COLORS.atr} />
-        <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 2px' }} />
-        <IndicatorToggle label="vs SPY" active={showComparison} onClick={() => setShowComparison(!showComparison)} color={COLORS.comparison} />
+      </div>
+
+      {/* Scale & Comparison toggles */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Scale:</span>
         <IndicatorToggle label="Log" active={logScale} onClick={() => setLogScale(!logScale)} />
+        <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 6px' }} />
+        <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Compare:</span>
+        <IndicatorToggle label="SPY" active={showSPY} onClick={() => setShowSPY(!showSPY)} color={COLORS.spy} />
+        <IndicatorToggle label="QQQ" active={showQQQ} onClick={() => setShowQQQ(!showQQQ)} color={COLORS.qqq} />
+        <IndicatorToggle label="Gold" active={showGold} onClick={() => setShowGold(!showGold)} color={COLORS.gold} />
+        <IndicatorToggle label="BTC" active={showBTC} onClick={() => setShowBTC(!showBTC)} color={COLORS.btc} />
       </div>
 
       {loading && (
@@ -826,11 +860,16 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
             </div>
           )}
 
-          {/* Comparison Panel (vs SPY) */}
-          {showComparison && comparisonData && (
+          {/* Comparison Panel */}
+          {showAnyComparison && (
             <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>
-                Performance vs SPY
+              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1, display: 'flex', gap: 8 }}>
+                <span>Relative Performance:</span>
+                <span style={{ color: chartColor }}>{symbol}</span>
+                {showSPY && <span style={{ color: COLORS.spy }}>SPY</span>}
+                {showQQQ && <span style={{ color: COLORS.qqq }}>QQQ</span>}
+                {showGold && <span style={{ color: COLORS.gold }}>Gold</span>}
+                {showBTC && <span style={{ color: COLORS.btc }}>BTC</span>}
               </div>
               <ResponsiveContainer width="100%" height={subChartHeight + 20}>
                 <LineChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
@@ -844,11 +883,17 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                       if (value === null || value === undefined) return ['-', name];
                       if (name === 'stockPctChange') return [`${value.toFixed(1)}%`, symbol];
                       if (name === 'spyPctChange') return [`${value.toFixed(1)}%`, 'SPY'];
+                      if (name === 'qqqPctChange') return [`${value.toFixed(1)}%`, 'QQQ'];
+                      if (name === 'goldPctChange') return [`${value.toFixed(1)}%`, 'Gold'];
+                      if (name === 'btcPctChange') return [`${value.toFixed(1)}%`, 'BTC'];
                       return [`${value.toFixed(1)}%`, name];
                     }}
                   />
-                  <Line type="monotone" dataKey="stockPctChange" stroke={chartColor} strokeWidth={1.5} dot={false} />
-                  <Line type="monotone" dataKey="spyPctChange" stroke={COLORS.comparison} strokeWidth={1.5} dot={false} connectNulls={false} />
+                  <Line type="monotone" dataKey="stockPctChange" stroke={chartColor} strokeWidth={2} dot={false} />
+                  {showSPY && <Line type="monotone" dataKey="spyPctChange" stroke={COLORS.spy} strokeWidth={1.5} dot={false} connectNulls={false} />}
+                  {showQQQ && <Line type="monotone" dataKey="qqqPctChange" stroke={COLORS.qqq} strokeWidth={1.5} dot={false} connectNulls={false} />}
+                  {showGold && <Line type="monotone" dataKey="goldPctChange" stroke={COLORS.gold} strokeWidth={1.5} dot={false} connectNulls={false} />}
+                  {showBTC && <Line type="monotone" dataKey="btcPctChange" stroke={COLORS.btc} strokeWidth={1.5} dot={false} connectNulls={false} />}
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -1044,11 +1089,16 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
             </div>
           )}
 
-          {/* Comparison Panel (vs SPY) */}
-          {showComparison && comparisonData && (
+          {/* Comparison Panel */}
+          {showAnyComparison && (
             <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>
-                Performance vs SPY
+              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1, display: 'flex', gap: 8 }}>
+                <span>Relative Performance:</span>
+                <span style={{ color: chartColor }}>{symbol}</span>
+                {showSPY && <span style={{ color: COLORS.spy }}>SPY</span>}
+                {showQQQ && <span style={{ color: COLORS.qqq }}>QQQ</span>}
+                {showGold && <span style={{ color: COLORS.gold }}>Gold</span>}
+                {showBTC && <span style={{ color: COLORS.btc }}>BTC</span>}
               </div>
               <ResponsiveContainer width="100%" height={subChartHeight + 20}>
                 <LineChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
@@ -1062,11 +1112,17 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                       if (value === null || value === undefined) return ['-', name];
                       if (name === 'stockPctChange') return [`${value.toFixed(1)}%`, symbol];
                       if (name === 'spyPctChange') return [`${value.toFixed(1)}%`, 'SPY'];
+                      if (name === 'qqqPctChange') return [`${value.toFixed(1)}%`, 'QQQ'];
+                      if (name === 'goldPctChange') return [`${value.toFixed(1)}%`, 'Gold'];
+                      if (name === 'btcPctChange') return [`${value.toFixed(1)}%`, 'BTC'];
                       return [`${value.toFixed(1)}%`, name];
                     }}
                   />
-                  <Line type="monotone" dataKey="stockPctChange" stroke={chartColor} strokeWidth={1.5} dot={false} />
-                  <Line type="monotone" dataKey="spyPctChange" stroke={COLORS.comparison} strokeWidth={1.5} dot={false} connectNulls={false} />
+                  <Line type="monotone" dataKey="stockPctChange" stroke={chartColor} strokeWidth={2} dot={false} />
+                  {showSPY && <Line type="monotone" dataKey="spyPctChange" stroke={COLORS.spy} strokeWidth={1.5} dot={false} connectNulls={false} />}
+                  {showQQQ && <Line type="monotone" dataKey="qqqPctChange" stroke={COLORS.qqq} strokeWidth={1.5} dot={false} connectNulls={false} />}
+                  {showGold && <Line type="monotone" dataKey="goldPctChange" stroke={COLORS.gold} strokeWidth={1.5} dot={false} connectNulls={false} />}
+                  {showBTC && <Line type="monotone" dataKey="btcPctChange" stroke={COLORS.btc} strokeWidth={1.5} dot={false} connectNulls={false} />}
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -1221,15 +1277,19 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               {/* Comparison */}
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.comparison, borderRadius: 1 }} />
-                  Performance vs SPY
+                  <span style={{ width: 12, height: 2, background: COLORS.spy, borderRadius: 1 }} />
+                  <span style={{ width: 12, height: 2, background: COLORS.qqq, borderRadius: 1 }} />
+                  <span style={{ width: 12, height: 2, background: COLORS.gold, borderRadius: 1 }} />
+                  <span style={{ width: 12, height: 2, background: COLORS.btc, borderRadius: 1 }} />
+                  Relative Performance Comparison
                 </div>
                 <div style={{ color: 'var(--text3)' }}>
-                  Relative performance comparison against S&P 500 (SPY) benchmark. Shows percentage change from period start.
-                  <strong> Outperforming SPY</strong> (stock line above): generating alpha, relative strength positive.
-                  <strong> Underperforming SPY</strong> (stock line below): lagging the market, consider if thesis still intact.
-                  <strong> Correlation analysis</strong>: high correlation = moves with market; low correlation = idiosyncratic drivers.
-                  Useful for identifying sector rotation, market beta, and stock-specific catalysts vs. macro moves.
+                  Compare stock performance against major benchmarks. Shows percentage change from period start.
+                  <strong> SPY</strong> (S&P 500): broad market benchmark — outperformance = generating alpha.
+                  <strong> QQQ</strong> (NASDAQ-100): tech-heavy benchmark — useful for growth stocks comparison.
+                  <strong> Gold</strong> (GLD): safe-haven asset — inverse correlation indicates risk-on behavior.
+                  <strong> BTC</strong> (Bitcoin): crypto benchmark — useful for crypto-correlated equities like BMNR.
+                  Overlaying multiple comparisons reveals correlation patterns and relative strength across asset classes.
                 </div>
               </div>
 
