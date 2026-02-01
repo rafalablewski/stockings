@@ -1268,9 +1268,8 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       />
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
-    <h3 className="section-head">Stock Chart</h3>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
+    <h3 className="section-head">Stock Chart</h3>
     <StockChart symbol="ASTS" />
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
