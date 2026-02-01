@@ -4488,6 +4488,28 @@ function CRCLModel() {
                           </div>
                         </div>
 
+                        {/* Technical Analyst Perspective */}
+                        <div style={{ background: 'rgba(52,211,153,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(52,211,153,0.2)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
+                            <span style={{ color: 'var(--text3)', fontSize: 12 }}>Chart Patterns & Price Action</span>
+                          </div>
+                          <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
+                            <p style={{ }}>
+                              <strong>IPO Base Formation:</strong> Recent IPO establishing price discovery range. Watch for completion of IPO base — typically 3-6 months of consolidation before directional move. Initial support at IPO price level ($31). Declining volume on pullbacks is constructive accumulation pattern.
+                            </p>
+                            <p style={{ }}>
+                              <strong>Key Levels:</strong> VWAP from IPO serving as key pivot level. Bollinger Bands narrowing suggests volatility compression before expansion. RSI neutral at 50 provides no directional bias yet — wait for confirmation. Watch for breakout above $45 with volume as momentum entry signal.
+                            </p>
+                            <p style={{ }}>
+                              <strong>Lock-up Dynamics:</strong> December 2025 lock-up expiry creates potential supply overhang. Monitor volume patterns carefully around that date. Historical IPO lock-up expirations show initial weakness followed by recovery if fundamentals intact. Use weakness as accumulation opportunity, not exit signal.
+                            </p>
+                            <p style={{ padding: 10, background: 'rgba(52,211,153,0.1)', borderRadius: 6, borderLeft: '3px solid #34d399' }}>
+                              <strong style={{ color: '#34d399' }}>📊 Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
+                            </p>
+                          </div>
+                        </div>
+
                         {/* Part 2: Key Strategic Questions */}
                         <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Key Strategic Questions</h4>
 
