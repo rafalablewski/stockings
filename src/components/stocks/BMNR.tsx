@@ -1361,23 +1361,21 @@ const ModelTab = ({
           </div>
         </div>
 
-        {/* ETH GROWTH RATE - Only visible when growth mode selected */}
-        {ethInputMode === 'growth' && (
-          <>
-            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-growth</div>
-            <h3 style={{ color: 'var(--cyan)' }}>ETH Growth Projection</h3>
-            <div className="g2">
-              <BMNRParameterCard
-                title="ETH Annual Growth Rate (%)"
-                explanation={`Expected annual ETH price appreciation over ${terminalYears} years. Terminal: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})} from current $${ethPrice.toLocaleString()}. Historical: +90% (2024), -67% (2022).`}
-                options={[-30, -5, 10, 20, 35, 60]}
-                value={ethGrowthRate}
-                onChange={v => { setEthGrowthRate(v); setSelectedScenario('custom'); }}
-                format="%"
-              />
-            </div>
-          </>
-        )}
+        {/* ETH GROWTH RATE - Always visible, disabled when using parameters */}
+        <div style={{ opacity: ethInputMode === 'current' ? 0.4 : 1, pointerEvents: ethInputMode === 'current' ? 'none' : 'auto' }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-growth</div>
+          <h3 style={{ color: 'var(--cyan)' }}>ETH Growth Projection</h3>
+          <div className="g2">
+            <BMNRParameterCard
+              title="ETH Annual Growth Rate (%)"
+              explanation={`Expected annual ETH price appreciation over ${terminalYears} years. Terminal: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})} from current $${ethPrice.toLocaleString()}. Historical: +90% (2024), -67% (2022).`}
+              options={[-30, -5, 10, 20, 35, 60]}
+              value={ethGrowthRate}
+              onChange={v => { setEthGrowthRate(v); setSelectedScenario('custom'); }}
+              format="%"
+            />
+          </div>
+        </div>
 
         {/* Current mode summary */}
         <div style={{
@@ -1458,20 +1456,6 @@ const ModelTab = ({
             format="%"
             inverse
           />
-        </div>
-
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#current-position</div>
-        <div className="card">
-          <div className="card-title">Current Position</div>
-          <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
-            Live data from BMNR holdings. Used as starting point for projections.
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, fontSize: 12 }}>
-            <div><span style={{ color: 'var(--text3)' }}>ETH Holdings:</span> <strong>{currentETH.toLocaleString()}</strong></div>
-            <div><span style={{ color: 'var(--text3)' }}>ETH Price:</span> <strong>${ethPrice.toLocaleString()}</strong></div>
-            <div><span style={{ color: 'var(--text3)' }}>Current NAV:</span> <strong>${currentNAV.toFixed(0)}M</strong></div>
-            <div><span style={{ color: 'var(--text3)' }}>NAV/Share:</span> <strong>${navPerShare.toFixed(2)}</strong></div>
-          </div>
         </div>
 
         {/* DCF VALUATION OUTPUT */}
