@@ -340,6 +340,10 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   // Scale toggle
   const [logScale, setLogScale] = useState(false);
 
+  // Refresh trigger
+  const [refreshKey, setRefreshKey] = useState(0);
+  const handleRefresh = () => setRefreshKey(k => k + 1);
+
   // Comparison toggles
   const [showSPY, setShowSPY] = useState(false);
   const [showQQQ, setShowQQQ] = useState(false);
@@ -376,7 +380,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     };
 
     fetchData();
-  }, [symbol, range]);
+  }, [symbol, range, refreshKey]);
 
   // Fetch comparison data when enabled
   useEffect(() => {
@@ -452,15 +456,16 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const macd = useMemo(() => calculateMACD(chartData), [chartData]);
   const atr = useMemo(() => calculateATR(chartData, 14), [chartData]);
 
-  // Calculate 52-week high/low (use available data or last 252 trading days)
-  const { high52Week, low52Week } = useMemo(() => {
-    if (chartData.length === 0) return { high52Week: null, low52Week: null };
-    const lookback = Math.min(chartData.length, 252); // ~252 trading days in a year
-    const relevantData = chartData.slice(-lookback);
-    const high = Math.max(...relevantData.map(d => d.high));
-    const low = Math.min(...relevantData.map(d => d.low));
-    return { high52Week: high, low52Week: low };
+  // Calculate high/low for current range
+  const { rangeHigh, rangeLow } = useMemo(() => {
+    if (chartData.length === 0) return { rangeHigh: null, rangeLow: null };
+    const high = Math.max(...chartData.map(d => d.high));
+    const low = Math.min(...chartData.map(d => d.low));
+    return { rangeHigh: high, rangeLow: low };
   }, [chartData]);
+
+  // Get label for current range
+  const rangeLabel = RANGES.find(r => r.value === range)?.label || range;
 
   // Calculate comparison data (normalize to percentage change)
   const normalizeComparison = (compData: ChartDataPoint[] | null): Map<number, number> | null => {
@@ -550,8 +555,8 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     macdHistogramUp: '#34d399',
     macdHistogramDown: '#f87171',
     atr: '#14b8a6',      // Teal
-    high52Week: '#22c55e', // Green
-    low52Week: '#ef4444',  // Red
+    rangeHigh: '#22c55e', // Green
+    rangeLow: '#ef4444',  // Red
     spy: '#a855f7',        // Purple
     qqq: '#06b6d4',        // Cyan
     gold: '#eab308',       // Yellow/Gold
@@ -647,6 +652,26 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                 {r.label}
               </button>
             ))}
+            <button
+              onClick={handleRefresh}
+              disabled={loading}
+              style={{
+                padding: '4px 8px',
+                fontSize: 11,
+                fontWeight: 500,
+                borderRadius: 4,
+                border: 'none',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                background: 'var(--surface2)',
+                color: 'var(--text3)',
+                transition: 'all 0.15s',
+                opacity: loading ? 0.5 : 1,
+                marginLeft: 4,
+              }}
+              title="Refresh chart data"
+            >
+              ↻
+            </button>
           </div>
         </div>
       </div>
@@ -1141,8 +1166,8 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         </>
       )}
 
-      {/* 52-Week Range */}
-      {!loading && !error && chartData.length > 0 && high52Week && low52Week && (
+      {/* Range High/Low */}
+      {!loading && !error && chartData.length > 0 && rangeHigh && rangeLow && (
         <div style={{
           marginTop: 12,
           padding: '10px 14px',
@@ -1150,9 +1175,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
           borderRadius: 8,
           fontSize: 11,
         }}>
-          <div style={{ color: 'var(--text3)', marginBottom: 6, fontWeight: 500 }}>52-Week Range</div>
+          <div style={{ color: 'var(--text3)', marginBottom: 6, fontWeight: 500 }}>{rangeLabel} Range</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ color: COLORS.low52Week, fontWeight: 600 }}>${low52Week.toFixed(2)}</span>
+            <span style={{ color: COLORS.rangeLow, fontWeight: 600 }}>${rangeLow.toFixed(2)}</span>
             <div style={{
               flex: 1,
               height: 4,
@@ -1162,7 +1187,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
             }}>
               <div style={{
                 position: 'absolute',
-                left: `${((lastPrice - low52Week) / (high52Week - low52Week)) * 100}%`,
+                left: `${((lastPrice - rangeLow) / (rangeHigh - rangeLow)) * 100}%`,
                 top: '50%',
                 transform: 'translate(-50%, -50%)',
                 width: 8,
@@ -1172,7 +1197,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                 border: '2px solid var(--surface)',
               }} />
             </div>
-            <span style={{ color: COLORS.high52Week, fontWeight: 600 }}>${high52Week.toFixed(2)}</span>
+            <span style={{ color: COLORS.rangeHigh, fontWeight: 600 }}>${rangeHigh.toFixed(2)}</span>
           </div>
         </div>
       )}
