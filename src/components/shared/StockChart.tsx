@@ -272,7 +272,7 @@ const IndicatorToggle = ({
   </button>
 );
 
-export default function StockChart({ symbol, height = 220 }: StockChartProps) {
+export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const [data, setData] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -386,10 +386,9 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
     macdHistogramDown: '#f87171',
   };
 
-  // Calculate heights based on active indicators
-  const subChartHeight = 60;
-  const activeSubCharts = [showVolume, showRSI, showMACD].filter(Boolean).length;
-  const mainChartHeight = height - (activeSubCharts * subChartHeight);
+  // Calculate heights - main chart stays fixed, sub-panels add to total
+  const mainChartHeight = height;
+  const subChartHeight = 70;
 
   // Get latest RSI value for display
   const latestRSI = rsi[rsi.length - 1];
