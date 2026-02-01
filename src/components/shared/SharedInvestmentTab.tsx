@@ -460,7 +460,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       </div>
       <CollapsibleSection
         id="perspectives"
-        title="Three Perspectives"
+        title="Four Perspectives"
         sources={['PR', 'SEC']}
         isOpen={investmentSections.has('perspectives')}
         onToggle={() => toggleSection('perspectives')}

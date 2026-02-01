@@ -4490,6 +4490,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         ecosystemView: 'Ecosystem maturation reduces tail risk. Beast Industries investment ($200M, CLOSED) expands reach to 450M+ YouTube subscribers (GenZ/Millennials) with DeFi platform integration planned. Tom Lee\'s 2026 thesis: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication/provenance demand, younger generation adoption. The GENIUS Act is transformational.',
         recommendation: '5-10% of crypto allocation. Multi-year hold.',
       },
+      technicalAnalyst: {
+        title: 'Technical Analyst',
+        assessment: 'BULLISH — ACCUMULATE',
+        color: 'var(--sky)',
+        summary: 'Price structure shows higher highs and higher lows since ETH treasury pivot. RSI holding above 50 on weekly timeframe indicates sustained momentum. MACD histogram expanding on daily chart. Key support at 20-day SMA has held on pullbacks. Volume profile shows accumulation patterns with higher volume on up days vs down days.',
+        ecosystemView: 'BMNR exhibits 0.85-0.95 correlation with ETH on 30-day rolling basis — trade it as leveraged ETH proxy. NAV premium/discount cycles provide tactical entry/exit signals: accumulate below 1.0x NAV, trim above 1.5x NAV. Watch ETH $3,500 support and $4,200 resistance for directional cues. Bollinger Band squeeze on weekly suggests imminent volatility expansion.',
+        recommendation: 'Buy pullbacks to 20-day SMA. Stop loss at 50-day SMA break. Target: previous swing high + 15%.',
+      },
     },
     
     // Position Sizing (CRCL-style)

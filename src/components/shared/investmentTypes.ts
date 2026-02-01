@@ -112,6 +112,7 @@ export interface InvestmentCurrent {
     cfa: Perspective;
     hedgeFund: Perspective;
     cio: Perspective;
+    technicalAnalyst: Perspective;
   };
   positionSizing: {
     aggressive: PositionSize;

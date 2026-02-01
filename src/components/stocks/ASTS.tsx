@@ -9971,6 +9971,14 @@ const InvestmentTab = () => {
         ecosystemView: 'Telecom infrastructure is a multi-decade investment theme. ASTS addresses fundamental gap in global coverage. Strategic investors (AT&T, Verizon, Vodafone, Google) validate market opportunity. Defense applications provide revenue diversification and strategic importance.',
         recommendation: '3-5% max portfolio weight. Hold for 2-3 year thesis.',
       },
+      technicalAnalyst: {
+        title: 'Technical Analyst',
+        assessment: 'BULLISH — BREAKOUT WATCH',
+        color: 'var(--sky)',
+        summary: 'Classic catalyst-driven momentum stock. Price gaps on launch news create defined support/resistance zones. Currently consolidating above 50-day SMA with declining volatility — textbook bull flag formation. RSI reset from overbought provides fresh runway. Volume accumulation patterns evident on weekly timeframe.',
+        ecosystemView: 'ASTS trades on sentiment cycles tied to satellite launch calendar. Key technical levels: $25-30 support zone (prior breakout), $40-45 resistance (prior highs). MACD bullish crossover on weekly chart. Relative strength vs NASDAQ positive. Watch for volume surge above 20M shares as breakout confirmation signal.',
+        recommendation: 'Accumulate on pullbacks to 50-day SMA. Add on breakout above $45 with volume. Stop loss: close below $25.',
+      },
     },
     
     // Position Sizing

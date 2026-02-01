@@ -2975,6 +2975,14 @@ function CRCLModel() {
         ecosystemView: 'Digital dollar infrastructure is a generational investment theme. Circle is the most investable pure-play. BlackRock/Fidelity ownership validates institutional acceptability.',
         recommendation: '3-5% of alternatives allocation. Multi-year hold.',
       },
+      technicalAnalyst: {
+        title: 'Technical Analyst',
+        assessment: 'NEUTRAL — BASE BUILDING',
+        color: 'var(--gold)',
+        summary: 'Recent IPO establishing price discovery range. Watch for completion of IPO base formation — typically 3-6 months of consolidation before directional move. Initial support at IPO price level ($31). Declining volume on pullbacks is constructive. VWAP from IPO serving as key pivot level.',
+        ecosystemView: 'CRCL showing relative strength vs fintech peers and crypto proxies. Lock-up expiry creates potential supply overhang — monitor volume carefully around that date. Bollinger Bands narrowing suggests volatility compression before expansion. RSI neutral at 50 level provides no directional bias yet.',
+        recommendation: 'Accumulate on successful test of IPO base. Wait for breakout above $45 with volume for momentum entry. Stop loss: close below $28.',
+      },
     },
 
     // Position Sizing
