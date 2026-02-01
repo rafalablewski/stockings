@@ -1932,194 +1932,369 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
             background: 'var(--surface2)',
             borderRadius: 8,
             fontSize: 11,
-            lineHeight: 1.6,
+            lineHeight: 1.7,
           }}>
-            <div style={{ display: 'grid', gap: 16 }}>
+            <div style={{ display: 'grid', gap: 20 }}>
 
               {/* INDICATORS SECTION */}
               <div>
-                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 8, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 4 }}>
+                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 12, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 6 }}>
                   Indicators
                 </div>
-                <div style={{ display: 'grid', gap: 10 }}>
+                <div style={{ display: 'grid', gap: 14 }}>
+
                   {/* SMA 20/50/200 */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.sma20, borderRadius: 1 }} />
-                      <span style={{ width: 10, height: 2, background: COLORS.sma50, borderRadius: 1 }} />
-                      <span style={{ width: 10, height: 2, background: COLORS.sma200, borderRadius: 1 }} />
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.sma20, borderRadius: 1 }} />
+                      <span style={{ width: 12, height: 2, background: COLORS.sma50, borderRadius: 1 }} />
+                      <span style={{ width: 12, height: 2, background: COLORS.sma200, borderRadius: 1 }} />
                       SMA 20 / SMA 50 / SMA 200
                     </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Simple Moving Averages for short, medium, and long-term trends. <em>Golden Cross</em> (50 above 200) = bullish; <em>Death Cross</em> = bearish.
+                      <strong>Simple Moving Averages</strong> smooth price action to reveal underlying trend direction. The 20-day SMA captures short-term momentum and is favored by swing traders for mean-reversion setups. The 50-day SMA serves as the institutional benchmark for intermediate-term trend—mutual funds and pension managers commonly use this as a tactical allocation trigger. The 200-day SMA defines the secular trend: price consistently above indicates a bull market regime, below signals bear market conditions.
+                      <br /><br />
+                      <strong>Key signals:</strong> The <em>Golden Cross</em> (50-day crossing above 200-day) historically precedes sustained rallies and triggers systematic buying from trend-following CTAs. The <em>Death Cross</em> (50 below 200) signals regime change to bearish and activates risk-off protocols. <strong>Price relationship to SMAs</strong> determines position bias: above all three = strong uptrend, increasing position; below all three = downtrend, reduce exposure or short.
+                      <br /><br />
+                      <strong>Institutional usage:</strong> Many quant funds use SMA crossovers as one factor in multi-signal models. The slope of the 200-day SMA (rising vs. falling) is itself a trend filter—flat or declining 200-day suggests range-bound or bearish environment where momentum strategies underperform.
                     </div>
                   </div>
+
                   {/* Bollinger */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.bbUpper, borderRadius: 1 }} />
-                      Bollinger
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.bbUpper, borderRadius: 1 }} />
+                      Bollinger Bands
                     </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Bollinger Bands (20-period, 2σ). Band squeeze = low volatility, breakout imminent. Price at upper band = overbought; lower = oversold.
+                      <strong>Volatility-based envelope</strong> consisting of 20-period SMA (middle band) with upper and lower bands at ±2 standard deviations. Bands dynamically expand during high volatility and contract during consolidation.
+                      <br /><br />
+                      <strong>The Squeeze:</strong> When bands narrow significantly (low volatility), it signals accumulation of energy before a breakout. This is the highest-probability setup—breakout direction is determined by fundamentals or price action, but the move's magnitude is often proportional to the squeeze duration. Volatility compression periods of 20+ days often precede major moves.
+                      <br /><br />
+                      <strong>Band touches:</strong> Price touching the upper band isn't automatically "overbought"—in strong uptrends, price can "walk the band" for extended periods. Conversely, oversold bounces from lower band are only reliable in range-bound markets. <strong>Professional interpretation:</strong> Use bands for volatility regime classification, not mechanical buy/sell signals. Combine with RSI divergence for higher-probability reversals.
+                      <br /><br />
+                      <strong>Width analysis:</strong> Bollinger Band Width (BBW) below historical 20th percentile = extreme compression, breakout imminent. Width expansion from squeeze confirms breakout validity.
                     </div>
                   </div>
+
                   {/* VWAP */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.vwap, borderRadius: 1 }} />
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.vwap, borderRadius: 1 }} />
                       VWAP
                     </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Volume Weighted Average Price. Institutional benchmark. Above VWAP = bullish, below = bearish. Key for intraday trading.
+                      <strong>Volume Weighted Average Price</strong> represents the true average price paid by all market participants, weighted by volume. This is the benchmark institutional traders use to evaluate execution quality—buying below VWAP or selling above indicates favorable fills.
+                      <br /><br />
+                      <strong>Institutional mechanics:</strong> Large orders are often executed via VWAP algorithms that slice orders throughout the day to minimize market impact. This creates natural support/resistance at VWAP as institutions defend their average entry prices. Prop desks and market makers use VWAP deviation for mean-reversion strategies.
+                      <br /><br />
+                      <strong>Trading applications:</strong> Price above VWAP = buyers control the tape, institutions accumulated at favorable prices, bullish bias. Price below VWAP = sellers dominant, distribution underway, bearish bias. The first test of VWAP after a gap often determines day's direction. <strong>Reclaim/rejection</strong> of VWAP after extended deviation is high-probability entry.
+                      <br /><br />
+                      <strong>Timeframe note:</strong> VWAP resets daily in traditional usage. On this chart, VWAP calculates from the start of the selected period—most relevant for 1D-1M timeframes, loses significance on longer periods.
                     </div>
                   </div>
+
                   {/* Volume */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>Volume</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
+                      Volume
+                    </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Shows trading activity. High volume confirms moves; low volume breakouts often fail. Spikes indicate institutional activity.
+                      <strong>Volume confirms price action</strong>—it reveals the conviction behind moves and distinguishes sustainable trends from false breakouts. Richard Wyckoff's century-old principle remains valid: "Volume is the fuel that drives the market."
+                      <br /><br />
+                      <strong>Volume-price relationships:</strong>
+                      <br />• <em>Rising price + Rising volume</em> = Strong demand, trend likely to continue. Institutions accumulating.
+                      <br />• <em>Rising price + Declining volume</em> = Weakening momentum, bearish divergence. Smart money distribution likely.
+                      <br />• <em>Falling price + Rising volume</em> = Panic selling or institutional distribution. Capitulation may signal bottom if extreme.
+                      <br />• <em>Falling price + Declining volume</em> = Selling exhaustion, potential bottoming process.
+                      <br /><br />
+                      <strong>Breakout validation:</strong> Genuine breakouts occur on volume 150%+ above 20-day average. Low-volume breakouts have 60%+ failure rate. Volume climax (extreme spike) often marks exhaustion points—buying climax at tops, selling climax at bottoms.
+                      <br /><br />
+                      <strong>Institutional footprints:</strong> Unusual volume (3x+ average) without news indicates informed trading—block trades, dark pool activity, or pre-announcement positioning. Track volume patterns around key levels for institutional intent.
                     </div>
                   </div>
+
                   {/* RSI */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.rsi, borderRadius: 1 }} />
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.rsi, borderRadius: 1 }} />
                       RSI
                     </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Relative Strength Index (14-period). Above 70 = overbought, below 30 = oversold. Divergences predict reversals.
+                      <strong>Relative Strength Index</strong> (14-period) measures momentum as a ratio of average gains to average losses, normalized to 0-100 scale. Created by J. Welles Wilder, it remains one of the most widely-used oscillators among professional traders.
+                      <br /><br />
+                      <strong>Level interpretation:</strong>
+                      <br />• <em>Above 70 (Overbought)</em>: Not a sell signal—strong trends can remain overbought for weeks. It means momentum is stretched; look for divergence or failure swings for reversal signals.
+                      <br />• <em>Below 30 (Oversold)</em>: Not a buy signal—stocks can stay oversold in downtrends. Indicates selling pressure exhaustion; wait for bullish divergence or reclaim of 30 level.
+                      <br />• <em>40-60 Range</em>: Neutral zone. Break above 60 confirms bullish momentum; break below 40 confirms bearish.
+                      <br /><br />
+                      <strong>Divergences (highest-probability signals):</strong>
+                      <br />• <em>Bearish divergence</em>: Price makes higher high, RSI makes lower high = momentum weakening despite new price highs. Precedes 70%+ of major tops.
+                      <br />• <em>Bullish divergence</em>: Price makes lower low, RSI makes higher low = selling exhaustion. Precedes major reversals.
+                      <br /><br />
+                      <strong>Failure swings:</strong> RSI crossing above 70, pulling back (not below 50), then making lower high below 70 = failure swing top. Opposite for bottoms. These are Wilder's original, often-overlooked signals.
                     </div>
                   </div>
+
                   {/* MACD */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.macd, borderRadius: 1 }} />
-                      <span style={{ width: 10, height: 2, background: COLORS.macdSignal, borderRadius: 1 }} />
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.macd, borderRadius: 1 }} />
+                      <span style={{ width: 12, height: 2, background: COLORS.macdSignal, borderRadius: 1 }} />
                       MACD
                     </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Moving Average Convergence Divergence. MACD crossing above signal = bullish, below = bearish. Histogram shows momentum strength.
+                      <strong>Moving Average Convergence Divergence</strong> (12, 26, 9) is a trend-following momentum indicator that shows the relationship between two EMAs. MACD Line = 12-day EMA − 26-day EMA; Signal Line = 9-day EMA of MACD; Histogram = MACD − Signal.
+                      <br /><br />
+                      <strong>Signal hierarchy (by reliability):</strong>
+                      <br />1. <em>Zero-line crossover</em>: MACD crossing above zero = 12 EMA crossed above 26 EMA, confirming bullish trend change. Most significant but slowest signal.
+                      <br />2. <em>Signal line crossover</em>: MACD crossing above signal line = bullish momentum shift. Below = bearish. Faster but more prone to whipsaws.
+                      <br />3. <em>Histogram direction</em>: Rising histogram = accelerating momentum. Falling = decelerating. Fastest signal, best for timing entries in direction of larger trend.
+                      <br /><br />
+                      <strong>Divergence analysis:</strong> MACD divergences are highly reliable for major reversals. Bullish divergence (price lower lows, MACD higher lows) at oversold RSI = high-probability long entry. Multiple timeframe divergence (daily + weekly) increases conviction significantly.
+                      <br /><br />
+                      <strong>Histogram patterns:</strong> Histogram peak/trough often precedes signal line cross by 1-3 bars—early warning for position adjustment. Histogram "saucer" pattern (gradual curve vs. sharp spike) indicates sustainable move vs. exhaustion.
                     </div>
                   </div>
+
                   {/* ATR */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.atr, borderRadius: 1 }} />
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.atr, borderRadius: 1 }} />
                       ATR
                     </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Average True Range (14-period). Measures volatility. Use for stop-loss placement (2× ATR) and position sizing.
+                      <strong>Average True Range</strong> (14-period) measures volatility by averaging the "true range" (greatest of: current high-low, |high-previous close|, |low-previous close|). Unlike standard deviation, ATR accounts for gaps.
+                      <br /><br />
+                      <strong>Position sizing (Kelly-adjacent):</strong> ATR enables volatility-normalized position sizing. Formula: Position Size = (Account Risk %) / (ATR × Multiplier). Example: 1% account risk, $2 ATR, 2× multiplier = risk $4 per share, so position = (0.01 × Account) / $4. This equalizes risk across volatile and stable positions.
+                      <br /><br />
+                      <strong>Stop-loss placement:</strong> Standard practice: Initial stop = Entry ± (2 × ATR). This accounts for normal price noise while protecting against adverse moves. Trailing stops often use 1.5-3× ATR from swing highs/lows. Wider stops in higher-volatility regimes.
+                      <br /><br />
+                      <strong>Volatility regime analysis:</strong>
+                      <br />• <em>ATR expansion</em>: Increasing volatility—trend acceleration or distribution/accumulation. Breakouts during ATR expansion are more reliable.
+                      <br />• <em>ATR contraction</em>: Decreasing volatility—consolidation, often precedes explosive moves. Similar signal to Bollinger squeeze.
+                      <br />• <em>ATR percentile ranking</em>: Current ATR vs. 252-day range indicates regime. Below 20th percentile = extreme compression, above 80th = extreme volatility.
                     </div>
                   </div>
+
                 </div>
               </div>
 
               {/* SCALE SECTION */}
               <div>
-                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 8, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 4 }}>
+                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 12, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 6 }}>
                   Scale
                 </div>
                 <div>
-                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>Log</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Log Scale</div>
                   <div style={{ color: 'var(--text3)' }}>
-                    Logarithmic Y-axis. Shows percentage changes equally (100% gain looks same at any price level). Essential for long-term charts.
+                    <strong>Logarithmic Y-axis</strong> displays percentage changes equally regardless of price level. This is essential for proper analysis of long-term charts and high-growth stocks.
+                    <br /><br />
+                    <strong>Why it matters:</strong> On linear scale, a move from $10→$20 (+100%) appears the same size as $100→$110 (+10%). This distorts perception of returns and makes early-stage moves look insignificant. On log scale, equal percentage moves appear equal—$10→$20 looks the same as $100→$200.
+                    <br /><br />
+                    <strong>Professional applications:</strong>
+                    <br />• <em>Trend channel analysis</em>: Log-scale trendlines maintain consistent slope regardless of price appreciation. A stock that compounds at 20%/year shows a straight trendline on log scale.
+                    <br />• <em>Long-term comparison</em>: Comparing performance of assets at different price levels (penny stocks vs. AMZN) is only valid on log scale.
+                    <br />• <em>Exponential growth detection</em>: Parabolic moves appear as straight lines on log scale. Deviation from log-linear trend signals acceleration/exhaustion.
+                    <br /><br />
+                    <strong>When to use linear:</strong> Short-term (1D-1W) intraday analysis where absolute dollar moves matter for P&L calculation. Options traders often prefer linear for strike price visualization.
                   </div>
                 </div>
               </div>
 
               {/* COMPARE SECTION */}
               <div>
-                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 8, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 4 }}>
+                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 12, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 6 }}>
                   Compare
                 </div>
-                <div style={{ display: 'grid', gap: 10 }}>
-                  <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.spy, borderRadius: 1 }} />
-                      vs. SPY
-                    </div>
-                    <div style={{ color: 'var(--text3)' }}>S&P 500 ETF. Broad market benchmark — outperformance = generating alpha.</div>
+                <div style={{ display: 'grid', gap: 14 }}>
+                  <div style={{ color: 'var(--text3)', marginBottom: 4 }}>
+                    <strong>Relative performance analysis</strong> overlays benchmark returns (normalized to 0% at period start) against the stock. This reveals alpha generation, correlation patterns, and relative strength regimes. Outperformance vs. relevant benchmark is the fundamental measure of active management value.
                   </div>
+
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.qqq, borderRadius: 1 }} />
-                      vs. QQQ
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.spy, borderRadius: 1 }} />
+                      vs. SPY (S&P 500)
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>NASDAQ-100 ETF. Tech-heavy benchmark for growth stock comparison.</div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      The definitive benchmark for U.S. equities and most hedge fund performance reporting. Consistent outperformance indicates genuine alpha; underperformance suggests negative stock selection or sector headwinds.
+                      <br /><br />
+                      <strong>Interpretation:</strong> Stock rising while SPY falling = relative strength, potential defensive play or idiosyncratic catalyst. Both falling but stock less = relative outperformance. Calculate rolling alpha (excess return) and information ratio for quantitative assessment.
+                    </div>
                   </div>
+
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.gold, borderRadius: 1 }} />
-                      vs. Gold
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.qqq, borderRadius: 1 }} />
+                      vs. QQQ (NASDAQ-100)
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>Gold ETF (GLD). Safe-haven asset — inverse correlation indicates risk-on behavior.</div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Tech-heavy, growth-oriented benchmark. Essential comparison for growth stocks, SaaS, and technology names. QQQ has higher beta than SPY—underperformance during rallies but outperformance in selloffs may indicate defensive characteristics.
+                      <br /><br />
+                      <strong>Sector rotation signal:</strong> When a tech stock underperforms QQQ while outperforming SPY, it suggests sector rotation out of growth. Monitor for regime change signals.
+                    </div>
                   </div>
+
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.btc, borderRadius: 1 }} />
-                      vs. BTC
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.gold, borderRadius: 1 }} />
+                      vs. Gold (GLD)
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>Bitcoin. Crypto benchmark — useful for crypto-correlated equities.</div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Traditional safe-haven and inflation hedge. Gold typically has negative or low correlation to equities. Strong positive correlation with gold may indicate the stock is perceived as a defensive asset or has commodity exposure.
+                      <br /><br />
+                      <strong>Risk regime indicator:</strong> When stock correlates inversely with gold during stress, it's a pure risk asset. When both rise together, possible inflation trade or flight-to-quality in the stock.
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.btc, borderRadius: 1 }} />
+                      vs. BTC (Bitcoin)
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Digital asset benchmark and crypto market proxy. Highly relevant for crypto-adjacent equities (miners, treasury companies, exchanges) and increasingly for high-beta tech names that correlate with risk appetite.
+                      <br /><br />
+                      <strong>Beta to BTC:</strong> For crypto treasury companies, the key metric is leveraged vs. direct BTC exposure. Underperformance during BTC rallies indicates NAV discount or operational issues; outperformance suggests premium valuation or yield advantage.
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* PRO SECTION */}
               <div>
-                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 8, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 4 }}>
-                  Pro (Professional Analysis)
+                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 12, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 6 }}>
+                  Pro (Professional Analysis Tools)
                 </div>
-                <div style={{ display: 'grid', gap: 10 }}>
+                <div style={{ display: 'grid', gap: 14 }}>
+
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.fibonacci, borderRadius: 1 }} />
-                      Fib
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.fibonacci, borderRadius: 1 }} />
+                      Fibonacci Retracements
                     </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Fibonacci retracement levels (23.6%, 38.2%, 50%, 61.8%, 78.6%). Key psychological levels where price often reverses. The 61.8% (golden ratio) is most significant.
+                      <strong>Mathematical price levels</strong> derived from Fibonacci sequence ratios (23.6%, 38.2%, 50%, 61.8%, 78.6%). These levels represent potential support/resistance zones where retracements often pause or reverse.
+                      <br /><br />
+                      <strong>Level significance:</strong>
+                      <br />• <em>38.2%</em>: Shallow retracement—strong trend, buyers eager to accumulate. First line of defense.
+                      <br />• <em>50%</em>: Psychological half-way point. Not a true Fibonacci ratio but widely watched.
+                      <br />• <em>61.8%</em>: The "golden ratio"—most significant level. Deep retracement that often marks final support before trend resumption. Failure here often leads to full retracement.
+                      <br />• <em>78.6%</em>: Last-chance support. Breach typically signals trend reversal rather than retracement.
+                      <br /><br />
+                      <strong>Confluence trading:</strong> Fibonacci levels gain significance when they align with other technical levels (horizontal support/resistance, moving averages, trendlines). Multiple-factor confluence at a level increases probability of reaction.
+                      <br /><br />
+                      <strong>Extensions:</strong> Beyond 100%, Fibonacci extensions (127.2%, 161.8%, 261.8%) project potential profit targets for trend continuation. The 161.8% extension is particularly significant for wave analysis.
                     </div>
                   </div>
+
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.vwapBand1, borderRadius: 1 }} />
-                      VWAP±σ
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.vwapBand1, borderRadius: 1 }} />
+                      VWAP Standard Deviation Bands
                     </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      VWAP with standard deviation bands (1σ, 2σ, 3σ). Statistical price zones. 68% of price action within 1σ, 95% within 2σ, 99% within 3σ.
+                      <strong>Statistical price zones</strong> showing 1σ, 2σ, and 3σ deviations from VWAP. Based on normal distribution properties, these bands define probability zones for price reversion.
+                      <br /><br />
+                      <strong>Statistical interpretation:</strong>
+                      <br />• <em>±1σ band</em>: Contains ~68% of price action. Touches are common; mean-reversion trades have moderate probability.
+                      <br />• <em>±2σ band</em>: Contains ~95% of price action. Touches are significant—extended deviation indicating unusual buying/selling pressure.
+                      <br />• <em>±3σ band</em>: Contains ~99.7% of price action. Touches are rare, extreme events. High-probability mean-reversion setups but require catalyst confirmation (not just statistical).
+                      <br /><br />
+                      <strong>Institutional application:</strong> Prop desks use VWAP bands for intraday mean-reversion strategies. Entry at 2σ with target at VWAP, stop at 3σ provides defined risk/reward. More effective in range-bound markets; trending markets can exceed 2σ for extended periods.
+                      <br /><br />
+                      <strong>Trend filter:</strong> Consistent closes above +1σ = strong uptrend. Closes below -1σ = strong downtrend. Use bands with trend direction, not against it.
                     </div>
                   </div>
+
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.support, borderRadius: 1 }} />
-                      <span style={{ width: 10, height: 2, background: COLORS.resistance, borderRadius: 1 }} />
-                      S/R
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.support, borderRadius: 1 }} />
+                      <span style={{ width: 12, height: 2, background: COLORS.resistance, borderRadius: 1 }} />
+                      Support / Resistance (S/R)
                     </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Auto-detected support (green) and resistance (red) levels. Key price zones where buying/selling pressure historically emerged. S1/S2/S3 and R1/R2/R3.
+                      <strong>Auto-detected price levels</strong> where historical buying (support) or selling (resistance) pressure emerged. Algorithm identifies local minima/maxima and clusters nearby levels to find significant zones.
+                      <br /><br />
+                      <strong>Why S/R works:</strong> Market memory—traders remember previous decision points. Those who bought at support defend positions; those who missed the move wait to buy pullbacks to the level. This creates self-fulfilling supply/demand zones.
+                      <br /><br />
+                      <strong>Level strength factors:</strong>
+                      <br />• <em>Number of touches</em>: More touches = more significant level. Each touch that holds reinforces the level.
+                      <br />• <em>Recency</em>: Recent levels more relevant than old ones. Market participants change.
+                      <br />• <em>Volume at level</em>: High volume at S/R indicates institutional participation.
+                      <br />• <em>Time at level</em>: Consolidation around level creates stronger zone.
+                      <br /><br />
+                      <strong>Role reversal:</strong> Broken resistance becomes support (previous sellers become buyers defending breakout entry). Broken support becomes resistance (trapped longs sell into rallies). This principle is fundamental to price action trading.
+                      <br /><br />
+                      <strong>S1/S2/S3 and R1/R2/R3</strong> labels indicate relative strength ranking of detected levels.
                     </div>
                   </div>
+
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 10, height: 2, background: COLORS.volumeProfile, borderRadius: 1 }} />
-                      Vol Profile
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.volumeProfile, borderRadius: 1 }} />
+                      Volume Profile
                     </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Volume Profile showing price levels with highest trading activity. High-volume nodes act as magnets; low-volume areas get passed quickly.
+                      <strong>Horizontal volume histogram</strong> showing cumulative volume traded at each price level. Unlike time-based volume (vertical bars), this reveals where market participants have positioned—the "auction profile" of the instrument.
+                      <br /><br />
+                      <strong>Key concepts:</strong>
+                      <br />• <em>High Volume Nodes (HVN)</em>: Price levels with significant volume—areas of acceptance where buyers and sellers agreed on fair value. Act as magnets that attract price and provide support/resistance.
+                      <br />• <em>Low Volume Nodes (LVN)</em>: Price levels with minimal volume—areas of rejection or rapid transit. Price moves quickly through LVNs; they offer little support/resistance but can act as acceleration zones.
+                      <br />• <em>Point of Control (POC)</em>: The single price with highest volume—strongest equilibrium level. Not shown but would be the top bar in the profile.
+                      <br /><br />
+                      <strong>Trading applications:</strong>
+                      <br />• <em>Entry/exit zones</em>: Enter long at HVN support below current price; exit at HVN resistance above.
+                      <br />• <em>Stop placement</em>: Place stops beyond significant HVNs—breaking through HVN indicates trend strength.
+                      <br />• <em>Gap fill probability</em>: Gaps leaving behind LVNs are more likely to fill than gaps through HVNs.
+                      <br /><br />
+                      <strong>Market profile integration:</strong> Volume profile is derived from Market Profile methodology. The profile shape (P-shape, b-shape, D-shape) indicates market type and likely future behavior.
                     </div>
                   </div>
+
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>Risk Metrics</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
+                      Risk Metrics Panel
+                    </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Professional risk analytics: <strong>Sharpe Ratio</strong> (risk-adjusted return), <strong>Sortino</strong> (downside-only), <strong>Max Drawdown</strong> (largest peak-to-trough), <strong>VaR</strong> (worst daily loss at 95% confidence), <strong>Beta</strong> (market correlation), <strong>Volatility</strong> (annualized).
+                      <strong>Quantitative risk analytics</strong> used by institutional investors to evaluate risk-adjusted performance and portfolio allocation decisions.
+                      <br /><br />
+                      <strong>Sharpe Ratio</strong> (annualized): Excess return per unit of total volatility. Formula: (Return - Risk-free Rate) / Standard Deviation. Interpretation: &lt;1.0 = suboptimal risk-adjusted return; 1.0-2.0 = good; 2.0-3.0 = excellent; &gt;3.0 = exceptional or possibly over-fitted. Most hedge funds target Sharpe of 1.5+. Calculated here using 4% risk-free rate assumption.
+                      <br /><br />
+                      <strong>Sortino Ratio</strong> (annualized): Like Sharpe but uses only downside deviation—doesn't penalize upside volatility. More appropriate for asymmetric return distributions. Higher Sortino vs. Sharpe indicates positive skew (larger up moves than down moves).
+                      <br /><br />
+                      <strong>Maximum Drawdown</strong>: Largest peak-to-trough decline during the period. Critical for sizing and survival analysis. Recovery time shown indicates how long capital was impaired. Rule of thumb: Expect 2x historical max drawdown in future.
+                      <br /><br />
+                      <strong>Value at Risk (VaR 95%)</strong>: The daily loss level that won't be exceeded 95% of the time. Historical VaR uses actual return distribution (non-parametric). Example: -3% VaR means 1-in-20 days you can expect losses of 3%+. Use for position sizing: scale positions so VaR equals acceptable daily loss.
+                      <br /><br />
+                      <strong>Beta vs SPY</strong>: Sensitivity to market moves. Beta 1.5 means stock moves 1.5% for every 1% SPY move. High beta (&gt;1.5) amplifies returns but increases drawdowns. Beta &lt;1 provides defensive characteristics. Negative beta (rare) indicates inverse relationship.
+                      <br /><br />
+                      <strong>Rolling Volatility</strong> (30-day annualized): Current volatility regime. Compare to historical average for regime classification. Elevated volatility = wider stops, smaller positions. Compressed volatility = potential for expansion.
                     </div>
                   </div>
+
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>Correlation</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
+                      Correlation Matrix
+                    </div>
                     <div style={{ color: 'var(--text3)' }}>
-                      Shows correlation coefficient (-1 to +1) with enabled comparisons. High correlation (&gt;0.7) = moves together; low (&lt;0.3) = diversification benefit; negative = inverse relationship.
+                      <strong>Pearson correlation coefficients</strong> measuring linear relationship strength between the stock and enabled benchmarks. Range: -1 (perfect inverse) to +1 (perfect positive).
+                      <br /><br />
+                      <strong>Interpretation thresholds:</strong>
+                      <br />• <em>|0.7 - 1.0|</em> (Green): Strong correlation—assets move together (or opposite if negative). Limited diversification benefit.
+                      <br />• <em>|0.3 - 0.7|</em>: Moderate correlation—some independent movement.
+                      <br />• <em>|0.0 - 0.3|</em> (Red): Weak/no correlation—assets move independently. Maximum diversification benefit.
+                      <br /><br />
+                      <strong>Portfolio applications:</strong>
+                      <br />• <em>Diversification</em>: Low correlation assets reduce portfolio volatility. Adding 0.3 correlation asset to portfolio improves risk-adjusted returns.
+                      <br />• <em>Pair trading</em>: High correlation pairs (0.8+) that diverge present mean-reversion opportunities.
+                      <br />• <em>Regime detection</em>: Correlation changes signal regime shifts. Correlations converge toward 1.0 during crises (diversification fails when needed most).
+                      <br /><br />
+                      <strong>Dynamic nature:</strong> Correlations are not stable—they shift with market regimes, monetary policy, and sector rotations. Rolling 60-day correlation captures recent relationship; compare to longer-term (252-day) for regime change detection.
                     </div>
                   </div>
+
                 </div>
               </div>
 
