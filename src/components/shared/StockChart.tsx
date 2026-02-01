@@ -645,10 +645,10 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         <IndicatorToggle label="Log" active={logScale} onClick={() => setLogScale(!logScale)} />
         <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 6px' }} />
         <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Compare:</span>
-        <IndicatorToggle label="SPY" active={showSPY} onClick={() => setShowSPY(!showSPY)} color={COLORS.spy} />
-        <IndicatorToggle label="QQQ" active={showQQQ} onClick={() => setShowQQQ(!showQQQ)} color={COLORS.qqq} />
-        <IndicatorToggle label="Gold" active={showGold} onClick={() => setShowGold(!showGold)} color={COLORS.gold} />
-        <IndicatorToggle label="BTC" active={showBTC} onClick={() => setShowBTC(!showBTC)} color={COLORS.btc} />
+        <IndicatorToggle label="vs. SPY" active={showSPY} onClick={() => setShowSPY(!showSPY)} color={COLORS.spy} />
+        <IndicatorToggle label="vs. QQQ" active={showQQQ} onClick={() => setShowQQQ(!showQQQ)} color={COLORS.qqq} />
+        <IndicatorToggle label="vs. Gold" active={showGold} onClick={() => setShowGold(!showGold)} color={COLORS.gold} />
+        <IndicatorToggle label="vs. BTC" active={showBTC} onClick={() => setShowBTC(!showBTC)} color={COLORS.btc} />
       </div>
 
       {loading && (
@@ -866,10 +866,10 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1, display: 'flex', gap: 8 }}>
                 <span>Relative Performance:</span>
                 <span style={{ color: chartColor }}>{symbol}</span>
-                {showSPY && <span style={{ color: COLORS.spy }}>SPY</span>}
-                {showQQQ && <span style={{ color: COLORS.qqq }}>QQQ</span>}
-                {showGold && <span style={{ color: COLORS.gold }}>Gold</span>}
-                {showBTC && <span style={{ color: COLORS.btc }}>BTC</span>}
+                {showSPY && <span style={{ color: COLORS.spy }}>vs. SPY</span>}
+                {showQQQ && <span style={{ color: COLORS.qqq }}>vs. QQQ</span>}
+                {showGold && <span style={{ color: COLORS.gold }}>vs. Gold</span>}
+                {showBTC && <span style={{ color: COLORS.btc }}>vs. BTC</span>}
               </div>
               <ResponsiveContainer width="100%" height={subChartHeight + 20}>
                 <LineChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
@@ -1095,10 +1095,10 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1, display: 'flex', gap: 8 }}>
                 <span>Relative Performance:</span>
                 <span style={{ color: chartColor }}>{symbol}</span>
-                {showSPY && <span style={{ color: COLORS.spy }}>SPY</span>}
-                {showQQQ && <span style={{ color: COLORS.qqq }}>QQQ</span>}
-                {showGold && <span style={{ color: COLORS.gold }}>Gold</span>}
-                {showBTC && <span style={{ color: COLORS.btc }}>BTC</span>}
+                {showSPY && <span style={{ color: COLORS.spy }}>vs. SPY</span>}
+                {showQQQ && <span style={{ color: COLORS.qqq }}>vs. QQQ</span>}
+                {showGold && <span style={{ color: COLORS.gold }}>vs. Gold</span>}
+                {showBTC && <span style={{ color: COLORS.btc }}>vs. BTC</span>}
               </div>
               <ResponsiveContainer width="100%" height={subChartHeight + 20}>
                 <LineChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
