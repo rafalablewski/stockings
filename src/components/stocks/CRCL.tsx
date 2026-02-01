@@ -111,6 +111,8 @@
 
 import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
+import { SharedWallStreetTab, AnalystCoverage } from '../shared';
+import StockChart from '../shared/StockChart';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, ScatterChart, Scatter, Cell, ReferenceLine,
@@ -120,6 +122,7 @@ import {
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
 import {
   MARKET,
+  USDC_DATA,
   MODEL_METADATA,
   DATA_FRESHNESS,
   QUARTERLY_DATA,
@@ -209,38 +212,7 @@ interface CFANotesProps {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /** Individual analyst report entry */
-interface AnalystReportEntry {
-  date: string;
-  action: 'Initiation' | 'PT Raise' | 'PT Cut' | 'Upgrade' | 'Downgrade' | 'Maintained' | 'Update' | 'Reiterate' | 'Double Downgrade' | 'Drop';
-  priceTarget: number | null;
-  previousTarget?: number | null;
-  rating: string;
-  ratingNormalized: 'bullish' | 'neutral' | 'bearish';
-  reportTitle?: string;
-  source?: string;
-  sourceUrl?: string;
-  isFullReport: boolean;
-  // Full report fields (only present when isFullReport = true)
-  thesis?: string;
-  reportSummary?: string;
-  assumptions?: { label: string; value: string }[];
-  catalysts?: string[];
-  risks?: string[];
-  estimates?: { metric: string; fy24?: string; fy25?: string; fy26?: string; fy27?: string; fy28?: string }[];
-  methodology?: string;
-  fullNotes?: string;
-}
-
-/** Analyst coverage by firm */
-interface AnalystCoverage {
-  firm: string;
-  analyst: string;
-  coverageSince: string;
-  currentPT: number | null;
-  currentRating: string;
-  currentRatingNormalized: 'bullish' | 'neutral' | 'bearish';
-  reports: AnalystReportEntry[];
-}
+// AnalystCoverage type imported from '../shared' (wallStreetTypes.ts)
 
 /** Rating normalization map */
 const RATING_NORMALIZATION: Record<string, 'bullish' | 'neutral' | 'bearish'> = {
@@ -1169,6 +1141,157 @@ const CRCLParameterCard = ({
         )}
       </div>
       <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
+        ← Bearish | Bullish →
+      </div>
+    </div>
+  );
+};
+
+// Overview Parameter Card - matches Model tab ParameterCard styling with custom input support
+const OverviewParameterCard = ({
+  title,
+  explanation,
+  options,
+  value,
+  onChange,
+  format = '',
+  currentValue,
+}: {
+  title: string;
+  explanation: string;
+  options: number[];
+  value: number;
+  onChange: (v: number) => void;
+  format?: string;
+  currentValue?: number;
+}) => {
+  const [customMode, setCustomMode] = useState(false);
+  const [customInput, setCustomInput] = useState('');
+  const isCustomValue = !options.includes(value);
+
+  const formatValue = (v: number) => {
+    if (format === '$') return `$${v}`;
+    if (format === '%') return `${v}%`;
+    if (format === 'B') return `${v}B`;
+    if (format === 'M') return `${v}M`;
+    return String(v);
+  };
+
+  const presetColors = [
+    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+  ];
+
+  const handleCustomSubmit = () => {
+    const num = parseFloat(customInput);
+    if (!isNaN(num)) {
+      onChange(num);
+      setCustomMode(false);
+      setCustomInput('');
+    }
+  };
+
+  return (
+    <div className="card">
+      <div className="card-title">{title}</div>
+      <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+        {explanation}
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+        {options.slice(0, 6).map((opt, idx) => {
+          const isActive = value === opt;
+          const isCurrent = currentValue !== undefined && opt === currentValue;
+          const colors = presetColors[idx];
+          return (
+            <div
+              key={opt}
+              onClick={() => { onChange(opt); setCustomMode(false); }}
+              style={{
+                padding: '10px 4px',
+                borderRadius: 8,
+                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                background: isActive ? colors.bg : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? colors.text : 'var(--text3)',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {isCurrent && (
+                <div style={{
+                  position: 'absolute',
+                  top: 4,
+                  right: 4,
+                  width: 4,
+                  height: 4,
+                  borderRadius: '50%',
+                  background: 'var(--text3)',
+                  opacity: 0.4,
+                }} />
+              )}
+              {formatValue(opt)}
+            </div>
+          );
+        })}
+        {/* Custom input button/field */}
+        {customMode ? (
+          <div style={{
+            display: 'flex',
+            borderRadius: 8,
+            border: '2px solid var(--violet)',
+            background: 'rgba(167,139,250,0.15)',
+            overflow: 'hidden',
+          }}>
+            <input
+              type="text"
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
+              placeholder="..."
+              autoFocus
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: '8px 4px',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--violet)',
+                fontSize: 12,
+                fontWeight: 600,
+                textAlign: 'center',
+                outline: 'none',
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            onClick={() => setCustomMode(true)}
+            style={{
+              padding: '10px 4px',
+              borderRadius: 8,
+              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
+              background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              textAlign: 'center',
+              fontSize: 12,
+              fontWeight: isCustomValue ? 600 : 400,
+              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
+            }}
+          >
+            {isCustomValue ? formatValue(value) : '...'}
+          </div>
+        )}
+      </div>
+      <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>
         ← Bearish | Bullish →
       </div>
     </div>
@@ -2852,6 +2975,14 @@ function CRCLModel() {
         ecosystemView: 'Digital dollar infrastructure is a generational investment theme. Circle is the most investable pure-play. BlackRock/Fidelity ownership validates institutional acceptability.',
         recommendation: '3-5% of alternatives allocation. Multi-year hold.',
       },
+      technicalAnalyst: {
+        title: 'Technical Analyst',
+        assessment: 'NEUTRAL — BASE BUILDING',
+        color: 'var(--gold)',
+        summary: 'Recent IPO establishing price discovery range. Watch for completion of IPO base formation — typically 3-6 months of consolidation before directional move. Initial support at IPO price level ($31). Declining volume on pullbacks is constructive. VWAP from IPO serving as key pivot level.',
+        ecosystemView: 'CRCL showing relative strength vs fintech peers and crypto proxies. Lock-up expiry creates potential supply overhang — monitor volume carefully around that date. Bollinger Bands narrowing suggests volatility compression before expansion. RSI neutral at 50 level provides no directional bias yet.',
+        recommendation: 'Accumulate on successful test of IPO base. Wait for breakout above $45 with volume for momentum entry. Stop loss: close below $28.',
+      },
     },
 
     // Position Sizing
@@ -2899,10 +3030,10 @@ function CRCLModel() {
   ];
 
   // Overview Tab Parameters - Unified with ASTS/BMNR structure
-  const [currentShares, setCurrentShares] = useState(MARKET.shares);  // Millions (Class A + Class B)
-  const [currentStockPrice, setCurrentStockPrice] = useState(MARKET.price);  // ⚠️ UPDATE REGULARLY
-  const [currentUSDC, setCurrentUSDC] = useState(62.5);  // USDC Circulation $B - from Q3 2025 10-Q
-  const [currentMarketShare, setCurrentMarketShare] = useState(29);  // USDC market share %
+  const [currentShares, setCurrentShares] = useState(MARKET.shares);  // From @/data/crcl/company.ts
+  const [currentStockPrice, setCurrentStockPrice] = useState(MARKET.price);  // From @/data/crcl/company.ts
+  const [currentUSDC, setCurrentUSDC] = useState(USDC_DATA.usdcCirculation);  // From @/data/crcl/company.ts
+  const [currentMarketShare, setCurrentMarketShare] = useState(USDC_DATA.marketShare);  // From @/data/crcl/company.ts
 
   const toggleSection = (section: string) => {
     const next = new Set(investmentSections);
@@ -3198,31 +3329,36 @@ function CRCLModel() {
                 <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>Circle:</strong> Building financial infrastructure for the internet economy. USDC enables 24/7 global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of traditional finance and blockchain technology.</p>
               </div>
 
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
               <div className="g2">
-                <div className="thesis bull">
-                  <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
-                  <ul>
-                    <li>USDC +{usdcGrowth.toFixed(0)}% YoY, mgmt guides 40% CAGR</li>
-                    <li>Market share: 23% → 29% in 12 months</li>
-                    <li>Platform % at 13.5% (was 2%) improves unit economics</li>
-                    <li>Intuit partnership brings ~100M user distribution</li>
-                    <li>OCC National Trust Charter approval</li>
-                    <li>GENIUS Act provides regulatory clarity</li>
-                    <li>Arc + CPN creating new revenue verticals</li>
-                  </ul>
+                <div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
+                  <div className="thesis bull">
+                    <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
+                    <ul>
+                      <li>USDC +{usdcGrowth.toFixed(0)}% YoY, mgmt guides 40% CAGR</li>
+                      <li>Market share: 23% → 29% in 12 months</li>
+                      <li>Platform % at 13.5% (was 2%) improves unit economics</li>
+                      <li>Intuit partnership brings ~100M user distribution</li>
+                      <li>OCC National Trust Charter approval</li>
+                      <li>GENIUS Act provides regulatory clarity</li>
+                      <li>Arc + CPN creating new revenue verticals</li>
+                    </ul>
+                  </div>
                 </div>
-                <div className="thesis bear">
-                  <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
-                  <ul>
-                    <li>96% revenue from reserve income (rate sensitive)</li>
-                    <li>~60% of income shared with Coinbase</li>
-                    <li>Tether dominant: 65% share, 85% margins</li>
-                    <li>P/E of {MARKET.pe}x prices in substantial growth</li>
-                    <li>Stock -73% from $299 peak</li>
-                    <li>Bank stablecoins, PayPal competition</li>
-                    <li>Fed rate cuts compress revenue</li>
-                  </ul>
+                <div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
+                  <div className="thesis bear">
+                    <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
+                    <ul>
+                      <li>96% revenue from reserve income (rate sensitive)</li>
+                      <li>~60% of income shared with Coinbase</li>
+                      <li>Tether dominant: 65% share, 85% margins</li>
+                      <li>P/E of {MARKET.pe}x prices in substantial growth</li>
+                      <li>Stock -73% from $299 peak</li>
+                      <li>Bank stablecoins, PayPal competition</li>
+                      <li>Fed rate cuts compress revenue</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 
@@ -3306,14 +3442,52 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-              <div className="card"><div className="card-title">Parameters</div>
-                <div className="g4" style={{ }}>
-                  <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} step={0.1} />
-                  <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
-                  <Input label="USDC Circ ($B)" value={currentUSDC} onChange={setCurrentUSDC} step={0.5} />
-                  <Input label="Market Share (%)" value={currentMarketShare} onChange={setCurrentMarketShare} step={1} />
-                </div>
+              <h3 className="section-head">Parameters</h3>
+              <div className="g2">
+                <OverviewParameterCard
+                  title="Shares Outstanding (M)"
+                  explanation="Total diluted shares. Higher share count = lower per-share metrics. Increases with equity raises and stock comp."
+                  options={[350, 300, 250, MARKET.shares, 200, 175]}
+                  value={currentShares}
+                  onChange={setCurrentShares}
+                  format="M"
+                  currentValue={MARKET.shares}
+                />
+                <OverviewParameterCard
+                  title="Stock Price ($)"
+                  explanation="Current market price per share. Determines market cap and valuation multiples like P/E and EV/Revenue."
+                  options={[50, 65, MARKET.price, 95, 110, 130]}
+                  value={currentStockPrice}
+                  onChange={setCurrentStockPrice}
+                  format="$"
+                  currentValue={MARKET.price}
+                />
               </div>
+              <div className="g2">
+                <OverviewParameterCard
+                  title="USDC Circulation ($B)"
+                  explanation="Total USDC in circulation. Primary revenue driver. More USDC = more reserves = more interest income."
+                  options={[40, 50, USDC_DATA.usdcCirculation, 75, 90, 110]}
+                  value={currentUSDC}
+                  onChange={setCurrentUSDC}
+                  format="B"
+                  currentValue={USDC_DATA.usdcCirculation}
+                />
+                <OverviewParameterCard
+                  title="Market Share (%)"
+                  explanation="USDC share of stablecoin market vs Tether. Higher share = stronger competitive position and pricing power."
+                  options={[20, 25, USDC_DATA.marketShare, 33, 40, 50]}
+                  value={currentMarketShare}
+                  onChange={setCurrentMarketShare}
+                  format="%"
+                  currentValue={USDC_DATA.marketShare}
+                />
+              </div>
+
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
+              <h3 className="section-head">Stock Chart</h3>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
+              <StockChart symbol="CRCL" />
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — Stablecoin Economics" items={[
@@ -6410,429 +6584,10 @@ Source: Example Research`
       ]
     },
   ];
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // DERIVED METRICS AND HELPER FUNCTIONS
-  // ═══════════════════════════════════════════════════════════════════════════
-  
-  // Get latest report from each firm for consensus calculations
-  const latestByFirm = ANALYST_COVERAGE.map(coverage => ({
-    firm: coverage.firm,
-    analyst: coverage.analyst,
-    priceTarget: coverage.currentPT,
-    rating: coverage.currentRating,
-    ratingNormalized: coverage.currentRatingNormalized,
-    latestDate: coverage.reports[0]?.date || ''
-  }));
-  
-  // Calculate consensus metrics from current ratings only
-  const firmsWithPT = latestByFirm.filter(f => f.priceTarget !== null);
-  const avgPT = firmsWithPT.length > 0 
-    ? firmsWithPT.reduce((sum, f) => sum + (f.priceTarget || 0), 0) / firmsWithPT.length 
-    : null;
-  const highPT = firmsWithPT.length > 0 ? Math.max(...firmsWithPT.map(f => f.priceTarget || 0)) : null;
-  const lowPT = firmsWithPT.length > 0 ? Math.min(...firmsWithPT.map(f => f.priceTarget || 0)) : null;
-  const medianPT = firmsWithPT.length > 0 ? (() => {
-    const sorted = [...firmsWithPT].map(f => f.priceTarget || 0).sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-  })() : null;
-  
-  // Rating counts by normalized category
-  const ratingCounts = {
-    bullish: latestByFirm.filter(f => f.ratingNormalized === 'bullish').length,
-    neutral: latestByFirm.filter(f => f.ratingNormalized === 'neutral').length,
-    bearish: latestByFirm.filter(f => f.ratingNormalized === 'bearish').length,
-  };
-  const totalAnalysts = ANALYST_COVERAGE.length;
-  
-  // Rating color helper
-  const getRatingColor = (rating: string, normalized?: 'bullish' | 'neutral' | 'bearish') => {
-    if (normalized) {
-      switch (normalized) {
-        case 'bullish': return 'var(--mint)';
-        case 'neutral': return 'var(--gold)';
-        case 'bearish': return 'var(--coral)';
-      }
-    }
-    switch (rating) {
-      case 'Strong Buy': case 'Buy': case 'Overweight': return 'var(--mint)';
-      case 'Hold': case 'Neutral': case 'Market Perform': case 'Sector Perform': case 'Perform': return 'var(--gold)';
-      case 'Underperform': case 'Underweight': case 'Sector Underperform': case 'Sell': return 'var(--coral)';
-      default: return 'var(--text2)';
-    }
-  };
-  
-  const getActionColor = (action: string) => {
-    switch (action) {
-      case 'Initiation': return 'var(--mint)';
-      case 'Upgrade': case 'PT Raise': return 'var(--mint)';
-      case 'Downgrade': case 'PT Cut': case 'Double Downgrade': return 'var(--coral)';
-      case 'Reiterate': case 'Maintained': case 'Update': return 'var(--text3)';
-      case 'Drop': return 'var(--coral)';
-      default: return 'var(--text3)';
-    }
-  };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Wall Street Coverage<UpdateIndicators sources="WS" /></h2>
-
-      {/* Consensus Snapshot */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-consensus</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Consensus Snapshot<UpdateIndicators sources="WS" /></div>
-        <div className="g2">
-          {/* Price Target Summary */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>AVG PT</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--mint)', fontFamily: 'Space Mono' }}>
-                  {avgPT ? `$${avgPT.toFixed(0)}` : '—'}
-                </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>MEDIAN PT</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--sky)', fontFamily: 'Space Mono' }}>
-                  {medianPT ? `$${medianPT.toFixed(0)}` : '—'}
-                </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>HIGH / LOW</div>
-                <div style={{ fontSize: 18, fontWeight: 700, fontFamily: 'Space Mono' }}>
-                  <span style={{ color: 'var(--mint)' }}>{highPT ? `$${highPT}` : '—'}</span>
-                  <span style={{ color: 'var(--text3)' }}> / </span>
-                  <span style={{ color: 'var(--coral)' }}>{lowPT ? `$${lowPT}` : '—'}</span>
-                </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>ANALYSTS</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text)', fontFamily: 'Space Mono' }}>
-                  {totalAnalysts}
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Ratings Distribution */}
-          <div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>RATINGS DISTRIBUTION</div>
-            {totalAnalysts > 0 ? (
-              <>
-                <div style={{ display: 'flex', height: 24, borderRadius: 6, overflow: 'hidden' }}>
-                  {ratingCounts.bullish > 0 && (
-                    <div style={{ width: `${(ratingCounts.bullish / totalAnalysts) * 100}%`, background: 'var(--mint)' }} />
-                  )}
-                  {ratingCounts.neutral > 0 && (
-                    <div style={{ width: `${(ratingCounts.neutral / totalAnalysts) * 100}%`, background: 'var(--gold)' }} />
-                  )}
-                  {ratingCounts.bearish > 0 && (
-                    <div style={{ width: `${(ratingCounts.bearish / totalAnalysts) * 100}%`, background: 'var(--coral)' }} />
-                  )}
-                </div>
-                <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
-                  <span style={{ color: 'var(--mint)' }}>● Buy/OW: {ratingCounts.bullish}</span>
-                  <span style={{ color: 'var(--gold)' }}>● Hold/Neutral: {ratingCounts.neutral}</span>
-                  <span style={{ color: 'var(--coral)' }}>● Sell/UW: {ratingCounts.bearish}</span>
-                </div>
-              </>
-            ) : (
-              <div style={{ color: 'var(--text3)', fontSize: 13 }}>No analyst coverage data yet</div>
-            )}
-          </div>
-        </div>
-      </div>
-      
-      {/* Coverage by Firm - Grouped Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-coverage</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})<UpdateIndicators sources="WS" /></div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {ANALYST_COVERAGE.map((coverage) => {
-            const isExpanded = expandedFirm === coverage.firm;
-            const fullReportCount = coverage.reports.filter(r => r.isFullReport).length;
-            const updateCount = coverage.reports.filter(r => !r.isFullReport).length;
-            
-            return (
-              <div 
-                key={coverage.firm}
-                style={{ 
-                  background: 'var(--surface2)', 
-                  borderRadius: 8,
-                  border: isExpanded ? '1px solid var(--mint)' : '1px solid var(--border)',
-                  overflow: 'hidden'
-                }}
-              >
-                {/* Firm Header - Always Visible */}
-                <div 
-                  onClick={() => setExpandedFirm(isExpanded ? null : coverage.firm)}
-                  style={{ 
-                    padding: 16, 
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div>
-                      <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>{coverage.firm}</div>
-                      <div style={{ color: 'var(--text3)', fontSize: 12 }}>{coverage.analyst} · Since {coverage.coverageSince}</div>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    {/* Current Rating Badge */}
-                    <div style={{ 
-                      padding: '4px 12px', 
-                      borderRadius: 6, 
-                      background: `${getRatingColor(coverage.currentRating, coverage.currentRatingNormalized)}22`,
-                      border: `1px solid ${getRatingColor(coverage.currentRating, coverage.currentRatingNormalized)}44`,
-                    }}>
-                      <span style={{ color: getRatingColor(coverage.currentRating, coverage.currentRatingNormalized), fontWeight: 600, fontSize: 12 }}>
-                        {coverage.currentRating.toUpperCase()}
-                      </span>
-                    </div>
-                    
-                    {/* Current PT */}
-                    <div style={{ fontFamily: 'Space Mono', textAlign: 'right', minWidth: 60 }}>
-                      <span style={{ color: 'var(--text)', fontSize: 16, fontWeight: 600 }}>
-                        {coverage.currentPT ? `$${coverage.currentPT}` : '—'}
-                      </span>
-                    </div>
-                    
-                    {/* Report counts */}
-                    <div style={{ display: 'flex', gap: 8, fontSize: 11 }}>
-                      <span style={{ padding: '2px 6px', background: 'var(--mint)', color: 'white', borderRadius: 4 }}>
-                        {fullReportCount} Report{fullReportCount !== 1 ? 's' : ''}
-                      </span>
-                      {updateCount > 0 && (
-                        <span style={{ padding: '2px 6px', background: 'var(--surface3)', color: 'var(--text3)', borderRadius: 4 }}>
-                          {updateCount} Update{updateCount !== 1 ? 's' : ''}
-                        </span>
-                      )}
-                    </div>
-                    
-                    {/* Expand indicator */}
-                    <span style={{ color: 'var(--text3)', fontSize: 12 }}>
-                      {isExpanded ? '▼' : '▶'}
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Expanded History */}
-                {isExpanded && (
-                  <div style={{ borderTop: '1px solid var(--border)', padding: 16, background: 'var(--surface)' }}>
-                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>COVERAGE HISTORY ({coverage.reports.length} entr{coverage.reports.length !== 1 ? 'ies' : 'y'})</div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {coverage.reports.map((report, idx) => {
-                        const reportKey = `${coverage.firm}-${idx}`;
-                        const isReportExpanded = expandedReportIdx === reportKey;
-                        
-                        return (
-                          <div
-                            key={idx}
-                            style={{
-                              padding: 12,
-                              background: report.isFullReport ? 'var(--surface2)' : 'var(--surface)',
-                              borderRadius: 6,
-                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? '3px solid var(--mint)' : 'none'
-                            }}
-                          >
-                            {/* Report Header */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <span style={{ color: 'var(--text3)', fontSize: 12, minWidth: 90 }}>
-                                  {new Date(report.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                </span>
-                                <span style={{ 
-                                  color: getActionColor(report.action),
-                                  fontSize: 11,
-                                  fontWeight: 600,
-                                  padding: '2px 8px',
-                                  background: `${getActionColor(report.action)}22`,
-                                  borderRadius: 4
-                                }}>
-                                  {report.action}
-                                </span>
-                                <span style={{ color: getRatingColor(report.rating, report.ratingNormalized), fontSize: 12, fontWeight: 500 }}>
-                                  {report.rating}
-                                </span>
-                              </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <span style={{ fontFamily: 'Space Mono', color: 'var(--text)', fontSize: 14 }}>
-                                  {report.priceTarget ? `$${report.priceTarget}` : '—'}
-                                  {report.previousTarget && (
-                                    <span style={{ color: 'var(--text3)', fontSize: 11 }}> ← ${report.previousTarget}</span>
-                                  )}
-                                </span>
-                                {report.source && (
-                                  <a 
-                                    href={report.sourceUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    style={{ fontSize: 10, color: 'var(--mint)', textDecoration: 'none' }}
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    {report.source}
-                                  </a>
-                                )}
-                              </div>
-                            </div>
-                            
-                            {/* Report Title if exists */}
-                            {report.reportTitle && (
-                              <div style={{ color: 'var(--text2)', fontSize: 12, fontStyle: 'italic' }}>
-                                "{report.reportTitle}"
-                              </div>
-                            )}
-                            
-                            {/* Full report content (expandable) */}
-                            {report.isFullReport && report.thesis && (
-                              <>
-                                <div style={{ color: 'var(--text2)', fontSize: 12, lineHeight: 1.5 }}>
-                                  {report.thesis}
-                                </div>
-                                
-                                {(report.reportSummary || report.assumptions || report.estimates) && (
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setExpandedReportIdx(isReportExpanded ? null : reportKey);
-                                    }}
-                                    style={{
-                                      background: 'none',
-                                      border: 'none',
-                                      color: 'var(--mint)',
-                                      fontSize: 11,
-                                      cursor: 'pointer',
-                                      padding: '4px 0'
-                                    }}
-                                  >
-                                    {isReportExpanded ? '▼ Less details' : '▶ Full report details'}
-                                  </button>
-                                )}
-                                
-                                {isReportExpanded && (
-                                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                                    {report.reportSummary && (
-                                      <div style={{ 
-                                        background: 'var(--surface)', 
-                                        padding: 12, 
-                                        borderRadius: 6,
-                                        fontSize: 12,
-                                        color: 'var(--text2)',
-                                        lineHeight: 1.6,
-                                        whiteSpace: 'pre-wrap'
-                                      }}>
-                                        {report.reportSummary.split('\n\n').map((paragraph, pIdx) => {
-                                          const headerMatch = paragraph.match(/^\*\*(.+?)\*\*/);
-                                          if (headerMatch) {
-                                            const header = headerMatch[1];
-                                            const rest = paragraph.replace(/^\*\*.+?\*\*\s*/, '');
-                                            return (
-                                              <div key={pIdx} style={{ }}>
-                                                <div style={{ color: 'var(--text)', fontWeight: 600, fontSize: 11 }}>{header}</div>
-                                                <div>{rest}</div>
-                                              </div>
-                                            );
-                                          }
-                                          return <div key={pIdx} style={{ }}>{paragraph}</div>;
-                                        })}
-                                      </div>
-                                    )}
-                                    
-                                    {report.assumptions && report.assumptions.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--text3)' }}>KEY ASSUMPTIONS</div>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                                          {report.assumptions.map((a, i) => (
-                                            <span key={i} style={{ padding: '3px 8px', background: 'var(--surface)', borderRadius: 4, fontSize: 11, color: 'var(--text2)' }}>
-                                              {a.label}: <span style={{ color: 'var(--mint)' }}>{a.value}</span>
-                                            </span>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-                                    
-                                    {report.catalysts && report.catalysts.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--mint)' }}>CATALYSTS</div>
-                                        <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
-                                          {report.catalysts.map((c, i) => <li key={i}>{c}</li>)}
-                                        </ul>
-                                      </div>
-                                    )}
-                                    
-                                    {report.risks && report.risks.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--coral)' }}>RISKS</div>
-                                        <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
-                                          {report.risks.map((r, i) => <li key={i}>{r}</li>)}
-                                        </ul>
-                                      </div>
-                                    )}
-                                    
-                                    {report.estimates && report.estimates.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--sky)' }}>ESTIMATES</div>
-                                        <table className="tbl">
-                                          <thead>
-                                            <tr>
-                                              <th>Metric</th>
-                                              <th className="r">FY24</th>
-                                              <th className="r">FY25</th>
-                                              <th className="r">FY26</th>
-                                              <th className="r">FY27</th>
-                                              <th className="r">FY28</th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            {report.estimates.map((e, i) => (
-                                              <tr key={i}>
-                                                <td>{e.metric}</td>
-                                                <td className="r">{e.fy24 || '—'}</td>
-                                                <td className="r">{e.fy25 || '—'}</td>
-                                                <td className="r">{e.fy26 || '—'}</td>
-                                                <td className="r">{e.fy27 || '—'}</td>
-                                                <td className="r">{e.fy28 || '—'}</td>
-                                              </tr>
-                                            ))}
-                                          </tbody>
-                                        </table>
-                                      </div>
-                                    )}
-                                    
-                                    {report.methodology && (
-                                      <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-                                        <span>Methodology: </span>
-                                        <span style={{ color: 'var(--text2)' }}>{report.methodology}</span>
-                                      </div>
-                                    )}
-                                    
-                                    {report.fullNotes && (
-                                      <div style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
-                                        {report.fullNotes}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
+    <>
+      <SharedWallStreetTab coverage={ANALYST_COVERAGE} ticker="CRCL" />
       {/* CFA Notes */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Sell-Side Research" items={[
@@ -6842,9 +6597,10 @@ Source: Example Research`
         { term: 'Consensus vs Variant', def: 'When your view differs from consensus, understand why. Variant perception + catalyst = alpha opportunity. But: "the market can stay irrational longer than you can stay solvent."' },
         { term: 'Conflicts of Interest', def: 'Investment banks have relationships with covered companies. Be aware of potential conflicts. Independent research may offer less conflicted views.' },
       ]} />
-    </div>
+    </>
   );
 };
+
 
 const CRCLWithErrorBoundary = () => (
   <FinancialModelErrorBoundary>

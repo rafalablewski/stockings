@@ -115,6 +115,8 @@
 
 import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
+import { SharedWallStreetTab, AnalystCoverage } from '../shared';
+import StockChart from '../shared/StockChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ComposedChart, Cell, PieChart, Pie, Legend, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -246,38 +248,7 @@ interface ErrorBoundaryState {
 // ============================================================================
 
 /** Individual analyst report/update entry */
-interface AnalystReportEntry {
-  date: string;
-  action: 'Initiation' | 'PT Raise' | 'PT Cut' | 'Upgrade' | 'Downgrade' | 'Maintained' | 'Update' | 'Reiterate' | 'Double Downgrade' | 'Drop';
-  priceTarget: number | null;
-  previousTarget?: number | null;
-  rating: string;
-  ratingNormalized: 'bullish' | 'neutral' | 'bearish';
-  reportTitle?: string;
-  source?: string;
-  sourceUrl?: string;
-  isFullReport: boolean;
-  // Full report fields (only present when isFullReport = true)
-  thesis?: string;
-  reportSummary?: string;
-  assumptions?: { label: string; value: string }[];
-  catalysts?: string[];
-  risks?: string[];
-  estimates?: { metric: string; fy24?: string; fy25?: string; fy26?: string; fy27?: string; fy28?: string }[];
-  methodology?: string;
-  fullNotes?: string;
-}
-
-/** Analyst coverage by firm */
-interface AnalystCoverage {
-  firm: string;
-  analyst: string;
-  coverageSince: string;
-  currentPT: number | null;
-  currentRating: string;
-  currentRatingNormalized: 'bullish' | 'neutral' | 'bearish';
-  reports: AnalystReportEntry[];
-}
+// AnalystCoverage type imported from '../shared' (wallStreetTypes.ts)
 
 // ============================================================================
 // COMPETITOR NEWS TRACKING INTERFACES
@@ -677,11 +648,11 @@ CFANotes.displayName = 'CFANotes';
 const ASTSAnalysis = () => {
   // === DATA FRESHNESS: Last updated Dec 30, 2025 ===
   // Update stock prices regularly - stale data affects all calculations
-  const [currentShares, setCurrentShares] = useState(361);  // Q3 10-Q: 272M Class A + 11.2M Class B + 78.2M Class C
-  const [currentStockPrice, setCurrentStockPrice] = useState(71);  // ⚠️ UPDATE REGULARLY - Last: Dec 30, 2025
-  const [cashOnHand, setCashOnHand] = useState(1220);  // Q3 10-Q: $1,220,123K
-  const [quarterlyBurn, setQuarterlyBurn] = useState(300);  // Q3 10-Q: CapEx + OpEx guidance
-  const [totalDebt, setTotalDebt] = useState(698);  // Q3 10-Q: $697.6M net long-term debt (convertibles net of discounts)
+  const [currentShares, setCurrentShares] = useState(DEFAULTS.currentShares);  // From @/data/asts/company.ts
+  const [currentStockPrice, setCurrentStockPrice] = useState(DEFAULTS.currentStockPrice);  // From @/data/asts/company.ts
+  const [cashOnHand, setCashOnHand] = useState(DEFAULTS.cashOnHand);  // From @/data/asts/company.ts
+  const [quarterlyBurn, setQuarterlyBurn] = useState(DEFAULTS.quarterlyBurn);  // From @/data/asts/company.ts
+  const [totalDebt, setTotalDebt] = useState(DEFAULTS.totalDebt);  // From @/data/asts/company.ts
   const [debtRate, setDebtRate] = useState(4.25);  // Q3 10-Q: Converts at 4.25%
   const [block1Sats, setBlock1Sats] = useState(6);  // BW3 + BB1-5 (Block 1)
   const [block2Sats, setBlock2Sats] = useState(1);  // BB6 launched Dec 23, 2025 (first Block 2)
@@ -919,6 +890,157 @@ const ASTSAnalysis = () => {
   );
 };
 
+// Overview Parameter Card - matches Model tab ParameterCard styling with custom input support
+const OverviewParameterCard = ({
+  title,
+  explanation,
+  options,
+  value,
+  onChange,
+  format = '',
+  currentValue,
+}: {
+  title: string;
+  explanation: string;
+  options: number[];
+  value: number;
+  onChange: (v: number) => void;
+  format?: string;
+  currentValue?: number;
+}) => {
+  const [customMode, setCustomMode] = useState(false);
+  const [customInput, setCustomInput] = useState('');
+  const isCustomValue = !options.includes(value);
+
+  const formatValue = (v: number) => {
+    if (format === '$') return `$${v}`;
+    if (format === '%') return `${v}%`;
+    if (format === 'B') return v >= 1000 ? `${(v/1000).toFixed(1)}B` : `${v}`;
+    if (format === 'M') return `${v}M`;
+    return String(v);
+  };
+
+  const presetColors = [
+    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+  ];
+
+  const handleCustomSubmit = () => {
+    const num = parseFloat(customInput);
+    if (!isNaN(num)) {
+      onChange(num);
+      setCustomMode(false);
+      setCustomInput('');
+    }
+  };
+
+  return (
+    <div className="card">
+      <div className="card-title">{title}</div>
+      <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+        {explanation}
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+        {options.slice(0, 6).map((opt, idx) => {
+          const isActive = value === opt;
+          const isCurrent = currentValue !== undefined && opt === currentValue;
+          const colors = presetColors[idx];
+          return (
+            <div
+              key={opt}
+              onClick={() => { onChange(opt); setCustomMode(false); }}
+              style={{
+                padding: '10px 4px',
+                borderRadius: 8,
+                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                background: isActive ? colors.bg : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? colors.text : 'var(--text3)',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {isCurrent && (
+                <div style={{
+                  position: 'absolute',
+                  top: 4,
+                  right: 4,
+                  width: 4,
+                  height: 4,
+                  borderRadius: '50%',
+                  background: 'var(--text3)',
+                  opacity: 0.4,
+                }} />
+              )}
+              {formatValue(opt)}
+            </div>
+          );
+        })}
+        {/* Custom input button/field */}
+        {customMode ? (
+          <div style={{
+            display: 'flex',
+            borderRadius: 8,
+            border: '2px solid var(--violet)',
+            background: 'rgba(167,139,250,0.15)',
+            overflow: 'hidden',
+          }}>
+            <input
+              type="text"
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
+              placeholder="..."
+              autoFocus
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: '8px 4px',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--violet)',
+                fontSize: 12,
+                fontWeight: 600,
+                textAlign: 'center',
+                outline: 'none',
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            onClick={() => setCustomMode(true)}
+            style={{
+              padding: '10px 4px',
+              borderRadius: 8,
+              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
+              background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              textAlign: 'center',
+              fontSize: 12,
+              fontWeight: isCustomValue ? 600 : 400,
+              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
+            }}
+          >
+            {isCustomValue ? formatValue(value) : '...'}
+          </div>
+        )}
+      </div>
+      <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>
+        ← Bearish | Bullish →
+      </div>
+    </div>
+  );
+};
+
 const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterlyBurn, totalDebt, setTotalDebt, block1Sats, block2Sats, targetSats2026, contractedRevenue, partnerReach, penetrationRate }) => {
   const [chartType, setChartType] = useState('constellation');
 
@@ -965,29 +1087,34 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
     <div className="g2">
-      <div className="thesis bull">
-        <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
-        <ul>
-          <li>BB6 proving D2D technology works at scale</li>
-          <li>53+ MNO partners with 3.2B addressable subscribers</li>
-          <li>$1B+ contracted revenue locked in</li>
-          <li>First-mover advantage in direct-to-phone satellite</li>
-          <li>MDA SHIELD prime contractor + DoD/SDA contracts</li>
-          <li>Regulatory moat — licensed spectrum agreements</li>
-        </ul>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
+        <div className="thesis bull">
+          <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
+          <ul>
+            <li>BB6 proving D2D technology works at scale</li>
+            <li>53+ MNO partners with 3.2B addressable subscribers</li>
+            <li>$1B+ contracted revenue locked in</li>
+            <li>First-mover advantage in direct-to-phone satellite</li>
+            <li>MDA SHIELD prime contractor + DoD/SDA contracts</li>
+            <li>Regulatory moat — licensed spectrum agreements</li>
+          </ul>
+        </div>
       </div>
-      <div className="thesis bear">
-        <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
-        <ul>
-          <li>Pre-revenue company, high execution risk</li>
-          <li>Dilution risk — $3.2B raised, may need more</li>
-          <li>Competition: Starlink/T-Mobile D2D partnership</li>
-          <li>Satellite launch/technology failure risk</li>
-          <li>Slow subscriber adoption by MNO partners</li>
-          <li>MNO partnership revenue share negotiations</li>
-        </ul>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
+        <div className="thesis bear">
+          <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
+          <ul>
+            <li>Pre-revenue company, high execution risk</li>
+            <li>Dilution risk — $3.2B raised, may need more</li>
+            <li>Competition: Starlink/T-Mobile D2D partnership</li>
+            <li>Satellite launch/technology failure risk</li>
+            <li>Slow subscriber adoption by MNO partners</li>
+            <li>MNO partnership revenue share negotiations</li>
+          </ul>
+        </div>
       </div>
     </div>
 
@@ -1092,17 +1219,59 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-    <div className="card"><div className="card-title">Parameters</div>
-      <div className="g4" style={{ }}>
-        <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
-        <Input label="Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.5} />
-        <Input label="Cash ($M)" value={cashOnHand} onChange={setCashOnHand} />
-        <Input label="Burn ($M/Q)" value={quarterlyBurn} onChange={setQuarterlyBurn} />
-      </div>
-      <div style={{ }}>
-        <Input label="Debt ($M)" value={totalDebt} onChange={setTotalDebt} />
-      </div>
+    <h3 className="section-head">Parameters</h3>
+    <div className="g2">
+      <OverviewParameterCard
+        title="Shares Outstanding (M)"
+        explanation="Total diluted shares outstanding. Higher share count = lower per-share metrics. Increases with equity raises, stock comp, warrant exercises."
+        options={[450, 400, 380, DEFAULTS.currentShares, 350, 330]}
+        value={currentShares}
+        onChange={setCurrentShares}
+        format="M"
+        currentValue={DEFAULTS.currentShares}
+      />
+      <OverviewParameterCard
+        title="Stock Price ($)"
+        explanation="Current market price per share. Determines market cap and valuation multiples. Compare to DCF intrinsic value for upside/downside."
+        options={[40, 55, 65, DEFAULTS.currentStockPrice, 85, 100]}
+        value={currentStockPrice}
+        onChange={setCurrentStockPrice}
+        format="$"
+        currentValue={DEFAULTS.currentStockPrice}
+      />
     </div>
+    <div className="g3">
+      <OverviewParameterCard
+        title="Cash ($M)"
+        explanation="Cash & equivalents. Determines runway = Cash ÷ Burn. Critical for pre-revenue companies."
+        options={[800, 1000, DEFAULTS.cashOnHand, 1500, 2000, 2500]}
+        value={cashOnHand}
+        onChange={setCashOnHand}
+        format="B"
+        currentValue={DEFAULTS.cashOnHand}
+      />
+      <OverviewParameterCard
+        title="Burn ($M/Q)"
+        explanation="Quarterly cash consumption. Lower burn extends runway and reduces dilution risk."
+        options={[400, 350, DEFAULTS.quarterlyBurn, 250, 200, 150]}
+        value={quarterlyBurn}
+        onChange={setQuarterlyBurn}
+        currentValue={DEFAULTS.quarterlyBurn}
+      />
+      <OverviewParameterCard
+        title="Debt ($M)"
+        explanation="Long-term debt obligations. Affects EV and adds financial risk. Lower is safer."
+        options={[900, 800, DEFAULTS.totalDebt, 600, 500, 400]}
+        value={totalDebt}
+        onChange={setTotalDebt}
+        currentValue={DEFAULTS.totalDebt}
+      />
+    </div>
+
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
+    <h3 className="section-head">Stock Chart</h3>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
+    <StockChart symbol="ASTS" />
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — Space-Based Cellular" items={[
@@ -9802,6 +9971,14 @@ const InvestmentTab = () => {
         ecosystemView: 'Telecom infrastructure is a multi-decade investment theme. ASTS addresses fundamental gap in global coverage. Strategic investors (AT&T, Verizon, Vodafone, Google) validate market opportunity. Defense applications provide revenue diversification and strategic importance.',
         recommendation: '3-5% max portfolio weight. Hold for 2-3 year thesis.',
       },
+      technicalAnalyst: {
+        title: 'Technical Analyst',
+        assessment: 'BULLISH — BREAKOUT WATCH',
+        color: 'var(--sky)',
+        summary: 'Classic catalyst-driven momentum stock. Price gaps on launch news create defined support/resistance zones. Currently consolidating above 50-day SMA with declining volatility — textbook bull flag formation. RSI reset from overbought provides fresh runway. Volume accumulation patterns evident on weekly timeframe.',
+        ecosystemView: 'ASTS trades on sentiment cycles tied to satellite launch calendar. Key technical levels: $25-30 support zone (prior breakout), $40-45 resistance (prior highs). MACD bullish crossover on weekly chart. Relative strength vs NASDAQ positive. Watch for volume surge above 20M shares as breakout confirmation signal.',
+        recommendation: 'Accumulate on pullbacks to 50-day SMA. Add on breakout above $45 with volume. Stop loss: close below $25.',
+      },
     },
     
     // Position Sizing
@@ -12766,434 +12943,10 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
       ]
     }
   ];
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // DERIVED METRICS AND HELPER FUNCTIONS
-  // ═══════════════════════════════════════════════════════════════════════════
-  
-  // Flatten all reports for aggregate calculations
-  const allReports = ANALYST_COVERAGE.flatMap(coverage => 
-    coverage.reports.map(report => ({
-      ...report,
-      firm: coverage.firm,
-      analyst: coverage.analyst
-    }))
-  );
-  
-  // Get latest report from each firm for consensus calculations
-  const latestByFirm = ANALYST_COVERAGE.map(coverage => ({
-    firm: coverage.firm,
-    analyst: coverage.analyst,
-    priceTarget: coverage.currentPT,
-    rating: coverage.currentRating,
-    ratingNormalized: coverage.currentRatingNormalized,
-    latestDate: coverage.reports[0]?.date || ''
-  }));
-  
-  // Calculate consensus metrics from current ratings only
-  const firmsWithPT = latestByFirm.filter(f => f.priceTarget !== null);
-  const avgPT = firmsWithPT.length > 0 
-    ? firmsWithPT.reduce((sum, f) => sum + (f.priceTarget || 0), 0) / firmsWithPT.length 
-    : null;
-  const highPT = firmsWithPT.length > 0 ? Math.max(...firmsWithPT.map(f => f.priceTarget || 0)) : null;
-  const lowPT = firmsWithPT.length > 0 ? Math.min(...firmsWithPT.map(f => f.priceTarget || 0)) : null;
-  const medianPT = firmsWithPT.length > 0 ? (() => {
-    const sorted = [...firmsWithPT].map(f => f.priceTarget || 0).sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-  })() : null;
-  
-  // Rating counts by normalized category
-  const ratingCounts = {
-    bullish: latestByFirm.filter(f => f.ratingNormalized === 'bullish').length,
-    neutral: latestByFirm.filter(f => f.ratingNormalized === 'neutral').length,
-    bearish: latestByFirm.filter(f => f.ratingNormalized === 'bearish').length,
-  };
-  const totalAnalysts = ANALYST_COVERAGE.length;
-  
-  // Rating color helper
-  const getRatingColor = (rating: string, normalized?: 'bullish' | 'neutral' | 'bearish') => {
-    if (normalized) {
-      switch (normalized) {
-        case 'bullish': return 'var(--mint)';
-        case 'neutral': return 'var(--gold)';
-        case 'bearish': return 'var(--coral)';
-      }
-    }
-    switch (rating) {
-      case 'Strong Buy': case 'Buy': case 'Overweight': return 'var(--mint)';
-      case 'Hold': case 'Neutral': case 'Market Perform': case 'Sector Perform': case 'Perform': return 'var(--gold)';
-      case 'Underperform': case 'Underweight': case 'Sector Underperform': case 'Sell': return 'var(--coral)';
-      default: return 'var(--text2)';
-    }
-  };
-  
-  const getActionColor = (action: string) => {
-    switch (action) {
-      case 'Initiation': return 'var(--cyan)';
-      case 'Upgrade': case 'PT Raise': return 'var(--mint)';
-      case 'Downgrade': case 'PT Cut': case 'Double Downgrade': return 'var(--coral)';
-      case 'Reiterate': case 'Maintained': case 'Update': return 'var(--text3)';
-      default: return 'var(--text3)';
-    }
-  };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Wall Street Coverage<UpdateIndicators sources="WS" /></h2>
-
-      {/* Consensus Snapshot */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-consensus</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Consensus Snapshot<UpdateIndicators sources="WS" /></div>
-        <div className="g2">
-          {/* Price Target Summary */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>AVG PT</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--cyan)', fontFamily: 'Space Mono' }}>
-                  {avgPT ? `$${avgPT.toFixed(0)}` : '—'}
-                </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>MEDIAN PT</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--sky)', fontFamily: 'Space Mono' }}>
-                  {medianPT ? `$${medianPT.toFixed(0)}` : '—'}
-                </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>HIGH / LOW</div>
-                <div style={{ fontSize: 18, fontWeight: 700, fontFamily: 'Space Mono' }}>
-                  <span style={{ color: 'var(--mint)' }}>${highPT}</span>
-                  <span style={{ color: 'var(--text3)' }}> / </span>
-                  <span style={{ color: 'var(--coral)' }}>${lowPT}</span>
-                </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>ANALYSTS</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text)', fontFamily: 'Space Mono' }}>
-                  {totalAnalysts}
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Ratings Distribution */}
-          <div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>RATINGS DISTRIBUTION</div>
-            {totalAnalysts > 0 ? (
-              <>
-                <div style={{ display: 'flex', height: 24, borderRadius: 6, overflow: 'hidden' }}>
-                  {ratingCounts.bullish > 0 && (
-                    <div style={{ width: `${(ratingCounts.bullish / totalAnalysts) * 100}%`, background: 'var(--mint)' }} />
-                  )}
-                  {ratingCounts.neutral > 0 && (
-                    <div style={{ width: `${(ratingCounts.neutral / totalAnalysts) * 100}%`, background: 'var(--gold)' }} />
-                  )}
-                  {ratingCounts.bearish > 0 && (
-                    <div style={{ width: `${(ratingCounts.bearish / totalAnalysts) * 100}%`, background: 'var(--coral)' }} />
-                  )}
-                </div>
-                <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
-                  <span style={{ color: 'var(--mint)' }}>● Buy/OW: {ratingCounts.bullish}</span>
-                  <span style={{ color: 'var(--gold)' }}>● Hold/Neutral: {ratingCounts.neutral}</span>
-                  <span style={{ color: 'var(--coral)' }}>● Sell/UW: {ratingCounts.bearish}</span>
-                </div>
-              </>
-            ) : (
-              <div style={{ color: 'var(--text3)', fontSize: 13 }}>No analyst coverage data yet</div>
-            )}
-          </div>
-        </div>
-      </div>
-      
-      {/* Coverage by Firm - Grouped Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-coverage</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage by Firm ({totalAnalysts} Analysts)<UpdateIndicators sources="WS" /></div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {ANALYST_COVERAGE.map((coverage) => {
-            const isExpanded = expandedFirm === coverage.firm;
-            const fullReportCount = coverage.reports.filter(r => r.isFullReport).length;
-            const updateCount = coverage.reports.filter(r => !r.isFullReport).length;
-            
-            return (
-              <div 
-                key={coverage.firm}
-                style={{ 
-                  background: 'var(--surface2)', 
-                  borderRadius: 8,
-                  border: isExpanded ? '1px solid var(--cyan)' : '1px solid var(--border)',
-                  overflow: 'hidden'
-                }}
-              >
-                {/* Firm Header - Always Visible */}
-                <div 
-                  onClick={() => setExpandedFirm(isExpanded ? null : coverage.firm)}
-                  style={{ 
-                    padding: 16, 
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div>
-                      <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>{coverage.firm}</div>
-                      <div style={{ color: 'var(--text3)', fontSize: 12 }}>{coverage.analyst} · Since {coverage.coverageSince}</div>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    {/* Current Rating Badge */}
-                    <div style={{ 
-                      padding: '4px 12px', 
-                      borderRadius: 6, 
-                      background: `${getRatingColor(coverage.currentRating, coverage.currentRatingNormalized)}22`,
-                      border: `1px solid ${getRatingColor(coverage.currentRating, coverage.currentRatingNormalized)}44`,
-                    }}>
-                      <span style={{ color: getRatingColor(coverage.currentRating, coverage.currentRatingNormalized), fontWeight: 600, fontSize: 12 }}>
-                        {coverage.currentRating.toUpperCase()}
-                      </span>
-                    </div>
-                    
-                    {/* Current PT */}
-                    <div style={{ fontFamily: 'Space Mono', textAlign: 'right', minWidth: 60 }}>
-                      <span style={{ color: 'var(--text)', fontSize: 16, fontWeight: 600 }}>
-                        {coverage.currentPT ? `$${coverage.currentPT}` : '—'}
-                      </span>
-                    </div>
-                    
-                    {/* Report counts */}
-                    <div style={{ display: 'flex', gap: 8, fontSize: 11 }}>
-                      <span style={{ padding: '2px 6px', background: 'var(--cyan)', color: 'white', borderRadius: 4 }}>
-                        {fullReportCount} Reports
-                      </span>
-                      <span style={{ padding: '2px 6px', background: 'var(--surface3)', color: 'var(--text3)', borderRadius: 4 }}>
-                        {updateCount} Updates
-                      </span>
-                    </div>
-                    
-                    {/* Expand indicator */}
-                    <span style={{ color: 'var(--text3)', fontSize: 12 }}>
-                      {isExpanded ? '▼' : '▶'}
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Expanded History */}
-                {isExpanded && (
-                  <div style={{ borderTop: '1px solid var(--border)', padding: 16, background: 'var(--surface)' }}>
-                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>COVERAGE HISTORY ({coverage.reports.length} entries)</div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {coverage.reports.map((report, idx) => {
-                        const reportKey = `${coverage.firm}-${idx}`;
-                        const isReportExpanded = expandedReportIdx === reportKey;
-                        
-                        return (
-                          <div
-                            key={idx}
-                            style={{
-                              padding: 12,
-                              background: report.isFullReport ? 'var(--surface2)' : 'var(--surface)',
-                              borderRadius: 6,
-                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? '3px solid var(--cyan)' : 'none'
-                            }}
-                          >
-                            {/* Report Header */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <span style={{ color: 'var(--text3)', fontSize: 12, minWidth: 90 }}>
-                                  {new Date(report.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                </span>
-                                <span style={{ 
-                                  color: getActionColor(report.action),
-                                  fontSize: 11,
-                                  fontWeight: 600,
-                                  padding: '2px 8px',
-                                  background: `${getActionColor(report.action)}22`,
-                                  borderRadius: 4
-                                }}>
-                                  {report.action}
-                                </span>
-                                <span style={{ color: getRatingColor(report.rating, report.ratingNormalized), fontSize: 12, fontWeight: 500 }}>
-                                  {report.rating}
-                                </span>
-                              </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <span style={{ fontFamily: 'Space Mono', color: 'var(--text)', fontSize: 14 }}>
-                                  {report.priceTarget ? `$${report.priceTarget}` : '—'}
-                                  {report.previousTarget && (
-                                    <span style={{ color: 'var(--text3)', fontSize: 11 }}> ← ${report.previousTarget}</span>
-                                  )}
-                                </span>
-                                {report.source && (
-                                  <a 
-                                    href={report.sourceUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    style={{ fontSize: 10, color: 'var(--cyan)', textDecoration: 'none' }}
-                                  >
-                                    {report.source}
-                                  </a>
-                                )}
-                              </div>
-                            </div>
-                            
-                            {/* Report Title if exists */}
-                            {report.reportTitle && (
-                              <div style={{ color: 'var(--text2)', fontSize: 12, fontStyle: 'italic' }}>
-                                "{report.reportTitle}"
-                              </div>
-                            )}
-                            
-                            {/* Full report content (expandable) */}
-                            {report.isFullReport && report.thesis && (
-                              <>
-                                <div style={{ color: 'var(--text2)', fontSize: 12, lineHeight: 1.5 }}>
-                                  {report.thesis}
-                                </div>
-                                
-                                {(report.reportSummary || report.assumptions || report.estimates) && (
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setExpandedReportIdx(isReportExpanded ? null : reportKey);
-                                    }}
-                                    style={{
-                                      background: 'none',
-                                      border: 'none',
-                                      color: 'var(--cyan)',
-                                      fontSize: 11,
-                                      cursor: 'pointer',
-                                      padding: '4px 0'
-                                    }}
-                                  >
-                                    {isReportExpanded ? '▼ Less details' : '▶ Full report details'}
-                                  </button>
-                                )}
-                                
-                                {isReportExpanded && (
-                                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                                    {report.reportSummary && (
-                                      <div style={{ 
-                                        background: 'var(--surface)', 
-                                        padding: 12, 
-                                        borderRadius: 6,
-                                        fontSize: 12,
-                                        color: 'var(--text2)',
-                                        lineHeight: 1.6,
-                                        whiteSpace: 'pre-wrap'
-                                      }}>
-                                        {report.reportSummary.split('\n\n').map((paragraph, pIdx) => {
-                                          const headerMatch = paragraph.match(/^\*\*(.+?)\*\*/);
-                                          if (headerMatch) {
-                                            const header = headerMatch[1];
-                                            const rest = paragraph.replace(/^\*\*.+?\*\*\s*/, '');
-                                            return (
-                                              <div key={pIdx} style={{ }}>
-                                                <div style={{ color: 'var(--text)', fontWeight: 600, fontSize: 11 }}>{header}</div>
-                                                <div>{rest}</div>
-                                              </div>
-                                            );
-                                          }
-                                          return <div key={pIdx} style={{ }}>{paragraph}</div>;
-                                        })}
-                                      </div>
-                                    )}
-                                    
-                                    {report.assumptions && report.assumptions.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--text3)' }}>KEY ASSUMPTIONS</div>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                                          {report.assumptions.map((a, i) => (
-                                            <span key={i} style={{ padding: '3px 8px', background: 'var(--surface)', borderRadius: 4, fontSize: 11, color: 'var(--text2)' }}>
-                                              {a.label}: <span style={{ color: 'var(--cyan)' }}>{a.value}</span>
-                                            </span>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-                                    
-                                    {report.catalysts && report.catalysts.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--mint)' }}>CATALYSTS</div>
-                                        <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
-                                          {report.catalysts.map((c, i) => <li key={i}>{c}</li>)}
-                                        </ul>
-                                      </div>
-                                    )}
-                                    
-                                    {report.risks && report.risks.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--coral)' }}>RISKS</div>
-                                        <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
-                                          {report.risks.map((r, i) => <li key={i}>{r}</li>)}
-                                        </ul>
-                                      </div>
-                                    )}
-                                    
-                                    {report.estimates && report.estimates.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--sky)' }}>ESTIMATES</div>
-                                        <table className="tbl">
-                                          <thead>
-                                            <tr>
-                                              <th>Metric</th>
-                                              <th className="r">FY24</th>
-                                              <th className="r">FY25</th>
-                                              <th className="r">FY26</th>
-                                              <th className="r">FY27</th>
-                                              <th className="r">FY28</th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            {report.estimates.map((e, i) => (
-                                              <tr key={i}>
-                                                <td>{e.metric}</td>
-                                                <td className="r">{e.fy24 || '—'}</td>
-                                                <td className="r">{e.fy25 || '—'}</td>
-                                                <td className="r">{e.fy26 || '—'}</td>
-                                                <td className="r">{e.fy27 || '—'}</td>
-                                                <td className="r">{e.fy28 || '—'}</td>
-                                              </tr>
-                                            ))}
-                                          </tbody>
-                                        </table>
-                                      </div>
-                                    )}
-                                    
-                                    {report.methodology && (
-                                      <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-                                        <span>Methodology: </span>
-                                        <span style={{ color: 'var(--text2)' }}>{report.methodology}</span>
-                                      </div>
-                                    )}
-                                    
-                                    {report.fullNotes && (
-                                      <div style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
-                                        {report.fullNotes}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
+    <>
+      <SharedWallStreetTab coverage={ANALYST_COVERAGE} ticker="ASTS" />
       {/* CFA Notes */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Sell-Side Research" items={[
@@ -13203,9 +12956,10 @@ DISCLOSURE: Roth Capital Partners, LLC. Scott W. Searle, CFA, Managing Director,
         { term: 'Consensus vs Variant', def: 'When your view differs from consensus, understand why. Variant perception + catalyst = alpha opportunity. But: "the market can stay irrational longer than you can stay solvent."' },
         { term: 'Conflicts of Interest', def: 'Investment banks have relationships with covered companies. Be aware of potential conflicts. Independent research may offer less conflicted views.' },
       ]} />
-    </div>
+    </>
   );
 };
+
 const FinancialsTab = () => {
   // ═══════════════════════════════════════════════════════════════════════════
   // UNIFIED FINANCIALS TAB - Canonical structure shared across all models

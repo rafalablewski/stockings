@@ -17,6 +17,7 @@ export {
   CRCL_METADATA,
   COMPANY_INFO,
   MARKET,
+  USDC_DATA,
   MODEL_METADATA,
   DATA_FRESHNESS,
 } from './company';

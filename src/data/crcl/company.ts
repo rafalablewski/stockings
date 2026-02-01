@@ -75,6 +75,23 @@ export const MARKET = {
 };
 
 // ============================================================================
+// USDC DATA - Update from quarterly reports
+// ============================================================================
+
+/**
+ * USDC circulation and market share data
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - usdcCirculation: From Circle transparency reports or 10-Q
+ * - marketShare: USDC % of total stablecoin market
+ */
+export const USDC_DATA = {
+  usdcCirculation: 62.5,      // $62.5B USDC in circulation (Q3 2025 10-Q)
+  marketShare: 29,            // ~29% of stablecoin market
+  usdcAsOf: '2025-09-30',     // Date of circulation data
+};
+
+// ============================================================================
 // MODEL METADATA - For display purposes
 // ============================================================================
 

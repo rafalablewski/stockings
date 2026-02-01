@@ -14,16 +14,16 @@
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
  * ║  BMNR (BitMine Immersion Technologies) Financial Analysis Model               ║
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
- * ║  Version: 2.4.8                                                               ║
- * ║  Last Updated: January 20, 2026                                               ║
+ * ║  Version: 2.4.9                                                               ║
+ * ║  Last Updated: January 26, 2026                                               ║
  * ║  Maintainer: Rafal (via Claude AI)                                            ║
  * ║                                                                               ║
- * ║  CHANGELOG v2.4.8:                                                            ║
- * ║  - Jan 20, 2026 PR: 4.203M ETH, $14.5B total, 81% shareholder vote YES        ║
- * ║  - Staked ETH surged to 1.838M (43.7%), $374M/yr at scale                     ║
- * ║  - Beast Industries $200M closed, 3.48% ETH supply (70% to Alchemy of 5%)     ║
+ * ║  CHANGELOG v2.4.9:                                                            ║
+ * ║  - Jan 26, 2026 PR: 4.243M ETH, $12.8B total, staking hits 2.009M (47.4%)     ║
+ * ║  - Acquired 40,302 ETH in past week, now 3.52% of supply (~70% to 5%)         ║
+ * ║  - Cash: $682M, Beast $200M closed, #91 most traded ($1.2B/day)               ║
  * ║                                                                               ║
- * ║  CHANGELOG v2.4.7:                                                            ║
+ * ║  CHANGELOG v2.4.8:                                                            ║
  * ║  - Added $200M Beast Industries investment PR (Jan 15, 2026)                   ║
  * ║                                                                               ║
  * ║  CHANGELOG v2.4.6:                                                            ║
@@ -196,6 +196,8 @@
 
 import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
+import { SharedWallStreetTab, AnalystCoverage } from '../shared';
+import StockChart from '../shared/StockChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -292,38 +294,7 @@ interface ErrorBoundaryState {
 // ============================================================================
 
 /** Individual analyst report entry */
-interface AnalystReportEntry {
-  date: string;
-  action: 'Initiation' | 'PT Raise' | 'PT Cut' | 'Upgrade' | 'Downgrade' | 'Maintained' | 'Update' | 'Reiterate' | 'Double Downgrade' | 'Drop';
-  priceTarget: number | null;
-  previousTarget?: number | null;
-  rating: string;
-  ratingNormalized: 'bullish' | 'neutral' | 'bearish';
-  reportTitle?: string;
-  source?: string;
-  sourceUrl?: string;
-  isFullReport: boolean;
-  // Full report fields (only present when isFullReport = true)
-  thesis?: string;
-  reportSummary?: string;
-  assumptions?: { label: string; value: string }[];
-  catalysts?: string[];
-  risks?: string[];
-  estimates?: { metric: string; fy24?: string; fy25?: string; fy26?: string; fy27?: string; fy28?: string }[];
-  methodology?: string;
-  fullNotes?: string;
-}
-
-/** Analyst coverage by firm */
-interface AnalystCoverage {
-  firm: string;
-  analyst: string;
-  coverageSince: string;
-  currentPT: number | null;
-  currentRating: string;
-  currentRatingNormalized: 'bullish' | 'neutral' | 'bearish';
-  reports: AnalystReportEntry[];
-}
+// AnalystCoverage type imported from '../shared' (wallStreetTypes.ts)
 
 /** Rating normalization map */
 const RATING_NORMALIZATION: Record<string, 'bullish' | 'neutral' | 'bearish'> = {
@@ -674,21 +645,21 @@ const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
 CFANotes.displayName = 'CFANotes';
 
 /*
- * DEFAULT PARAMETERS - Based on latest official data (Jan 20, 2026 PR)
+ * DEFAULT PARAMETERS - Based on latest official data (Jan 26, 2026 PR)
  * Update these when new weekly holdings PRs are released
  *
  * Current defaults reflect:
- * - ETH Holdings: 4,203,036 (Jan 20, 2026 PR - 3.48% of 120.7M ETH supply)
- * - Shares Outstanding: 434M fully diluted (Jan 20, 2026 PR)
- * - Stock Price: ~$27.15 (Jan 20, 2026)
- * - ETH Price: $3,211 (Jan 19, 2026 Coinbase)
- * - Staking Ratio: 43.73% (1,838,003 ETH staked via 3 providers, Jan 19)
+ * - ETH Holdings: 4,243,338 (Jan 26, 2026 PR - 3.52% of 120.7M ETH supply)
+ * - Shares Outstanding: 434M fully diluted (Jan 26, 2026 PR)
+ * - Stock Price: ~$27.15 (Jan 26, 2026) - UPDATE REGULARLY
+ * - ETH Price: $2,839 (Jan 25, 2026 Coinbase)
+ * - Staking Ratio: 47.36% (2,009,267 ETH staked via 3 providers, Jan 25)
  * - Base Staking APY: 2.81% (CESR rate)
- * - Total Cash: $979M (post Beast Industries closing)
+ * - Total Cash: $682M
  * - BTC Holdings: 193 BTC
- * - Moonshots: $22M (Eightco ORBS stake)
+ * - Moonshots: $19M (Eightco ORBS stake)
  * - Strategic Investments: $200M (Beast Industries - MrBeast, CLOSED Jan 17)
- * - Total Holdings: $14.5B (crypto + cash + moonshots + strategic investments)
+ * - Total Holdings: $12.8B (crypto + cash + moonshots + strategic investments)
  *
  * COMPANY INFO (SEC EDGAR):
  * - CIK: 0001829311
@@ -698,12 +669,12 @@ CFANotes.displayName = 'CFANotes';
  * - Fiscal Year End: August 31
  */
 const BMNRDilutionAnalysis = () => {
-  // === DATA FRESHNESS: Last updated Jan 20, 2026 ===
+  // === DATA FRESHNESS: Last updated Jan 26, 2026 ===
   // Update prices regularly - stale data affects all NAV calculations
-  const [currentETH, setCurrentETH] = useState(4203036);  // Jan 20, 2026 PR - 3.48% of ETH supply
-  const [currentShares, setCurrentShares] = useState(434);
-  const [currentStockPrice, setCurrentStockPrice] = useState(27.15);  // ⚠️ UPDATE REGULARLY - Last: Jan 20, 2026
-  const [ethPrice, setEthPrice] = useState(3211);  // ⚠️ UPDATE REGULARLY - Last: Jan 19, 2026 (Coinbase)
+  const [currentETH, setCurrentETH] = useState(DEFAULTS.currentETH);  // From @/data/bmnr/company.ts
+  const [currentShares, setCurrentShares] = useState(DEFAULTS.currentShares);  // From @/data/bmnr/company.ts
+  const [currentStockPrice, setCurrentStockPrice] = useState(DEFAULTS.currentStockPrice);  // From @/data/bmnr/company.ts
+  const [ethPrice, setEthPrice] = useState(DEFAULTS.ethPrice);  // From @/data/bmnr/company.ts
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
   const [dilutionPercent, setDilutionPercent] = useState(5);
@@ -723,7 +694,7 @@ const BMNRDilutionAnalysis = () => {
   const [stakingType, setStakingType] = useState('liquid');
   const [baseStakingAPY, setBaseStakingAPY] = useState(2.81);
   const [restakingBonus, setRestakingBonus] = useState(2.0);
-  const [stakingRatio, setStakingRatio] = useState(43.73);  // 1,838,003 / 4,203,036 = 43.73% (Jan 20, 2026 PR)
+  const [stakingRatio, setStakingRatio] = useState(47.36);  // 2,009,267 / 4,243,338 = 47.36% (Jan 26, 2026 PR)
   const [useDebt, setUseDebt] = useState(false);
   const [debtAmount, setDebtAmount] = useState(100);
   const [debtRate, setDebtRate] = useState(2.5);
@@ -731,7 +702,7 @@ const BMNRDilutionAnalysis = () => {
   const [conversionPremium, setConversionPremium] = useState(50);
   const [debtCovenantLTV, setDebtCovenantLTV] = useState(50);
   // Dividend parameters - First dividend announced Nov 24, 2025 ($0.01/share)
-  const [quarterlyDividend, setQuarterlyDividend] = useState(0.01);
+  const [quarterlyDividend, setQuarterlyDividend] = useState(DIVIDEND_DATA.quarterlyDividend);  // From @/data/bmnr/company.ts
   const [dividendGrowthRate, setDividendGrowthRate] = useState(10); // % annual growth
 
   // Update indicator visibility toggle
@@ -932,7 +903,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'backtest' && <BacktestTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} historicalETH={historicalETH} baseStakingAPY={baseStakingAPY} navMultiple={currentStockPrice / calc.currentNAV} />}
         {activeTab === 'monte-carlo' && <MonteCarloTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} stakingYield={calc.effectiveAPY} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} operatingCosts={operatingCosts} regulatoryRisk={regulatoryRisk} />}
         {activeTab === 'investment' && <InvestmentTab />}
-        {activeTab === 'financials' && <SECFilingsTab />}
+        {activeTab === 'financials' && <FinancialsTab />}
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
         </main>
@@ -1181,9 +1152,8 @@ const ModelTab = ({
 }) => {
   // Model parameters state
   // Note: For NAV companies, discount rate captures ALL risk (no separate risk factors)
-  const [ethInputMode, setEthInputMode] = useState<'growth' | 'target'>('growth');
+  const [ethInputMode, setEthInputMode] = useState<'current' | 'growth'>('current');
   const [ethGrowthRate, setEthGrowthRate] = useState(10);
-  const [ethTargetPrice, setEthTargetPrice] = useState(10000);
   const [stakingYield, setStakingYield] = useState(3.5);
   const [navPremium, setNavPremium] = useState(1.0);
   const [dilutionRate, setDilutionRate] = useState(8);
@@ -1224,14 +1194,10 @@ const ModelTab = ({
 
   // STEP 2: Terminal Year (5 years) ETH Price
   const terminalYears = 5;
-  // Support both growth rate and target price modes
-  const terminalEthPrice = ethInputMode === 'target'
-    ? ethTargetPrice
+  // Support both current (no growth) and growth projection modes
+  const terminalEthPrice = ethInputMode === 'current'
+    ? ethPrice  // Use current price from Parameters (no appreciation assumed)
     : ethPrice * Math.pow(1 + ethGrowthRate / 100, terminalYears);
-  // Calculate implied values for display
-  const impliedGrowthRate = ethInputMode === 'target'
-    ? (Math.pow(ethTargetPrice / ethPrice, 1 / terminalYears) - 1) * 100
-    : ethGrowthRate;
 
   // STEP 3: Terminal Year ETH Holdings (with staking yield compounding)
   const netYieldRate = (stakingYield - operatingCosts) / 100;
@@ -1344,118 +1310,93 @@ const ModelTab = ({
           </div>
         </div>
 
-        {/* ETH HOLDINGS ASSUMPTION */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-holdings</div>
-        <h3 style={{ color: 'var(--cyan)' }}>ETH Holdings</h3>
-        <div className="g2">
-          <BMNRParameterCard
-            title="ETH Holdings (M)"
-            explanation="Total ETH held by BMNR. Default: 4.17M from Jan 2026 PR (3.45% of ETH supply). Adjust to model different accumulation scenarios or test sensitivity to holdings size."
-            options={[2, 3, 3.5, 4.17, 5, 7]}
-            value={Math.round(currentETH / 1_000_000 * 100) / 100}
-            onChange={v => setCurrentETH(Math.round(v * 1_000_000))}
-            format="ETH"
-          />
+        {/* CALCULATION MODE TOGGLE */}
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#calculation-mode</div>
+        <h3 style={{ color: 'var(--cyan)' }}>Calculation Mode</h3>
+        <div className="card">
+          <div className="card-title">Data Source</div>
+          <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5, marginBottom: 12 }}>
+            Choose how to calculate valuation. "Use Parameters" takes current ETH holdings and price from Overview tab. "Use Growth Projection" projects future value using growth rate.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+            <div
+              onClick={() => setEthInputMode('current')}
+              style={{
+                padding: 16,
+                borderRadius: 10,
+                border: ethInputMode === 'current' ? '2px solid var(--mint)' : '1px solid var(--border)',
+                background: ethInputMode === 'current' ? 'rgba(52,211,153,0.1)' : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ fontSize: 20, marginBottom: 4 }}>📍</div>
+              <div style={{ fontWeight: 600, fontSize: 13, color: ethInputMode === 'current' ? 'var(--mint)' : 'var(--text)' }}>
+                Use Parameters
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>
+                {(currentETH / 1_000_000).toFixed(2)}M ETH × ${ethPrice.toLocaleString()}
+              </div>
+            </div>
+            <div
+              onClick={() => setEthInputMode('growth')}
+              style={{
+                padding: 16,
+                borderRadius: 10,
+                border: ethInputMode === 'growth' ? '2px solid var(--cyan)' : '1px solid var(--border)',
+                background: ethInputMode === 'growth' ? 'rgba(34,211,238,0.1)' : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ fontSize: 20, marginBottom: 4 }}>📈</div>
+              <div style={{ fontWeight: 600, fontSize: 13, color: ethInputMode === 'growth' ? 'var(--cyan)' : 'var(--text)' }}>
+                Use Growth Projection
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>
+                {ethGrowthRate > 0 ? '+' : ''}{ethGrowthRate}% annual ETH growth
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* ETH & YIELD PARAMETERS */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-price</div>
-        <h3 style={{ color: 'var(--cyan)' }}>ETH Price Projection</h3>
-        <p style={{ fontSize: 12, color: 'var(--text3)' }}>
-          Choose ONE method to project terminal ETH price. Click on a card to activate it.
-        </p>
-
-        {/* Two mutually exclusive ETH price inputs */}
-        <div className="g2">
-          {/* Target ETH Price Card */}
-          <div
-            onClick={() => setEthInputMode('target')}
-            style={{
-              opacity: ethInputMode === 'target' ? 1 : 0.5,
-              cursor: ethInputMode === 'target' ? 'default' : 'pointer',
-              position: 'relative',
-            }}
-          >
-            {ethInputMode !== 'target' && (
-              <div style={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                background: 'var(--surface2)',
-                padding: '2px 8px',
-                borderRadius: 4,
-                fontSize: 10,
-                color: 'var(--text3)',
-                zIndex: 1,
-              }}>
-                Click to enable
-              </div>
-            )}
-            <BMNRParameterCard
-              title={`Target ETH Price (${new Date().getFullYear() + 5})`}
-              explanation={`Set your target ETH price for ${new Date().getFullYear() + 5}. Current: $${ethPrice.toLocaleString()}. ${ethInputMode === 'target' ? `Implies ${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}% annual growth.` : 'Click to use this method.'}`}
-              options={[1500, 2500, 4000, 8000, 15000, 50000]}
-              value={ethTargetPrice}
-              onChange={v => { setEthTargetPrice(v); setEthInputMode('target'); setSelectedScenario('custom'); }}
-              format="$"
-              disabled={ethInputMode !== 'target'}
-            />
-          </div>
-
-          {/* ETH Growth Rate Card */}
-          <div
-            onClick={() => setEthInputMode('growth')}
-            style={{
-              opacity: ethInputMode === 'growth' ? 1 : 0.5,
-              cursor: ethInputMode === 'growth' ? 'default' : 'pointer',
-              position: 'relative',
-            }}
-          >
-            {ethInputMode !== 'growth' && (
-              <div style={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                background: 'var(--surface2)',
-                padding: '2px 8px',
-                borderRadius: 4,
-                fontSize: 10,
-                color: 'var(--text3)',
-                zIndex: 1,
-              }}>
-                Click to enable
-              </div>
-            )}
+        {/* ETH GROWTH RATE - Always visible, disabled when using parameters */}
+        <div style={{ opacity: ethInputMode === 'current' ? 0.4 : 1, pointerEvents: ethInputMode === 'current' ? 'none' : 'auto' }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-growth</div>
+          <h3 style={{ color: 'var(--cyan)' }}>ETH Growth Projection</h3>
+          <div className="g2">
             <BMNRParameterCard
               title="ETH Annual Growth Rate (%)"
-              explanation={`Expected annual ETH price appreciation. ${ethInputMode === 'growth' ? `Terminal: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}` : 'Click to use this method.'} Historical: +90% (2024), -67% (2022).`}
+              explanation={`Expected annual ETH price appreciation over ${terminalYears} years. Terminal: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})} from current $${ethPrice.toLocaleString()}. Historical: +90% (2024), -67% (2022).`}
               options={[-30, -5, 10, 20, 35, 60]}
               value={ethGrowthRate}
-              onChange={v => { setEthGrowthRate(v); setEthInputMode('growth'); setSelectedScenario('custom'); }}
+              onChange={v => { setEthGrowthRate(v); setSelectedScenario('custom'); }}
               format="%"
-              disabled={ethInputMode !== 'growth'}
             />
           </div>
         </div>
 
-        {/* Active method indicator */}
+        {/* Current mode summary */}
         <div style={{
           padding: '8px 12px',
-          background: ethInputMode === 'target' ? 'rgba(126,231,135,0.1)' : 'rgba(34,211,238,0.1)',
+          background: ethInputMode === 'current' ? 'rgba(52,211,153,0.1)' : 'rgba(34,211,238,0.1)',
           borderRadius: 6,
           fontSize: 12,
           display: 'flex',
           alignItems: 'center',
           gap: 8,
         }}>
-          <span style={{ color: ethInputMode === 'target' ? 'var(--mint)' : 'var(--cyan)', fontWeight: 600 }}>
-            {ethInputMode === 'target' ? '🎯 Using Target Price' : '📈 Using Growth Rate'}
+          <span style={{ color: ethInputMode === 'current' ? 'var(--mint)' : 'var(--cyan)', fontWeight: 600 }}>
+            {ethInputMode === 'current' ? '📍 Using Parameters' : '📈 Using Growth Projection'}
           </span>
           <span style={{ color: 'var(--text3)' }}>→</span>
           <span style={{ color: 'var(--text2)' }}>
-            Terminal ETH: <strong>${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}</strong>
-            {ethInputMode === 'target' && ` (${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}%/yr)`}
-            {ethInputMode === 'growth' && ` (from $${ethPrice.toLocaleString()})`}
+            {ethInputMode === 'current'
+              ? `NAV: $${((currentETH * ethPrice) / 1e9).toFixed(2)}B (${(currentETH / 1_000_000).toFixed(2)}M ETH × $${ethPrice.toLocaleString()})`
+              : `Terminal ETH: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})} (${ethGrowthRate > 0 ? '+' : ''}${ethGrowthRate}%/yr × ${terminalYears}yr)`
+            }
           </span>
         </div>
 
@@ -1518,20 +1459,6 @@ const ModelTab = ({
           />
         </div>
 
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#current-position</div>
-        <div className="card">
-          <div className="card-title">Current Position</div>
-          <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
-            Live data from BMNR holdings. Used as starting point for projections.
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, fontSize: 12 }}>
-            <div><span style={{ color: 'var(--text3)' }}>ETH Holdings:</span> <strong>{currentETH.toLocaleString()}</strong></div>
-            <div><span style={{ color: 'var(--text3)' }}>ETH Price:</span> <strong>${ethPrice.toLocaleString()}</strong></div>
-            <div><span style={{ color: 'var(--text3)' }}>Current NAV:</span> <strong>${currentNAV.toFixed(0)}M</strong></div>
-            <div><span style={{ color: 'var(--text3)' }}>NAV/Share:</span> <strong>${navPerShare.toFixed(2)}</strong></div>
-          </div>
-        </div>
-
         {/* DCF VALUATION OUTPUT */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-output</div>
         <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
@@ -1569,7 +1496,7 @@ const ModelTab = ({
               <tr>
                 <td style={{ color: 'var(--text2)' }}>Terminal ETH Price</td>
                 <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                <td style={{ color: 'var(--text3)' }}>{impliedGrowthRate > 0 ? '+' : ''}{impliedGrowthRate.toFixed(1)}%/yr × 5yrs</td>
+                <td style={{ color: 'var(--text3)' }}>{ethInputMode === 'current' ? 'current (no growth)' : `${ethGrowthRate > 0 ? '+' : ''}${ethGrowthRate}%/yr × 5yrs`}</td>
               </tr>
               <tr>
                 <td style={{ color: 'var(--text2)' }}>Terminal ETH Holdings</td>
@@ -1628,8 +1555,7 @@ const ModelTab = ({
                   {ethInputMode === 'growth' ? (
                     <>ETH Price = ${ethPrice.toLocaleString()} × (1 + {ethGrowthRate}%)^5<br/></>
                   ) : (
-                    <>ETH Price = ${ethTargetPrice.toLocaleString()} (target)<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ≈ {impliedGrowthRate.toFixed(1)}%/yr implied<br/></>
+                    <>ETH Price = ${ethPrice.toLocaleString()} (current, no growth)<br/></>
                   )}
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong><br/><br/>
                   ETH Holdings = {currentETH.toLocaleString()} × (1 + {(netYieldRate * 100).toFixed(2)}%)^5<br/>
@@ -1689,6 +1615,158 @@ const ModelTab = ({
   );
 };
 
+// Overview Parameter Card - matches Model tab ParameterCard styling with custom input support
+const OverviewParameterCard = ({
+  title,
+  explanation,
+  options,
+  value,
+  onChange,
+  format = '',
+  currentValue,
+}: {
+  title: string;
+  explanation: string;
+  options: number[];
+  value: number;
+  onChange: (v: number) => void;
+  format?: string;
+  currentValue?: number;
+}) => {
+  const [customMode, setCustomMode] = useState(false);
+  const [customInput, setCustomInput] = useState('');
+  const isCustomValue = !options.includes(value);
+
+  const formatValue = (v: number) => {
+    if (format === '$') return `$${v}`;
+    if (format === '%') return `${v}%`;
+    if (format === 'B') return v >= 1000 ? `${(v/1000).toFixed(1)}B` : `${v}`;
+    if (format === 'M') return v >= 1000000 ? `${(v/1000000).toFixed(2)}M` : `${(v/1000).toFixed(0)}K`;
+    if (format === 'ETH') return v >= 1000000 ? `${(v/1000000).toFixed(2)}M` : `${(v/1000).toFixed(0)}K`;
+    return String(v);
+  };
+
+  const presetColors = [
+    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+  ];
+
+  const handleCustomSubmit = () => {
+    const num = parseFloat(customInput);
+    if (!isNaN(num)) {
+      onChange(num);
+      setCustomMode(false);
+      setCustomInput('');
+    }
+  };
+
+  return (
+    <div className="card">
+      <div className="card-title">{title}</div>
+      <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+        {explanation}
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+        {options.slice(0, 6).map((opt, idx) => {
+          const isActive = value === opt;
+          const isCurrent = currentValue !== undefined && opt === currentValue;
+          const colors = presetColors[idx];
+          return (
+            <div
+              key={opt}
+              onClick={() => { onChange(opt); setCustomMode(false); }}
+              style={{
+                padding: '10px 4px',
+                borderRadius: 8,
+                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                background: isActive ? colors.bg : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? colors.text : 'var(--text3)',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {isCurrent && (
+                <div style={{
+                  position: 'absolute',
+                  top: 4,
+                  right: 4,
+                  width: 4,
+                  height: 4,
+                  borderRadius: '50%',
+                  background: 'var(--text3)',
+                  opacity: 0.4,
+                }} />
+              )}
+              {formatValue(opt)}
+            </div>
+          );
+        })}
+        {/* Custom input button/field */}
+        {customMode ? (
+          <div style={{
+            display: 'flex',
+            borderRadius: 8,
+            border: '2px solid var(--violet)',
+            background: 'rgba(167,139,250,0.15)',
+            overflow: 'hidden',
+          }}>
+            <input
+              type="text"
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
+              placeholder="..."
+              autoFocus
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: '8px 4px',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--violet)',
+                fontSize: 12,
+                fontWeight: 600,
+                textAlign: 'center',
+                outline: 'none',
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            onClick={() => setCustomMode(true)}
+            style={{
+              padding: '10px 4px',
+              borderRadius: 8,
+              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
+              background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              textAlign: 'center',
+              fontSize: 12,
+              fontWeight: isCustomValue ? 600 : 400,
+              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
+            }}
+          >
+            {isCustomValue ? formatValue(value) : '...'}
+          </div>
+        )}
+      </div>
+      <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>
+        ← Bearish | Bullish →
+      </div>
+    </div>
+  );
+};
+
 // OVERVIEW TAB with CFA Guide
 const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend }) => {
   // Chart data - HISTORICAL ONLY
@@ -1712,29 +1790,34 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>BMNR:</strong> ETH treasury company accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull-bear</div>
     <div className="g2">
-      <div className="thesis bull">
-        <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
-        <ul>
-          <li>ETH price appreciation — Cycle targets $10K-$15K+</li>
-          <li>NAV premium expansion — MSTR trades 2-3x; BMNR could follow</li>
-          <li>ETF/index inclusion — Forces passive buying, liquidity premium</li>
-          <li>Dividend growth — Staking scales → higher payouts</li>
-          <li>MAVAN launch — Proprietary staking = higher yields</li>
-          <li>Regulatory clarity — ETH not a security, staking approved</li>
-        </ul>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
+        <div className="thesis bull">
+          <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
+          <ul>
+            <li>ETH price appreciation — Cycle targets $10K-$15K+</li>
+            <li>NAV premium expansion — MSTR trades 2-3x; BMNR could follow</li>
+            <li>ETF/index inclusion — Forces passive buying, liquidity premium</li>
+            <li>Dividend growth — Staking scales → higher payouts</li>
+            <li>MAVAN launch — Proprietary staking = higher yields</li>
+            <li>Regulatory clarity — ETH not a security, staking approved</li>
+          </ul>
+        </div>
       </div>
-      <div className="thesis bear">
-        <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
-        <ul>
-          <li>ETH price crash — Crypto winter, -70% drawdowns possible</li>
-          <li>NAV discount — Premium compresses or inverts</li>
-          <li>Dilution risk — Aggressive ATM erodes ETH/share</li>
-          <li>Slashing events — Validator penalties reduce holdings</li>
-          <li>Regulatory action — SEC deems ETH a security</li>
-          <li>Execution risk — MAVAN delays, competition</li>
-        </ul>
+      <div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
+        <div className="thesis bear">
+          <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
+          <ul>
+            <li>ETH price crash — Crypto winter, -70% drawdowns possible</li>
+            <li>NAV discount — Premium compresses or inverts</li>
+            <li>Dilution risk — Aggressive ATM erodes ETH/share</li>
+            <li>Slashing events — Validator penalties reduce holdings</li>
+            <li>Regulatory action — SEC deems ETH a security</li>
+            <li>Execution risk — MAVAN delays, competition</li>
+          </ul>
+        </div>
       </div>
     </div>
 
@@ -1813,17 +1896,60 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-    <div className="card"><div className="card-title">Parameters</div>
-      <div className="g4" style={{ }}>
-        <Input label="ETH Holdings" value={currentETH} onChange={setCurrentETH} />
-        <Input label="Shares (M)" value={currentShares} onChange={setCurrentShares} />
-        <Input label="Stock Price ($)" value={currentStockPrice} onChange={setCurrentStockPrice} step={0.01} />
-        <Input label="ETH Price ($)" value={ethPrice} onChange={setEthPrice} />
-      </div>
-      <div style={{ }}>
-        <Input label="Qtr Dividend ($)" value={quarterlyDividend} onChange={setQuarterlyDividend} step={0.01} />
-      </div>
+    <h3 className="section-head">Parameters</h3>
+    <div className="g2">
+      <OverviewParameterCard
+        title="ETH Holdings"
+        explanation="Total ETH in treasury. Primary driver of NAV. Higher holdings = more intrinsic value per share assuming no dilution."
+        options={[3000000, 4000000, DEFAULTS.currentETH, 5000000, 6000000, 7000000]}
+        value={currentETH}
+        onChange={setCurrentETH}
+        format="ETH"
+        currentValue={DEFAULTS.currentETH}
+      />
+      <OverviewParameterCard
+        title="ETH Price ($)"
+        explanation="Current ETH spot price. Drives NAV calculation. Higher ETH price = higher NAV/share and staking income."
+        options={[2000, 2500, DEFAULTS.ethPrice, 3500, 4000, 5000]}
+        value={ethPrice}
+        onChange={setEthPrice}
+        format="$"
+        currentValue={DEFAULTS.ethPrice}
+      />
     </div>
+    <div className="g3">
+      <OverviewParameterCard
+        title="Shares (M)"
+        explanation="Total diluted shares. Higher count dilutes ETH/share and NAV/share."
+        options={[500, 450, DEFAULTS.currentShares, 400, 350, 300]}
+        value={currentShares}
+        onChange={setCurrentShares}
+        currentValue={DEFAULTS.currentShares}
+      />
+      <OverviewParameterCard
+        title="Stock Price ($)"
+        explanation="Current market price. Compare to NAV for premium/discount analysis."
+        options={[15, 20, DEFAULTS.currentStockPrice, 40, 55, 70]}
+        value={currentStockPrice}
+        onChange={setCurrentStockPrice}
+        format="$"
+        currentValue={DEFAULTS.currentStockPrice}
+      />
+      <OverviewParameterCard
+        title="Qtr Dividend ($)"
+        explanation="Per-share quarterly dividend. Higher dividend = better yield for income investors."
+        options={[DIVIDEND_DATA.quarterlyDividend, 0.02, 0.03, 0.04, 0.05, 0.10]}
+        value={quarterlyDividend}
+        onChange={setQuarterlyDividend}
+        format="$"
+        currentValue={DIVIDEND_DATA.quarterlyDividend}
+      />
+    </div>
+
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
+    <h3 className="section-head">Stock Chart</h3>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
+    <StockChart symbol="BMNR" />
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — ETH Treasury Fundamentals" items={[
@@ -4135,18 +4261,18 @@ const SECFilingTracker = () => {
     // Key dates
     firstFiling: 'October 27, 2020',
     firstFilingNote: 'As Sandy Springs Holdings (renamed Jul 2021)',
-    latestEvent: '4.203M ETH Holdings — $14.5B Total',
-    latestEventDate: 'Jan 20, 2026',
+    latestEvent: '4.243M ETH Holdings — $12.8B Total',
+    latestEventDate: 'Jan 26, 2026',
 
     // Last press release processed (for tracking)
-    lastPressRelease: 'January 20, 2026',
-    lastPressReleaseTitle: '4,203,036 ETH Holdings Update — $14.5B Total',
+    lastPressRelease: 'January 26, 2026',
+    lastPressReleaseTitle: '4,243,338 ETH Holdings Update — $12.8B Total',
 
     // Latest filings by type
     filings: {
       '10-K': { date: 'Nov 21, 2025', description: 'FY 2025', color: 'blue' },
       '10-Q': { date: 'Jan 13, 2026', description: 'Q1 FY2026', color: 'purple' },
-      '8-K': { date: 'Jan 20, 2026', description: '4.203M ETH Holdings', color: 'yellow' },
+      '8-K': { date: 'Jan 26, 2026', description: '4.243M ETH Holdings', color: 'yellow' },
       'S-3ASR': { date: 'Jul 9, 2025', description: '$2B ATM Shelf', color: 'green' },
       '424B5': { date: 'Sep 22, 2025', description: '$365M @ $70 + Warrants', color: 'orange' },
       'DEF 14A': { date: '—', description: 'Proxy (Annual)', color: 'cyan' },
@@ -4246,22 +4372,22 @@ const InvestmentTab = () => {
   
   // Current Investment Summary
   const current = {
-    date: '2026-01-20',
-    source: 'January 20, 2026 — PR: 4.203M ETH Holdings + 81% Shareholder Vote YES',
+    date: '2026-01-26',
+    source: 'January 26, 2026 — PR: 4.243M ETH Holdings + $12.8B Total',
     verdict: 'STRONG BUY',
     verdictColor: 'green',
     tagline: 'The ETH Supercycle Play',
 
     // Investment Scorecard — Unified 8-category framework (matches ASTS/CRCL)
     scorecard: [
-      { category: 'Financial Strength', rating: 'A+', color: 'var(--mint)', detail: 'Fortress: $14.5B total holdings, $979M cash, zero debt' },
-      { category: 'Profitability', rating: 'A', color: 'var(--mint)', detail: 'Staking yield: $518M/yr run rate (43.7% deployed), dividend initiated' },
-      { category: 'Growth', rating: 'A+', color: 'var(--mint)', detail: '3.48% ETH supply, 70% to "Alchemy of 5%", $24.5B ATM capacity' },
+      { category: 'Financial Strength', rating: 'A+', color: 'var(--mint)', detail: 'Fortress: $12.8B total holdings, $682M cash, zero debt' },
+      { category: 'Profitability', rating: 'A', color: 'var(--mint)', detail: 'Staking yield: $566M/yr run rate (47.4% deployed), dividend initiated' },
+      { category: 'Growth', rating: 'A+', color: 'var(--mint)', detail: '3.52% ETH supply, ~70% to "Alchemy of 5%", $24.5B ATM capacity' },
       { category: 'Valuation', rating: 'B+', color: 'var(--sky)', detail: 'Near NAV (~1.0x), MSTR trades 2-3x — gap closure = significant upside' },
       { category: 'Competitive Position', rating: 'A+', color: 'var(--mint)', detail: '#1 ETH treasury globally, 4yr+ head start, scale nearly unassailable' },
       { category: 'Execution', rating: 'A+', color: 'var(--mint)', detail: 'Flawless pivot, Young Kim CFO/COO, 81% YES shareholder vote' },
       { category: 'Regulatory/External', rating: 'B+', color: 'var(--sky)', detail: 'Pro-crypto admin, but SEC/staking risk persists; GENIUS Act tailwind' },
-      { category: 'Capital Structure', rating: 'A', color: 'var(--mint)', detail: '500K+ stockholders, #60 most traded, $200M Beast Industries closed' },
+      { category: 'Capital Structure', rating: 'A', color: 'var(--mint)', detail: '500K+ stockholders, #91 most traded, $200M Beast Industries closed' },
     ],
     
     // Ecosystem Health Rating (summarizes Ethereum tab metrics)
@@ -4275,42 +4401,42 @@ const InvestmentTab = () => {
         { metric: 'Supply Growth', value: '-0.2%', signal: 'Deflationary', weight: '15%', color: 'var(--mint)' },
         { metric: 'Protocol Progress', value: 'Fusaka Live', signal: 'Upgraded', weight: '20%', color: 'var(--mint)' },
       ],
-      summary: 'Strong ecosystem tailwinds. Beast Industries ($200M investment) expands reach to GenZ/Millennials via MrBeast (450M+ subscribers). Tom Lee cites: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication demand, younger generation adoption. Metals correlation bullish for 2026.',
+      summary: 'Strong ecosystem tailwinds. Beast Industries ($200M investment) expands reach to GenZ/Millennials via MrBeast (450M+ subscribers). Tom Lee cites: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication demand, younger generation adoption. Davos 2026 consensus: digital assets central to future of financial system.',
     },
-    
+
     // Executive Summary — Unified schema (matches ASTS/CRCL)
     executiveSummary: {
       headline: `BMNR is the single best way to play the Ethereum supercycle with downside protection.`,
       thesis: `This is not just another crypto stock. BMNR has created something unprecedented: a yield-generating, dividend-paying, institutionally-accessible vehicle for leveraged ETH exposure.
 
-They own 3.48% of all Ethereum in existence — 4.203 million tokens. They're 70% of the way to 5%. No one else is even close.
+They own 3.52% of all Ethereum in existence — 4.243 million tokens. They're nearly 70% of the way to 5%. No one else is even close.
 
-The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset — and paying you to wait. With $979M cash and $24.5B ATM capacity, the accumulation machine keeps running. Staking exploded to 1.84M ETH (43.7% of holdings). 81% shareholder YES vote just unlocked massive share authorization.`,
-      bottomLine: `If you believe ETH goes higher, BMNR is the trade. If you're wrong, $14.5B in assets, staking income ($518M/yr at current 43.7% staked), and NAV floor limit your downside. Asymmetric.`,
+The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset — and paying you to wait. With $682M cash and $24.5B ATM capacity, the accumulation machine keeps running. Staking surged to 2.0M ETH (47.4% of holdings). Davos 2026: Wall Street has embraced crypto — Larry Fink, David Sacks, Bill Winters all bullish on tokenization and blockchain convergence.`,
+      bottomLine: `If you believe ETH goes higher, BMNR is the trade. If you're wrong, $12.8B in assets, staking income ($566M/yr at current 47.4% staked), and NAV floor limit your downside. Asymmetric.`,
       whatsNew: [
-        '81% shareholder YES vote on Proposal 2 (share authorization)',
-        '$200M Beast Industries investment CLOSED (Jan 17)',
-        'Staking surged to 1.84M ETH (43.7% of holdings)',
-        '500K+ individual stockholders, #60 most traded US stock',
+        'Acquired 40,302 ETH in past week — now 3.52% of supply',
+        'Staking surged to 2.0M ETH (47.4% of holdings, +171K in one week)',
+        'Davos 2026: Larry Fink, David Sacks, Bill Winters all bullish on blockchain/tokenization',
+        '#91 most traded US stock ($1.2B/day), ahead of PepsiCo',
       ],
     },
     
     // Growth Drivers (CRCL-style)
     growthDrivers: [
       { driver: 'ETH Price Appreciation', impact: 'Critical', description: 'Every $1,000 ETH move = $4.2B NAV change. At $10K ETH, NAV/share hits $96+.', color: 'var(--mint)' },
-      { driver: 'Staking Income Scale', impact: 'High', description: '1.84M ETH staked ($5.9B, 43.7% of holdings). Current run rate: $518M/yr (>$1.4M/day).', color: 'var(--mint)' },
+      { driver: 'Staking Income Scale', impact: 'High', description: '2.0M ETH staked ($5.7B, 47.4% of holdings). Current run rate: $566M/yr (>$1.5M/day).', color: 'var(--mint)' },
       { driver: 'NAV Premium Expansion', impact: 'High', description: 'Currently near NAV. MSTR trades 2-3x. Gap closure = 2-3x upside.', color: 'var(--sky)' },
-      { driver: 'Continued Accumulation', impact: 'High', description: '$979M cash + $24.5B ATM capacity. 81% YES vote unlocks massive share authorization.', color: 'var(--sky)' },
+      { driver: 'Continued Accumulation', impact: 'High', description: '$682M cash + $24.5B ATM capacity. 81% YES vote unlocks massive share authorization.', color: 'var(--sky)' },
       { driver: 'Dividend Growth', impact: 'Medium', description: 'Started at $0.04/yr. As staking scales, expect 10-20% annual dividend growth.', color: 'var(--gold)' },
     ],
     
     // Competitive Moat (CRCL-style with sources and threats)
     moatSources: [
-      { source: 'Scale Dominance', strength: 'Strong', detail: '4.203M ETH = 3.48% of total supply. #1 ETH treasury, #2 global crypto treasury behind MSTR.', color: 'var(--mint)' },
-      { source: 'Yield Advantage', strength: 'Strong', detail: 'Only ETH treasury generating staking yield AND paying dividends. 1.84M ETH staked, $518M/yr run rate.', color: 'var(--mint)' },
-      { source: 'Capital Access', strength: 'Strong', detail: '$979M cash + $24.5B ATM + 81% shareholder YES vote unlocks massive issuance capacity.', color: 'var(--mint)' },
+      { source: 'Scale Dominance', strength: 'Strong', detail: '4.243M ETH = 3.52% of total supply. #1 ETH treasury, #2 global crypto treasury behind MSTR.', color: 'var(--mint)' },
+      { source: 'Yield Advantage', strength: 'Strong', detail: 'Only ETH treasury generating staking yield AND paying dividends. 2.0M ETH staked, $566M/yr run rate.', color: 'var(--mint)' },
+      { source: 'Capital Access', strength: 'Strong', detail: '$682M cash + $24.5B ATM + 81% shareholder YES vote unlocks massive issuance capacity.', color: 'var(--mint)' },
       { source: 'Management Depth', strength: 'Strong', detail: 'Tom Lee (Chairman) + Young Kim CFO/COO (MIT/HBS, 20yr institutional PM). Backed by ARK, Founders Fund, Pantera, Galaxy, Bill Miller III.', color: 'var(--mint)' },
-      { source: 'Retail Base', strength: 'Strong', detail: '500K+ individual stockholders. #60 most traded US stock ($1.5B/day). Deep liquidity.', color: 'var(--mint)' },
+      { source: 'Retail Base', strength: 'Strong', detail: '500K+ individual stockholders. #91 most traded US stock ($1.2B/day). Deep liquidity.', color: 'var(--mint)' },
     ],
     moatThreats: [
       { threat: 'ETH Price Collapse', risk: 'Critical', detail: '-70% drawdown would devastate NAV. At $1K ETH, NAV/share drops to ~$9.70.', color: 'var(--coral)' },
@@ -4334,8 +4460,8 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       { risk: 'ETH Price Collapse', severity: 'Critical', likelihood: 'Low', impact: 'High', detail: 'The existential risk. A -70% drawdown would devastate NAV. At $1,000 ETH, NAV/share drops to ~$9.60. This is a leveraged ETH bet.', mitigation: 'Staking income ($374M/yr at scale) provides cushion; NAV floor via $1B buyback authorization.' },
       { risk: 'NAV Premium Evaporation', severity: 'High', likelihood: 'Medium', impact: 'High', detail: 'Currently near NAV. If sentiment shifts, could drop to 0.5x. GBTC traded at -40% discount for years.', mitigation: '$1B buyback at discount provides floor; dividend yield supports valuation.' },
       { risk: 'Regulatory Crackdown', severity: 'Medium', likelihood: 'Low', impact: 'High', detail: 'SEC declares ETH a security, bans staking, or targets crypto treasuries. Current environment favorable but politics change.', mitigation: 'Diversified staking providers; compliance-first approach; MAVAN US-based.' },
-      { risk: 'MAVAN Execution Failure', severity: 'Medium', likelihood: 'Low', impact: 'Medium', detail: 'Delays or technical issues with proprietary staking. On track for Q1 2026 launch.', mitigation: 'Third-party providers already operational (1.84M staked); upside risk, not existential.' },
-      { risk: 'Dilution Fatigue', severity: 'Low', likelihood: 'Low', impact: 'Medium', detail: 'Market stops funding ATMs at premium. Would slow accumulation but not fatal.', mitigation: '$979M cash + staking income ($518M/yr run rate) provides runway without issuance.' },
+      { risk: 'MAVAN Execution Failure', severity: 'Medium', likelihood: 'Low', impact: 'Medium', detail: 'Delays or technical issues with proprietary staking. On track for Q1 2026 launch.', mitigation: 'Third-party providers already operational (2.0M staked); upside risk, not existential.' },
+      { risk: 'Dilution Fatigue', severity: 'Low', likelihood: 'Low', impact: 'Medium', detail: 'Market stops funding ATMs at premium. Would slow accumulation but not fatal.', mitigation: '$682M cash + staking income ($566M/yr run rate) provides runway without issuance.' },
     ],
     
     // Three Perspectives (CRCL-style)
@@ -4364,6 +4490,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         ecosystemView: 'Ecosystem maturation reduces tail risk. Beast Industries investment ($200M, CLOSED) expands reach to 450M+ YouTube subscribers (GenZ/Millennials) with DeFi platform integration planned. Tom Lee\'s 2026 thesis: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication/provenance demand, younger generation adoption. The GENIUS Act is transformational.',
         recommendation: '5-10% of crypto allocation. Multi-year hold.',
       },
+      technicalAnalyst: {
+        title: 'Technical Analyst',
+        assessment: 'BULLISH — ACCUMULATE',
+        color: 'var(--sky)',
+        summary: 'Price structure shows higher highs and higher lows since ETH treasury pivot. RSI holding above 50 on weekly timeframe indicates sustained momentum. MACD histogram expanding on daily chart. Key support at 20-day SMA has held on pullbacks. Volume profile shows accumulation patterns with higher volume on up days vs down days.',
+        ecosystemView: 'BMNR exhibits 0.85-0.95 correlation with ETH on 30-day rolling basis — trade it as leveraged ETH proxy. NAV premium/discount cycles provide tactical entry/exit signals: accumulate below 1.0x NAV, trim above 1.5x NAV. Watch ETH $3,500 support and $4,200 resistance for directional cues. Bollinger Band squeeze on weekly suggests imminent volatility expansion.',
+        recommendation: 'Buy pullbacks to 20-day SMA. Stop loss at 50-day SMA break. Target: previous swing high + 15%.',
+      },
     },
     
     // Position Sizing (CRCL-style)
@@ -4386,6 +4520,35 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   
   // Archive - Full historical investment summaries (generous detail for each period)
   const archive = [
+    {
+      date: '2026-01-26',
+      source: 'PR: 4.243M ETH Holdings + $12.8B Total + Davos 2026',
+      verdict: 'STRONG BUY',
+      verdictColor: 'green',
+      summary: '4.243M ETH ($12.0B @ $2,839). 2.0M ETH staked (47.4%). +40,302 ETH acquired. 3.52% of supply. $682M cash. #91 most traded US stock ($1.2B/day). Davos: Wall Street embraces crypto.',
+      fullAnalysis: {
+        context: 'January 26, 2026 PR shows continued aggressive ETH accumulation (+40,302 ETH in one week) and staking expansion (now 2.0M ETH, 47.4%). Davos 2026 featured overwhelming bullish sentiment on crypto from Larry Fink (BlackRock), David Sacks (White House AI/Crypto), Bill Winters (Standard Chartered), and others. Tom Lee: "2026 is the year policymakers and world leaders now view digital assets as central to the future of the financial system."',
+        keyHighlights: [
+          'ETH holdings: 4,243,338 ETH @ $2,839 = $12.0B (3.52% of 120.7M supply)',
+          'Total holdings: $12.8B (ETH + cash + BTC + moonshots + Beast Industries)',
+          'Cash position: $682M',
+          'Staked ETH: 2,009,267 ($5.7B) — up 171,264 in one week',
+          'Staking ratio: 47.36% of holdings now staked (was 43.7%)',
+          'Staking income: $374M/yr at scale (2.81% CESR)',
+          'Acquired 40,302 ETH in past week',
+          '#91 most traded US stock ($1.2B/day, behind Accenture, ahead of PepsiCo)',
+          'MAVAN launch on track for Q1 2026',
+          'Davos 2026: Larry Fink — "Tokenization is necessary... if we have one common blockchain, we could reduce corruption"',
+          'Davos 2026: David Sacks — "Banking and crypto will transform into a single digital asset industry"',
+          'Davos 2026: Bill Winters — "Most things will settle in digital form... this is the year when this is happening in scale"',
+          'ETHBTC ratio climbing since mid-October — investors recognizing Wall Street building on Ethereum',
+        ],
+        verdict: 'Accumulation machine running smoothly. Staking approaching 50% of holdings. Davos 2026 sentiment shift validates institutional thesis. ETH price weakness ($2,839) is buying opportunity for long-term holders.',
+        scorecard: 9.6,
+        risks: 'ETH price declined from $3,211 to $2,839 (-11.6%). Total holdings down from $14.5B to $12.8B. Price volatility remains key risk.',
+        strategy: 'STRONG BUY. ETH weakness = accumulation opportunity. Davos consensus validates long-term thesis. MAVAN launch imminent.'
+      }
+    },
     {
       date: '2026-01-20',
       source: 'PR: 4.203M ETH Holdings + 81% Shareholder Vote YES + Beast CLOSED',
@@ -4711,18 +4874,18 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>NAV/Share</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$33.41</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>@ $3,211 ETH</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$29.49</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)' }}>@ $2,839 ETH</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Total Holdings</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$14.5B</div>
-              <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.203M ETH + $979M Cash</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$12.8B</div>
+              <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.243M ETH + $682M Cash</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Staked ETH</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>1.84M</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>$5.9B Value (43.7%)</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>2.01M</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)' }}>$5.7B Value (47.4%)</div>
             </div>
           </div>
         </div>
@@ -5499,7 +5662,7 @@ const BMNRQuarterlyMetricsPanel = () => {
   );
 };
 
-const SECFilingsTab = () => {
+const FinancialsTab = () => {
   // ═══════════════════════════════════════════════════════════════════════════
   // UNIFIED FINANCIALS TAB - Canonical structure shared across all models
   // Only data and labels differ between ASTS, BMNR, and CRCL
@@ -5630,6 +5793,40 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   // Ethereum Adoption Timeline - Institutional & Enterprise adoption events
   // Each entry includes: date, category, company, title, summary (detailed), significance, bmnrImplication, impact, source
   const adoptionTimeline = [
+    // === JANUARY 2026 ===
+    {
+      date: '2026-01-30',
+      category: 'Institutional',
+      company: 'Naviator Global',
+      title: 'Abu Dhabi Family Office Naviator Global Appoints Ethereum Foundation Policy Advisor',
+      summary: 'Abu Dhabi-based investment and family office Naviator Global appoints Steven Nam, policy and legal advisor at the Ethereum Foundation, as advisor. Nam specializes in legal and policy dimensions of decentralized technologies, advises Ethereum Foundation on global policy and regulatory matters including South Korea, and leads governance initiatives at Stanford Cyber Policy Center. Also serves as editor-in-chief of academic journal on blockchain law and digital asset policy. Appointment signals Naviator Global\'s intention to strengthen strategic focus on areas where technology, public policy, and governance intersect. Representative stated: "We recognized the need to bring in expertise that can support long-term, structured decision-making amid a rapidly changing global environment. Steven Nam\'s experience will play an important role in shaping Naviator Global\'s direction in areas where technology and institutional frameworks meet." Abu Dhabi has emerged as global hub for family offices supported by regulatory environment encouraging convergence of finance, technology, and policy experimentation.',
+      significance: 'Ethereum Foundation policy expertise entering Abu Dhabi family office ecosystem. Signals institutional interest in Ethereum governance and policy dimensions beyond pure investment. Aligns with Abu Dhabi\'s emergence as global hub for digital asset regulation and infrastructure (ADGM, ADI Chain).',
+      bmnrImplication: 'Ethereum Foundation advisor joining Abu Dhabi family office reinforces MENA region\'s growing institutional commitment to Ethereum ecosystem. Policy expertise integration suggests long-term strategic positioning around Ethereum governance. Complements ADI Chain and ADGM institutional activity in the region.',
+      impact: 'Bullish',
+      source: 'ACCESS Newswire'
+    },
+    {
+      date: '2026-01-28',
+      category: 'Enterprise',
+      company: 'Fidelity',
+      title: 'Fidelity to Launch Dollar-Backed Stablecoin FIDD on Ethereum',
+      summary: 'Fidelity Investments announces its first stablecoin, the Fidelity Digital Dollar (FIDD), will launch on Ethereum in coming weeks. FIDD will be issued by Fidelity Digital Assets\' national trust bank and will be redeemable 1:1 for U.S. dollars through Fidelity platforms. Fidelity Management & Research Company LLC will handle reserve assets. Available to both retail and institutional customers through Fidelity Digital Assets, Fidelity Crypto, and Fidelity Crypto for Wealth Managers. FIDD will be transferable to any Ethereum mainnet address and available on major crypto exchanges. Mike O\'Reilly, President of Fidelity Digital Assets: "At Fidelity, we have a long-standing belief in the transformative power of the digital assets ecosystem and have spent years researching and advocating for the benefits of stablecoins. The recent passage of the GENIUS Act was a significant milestone for the industry in providing clear regulatory guardrails for payment stablecoins." Fidelity began building digital asset infrastructure in 2014, formally launched Fidelity Digital Assets in 2019, and first disclosed stablecoin testing in early 2025. Stablecoin market has grown to ~$300B in total supply.',
+      significance: 'Major asset manager ($5.8T AUM) entering stablecoin market with institutional-grade offering on Ethereum. First TradFi giant to launch own-branded stablecoin. GENIUS Act compliance positions FIDD for regulated payment use cases. Follows years of Fidelity digital asset infrastructure development since 2014.',
+      bmnrImplication: 'Fidelity launching FIDD on Ethereum validates network as primary settlement layer for institutional stablecoins. Major TradFi firm choosing Ethereum over alternatives reinforces network effect. More institutional stablecoins on Ethereum = more on-chain settlement = ETH ecosystem value growth.',
+      impact: 'Bullish',
+      source: 'The Block'
+    },
+    {
+      date: '2026-01-13',
+      category: 'Institutional',
+      company: 'Franklin Templeton',
+      title: 'Franklin Templeton Prepares Institutional Money Market Funds for Tokenized Finance',
+      summary: 'Franklin Templeton announces two institutional money market funds managed by Western Asset Management are now eligible for tokenized finance: one supporting stablecoin reserves under the GENIUS Act, and another for blockchain-enabled distribution. Western Asset Institutional Treasury Obligations Fund ($LUIXX) updated to align with GENIUS Act reserve requirements, investing exclusively in U.S. Treasuries with maturities of 93 days or less. Western Asset Institutional Treasury Reserves Fund introduced new Digital Institutional Share Class ($DIGXX) for distribution through blockchain-enabled intermediary platforms. Roger Bayston, Head of Digital Assets: "Traditional funds are already beginning to move on-chain, so rather than question their ability, our focus is to make them more accessible and useful by many. By prioritizing interoperability and flexibility, we\'re opening more ways for clients to access and deploy regulated funds across the platforms they rely on." Matt Jones, Head of Institutional Liquidity: "Being early only matters if you do it responsibly, and these updates prove how we can help institutions adopt tokenized infrastructure with products they already know." Stablecoin market surpassed $310B in total supply, projecting ~$2T by 2030.',
+      significance: 'Major global asset manager ($1.67T AUM) retrofitting traditional Rule 2a-7 government money market funds for GENIUS Act compliance and blockchain distribution. First mover positioning institutional funds for regulated stablecoin reserve management and tokenized distribution infrastructure.',
+      bmnrImplication: 'Franklin Templeton (already operates BENJI tokenized fund on Ethereum) now preparing institutional money market funds for tokenized finance ecosystem. GENIUS Act-compliant reserves + blockchain distribution validates Ethereum infrastructure for institutional treasury products. Growing tokenized fund market supports BMNR\'s Ethereum ecosystem thesis.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
     // === DECEMBER 2025 ===
     {
       date: '2025-12-24',
@@ -6325,12 +6522,23 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Deutsche Bank, Axelar Network (Interop Labs), and Memento Blockchain publish litepaper for Digital Asset Management Access (DAMA) 2 platform — a next-generation tokenization platform built on public blockchains with regulatory alignment and privacy as core design principles. Key features: Blockchain-as-a-Service model minimizing upfront investment, privacy-enabled Layer 2 using zkSync ZK Chain technology, managed token issuance across multiple blockchains via Axelar, and app store for fund smart contract designs. Platform targets tokenized funds, stablecoins, and RWAs for asset managers, wealth managers, and investment advisors. Innovation Lead Boon-Hiong Chan: "DAMA 2 represents how public chains have evolved for institutional finance\'s use." MVP launch targeted H2 2025. Context: $84T in global wealth shifting to digital-native generations by 2045 (Cerulli Associates).',
       significance: 'Major European bank ($1.4T assets) publishing blueprint for institutional tokenization on Ethereum L2. Privacy-preserving ZK technology addresses compliance concerns. Blockchain-as-a-Service model lowers barrier for traditional asset managers. Project won Global Custodian 2025 Innovation in Smart Contract Technology award.',
       bmnrImplication: 'Deutsche Bank building tokenization infrastructure on Ethereum ecosystem validates network for European institutional finance. Privacy-enabled L2 addresses regulatory requirements that blocked enterprise adoption. More institutional activity on Ethereum L2s = more settlement to Ethereum L1.',
-      impact: 'Bullish', 
-      source: 'Deutsche Bank / Axelar / Memento Press Release' 
+      impact: 'Bullish',
+      source: 'Deutsche Bank / Axelar / Memento Press Release'
     },
-    { 
-      date: '2025-03-26', 
-      category: 'Institutional', 
+    {
+      date: '2025-04-03',
+      category: 'Institutional',
+      company: 'WisdomTree',
+      title: 'WisdomTree Connect Now Offers 13 Tokenized Funds Across Ethereum, Arbitrum, Avalanche, Base and Optimism',
+      summary: 'WisdomTree announces significant enhancements to WisdomTree Connect, its institutional platform for tokenized real world assets (RWA). Platform now offers 13 SEC-registered tokenized funds under the Investment Company Act of 1940 — the largest collection of tokenized funds in the market, including money market, equities, fixed income and asset allocation funds. Funds available: WTGXX (Government Money Market), SPXUX (S&P 500), TECHX (Technology & Innovation 100), TWLGX (Long Term Treasury), WTSTX (7-10 Year Treasury), WTTSX (3-7 Year Treasury), TIPSX (TIPS), FLTTX (Floating Rate Treasury), WTSIX (Short-Duration Income), WTSYX (Short-Term Treasury), EQTYX (Siegel Global Equity), LNGVX (Siegel Longevity), MODRX (Siegel Moderate). Platform expands beyond Ethereum to Arbitrum, Avalanche, Base, and Optimism\'s OP Mainnet. Users can hold tokenized funds directly on these chains via fiat (USD) or USDC through WisdomTree\'s stablecoin conversion service. Maredith Hannon, Head of Business Development, Digital Assets: "These product suite and blockchain coverage expansions underscore our dedication to providing diverse and innovative solutions to meet the evolving needs of our clients. With access to our comprehensive suite of tokenized funds and the ability to interact with them directly across these newly supported blockchains, our tokens are able to be held in third-party and self-custodial wallets, providing users with greater choice in how they access tokenized RWA." WisdomTree has ~$116.2B in AUM globally.',
+      significance: 'Largest suite of SEC-registered tokenized funds (13 total) now available across Ethereum and major L2s. Multi-chain deployment (Ethereum, Arbitrum, Avalanche, Base, Optimism) demonstrates institutional commitment to Ethereum ecosystem. Full product spectrum: money market, equities, fixed income, asset allocation — covering all major institutional fund categories.',
+      bmnrImplication: 'WisdomTree expanding to 13 tokenized funds across 5 Ethereum ecosystem chains validates network for comprehensive institutional fund distribution. Multi-asset tokenization (equities, fixed income, money market) on Ethereum proves network can handle diverse institutional use cases. More tokenized fund AUM on Ethereum = more on-chain value = ETH ecosystem growth.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
+    {
+      date: '2025-03-26',
+      category: 'Institutional',
       company: 'Interactive Brokers',
       title: 'Interactive Brokers Expands Crypto Trading with SOL, ADA, XRP, DOGE', 
       summary: 'Interactive Brokers (Nasdaq: IBKR), automated global electronic broker, expands cryptocurrency offerings with Solana (SOL), Cardano (ADA), Ripple (XRP), and Dogecoin (DOGE). These join existing BTC, ETH, LTC, and BCH. Trading via Zero Hash LLC (FinCEN-registered MSB, NY DFS licensed) and Paxos Trust Company. Platform enables crypto trading alongside stocks, options, futures, currencies, and bonds across 160+ global markets. Features include: 24/7 trading, USD/crypto account balances, non-marketable limit orders, and external wallet withdrawals. Commissions: 0.12-0.18% of trade value, $1.75 minimum, no spreads/markups/custody fees. EVP Steve Sanders: "Adding these new tokens gives our clients even more flexibility to diversify their portfolios."',
@@ -7258,7 +7466,7 @@ const TimelineTab = () => {
     cik: '0001829311',
     ticker: 'BMNR',
     exchange: 'NYSE American',
-    lastPR: { date: 'January 20, 2026', title: '4.203M ETH Holdings + 81% Shareholder Vote YES' }
+    lastPR: { date: 'January 26, 2026', title: '4.243M ETH Holdings + $12.8B Total + Davos 2026' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {
@@ -7318,6 +7526,25 @@ const TimelineTab = () => {
   // NEWEST ENTRIES AT TOP - maintain descending chronological order
   const timelineEvents = [
     // [PR_CHECKLIST_EVENT_TIMELINE] - Add new PR entry here at top!
+    // === JANUARY 26, 2026 - ETH HOLDINGS + DAVOS 2026 ===
+    {
+      date: '2026-01-26',
+      source: 'PRNewswire',
+      category: 'Holdings',
+      title: '📊 ETH Holdings Reach 4.243M — $12.8B Total, Davos 2026 Bullish',
+      changes: [
+        { metric: 'ETH Holdings', previous: '4,203,036', new: '4,243,338', change: '+40,302 (+1.0%)' },
+        { metric: 'ETH Price', previous: '$3,211', new: '$2,839', change: '-11.6% (Coinbase)' },
+        { metric: 'ETH Supply %', previous: '3.48%', new: '3.52%', change: '+0.04pp' },
+        { metric: 'Staked ETH', previous: '1,838,003', new: '2,009,267', change: '+171,264 (+9.3%)' },
+        { metric: 'Total Cash', previous: '$979M', new: '$682M', change: '-$297M' },
+        { metric: 'Eightco (ORBS)', previous: '$22M', new: '$19M', change: '-$3M' },
+        { metric: 'Trading Rank', previous: '#60', new: '#91', change: '-31 ($1.2B/day)' },
+        { metric: 'Total Holdings', previous: '$14.5B', new: '$12.8B', change: '-$1.7B (ETH price)' },
+      ],
+      notes: 'Davos 2026 sentiment strongly bullish on crypto/blockchain. Larry Fink (BlackRock): "Tokenization is necessary... if we have one common blockchain, we could reduce corruption." David Sacks (White House): "Banking and crypto will transform into a single digital asset industry." Bill Winters (Standard Chartered): "Most things will settle in digital form... this is the year when this is happening in scale." ETHBTC ratio climbing since mid-October as investors recognize Wall Street building on Ethereum. Staking income: $374M/yr at scale (2.81% CESR). MAVAN on track Q1 2026. Beast Industries $200M closed.',
+      impact: 'positive'
+    },
     // === JANUARY 20, 2026 - ETH HOLDINGS + SHAREHOLDER VOTE ===
     {
       date: '2026-01-20',
@@ -8483,11 +8710,11 @@ const TimelineTab = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>5% ETH Supply Target</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.45% (~6.04M ETH needed)</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.52% (~6.04M ETH needed)</div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>70%</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~1.87M ETH to go</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~1.79M ETH to go</div>
               </div>
             </div>
           </div>
@@ -8500,6 +8727,13 @@ const TimelineTab = () => {
             {/* [PR_CHECKLIST_RECENT_PRESS_RELEASES] - Add new PR at top! */}
             <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 26, 2026</span>
+                <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,243,338 — 3.52% of Supply, $12.8B, Davos 2026</div>
+            </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 20, 2026</span>
@@ -8742,15 +8976,12 @@ const TimelineTab = () => {
 // Unified architecture with ASTS/CRCL - Grouped by Firm
 // ═══════════════════════════════════════════════════════════════════════════════
 const WallStreetTab = () => {
-  const [expandedFirm, setExpandedFirm] = useState<string | null>(null);
-  const [expandedReportIdx, setExpandedReportIdx] = useState<string | null>(null);
-
   // ═══════════════════════════════════════════════════════════════════════════
   // ANALYST COVERAGE DATA - Grouped by Firm
   // Add new reports at the TOP of each firm's reports array (newest first)
   // NEVER delete historical reports - this is an audit trail
   // ═══════════════════════════════════════════════════════════════════════════
-  
+
   const ANALYST_COVERAGE: AnalystCoverage[] = [
     // ═══════════════════════════════════════════════════════════════════════════
     // CANTOR FITZGERALD - N/A (Coverage since January 2026)
@@ -8864,428 +9095,10 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
       ]
     },
   ];
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // DERIVED METRICS AND HELPER FUNCTIONS
-  // ═══════════════════════════════════════════════════════════════════════════
-  
-  // Get latest report from each firm for consensus calculations
-  const latestByFirm = ANALYST_COVERAGE.map(coverage => ({
-    firm: coverage.firm,
-    analyst: coverage.analyst,
-    priceTarget: coverage.currentPT,
-    rating: coverage.currentRating,
-    ratingNormalized: coverage.currentRatingNormalized,
-    latestDate: coverage.reports[0]?.date || ''
-  }));
-  
-  // Calculate consensus metrics from current ratings only
-  const firmsWithPT = latestByFirm.filter(f => f.priceTarget !== null);
-  const avgPT = firmsWithPT.length > 0 
-    ? firmsWithPT.reduce((sum, f) => sum + (f.priceTarget || 0), 0) / firmsWithPT.length 
-    : null;
-  const highPT = firmsWithPT.length > 0 ? Math.max(...firmsWithPT.map(f => f.priceTarget || 0)) : null;
-  const lowPT = firmsWithPT.length > 0 ? Math.min(...firmsWithPT.map(f => f.priceTarget || 0)) : null;
-  const medianPT = firmsWithPT.length > 0 ? (() => {
-    const sorted = [...firmsWithPT].map(f => f.priceTarget || 0).sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-  })() : null;
-  
-  // Rating counts by normalized category
-  const ratingCounts = {
-    bullish: latestByFirm.filter(f => f.ratingNormalized === 'bullish').length,
-    neutral: latestByFirm.filter(f => f.ratingNormalized === 'neutral').length,
-    bearish: latestByFirm.filter(f => f.ratingNormalized === 'bearish').length,
-  };
-  const totalAnalysts = ANALYST_COVERAGE.length;
-  
-  // Rating color helper
-  const getRatingColor = (rating: string, normalized?: 'bullish' | 'neutral' | 'bearish') => {
-    if (normalized) {
-      switch (normalized) {
-        case 'bullish': return 'var(--mint)';
-        case 'neutral': return 'var(--gold)';
-        case 'bearish': return 'var(--coral)';
-      }
-    }
-    switch (rating) {
-      case 'Strong Buy': case 'Buy': case 'Overweight': return 'var(--mint)';
-      case 'Hold': case 'Neutral': case 'Market Perform': case 'Sector Perform': case 'Perform': return 'var(--gold)';
-      case 'Underperform': case 'Underweight': case 'Sector Underperform': case 'Sell': return 'var(--coral)';
-      default: return 'var(--text2)';
-    }
-  };
-  
-  const getActionColor = (action: string) => {
-    switch (action) {
-      case 'Initiation': return 'var(--violet)';
-      case 'Upgrade': case 'PT Raise': return 'var(--mint)';
-      case 'Downgrade': case 'PT Cut': case 'Double Downgrade': return 'var(--coral)';
-      case 'Reiterate': case 'Maintained': case 'Update': return 'var(--text3)';
-      default: return 'var(--text3)';
-    }
-  };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Wall Street Coverage<UpdateIndicators sources="WS" /></h2>
-
-      {/* Consensus Snapshot */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-consensus</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Consensus Snapshot<UpdateIndicators sources="WS" /></div>
-        <div className="g2">
-          {/* Price Target Summary */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>AVG PT</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--violet)', fontFamily: 'Space Mono' }}>
-                  {avgPT ? `$${avgPT.toFixed(0)}` : '—'}
-                </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>MEDIAN PT</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--sky)', fontFamily: 'Space Mono' }}>
-                  {medianPT ? `$${medianPT.toFixed(0)}` : '—'}
-                </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>HIGH / LOW</div>
-                <div style={{ fontSize: 18, fontWeight: 700, fontFamily: 'Space Mono' }}>
-                  <span style={{ color: 'var(--mint)' }}>{highPT ? `$${highPT}` : '—'}</span>
-                  <span style={{ color: 'var(--text3)' }}> / </span>
-                  <span style={{ color: 'var(--coral)' }}>{lowPT ? `$${lowPT}` : '—'}</span>
-                </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>ANALYSTS</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text)', fontFamily: 'Space Mono' }}>
-                  {totalAnalysts}
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Ratings Distribution */}
-          <div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>RATINGS DISTRIBUTION</div>
-            {totalAnalysts > 0 ? (
-              <>
-                <div style={{ display: 'flex', height: 24, borderRadius: 6, overflow: 'hidden' }}>
-                  {ratingCounts.bullish > 0 && (
-                    <div style={{ width: `${(ratingCounts.bullish / totalAnalysts) * 100}%`, background: 'var(--mint)' }} />
-                  )}
-                  {ratingCounts.neutral > 0 && (
-                    <div style={{ width: `${(ratingCounts.neutral / totalAnalysts) * 100}%`, background: 'var(--gold)' }} />
-                  )}
-                  {ratingCounts.bearish > 0 && (
-                    <div style={{ width: `${(ratingCounts.bearish / totalAnalysts) * 100}%`, background: 'var(--coral)' }} />
-                  )}
-                </div>
-                <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
-                  <span style={{ color: 'var(--mint)' }}>● Buy/OW: {ratingCounts.bullish}</span>
-                  <span style={{ color: 'var(--gold)' }}>● Hold/Neutral: {ratingCounts.neutral}</span>
-                  <span style={{ color: 'var(--coral)' }}>● Sell/UW: {ratingCounts.bearish}</span>
-                </div>
-              </>
-            ) : (
-              <div style={{ color: 'var(--text3)', fontSize: 13 }}>No analyst coverage data yet</div>
-            )}
-          </div>
-        </div>
-      </div>
-      
-      {/* Coverage by Firm - Grouped Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-coverage</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})<UpdateIndicator source="WS" /></div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {ANALYST_COVERAGE.map((coverage) => {
-            const isExpanded = expandedFirm === coverage.firm;
-            const fullReportCount = coverage.reports.filter(r => r.isFullReport).length;
-            const updateCount = coverage.reports.filter(r => !r.isFullReport).length;
-            
-            return (
-              <div 
-                key={coverage.firm}
-                style={{ 
-                  background: 'var(--surface2)', 
-                  borderRadius: 8,
-                  border: isExpanded ? '1px solid var(--violet)' : '1px solid var(--border)',
-                  overflow: 'hidden'
-                }}
-              >
-                {/* Firm Header - Always Visible */}
-                <div 
-                  onClick={() => setExpandedFirm(isExpanded ? null : coverage.firm)}
-                  style={{ 
-                    padding: 16, 
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div>
-                      <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>{coverage.firm}</div>
-                      <div style={{ color: 'var(--text3)', fontSize: 12 }}>{coverage.analyst} · Since {coverage.coverageSince}</div>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    {/* Current Rating Badge */}
-                    <div style={{ 
-                      padding: '4px 12px', 
-                      borderRadius: 6, 
-                      background: `${getRatingColor(coverage.currentRating, coverage.currentRatingNormalized)}22`,
-                      border: `1px solid ${getRatingColor(coverage.currentRating, coverage.currentRatingNormalized)}44`,
-                    }}>
-                      <span style={{ color: getRatingColor(coverage.currentRating, coverage.currentRatingNormalized), fontWeight: 600, fontSize: 12 }}>
-                        {coverage.currentRating.toUpperCase()}
-                      </span>
-                    </div>
-                    
-                    {/* Current PT */}
-                    <div style={{ fontFamily: 'Space Mono', textAlign: 'right', minWidth: 60 }}>
-                      <span style={{ color: 'var(--text)', fontSize: 16, fontWeight: 600 }}>
-                        {coverage.currentPT ? `$${coverage.currentPT}` : '—'}
-                      </span>
-                    </div>
-                    
-                    {/* Report counts */}
-                    <div style={{ display: 'flex', gap: 8, fontSize: 11 }}>
-                      <span style={{ padding: '2px 6px', background: 'var(--violet)', color: 'white', borderRadius: 4 }}>
-                        {fullReportCount} Report{fullReportCount !== 1 ? 's' : ''}
-                      </span>
-                      {updateCount > 0 && (
-                        <span style={{ padding: '2px 6px', background: 'var(--surface3)', color: 'var(--text3)', borderRadius: 4 }}>
-                          {updateCount} Update{updateCount !== 1 ? 's' : ''}
-                        </span>
-                      )}
-                    </div>
-                    
-                    {/* Expand indicator */}
-                    <span style={{ color: 'var(--text3)', fontSize: 12 }}>
-                      {isExpanded ? '▼' : '▶'}
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Expanded History */}
-                {isExpanded && (
-                  <div style={{ borderTop: '1px solid var(--border)', padding: 16, background: 'var(--surface)' }}>
-                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>COVERAGE HISTORY ({coverage.reports.length} entr{coverage.reports.length !== 1 ? 'ies' : 'y'})</div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {coverage.reports.map((report, idx) => {
-                        const reportKey = `${coverage.firm}-${idx}`;
-                        const isReportExpanded = expandedReportIdx === reportKey;
-                        
-                        return (
-                          <div
-                            key={idx}
-                            style={{
-                              padding: 12,
-                              background: report.isFullReport ? 'var(--surface2)' : 'var(--surface)',
-                              borderRadius: 6,
-                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? '3px solid var(--violet)' : 'none'
-                            }}
-                          >
-                            {/* Report Header */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <span style={{ color: 'var(--text3)', fontSize: 12, minWidth: 90 }}>
-                                  {new Date(report.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                </span>
-                                <span style={{ 
-                                  color: getActionColor(report.action),
-                                  fontSize: 11,
-                                  fontWeight: 600,
-                                  padding: '2px 8px',
-                                  background: `${getActionColor(report.action)}22`,
-                                  borderRadius: 4
-                                }}>
-                                  {report.action}
-                                </span>
-                                <span style={{ color: getRatingColor(report.rating, report.ratingNormalized), fontSize: 12, fontWeight: 500 }}>
-                                  {report.rating}
-                                </span>
-                              </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <span style={{ fontFamily: 'Space Mono', color: 'var(--text)', fontSize: 14 }}>
-                                  {report.priceTarget ? `$${report.priceTarget}` : '—'}
-                                  {report.previousTarget && (
-                                    <span style={{ color: 'var(--text3)', fontSize: 11 }}> ← ${report.previousTarget}</span>
-                                  )}
-                                </span>
-                                {report.source && (
-                                  <a 
-                                    href={report.sourceUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    style={{ fontSize: 10, color: 'var(--violet)', textDecoration: 'none' }}
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    {report.source}
-                                  </a>
-                                )}
-                              </div>
-                            </div>
-                            
-                            {/* Report Title if exists */}
-                            {report.reportTitle && (
-                              <div style={{ color: 'var(--text2)', fontSize: 12, fontStyle: 'italic' }}>
-                                "{report.reportTitle}"
-                              </div>
-                            )}
-                            
-                            {/* Full report content (expandable) */}
-                            {report.isFullReport && report.thesis && (
-                              <>
-                                <div style={{ color: 'var(--text2)', fontSize: 12, lineHeight: 1.5 }}>
-                                  {report.thesis}
-                                </div>
-                                
-                                {(report.reportSummary || report.assumptions || report.estimates) && (
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setExpandedReportIdx(isReportExpanded ? null : reportKey);
-                                    }}
-                                    style={{
-                                      background: 'none',
-                                      border: 'none',
-                                      color: 'var(--violet)',
-                                      fontSize: 11,
-                                      cursor: 'pointer',
-                                      padding: '4px 0'
-                                    }}
-                                  >
-                                    {isReportExpanded ? '▼ Less details' : '▶ Full report details'}
-                                  </button>
-                                )}
-                                
-                                {isReportExpanded && (
-                                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                                    {report.reportSummary && (
-                                      <div style={{ 
-                                        background: 'var(--surface)', 
-                                        padding: 12, 
-                                        borderRadius: 6,
-                                        fontSize: 12,
-                                        color: 'var(--text2)',
-                                        lineHeight: 1.6,
-                                        whiteSpace: 'pre-wrap'
-                                      }}>
-                                        {report.reportSummary.split('\n\n').map((paragraph, pIdx) => {
-                                          const headerMatch = paragraph.match(/^\*\*(.+?)\*\*/);
-                                          if (headerMatch) {
-                                            const header = headerMatch[1];
-                                            const rest = paragraph.replace(/^\*\*.+?\*\*\s*/, '');
-                                            return (
-                                              <div key={pIdx} style={{ }}>
-                                                <div style={{ color: 'var(--text)', fontWeight: 600, fontSize: 11 }}>{header}</div>
-                                                <div>{rest}</div>
-                                              </div>
-                                            );
-                                          }
-                                          return <div key={pIdx} style={{ }}>{paragraph}</div>;
-                                        })}
-                                      </div>
-                                    )}
-                                    
-                                    {report.assumptions && report.assumptions.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--text3)' }}>KEY ASSUMPTIONS</div>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                                          {report.assumptions.map((a, i) => (
-                                            <span key={i} style={{ padding: '3px 8px', background: 'var(--surface)', borderRadius: 4, fontSize: 11, color: 'var(--text2)' }}>
-                                              {a.label}: <span style={{ color: 'var(--violet)' }}>{a.value}</span>
-                                            </span>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-                                    
-                                    {report.catalysts && report.catalysts.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--mint)' }}>CATALYSTS</div>
-                                        <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
-                                          {report.catalysts.map((c, i) => <li key={i}>{c}</li>)}
-                                        </ul>
-                                      </div>
-                                    )}
-                                    
-                                    {report.risks && report.risks.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--coral)' }}>RISKS</div>
-                                        <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
-                                          {report.risks.map((r, i) => <li key={i}>{r}</li>)}
-                                        </ul>
-                                      </div>
-                                    )}
-                                    
-                                    {report.estimates && report.estimates.length > 0 && (
-                                      <div style={{ }}>
-                                        <div style={{ fontSize: 10, color: 'var(--sky)' }}>ESTIMATES</div>
-                                        <table className="tbl">
-                                          <thead>
-                                            <tr>
-                                              <th>Metric</th>
-                                              <th className="r">FY24</th>
-                                              <th className="r">FY25</th>
-                                              <th className="r">FY26</th>
-                                              <th className="r">FY27</th>
-                                              <th className="r">FY28</th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            {report.estimates.map((e, i) => (
-                                              <tr key={i}>
-                                                <td>{e.metric}</td>
-                                                <td className="r">{e.fy24 || '—'}</td>
-                                                <td className="r">{e.fy25 || '—'}</td>
-                                                <td className="r">{e.fy26 || '—'}</td>
-                                                <td className="r">{e.fy27 || '—'}</td>
-                                                <td className="r">{e.fy28 || '—'}</td>
-                                              </tr>
-                                            ))}
-                                          </tbody>
-                                        </table>
-                                      </div>
-                                    )}
-                                    
-                                    {report.methodology && (
-                                      <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-                                        <span>Methodology: </span>
-                                        <span style={{ color: 'var(--text2)' }}>{report.methodology}</span>
-                                      </div>
-                                    )}
-                                    
-                                    {report.fullNotes && (
-                                      <div style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
-                                        {report.fullNotes}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
+    <>
+      <SharedWallStreetTab coverage={ANALYST_COVERAGE} ticker="BMNR" />
       {/* CFA Notes */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Sell-Side Research" items={[
@@ -9295,7 +9108,7 @@ Source: Company Reports, Cantor Fitzgerald Research, Pricing as of 12/29/2025`
         { term: 'Consensus vs Variant', def: 'When your view differs from consensus, understand why. Variant perception + catalyst = alpha opportunity. But: "the market can stay irrational longer than you can stay solvent."' },
         { term: 'Conflicts of Interest', def: 'Investment banks have relationships with covered companies. Be aware of potential conflicts. Independent research may offer less conflicted views.' },
       ]} />
-    </div>
+    </>
   );
 };
 
