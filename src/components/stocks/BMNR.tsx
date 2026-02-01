@@ -5044,7 +5044,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* Part 1: Multi-Perspective Risk Evaluation */}
-        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Three Perspectives</h4>
+        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Four Perspectives</h4>
         
         {/* CFA Level III Perspective */}
         <div style={{ background: 'rgba(139,92,246,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
@@ -5108,6 +5108,28 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             </p>
             <p style={{ padding: 10, background: 'rgba(100,149,237,0.1)', borderRadius: 6, borderLeft: '3px solid var(--sky)' }}>
               <strong style={{ color: 'var(--sky)' }}>📊 Ecosystem Assessment:</strong> {current.perspectives.cio.ecosystemView}
+            </p>
+          </div>
+        </div>
+
+        {/* Technical Analyst Perspective */}
+        <div style={{ background: 'rgba(52,211,153,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(52,211,153,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
+            <span style={{ color: 'var(--text3)', fontSize: 12 }}>Chart Patterns & Price Action</span>
+          </div>
+          <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
+            <p style={{ }}>
+              <strong>Trend Structure:</strong> Price action shows higher highs and higher lows since ETH treasury pivot — classic uptrend structure. Weekly RSI holding above 50 confirms sustained bullish momentum. MACD histogram expanding on daily timeframe. Key support at 20-day SMA has held on all pullbacks — this is your buy zone.
+            </p>
+            <p style={{ }}>
+              <strong>ETH Correlation:</strong> BMNR exhibits 0.85-0.95 correlation with ETH on 30-day rolling basis — trade it as leveraged ETH proxy. When ETH breaks key levels, BMNR moves 1.2-1.5x. Watch ETH $3,500 support and $4,200 resistance for directional cues on BMNR positioning.
+            </p>
+            <p style={{ }}>
+              <strong>NAV Premium Cycles:</strong> NAV premium/discount provides tactical entry/exit signals independent of price. Accumulate aggressively below 1.0x NAV (discount = free money). Trim 20-30% above 1.5x NAV. Current Bollinger Band squeeze on weekly suggests imminent volatility expansion — prepare for directional move.
+            </p>
+            <p style={{ padding: 10, background: 'rgba(52,211,153,0.1)', borderRadius: 6, borderLeft: '3px solid #34d399' }}>
+              <strong style={{ color: '#34d399' }}>📊 Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
             </p>
           </div>
         </div>

@@ -10324,7 +10324,7 @@ const InvestmentTab = () => {
         </div>
 
         {/* Part 1: Multi-Perspective Risk Evaluation */}
-        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Three Perspectives</h4>
+        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Four Perspectives</h4>
         
         {/* CFA Level III Perspective */}
         <div style={{ background: 'rgba(6,182,212,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(6,182,212,0.2)' }}>
@@ -10379,6 +10379,28 @@ const InvestmentTab = () => {
             </p>
             <p style={{ }}>
               <strong>Fiduciary Narrative:</strong> If questioned by stakeholders: "We own the infrastructure layer enabling mobile operators to extend coverage without building towers — backed by AT&T, Verizon, Vodafone partnerships and $1B+ in contracted revenue." The blue-chip MNO partnerships provide institutional credibility. Comparable thesis to early investments in cell tower REITs.
+            </p>
+          </div>
+        </div>
+
+        {/* Technical Analyst Perspective */}
+        <div style={{ background: 'rgba(52,211,153,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(52,211,153,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
+            <span style={{ color: 'var(--text3)', fontSize: 12 }}>Chart Patterns & Price Action</span>
+          </div>
+          <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
+            <p style={{ }}>
+              <strong>Trend Structure:</strong> Classic catalyst-driven momentum stock. Price gaps on launch news create defined support/resistance zones. Currently consolidating above 50-day SMA with declining volatility — textbook bull flag formation. RSI reset from overbought provides fresh runway for next leg up.
+            </p>
+            <p style={{ }}>
+              <strong>Key Levels:</strong> Support zone at $25-30 (prior breakout level, high volume node). Resistance at $40-45 (prior swing highs). MACD bullish crossover on weekly chart. Volume accumulation patterns evident — institutional buying on dips. Watch for breakout above $45 with volume &gt;20M shares as confirmation signal.
+            </p>
+            <p style={{ }}>
+              <strong>Catalyst Trading:</strong> Satellite launch dates provide predictable volatility windows. Build position 2-3 weeks before scheduled launches. Take partial profits into strength post-launch. Use RSI divergence to identify exhaustion after catalyst-driven rallies. Relative strength vs NASDAQ positive — outperforming growth cohort.
+            </p>
+            <p style={{ padding: 10, background: 'rgba(52,211,153,0.1)', borderRadius: 6, borderLeft: '3px solid #34d399' }}>
+              <strong style={{ color: '#34d399' }}>📊 Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
             </p>
           </div>
         </div>
