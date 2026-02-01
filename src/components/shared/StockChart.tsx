@@ -1141,15 +1141,39 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         </>
       )}
 
-      {/* 52-Week High/Low Text */}
+      {/* 52-Week Range */}
       {!loading && !error && chartData.length > 0 && high52Week && low52Week && (
-        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', display: 'flex', gap: 16 }}>
-          <span>
-            <span style={{ color: COLORS.high52Week, fontWeight: 500 }}>52W High:</span> ${high52Week.toFixed(2)}
-          </span>
-          <span>
-            <span style={{ color: COLORS.low52Week, fontWeight: 500 }}>52W Low:</span> ${low52Week.toFixed(2)}
-          </span>
+        <div style={{
+          marginTop: 12,
+          padding: '10px 14px',
+          background: 'var(--surface2)',
+          borderRadius: 8,
+          fontSize: 11,
+        }}>
+          <div style={{ color: 'var(--text3)', marginBottom: 6, fontWeight: 500 }}>52-Week Range</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ color: COLORS.low52Week, fontWeight: 600 }}>${low52Week.toFixed(2)}</span>
+            <div style={{
+              flex: 1,
+              height: 4,
+              background: 'var(--border)',
+              borderRadius: 2,
+              position: 'relative',
+            }}>
+              <div style={{
+                position: 'absolute',
+                left: `${((lastPrice - low52Week) / (high52Week - low52Week)) * 100}%`,
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 8,
+                height: 8,
+                background: chartColor,
+                borderRadius: '50%',
+                border: '2px solid var(--surface)',
+              }} />
+            </div>
+            <span style={{ color: COLORS.high52Week, fontWeight: 600 }}>${high52Week.toFixed(2)}</span>
+          </div>
         </div>
       )}
 
