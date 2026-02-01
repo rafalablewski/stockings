@@ -828,6 +828,124 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
           )}
         </>
       )}
+
+      {/* Indicator Guide */}
+      {!loading && !error && chartData.length > 0 && (
+        <details style={{ marginTop: 12 }}>
+          <summary style={{
+            cursor: 'pointer',
+            fontSize: 11,
+            color: 'var(--text3)',
+            userSelect: 'none',
+            padding: '4px 0',
+          }}>
+            Indicator Guide
+          </summary>
+          <div style={{
+            marginTop: 8,
+            padding: 12,
+            background: 'var(--surface2)',
+            borderRadius: 8,
+            fontSize: 11,
+            lineHeight: 1.6,
+          }}>
+            <div style={{ display: 'grid', gap: 12 }}>
+              {/* Moving Averages */}
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 12, height: 2, background: COLORS.sma20, borderRadius: 1 }} />
+                  <span style={{ width: 12, height: 2, background: COLORS.sma50, borderRadius: 1 }} />
+                  <span style={{ width: 12, height: 2, background: COLORS.sma200, borderRadius: 1 }} />
+                  Simple Moving Averages (SMA)
+                </div>
+                <div style={{ color: 'var(--text3)' }}>
+                  <strong>SMA 20</strong> (short-term): Captures recent momentum. Price above = bullish short-term trend.
+                  <strong> SMA 50</strong> (medium-term): Institutional benchmark for intermediate trend.
+                  <strong> SMA 200</strong> (long-term): Defines secular bull/bear markets.
+                  <em> Golden Cross</em> (50 crosses above 200) signals bullish reversal; <em>Death Cross</em> (50 below 200) signals bearish reversal.
+                  Widely watched by funds for trend confirmation and mean-reversion entries.
+                </div>
+              </div>
+
+              {/* Bollinger Bands */}
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 12, height: 2, background: COLORS.bbUpper, borderRadius: 1 }} />
+                  Bollinger Bands (20, 2σ)
+                </div>
+                <div style={{ color: 'var(--text3)' }}>
+                  Volatility envelope: middle band = 20-day SMA, upper/lower bands = ±2 standard deviations.
+                  <strong> Band squeeze</strong> (narrow bands) indicates low volatility, often preceding breakouts.
+                  <strong> Band expansion</strong> signals increased volatility. Price touching upper band suggests overbought conditions (mean reversion likely);
+                  lower band suggests oversold. <em>Walk the band</em>: trending markets can ride upper/lower band for extended periods.
+                  Use with RSI for confirmation.
+                </div>
+              </div>
+
+              {/* VWAP */}
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 12, height: 2, background: COLORS.vwap, borderRadius: 1, borderStyle: 'dashed' }} />
+                  VWAP (Volume Weighted Average Price)
+                </div>
+                <div style={{ color: 'var(--text3)' }}>
+                  Institutional execution benchmark. Calculated as cumulative (price × volume) ÷ cumulative volume.
+                  <strong> Price above VWAP</strong>: buyers in control, institutions likely accumulated at favorable prices.
+                  <strong> Price below VWAP</strong>: sellers dominating, distribution phase.
+                  Algorithms target VWAP for order execution. Intraday traders use as dynamic support/resistance.
+                  Most relevant on shorter timeframes (1W, 1M); loses significance on longer periods.
+                </div>
+              </div>
+
+              {/* Volume */}
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
+                  Volume
+                </div>
+                <div style={{ color: 'var(--text3)' }}>
+                  Confirms price moves. <strong>Rising price + high volume</strong> = strong conviction, sustainable trend.
+                  <strong> Rising price + declining volume</strong> = weakening momentum, potential reversal.
+                  <strong> Breakout on high volume</strong> validates the move; low volume breakouts often fail.
+                  Volume spikes indicate institutional activity or news-driven events.
+                  Compare current volume to 20-day average for relative significance.
+                </div>
+              </div>
+
+              {/* RSI */}
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 12, height: 2, background: COLORS.rsi, borderRadius: 1 }} />
+                  RSI (Relative Strength Index, 14-period)
+                </div>
+                <div style={{ color: 'var(--text3)' }}>
+                  Momentum oscillator (0-100). <strong>Above 70</strong>: overbought—price extended, pullback likely but not guaranteed in strong trends.
+                  <strong> Below 30</strong>: oversold—potential bounce, but can stay oversold in downtrends.
+                  <strong> Divergence</strong>: price makes new high but RSI doesn't = bearish divergence (momentum weakening);
+                  price makes new low but RSI doesn't = bullish divergence (selling exhaustion).
+                  Most effective in range-bound markets; use trend filters in trending markets.
+                </div>
+              </div>
+
+              {/* MACD */}
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 12, height: 2, background: COLORS.macd, borderRadius: 1 }} />
+                  <span style={{ width: 12, height: 2, background: COLORS.macdSignal, borderRadius: 1 }} />
+                  MACD (12, 26, 9)
+                </div>
+                <div style={{ color: 'var(--text3)' }}>
+                  Trend-following momentum indicator. <strong>MACD line</strong> (blue) = 12-day EMA − 26-day EMA.
+                  <strong> Signal line</strong> (red) = 9-day EMA of MACD. <strong>Histogram</strong> = MACD − Signal (momentum strength).
+                  <em>Bullish signal</em>: MACD crosses above signal line, histogram turns positive.
+                  <em>Bearish signal</em>: MACD crosses below signal, histogram turns negative.
+                  <strong>Zero-line crossover</strong>: MACD above zero = bullish trend, below = bearish.
+                  Divergences between MACD and price predict reversals. Lagging indicator—confirms trends rather than predicting them.
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      )}
     </div>
   );
 }
