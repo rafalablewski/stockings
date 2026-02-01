@@ -6,13 +6,14 @@ export async function GET(
   request: NextRequest,
   { params }: { params: RouteParams }
 ) {
-  const { symbol } = await params;
+  const { symbol: rawSymbol } = await params;
+  const symbol = decodeURIComponent(rawSymbol);
   const { searchParams } = new URL(request.url);
   const range = searchParams.get('range') || '3mo';
   const interval = searchParams.get('interval') || '1d';
 
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=${interval}&range=${range}`;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=${interval}&range=${range}`;
 
     const response = await fetch(url, {
       headers: {
