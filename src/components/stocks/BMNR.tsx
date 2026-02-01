@@ -1151,9 +1151,8 @@ const ModelTab = ({
 }) => {
   // Model parameters state
   // Note: For NAV companies, discount rate captures ALL risk (no separate risk factors)
-  const [ethInputMode, setEthInputMode] = useState<'growth' | 'target'>('growth');
+  const [ethInputMode, setEthInputMode] = useState<'current' | 'growth'>('current');
   const [ethGrowthRate, setEthGrowthRate] = useState(10);
-  const [ethTargetPrice, setEthTargetPrice] = useState(10000);
   const [stakingYield, setStakingYield] = useState(3.5);
   const [navPremium, setNavPremium] = useState(1.0);
   const [dilutionRate, setDilutionRate] = useState(8);
@@ -1194,14 +1193,10 @@ const ModelTab = ({
 
   // STEP 2: Terminal Year (5 years) ETH Price
   const terminalYears = 5;
-  // Support both growth rate and target price modes
-  const terminalEthPrice = ethInputMode === 'target'
-    ? ethTargetPrice
+  // Support both current (no growth) and growth projection modes
+  const terminalEthPrice = ethInputMode === 'current'
+    ? ethPrice  // Use current price from Parameters (no appreciation assumed)
     : ethPrice * Math.pow(1 + ethGrowthRate / 100, terminalYears);
-  // Calculate implied values for display
-  const impliedGrowthRate = ethInputMode === 'target'
-    ? (Math.pow(ethTargetPrice / ethPrice, 1 / terminalYears) - 1) * 100
-    : ethGrowthRate;
 
   // STEP 3: Terminal Year ETH Holdings (with staking yield compounding)
   const netYieldRate = (stakingYield - operatingCosts) / 100;
@@ -1314,118 +1309,95 @@ const ModelTab = ({
           </div>
         </div>
 
-        {/* ETH HOLDINGS ASSUMPTION */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-holdings</div>
-        <h3 style={{ color: 'var(--cyan)' }}>ETH Holdings</h3>
-        <div className="g2">
-          <BMNRParameterCard
-            title="ETH Holdings (M)"
-            explanation="Total ETH held by BMNR. Default: 4.17M from Jan 2026 PR (3.45% of ETH supply). Adjust to model different accumulation scenarios or test sensitivity to holdings size."
-            options={[2, 3, 3.5, 4.17, 5, 7]}
-            value={Math.round(currentETH / 1_000_000 * 100) / 100}
-            onChange={v => setCurrentETH(Math.round(v * 1_000_000))}
-            format="ETH"
-          />
-        </div>
-
-        {/* ETH & YIELD PARAMETERS */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-price</div>
-        <h3 style={{ color: 'var(--cyan)' }}>ETH Price Projection</h3>
-        <p style={{ fontSize: 12, color: 'var(--text3)' }}>
-          Choose ONE method to project terminal ETH price. Click on a card to activate it.
-        </p>
-
-        {/* Two mutually exclusive ETH price inputs */}
-        <div className="g2">
-          {/* Target ETH Price Card */}
-          <div
-            onClick={() => setEthInputMode('target')}
-            style={{
-              opacity: ethInputMode === 'target' ? 1 : 0.5,
-              cursor: ethInputMode === 'target' ? 'default' : 'pointer',
-              position: 'relative',
-            }}
-          >
-            {ethInputMode !== 'target' && (
-              <div style={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                background: 'var(--surface2)',
-                padding: '2px 8px',
-                borderRadius: 4,
-                fontSize: 10,
-                color: 'var(--text3)',
-                zIndex: 1,
-              }}>
-                Click to enable
+        {/* CALCULATION MODE TOGGLE */}
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#calculation-mode</div>
+        <h3 style={{ color: 'var(--cyan)' }}>Calculation Mode</h3>
+        <div className="card">
+          <div className="card-title">Data Source</div>
+          <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5, marginBottom: 12 }}>
+            Choose how to calculate valuation. "Use Parameters" takes current ETH holdings and price from Overview tab. "Use Growth Projection" projects future value using growth rate.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+            <div
+              onClick={() => setEthInputMode('current')}
+              style={{
+                padding: 16,
+                borderRadius: 10,
+                border: ethInputMode === 'current' ? '2px solid var(--mint)' : '1px solid var(--border)',
+                background: ethInputMode === 'current' ? 'rgba(52,211,153,0.1)' : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ fontSize: 20, marginBottom: 4 }}>📍</div>
+              <div style={{ fontWeight: 600, fontSize: 13, color: ethInputMode === 'current' ? 'var(--mint)' : 'var(--text)' }}>
+                Use Parameters
               </div>
-            )}
-            <BMNRParameterCard
-              title={`Target ETH Price (${new Date().getFullYear() + 5})`}
-              explanation={`Set your target ETH price for ${new Date().getFullYear() + 5}. Current: $${ethPrice.toLocaleString()}. ${ethInputMode === 'target' ? `Implies ${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}% annual growth.` : 'Click to use this method.'}`}
-              options={[1500, 2500, 4000, 8000, 15000, 50000]}
-              value={ethTargetPrice}
-              onChange={v => { setEthTargetPrice(v); setEthInputMode('target'); setSelectedScenario('custom'); }}
-              format="$"
-              disabled={ethInputMode !== 'target'}
-            />
-          </div>
-
-          {/* ETH Growth Rate Card */}
-          <div
-            onClick={() => setEthInputMode('growth')}
-            style={{
-              opacity: ethInputMode === 'growth' ? 1 : 0.5,
-              cursor: ethInputMode === 'growth' ? 'default' : 'pointer',
-              position: 'relative',
-            }}
-          >
-            {ethInputMode !== 'growth' && (
-              <div style={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                background: 'var(--surface2)',
-                padding: '2px 8px',
-                borderRadius: 4,
-                fontSize: 10,
-                color: 'var(--text3)',
-                zIndex: 1,
-              }}>
-                Click to enable
+              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>
+                {(currentETH / 1_000_000).toFixed(2)}M ETH × ${ethPrice.toLocaleString()}
               </div>
-            )}
-            <BMNRParameterCard
-              title="ETH Annual Growth Rate (%)"
-              explanation={`Expected annual ETH price appreciation. ${ethInputMode === 'growth' ? `Terminal: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}` : 'Click to use this method.'} Historical: +90% (2024), -67% (2022).`}
-              options={[-30, -5, 10, 20, 35, 60]}
-              value={ethGrowthRate}
-              onChange={v => { setEthGrowthRate(v); setEthInputMode('growth'); setSelectedScenario('custom'); }}
-              format="%"
-              disabled={ethInputMode !== 'growth'}
-            />
+            </div>
+            <div
+              onClick={() => setEthInputMode('growth')}
+              style={{
+                padding: 16,
+                borderRadius: 10,
+                border: ethInputMode === 'growth' ? '2px solid var(--cyan)' : '1px solid var(--border)',
+                background: ethInputMode === 'growth' ? 'rgba(34,211,238,0.1)' : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ fontSize: 20, marginBottom: 4 }}>📈</div>
+              <div style={{ fontWeight: 600, fontSize: 13, color: ethInputMode === 'growth' ? 'var(--cyan)' : 'var(--text)' }}>
+                Use Growth Projection
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>
+                {ethGrowthRate > 0 ? '+' : ''}{ethGrowthRate}% annual ETH growth
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Active method indicator */}
+        {/* ETH GROWTH RATE - Only visible when growth mode selected */}
+        {ethInputMode === 'growth' && (
+          <>
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-growth</div>
+            <h3 style={{ color: 'var(--cyan)' }}>ETH Growth Projection</h3>
+            <div className="g2">
+              <BMNRParameterCard
+                title="ETH Annual Growth Rate (%)"
+                explanation={`Expected annual ETH price appreciation over ${terminalYears} years. Terminal: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})} from current $${ethPrice.toLocaleString()}. Historical: +90% (2024), -67% (2022).`}
+                options={[-30, -5, 10, 20, 35, 60]}
+                value={ethGrowthRate}
+                onChange={v => { setEthGrowthRate(v); setSelectedScenario('custom'); }}
+                format="%"
+              />
+            </div>
+          </>
+        )}
+
+        {/* Current mode summary */}
         <div style={{
           padding: '8px 12px',
-          background: ethInputMode === 'target' ? 'rgba(126,231,135,0.1)' : 'rgba(34,211,238,0.1)',
+          background: ethInputMode === 'current' ? 'rgba(52,211,153,0.1)' : 'rgba(34,211,238,0.1)',
           borderRadius: 6,
           fontSize: 12,
           display: 'flex',
           alignItems: 'center',
           gap: 8,
         }}>
-          <span style={{ color: ethInputMode === 'target' ? 'var(--mint)' : 'var(--cyan)', fontWeight: 600 }}>
-            {ethInputMode === 'target' ? '🎯 Using Target Price' : '📈 Using Growth Rate'}
+          <span style={{ color: ethInputMode === 'current' ? 'var(--mint)' : 'var(--cyan)', fontWeight: 600 }}>
+            {ethInputMode === 'current' ? '📍 Using Parameters' : '📈 Using Growth Projection'}
           </span>
           <span style={{ color: 'var(--text3)' }}>→</span>
           <span style={{ color: 'var(--text2)' }}>
-            Terminal ETH: <strong>${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}</strong>
-            {ethInputMode === 'target' && ` (${impliedGrowthRate > 0 ? '+' : ''}${impliedGrowthRate.toFixed(1)}%/yr)`}
-            {ethInputMode === 'growth' && ` (from $${ethPrice.toLocaleString()})`}
+            {ethInputMode === 'current'
+              ? `NAV: $${((currentETH * ethPrice) / 1e9).toFixed(2)}B (${(currentETH / 1_000_000).toFixed(2)}M ETH × $${ethPrice.toLocaleString()})`
+              : `Terminal ETH: $${terminalEthPrice.toLocaleString(undefined, {maximumFractionDigits: 0})} (${ethGrowthRate > 0 ? '+' : ''}${ethGrowthRate}%/yr × ${terminalYears}yr)`
+            }
           </span>
         </div>
 
