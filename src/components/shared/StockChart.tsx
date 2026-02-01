@@ -336,7 +336,6 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const [showVWAP, setShowVWAP] = useState(false);
   const [showMACD, setShowMACD] = useState(false);
   const [showATR, setShowATR] = useState(false);
-  const [show52WeekHL, setShow52WeekHL] = useState(false);
 
   // Scale toggle
   const [logScale, setLogScale] = useState(false);
@@ -660,7 +659,6 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         <IndicatorToggle label="SMA 200" active={showSMA200} onClick={() => setShowSMA200(!showSMA200)} color={COLORS.sma200} />
         <IndicatorToggle label="Bollinger" active={showBollinger} onClick={() => setShowBollinger(!showBollinger)} color={COLORS.bbUpper} />
         <IndicatorToggle label="VWAP" active={showVWAP} onClick={() => setShowVWAP(!showVWAP)} color={COLORS.vwap} />
-        <IndicatorToggle label="52W H/L" active={show52WeekHL} onClick={() => setShow52WeekHL(!show52WeekHL)} color={COLORS.high52Week} />
         <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 2px' }} />
         <IndicatorToggle label="Volume" active={showVolume} onClick={() => setShowVolume(!showVolume)} />
         <IndicatorToggle label="RSI" active={showRSI} onClick={() => setShowRSI(!showRSI)} color={COLORS.rsi} />
@@ -749,14 +747,6 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                 }}
               />
               <ReferenceLine y={firstPrice} stroke="var(--text3)" strokeDasharray="3 3" strokeOpacity={0.5} />
-
-              {/* 52-Week High/Low Lines */}
-              {show52WeekHL && high52Week && (
-                <ReferenceLine y={high52Week} stroke={COLORS.high52Week} strokeDasharray="6 3" strokeWidth={1.5} label={{ value: '52W High', fill: COLORS.high52Week, fontSize: 9, position: 'right' }} />
-              )}
-              {show52WeekHL && low52Week && (
-                <ReferenceLine y={low52Week} stroke={COLORS.low52Week} strokeDasharray="6 3" strokeWidth={1.5} label={{ value: '52W Low', fill: COLORS.low52Week, fontSize: 9, position: 'right' }} />
-              )}
 
               {/* Bollinger Bands */}
               {showBollinger && (
@@ -984,14 +974,6 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               />
               <ReferenceLine y={firstPrice} stroke="var(--text3)" strokeDasharray="3 3" strokeOpacity={0.5} />
 
-              {/* 52-Week High/Low Lines */}
-              {show52WeekHL && high52Week && (
-                <ReferenceLine y={high52Week} stroke={COLORS.high52Week} strokeDasharray="6 3" strokeWidth={1.5} label={{ value: '52W High', fill: COLORS.high52Week, fontSize: 9, position: 'right' }} />
-              )}
-              {show52WeekHL && low52Week && (
-                <ReferenceLine y={low52Week} stroke={COLORS.low52Week} strokeDasharray="6 3" strokeWidth={1.5} label={{ value: '52W Low', fill: COLORS.low52Week, fontSize: 9, position: 'right' }} />
-              )}
-
               {/* Bollinger Bands */}
               {showBollinger && (
                 <>
@@ -1159,6 +1141,18 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         </>
       )}
 
+      {/* 52-Week High/Low Text */}
+      {!loading && !error && chartData.length > 0 && high52Week && low52Week && (
+        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)', display: 'flex', gap: 16 }}>
+          <span>
+            <span style={{ color: COLORS.high52Week, fontWeight: 500 }}>52W High:</span> ${high52Week.toFixed(2)}
+          </span>
+          <span>
+            <span style={{ color: COLORS.low52Week, fontWeight: 500 }}>52W Low:</span> ${low52Week.toFixed(2)}
+          </span>
+        </div>
+      )}
+
       {/* Indicator Guide */}
       {!loading && !error && chartData.length > 0 && (
         <details open style={{ marginTop: 12 }}>
@@ -1285,21 +1279,6 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                   <strong> Position sizing</strong>: use ATR to set stop-losses (e.g., 2× ATR below entry) and calculate position size for consistent risk.
                   <strong> Breakout confirmation</strong>: ATR expansion during breakout confirms genuine move; contraction suggests false break.
                   Not directional—shows magnitude of moves, not direction. Often used with trend indicators for complete picture.
-                </div>
-              </div>
-
-              {/* 52-Week High/Low */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.high52Week, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.low52Week, borderRadius: 1 }} />
-                  52-Week High/Low
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Key psychological and technical levels. <strong>Near 52W high</strong>: momentum stocks often break higher; resistance level for mean-reversion.
-                  <strong> Near 52W low</strong>: potential value zone or falling knife—context matters. <strong>Breakout above 52W high</strong> is bullish signal often
-                  attracting momentum buyers. <strong>New 52W low</strong> can trigger selling cascade. Institutions track these levels for entry/exit decisions.
-                  Compare current price to 52W range for relative valuation context.
                 </div>
               </div>
 
