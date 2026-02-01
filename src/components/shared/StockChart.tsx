@@ -831,7 +831,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
       {/* Indicator Guide */}
       {!loading && !error && chartData.length > 0 && (
-        <details style={{ marginTop: 12 }}>
+        <details open style={{ marginTop: 12 }}>
           <summary style={{
             cursor: 'pointer',
             fontSize: 11,
