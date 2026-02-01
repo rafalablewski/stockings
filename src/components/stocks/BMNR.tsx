@@ -197,6 +197,7 @@
 import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage } from '../shared';
+import StockChart from '../shared/StockChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -1944,6 +1945,10 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         currentValue={DIVIDEND_DATA.quarterlyDividend}
       />
     </div>
+
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
+    <h3 className="section-head">Stock Chart</h3>
+    <StockChart symbol="BMNR" />
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — ETH Treasury Fundamentals" items={[
