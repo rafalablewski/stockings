@@ -413,7 +413,8 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
     if (range === '1d') {
-      return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      // Show date + time since it may be showing previous trading day (e.g., Friday on weekends)
+      return date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
     }
     if (range === '5d') {
       return date.toLocaleDateString('en-US', { weekday: 'short', hour: 'numeric' });
