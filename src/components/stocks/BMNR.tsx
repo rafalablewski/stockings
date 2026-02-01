@@ -1511,7 +1511,7 @@ const ModelTab = ({
               <tr>
                 <td style={{ color: 'var(--text2)' }}>Terminal ETH Price</td>
                 <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                <td style={{ color: 'var(--text3)' }}>{impliedGrowthRate > 0 ? '+' : ''}{impliedGrowthRate.toFixed(1)}%/yr × 5yrs</td>
+                <td style={{ color: 'var(--text3)' }}>{ethInputMode === 'current' ? 'current (no growth)' : `${ethGrowthRate > 0 ? '+' : ''}${ethGrowthRate}%/yr × 5yrs`}</td>
               </tr>
               <tr>
                 <td style={{ color: 'var(--text2)' }}>Terminal ETH Holdings</td>
@@ -1570,8 +1570,7 @@ const ModelTab = ({
                   {ethInputMode === 'growth' ? (
                     <>ETH Price = ${ethPrice.toLocaleString()} × (1 + {ethGrowthRate}%)^5<br/></>
                   ) : (
-                    <>ETH Price = ${ethTargetPrice.toLocaleString()} (target)<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ≈ {impliedGrowthRate.toFixed(1)}%/yr implied<br/></>
+                    <>ETH Price = ${ethPrice.toLocaleString()} (current, no growth)<br/></>
                   )}
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong><br/><br/>
                   ETH Holdings = {currentETH.toLocaleString()} × (1 + {(netYieldRate * 100).toFixed(2)}%)^5<br/>
