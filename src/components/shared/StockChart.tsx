@@ -394,7 +394,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         return;
       }
       try {
-        const res = await fetch(`/api/stock/${ticker}?range=${range}&interval=${interval}`);
+        const res = await fetch(`/api/stock/${encodeURIComponent(ticker)}?range=${range}&interval=${interval}`);
         if (res.ok) {
           const json = await res.json();
           setData(json.data);
