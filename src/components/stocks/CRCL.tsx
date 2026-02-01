@@ -4429,7 +4429,7 @@ function CRCLModel() {
                         </div>
 
                         {/* Part 1: Multi-Perspective Risk Evaluation */}
-                        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Three Perspectives</h4>
+                        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Four Perspectives</h4>
                         
                         {/* CFA Level III Perspective */}
                         <div style={{ background: 'rgba(0,212,170,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(0,212,170,0.2)' }}>
