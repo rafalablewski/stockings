@@ -14,6 +14,7 @@ import {
   Cell,
   Line,
   BarChart,
+  LineChart,
 } from 'recharts';
 
 interface ChartDataPoint {
@@ -65,6 +66,178 @@ const calculateSMA = (data: ChartDataPoint[], period: number): (number | null)[]
   return result;
 };
 
+// Calculate EMA (Exponential Moving Average)
+const calculateEMA = (data: number[], period: number): (number | null)[] => {
+  const result: (number | null)[] = [];
+  const multiplier = 2 / (period + 1);
+
+  for (let i = 0; i < data.length; i++) {
+    if (i < period - 1) {
+      result.push(null);
+    } else if (i === period - 1) {
+      // First EMA is SMA
+      let sum = 0;
+      for (let j = 0; j < period; j++) {
+        sum += data[i - j];
+      }
+      result.push(sum / period);
+    } else {
+      const prevEMA = result[i - 1];
+      if (prevEMA !== null) {
+        result.push((data[i] - prevEMA) * multiplier + prevEMA);
+      } else {
+        result.push(null);
+      }
+    }
+  }
+  return result;
+};
+
+// Calculate RSI (Relative Strength Index)
+const calculateRSI = (data: ChartDataPoint[], period: number = 14): (number | null)[] => {
+  const result: (number | null)[] = [];
+  const gains: number[] = [];
+  const losses: number[] = [];
+
+  for (let i = 0; i < data.length; i++) {
+    if (i === 0) {
+      gains.push(0);
+      losses.push(0);
+      result.push(null);
+      continue;
+    }
+
+    const change = data[i].close - data[i - 1].close;
+    gains.push(change > 0 ? change : 0);
+    losses.push(change < 0 ? Math.abs(change) : 0);
+
+    if (i < period) {
+      result.push(null);
+      continue;
+    }
+
+    let avgGain = 0;
+    let avgLoss = 0;
+
+    if (i === period) {
+      // First RSI uses simple average
+      for (let j = 1; j <= period; j++) {
+        avgGain += gains[i - period + j];
+        avgLoss += losses[i - period + j];
+      }
+      avgGain /= period;
+      avgLoss /= period;
+    } else {
+      // Subsequent RSI uses smoothed average
+      const prevAvgGain = gains.slice(i - period, i).reduce((a, b) => a + b, 0) / period;
+      const prevAvgLoss = losses.slice(i - period, i).reduce((a, b) => a + b, 0) / period;
+      avgGain = (prevAvgGain * (period - 1) + gains[i]) / period;
+      avgLoss = (prevAvgLoss * (period - 1) + losses[i]) / period;
+    }
+
+    if (avgLoss === 0) {
+      result.push(100);
+    } else {
+      const rs = avgGain / avgLoss;
+      result.push(100 - (100 / (1 + rs)));
+    }
+  }
+  return result;
+};
+
+// Calculate Bollinger Bands
+const calculateBollingerBands = (data: ChartDataPoint[], period: number = 20, stdDev: number = 2): {
+  upper: (number | null)[];
+  middle: (number | null)[];
+  lower: (number | null)[];
+} => {
+  const middle = calculateSMA(data, period);
+  const upper: (number | null)[] = [];
+  const lower: (number | null)[] = [];
+
+  for (let i = 0; i < data.length; i++) {
+    if (i < period - 1 || middle[i] === null) {
+      upper.push(null);
+      lower.push(null);
+      continue;
+    }
+
+    // Calculate standard deviation
+    let sumSquares = 0;
+    for (let j = 0; j < period; j++) {
+      const diff = data[i - j].close - middle[i]!;
+      sumSquares += diff * diff;
+    }
+    const std = Math.sqrt(sumSquares / period);
+
+    upper.push(middle[i]! + stdDev * std);
+    lower.push(middle[i]! - stdDev * std);
+  }
+
+  return { upper, middle, lower };
+};
+
+// Calculate VWAP (Volume Weighted Average Price)
+const calculateVWAP = (data: ChartDataPoint[]): (number | null)[] => {
+  const result: (number | null)[] = [];
+  let cumulativeTPV = 0; // Typical Price × Volume
+  let cumulativeVolume = 0;
+
+  for (let i = 0; i < data.length; i++) {
+    const typicalPrice = (data[i].high + data[i].low + data[i].close) / 3;
+    cumulativeTPV += typicalPrice * data[i].volume;
+    cumulativeVolume += data[i].volume;
+
+    if (cumulativeVolume === 0) {
+      result.push(null);
+    } else {
+      result.push(cumulativeTPV / cumulativeVolume);
+    }
+  }
+  return result;
+};
+
+// Calculate MACD
+const calculateMACD = (data: ChartDataPoint[], fastPeriod: number = 12, slowPeriod: number = 26, signalPeriod: number = 9): {
+  macd: (number | null)[];
+  signal: (number | null)[];
+  histogram: (number | null)[];
+} => {
+  const closes = data.map(d => d.close);
+  const fastEMA = calculateEMA(closes, fastPeriod);
+  const slowEMA = calculateEMA(closes, slowPeriod);
+
+  const macdLine: (number | null)[] = [];
+  for (let i = 0; i < data.length; i++) {
+    if (fastEMA[i] === null || slowEMA[i] === null) {
+      macdLine.push(null);
+    } else {
+      macdLine.push(fastEMA[i]! - slowEMA[i]!);
+    }
+  }
+
+  // Calculate signal line (EMA of MACD)
+  const macdValues = macdLine.map(v => v ?? 0);
+  const signalLine = calculateEMA(macdValues, signalPeriod);
+
+  // Adjust signal line to have nulls where MACD is null
+  const adjustedSignal: (number | null)[] = signalLine.map((v, i) =>
+    macdLine[i] === null ? null : v
+  );
+
+  // Calculate histogram
+  const histogram: (number | null)[] = [];
+  for (let i = 0; i < data.length; i++) {
+    if (macdLine[i] === null || adjustedSignal[i] === null) {
+      histogram.push(null);
+    } else {
+      histogram.push(macdLine[i]! - adjustedSignal[i]!);
+    }
+  }
+
+  return { macd: macdLine, signal: adjustedSignal, histogram };
+};
+
 // Indicator toggle button component
 const IndicatorToggle = ({
   label,
@@ -111,6 +284,10 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
   const [showSMA50, setShowSMA50] = useState(false);
   const [showSMA200, setShowSMA200] = useState(false);
   const [showVolume, setShowVolume] = useState(false);
+  const [showRSI, setShowRSI] = useState(false);
+  const [showBollinger, setShowBollinger] = useState(false);
+  const [showVWAP, setShowVWAP] = useState(false);
+  const [showMACD, setShowMACD] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -167,29 +344,58 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
 
   const chartColor = isPositive ? '#34d399' : '#f87171';
 
-  // Calculate SMAs
+  // Calculate indicators
   const sma20 = useMemo(() => calculateSMA(chartData, 20), [chartData]);
   const sma50 = useMemo(() => calculateSMA(chartData, 50), [chartData]);
   const sma200 = useMemo(() => calculateSMA(chartData, 200), [chartData]);
+  const rsi = useMemo(() => calculateRSI(chartData, 14), [chartData]);
+  const bollinger = useMemo(() => calculateBollingerBands(chartData, 20, 2), [chartData]);
+  const vwap = useMemo(() => calculateVWAP(chartData), [chartData]);
+  const macd = useMemo(() => calculateMACD(chartData), [chartData]);
 
-  // Prepare chart data with SMAs
+  // Prepare chart data with all indicators
   const enrichedData = useMemo(() => chartData.map((d, i) => ({
     ...d,
     sma20: sma20[i],
     sma50: sma50[i],
     sma200: sma200[i],
+    rsi: rsi[i],
+    bbUpper: bollinger.upper[i],
+    bbMiddle: bollinger.middle[i],
+    bbLower: bollinger.lower[i],
+    vwap: vwap[i],
+    macdLine: macd.macd[i],
+    macdSignal: macd.signal[i],
+    macdHistogram: macd.histogram[i],
     priceRange: [d.low, d.high],
-  })), [chartData, sma20, sma50, sma200]);
+  })), [chartData, sma20, sma50, sma200, rsi, bollinger, vwap, macd]);
 
-  // SMA colors
-  const SMA_COLORS = {
-    sma20: '#f59e0b',  // Amber
-    sma50: '#8b5cf6',  // Purple
-    sma200: '#06b6d4', // Cyan
+  // Colors
+  const COLORS = {
+    sma20: '#f59e0b',    // Amber
+    sma50: '#8b5cf6',    // Purple
+    sma200: '#06b6d4',   // Cyan
+    rsi: '#ec4899',      // Pink
+    bbUpper: '#64748b',  // Slate
+    bbLower: '#64748b',  // Slate
+    bbMiddle: '#94a3b8', // Slate lighter
+    vwap: '#f97316',     // Orange
+    macd: '#3b82f6',     // Blue
+    macdSignal: '#ef4444', // Red
+    macdHistogramUp: '#34d399',
+    macdHistogramDown: '#f87171',
   };
 
-  const mainChartHeight = showVolume ? height - 60 : height;
-  const volumeHeight = 50;
+  // Calculate heights based on active indicators
+  const subChartHeight = 60;
+  const activeSubCharts = [showVolume, showRSI, showMACD].filter(Boolean).length;
+  const mainChartHeight = height - (activeSubCharts * subChartHeight);
+
+  // Get latest RSI value for display
+  const latestRSI = rsi[rsi.length - 1];
+  const rsiStatus = latestRSI !== null
+    ? latestRSI > 70 ? 'Overbought' : latestRSI < 30 ? 'Oversold' : 'Neutral'
+    : '';
 
   return (
     <div className="card">
@@ -276,29 +482,15 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
 
       {/* Indicator toggles */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
-        <IndicatorToggle
-          label="SMA 20"
-          active={showSMA20}
-          onClick={() => setShowSMA20(!showSMA20)}
-          color={SMA_COLORS.sma20}
-        />
-        <IndicatorToggle
-          label="SMA 50"
-          active={showSMA50}
-          onClick={() => setShowSMA50(!showSMA50)}
-          color={SMA_COLORS.sma50}
-        />
-        <IndicatorToggle
-          label="SMA 200"
-          active={showSMA200}
-          onClick={() => setShowSMA200(!showSMA200)}
-          color={SMA_COLORS.sma200}
-        />
-        <IndicatorToggle
-          label="Volume"
-          active={showVolume}
-          onClick={() => setShowVolume(!showVolume)}
-        />
+        <IndicatorToggle label="SMA 20" active={showSMA20} onClick={() => setShowSMA20(!showSMA20)} color={COLORS.sma20} />
+        <IndicatorToggle label="SMA 50" active={showSMA50} onClick={() => setShowSMA50(!showSMA50)} color={COLORS.sma50} />
+        <IndicatorToggle label="SMA 200" active={showSMA200} onClick={() => setShowSMA200(!showSMA200)} color={COLORS.sma200} />
+        <IndicatorToggle label="Bollinger" active={showBollinger} onClick={() => setShowBollinger(!showBollinger)} color={COLORS.bbUpper} />
+        <IndicatorToggle label="VWAP" active={showVWAP} onClick={() => setShowVWAP(!showVWAP)} color={COLORS.vwap} />
+        <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 2px' }} />
+        <IndicatorToggle label="Volume" active={showVolume} onClick={() => setShowVolume(!showVolume)} />
+        <IndicatorToggle label="RSI" active={showRSI} onClick={() => setShowRSI(!showRSI)} color={COLORS.rsi} />
+        <IndicatorToggle label="MACD" active={showMACD} onClick={() => setShowMACD(!showMACD)} color={COLORS.macd} />
       </div>
 
       {loading && (
@@ -321,6 +513,10 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
                 <linearGradient id={`gradient-${symbol}`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={chartColor} stopOpacity={0.3} />
                   <stop offset="100%" stopColor={chartColor} stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id={`bb-gradient-${symbol}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={COLORS.bbUpper} stopOpacity={0.1} />
+                  <stop offset="100%" stopColor={COLORS.bbLower} stopOpacity={0.1} />
                 </linearGradient>
               </defs>
               <XAxis
@@ -353,19 +549,30 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
                   year: 'numeric',
                 })}
                 formatter={(value: number, name: string) => {
+                  if (value === null || value === undefined) return ['-', name];
                   if (name === 'close') return [`$${value.toFixed(2)}`, 'Price'];
                   if (name === 'sma20') return [`$${value.toFixed(2)}`, 'SMA 20'];
                   if (name === 'sma50') return [`$${value.toFixed(2)}`, 'SMA 50'];
                   if (name === 'sma200') return [`$${value.toFixed(2)}`, 'SMA 200'];
+                  if (name === 'bbUpper') return [`$${value.toFixed(2)}`, 'BB Upper'];
+                  if (name === 'bbLower') return [`$${value.toFixed(2)}`, 'BB Lower'];
+                  if (name === 'vwap') return [`$${value.toFixed(2)}`, 'VWAP'];
                   return [`$${value.toFixed(2)}`, name];
                 }}
               />
-              <ReferenceLine
-                y={firstPrice}
-                stroke="var(--text3)"
-                strokeDasharray="3 3"
-                strokeOpacity={0.5}
-              />
+              <ReferenceLine y={firstPrice} stroke="var(--text3)" strokeDasharray="3 3" strokeOpacity={0.5} />
+
+              {/* Bollinger Bands */}
+              {showBollinger && (
+                <>
+                  <Area type="monotone" dataKey="bbUpper" stroke="none" fill={`url(#bb-gradient-${symbol})`} connectNulls={false} />
+                  <Line type="monotone" dataKey="bbUpper" stroke={COLORS.bbUpper} strokeWidth={1} strokeDasharray="3 3" dot={false} connectNulls={false} />
+                  <Line type="monotone" dataKey="bbMiddle" stroke={COLORS.bbMiddle} strokeWidth={1} dot={false} connectNulls={false} />
+                  <Line type="monotone" dataKey="bbLower" stroke={COLORS.bbLower} strokeWidth={1} strokeDasharray="3 3" dot={false} connectNulls={false} />
+                </>
+              )}
+
+              {/* Main price line */}
               <Area
                 type="monotone"
                 dataKey="close"
@@ -375,65 +582,92 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
                 dot={false}
                 activeDot={{ r: 4, fill: chartColor }}
               />
-              {showSMA20 && (
-                <Line
-                  type="monotone"
-                  dataKey="sma20"
-                  stroke={SMA_COLORS.sma20}
-                  strokeWidth={1.5}
-                  dot={false}
-                  connectNulls={false}
-                />
+
+              {/* VWAP */}
+              {showVWAP && (
+                <Line type="monotone" dataKey="vwap" stroke={COLORS.vwap} strokeWidth={1.5} strokeDasharray="5 2" dot={false} connectNulls={false} />
               )}
-              {showSMA50 && (
-                <Line
-                  type="monotone"
-                  dataKey="sma50"
-                  stroke={SMA_COLORS.sma50}
-                  strokeWidth={1.5}
-                  dot={false}
-                  connectNulls={false}
-                />
-              )}
-              {showSMA200 && (
-                <Line
-                  type="monotone"
-                  dataKey="sma200"
-                  stroke={SMA_COLORS.sma200}
-                  strokeWidth={1.5}
-                  dot={false}
-                  connectNulls={false}
-                />
-              )}
+
+              {/* SMAs */}
+              {showSMA20 && <Line type="monotone" dataKey="sma20" stroke={COLORS.sma20} strokeWidth={1.5} dot={false} connectNulls={false} />}
+              {showSMA50 && <Line type="monotone" dataKey="sma50" stroke={COLORS.sma50} strokeWidth={1.5} dot={false} connectNulls={false} />}
+              {showSMA200 && <Line type="monotone" dataKey="sma200" stroke={COLORS.sma200} strokeWidth={1.5} dot={false} connectNulls={false} />}
             </ComposedChart>
           </ResponsiveContainer>
+
+          {/* Volume Panel */}
           {showVolume && (
-            <ResponsiveContainer width="100%" height={volumeHeight}>
+            <ResponsiveContainer width="100%" height={subChartHeight}>
               <BarChart data={enrichedData} margin={{ top: 0, right: 5, left: 0, bottom: 5 }}>
                 <XAxis dataKey="date" hide />
-                <YAxis
-                  tickFormatter={formatVolume}
-                  tick={{ fontSize: 9, fill: 'var(--text3)' }}
-                  axisLine={false}
-                  tickLine={false}
-                  width={60}
-                />
+                <YAxis tickFormatter={formatVolume} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} />
                 <Tooltip
-                  contentStyle={{
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 8,
-                    fontSize: 12,
-                  }}
-                  labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
+                  contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                  labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   formatter={(value: number) => [formatVolume(value), 'Volume']}
                 />
                 <Bar dataKey="volume" fill="var(--text3)" opacity={0.5} />
               </BarChart>
             </ResponsiveContainer>
+          )}
+
+          {/* RSI Panel */}
+          {showRSI && (
+            <div style={{ position: 'relative' }}>
+              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>
+                RSI(14): <span style={{ color: latestRSI !== null && latestRSI > 70 ? '#f87171' : latestRSI !== null && latestRSI < 30 ? '#34d399' : 'var(--text2)' }}>
+                  {latestRSI?.toFixed(1)} {rsiStatus}
+                </span>
+              </div>
+              <ResponsiveContainer width="100%" height={subChartHeight}>
+                <LineChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+                  <XAxis dataKey="date" hide />
+                  <YAxis domain={[0, 100]} ticks={[30, 70]} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} />
+                  <ReferenceLine y={70} stroke="#f87171" strokeDasharray="3 3" strokeOpacity={0.5} />
+                  <ReferenceLine y={30} stroke="#34d399" strokeDasharray="3 3" strokeOpacity={0.5} />
+                  <Tooltip
+                    contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                    labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    formatter={(value: number) => [value?.toFixed(1), 'RSI']}
+                  />
+                  <Line type="monotone" dataKey="rsi" stroke={COLORS.rsi} strokeWidth={1.5} dot={false} connectNulls={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* MACD Panel */}
+          {showMACD && (
+            <div style={{ position: 'relative' }}>
+              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>
+                MACD(12,26,9)
+              </div>
+              <ResponsiveContainer width="100%" height={subChartHeight}>
+                <ComposedChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+                  <XAxis dataKey="date" hide />
+                  <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} />
+                  <ReferenceLine y={0} stroke="var(--border)" />
+                  <Tooltip
+                    contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                    labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    formatter={(value: number, name: string) => {
+                      if (value === null) return ['-', name];
+                      if (name === 'macdLine') return [value?.toFixed(3), 'MACD'];
+                      if (name === 'macdSignal') return [value?.toFixed(3), 'Signal'];
+                      if (name === 'macdHistogram') return [value?.toFixed(3), 'Histogram'];
+                      return [value?.toFixed(3), name];
+                    }}
+                  />
+                  <Bar dataKey="macdHistogram" fill={COLORS.macdHistogramUp}>
+                    {enrichedData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.macdHistogram && entry.macdHistogram >= 0 ? COLORS.macdHistogramUp : COLORS.macdHistogramDown} opacity={0.7} />
+                    ))}
+                  </Bar>
+                  <Line type="monotone" dataKey="macdLine" stroke={COLORS.macd} strokeWidth={1.5} dot={false} connectNulls={false} />
+                  <Line type="monotone" dataKey="macdSignal" stroke={COLORS.macdSignal} strokeWidth={1.5} dot={false} connectNulls={false} />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </>
       )}
@@ -442,6 +676,12 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
         <>
           <ResponsiveContainer width="100%" height={mainChartHeight}>
             <ComposedChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+              <defs>
+                <linearGradient id={`bb-gradient-candle-${symbol}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={COLORS.bbUpper} stopOpacity={0.1} />
+                  <stop offset="100%" stopColor={COLORS.bbLower} stopOpacity={0.1} />
+                </linearGradient>
+              </defs>
               <XAxis
                 dataKey="date"
                 tickFormatter={formatDate}
@@ -464,20 +704,9 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
                   const d = payload[0]?.payload;
                   if (!d) return null;
                   return (
-                    <div style={{
-                      background: 'var(--surface)',
-                      border: '1px solid var(--border)',
-                      borderRadius: 8,
-                      padding: 8,
-                      fontSize: 12,
-                    }}>
+                    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: 8, fontSize: 12 }}>
                       <div style={{ color: 'var(--text3)', marginBottom: 4 }}>
-                        {new Date(label).toLocaleDateString('en-US', {
-                          weekday: 'short',
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
+                        {new Date(label).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '2px 12px' }}>
                         <span style={{ color: 'var(--text3)' }}>Open:</span>
@@ -487,38 +716,26 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
                         <span style={{ color: 'var(--text3)' }}>Low:</span>
                         <span style={{ fontFamily: 'Space Mono' }}>${d.low?.toFixed(2)}</span>
                         <span style={{ color: 'var(--text3)' }}>Close:</span>
-                        <span style={{ fontFamily: 'Space Mono', color: d.close >= d.open ? '#34d399' : '#f87171' }}>
-                          ${d.close?.toFixed(2)}
-                        </span>
-                        {showSMA20 && d.sma20 && (
-                          <>
-                            <span style={{ color: SMA_COLORS.sma20 }}>SMA 20:</span>
-                            <span style={{ fontFamily: 'Space Mono' }}>${d.sma20?.toFixed(2)}</span>
-                          </>
-                        )}
-                        {showSMA50 && d.sma50 && (
-                          <>
-                            <span style={{ color: SMA_COLORS.sma50 }}>SMA 50:</span>
-                            <span style={{ fontFamily: 'Space Mono' }}>${d.sma50?.toFixed(2)}</span>
-                          </>
-                        )}
-                        {showSMA200 && d.sma200 && (
-                          <>
-                            <span style={{ color: SMA_COLORS.sma200 }}>SMA 200:</span>
-                            <span style={{ fontFamily: 'Space Mono' }}>${d.sma200?.toFixed(2)}</span>
-                          </>
-                        )}
+                        <span style={{ fontFamily: 'Space Mono', color: d.close >= d.open ? '#34d399' : '#f87171' }}>${d.close?.toFixed(2)}</span>
+                        {showVWAP && d.vwap && (<><span style={{ color: COLORS.vwap }}>VWAP:</span><span style={{ fontFamily: 'Space Mono' }}>${d.vwap?.toFixed(2)}</span></>)}
                       </div>
                     </div>
                   );
                 }}
               />
-              <ReferenceLine
-                y={firstPrice}
-                stroke="var(--text3)"
-                strokeDasharray="3 3"
-                strokeOpacity={0.5}
-              />
+              <ReferenceLine y={firstPrice} stroke="var(--text3)" strokeDasharray="3 3" strokeOpacity={0.5} />
+
+              {/* Bollinger Bands */}
+              {showBollinger && (
+                <>
+                  <Area type="monotone" dataKey="bbUpper" stroke="none" fill={`url(#bb-gradient-candle-${symbol})`} connectNulls={false} />
+                  <Line type="monotone" dataKey="bbUpper" stroke={COLORS.bbUpper} strokeWidth={1} strokeDasharray="3 3" dot={false} connectNulls={false} />
+                  <Line type="monotone" dataKey="bbMiddle" stroke={COLORS.bbMiddle} strokeWidth={1} dot={false} connectNulls={false} />
+                  <Line type="monotone" dataKey="bbLower" stroke={COLORS.bbLower} strokeWidth={1} strokeDasharray="3 3" dot={false} connectNulls={false} />
+                </>
+              )}
+
+              {/* Candlesticks */}
               <Bar
                 dataKey="priceRange"
                 shape={(props: any) => {
@@ -527,23 +744,12 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
                   const { open, close, high, low } = payload;
                   const isUp = close >= open;
                   const color = isUp ? '#34d399' : '#f87171';
-
                   const barWidth = Math.max(width * 0.8, 3);
                   const barX = x + (width - barWidth) / 2;
                   const wickX = x + width / 2;
-
                   return (
                     <g>
-                      {/* Wick */}
-                      <line
-                        x1={wickX}
-                        y1={y}
-                        x2={wickX}
-                        y2={y + height}
-                        stroke={color}
-                        strokeWidth={1}
-                      />
-                      {/* Body */}
+                      <line x1={wickX} y1={y} x2={wickX} y2={y + height} stroke={color} strokeWidth={1} />
                       <rect
                         x={barX}
                         y={y + height * (high - Math.max(open, close)) / (high - low)}
@@ -557,69 +763,69 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
                   );
                 }}
               >
-                {enrichedData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} />
-                ))}
+                {enrichedData.map((entry, index) => (<Cell key={`cell-${index}`} />))}
               </Bar>
-              {showSMA20 && (
-                <Line
-                  type="monotone"
-                  dataKey="sma20"
-                  stroke={SMA_COLORS.sma20}
-                  strokeWidth={1.5}
-                  dot={false}
-                  connectNulls={false}
-                />
-              )}
-              {showSMA50 && (
-                <Line
-                  type="monotone"
-                  dataKey="sma50"
-                  stroke={SMA_COLORS.sma50}
-                  strokeWidth={1.5}
-                  dot={false}
-                  connectNulls={false}
-                />
-              )}
-              {showSMA200 && (
-                <Line
-                  type="monotone"
-                  dataKey="sma200"
-                  stroke={SMA_COLORS.sma200}
-                  strokeWidth={1.5}
-                  dot={false}
-                  connectNulls={false}
-                />
-              )}
+
+              {/* VWAP */}
+              {showVWAP && <Line type="monotone" dataKey="vwap" stroke={COLORS.vwap} strokeWidth={1.5} strokeDasharray="5 2" dot={false} connectNulls={false} />}
+
+              {/* SMAs */}
+              {showSMA20 && <Line type="monotone" dataKey="sma20" stroke={COLORS.sma20} strokeWidth={1.5} dot={false} connectNulls={false} />}
+              {showSMA50 && <Line type="monotone" dataKey="sma50" stroke={COLORS.sma50} strokeWidth={1.5} dot={false} connectNulls={false} />}
+              {showSMA200 && <Line type="monotone" dataKey="sma200" stroke={COLORS.sma200} strokeWidth={1.5} dot={false} connectNulls={false} />}
             </ComposedChart>
           </ResponsiveContainer>
+
+          {/* Volume Panel */}
           {showVolume && (
-            <ResponsiveContainer width="100%" height={volumeHeight}>
+            <ResponsiveContainer width="100%" height={subChartHeight}>
               <BarChart data={enrichedData} margin={{ top: 0, right: 5, left: 0, bottom: 5 }}>
                 <XAxis dataKey="date" hide />
-                <YAxis
-                  tickFormatter={formatVolume}
-                  tick={{ fontSize: 9, fill: 'var(--text3)' }}
-                  axisLine={false}
-                  tickLine={false}
-                  width={60}
-                />
-                <Tooltip
-                  contentStyle={{
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 8,
-                    fontSize: 12,
-                  }}
-                  labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                  formatter={(value: number) => [formatVolume(value), 'Volume']}
-                />
+                <YAxis tickFormatter={formatVolume} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} />
                 <Bar dataKey="volume" fill="var(--text3)" opacity={0.5} />
               </BarChart>
             </ResponsiveContainer>
+          )}
+
+          {/* RSI Panel */}
+          {showRSI && (
+            <div style={{ position: 'relative' }}>
+              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>
+                RSI(14): <span style={{ color: latestRSI !== null && latestRSI > 70 ? '#f87171' : latestRSI !== null && latestRSI < 30 ? '#34d399' : 'var(--text2)' }}>
+                  {latestRSI?.toFixed(1)} {rsiStatus}
+                </span>
+              </div>
+              <ResponsiveContainer width="100%" height={subChartHeight}>
+                <LineChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+                  <XAxis dataKey="date" hide />
+                  <YAxis domain={[0, 100]} ticks={[30, 70]} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} />
+                  <ReferenceLine y={70} stroke="#f87171" strokeDasharray="3 3" strokeOpacity={0.5} />
+                  <ReferenceLine y={30} stroke="#34d399" strokeDasharray="3 3" strokeOpacity={0.5} />
+                  <Line type="monotone" dataKey="rsi" stroke={COLORS.rsi} strokeWidth={1.5} dot={false} connectNulls={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* MACD Panel */}
+          {showMACD && (
+            <div style={{ position: 'relative' }}>
+              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>MACD(12,26,9)</div>
+              <ResponsiveContainer width="100%" height={subChartHeight}>
+                <ComposedChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+                  <XAxis dataKey="date" hide />
+                  <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} />
+                  <ReferenceLine y={0} stroke="var(--border)" />
+                  <Bar dataKey="macdHistogram" fill={COLORS.macdHistogramUp}>
+                    {enrichedData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.macdHistogram && entry.macdHistogram >= 0 ? COLORS.macdHistogramUp : COLORS.macdHistogramDown} opacity={0.7} />
+                    ))}
+                  </Bar>
+                  <Line type="monotone" dataKey="macdLine" stroke={COLORS.macd} strokeWidth={1.5} dot={false} connectNulls={false} />
+                  <Line type="monotone" dataKey="macdSignal" stroke={COLORS.macdSignal} strokeWidth={1.5} dot={false} connectNulls={false} />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </>
       )}
