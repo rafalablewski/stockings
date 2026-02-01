@@ -9,6 +9,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
+  ComposedChart,
+  Bar,
+  Cell,
 } from 'recharts';
 
 interface ChartDataPoint {
@@ -43,11 +46,58 @@ const RANGES = [
   { label: '5Y', value: '5y', interval: '1wk' },
 ];
 
+// Custom candlestick shape for Recharts
+const CandlestickBar = (props: any) => {
+  const { x, y, width, height, open, close, high, low, fill } = props;
+  const isUp = close >= open;
+  const color = isUp ? '#34d399' : '#f87171';
+
+  // Calculate positions
+  const bodyTop = Math.min(open, close);
+  const bodyBottom = Math.max(open, close);
+  const bodyHeight = Math.abs(close - open);
+
+  // Scale factor from price to pixels (using the bar's dimensions)
+  const priceRange = high - low;
+  const pixelPerPrice = Math.abs(height) / (priceRange || 1);
+
+  const wickX = x + width / 2;
+  const bodyY = y + (high - bodyBottom) * pixelPerPrice;
+  const bodyPixelHeight = Math.max(bodyHeight * pixelPerPrice, 1);
+  const wickTopY = y;
+  const wickBottomY = y + Math.abs(height);
+
+  return (
+    <g>
+      {/* Wick (high-low line) */}
+      <line
+        x1={wickX}
+        y1={wickTopY}
+        x2={wickX}
+        y2={wickBottomY}
+        stroke={color}
+        strokeWidth={1}
+      />
+      {/* Body (open-close rect) */}
+      <rect
+        x={x + 1}
+        y={bodyY}
+        width={Math.max(width - 2, 2)}
+        height={Math.max(bodyPixelHeight, 2)}
+        fill={isUp ? color : color}
+        stroke={color}
+        strokeWidth={1}
+      />
+    </g>
+  );
+};
+
 export default function StockChart({ symbol, height = 220 }: StockChartProps) {
   const [data, setData] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [range, setRange] = useState('3mo');
+  const [chartType, setChartType] = useState<'line' | 'candle'>('line');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,6 +148,13 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
 
   const chartColor = isPositive ? '#34d399' : '#f87171'; // Bright mint / bright red
 
+  // Prepare candlestick data with price range for each bar
+  const candleData = chartData.map(d => ({
+    ...d,
+    // For candlestick, we need the range from low to high
+    priceRange: [d.low, d.high],
+  }));
+
   return (
     <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
@@ -118,26 +175,66 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
             </div>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 4 }}>
-          {RANGES.map(r => (
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {/* Chart type toggle */}
+          <div style={{ display: 'flex', gap: 2, background: 'var(--surface2)', borderRadius: 4, padding: 2 }}>
             <button
-              key={r.value}
-              onClick={() => setRange(r.value)}
+              onClick={() => setChartType('line')}
               style={{
                 padding: '4px 8px',
                 fontSize: 11,
                 fontWeight: 500,
-                borderRadius: 4,
+                borderRadius: 3,
                 border: 'none',
                 cursor: 'pointer',
-                background: range === r.value ? 'var(--accent)' : 'var(--surface2)',
-                color: range === r.value ? 'white' : 'var(--text3)',
+                background: chartType === 'line' ? 'var(--surface)' : 'transparent',
+                color: chartType === 'line' ? 'var(--text)' : 'var(--text3)',
                 transition: 'all 0.15s',
               }}
+              title="Line chart"
             >
-              {r.label}
+              📈
             </button>
-          ))}
+            <button
+              onClick={() => setChartType('candle')}
+              style={{
+                padding: '4px 8px',
+                fontSize: 11,
+                fontWeight: 500,
+                borderRadius: 3,
+                border: 'none',
+                cursor: 'pointer',
+                background: chartType === 'candle' ? 'var(--surface)' : 'transparent',
+                color: chartType === 'candle' ? 'var(--text)' : 'var(--text3)',
+                transition: 'all 0.15s',
+              }}
+              title="Candlestick chart"
+            >
+              🕯️
+            </button>
+          </div>
+          {/* Time range buttons */}
+          <div style={{ display: 'flex', gap: 4 }}>
+            {RANGES.map(r => (
+              <button
+                key={r.value}
+                onClick={() => setRange(r.value)}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  borderRadius: 4,
+                  border: 'none',
+                  cursor: 'pointer',
+                  background: range === r.value ? 'var(--accent)' : 'var(--surface2)',
+                  color: range === r.value ? 'white' : 'var(--text3)',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -153,7 +250,7 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
         </div>
       )}
 
-      {!loading && !error && chartData.length > 0 && (
+      {!loading && !error && chartData.length > 0 && chartType === 'line' && (
         <ResponsiveContainer width="100%" height={height}>
           <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
             <defs>
@@ -209,6 +306,130 @@ export default function StockChart({ symbol, height = 220 }: StockChartProps) {
               activeDot={{ r: 4, fill: chartColor }}
             />
           </AreaChart>
+        </ResponsiveContainer>
+      )}
+
+      {!loading && !error && chartData.length > 0 && chartType === 'candle' && (
+        <ResponsiveContainer width="100%" height={height}>
+          <ComposedChart data={candleData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+            <XAxis
+              dataKey="date"
+              tickFormatter={formatDate}
+              tick={{ fontSize: 10, fill: 'var(--text3)' }}
+              axisLine={{ stroke: 'var(--border)' }}
+              tickLine={false}
+              minTickGap={50}
+            />
+            <YAxis
+              domain={['auto', 'auto']}
+              tickFormatter={formatPrice}
+              tick={{ fontSize: 10, fill: 'var(--text3)' }}
+              axisLine={false}
+              tickLine={false}
+              width={60}
+            />
+            <Tooltip
+              contentStyle={{
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderRadius: 8,
+                fontSize: 12,
+              }}
+              labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+              formatter={(value: number, name: string) => {
+                if (name === 'priceRange') return null;
+                return [`$${value.toFixed(2)}`, name.charAt(0).toUpperCase() + name.slice(1)];
+              }}
+              content={({ active, payload, label }) => {
+                if (!active || !payload || !payload.length) return null;
+                const d = payload[0]?.payload;
+                if (!d) return null;
+                return (
+                  <div style={{
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 8,
+                    padding: 8,
+                    fontSize: 12,
+                  }}>
+                    <div style={{ color: 'var(--text3)', marginBottom: 4 }}>
+                      {new Date(label).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '2px 12px' }}>
+                      <span style={{ color: 'var(--text3)' }}>Open:</span>
+                      <span style={{ fontFamily: 'Space Mono' }}>${d.open?.toFixed(2)}</span>
+                      <span style={{ color: 'var(--text3)' }}>High:</span>
+                      <span style={{ fontFamily: 'Space Mono' }}>${d.high?.toFixed(2)}</span>
+                      <span style={{ color: 'var(--text3)' }}>Low:</span>
+                      <span style={{ fontFamily: 'Space Mono' }}>${d.low?.toFixed(2)}</span>
+                      <span style={{ color: 'var(--text3)' }}>Close:</span>
+                      <span style={{ fontFamily: 'Space Mono', color: d.close >= d.open ? '#34d399' : '#f87171' }}>
+                        ${d.close?.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              }}
+            />
+            <ReferenceLine
+              y={firstPrice}
+              stroke="var(--text3)"
+              strokeDasharray="3 3"
+              strokeOpacity={0.5}
+            />
+            <Bar
+              dataKey="priceRange"
+              shape={(props: any) => {
+                const { x, y, width, height, payload } = props;
+                if (!payload) return null;
+                const { open, close, high, low } = payload;
+                const isUp = close >= open;
+                const color = isUp ? '#34d399' : '#f87171';
+
+                const barWidth = Math.max(width * 0.8, 3);
+                const barX = x + (width - barWidth) / 2;
+                const wickX = x + width / 2;
+
+                return (
+                  <g>
+                    {/* Wick */}
+                    <line
+                      x1={wickX}
+                      y1={y}
+                      x2={wickX}
+                      y2={y + height}
+                      stroke={color}
+                      strokeWidth={1}
+                    />
+                    {/* Body */}
+                    <rect
+                      x={barX}
+                      y={y + height * (high - Math.max(open, close)) / (high - low)}
+                      width={barWidth}
+                      height={Math.max(height * Math.abs(close - open) / (high - low), 2)}
+                      fill={isUp ? 'transparent' : color}
+                      stroke={color}
+                      strokeWidth={1.5}
+                    />
+                  </g>
+                );
+              }}
+            >
+              {candleData.map((entry, index) => (
+                <Cell key={`cell-${index}`} />
+              ))}
+            </Bar>
+          </ComposedChart>
         </ResponsiveContainer>
       )}
     </div>
