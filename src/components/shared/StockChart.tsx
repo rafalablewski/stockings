@@ -285,6 +285,389 @@ const calculateATR = (data: ChartDataPoint[], period: number = 14): (number | nu
   return result;
 };
 
+// ============================================
+// RISK & PERFORMANCE METRICS
+// ============================================
+
+// Calculate daily returns
+const calculateReturns = (data: ChartDataPoint[]): number[] => {
+  const returns: number[] = [];
+  for (let i = 1; i < data.length; i++) {
+    returns.push((data[i].close - data[i - 1].close) / data[i - 1].close);
+  }
+  return returns;
+};
+
+// Calculate annualized Sharpe Ratio (assuming risk-free rate of 4%)
+const calculateSharpeRatio = (data: ChartDataPoint[], riskFreeRate: number = 0.04): number | null => {
+  if (data.length < 2) return null;
+  const returns = calculateReturns(data);
+  if (returns.length === 0) return null;
+
+  const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length;
+  const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
+  const stdDev = Math.sqrt(variance);
+
+  if (stdDev === 0) return null;
+
+  // Annualize (assuming 252 trading days)
+  const annualizedReturn = avgReturn * 252;
+  const annualizedStdDev = stdDev * Math.sqrt(252);
+
+  return (annualizedReturn - riskFreeRate) / annualizedStdDev;
+};
+
+// Calculate Sortino Ratio (only considers downside deviation)
+const calculateSortinoRatio = (data: ChartDataPoint[], riskFreeRate: number = 0.04): number | null => {
+  if (data.length < 2) return null;
+  const returns = calculateReturns(data);
+  if (returns.length === 0) return null;
+
+  const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length;
+  const negativeReturns = returns.filter(r => r < 0);
+
+  if (negativeReturns.length === 0) return null; // No downside
+
+  const downsideVariance = negativeReturns.reduce((sum, r) => sum + r * r, 0) / negativeReturns.length;
+  const downsideStdDev = Math.sqrt(downsideVariance);
+
+  if (downsideStdDev === 0) return null;
+
+  // Annualize
+  const annualizedReturn = avgReturn * 252;
+  const annualizedDownsideStdDev = downsideStdDev * Math.sqrt(252);
+
+  return (annualizedReturn - riskFreeRate) / annualizedDownsideStdDev;
+};
+
+// Calculate Maximum Drawdown with recovery info
+const calculateMaxDrawdown = (data: ChartDataPoint[]): {
+  maxDrawdown: number;
+  peakDate: number;
+  troughDate: number;
+  recoveryDate: number | null;
+  recoveryDays: number | null;
+} | null => {
+  if (data.length < 2) return null;
+
+  let peak = data[0].close;
+  let peakDate = data[0].date;
+  let maxDrawdown = 0;
+  let maxDrawdownPeakDate = data[0].date;
+  let maxDrawdownTroughDate = data[0].date;
+  let troughValue = data[0].close;
+
+  for (const point of data) {
+    if (point.close > peak) {
+      peak = point.close;
+      peakDate = point.date;
+    }
+
+    const drawdown = (peak - point.close) / peak;
+    if (drawdown > maxDrawdown) {
+      maxDrawdown = drawdown;
+      maxDrawdownPeakDate = peakDate;
+      maxDrawdownTroughDate = point.date;
+      troughValue = point.close;
+    }
+  }
+
+  // Find recovery date
+  let recoveryDate: number | null = null;
+  let recoveryDays: number | null = null;
+  const troughIndex = data.findIndex(d => d.date === maxDrawdownTroughDate);
+
+  for (let i = troughIndex + 1; i < data.length; i++) {
+    if (data[i].close >= data.find(d => d.date === maxDrawdownPeakDate)!.close) {
+      recoveryDate = data[i].date;
+      recoveryDays = i - troughIndex;
+      break;
+    }
+  }
+
+  return {
+    maxDrawdown,
+    peakDate: maxDrawdownPeakDate,
+    troughDate: maxDrawdownTroughDate,
+    recoveryDate,
+    recoveryDays
+  };
+};
+
+// Calculate Rolling Volatility
+const calculateRollingVolatility = (data: ChartDataPoint[], period: number): (number | null)[] => {
+  const result: (number | null)[] = [];
+  const returns = calculateReturns(data);
+
+  for (let i = 0; i < data.length; i++) {
+    if (i < period) {
+      result.push(null);
+      continue;
+    }
+
+    const periodReturns = returns.slice(i - period, i);
+    const avgReturn = periodReturns.reduce((a, b) => a + b, 0) / period;
+    const variance = periodReturns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / period;
+    const annualizedVol = Math.sqrt(variance) * Math.sqrt(252) * 100; // As percentage
+    result.push(annualizedVol);
+  }
+
+  return result;
+};
+
+// Calculate Value at Risk (Historical VaR at 95% confidence)
+const calculateVaR = (data: ChartDataPoint[], confidence: number = 0.95): number | null => {
+  if (data.length < 20) return null;
+  const returns = calculateReturns(data);
+  const sortedReturns = [...returns].sort((a, b) => a - b);
+  const index = Math.floor((1 - confidence) * sortedReturns.length);
+  return sortedReturns[index] * 100; // As percentage
+};
+
+// Calculate Beta vs benchmark
+const calculateBeta = (stockData: ChartDataPoint[], benchmarkData: ChartDataPoint[]): number | null => {
+  if (stockData.length < 20 || benchmarkData.length < 20) return null;
+
+  // Align data by date
+  const stockMap = new Map(stockData.map(d => [d.date, d]));
+  const alignedStock: number[] = [];
+  const alignedBench: number[] = [];
+
+  let prevStock: number | null = null;
+  let prevBench: number | null = null;
+
+  for (const bench of benchmarkData) {
+    const stock = stockMap.get(bench.date);
+    if (stock && prevStock !== null && prevBench !== null) {
+      alignedStock.push((stock.close - prevStock) / prevStock);
+      alignedBench.push((bench.close - prevBench) / prevBench);
+    }
+    if (stock) prevStock = stock.close;
+    prevBench = bench.close;
+  }
+
+  if (alignedStock.length < 10) return null;
+
+  // Calculate covariance and variance
+  const avgStock = alignedStock.reduce((a, b) => a + b, 0) / alignedStock.length;
+  const avgBench = alignedBench.reduce((a, b) => a + b, 0) / alignedBench.length;
+
+  let covariance = 0;
+  let benchVariance = 0;
+
+  for (let i = 0; i < alignedStock.length; i++) {
+    covariance += (alignedStock[i] - avgStock) * (alignedBench[i] - avgBench);
+    benchVariance += Math.pow(alignedBench[i] - avgBench, 2);
+  }
+
+  if (benchVariance === 0) return null;
+
+  return covariance / benchVariance;
+};
+
+// ============================================
+// ADVANCED TECHNICAL INDICATORS
+// ============================================
+
+// Calculate Fibonacci Retracement Levels
+const calculateFibonacciLevels = (data: ChartDataPoint[]): {
+  high: number;
+  low: number;
+  levels: { level: number; price: number; label: string }[];
+} | null => {
+  if (data.length < 2) return null;
+
+  const high = Math.max(...data.map(d => d.high));
+  const low = Math.min(...data.map(d => d.low));
+  const diff = high - low;
+
+  const fibLevels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
+  const levels = fibLevels.map(level => ({
+    level,
+    price: high - diff * level,
+    label: `${(level * 100).toFixed(1)}%`
+  }));
+
+  return { high, low, levels };
+};
+
+// Calculate Volume Profile (price levels with most volume)
+const calculateVolumeProfile = (data: ChartDataPoint[], bins: number = 20): {
+  priceLevel: number;
+  volume: number;
+  percentage: number;
+}[] => {
+  if (data.length === 0) return [];
+
+  const high = Math.max(...data.map(d => d.high));
+  const low = Math.min(...data.map(d => d.low));
+  const binSize = (high - low) / bins;
+
+  const profile: Map<number, number> = new Map();
+
+  for (let i = 0; i < bins; i++) {
+    profile.set(i, 0);
+  }
+
+  let totalVolume = 0;
+  for (const point of data) {
+    const avgPrice = (point.high + point.low) / 2;
+    const binIndex = Math.min(Math.floor((avgPrice - low) / binSize), bins - 1);
+    profile.set(binIndex, (profile.get(binIndex) || 0) + point.volume);
+    totalVolume += point.volume;
+  }
+
+  return Array.from(profile.entries()).map(([binIndex, volume]) => ({
+    priceLevel: low + binSize * (binIndex + 0.5),
+    volume,
+    percentage: totalVolume > 0 ? (volume / totalVolume) * 100 : 0
+  })).sort((a, b) => b.volume - a.volume);
+};
+
+// Calculate VWAP Bands (standard deviations)
+const calculateVWAPBands = (data: ChartDataPoint[]): {
+  vwap: (number | null)[];
+  upper1: (number | null)[];
+  lower1: (number | null)[];
+  upper2: (number | null)[];
+  lower2: (number | null)[];
+  upper3: (number | null)[];
+  lower3: (number | null)[];
+} => {
+  const vwap = calculateVWAP(data);
+  const upper1: (number | null)[] = [];
+  const lower1: (number | null)[] = [];
+  const upper2: (number | null)[] = [];
+  const lower2: (number | null)[] = [];
+  const upper3: (number | null)[] = [];
+  const lower3: (number | null)[] = [];
+
+  let cumulativeSquaredDev = 0;
+  let cumulativeVolume = 0;
+
+  for (let i = 0; i < data.length; i++) {
+    const typicalPrice = (data[i].high + data[i].low + data[i].close) / 3;
+    cumulativeVolume += data[i].volume;
+
+    if (vwap[i] === null || cumulativeVolume === 0) {
+      upper1.push(null);
+      lower1.push(null);
+      upper2.push(null);
+      lower2.push(null);
+      upper3.push(null);
+      lower3.push(null);
+      continue;
+    }
+
+    cumulativeSquaredDev += data[i].volume * Math.pow(typicalPrice - vwap[i]!, 2);
+    const stdDev = Math.sqrt(cumulativeSquaredDev / cumulativeVolume);
+
+    upper1.push(vwap[i]! + stdDev);
+    lower1.push(vwap[i]! - stdDev);
+    upper2.push(vwap[i]! + 2 * stdDev);
+    lower2.push(vwap[i]! - 2 * stdDev);
+    upper3.push(vwap[i]! + 3 * stdDev);
+    lower3.push(vwap[i]! - 3 * stdDev);
+  }
+
+  return { vwap, upper1, lower1, upper2, lower2, upper3, lower3 };
+};
+
+// Detect Support and Resistance Levels
+const detectSupportResistance = (data: ChartDataPoint[], sensitivity: number = 3): {
+  supports: number[];
+  resistances: number[];
+} => {
+  if (data.length < sensitivity * 2 + 1) return { supports: [], resistances: [] };
+
+  const supports: number[] = [];
+  const resistances: number[] = [];
+
+  for (let i = sensitivity; i < data.length - sensitivity; i++) {
+    let isSupport = true;
+    let isResistance = true;
+
+    for (let j = 1; j <= sensitivity; j++) {
+      if (data[i].low >= data[i - j].low || data[i].low >= data[i + j].low) {
+        isSupport = false;
+      }
+      if (data[i].high <= data[i - j].high || data[i].high <= data[i + j].high) {
+        isResistance = false;
+      }
+    }
+
+    if (isSupport) supports.push(data[i].low);
+    if (isResistance) resistances.push(data[i].high);
+  }
+
+  // Cluster nearby levels (within 1% of each other)
+  const clusterLevels = (levels: number[]): number[] => {
+    if (levels.length === 0) return [];
+    const sorted = [...levels].sort((a, b) => a - b);
+    const clustered: number[] = [];
+    let cluster: number[] = [sorted[0]];
+
+    for (let i = 1; i < sorted.length; i++) {
+      if ((sorted[i] - sorted[i - 1]) / sorted[i - 1] < 0.01) {
+        cluster.push(sorted[i]);
+      } else {
+        clustered.push(cluster.reduce((a, b) => a + b, 0) / cluster.length);
+        cluster = [sorted[i]];
+      }
+    }
+    clustered.push(cluster.reduce((a, b) => a + b, 0) / cluster.length);
+    return clustered;
+  };
+
+  return {
+    supports: clusterLevels(supports).slice(-3), // Top 3 strongest
+    resistances: clusterLevels(resistances).slice(-3)
+  };
+};
+
+// Calculate Correlation between two assets
+const calculateCorrelation = (data1: ChartDataPoint[], data2: ChartDataPoint[]): number | null => {
+  // Align by date
+  const map1 = new Map(data1.map(d => [d.date, d.close]));
+  const aligned1: number[] = [];
+  const aligned2: number[] = [];
+
+  for (const d of data2) {
+    const val1 = map1.get(d.date);
+    if (val1 !== undefined) {
+      aligned1.push(val1);
+      aligned2.push(d.close);
+    }
+  }
+
+  if (aligned1.length < 10) return null;
+
+  // Calculate returns
+  const returns1: number[] = [];
+  const returns2: number[] = [];
+  for (let i = 1; i < aligned1.length; i++) {
+    returns1.push((aligned1[i] - aligned1[i - 1]) / aligned1[i - 1]);
+    returns2.push((aligned2[i] - aligned2[i - 1]) / aligned2[i - 1]);
+  }
+
+  const avg1 = returns1.reduce((a, b) => a + b, 0) / returns1.length;
+  const avg2 = returns2.reduce((a, b) => a + b, 0) / returns2.length;
+
+  let covariance = 0;
+  let var1 = 0;
+  let var2 = 0;
+
+  for (let i = 0; i < returns1.length; i++) {
+    covariance += (returns1[i] - avg1) * (returns2[i] - avg2);
+    var1 += Math.pow(returns1[i] - avg1, 2);
+    var2 += Math.pow(returns2[i] - avg2, 2);
+  }
+
+  if (var1 === 0 || var2 === 0) return null;
+
+  return covariance / Math.sqrt(var1 * var2);
+};
+
 // Indicator toggle button component
 const IndicatorToggle = ({
   label,
@@ -336,6 +719,14 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const [showVWAP, setShowVWAP] = useState(false);
   const [showMACD, setShowMACD] = useState(false);
   const [showATR, setShowATR] = useState(false);
+
+  // Professional features toggles
+  const [showFibonacci, setShowFibonacci] = useState(false);
+  const [showVWAPBands, setShowVWAPBands] = useState(false);
+  const [showSupportResistance, setShowSupportResistance] = useState(false);
+  const [showVolumeProfile, setShowVolumeProfile] = useState(false);
+  const [showRiskMetrics, setShowRiskMetrics] = useState(false);
+  const [showCorrelation, setShowCorrelation] = useState(false);
 
   // Scale toggle
   const [logScale, setLogScale] = useState(false);
@@ -456,6 +847,18 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const macd = useMemo(() => calculateMACD(chartData), [chartData]);
   const atr = useMemo(() => calculateATR(chartData, 14), [chartData]);
 
+  // Professional metrics calculations
+  const sharpeRatio = useMemo(() => calculateSharpeRatio(chartData), [chartData]);
+  const sortinoRatio = useMemo(() => calculateSortinoRatio(chartData), [chartData]);
+  const maxDrawdown = useMemo(() => calculateMaxDrawdown(chartData), [chartData]);
+  const volatility30d = useMemo(() => calculateRollingVolatility(chartData, 30), [chartData]);
+  const volatility90d = useMemo(() => calculateRollingVolatility(chartData, 90), [chartData]);
+  const valueAtRisk = useMemo(() => calculateVaR(chartData), [chartData]);
+  const fibonacciLevels = useMemo(() => calculateFibonacciLevels(chartData), [chartData]);
+  const volumeProfile = useMemo(() => calculateVolumeProfile(chartData, 15), [chartData]);
+  const vwapBands = useMemo(() => calculateVWAPBands(chartData), [chartData]);
+  const supportResistance = useMemo(() => detectSupportResistance(chartData, 3), [chartData]);
+
   // Calculate high/low for current range
   const { rangeHigh, rangeLow } = useMemo(() => {
     if (chartData.length === 0) return { rangeHigh: null, rangeLow: null };
@@ -505,6 +908,15 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const goldNormalized = useMemo(() => normalizeComparison(goldData), [goldData]);
   const btcNormalized = useMemo(() => normalizeBtcComparison(btcData), [btcData]);
 
+  // Beta and correlations
+  const betaVsSPY = useMemo(() => spyData ? calculateBeta(chartData, spyData) : null, [chartData, spyData]);
+  const correlations = useMemo(() => ({
+    spy: spyData ? calculateCorrelation(chartData, spyData) : null,
+    qqq: qqqData ? calculateCorrelation(chartData, qqqData) : null,
+    gold: goldData ? calculateCorrelation(chartData, goldData) : null,
+    btc: btcData ? calculateCorrelation(chartData, btcData) : null,
+  }), [chartData, spyData, qqqData, goldData, btcData]);
+
   const showAnyComparison = showSPY || showQQQ || showGold || showBTC;
 
   // Prepare chart data with all indicators
@@ -529,6 +941,16 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         macdHistogram: macd.histogram[i],
         atr: atr[i],
         priceRange: [d.low, d.high],
+        // VWAP Bands
+        vwapUpper1: vwapBands.upper1[i],
+        vwapLower1: vwapBands.lower1[i],
+        vwapUpper2: vwapBands.upper2[i],
+        vwapLower2: vwapBands.lower2[i],
+        vwapUpper3: vwapBands.upper3[i],
+        vwapLower3: vwapBands.lower3[i],
+        // Volatility
+        vol30d: volatility30d[i],
+        vol90d: volatility90d[i],
         // For comparison chart: stock's percentage change
         stockPctChange: ((d.close - stockBasePrice) / stockBasePrice) * 100,
         // Comparison percentage changes
@@ -538,7 +960,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         btcPctChange: btcPct,
       };
     });
-  }, [chartData, sma20, sma50, sma200, rsi, bollinger, vwap, macd, atr, spyNormalized, qqqNormalized, goldNormalized, btcNormalized]);
+  }, [chartData, sma20, sma50, sma200, rsi, bollinger, vwap, macd, atr, vwapBands, volatility30d, volatility90d, spyNormalized, qqqNormalized, goldNormalized, btcNormalized]);
 
   // Colors
   const COLORS = {
@@ -561,6 +983,14 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     qqq: '#06b6d4',        // Cyan
     gold: '#eab308',       // Yellow/Gold
     btc: '#f97316',        // Orange
+    // Professional features
+    fibonacci: '#a78bfa',  // Violet
+    vwapBand1: '#f97316',  // Orange (lighter)
+    vwapBand2: '#fb923c',  // Orange
+    vwapBand3: '#fdba74',  // Orange (lightest)
+    support: '#22c55e',    // Green
+    resistance: '#ef4444', // Red
+    volumeProfile: '#6366f1', // Indigo
   };
 
   // Calculate heights - main chart stays fixed, sub-panels add to total
@@ -703,6 +1133,18 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         <IndicatorToggle label="vs. BTC" active={showBTC} onClick={() => setShowBTC(!showBTC)} color={COLORS.btc} />
       </div>
 
+      {/* Professional Analysis toggles */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Pro:</span>
+        <IndicatorToggle label="Fib" active={showFibonacci} onClick={() => setShowFibonacci(!showFibonacci)} color={COLORS.fibonacci} />
+        <IndicatorToggle label="VWAP±σ" active={showVWAPBands} onClick={() => setShowVWAPBands(!showVWAPBands)} color={COLORS.vwapBand1} />
+        <IndicatorToggle label="S/R" active={showSupportResistance} onClick={() => setShowSupportResistance(!showSupportResistance)} color={COLORS.support} />
+        <IndicatorToggle label="Vol Profile" active={showVolumeProfile} onClick={() => setShowVolumeProfile(!showVolumeProfile)} color={COLORS.volumeProfile} />
+        <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 2px' }} />
+        <IndicatorToggle label="Risk Metrics" active={showRiskMetrics} onClick={() => setShowRiskMetrics(!showRiskMetrics)} />
+        <IndicatorToggle label="Correlation" active={showCorrelation} onClick={() => setShowCorrelation(!showCorrelation)} />
+      </div>
+
       {loading && (
         <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)' }}>
           Loading...
@@ -782,6 +1224,57 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                   <Line type="monotone" dataKey="bbLower" stroke={COLORS.bbLower} strokeWidth={1} strokeDasharray="3 3" dot={false} connectNulls={false} />
                 </>
               )}
+
+              {/* VWAP Bands */}
+              {showVWAPBands && (
+                <>
+                  <Line type="monotone" dataKey="vwapUpper1" stroke={COLORS.vwapBand1} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.8} />
+                  <Line type="monotone" dataKey="vwapLower1" stroke={COLORS.vwapBand1} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.8} />
+                  <Line type="monotone" dataKey="vwapUpper2" stroke={COLORS.vwapBand2} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.6} />
+                  <Line type="monotone" dataKey="vwapLower2" stroke={COLORS.vwapBand2} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.6} />
+                  <Line type="monotone" dataKey="vwapUpper3" stroke={COLORS.vwapBand3} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.4} />
+                  <Line type="monotone" dataKey="vwapLower3" stroke={COLORS.vwapBand3} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.4} />
+                </>
+              )}
+
+              {/* Fibonacci Retracement Levels */}
+              {showFibonacci && fibonacciLevels && fibonacciLevels.levels.map((fib, i) => (
+                <ReferenceLine
+                  key={`fib-${i}`}
+                  y={fib.price}
+                  stroke={COLORS.fibonacci}
+                  strokeDasharray="6 4"
+                  strokeWidth={1}
+                  strokeOpacity={fib.level === 0.5 || fib.level === 0.618 ? 1 : 0.5}
+                  label={{ value: fib.label, fill: COLORS.fibonacci, fontSize: 8, position: 'right' }}
+                />
+              ))}
+
+              {/* Support Levels */}
+              {showSupportResistance && supportResistance.supports.map((level, i) => (
+                <ReferenceLine
+                  key={`support-${i}`}
+                  y={level}
+                  stroke={COLORS.support}
+                  strokeDasharray="8 4"
+                  strokeWidth={1.5}
+                  strokeOpacity={0.7}
+                  label={{ value: `S${i + 1}`, fill: COLORS.support, fontSize: 8, position: 'left' }}
+                />
+              ))}
+
+              {/* Resistance Levels */}
+              {showSupportResistance && supportResistance.resistances.map((level, i) => (
+                <ReferenceLine
+                  key={`resistance-${i}`}
+                  y={level}
+                  stroke={COLORS.resistance}
+                  strokeDasharray="8 4"
+                  strokeWidth={1.5}
+                  strokeOpacity={0.7}
+                  label={{ value: `R${i + 1}`, fill: COLORS.resistance, fontSize: 8, position: 'left' }}
+                />
+              ))}
 
               {/* Main price line */}
               <Area
@@ -1009,6 +1502,57 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                 </>
               )}
 
+              {/* VWAP Bands */}
+              {showVWAPBands && (
+                <>
+                  <Line type="monotone" dataKey="vwapUpper1" stroke={COLORS.vwapBand1} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.8} />
+                  <Line type="monotone" dataKey="vwapLower1" stroke={COLORS.vwapBand1} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.8} />
+                  <Line type="monotone" dataKey="vwapUpper2" stroke={COLORS.vwapBand2} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.6} />
+                  <Line type="monotone" dataKey="vwapLower2" stroke={COLORS.vwapBand2} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.6} />
+                  <Line type="monotone" dataKey="vwapUpper3" stroke={COLORS.vwapBand3} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.4} />
+                  <Line type="monotone" dataKey="vwapLower3" stroke={COLORS.vwapBand3} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.4} />
+                </>
+              )}
+
+              {/* Fibonacci Retracement Levels */}
+              {showFibonacci && fibonacciLevels && fibonacciLevels.levels.map((fib, i) => (
+                <ReferenceLine
+                  key={`fib-candle-${i}`}
+                  y={fib.price}
+                  stroke={COLORS.fibonacci}
+                  strokeDasharray="6 4"
+                  strokeWidth={1}
+                  strokeOpacity={fib.level === 0.5 || fib.level === 0.618 ? 1 : 0.5}
+                  label={{ value: fib.label, fill: COLORS.fibonacci, fontSize: 8, position: 'right' }}
+                />
+              ))}
+
+              {/* Support Levels */}
+              {showSupportResistance && supportResistance.supports.map((level, i) => (
+                <ReferenceLine
+                  key={`support-candle-${i}`}
+                  y={level}
+                  stroke={COLORS.support}
+                  strokeDasharray="8 4"
+                  strokeWidth={1.5}
+                  strokeOpacity={0.7}
+                  label={{ value: `S${i + 1}`, fill: COLORS.support, fontSize: 8, position: 'left' }}
+                />
+              ))}
+
+              {/* Resistance Levels */}
+              {showSupportResistance && supportResistance.resistances.map((level, i) => (
+                <ReferenceLine
+                  key={`resistance-candle-${i}`}
+                  y={level}
+                  stroke={COLORS.resistance}
+                  strokeDasharray="8 4"
+                  strokeWidth={1.5}
+                  strokeOpacity={0.7}
+                  label={{ value: `R${i + 1}`, fill: COLORS.resistance, fontSize: 8, position: 'left' }}
+                />
+              ))}
+
               {/* Candlesticks */}
               <Bar
                 dataKey="priceRange"
@@ -1198,6 +1742,171 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               }} />
             </div>
             <span style={{ color: COLORS.rangeHigh, fontWeight: 600 }}>${rangeHigh.toFixed(2)}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Risk Metrics Panel */}
+      {!loading && !error && chartData.length > 0 && showRiskMetrics && (
+        <div style={{
+          marginTop: 12,
+          padding: '12px 14px',
+          background: 'var(--surface2)',
+          borderRadius: 8,
+          fontSize: 11,
+        }}>
+          <div style={{ color: 'var(--text)', marginBottom: 10, fontWeight: 600 }}>Risk & Performance Metrics</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+            {/* Sharpe Ratio */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Sharpe Ratio (Ann.)</div>
+              <div style={{ color: sharpeRatio !== null && sharpeRatio > 1 ? '#22c55e' : sharpeRatio !== null && sharpeRatio < 0 ? '#ef4444' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
+                {sharpeRatio !== null ? sharpeRatio.toFixed(2) : '—'}
+              </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>{sharpeRatio !== null && sharpeRatio > 1 ? 'Good' : sharpeRatio !== null && sharpeRatio > 0 ? 'Moderate' : sharpeRatio !== null ? 'Negative' : ''}</div>
+            </div>
+            {/* Sortino Ratio */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Sortino Ratio (Ann.)</div>
+              <div style={{ color: sortinoRatio !== null && sortinoRatio > 1.5 ? '#22c55e' : sortinoRatio !== null && sortinoRatio < 0 ? '#ef4444' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
+                {sortinoRatio !== null ? sortinoRatio.toFixed(2) : '—'}
+              </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>Downside risk-adjusted</div>
+            </div>
+            {/* Max Drawdown */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Max Drawdown</div>
+              <div style={{ color: '#ef4444', fontWeight: 600, fontSize: 14 }}>
+                {maxDrawdown ? `-${(maxDrawdown.maxDrawdown * 100).toFixed(1)}%` : '—'}
+              </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>
+                {maxDrawdown?.recoveryDays ? `Recovered in ${maxDrawdown.recoveryDays}d` : maxDrawdown ? 'Not recovered' : ''}
+              </div>
+            </div>
+            {/* VaR */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Value at Risk (95%)</div>
+              <div style={{ color: '#ef4444', fontWeight: 600, fontSize: 14 }}>
+                {valueAtRisk !== null ? `${valueAtRisk.toFixed(2)}%` : '—'}
+              </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>Daily worst case</div>
+            </div>
+            {/* Beta */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Beta vs SPY</div>
+              <div style={{ color: betaVsSPY !== null && Math.abs(betaVsSPY) > 1.5 ? '#f59e0b' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
+                {betaVsSPY !== null ? betaVsSPY.toFixed(2) : '—'}
+              </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>
+                {betaVsSPY !== null ? (betaVsSPY > 1 ? 'More volatile than market' : betaVsSPY < 1 ? 'Less volatile' : 'Market-like') : ''}
+              </div>
+            </div>
+            {/* Rolling Volatility */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Volatility (Ann.)</div>
+              <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>
+                {volatility30d[volatility30d.length - 1] !== null ? `${volatility30d[volatility30d.length - 1]!.toFixed(1)}%` : '—'}
+              </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>30-day rolling</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Correlation Matrix */}
+      {!loading && !error && chartData.length > 0 && showCorrelation && (showSPY || showQQQ || showGold || showBTC) && (
+        <div style={{
+          marginTop: 12,
+          padding: '12px 14px',
+          background: 'var(--surface2)',
+          borderRadius: 8,
+          fontSize: 11,
+        }}>
+          <div style={{ color: 'var(--text)', marginBottom: 10, fontWeight: 600 }}>Correlation Matrix</div>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            {showSPY && correlations.spy !== null && (
+              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
+                <div style={{ color: COLORS.spy, fontSize: 10, marginBottom: 2 }}>vs SPY</div>
+                <div style={{
+                  fontWeight: 600,
+                  fontSize: 16,
+                  color: Math.abs(correlations.spy) > 0.7 ? '#22c55e' : Math.abs(correlations.spy) < 0.3 ? '#ef4444' : 'var(--text)'
+                }}>
+                  {correlations.spy.toFixed(2)}
+                </div>
+              </div>
+            )}
+            {showQQQ && correlations.qqq !== null && (
+              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
+                <div style={{ color: COLORS.qqq, fontSize: 10, marginBottom: 2 }}>vs QQQ</div>
+                <div style={{
+                  fontWeight: 600,
+                  fontSize: 16,
+                  color: Math.abs(correlations.qqq) > 0.7 ? '#22c55e' : Math.abs(correlations.qqq) < 0.3 ? '#ef4444' : 'var(--text)'
+                }}>
+                  {correlations.qqq.toFixed(2)}
+                </div>
+              </div>
+            )}
+            {showGold && correlations.gold !== null && (
+              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
+                <div style={{ color: COLORS.gold, fontSize: 10, marginBottom: 2 }}>vs Gold</div>
+                <div style={{
+                  fontWeight: 600,
+                  fontSize: 16,
+                  color: Math.abs(correlations.gold) > 0.7 ? '#22c55e' : Math.abs(correlations.gold) < 0.3 ? '#ef4444' : 'var(--text)'
+                }}>
+                  {correlations.gold.toFixed(2)}
+                </div>
+              </div>
+            )}
+            {showBTC && correlations.btc !== null && (
+              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
+                <div style={{ color: COLORS.btc, fontSize: 10, marginBottom: 2 }}>vs BTC</div>
+                <div style={{
+                  fontWeight: 600,
+                  fontSize: 16,
+                  color: Math.abs(correlations.btc) > 0.7 ? '#22c55e' : Math.abs(correlations.btc) < 0.3 ? '#ef4444' : 'var(--text)'
+                }}>
+                  {correlations.btc.toFixed(2)}
+                </div>
+              </div>
+            )}
+          </div>
+          <div style={{ color: 'var(--text3)', fontSize: 9, marginTop: 8 }}>
+            Green = highly correlated (&gt;0.7), Red = low correlation (&lt;0.3)
+          </div>
+        </div>
+      )}
+
+      {/* Volume Profile */}
+      {!loading && !error && chartData.length > 0 && showVolumeProfile && volumeProfile.length > 0 && (
+        <div style={{
+          marginTop: 12,
+          padding: '12px 14px',
+          background: 'var(--surface2)',
+          borderRadius: 8,
+          fontSize: 11,
+        }}>
+          <div style={{ color: 'var(--text)', marginBottom: 10, fontWeight: 600 }}>Volume Profile (Top Price Levels)</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {volumeProfile.slice(0, 5).map((level, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ width: 60, color: 'var(--text)', fontWeight: 500 }}>${level.priceLevel.toFixed(2)}</span>
+                <div style={{ flex: 1, height: 12, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${level.percentage}%`,
+                    height: '100%',
+                    background: level.priceLevel <= lastPrice ? COLORS.support : COLORS.resistance,
+                    opacity: 0.7,
+                  }} />
+                </div>
+                <span style={{ width: 40, color: 'var(--text3)', textAlign: 'right' }}>{level.percentage.toFixed(1)}%</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ color: 'var(--text3)', fontSize: 9, marginTop: 8 }}>
+            High volume price levels often act as support/resistance
           </div>
         </div>
       )}
