@@ -897,6 +897,7 @@ const OverviewParameterCard = ({
   value,
   onChange,
   format = '',
+  currentValue,
 }: {
   title: string;
   explanation: string;
@@ -904,6 +905,7 @@ const OverviewParameterCard = ({
   value: number;
   onChange: (v: number) => void;
   format?: string;
+  currentValue?: number;
 }) => {
   const [customMode, setCustomMode] = useState(false);
   const [customInput, setCustomInput] = useState('');
@@ -944,6 +946,7 @@ const OverviewParameterCard = ({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
         {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
+          const isCurrent = currentValue !== undefined && opt === currentValue;
           const colors = presetColors[idx];
           return (
             <div
@@ -951,6 +954,7 @@ const OverviewParameterCard = ({
               onClick={() => { onChange(opt); setCustomMode(false); }}
               style={{
                 padding: '10px 4px',
+                paddingTop: isCurrent ? 6 : 10,
                 borderRadius: 8,
                 border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                 background: isActive ? colors.bg : 'var(--surface2)',
@@ -960,8 +964,12 @@ const OverviewParameterCard = ({
                 fontSize: 12,
                 fontWeight: isActive ? 600 : 400,
                 color: isActive ? colors.text : 'var(--text3)',
+                position: 'relative',
               }}
             >
+              {isCurrent && (
+                <div style={{ fontSize: 8, color: 'var(--text3)', marginBottom: 2, letterSpacing: 0.5 }}>current</div>
+              )}
               {formatValue(opt)}
             </div>
           );
@@ -1210,6 +1218,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         value={currentShares}
         onChange={setCurrentShares}
         format="M"
+        currentValue={DEFAULTS.currentShares}
       />
       <OverviewParameterCard
         title="Stock Price ($)"
@@ -1218,6 +1227,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         value={currentStockPrice}
         onChange={setCurrentStockPrice}
         format="$"
+        currentValue={DEFAULTS.currentStockPrice}
       />
     </div>
     <div className="g3">
@@ -1228,6 +1238,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         value={cashOnHand}
         onChange={setCashOnHand}
         format="B"
+        currentValue={DEFAULTS.cashOnHand}
       />
       <OverviewParameterCard
         title="Burn ($M/Q)"
@@ -1235,6 +1246,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         options={[400, 350, DEFAULTS.quarterlyBurn, 250, 200, 150]}
         value={quarterlyBurn}
         onChange={setQuarterlyBurn}
+        currentValue={DEFAULTS.quarterlyBurn}
       />
       <OverviewParameterCard
         title="Debt ($M)"
@@ -1242,6 +1254,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         options={[900, 800, DEFAULTS.totalDebt, 600, 500, 400]}
         value={totalDebt}
         onChange={setTotalDebt}
+        currentValue={DEFAULTS.totalDebt}
       />
     </div>
 
