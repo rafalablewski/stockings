@@ -1938,11 +1938,16 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
           </div>
           {showChartGuide && (
             <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 32,
               fontSize: 11,
               lineHeight: 1.8,
               color: 'var(--text3)',
-              maxWidth: '70ch',
             }}>
+
+              {/* LEFT COLUMN */}
+              <div>
 
               {/* INDICATORS */}
               <div>
@@ -2195,6 +2200,11 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                 </div>
               </div>
 
+              </div>
+
+              {/* RIGHT COLUMN */}
+              <div>
+
               {/* PRO */}
               <div>
                 <div style={{
@@ -2356,6 +2366,8 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     <br /><br />
                     <strong>Dynamic nature:</strong> Correlations are not stable—they shift with market regimes, monetary policy, and sector rotations. Rolling 60-day correlation captures recent relationship; compare to longer-term (252-day) for regime change detection.
                 </div>
+              </div>
+
               </div>
 
             </div>
