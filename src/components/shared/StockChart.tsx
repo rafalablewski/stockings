@@ -1921,7 +1921,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
       {/* Chart Guide - Separate Card */}
       {!loading && !error && chartData.length > 0 && (
-        <div className="card" style={{ marginTop: 16 }}>
+        <>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 16 }}>#chart-guide</div>
+        <div className="card">
           <div
             onClick={() => setShowChartGuide(!showChartGuide)}
             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -1931,10 +1933,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
             aria-label="Toggle Chart Guide"
             onKeyDown={(e) => e.key === 'Enter' && setShowChartGuide(!showChartGuide)}
           >
-            <div>
-              <div className="card-title">Chart Guide</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>Reference for all chart indicators and tools</div>
-            </div>
+            <div className="card-title">Chart Guide</div>
             <span style={{ color: 'var(--text3)', fontSize: 18 }}>{showChartGuide ? '−' : '+'}</span>
           </div>
           {showChartGuide && (
@@ -2361,6 +2360,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
             </div>
           )}
         </div>
+        </>
       )}
     </>
   );
