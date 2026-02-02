@@ -7603,7 +7603,7 @@ const TimelineTab = () => {
         { metric: 'Staking Revenue', previous: 'N/A', new: '$188M/yr', change: '+18% WoW annualized' },
       ],
       notes: 'ETH price dropped sharply (~$3,000→$2,317) but fundamentals strengthening: Ethereum daily txns hit ATH (2.5M via theblock.co), active addresses soared to ATH (1M daily). Tom Lee: "non-fundamental factors" explain weakness — leverage not returned since Oct 10th, gold "vortex" pulling risk appetite. Gold -9% on Jan 30 (4th largest daily drop) may signal near-term top (similar to Jan 22, 1980 pattern). Staking exploded +888K ETH to 2.9M (67.6% of holdings, largest staker in world). Annualized staking revenue $188M (up 18% WoW). MAVAN on track Q1 2026 (3 staking providers). GENIUS Act + SEC Project Crypto "transformational." Beast $200M closed. 193 BTC held.',
-      impact: 'positive'
+      impact: 'neutral'
     },
     // === JANUARY 26, 2026 - ETH HOLDINGS + DAVOS 2026 ===
     {

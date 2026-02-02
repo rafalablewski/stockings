@@ -1240,7 +1240,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-top: 1px solid var(--border);
 }
 .timeline-item.expanded .timeline-details {
-  max-height: 500px;
+  max-height: 2000px;
   padding: 20px;
 }
 .t-details-content {
