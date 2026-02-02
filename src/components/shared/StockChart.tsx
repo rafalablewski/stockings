@@ -747,6 +747,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const [goldData, setGoldData] = useState<ChartDataPoint[] | null>(null);
   const [btcData, setBtcData] = useState<ChartDataPoint[] | null>(null);
 
+  // Chart Guide toggle (open by default)
+  const [showChartGuide, setShowChartGuide] = useState(true);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -1919,19 +1922,23 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
       {/* Chart Guide - Separate Card */}
       {!loading && !error && chartData.length > 0 && (
         <div className="card" style={{ marginTop: 16 }}>
-          <details>
-            <summary style={{
-              cursor: 'pointer',
-              fontSize: 13,
-              fontWeight: 600,
-              color: 'var(--text)',
-              userSelect: 'none',
-              padding: '4px 0',
-            }}>
-              📖 Chart Guide
-            </summary>
+          <div
+            onClick={() => setShowChartGuide(!showChartGuide)}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+            role="button"
+            tabIndex={0}
+            aria-expanded={showChartGuide}
+            aria-label="Toggle Chart Guide"
+            onKeyDown={(e) => e.key === 'Enter' && setShowChartGuide(!showChartGuide)}
+          >
+            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
+              Chart Guide
+            </div>
+            <span style={{ color: 'var(--text3)', fontSize: 18 }}>{showChartGuide ? '−' : '+'}</span>
+          </div>
+          {showChartGuide && (
             <div style={{
-              marginTop: 12,
+              marginTop: 16,
               padding: 16,
               background: 'var(--surface2)',
               borderRadius: 8,
@@ -2304,7 +2311,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
             </div>
           </div>
-        </details>
+          )}
         </div>
       )}
     </>
