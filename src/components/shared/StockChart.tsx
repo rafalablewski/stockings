@@ -1939,7 +1939,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
           {showChartGuide && (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
               gap: 32,
               fontSize: 11,
               lineHeight: 1.8,
