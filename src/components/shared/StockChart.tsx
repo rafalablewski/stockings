@@ -749,6 +749,13 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
   // Chart Guide toggle (open by default)
   const [showChartGuide, setShowChartGuide] = useState(true);
+  // Chart Guide sub-sections (all open by default)
+  const [guideIndicators, setGuideIndicators] = useState(true);
+  const [guideScale, setGuideScale] = useState(true);
+  const [guideCompare, setGuideCompare] = useState(true);
+  const [guidePro, setGuidePro] = useState(true);
+  const [guideRiskMetrics, setGuideRiskMetrics] = useState(true);
+  const [guideCorrelation, setGuideCorrelation] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1948,11 +1955,34 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
             <div style={{ display: 'grid', gap: 20 }}>
 
               {/* INDICATORS SECTION */}
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 12, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 6 }}>
-                  Indicators
+              <div style={{
+                background: 'var(--surface1)',
+                borderRadius: 8,
+                border: '1px solid var(--border)',
+                overflow: 'hidden'
+              }}>
+                <div
+                  onClick={() => setGuideIndicators(!guideIndicators)}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    padding: '12px 16px',
+                    background: 'var(--surface2)',
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={guideIndicators}
+                  onKeyDown={(e) => e.key === 'Enter' && setGuideIndicators(!guideIndicators)}
+                >
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                    Indicators
+                  </div>
+                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guideIndicators ? '−' : '+'}</span>
                 </div>
-                <div style={{ display: 'grid', gap: 14 }}>
+                {guideIndicators && (
+                <div style={{ padding: 16, display: 'grid', gap: 14 }}>
 
                   {/* SMA 20/50/200 */}
                   <div>
@@ -2089,14 +2119,38 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                   </div>
 
                 </div>
+                )}
               </div>
 
               {/* SCALE SECTION */}
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 12, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 6 }}>
-                  Scale
+              <div style={{
+                background: 'var(--surface1)',
+                borderRadius: 8,
+                border: '1px solid var(--border)',
+                overflow: 'hidden'
+              }}>
+                <div
+                  onClick={() => setGuideScale(!guideScale)}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    padding: '12px 16px',
+                    background: 'var(--surface2)',
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={guideScale}
+                  onKeyDown={(e) => e.key === 'Enter' && setGuideScale(!guideScale)}
+                >
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                    Scale
+                  </div>
+                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guideScale ? '−' : '+'}</span>
                 </div>
-                <div>
+                {guideScale && (
+                <div style={{ padding: 16 }}>
                   <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Log Scale</div>
                   <div style={{ color: 'var(--text3)' }}>
                     <strong>Logarithmic Y-axis</strong> displays percentage changes equally regardless of price level. This is essential for proper analysis of long-term charts and high-growth stocks.
@@ -2111,14 +2165,38 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     <strong>When to use linear:</strong> Short-term (1D-1W) intraday analysis where absolute dollar moves matter for P&L calculation. Options traders often prefer linear for strike price visualization.
                   </div>
                 </div>
+                )}
               </div>
 
               {/* COMPARE SECTION */}
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 12, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 6 }}>
-                  Compare
+              <div style={{
+                background: 'var(--surface1)',
+                borderRadius: 8,
+                border: '1px solid var(--border)',
+                overflow: 'hidden'
+              }}>
+                <div
+                  onClick={() => setGuideCompare(!guideCompare)}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    padding: '12px 16px',
+                    background: 'var(--surface2)',
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={guideCompare}
+                  onKeyDown={(e) => e.key === 'Enter' && setGuideCompare(!guideCompare)}
+                >
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                    Compare
+                  </div>
+                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guideCompare ? '−' : '+'}</span>
                 </div>
-                <div style={{ display: 'grid', gap: 14 }}>
+                {guideCompare && (
+                <div style={{ padding: 16, display: 'grid', gap: 14 }}>
                   <div style={{ color: 'var(--text3)', marginBottom: 4 }}>
                     <strong>Relative performance analysis</strong> overlays benchmark returns (normalized to 0% at period start) against the stock. This reveals alpha generation, correlation patterns, and relative strength regimes. Outperformance vs. relevant benchmark is the fundamental measure of active management value.
                   </div>
@@ -2171,14 +2249,38 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     </div>
                   </div>
                 </div>
+                )}
               </div>
 
               {/* PRO SECTION */}
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--text)', marginBottom: 12, fontSize: 12, borderBottom: '1px solid var(--border)', paddingBottom: 6 }}>
-                  Pro (Professional Analysis Tools)
+              <div style={{
+                background: 'var(--surface1)',
+                borderRadius: 8,
+                border: '1px solid var(--border)',
+                overflow: 'hidden'
+              }}>
+                <div
+                  onClick={() => setGuidePro(!guidePro)}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    padding: '12px 16px',
+                    background: 'var(--surface2)',
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={guidePro}
+                  onKeyDown={(e) => e.key === 'Enter' && setGuidePro(!guidePro)}
+                >
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                    Pro (Professional Analysis Tools)
+                  </div>
+                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guidePro ? '−' : '+'}</span>
                 </div>
-                <div style={{ display: 'grid', gap: 14 }}>
+                {guidePro && (
+                <div style={{ padding: 16, display: 'grid', gap: 14 }}>
 
                   <div>
                     <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -2264,49 +2366,104 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     </div>
                   </div>
 
-                  <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
-                      Risk Metrics Panel
-                    </div>
-                    <div style={{ color: 'var(--text3)' }}>
-                      <strong>Quantitative risk analytics</strong> used by institutional investors to evaluate risk-adjusted performance and portfolio allocation decisions.
-                      <br /><br />
-                      <strong>Sharpe Ratio</strong> (annualized): Excess return per unit of total volatility. Formula: (Return - Risk-free Rate) / Standard Deviation. Interpretation: &lt;1.0 = suboptimal risk-adjusted return; 1.0-2.0 = good; 2.0-3.0 = excellent; &gt;3.0 = exceptional or possibly over-fitted. Most hedge funds target Sharpe of 1.5+. Calculated here using 4% risk-free rate assumption.
-                      <br /><br />
-                      <strong>Sortino Ratio</strong> (annualized): Like Sharpe but uses only downside deviation—doesn't penalize upside volatility. More appropriate for asymmetric return distributions. Higher Sortino vs. Sharpe indicates positive skew (larger up moves than down moves).
-                      <br /><br />
-                      <strong>Maximum Drawdown</strong>: Largest peak-to-trough decline during the period. Critical for sizing and survival analysis. Recovery time shown indicates how long capital was impaired. Rule of thumb: Expect 2x historical max drawdown in future.
-                      <br /><br />
-                      <strong>Value at Risk (VaR 95%)</strong>: The daily loss level that won't be exceeded 95% of the time. Historical VaR uses actual return distribution (non-parametric). Example: -3% VaR means 1-in-20 days you can expect losses of 3%+. Use for position sizing: scale positions so VaR equals acceptable daily loss.
-                      <br /><br />
-                      <strong>Beta vs SPY</strong>: Sensitivity to market moves. Beta 1.5 means stock moves 1.5% for every 1% SPY move. High beta (&gt;1.5) amplifies returns but increases drawdowns. Beta &lt;1 provides defensive characteristics. Negative beta (rare) indicates inverse relationship.
-                      <br /><br />
-                      <strong>Rolling Volatility</strong> (30-day annualized): Current volatility regime. Compare to historical average for regime classification. Elevated volatility = wider stops, smaller positions. Compressed volatility = potential for expansion.
-                    </div>
-                  </div>
-
-                  <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
-                      Correlation Matrix
-                    </div>
-                    <div style={{ color: 'var(--text3)' }}>
-                      <strong>Pearson correlation coefficients</strong> measuring linear relationship strength between the stock and enabled benchmarks. Range: -1 (perfect inverse) to +1 (perfect positive).
-                      <br /><br />
-                      <strong>Interpretation thresholds:</strong>
-                      <br />• <em>|0.7 - 1.0|</em> (Green): Strong correlation—assets move together (or opposite if negative). Limited diversification benefit.
-                      <br />• <em>|0.3 - 0.7|</em>: Moderate correlation—some independent movement.
-                      <br />• <em>|0.0 - 0.3|</em> (Red): Weak/no correlation—assets move independently. Maximum diversification benefit.
-                      <br /><br />
-                      <strong>Portfolio applications:</strong>
-                      <br />• <em>Diversification</em>: Low correlation assets reduce portfolio volatility. Adding 0.3 correlation asset to portfolio improves risk-adjusted returns.
-                      <br />• <em>Pair trading</em>: High correlation pairs (0.8+) that diverge present mean-reversion opportunities.
-                      <br />• <em>Regime detection</em>: Correlation changes signal regime shifts. Correlations converge toward 1.0 during crises (diversification fails when needed most).
-                      <br /><br />
-                      <strong>Dynamic nature:</strong> Correlations are not stable—they shift with market regimes, monetary policy, and sector rotations. Rolling 60-day correlation captures recent relationship; compare to longer-term (252-day) for regime change detection.
-                    </div>
-                  </div>
-
                 </div>
+                )}
+              </div>
+
+              {/* RISK METRICS SECTION */}
+              <div style={{
+                background: 'var(--surface1)',
+                borderRadius: 8,
+                border: '1px solid var(--border)',
+                overflow: 'hidden'
+              }}>
+                <div
+                  onClick={() => setGuideRiskMetrics(!guideRiskMetrics)}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    padding: '12px 16px',
+                    background: 'var(--surface2)',
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={guideRiskMetrics}
+                  onKeyDown={(e) => e.key === 'Enter' && setGuideRiskMetrics(!guideRiskMetrics)}
+                >
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                    Risk Metrics
+                  </div>
+                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guideRiskMetrics ? '−' : '+'}</span>
+                </div>
+                {guideRiskMetrics && (
+                <div style={{ padding: 16 }}>
+                  <div style={{ color: 'var(--text3)' }}>
+                    <strong>Quantitative risk analytics</strong> used by institutional investors to evaluate risk-adjusted performance and portfolio allocation decisions.
+                    <br /><br />
+                    <strong>Sharpe Ratio</strong> (annualized): Excess return per unit of total volatility. Formula: (Return - Risk-free Rate) / Standard Deviation. Interpretation: &lt;1.0 = suboptimal risk-adjusted return; 1.0-2.0 = good; 2.0-3.0 = excellent; &gt;3.0 = exceptional or possibly over-fitted. Most hedge funds target Sharpe of 1.5+. Calculated here using 4% risk-free rate assumption.
+                    <br /><br />
+                    <strong>Sortino Ratio</strong> (annualized): Like Sharpe but uses only downside deviation—doesn't penalize upside volatility. More appropriate for asymmetric return distributions. Higher Sortino vs. Sharpe indicates positive skew (larger up moves than down moves).
+                    <br /><br />
+                    <strong>Maximum Drawdown</strong>: Largest peak-to-trough decline during the period. Critical for sizing and survival analysis. Recovery time shown indicates how long capital was impaired. Rule of thumb: Expect 2x historical max drawdown in future.
+                    <br /><br />
+                    <strong>Value at Risk (VaR 95%)</strong>: The daily loss level that won't be exceeded 95% of the time. Historical VaR uses actual return distribution (non-parametric). Example: -3% VaR means 1-in-20 days you can expect losses of 3%+. Use for position sizing: scale positions so VaR equals acceptable daily loss.
+                    <br /><br />
+                    <strong>Beta vs SPY</strong>: Sensitivity to market moves. Beta 1.5 means stock moves 1.5% for every 1% SPY move. High beta (&gt;1.5) amplifies returns but increases drawdowns. Beta &lt;1 provides defensive characteristics. Negative beta (rare) indicates inverse relationship.
+                    <br /><br />
+                    <strong>Rolling Volatility</strong> (30-day annualized): Current volatility regime. Compare to historical average for regime classification. Elevated volatility = wider stops, smaller positions. Compressed volatility = potential for expansion.
+                  </div>
+                </div>
+                )}
+              </div>
+
+              {/* CORRELATION SECTION */}
+              <div style={{
+                background: 'var(--surface1)',
+                borderRadius: 8,
+                border: '1px solid var(--border)',
+                overflow: 'hidden'
+              }}>
+                <div
+                  onClick={() => setGuideCorrelation(!guideCorrelation)}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    padding: '12px 16px',
+                    background: 'var(--surface2)',
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={guideCorrelation}
+                  onKeyDown={(e) => e.key === 'Enter' && setGuideCorrelation(!guideCorrelation)}
+                >
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                    Correlation
+                  </div>
+                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guideCorrelation ? '−' : '+'}</span>
+                </div>
+                {guideCorrelation && (
+                <div style={{ padding: 16 }}>
+                  <div style={{ color: 'var(--text3)' }}>
+                    <strong>Pearson correlation coefficients</strong> measuring linear relationship strength between the stock and enabled benchmarks. Range: -1 (perfect inverse) to +1 (perfect positive).
+                    <br /><br />
+                    <strong>Interpretation thresholds:</strong>
+                    <br />• <em>|0.7 - 1.0|</em> (Green): Strong correlation—assets move together (or opposite if negative). Limited diversification benefit.
+                    <br />• <em>|0.3 - 0.7|</em>: Moderate correlation—some independent movement.
+                    <br />• <em>|0.0 - 0.3|</em> (Red): Weak/no correlation—assets move independently. Maximum diversification benefit.
+                    <br /><br />
+                    <strong>Portfolio applications:</strong>
+                    <br />• <em>Diversification</em>: Low correlation assets reduce portfolio volatility. Adding 0.3 correlation asset to portfolio improves risk-adjusted returns.
+                    <br />• <em>Pair trading</em>: High correlation pairs (0.8+) that diverge present mean-reversion opportunities.
+                    <br />• <em>Regime detection</em>: Correlation changes signal regime shifts. Correlations converge toward 1.0 during crises (diversification fails when needed most).
+                    <br /><br />
+                    <strong>Dynamic nature:</strong> Correlations are not stable—they shift with market regimes, monetary policy, and sector rotations. Rolling 60-day correlation captures recent relationship; compare to longer-term (252-day) for regime change detection.
+                  </div>
+                </div>
+                )}
               </div>
 
             </div>
