@@ -1941,6 +1941,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               fontSize: 11,
               lineHeight: 1.8,
               color: 'var(--text3)',
+              maxWidth: '70ch',
             }}>
 
               {/* INDICATORS */}
