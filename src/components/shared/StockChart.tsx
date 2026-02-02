@@ -682,11 +682,13 @@ const IndicatorToggle = ({
 }) => (
   <button
     onClick={onClick}
+    aria-pressed={active}
+    aria-label={`${label} indicator ${active ? 'enabled' : 'disabled'}`}
     style={{
-      padding: '3px 8px',
-      fontSize: 10,
+      padding: '6px 10px',
+      fontSize: 11,
       fontWeight: 500,
-      borderRadius: 3,
+      borderRadius: 6,
       border: active ? `1px solid ${color || 'var(--accent)'}` : '1px solid var(--border)',
       cursor: 'pointer',
       background: active ? `${color}20` : 'transparent',
@@ -695,11 +697,83 @@ const IndicatorToggle = ({
       display: 'flex',
       alignItems: 'center',
       gap: 4,
+      minHeight: 32,
+      touchAction: 'manipulation',
     }}
   >
     {color && <span style={{ width: 8, height: 2, background: color, borderRadius: 1 }} />}
     {label}
   </button>
+);
+
+// Collapsible section for indicator groups
+const ToggleSection = ({
+  label,
+  isOpen,
+  onToggle,
+  children,
+  count,
+}: {
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+  count?: number;
+}) => (
+  <div style={{ marginBottom: 8 }}>
+    <button
+      onClick={onToggle}
+      aria-expanded={isOpen}
+      aria-label={`${label} section ${isOpen ? 'expanded' : 'collapsed'}`}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        padding: '8px 0',
+        fontSize: 11,
+        fontWeight: 600,
+        color: 'var(--text3)',
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        width: '100%',
+        textAlign: 'left',
+        touchAction: 'manipulation',
+      }}
+    >
+      <span style={{
+        fontSize: 10,
+        transition: 'transform 0.2s',
+        transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+      }}>
+        ▶
+      </span>
+      {label}
+      {count !== undefined && count > 0 && (
+        <span style={{
+          fontSize: 9,
+          padding: '2px 6px',
+          background: 'var(--accent)',
+          color: 'white',
+          borderRadius: 10,
+        }}>
+          {count}
+        </span>
+      )}
+    </button>
+    {isOpen && (
+      <div style={{
+        display: 'flex',
+        gap: 6,
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        paddingLeft: 16,
+        paddingBottom: 8,
+      }}>
+        {children}
+      </div>
+    )}
+  </div>
 );
 
 export default function StockChart({ symbol, height = 280 }: StockChartProps) {
@@ -749,6 +823,11 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
   // Chart Guide toggle (open by default)
   const [showChartGuide, setShowChartGuide] = useState(true);
+
+  // Collapsible indicator sections (indicators open by default, others collapsed on mobile)
+  const [showIndicatorSection, setShowIndicatorSection] = useState(true);
+  const [showCompareSection, setShowCompareSection] = useState(false);
+  const [showProSection, setShowProSection] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1009,147 +1088,189 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   return (
     <>
     <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-        <div>
-          <div className="card-title" style={{ marginBottom: 4 }}>{symbol}</div>
-          {data && (
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <span style={{ fontSize: 24, fontWeight: 600, fontFamily: 'Space Mono' }}>
-                ${data.regularMarketPrice?.toFixed(2) || lastPrice.toFixed(2)}
-              </span>
-              <span style={{
-                fontSize: 14,
-                color: isPositive ? 'var(--mint)' : 'var(--red)',
-                fontFamily: 'Space Mono',
-              }}>
-                {isPositive ? '+' : ''}{priceChange.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)
-              </span>
-            </div>
-          )}
-        </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      {/* Header - responsive stacking */}
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ minWidth: 200 }}>
+            <div className="card-title" style={{ marginBottom: 4 }}>{symbol}</div>
+            {data && (
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 24, fontWeight: 600, fontFamily: 'Space Mono' }}>
+                  ${data.regularMarketPrice?.toFixed(2) || lastPrice.toFixed(2)}
+                </span>
+                <span style={{
+                  fontSize: 14,
+                  color: isPositive ? 'var(--mint)' : 'var(--red)',
+                  fontFamily: 'Space Mono',
+                }}>
+                  {isPositive ? '+' : ''}{priceChange.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)
+                </span>
+              </div>
+            )}
+          </div>
+
           {/* Chart type toggle */}
-          <div style={{ display: 'flex', gap: 2, background: 'var(--surface2)', borderRadius: 4, padding: 2 }}>
+          <div
+            role="group"
+            aria-label="Chart type"
+            style={{ display: 'flex', gap: 2, background: 'var(--surface2)', borderRadius: 6, padding: 2 }}
+          >
             <button
               onClick={() => setChartType('line')}
+              aria-pressed={chartType === 'line'}
+              aria-label="Line chart"
               style={{
-                padding: '4px 8px',
-                fontSize: 11,
-                fontWeight: 500,
-                borderRadius: 3,
+                padding: '8px 12px',
+                fontSize: 14,
+                borderRadius: 4,
                 border: 'none',
                 cursor: 'pointer',
                 background: chartType === 'line' ? 'var(--surface)' : 'transparent',
                 color: chartType === 'line' ? 'var(--text)' : 'var(--text3)',
                 transition: 'all 0.15s',
+                minHeight: 36,
+                touchAction: 'manipulation',
               }}
-              title="Line chart"
             >
               📈
             </button>
             <button
               onClick={() => setChartType('candle')}
+              aria-pressed={chartType === 'candle'}
+              aria-label="Candlestick chart"
               style={{
-                padding: '4px 8px',
-                fontSize: 11,
-                fontWeight: 500,
-                borderRadius: 3,
+                padding: '8px 12px',
+                fontSize: 14,
+                borderRadius: 4,
                 border: 'none',
                 cursor: 'pointer',
                 background: chartType === 'candle' ? 'var(--surface)' : 'transparent',
                 color: chartType === 'candle' ? 'var(--text)' : 'var(--text3)',
                 transition: 'all 0.15s',
+                minHeight: 36,
+                touchAction: 'manipulation',
               }}
-              title="Candlestick chart"
             >
               🕯️
             </button>
           </div>
-          {/* Time range buttons */}
-          <div style={{ display: 'flex', gap: 4 }}>
-            {RANGES.map(r => (
-              <button
-                key={r.value}
-                onClick={() => setRange(r.value)}
-                style={{
-                  padding: '4px 8px',
-                  fontSize: 11,
-                  fontWeight: 500,
-                  borderRadius: 4,
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: range === r.value ? 'var(--accent)' : 'var(--surface2)',
-                  color: range === r.value ? 'white' : 'var(--text3)',
-                  transition: 'all 0.15s',
-                }}
-              >
-                {r.label}
-              </button>
-            ))}
+        </div>
+
+        {/* Time range buttons - horizontally scrollable on mobile */}
+        <div
+          role="group"
+          aria-label="Time range"
+          style={{
+            display: 'flex',
+            gap: 6,
+            marginTop: 12,
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            paddingBottom: 4,
+          }}
+        >
+          {RANGES.map(r => (
             <button
-              onClick={handleRefresh}
-              disabled={loading}
+              key={r.value}
+              onClick={() => setRange(r.value)}
+              aria-pressed={range === r.value}
+              aria-label={`${r.label} time range`}
               style={{
-                padding: '4px 8px',
-                fontSize: 11,
-                fontWeight: 500,
-                borderRadius: 4,
+                padding: '8px 14px',
+                fontSize: 12,
+                fontWeight: 600,
+                borderRadius: 6,
                 border: 'none',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                background: 'var(--surface2)',
-                color: 'var(--text3)',
+                cursor: 'pointer',
+                background: range === r.value ? 'var(--accent)' : 'var(--surface2)',
+                color: range === r.value ? 'white' : 'var(--text3)',
                 transition: 'all 0.15s',
-                opacity: loading ? 0.5 : 1,
-                marginLeft: 4,
+                minHeight: 36,
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                touchAction: 'manipulation',
               }}
-              title="Refresh chart data"
             >
-              ↻
+              {r.label}
             </button>
-          </div>
+          ))}
+          <button
+            onClick={handleRefresh}
+            disabled={loading}
+            aria-label="Refresh chart data"
+            style={{
+              padding: '8px 14px',
+              fontSize: 14,
+              fontWeight: 500,
+              borderRadius: 6,
+              border: 'none',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              background: 'var(--surface2)',
+              color: 'var(--text3)',
+              transition: 'all 0.15s',
+              opacity: loading ? 0.5 : 1,
+              minHeight: 36,
+              flexShrink: 0,
+              touchAction: 'manipulation',
+            }}
+          >
+            ↻
+          </button>
         </div>
       </div>
 
-      {/* Indicator toggles */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Indicators:</span>
-        <IndicatorToggle label="SMA 20" active={showSMA20} onClick={() => setShowSMA20(!showSMA20)} color={COLORS.sma20} />
-        <IndicatorToggle label="SMA 50" active={showSMA50} onClick={() => setShowSMA50(!showSMA50)} color={COLORS.sma50} />
-        <IndicatorToggle label="SMA 200" active={showSMA200} onClick={() => setShowSMA200(!showSMA200)} color={COLORS.sma200} />
-        <IndicatorToggle label="Bollinger" active={showBollinger} onClick={() => setShowBollinger(!showBollinger)} color={COLORS.bbUpper} />
-        <IndicatorToggle label="VWAP" active={showVWAP} onClick={() => setShowVWAP(!showVWAP)} color={COLORS.vwap} />
-        <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 2px' }} />
-        <IndicatorToggle label="Volume" active={showVolume} onClick={() => setShowVolume(!showVolume)} />
-        <IndicatorToggle label="RSI" active={showRSI} onClick={() => setShowRSI(!showRSI)} color={COLORS.rsi} />
-        <IndicatorToggle label="MACD" active={showMACD} onClick={() => setShowMACD(!showMACD)} color={COLORS.macd} />
-        <IndicatorToggle label="ATR" active={showATR} onClick={() => setShowATR(!showATR)} color={COLORS.atr} />
-      </div>
+      {/* Indicator Controls - Collapsible sections for mobile */}
+      <div style={{ borderTop: '1px solid var(--border)', paddingTop: 8 }}>
+        {/* Indicators Section */}
+        <ToggleSection
+          label="Indicators"
+          isOpen={showIndicatorSection}
+          onToggle={() => setShowIndicatorSection(!showIndicatorSection)}
+          count={[showSMA20, showSMA50, showSMA200, showBollinger, showVWAP, showVolume, showRSI, showMACD, showATR].filter(Boolean).length}
+        >
+          <IndicatorToggle label="SMA 20" active={showSMA20} onClick={() => setShowSMA20(!showSMA20)} color={COLORS.sma20} />
+          <IndicatorToggle label="SMA 50" active={showSMA50} onClick={() => setShowSMA50(!showSMA50)} color={COLORS.sma50} />
+          <IndicatorToggle label="SMA 200" active={showSMA200} onClick={() => setShowSMA200(!showSMA200)} color={COLORS.sma200} />
+          <IndicatorToggle label="Bollinger" active={showBollinger} onClick={() => setShowBollinger(!showBollinger)} color={COLORS.bbUpper} />
+          <IndicatorToggle label="VWAP" active={showVWAP} onClick={() => setShowVWAP(!showVWAP)} color={COLORS.vwap} />
+          <IndicatorToggle label="Volume" active={showVolume} onClick={() => setShowVolume(!showVolume)} />
+          <IndicatorToggle label="RSI" active={showRSI} onClick={() => setShowRSI(!showRSI)} color={COLORS.rsi} />
+          <IndicatorToggle label="MACD" active={showMACD} onClick={() => setShowMACD(!showMACD)} color={COLORS.macd} />
+          <IndicatorToggle label="ATR" active={showATR} onClick={() => setShowATR(!showATR)} color={COLORS.atr} />
+          <span style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 4px' }} />
+          <IndicatorToggle label="Log Scale" active={logScale} onClick={() => setLogScale(!logScale)} />
+        </ToggleSection>
 
-      {/* Scale toggle */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Scale:</span>
-        <IndicatorToggle label="Log" active={logScale} onClick={() => setLogScale(!logScale)} />
-      </div>
+        {/* Compare Section */}
+        <ToggleSection
+          label="Compare"
+          isOpen={showCompareSection}
+          onToggle={() => setShowCompareSection(!showCompareSection)}
+          count={[showSPY, showQQQ, showGold, showBTC].filter(Boolean).length}
+        >
+          <IndicatorToggle label="vs. SPY" active={showSPY} onClick={() => setShowSPY(!showSPY)} color={COLORS.spy} />
+          <IndicatorToggle label="vs. QQQ" active={showQQQ} onClick={() => setShowQQQ(!showQQQ)} color={COLORS.qqq} />
+          <IndicatorToggle label="vs. Gold" active={showGold} onClick={() => setShowGold(!showGold)} color={COLORS.gold} />
+          <IndicatorToggle label="vs. BTC" active={showBTC} onClick={() => setShowBTC(!showBTC)} color={COLORS.btc} />
+        </ToggleSection>
 
-      {/* Comparison toggles */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Compare:</span>
-        <IndicatorToggle label="vs. SPY" active={showSPY} onClick={() => setShowSPY(!showSPY)} color={COLORS.spy} />
-        <IndicatorToggle label="vs. QQQ" active={showQQQ} onClick={() => setShowQQQ(!showQQQ)} color={COLORS.qqq} />
-        <IndicatorToggle label="vs. Gold" active={showGold} onClick={() => setShowGold(!showGold)} color={COLORS.gold} />
-        <IndicatorToggle label="vs. BTC" active={showBTC} onClick={() => setShowBTC(!showBTC)} color={COLORS.btc} />
-      </div>
-
-      {/* Professional Analysis toggles */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Pro:</span>
-        <IndicatorToggle label="Fib" active={showFibonacci} onClick={() => setShowFibonacci(!showFibonacci)} color={COLORS.fibonacci} />
-        <IndicatorToggle label="VWAP±σ" active={showVWAPBands} onClick={() => setShowVWAPBands(!showVWAPBands)} color={COLORS.vwapBand1} />
-        <IndicatorToggle label="S/R" active={showSupportResistance} onClick={() => setShowSupportResistance(!showSupportResistance)} color={COLORS.support} />
-        <IndicatorToggle label="Vol Profile" active={showVolumeProfile} onClick={() => setShowVolumeProfile(!showVolumeProfile)} color={COLORS.volumeProfile} />
-        <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 2px' }} />
-        <IndicatorToggle label="Risk Metrics" active={showRiskMetrics} onClick={() => setShowRiskMetrics(!showRiskMetrics)} />
-        <IndicatorToggle label="Correlation" active={showCorrelation} onClick={() => setShowCorrelation(!showCorrelation)} />
+        {/* Pro Section */}
+        <ToggleSection
+          label="Professional Tools"
+          isOpen={showProSection}
+          onToggle={() => setShowProSection(!showProSection)}
+          count={[showFibonacci, showVWAPBands, showSupportResistance, showVolumeProfile, showRiskMetrics, showCorrelation].filter(Boolean).length}
+        >
+          <IndicatorToggle label="Fibonacci" active={showFibonacci} onClick={() => setShowFibonacci(!showFibonacci)} color={COLORS.fibonacci} />
+          <IndicatorToggle label="VWAP Bands" active={showVWAPBands} onClick={() => setShowVWAPBands(!showVWAPBands)} color={COLORS.vwapBand1} />
+          <IndicatorToggle label="Support/Resistance" active={showSupportResistance} onClick={() => setShowSupportResistance(!showSupportResistance)} color={COLORS.support} />
+          <IndicatorToggle label="Volume Profile" active={showVolumeProfile} onClick={() => setShowVolumeProfile(!showVolumeProfile)} color={COLORS.volumeProfile} />
+          <span style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 4px' }} />
+          <IndicatorToggle label="Risk Metrics" active={showRiskMetrics} onClick={() => setShowRiskMetrics(!showRiskMetrics)} />
+          <IndicatorToggle label="Correlation" active={showCorrelation} onClick={() => setShowCorrelation(!showCorrelation)} />
+        </ToggleSection>
       </div>
 
       {loading && (
