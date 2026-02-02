@@ -1004,6 +1004,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     : '';
 
   return (
+    <>
     <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
         <div>
@@ -1913,27 +1914,30 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
           </div>
         </div>
       )}
+    </div>
 
-      {/* Chart Guide */}
+      {/* Chart Guide - Separate Card */}
       {!loading && !error && chartData.length > 0 && (
-        <details style={{ marginTop: 12 }}>
-          <summary style={{
-            cursor: 'pointer',
-            fontSize: 11,
-            color: 'var(--text3)',
-            userSelect: 'none',
-            padding: '4px 0',
-          }}>
-            Chart Guide
-          </summary>
-          <div style={{
-            marginTop: 8,
-            padding: 12,
-            background: 'var(--surface2)',
-            borderRadius: 8,
-            fontSize: 11,
-            lineHeight: 1.7,
-          }}>
+        <div className="card" style={{ marginTop: 16 }}>
+          <details>
+            <summary style={{
+              cursor: 'pointer',
+              fontSize: 13,
+              fontWeight: 600,
+              color: 'var(--text)',
+              userSelect: 'none',
+              padding: '4px 0',
+            }}>
+              📖 Chart Guide
+            </summary>
+            <div style={{
+              marginTop: 12,
+              padding: 16,
+              background: 'var(--surface2)',
+              borderRadius: 8,
+              fontSize: 11,
+              lineHeight: 1.7,
+            }}>
             <div style={{ display: 'grid', gap: 20 }}>
 
               {/* INDICATORS SECTION */}
@@ -2301,7 +2305,8 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
             </div>
           </div>
         </details>
+        </div>
       )}
-    </div>
+    </>
   );
 }
