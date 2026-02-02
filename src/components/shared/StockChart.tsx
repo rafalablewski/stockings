@@ -1956,9 +1956,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
               {/* INDICATORS SECTION */}
               <div style={{
-                background: 'var(--surface1)',
+                background: 'var(--surface2)',
                 borderRadius: 8,
-                border: '1px solid var(--border)',
+                border: guideIndicators ? '1px solid var(--violet)' : '1px solid var(--border)',
                 overflow: 'hidden'
               }}>
                 <div
@@ -1968,21 +1968,20 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     cursor: 'pointer',
-                    padding: '12px 16px',
-                    background: 'var(--surface2)',
+                    padding: 16,
                   }}
                   role="button"
                   tabIndex={0}
                   aria-expanded={guideIndicators}
                   onKeyDown={(e) => e.key === 'Enter' && setGuideIndicators(!guideIndicators)}
                 >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
                     Indicators
                   </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guideIndicators ? '−' : '+'}</span>
+                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guideIndicators ? '▼' : '▶'}</span>
                 </div>
                 {guideIndicators && (
-                <div style={{ padding: 16, display: 'grid', gap: 14 }}>
+                <div style={{ padding: '0 16px 16px 16px', display: 'grid', gap: 14 }}>
 
                   {/* SMA 20/50/200 */}
                   <div>
@@ -2124,9 +2123,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
               {/* SCALE SECTION */}
               <div style={{
-                background: 'var(--surface1)',
+                background: 'var(--surface2)',
                 borderRadius: 8,
-                border: '1px solid var(--border)',
+                border: guideScale ? '1px solid var(--violet)' : '1px solid var(--border)',
                 overflow: 'hidden'
               }}>
                 <div
@@ -2136,21 +2135,20 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     cursor: 'pointer',
-                    padding: '12px 16px',
-                    background: 'var(--surface2)',
+                    padding: 16,
                   }}
                   role="button"
                   tabIndex={0}
                   aria-expanded={guideScale}
                   onKeyDown={(e) => e.key === 'Enter' && setGuideScale(!guideScale)}
                 >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
                     Scale
                   </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guideScale ? '−' : '+'}</span>
+                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guideScale ? '▼' : '▶'}</span>
                 </div>
                 {guideScale && (
-                <div style={{ padding: 16 }}>
+                <div style={{ padding: '0 16px 16px 16px' }}>
                   <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Log Scale</div>
                   <div style={{ color: 'var(--text3)' }}>
                     <strong>Logarithmic Y-axis</strong> displays percentage changes equally regardless of price level. This is essential for proper analysis of long-term charts and high-growth stocks.
@@ -2170,9 +2168,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
               {/* COMPARE SECTION */}
               <div style={{
-                background: 'var(--surface1)',
+                background: 'var(--surface2)',
                 borderRadius: 8,
-                border: '1px solid var(--border)',
+                border: guideCompare ? '1px solid var(--violet)' : '1px solid var(--border)',
                 overflow: 'hidden'
               }}>
                 <div
@@ -2182,21 +2180,20 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     cursor: 'pointer',
-                    padding: '12px 16px',
-                    background: 'var(--surface2)',
+                    padding: 16,
                   }}
                   role="button"
                   tabIndex={0}
                   aria-expanded={guideCompare}
                   onKeyDown={(e) => e.key === 'Enter' && setGuideCompare(!guideCompare)}
                 >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
                     Compare
                   </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guideCompare ? '−' : '+'}</span>
+                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guideCompare ? '▼' : '▶'}</span>
                 </div>
                 {guideCompare && (
-                <div style={{ padding: 16, display: 'grid', gap: 14 }}>
+                <div style={{ padding: '0 16px 16px 16px', display: 'grid', gap: 14 }}>
                   <div style={{ color: 'var(--text3)', marginBottom: 4 }}>
                     <strong>Relative performance analysis</strong> overlays benchmark returns (normalized to 0% at period start) against the stock. This reveals alpha generation, correlation patterns, and relative strength regimes. Outperformance vs. relevant benchmark is the fundamental measure of active management value.
                   </div>
@@ -2254,9 +2251,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
               {/* PRO SECTION */}
               <div style={{
-                background: 'var(--surface1)',
+                background: 'var(--surface2)',
                 borderRadius: 8,
-                border: '1px solid var(--border)',
+                border: guidePro ? '1px solid var(--violet)' : '1px solid var(--border)',
                 overflow: 'hidden'
               }}>
                 <div
@@ -2266,21 +2263,20 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     cursor: 'pointer',
-                    padding: '12px 16px',
-                    background: 'var(--surface2)',
+                    padding: 16,
                   }}
                   role="button"
                   tabIndex={0}
                   aria-expanded={guidePro}
                   onKeyDown={(e) => e.key === 'Enter' && setGuidePro(!guidePro)}
                 >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
                     Pro (Professional Analysis Tools)
                   </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guidePro ? '−' : '+'}</span>
+                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guidePro ? '▼' : '▶'}</span>
                 </div>
                 {guidePro && (
-                <div style={{ padding: 16, display: 'grid', gap: 14 }}>
+                <div style={{ padding: '0 16px 16px 16px', display: 'grid', gap: 14 }}>
 
                   <div>
                     <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -2372,9 +2368,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
               {/* RISK METRICS SECTION */}
               <div style={{
-                background: 'var(--surface1)',
+                background: 'var(--surface2)',
                 borderRadius: 8,
-                border: '1px solid var(--border)',
+                border: guideRiskMetrics ? '1px solid var(--violet)' : '1px solid var(--border)',
                 overflow: 'hidden'
               }}>
                 <div
@@ -2384,21 +2380,20 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     cursor: 'pointer',
-                    padding: '12px 16px',
-                    background: 'var(--surface2)',
+                    padding: 16,
                   }}
                   role="button"
                   tabIndex={0}
                   aria-expanded={guideRiskMetrics}
                   onKeyDown={(e) => e.key === 'Enter' && setGuideRiskMetrics(!guideRiskMetrics)}
                 >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
                     Risk Metrics
                   </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guideRiskMetrics ? '−' : '+'}</span>
+                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guideRiskMetrics ? '▼' : '▶'}</span>
                 </div>
                 {guideRiskMetrics && (
-                <div style={{ padding: 16 }}>
+                <div style={{ padding: '0 16px 16px 16px' }}>
                   <div style={{ color: 'var(--text3)' }}>
                     <strong>Quantitative risk analytics</strong> used by institutional investors to evaluate risk-adjusted performance and portfolio allocation decisions.
                     <br /><br />
@@ -2420,9 +2415,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
               {/* CORRELATION SECTION */}
               <div style={{
-                background: 'var(--surface1)',
+                background: 'var(--surface2)',
                 borderRadius: 8,
-                border: '1px solid var(--border)',
+                border: guideCorrelation ? '1px solid var(--violet)' : '1px solid var(--border)',
                 overflow: 'hidden'
               }}>
                 <div
@@ -2432,21 +2427,20 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     cursor: 'pointer',
-                    padding: '12px 16px',
-                    background: 'var(--surface2)',
+                    padding: 16,
                   }}
                   role="button"
                   tabIndex={0}
                   aria-expanded={guideCorrelation}
                   onKeyDown={(e) => e.key === 'Enter' && setGuideCorrelation(!guideCorrelation)}
                 >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
                     Correlation
                   </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 14 }}>{guideCorrelation ? '−' : '+'}</span>
+                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guideCorrelation ? '▼' : '▶'}</span>
                 </div>
                 {guideCorrelation && (
-                <div style={{ padding: 16 }}>
+                <div style={{ padding: '0 16px 16px 16px' }}>
                   <div style={{ color: 'var(--text3)' }}>
                     <strong>Pearson correlation coefficients</strong> measuring linear relationship strength between the stock and enabled benchmarks. Range: -1 (perfect inverse) to +1 (perfect positive).
                     <br /><br />
