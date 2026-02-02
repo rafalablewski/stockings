@@ -749,13 +749,6 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
 
   // Chart Guide toggle (open by default)
   const [showChartGuide, setShowChartGuide] = useState(true);
-  // Chart Guide sub-sections (all open by default)
-  const [guideIndicators, setGuideIndicators] = useState(true);
-  const [guideScale, setGuideScale] = useState(true);
-  const [guideCompare, setGuideCompare] = useState(true);
-  const [guidePro, setGuidePro] = useState(true);
-  const [guideRiskMetrics, setGuideRiskMetrics] = useState(true);
-  const [guideCorrelation, setGuideCorrelation] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1946,42 +1939,26 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
           {showChartGuide && (
             <div style={{
               marginTop: 16,
-              padding: 16,
-              background: 'var(--surface2)',
-              borderRadius: 8,
               fontSize: 11,
-              lineHeight: 1.7,
+              lineHeight: 1.8,
+              color: 'var(--text3)',
             }}>
-            <div style={{ display: 'grid', gap: 20 }}>
 
-              {/* INDICATORS SECTION */}
-              <div style={{
-                background: 'var(--surface2)',
-                borderRadius: 8,
-                border: guideIndicators ? '1px solid var(--violet)' : '1px solid var(--border)',
-                overflow: 'hidden'
-              }}>
-                <div
-                  onClick={() => setGuideIndicators(!guideIndicators)}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    padding: 16,
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-expanded={guideIndicators}
-                  onKeyDown={(e) => e.key === 'Enter' && setGuideIndicators(!guideIndicators)}
-                >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
-                    Indicators
-                  </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guideIndicators ? '▼' : '▶'}</span>
+              {/* INDICATORS */}
+              <div style={{ marginBottom: 32 }}>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: 16,
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Indicators
                 </div>
-                {guideIndicators && (
-                <div style={{ padding: '0 16px 16px 16px', display: 'grid', gap: 14 }}>
+                <div style={{ display: 'grid', gap: 20 }}>
 
                   {/* SMA 20/50/200 */}
                   <div>
@@ -2118,37 +2095,23 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                   </div>
 
                 </div>
-                )}
               </div>
 
-              {/* SCALE SECTION */}
-              <div style={{
-                background: 'var(--surface2)',
-                borderRadius: 8,
-                border: guideScale ? '1px solid var(--violet)' : '1px solid var(--border)',
-                overflow: 'hidden'
-              }}>
-                <div
-                  onClick={() => setGuideScale(!guideScale)}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    padding: 16,
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-expanded={guideScale}
-                  onKeyDown={(e) => e.key === 'Enter' && setGuideScale(!guideScale)}
-                >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
-                    Scale
-                  </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guideScale ? '▼' : '▶'}</span>
+              {/* SCALE */}
+              <div style={{ marginBottom: 32 }}>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: 16,
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Scale
                 </div>
-                {guideScale && (
-                <div style={{ padding: '0 16px 16px 16px' }}>
+                <div>
                   <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Log Scale</div>
                   <div style={{ color: 'var(--text3)' }}>
                     <strong>Logarithmic Y-axis</strong> displays percentage changes equally regardless of price level. This is essential for proper analysis of long-term charts and high-growth stocks.
@@ -2163,37 +2126,23 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     <strong>When to use linear:</strong> Short-term (1D-1W) intraday analysis where absolute dollar moves matter for P&L calculation. Options traders often prefer linear for strike price visualization.
                   </div>
                 </div>
-                )}
               </div>
 
-              {/* COMPARE SECTION */}
-              <div style={{
-                background: 'var(--surface2)',
-                borderRadius: 8,
-                border: guideCompare ? '1px solid var(--violet)' : '1px solid var(--border)',
-                overflow: 'hidden'
-              }}>
-                <div
-                  onClick={() => setGuideCompare(!guideCompare)}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    padding: 16,
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-expanded={guideCompare}
-                  onKeyDown={(e) => e.key === 'Enter' && setGuideCompare(!guideCompare)}
-                >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
-                    Compare
-                  </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guideCompare ? '▼' : '▶'}</span>
+              {/* COMPARE */}
+              <div style={{ marginBottom: 32 }}>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: 16,
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Compare
                 </div>
-                {guideCompare && (
-                <div style={{ padding: '0 16px 16px 16px', display: 'grid', gap: 14 }}>
+                <div style={{ display: 'grid', gap: 20 }}>
                   <div style={{ color: 'var(--text3)', marginBottom: 4 }}>
                     <strong>Relative performance analysis</strong> overlays benchmark returns (normalized to 0% at period start) against the stock. This reveals alpha generation, correlation patterns, and relative strength regimes. Outperformance vs. relevant benchmark is the fundamental measure of active management value.
                   </div>
@@ -2246,37 +2195,23 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     </div>
                   </div>
                 </div>
-                )}
               </div>
 
-              {/* PRO SECTION */}
-              <div style={{
-                background: 'var(--surface2)',
-                borderRadius: 8,
-                border: guidePro ? '1px solid var(--violet)' : '1px solid var(--border)',
-                overflow: 'hidden'
-              }}>
-                <div
-                  onClick={() => setGuidePro(!guidePro)}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    padding: 16,
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-expanded={guidePro}
-                  onKeyDown={(e) => e.key === 'Enter' && setGuidePro(!guidePro)}
-                >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
-                    Pro (Professional Analysis Tools)
-                  </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guidePro ? '▼' : '▶'}</span>
+              {/* PRO */}
+              <div style={{ marginBottom: 32 }}>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: 16,
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Professional Tools
                 </div>
-                {guidePro && (
-                <div style={{ padding: '0 16px 16px 16px', display: 'grid', gap: 14 }}>
+                <div style={{ display: 'grid', gap: 20 }}>
 
                   <div>
                     <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -2363,38 +2298,23 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                   </div>
 
                 </div>
-                )}
               </div>
 
-              {/* RISK METRICS SECTION */}
-              <div style={{
-                background: 'var(--surface2)',
-                borderRadius: 8,
-                border: guideRiskMetrics ? '1px solid var(--violet)' : '1px solid var(--border)',
-                overflow: 'hidden'
-              }}>
-                <div
-                  onClick={() => setGuideRiskMetrics(!guideRiskMetrics)}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    padding: 16,
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-expanded={guideRiskMetrics}
-                  onKeyDown={(e) => e.key === 'Enter' && setGuideRiskMetrics(!guideRiskMetrics)}
-                >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
-                    Risk Metrics
-                  </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guideRiskMetrics ? '▼' : '▶'}</span>
+              {/* RISK METRICS */}
+              <div style={{ marginBottom: 32 }}>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: 16,
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Risk Metrics
                 </div>
-                {guideRiskMetrics && (
-                <div style={{ padding: '0 16px 16px 16px' }}>
-                  <div style={{ color: 'var(--text3)' }}>
+                <div>
                     <strong>Quantitative risk analytics</strong> used by institutional investors to evaluate risk-adjusted performance and portfolio allocation decisions.
                     <br /><br />
                     <strong>Sharpe Ratio</strong> (annualized): Excess return per unit of total volatility. Formula: (Return - Risk-free Rate) / Standard Deviation. Interpretation: &lt;1.0 = suboptimal risk-adjusted return; 1.0-2.0 = good; 2.0-3.0 = excellent; &gt;3.0 = exceptional or possibly over-fitted. Most hedge funds target Sharpe of 1.5+. Calculated here using 4% risk-free rate assumption.
@@ -2408,40 +2328,24 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     <strong>Beta vs SPY</strong>: Sensitivity to market moves. Beta 1.5 means stock moves 1.5% for every 1% SPY move. High beta (&gt;1.5) amplifies returns but increases drawdowns. Beta &lt;1 provides defensive characteristics. Negative beta (rare) indicates inverse relationship.
                     <br /><br />
                     <strong>Rolling Volatility</strong> (30-day annualized): Current volatility regime. Compare to historical average for regime classification. Elevated volatility = wider stops, smaller positions. Compressed volatility = potential for expansion.
-                  </div>
                 </div>
-                )}
               </div>
 
-              {/* CORRELATION SECTION */}
-              <div style={{
-                background: 'var(--surface2)',
-                borderRadius: 8,
-                border: guideCorrelation ? '1px solid var(--violet)' : '1px solid var(--border)',
-                overflow: 'hidden'
-              }}>
-                <div
-                  onClick={() => setGuideCorrelation(!guideCorrelation)}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    padding: 16,
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-expanded={guideCorrelation}
-                  onKeyDown={(e) => e.key === 'Enter' && setGuideCorrelation(!guideCorrelation)}
-                >
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>
-                    Correlation
-                  </div>
-                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>{guideCorrelation ? '▼' : '▶'}</span>
+              {/* CORRELATION */}
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: 16,
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Correlation
                 </div>
-                {guideCorrelation && (
-                <div style={{ padding: '0 16px 16px 16px' }}>
-                  <div style={{ color: 'var(--text3)' }}>
+                <div>
                     <strong>Pearson correlation coefficients</strong> measuring linear relationship strength between the stock and enabled benchmarks. Range: -1 (perfect inverse) to +1 (perfect positive).
                     <br /><br />
                     <strong>Interpretation thresholds:</strong>
@@ -2455,13 +2359,10 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                     <br />• <em>Regime detection</em>: Correlation changes signal regime shifts. Correlations converge toward 1.0 during crises (diversification fails when needed most).
                     <br /><br />
                     <strong>Dynamic nature:</strong> Correlations are not stable—they shift with market regimes, monetary policy, and sector rotations. Rolling 60-day correlation captures recent relationship; compare to longer-term (252-day) for regime change detection.
-                  </div>
                 </div>
-                )}
               </div>
 
             </div>
-          </div>
           )}
         </div>
       )}
