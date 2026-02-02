@@ -1240,7 +1240,8 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
           <IndicatorToggle label="MACD" active={showMACD} onClick={() => setShowMACD(!showMACD)} color={COLORS.macd} />
           <IndicatorToggle label="ATR" active={showATR} onClick={() => setShowATR(!showATR)} color={COLORS.atr} />
           <span style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 4px' }} />
-          <IndicatorToggle label="Log Scale" active={logScale} onClick={() => setLogScale(!logScale)} />
+          <IndicatorToggle label="Arithmetic" active={!logScale} onClick={() => setLogScale(false)} />
+          <IndicatorToggle label="Log" active={logScale} onClick={() => setLogScale(true)} />
         </ToggleSection>
 
         {/* Compare Section */}
@@ -2236,19 +2237,32 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                 }}>
                   Scale
                 </div>
-                <div>
-                  <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Log Scale</div>
-                  <div style={{ color: 'var(--text3)' }}>
-                    <strong>Logarithmic Y-axis</strong> displays percentage changes equally regardless of price level. This is essential for proper analysis of long-term charts and high-growth stocks.
-                    <br /><br />
-                    <strong>Why it matters:</strong> On linear scale, a move from $10→$20 (+100%) appears the same size as $100→$110 (+10%). This distorts perception of returns and makes early-stage moves look insignificant. On log scale, equal percentage moves appear equal—$10→$20 looks the same as $100→$200.
-                    <br /><br />
-                    <strong>Professional applications:</strong>
-                    <br />• <em>Trend channel analysis</em>: Log-scale trendlines maintain consistent slope regardless of price appreciation. A stock that compounds at 20%/year shows a straight trendline on log scale.
-                    <br />• <em>Long-term comparison</em>: Comparing performance of assets at different price levels (penny stocks vs. AMZN) is only valid on log scale.
-                    <br />• <em>Exponential growth detection</em>: Parabolic moves appear as straight lines on log scale. Deviation from log-linear trend signals acceleration/exhaustion.
-                    <br /><br />
-                    <strong>When to use linear:</strong> Short-term (1D-1W) intraday analysis where absolute dollar moves matter for P&L calculation. Options traders often prefer linear for strike price visualization.
+                <div style={{ display: 'grid', gap: 16 }}>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Arithmetic (Linear) Scale</div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Default scale</strong> where equal vertical distances represent equal dollar amounts. A $10 move always appears the same size regardless of price level.
+                      <br /><br />
+                      <strong>When to use Arithmetic:</strong>
+                      <br />• <em>Short-term trading (1D–1M)</em>: Day traders and swing traders care about absolute dollar P&L, not percentages.
+                      <br />• <em>Options analysis</em>: Strike prices are evenly spaced in dollar terms—linear scale shows this correctly.
+                      <br />• <em>Support/resistance levels</em>: Key price levels ($50, $100, $200) are easier to identify.
+                      <br />• <em>Range-bound stocks</em>: When price oscillates within a fixed dollar range, arithmetic shows the true trading band.
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Logarithmic Scale</div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Percentage-based scale</strong> where equal vertical distances represent equal percentage changes. A 50% move always appears the same size.
+                      <br /><br />
+                      <strong>When to use Log:</strong>
+                      <br />• <em>Long-term charts (1Y+)</em>: Essential for viewing multi-year price history without distortion.
+                      <br />• <em>High-growth stocks</em>: A stock that went from $10→$1000 shows proportional moves, not a hockey stick.
+                      <br />• <em>Comparing assets</em>: Fairly compare a $5 stock vs $500 stock—both show equivalent percentage moves equally.
+                      <br />• <em>Trend analysis</em>: Consistent 20%/year growth appears as a straight line, making trend breaks obvious.
+                      <br /><br />
+                      <strong>Key insight:</strong> On arithmetic scale, $10→$20 (+100%) looks the same as $100→$110 (+10%). This makes early gains appear insignificant and recent volatility appear exaggerated. Log scale corrects this distortion.
+                    </div>
                   </div>
                 </div>
               </div>
