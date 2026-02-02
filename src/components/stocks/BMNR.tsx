@@ -1959,11 +1959,16 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — ETH Treasury Fundamentals" items={[
-      { term: 'Net Asset Value (NAV)', def: 'The per-share intrinsic value = (Total ETH Holdings × ETH Price) ÷ Shares Outstanding. Represents liquidation value — what each share would be worth if all ETH were sold today. This is the fundamental anchor for valuation.' },
-      { term: 'Premium/Discount to NAV', def: 'The % difference between stock price and NAV. Premium (positive) means market prices in future appreciation, management alpha, or scarcity. Discount (negative) suggests market doubts or liquidity concerns. MSTR historically trades 1.5-2.5x NAV.' },
-      { term: 'ETH per Share (Backing Ratio)', def: 'Your fractional ETH ownership = Total ETH ÷ Shares. If this increases (via buybacks or accretive offerings), shareholders gain value even if ETH price is flat.' },
-      { term: 'Dividend Yield', def: 'Annual Dividend ÷ Stock Price. BMNR announced its first dividend ($0.01/share quarterly) in Nov 2025, becoming the first large-cap crypto treasury to pay dividends. Funded by staking income.' },
-      { term: 'Market Cap vs NAV', def: 'Market Cap = Shares × Stock Price. Compare to total ETH value to understand market sentiment. Premium indicates growth expectations; discount indicates skepticism.' },
+      { term: 'Net Asset Value (NAV)', def: 'Intrinsic value of underlying assets = (ETH Holdings × ETH Price + Cash + Other Assets). NOT dependent on stock price. NAV is what the company owns; stock price is what market will pay for it.' },
+      { term: 'NAV/Share', def: 'NAV ÷ Shares Outstanding. The per-share liquidation value. Example: $10.5B NAV ÷ 434M shares = $24.23/share. This is independent of where stock trades.' },
+      { term: 'mNAV (NAV Multiple)', def: 'Stock Price ÷ NAV/Share. If stock = $27 and NAV = $24, mNAV = 1.125x (12.5% premium). mNAV > 1 = premium, mNAV < 1 = discount. MSTR trades 2-3x; GBTC traded at -40% discount for years.' },
+      { term: 'Premium/Discount Drivers', def: 'Premiums reflect: management alpha, scarcity value, institutional access, yield generation. Discounts reflect: liquidity concerns, management fees, redemption restrictions, market skepticism.' },
+      { term: 'ETH/Share (Backing Ratio)', def: 'ETH Holdings ÷ Shares. Your fractional ETH ownership. If this rises (buybacks, accretive offerings), you gain even if ETH is flat. Dilution reduces this; accretion increases it.' },
+      { term: 'Accretive vs Dilutive Issuance', def: 'Issuing shares above NAV is ACCRETIVE (increases ETH/share for existing holders). Below NAV is DILUTIVE. At 1.5x mNAV, selling $100 of stock buys $150 of ETH equivalent.' },
+      { term: 'Staking Yield (CESR)', def: 'Composite Ethereum Staking Rate — the benchmark yield for staking ETH (~2.81%). BMNR earns this on staked ETH. At 2.9M ETH staked × 2.81% = ~$188M/yr annualized income.' },
+      { term: 'Staking Ratio', def: '% of ETH holdings that are staked. Higher = more yield income. BMNR at 67.6% (2.9M of 4.3M). Target is near 100% via MAVAN. Unstaked ETH earns nothing.' },
+      { term: 'Flywheel Effect', def: 'Premium → Issue shares → Buy ETH → NAV grows → Premium sustained → Repeat. Only works while mNAV > 1. This is how MSTR accumulated 470K+ BTC.' },
+      { term: 'NAV Floor', def: 'Theoretical minimum value = liquidation value. In practice, discounts can persist (GBTC). Buybacks at discount are value-accretive and can defend NAV floor.' },
     ]} />
   </div>
   );
@@ -2660,12 +2665,15 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
       </div>
       
       <CFANotes title="CFA Level III — Staking & Yield" items={[
-        { term: 'MAVAN (Made in America Validator Network)', def: 'BMNR\'s proprietary staking infrastructure targeting Q1 2026 launch. Currently working with 3 staking providers. At scale: $374M annual staking fee (~$1M+/day).' },
-        { term: 'Proof-of-Stake Staking', def: 'Locking ETH to validate Ethereum consensus. Validators earn ~3-5% APY from block rewards and transaction fees. Unlike BTC, ETH generates yield — a structural advantage for ETH treasuries.' },
-        { term: 'Solo Staking (+0.5%)', def: 'Run your own validators (32 ETH each). Higher yield from MEV + priority tips, but requires technical expertise and faces direct slashing risk if nodes misbehave.' },
-        { term: 'Liquid Staking (Base APY)', def: 'Deposit to Lido (stETH) or Rocket Pool (rETH). Get liquid tokens tradeable instantly. Trade-off: ~10% fee to protocol, smart contract risk.' },
-        { term: 'Restaking (EigenLayer)', def: 'Stake LSTs on EigenLayer to secure additional protocols (AVS). Bonus yield but compounds slashing risk — if an AVS fails, you can lose staked ETH.' },
-        { term: 'Compounding Effect', def: `${calc.effectiveAPY.toFixed(1)}% APY over 5 years = ${((Math.pow(1 + calc.effectiveAPY/100, 5) - 1) * 100).toFixed(1)}% cumulative NAV growth, even if ETH price is flat.` },
+        { term: 'CESR (Composite ETH Staking Rate)', def: 'Industry benchmark staking yield (~2.81%), administered by Quatrefoil. Like SOFR for ETH staking. BMNR uses this as reference rate for staking income projections.' },
+        { term: 'Staking Income vs ETH Appreciation', def: 'Two return sources: (1) Staking yield — predictable ~3% APY income stream; (2) ETH price — volatile capital gains. Staking provides income floor even if ETH is flat.' },
+        { term: 'MAVAN (Made in America Validator Network)', def: 'BMNR\'s proprietary staking infrastructure (Q1 2026). Eliminates third-party fees, improves margins. At 100% staking: $374M/yr income at current holdings.' },
+        { term: 'Slashing Risk', def: 'Validators lose staked ETH if they misbehave (double-signing, downtime). Solo staking has higher risk; liquid staking spreads risk across many validators. BMNR uses 3 providers to diversify.' },
+        { term: 'Validator Economics', def: '32 ETH minimum per validator. Rewards from: block proposals, attestations, sync committees, MEV tips. Larger operators get more consistent returns (law of large numbers).' },
+        { term: 'Liquid Staking Tokens (LSTs)', def: 'stETH (Lido), rETH (Rocket Pool) — tokens representing staked ETH. Trade freely while underlying ETH earns yield. ~10% protocol fee. Smart contract risk.' },
+        { term: 'Restaking (EigenLayer)', def: 'Re-use staked ETH to secure other protocols (AVS). Bonus yield but compounds slashing risk. BMNR currently not restaking — conservative approach.' },
+        { term: 'Yield on Cost vs Current Yield', def: 'Yield on cost = income ÷ purchase price. If you bought at $1,500/ETH and earn 3%, your yield on cost rises as ETH appreciates. Current yield = income ÷ current price.' },
+        { term: 'Compounding Effect', def: `${calc.effectiveAPY.toFixed(1)}% APY over 5 years = ${((Math.pow(1 + calc.effectiveAPY/100, 5) - 1) * 100).toFixed(1)}% cumulative NAV growth from staking alone, even if ETH price is flat.` },
       ]} />
     </div>
   );
@@ -2733,11 +2741,14 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
       </div>
       
       <CFANotes title="CFA Level III — Dilution & Accretion" items={[
-        { term: 'Accretive vs Dilutive', def: 'Accretive = shares issued ABOVE NAV, proceeds buy more ETH per share than dilution costs, NAV/share increases. Dilutive = shares below NAV or proceeds not deployed efficiently, NAV/share decreases.' },
-        { term: 'Premium Capture', def: 'If stock trades at 1.5x NAV and you issue at that price, you\'re buying $1.50 of ETH for every $1 of NAV dilution. This premium capture drives accretion.' },
-        { term: 'Multi-Tranche Strategy', def: 'Staged raises allow selling into strength. Higher ETH price = more USD per share = more ETH bought. Each tranche calculates accretion based on cumulative prior ETH/shares.' },
-        { term: 'Risk Adjustments', def: `Slashing (${slashingRisk}%) reduces ETH holdings. Liquidity discount (${liquidityDiscount}%) penalizes staked ETH illiquidity. Regulatory (${regulatoryRisk}%) for legal uncertainty.` },
-        { term: 'Available Capacity', def: 'Authorized shares minus outstanding = available for future offerings. ATM programs draw from this capacity over time.' },
+        { term: 'The Accretion Formula', def: 'If Stock Price > NAV/Share, issuing shares is ACCRETIVE. Example: NAV = $24, Stock = $30. Sell 10M shares at $30 = $300M. Buy $300M/$2,317 = 129.5K ETH. New NAV/share rises because you added more ETH value than share dilution.' },
+        { term: 'Break-Even mNAV', def: 'At mNAV = 1.0x (stock = NAV), issuance is neutral. Above 1.0x = accretive. Below 1.0x = dilutive. The higher the premium, the more accretive each dollar raised.' },
+        { term: 'ATM (At-The-Market) Offering', def: 'Sell shares gradually into market at prevailing prices. More flexible than fixed offerings. BMNR has $24.5B ATM shelf capacity. Avoids single-day price impact.' },
+        { term: 'Premium Capture Math', def: 'At 1.5x mNAV: sell $1 of stock → buy $1 of ETH → but only diluted NAV by $0.67. Net gain = $0.33 per dollar raised. This is the flywheel that built MSTR.' },
+        { term: 'Authorized vs Outstanding', def: 'Authorized shares = maximum allowed by charter (now 50B after 81% YES vote). Outstanding = actually issued (434M). Difference = capacity for future raises without shareholder approval.' },
+        { term: 'ETH/Share Tracking', def: 'The key metric: Total ETH ÷ Total Shares. Accretive actions increase this; dilutive decrease it. Even if ETH price falls, rising ETH/share means you own more of the asset.' },
+        { term: 'Risk Adjustments', def: `Slashing (${slashingRisk}%) reduces ETH holdings. Liquidity discount (${liquidityDiscount}%) for staked ETH illiquidity. Regulatory (${regulatoryRisk}%) for legal uncertainty.` },
+        { term: 'Death Spiral Risk', def: 'If stock falls below NAV and company must raise capital, forced dilutive issuance → lower NAV → lower stock → more dilution. Avoided by maintaining cash buffer and buyback authorization.' },
       ]} />
     </div>
   );
