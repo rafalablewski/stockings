@@ -691,7 +691,7 @@ const IndicatorToggle = ({
       borderRadius: 6,
       border: active ? `1px solid ${color || 'var(--accent)'}` : '1px solid var(--border)',
       cursor: 'pointer',
-      background: active ? `${color}20` : 'transparent',
+      background: active ? (color ? `${color}20` : 'var(--accent-light, rgba(99, 102, 241, 0.1))') : 'transparent',
       color: active ? color || 'var(--accent)' : 'var(--text3)',
       transition: 'all 0.15s',
       display: 'flex',
