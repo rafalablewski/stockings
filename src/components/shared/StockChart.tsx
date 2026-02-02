@@ -285,6 +285,389 @@ const calculateATR = (data: ChartDataPoint[], period: number = 14): (number | nu
   return result;
 };
 
+// ============================================
+// RISK & PERFORMANCE METRICS
+// ============================================
+
+// Calculate daily returns
+const calculateReturns = (data: ChartDataPoint[]): number[] => {
+  const returns: number[] = [];
+  for (let i = 1; i < data.length; i++) {
+    returns.push((data[i].close - data[i - 1].close) / data[i - 1].close);
+  }
+  return returns;
+};
+
+// Calculate annualized Sharpe Ratio (assuming risk-free rate of 4%)
+const calculateSharpeRatio = (data: ChartDataPoint[], riskFreeRate: number = 0.04): number | null => {
+  if (data.length < 2) return null;
+  const returns = calculateReturns(data);
+  if (returns.length === 0) return null;
+
+  const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length;
+  const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
+  const stdDev = Math.sqrt(variance);
+
+  if (stdDev === 0) return null;
+
+  // Annualize (assuming 252 trading days)
+  const annualizedReturn = avgReturn * 252;
+  const annualizedStdDev = stdDev * Math.sqrt(252);
+
+  return (annualizedReturn - riskFreeRate) / annualizedStdDev;
+};
+
+// Calculate Sortino Ratio (only considers downside deviation)
+const calculateSortinoRatio = (data: ChartDataPoint[], riskFreeRate: number = 0.04): number | null => {
+  if (data.length < 2) return null;
+  const returns = calculateReturns(data);
+  if (returns.length === 0) return null;
+
+  const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length;
+  const negativeReturns = returns.filter(r => r < 0);
+
+  if (negativeReturns.length === 0) return null; // No downside
+
+  const downsideVariance = negativeReturns.reduce((sum, r) => sum + r * r, 0) / negativeReturns.length;
+  const downsideStdDev = Math.sqrt(downsideVariance);
+
+  if (downsideStdDev === 0) return null;
+
+  // Annualize
+  const annualizedReturn = avgReturn * 252;
+  const annualizedDownsideStdDev = downsideStdDev * Math.sqrt(252);
+
+  return (annualizedReturn - riskFreeRate) / annualizedDownsideStdDev;
+};
+
+// Calculate Maximum Drawdown with recovery info
+const calculateMaxDrawdown = (data: ChartDataPoint[]): {
+  maxDrawdown: number;
+  peakDate: number;
+  troughDate: number;
+  recoveryDate: number | null;
+  recoveryDays: number | null;
+} | null => {
+  if (data.length < 2) return null;
+
+  let peak = data[0].close;
+  let peakDate = data[0].date;
+  let maxDrawdown = 0;
+  let maxDrawdownPeakDate = data[0].date;
+  let maxDrawdownTroughDate = data[0].date;
+  let troughValue = data[0].close;
+
+  for (const point of data) {
+    if (point.close > peak) {
+      peak = point.close;
+      peakDate = point.date;
+    }
+
+    const drawdown = (peak - point.close) / peak;
+    if (drawdown > maxDrawdown) {
+      maxDrawdown = drawdown;
+      maxDrawdownPeakDate = peakDate;
+      maxDrawdownTroughDate = point.date;
+      troughValue = point.close;
+    }
+  }
+
+  // Find recovery date
+  let recoveryDate: number | null = null;
+  let recoveryDays: number | null = null;
+  const troughIndex = data.findIndex(d => d.date === maxDrawdownTroughDate);
+
+  for (let i = troughIndex + 1; i < data.length; i++) {
+    if (data[i].close >= data.find(d => d.date === maxDrawdownPeakDate)!.close) {
+      recoveryDate = data[i].date;
+      recoveryDays = i - troughIndex;
+      break;
+    }
+  }
+
+  return {
+    maxDrawdown,
+    peakDate: maxDrawdownPeakDate,
+    troughDate: maxDrawdownTroughDate,
+    recoveryDate,
+    recoveryDays
+  };
+};
+
+// Calculate Rolling Volatility
+const calculateRollingVolatility = (data: ChartDataPoint[], period: number): (number | null)[] => {
+  const result: (number | null)[] = [];
+  const returns = calculateReturns(data);
+
+  for (let i = 0; i < data.length; i++) {
+    if (i < period) {
+      result.push(null);
+      continue;
+    }
+
+    const periodReturns = returns.slice(i - period, i);
+    const avgReturn = periodReturns.reduce((a, b) => a + b, 0) / period;
+    const variance = periodReturns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / period;
+    const annualizedVol = Math.sqrt(variance) * Math.sqrt(252) * 100; // As percentage
+    result.push(annualizedVol);
+  }
+
+  return result;
+};
+
+// Calculate Value at Risk (Historical VaR at 95% confidence)
+const calculateVaR = (data: ChartDataPoint[], confidence: number = 0.95): number | null => {
+  if (data.length < 20) return null;
+  const returns = calculateReturns(data);
+  const sortedReturns = [...returns].sort((a, b) => a - b);
+  const index = Math.floor((1 - confidence) * sortedReturns.length);
+  return sortedReturns[index] * 100; // As percentage
+};
+
+// Calculate Beta vs benchmark
+const calculateBeta = (stockData: ChartDataPoint[], benchmarkData: ChartDataPoint[]): number | null => {
+  if (stockData.length < 20 || benchmarkData.length < 20) return null;
+
+  // Align data by date
+  const stockMap = new Map(stockData.map(d => [d.date, d]));
+  const alignedStock: number[] = [];
+  const alignedBench: number[] = [];
+
+  let prevStock: number | null = null;
+  let prevBench: number | null = null;
+
+  for (const bench of benchmarkData) {
+    const stock = stockMap.get(bench.date);
+    if (stock && prevStock !== null && prevBench !== null) {
+      alignedStock.push((stock.close - prevStock) / prevStock);
+      alignedBench.push((bench.close - prevBench) / prevBench);
+    }
+    if (stock) prevStock = stock.close;
+    prevBench = bench.close;
+  }
+
+  if (alignedStock.length < 10) return null;
+
+  // Calculate covariance and variance
+  const avgStock = alignedStock.reduce((a, b) => a + b, 0) / alignedStock.length;
+  const avgBench = alignedBench.reduce((a, b) => a + b, 0) / alignedBench.length;
+
+  let covariance = 0;
+  let benchVariance = 0;
+
+  for (let i = 0; i < alignedStock.length; i++) {
+    covariance += (alignedStock[i] - avgStock) * (alignedBench[i] - avgBench);
+    benchVariance += Math.pow(alignedBench[i] - avgBench, 2);
+  }
+
+  if (benchVariance === 0) return null;
+
+  return covariance / benchVariance;
+};
+
+// ============================================
+// ADVANCED TECHNICAL INDICATORS
+// ============================================
+
+// Calculate Fibonacci Retracement Levels
+const calculateFibonacciLevels = (data: ChartDataPoint[]): {
+  high: number;
+  low: number;
+  levels: { level: number; price: number; label: string }[];
+} | null => {
+  if (data.length < 2) return null;
+
+  const high = Math.max(...data.map(d => d.high));
+  const low = Math.min(...data.map(d => d.low));
+  const diff = high - low;
+
+  const fibLevels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
+  const levels = fibLevels.map(level => ({
+    level,
+    price: high - diff * level,
+    label: `${(level * 100).toFixed(1)}%`
+  }));
+
+  return { high, low, levels };
+};
+
+// Calculate Volume Profile (price levels with most volume)
+const calculateVolumeProfile = (data: ChartDataPoint[], bins: number = 20): {
+  priceLevel: number;
+  volume: number;
+  percentage: number;
+}[] => {
+  if (data.length === 0) return [];
+
+  const high = Math.max(...data.map(d => d.high));
+  const low = Math.min(...data.map(d => d.low));
+  const binSize = (high - low) / bins;
+
+  const profile: Map<number, number> = new Map();
+
+  for (let i = 0; i < bins; i++) {
+    profile.set(i, 0);
+  }
+
+  let totalVolume = 0;
+  for (const point of data) {
+    const avgPrice = (point.high + point.low) / 2;
+    const binIndex = Math.min(Math.floor((avgPrice - low) / binSize), bins - 1);
+    profile.set(binIndex, (profile.get(binIndex) || 0) + point.volume);
+    totalVolume += point.volume;
+  }
+
+  return Array.from(profile.entries()).map(([binIndex, volume]) => ({
+    priceLevel: low + binSize * (binIndex + 0.5),
+    volume,
+    percentage: totalVolume > 0 ? (volume / totalVolume) * 100 : 0
+  })).sort((a, b) => b.volume - a.volume);
+};
+
+// Calculate VWAP Bands (standard deviations)
+const calculateVWAPBands = (data: ChartDataPoint[]): {
+  vwap: (number | null)[];
+  upper1: (number | null)[];
+  lower1: (number | null)[];
+  upper2: (number | null)[];
+  lower2: (number | null)[];
+  upper3: (number | null)[];
+  lower3: (number | null)[];
+} => {
+  const vwap = calculateVWAP(data);
+  const upper1: (number | null)[] = [];
+  const lower1: (number | null)[] = [];
+  const upper2: (number | null)[] = [];
+  const lower2: (number | null)[] = [];
+  const upper3: (number | null)[] = [];
+  const lower3: (number | null)[] = [];
+
+  let cumulativeSquaredDev = 0;
+  let cumulativeVolume = 0;
+
+  for (let i = 0; i < data.length; i++) {
+    const typicalPrice = (data[i].high + data[i].low + data[i].close) / 3;
+    cumulativeVolume += data[i].volume;
+
+    if (vwap[i] === null || cumulativeVolume === 0) {
+      upper1.push(null);
+      lower1.push(null);
+      upper2.push(null);
+      lower2.push(null);
+      upper3.push(null);
+      lower3.push(null);
+      continue;
+    }
+
+    cumulativeSquaredDev += data[i].volume * Math.pow(typicalPrice - vwap[i]!, 2);
+    const stdDev = Math.sqrt(cumulativeSquaredDev / cumulativeVolume);
+
+    upper1.push(vwap[i]! + stdDev);
+    lower1.push(vwap[i]! - stdDev);
+    upper2.push(vwap[i]! + 2 * stdDev);
+    lower2.push(vwap[i]! - 2 * stdDev);
+    upper3.push(vwap[i]! + 3 * stdDev);
+    lower3.push(vwap[i]! - 3 * stdDev);
+  }
+
+  return { vwap, upper1, lower1, upper2, lower2, upper3, lower3 };
+};
+
+// Detect Support and Resistance Levels
+const detectSupportResistance = (data: ChartDataPoint[], sensitivity: number = 3): {
+  supports: number[];
+  resistances: number[];
+} => {
+  if (data.length < sensitivity * 2 + 1) return { supports: [], resistances: [] };
+
+  const supports: number[] = [];
+  const resistances: number[] = [];
+
+  for (let i = sensitivity; i < data.length - sensitivity; i++) {
+    let isSupport = true;
+    let isResistance = true;
+
+    for (let j = 1; j <= sensitivity; j++) {
+      if (data[i].low >= data[i - j].low || data[i].low >= data[i + j].low) {
+        isSupport = false;
+      }
+      if (data[i].high <= data[i - j].high || data[i].high <= data[i + j].high) {
+        isResistance = false;
+      }
+    }
+
+    if (isSupport) supports.push(data[i].low);
+    if (isResistance) resistances.push(data[i].high);
+  }
+
+  // Cluster nearby levels (within 1% of each other)
+  const clusterLevels = (levels: number[]): number[] => {
+    if (levels.length === 0) return [];
+    const sorted = [...levels].sort((a, b) => a - b);
+    const clustered: number[] = [];
+    let cluster: number[] = [sorted[0]];
+
+    for (let i = 1; i < sorted.length; i++) {
+      if ((sorted[i] - sorted[i - 1]) / sorted[i - 1] < 0.01) {
+        cluster.push(sorted[i]);
+      } else {
+        clustered.push(cluster.reduce((a, b) => a + b, 0) / cluster.length);
+        cluster = [sorted[i]];
+      }
+    }
+    clustered.push(cluster.reduce((a, b) => a + b, 0) / cluster.length);
+    return clustered;
+  };
+
+  return {
+    supports: clusterLevels(supports).slice(-3), // Top 3 strongest
+    resistances: clusterLevels(resistances).slice(-3)
+  };
+};
+
+// Calculate Correlation between two assets
+const calculateCorrelation = (data1: ChartDataPoint[], data2: ChartDataPoint[]): number | null => {
+  // Align by date
+  const map1 = new Map(data1.map(d => [d.date, d.close]));
+  const aligned1: number[] = [];
+  const aligned2: number[] = [];
+
+  for (const d of data2) {
+    const val1 = map1.get(d.date);
+    if (val1 !== undefined) {
+      aligned1.push(val1);
+      aligned2.push(d.close);
+    }
+  }
+
+  if (aligned1.length < 10) return null;
+
+  // Calculate returns
+  const returns1: number[] = [];
+  const returns2: number[] = [];
+  for (let i = 1; i < aligned1.length; i++) {
+    returns1.push((aligned1[i] - aligned1[i - 1]) / aligned1[i - 1]);
+    returns2.push((aligned2[i] - aligned2[i - 1]) / aligned2[i - 1]);
+  }
+
+  const avg1 = returns1.reduce((a, b) => a + b, 0) / returns1.length;
+  const avg2 = returns2.reduce((a, b) => a + b, 0) / returns2.length;
+
+  let covariance = 0;
+  let var1 = 0;
+  let var2 = 0;
+
+  for (let i = 0; i < returns1.length; i++) {
+    covariance += (returns1[i] - avg1) * (returns2[i] - avg2);
+    var1 += Math.pow(returns1[i] - avg1, 2);
+    var2 += Math.pow(returns2[i] - avg2, 2);
+  }
+
+  if (var1 === 0 || var2 === 0) return null;
+
+  return covariance / Math.sqrt(var1 * var2);
+};
+
 // Indicator toggle button component
 const IndicatorToggle = ({
   label,
@@ -299,24 +682,98 @@ const IndicatorToggle = ({
 }) => (
   <button
     onClick={onClick}
+    aria-pressed={active}
+    aria-label={`${label} indicator ${active ? 'enabled' : 'disabled'}`}
     style={{
-      padding: '3px 8px',
-      fontSize: 10,
+      padding: '6px 10px',
+      fontSize: 11,
       fontWeight: 500,
-      borderRadius: 3,
+      borderRadius: 6,
       border: active ? `1px solid ${color || 'var(--accent)'}` : '1px solid var(--border)',
       cursor: 'pointer',
-      background: active ? `${color}20` : 'transparent',
+      background: active ? (color ? `${color}20` : 'var(--accent-light, rgba(99, 102, 241, 0.1))') : 'transparent',
       color: active ? color || 'var(--accent)' : 'var(--text3)',
       transition: 'all 0.15s',
       display: 'flex',
       alignItems: 'center',
       gap: 4,
+      minHeight: 32,
+      touchAction: 'manipulation',
     }}
   >
     {color && <span style={{ width: 8, height: 2, background: color, borderRadius: 1 }} />}
     {label}
   </button>
+);
+
+// Collapsible section for indicator groups
+const ToggleSection = ({
+  label,
+  isOpen,
+  onToggle,
+  children,
+  count,
+}: {
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+  count?: number;
+}) => (
+  <div style={{ marginBottom: 8 }}>
+    <button
+      onClick={onToggle}
+      aria-expanded={isOpen}
+      aria-label={`${label} section ${isOpen ? 'expanded' : 'collapsed'}`}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        padding: '8px 0',
+        fontSize: 11,
+        fontWeight: 600,
+        color: 'var(--text3)',
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        width: '100%',
+        textAlign: 'left',
+        touchAction: 'manipulation',
+      }}
+    >
+      <span style={{
+        fontSize: 10,
+        transition: 'transform 0.2s',
+        transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+      }}>
+        ▶
+      </span>
+      {label}
+      {count !== undefined && count > 0 && (
+        <span style={{
+          fontSize: 9,
+          padding: '2px 6px',
+          background: 'var(--accent)',
+          color: 'white',
+          borderRadius: 10,
+        }}>
+          {count}
+        </span>
+      )}
+    </button>
+    {isOpen && (
+      <div style={{
+        display: 'flex',
+        gap: 6,
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        paddingLeft: 16,
+        paddingBottom: 8,
+      }}>
+        {children}
+      </div>
+    )}
+  </div>
 );
 
 export default function StockChart({ symbol, height = 280 }: StockChartProps) {
@@ -336,10 +793,21 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const [showVWAP, setShowVWAP] = useState(false);
   const [showMACD, setShowMACD] = useState(false);
   const [showATR, setShowATR] = useState(false);
-  const [show52WeekHL, setShow52WeekHL] = useState(false);
+
+  // Professional features toggles
+  const [showFibonacci, setShowFibonacci] = useState(false);
+  const [showVWAPBands, setShowVWAPBands] = useState(false);
+  const [showSupportResistance, setShowSupportResistance] = useState(false);
+  const [showVolumeProfile, setShowVolumeProfile] = useState(false);
+  const [showRiskMetrics, setShowRiskMetrics] = useState(false);
+  const [showCorrelation, setShowCorrelation] = useState(false);
 
   // Scale toggle
   const [logScale, setLogScale] = useState(false);
+
+  // Refresh trigger
+  const [refreshKey, setRefreshKey] = useState(0);
+  const handleRefresh = () => setRefreshKey(k => k + 1);
 
   // Comparison toggles
   const [showSPY, setShowSPY] = useState(false);
@@ -352,6 +820,14 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const [qqqData, setQqqData] = useState<ChartDataPoint[] | null>(null);
   const [goldData, setGoldData] = useState<ChartDataPoint[] | null>(null);
   const [btcData, setBtcData] = useState<ChartDataPoint[] | null>(null);
+
+  // Chart Guide toggle (open by default)
+  const [showChartGuide, setShowChartGuide] = useState(true);
+
+  // Collapsible indicator sections (indicators open by default, others collapsed on mobile)
+  const [showIndicatorSection, setShowIndicatorSection] = useState(true);
+  const [showCompareSection, setShowCompareSection] = useState(false);
+  const [showProSection, setShowProSection] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -377,7 +853,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     };
 
     fetchData();
-  }, [symbol, range]);
+  }, [symbol, range, refreshKey]);
 
   // Fetch comparison data when enabled
   useEffect(() => {
@@ -404,14 +880,18 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
       }
     };
 
-    fetchComparisonData('SPY', setSpyData, showSPY);
-    fetchComparisonData('QQQ', setQqqData, showQQQ);
-    fetchComparisonData('GLD', setGoldData, showGold);
-    fetchComparisonData('BTC-USD', setBtcData, showBTC);
-  }, [showSPY, showQQQ, showGold, showBTC, range]);
+    fetchComparisonData('SPY', setSpyData, showSPY || showCorrelation || showRiskMetrics);
+    fetchComparisonData('QQQ', setQqqData, showQQQ || showCorrelation);
+    fetchComparisonData('GLD', setGoldData, showGold || showCorrelation);
+    fetchComparisonData('BTC-USD', setBtcData, showBTC || showCorrelation);
+  }, [showSPY, showQQQ, showGold, showBTC, showCorrelation, showRiskMetrics, range]);
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
+    if (range === '1d') {
+      // Show date + time since it may be showing previous trading day (e.g., Friday on weekends)
+      return date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    }
     if (range === '5d') {
       return date.toLocaleDateString('en-US', { weekday: 'short', hour: 'numeric' });
     }
@@ -449,15 +929,28 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
   const macd = useMemo(() => calculateMACD(chartData), [chartData]);
   const atr = useMemo(() => calculateATR(chartData, 14), [chartData]);
 
-  // Calculate 52-week high/low (use available data or last 252 trading days)
-  const { high52Week, low52Week } = useMemo(() => {
-    if (chartData.length === 0) return { high52Week: null, low52Week: null };
-    const lookback = Math.min(chartData.length, 252); // ~252 trading days in a year
-    const relevantData = chartData.slice(-lookback);
-    const high = Math.max(...relevantData.map(d => d.high));
-    const low = Math.min(...relevantData.map(d => d.low));
-    return { high52Week: high, low52Week: low };
+  // Professional metrics calculations
+  const sharpeRatio = useMemo(() => calculateSharpeRatio(chartData), [chartData]);
+  const sortinoRatio = useMemo(() => calculateSortinoRatio(chartData), [chartData]);
+  const maxDrawdown = useMemo(() => calculateMaxDrawdown(chartData), [chartData]);
+  const volatility30d = useMemo(() => calculateRollingVolatility(chartData, 30), [chartData]);
+  const volatility90d = useMemo(() => calculateRollingVolatility(chartData, 90), [chartData]);
+  const valueAtRisk = useMemo(() => calculateVaR(chartData), [chartData]);
+  const fibonacciLevels = useMemo(() => calculateFibonacciLevels(chartData), [chartData]);
+  const volumeProfile = useMemo(() => calculateVolumeProfile(chartData, 15), [chartData]);
+  const vwapBands = useMemo(() => calculateVWAPBands(chartData), [chartData]);
+  const supportResistance = useMemo(() => detectSupportResistance(chartData, 3), [chartData]);
+
+  // Calculate high/low for current range
+  const { rangeHigh, rangeLow } = useMemo(() => {
+    if (chartData.length === 0) return { rangeHigh: null, rangeLow: null };
+    const high = Math.max(...chartData.map(d => d.high));
+    const low = Math.min(...chartData.map(d => d.low));
+    return { rangeHigh: high, rangeLow: low };
   }, [chartData]);
+
+  // Get label for current range
+  const rangeLabel = RANGES.find(r => r.value === range)?.label || range;
 
   // Calculate comparison data (normalize to percentage change)
   const normalizeComparison = (compData: ChartDataPoint[] | null): Map<number, number> | null => {
@@ -472,40 +965,84 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     return compMap;
   };
 
+  // For BTC (trades 24/7), normalize by calendar day in UTC
+  const normalizeBtcComparison = (compData: ChartDataPoint[] | null): Map<string, number> | null => {
+    if (!compData || compData.length === 0) return null;
+    const basePrice = compData[0]?.close;
+    if (!basePrice) return null;
+    const compMap = new Map<string, number>();
+    compData.forEach(d => {
+      const pctChange = ((d.close - basePrice) / basePrice) * 100;
+      const date = new Date(d.date);
+      const dayKey = `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`;
+      compMap.set(dayKey, pctChange);
+    });
+    return compMap;
+  };
+
+  const getDayKey = (timestamp: number): string => {
+    const date = new Date(timestamp);
+    return `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`;
+  };
+
   const spyNormalized = useMemo(() => normalizeComparison(spyData), [spyData]);
   const qqqNormalized = useMemo(() => normalizeComparison(qqqData), [qqqData]);
   const goldNormalized = useMemo(() => normalizeComparison(goldData), [goldData]);
-  const btcNormalized = useMemo(() => normalizeComparison(btcData), [btcData]);
+  const btcNormalized = useMemo(() => normalizeBtcComparison(btcData), [btcData]);
+
+  // Beta and correlations
+  const betaVsSPY = useMemo(() => spyData ? calculateBeta(chartData, spyData) : null, [chartData, spyData]);
+  const correlations = useMemo(() => ({
+    spy: spyData ? calculateCorrelation(chartData, spyData) : null,
+    qqq: qqqData ? calculateCorrelation(chartData, qqqData) : null,
+    gold: goldData ? calculateCorrelation(chartData, goldData) : null,
+    btc: btcData ? calculateCorrelation(chartData, btcData) : null,
+  }), [chartData, spyData, qqqData, goldData, btcData]);
 
   const showAnyComparison = showSPY || showQQQ || showGold || showBTC;
 
   // Prepare chart data with all indicators
   const enrichedData = useMemo(() => {
     const stockBasePrice = chartData[0]?.close || 1;
-    return chartData.map((d, i) => ({
-      ...d,
-      sma20: sma20[i],
-      sma50: sma50[i],
-      sma200: sma200[i],
-      rsi: rsi[i],
-      bbUpper: bollinger.upper[i],
-      bbMiddle: bollinger.middle[i],
-      bbLower: bollinger.lower[i],
-      vwap: vwap[i],
-      macdLine: macd.macd[i],
-      macdSignal: macd.signal[i],
-      macdHistogram: macd.histogram[i],
-      atr: atr[i],
-      priceRange: [d.low, d.high],
-      // For comparison chart: stock's percentage change
-      stockPctChange: ((d.close - stockBasePrice) / stockBasePrice) * 100,
-      // Comparison percentage changes
-      spyPctChange: spyNormalized?.get(d.date) ?? null,
-      qqqPctChange: qqqNormalized?.get(d.date) ?? null,
-      goldPctChange: goldNormalized?.get(d.date) ?? null,
-      btcPctChange: btcNormalized?.get(d.date) ?? null,
-    }));
-  }, [chartData, sma20, sma50, sma200, rsi, bollinger, vwap, macd, atr, spyNormalized, qqqNormalized, goldNormalized, btcNormalized]);
+    return chartData.map((d, i) => {
+      // For BTC, look up by day key (UTC) since it trades 24/7
+      const btcPct = btcNormalized?.get(getDayKey(d.date)) ?? null;
+
+      return {
+        ...d,
+        sma20: sma20[i],
+        sma50: sma50[i],
+        sma200: sma200[i],
+        rsi: rsi[i],
+        bbUpper: bollinger.upper[i],
+        bbMiddle: bollinger.middle[i],
+        bbLower: bollinger.lower[i],
+        vwap: vwap[i],
+        macdLine: macd.macd[i],
+        macdSignal: macd.signal[i],
+        macdHistogram: macd.histogram[i],
+        atr: atr[i],
+        priceRange: [d.low, d.high],
+        // VWAP Bands
+        vwapUpper1: vwapBands.upper1[i],
+        vwapLower1: vwapBands.lower1[i],
+        vwapUpper2: vwapBands.upper2[i],
+        vwapLower2: vwapBands.lower2[i],
+        vwapUpper3: vwapBands.upper3[i],
+        vwapLower3: vwapBands.lower3[i],
+        // Volatility
+        vol30d: volatility30d[i],
+        vol90d: volatility90d[i],
+        // For comparison chart: stock's percentage change
+        stockPctChange: ((d.close - stockBasePrice) / stockBasePrice) * 100,
+        // Comparison percentage changes
+        spyPctChange: spyNormalized?.get(d.date) ?? null,
+        qqqPctChange: qqqNormalized?.get(d.date) ?? null,
+        goldPctChange: goldNormalized?.get(d.date) ?? null,
+        btcPctChange: btcPct,
+      };
+    });
+  }, [chartData, sma20, sma50, sma200, rsi, bollinger, vwap, macd, atr, vwapBands, volatility30d, volatility90d, spyNormalized, qqqNormalized, goldNormalized, btcNormalized]);
 
   // Colors
   const COLORS = {
@@ -522,12 +1059,20 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     macdHistogramUp: '#34d399',
     macdHistogramDown: '#f87171',
     atr: '#14b8a6',      // Teal
-    high52Week: '#22c55e', // Green
-    low52Week: '#ef4444',  // Red
+    rangeHigh: '#22c55e', // Green
+    rangeLow: '#ef4444',  // Red
     spy: '#a855f7',        // Purple
     qqq: '#06b6d4',        // Cyan
     gold: '#eab308',       // Yellow/Gold
     btc: '#f97316',        // Orange
+    // Professional features
+    fibonacci: '#a78bfa',  // Violet
+    vwapBand1: '#f97316',  // Orange (lighter)
+    vwapBand2: '#fb923c',  // Orange
+    vwapBand3: '#fdba74',  // Orange (lightest)
+    support: '#22c55e',    // Green
+    resistance: '#ef4444', // Red
+    volumeProfile: '#6366f1', // Indigo
   };
 
   // Calculate heights - main chart stays fixed, sub-panels add to total
@@ -541,114 +1086,192 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     : '';
 
   return (
+    <>
     <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-        <div>
-          <div className="card-title" style={{ marginBottom: 4 }}>{symbol}</div>
-          {data && (
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <span style={{ fontSize: 24, fontWeight: 600, fontFamily: 'Space Mono' }}>
-                ${data.regularMarketPrice?.toFixed(2) || lastPrice.toFixed(2)}
-              </span>
-              <span style={{
-                fontSize: 14,
-                color: isPositive ? 'var(--mint)' : 'var(--red)',
-                fontFamily: 'Space Mono',
-              }}>
-                {isPositive ? '+' : ''}{priceChange.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)
-              </span>
-            </div>
-          )}
-        </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      {/* Header - responsive stacking */}
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ minWidth: 200 }}>
+            <div className="card-title" style={{ marginBottom: 4 }}>{symbol}</div>
+            {data && (
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 24, fontWeight: 600, fontFamily: 'Space Mono' }}>
+                  ${data.regularMarketPrice?.toFixed(2) || lastPrice.toFixed(2)}
+                </span>
+                <span style={{
+                  fontSize: 14,
+                  color: isPositive ? 'var(--mint)' : 'var(--red)',
+                  fontFamily: 'Space Mono',
+                }}>
+                  {isPositive ? '+' : ''}{priceChange.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)
+                </span>
+              </div>
+            )}
+          </div>
+
           {/* Chart type toggle */}
-          <div style={{ display: 'flex', gap: 2, background: 'var(--surface2)', borderRadius: 4, padding: 2 }}>
+          <div
+            role="group"
+            aria-label="Chart type"
+            style={{ display: 'flex', gap: 2, background: 'var(--surface2)', borderRadius: 6, padding: 2 }}
+          >
             <button
               onClick={() => setChartType('line')}
+              aria-pressed={chartType === 'line'}
+              aria-label="Line chart"
               style={{
-                padding: '4px 8px',
-                fontSize: 11,
-                fontWeight: 500,
-                borderRadius: 3,
+                padding: '8px 12px',
+                fontSize: 14,
+                borderRadius: 4,
                 border: 'none',
                 cursor: 'pointer',
                 background: chartType === 'line' ? 'var(--surface)' : 'transparent',
                 color: chartType === 'line' ? 'var(--text)' : 'var(--text3)',
                 transition: 'all 0.15s',
+                minHeight: 36,
+                touchAction: 'manipulation',
               }}
-              title="Line chart"
             >
               📈
             </button>
             <button
               onClick={() => setChartType('candle')}
+              aria-pressed={chartType === 'candle'}
+              aria-label="Candlestick chart"
               style={{
-                padding: '4px 8px',
-                fontSize: 11,
-                fontWeight: 500,
-                borderRadius: 3,
+                padding: '8px 12px',
+                fontSize: 14,
+                borderRadius: 4,
                 border: 'none',
                 cursor: 'pointer',
                 background: chartType === 'candle' ? 'var(--surface)' : 'transparent',
                 color: chartType === 'candle' ? 'var(--text)' : 'var(--text3)',
                 transition: 'all 0.15s',
+                minHeight: 36,
+                touchAction: 'manipulation',
               }}
-              title="Candlestick chart"
             >
               🕯️
             </button>
           </div>
-          {/* Time range buttons */}
-          <div style={{ display: 'flex', gap: 4 }}>
-            {RANGES.map(r => (
-              <button
-                key={r.value}
-                onClick={() => setRange(r.value)}
-                style={{
-                  padding: '4px 8px',
-                  fontSize: 11,
-                  fontWeight: 500,
-                  borderRadius: 4,
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: range === r.value ? 'var(--accent)' : 'var(--surface2)',
-                  color: range === r.value ? 'white' : 'var(--text3)',
-                  transition: 'all 0.15s',
-                }}
-              >
-                {r.label}
-              </button>
-            ))}
-          </div>
+        </div>
+
+        {/* Time range buttons - horizontally scrollable on mobile */}
+        <div
+          role="group"
+          aria-label="Time range"
+          style={{
+            display: 'flex',
+            gap: 6,
+            marginTop: 12,
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            paddingBottom: 4,
+          }}
+        >
+          {RANGES.map(r => (
+            <button
+              key={r.value}
+              onClick={() => setRange(r.value)}
+              aria-pressed={range === r.value}
+              aria-label={`${r.label} time range`}
+              style={{
+                padding: '8px 14px',
+                fontSize: 12,
+                fontWeight: 600,
+                borderRadius: 6,
+                border: 'none',
+                cursor: 'pointer',
+                background: range === r.value ? 'var(--accent)' : 'var(--surface2)',
+                color: range === r.value ? 'white' : 'var(--text3)',
+                transition: 'all 0.15s',
+                minHeight: 36,
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                touchAction: 'manipulation',
+              }}
+            >
+              {r.label}
+            </button>
+          ))}
+          <button
+            onClick={handleRefresh}
+            disabled={loading}
+            aria-label="Refresh chart data"
+            style={{
+              padding: '8px 14px',
+              fontSize: 14,
+              fontWeight: 500,
+              borderRadius: 6,
+              border: 'none',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              background: 'var(--surface2)',
+              color: 'var(--text3)',
+              transition: 'all 0.15s',
+              opacity: loading ? 0.5 : 1,
+              minHeight: 36,
+              flexShrink: 0,
+              touchAction: 'manipulation',
+            }}
+          >
+            ↻
+          </button>
         </div>
       </div>
 
-      {/* Indicator toggles */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Indicators:</span>
-        <IndicatorToggle label="SMA 20" active={showSMA20} onClick={() => setShowSMA20(!showSMA20)} color={COLORS.sma20} />
-        <IndicatorToggle label="SMA 50" active={showSMA50} onClick={() => setShowSMA50(!showSMA50)} color={COLORS.sma50} />
-        <IndicatorToggle label="SMA 200" active={showSMA200} onClick={() => setShowSMA200(!showSMA200)} color={COLORS.sma200} />
-        <IndicatorToggle label="Bollinger" active={showBollinger} onClick={() => setShowBollinger(!showBollinger)} color={COLORS.bbUpper} />
-        <IndicatorToggle label="VWAP" active={showVWAP} onClick={() => setShowVWAP(!showVWAP)} color={COLORS.vwap} />
-        <IndicatorToggle label="52W H/L" active={show52WeekHL} onClick={() => setShow52WeekHL(!show52WeekHL)} color={COLORS.high52Week} />
-        <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 2px' }} />
-        <IndicatorToggle label="Volume" active={showVolume} onClick={() => setShowVolume(!showVolume)} />
-        <IndicatorToggle label="RSI" active={showRSI} onClick={() => setShowRSI(!showRSI)} color={COLORS.rsi} />
-        <IndicatorToggle label="MACD" active={showMACD} onClick={() => setShowMACD(!showMACD)} color={COLORS.macd} />
-        <IndicatorToggle label="ATR" active={showATR} onClick={() => setShowATR(!showATR)} color={COLORS.atr} />
-      </div>
+      {/* Indicator Controls - Collapsible sections for mobile */}
+      <div style={{ borderTop: '1px solid var(--border)', paddingTop: 8 }}>
+        {/* Indicators Section */}
+        <ToggleSection
+          label="Indicators"
+          isOpen={showIndicatorSection}
+          onToggle={() => setShowIndicatorSection(!showIndicatorSection)}
+          count={[showSMA20, showSMA50, showSMA200, showBollinger, showVWAP, showVolume, showRSI, showMACD, showATR].filter(Boolean).length}
+        >
+          <IndicatorToggle label="SMA 20" active={showSMA20} onClick={() => setShowSMA20(!showSMA20)} color={COLORS.sma20} />
+          <IndicatorToggle label="SMA 50" active={showSMA50} onClick={() => setShowSMA50(!showSMA50)} color={COLORS.sma50} />
+          <IndicatorToggle label="SMA 200" active={showSMA200} onClick={() => setShowSMA200(!showSMA200)} color={COLORS.sma200} />
+          <IndicatorToggle label="Bollinger" active={showBollinger} onClick={() => setShowBollinger(!showBollinger)} color={COLORS.bbUpper} />
+          <IndicatorToggle label="VWAP" active={showVWAP} onClick={() => setShowVWAP(!showVWAP)} color={COLORS.vwap} />
+          <IndicatorToggle label="Volume" active={showVolume} onClick={() => setShowVolume(!showVolume)} />
+          <IndicatorToggle label="RSI" active={showRSI} onClick={() => setShowRSI(!showRSI)} color={COLORS.rsi} />
+          <IndicatorToggle label="MACD" active={showMACD} onClick={() => setShowMACD(!showMACD)} color={COLORS.macd} />
+          <IndicatorToggle label="ATR" active={showATR} onClick={() => setShowATR(!showATR)} color={COLORS.atr} />
+          <span style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 4px' }} />
+          <IndicatorToggle label="Arithmetic" active={!logScale} onClick={() => setLogScale(false)} />
+          <IndicatorToggle label="Log" active={logScale} onClick={() => setLogScale(true)} />
+        </ToggleSection>
 
-      {/* Scale & Comparison toggles */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Scale:</span>
-        <IndicatorToggle label="Log" active={logScale} onClick={() => setLogScale(!logScale)} />
-        <span style={{ width: 1, height: 16, background: 'var(--border)', margin: '0 6px' }} />
-        <span style={{ fontSize: 9, color: 'var(--text3)', marginRight: 2 }}>Compare:</span>
-        <IndicatorToggle label="SPY" active={showSPY} onClick={() => setShowSPY(!showSPY)} color={COLORS.spy} />
-        <IndicatorToggle label="QQQ" active={showQQQ} onClick={() => setShowQQQ(!showQQQ)} color={COLORS.qqq} />
-        <IndicatorToggle label="Gold" active={showGold} onClick={() => setShowGold(!showGold)} color={COLORS.gold} />
-        <IndicatorToggle label="BTC" active={showBTC} onClick={() => setShowBTC(!showBTC)} color={COLORS.btc} />
+        {/* Compare Section */}
+        <ToggleSection
+          label="Compare"
+          isOpen={showCompareSection}
+          onToggle={() => setShowCompareSection(!showCompareSection)}
+          count={[showSPY, showQQQ, showGold, showBTC].filter(Boolean).length}
+        >
+          <IndicatorToggle label="vs. SPY" active={showSPY} onClick={() => setShowSPY(!showSPY)} color={COLORS.spy} />
+          <IndicatorToggle label="vs. QQQ" active={showQQQ} onClick={() => setShowQQQ(!showQQQ)} color={COLORS.qqq} />
+          <IndicatorToggle label="vs. Gold" active={showGold} onClick={() => setShowGold(!showGold)} color={COLORS.gold} />
+          <IndicatorToggle label="vs. BTC" active={showBTC} onClick={() => setShowBTC(!showBTC)} color={COLORS.btc} />
+        </ToggleSection>
+
+        {/* Pro Section */}
+        <ToggleSection
+          label="Professional Tools"
+          isOpen={showProSection}
+          onToggle={() => setShowProSection(!showProSection)}
+          count={[showFibonacci, showVWAPBands, showSupportResistance, showVolumeProfile, showRiskMetrics, showCorrelation].filter(Boolean).length}
+        >
+          <IndicatorToggle label="Fibonacci" active={showFibonacci} onClick={() => setShowFibonacci(!showFibonacci)} color={COLORS.fibonacci} />
+          <IndicatorToggle label="VWAP Bands" active={showVWAPBands} onClick={() => setShowVWAPBands(!showVWAPBands)} color={COLORS.vwapBand1} />
+          <IndicatorToggle label="Support/Resistance" active={showSupportResistance} onClick={() => setShowSupportResistance(!showSupportResistance)} color={COLORS.support} />
+          <IndicatorToggle label="Volume Profile" active={showVolumeProfile} onClick={() => setShowVolumeProfile(!showVolumeProfile)} color={COLORS.volumeProfile} />
+          <span style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 4px' }} />
+          <IndicatorToggle label="Risk Metrics" active={showRiskMetrics} onClick={() => setShowRiskMetrics(!showRiskMetrics)} />
+          <IndicatorToggle label="Correlation" active={showCorrelation} onClick={() => setShowCorrelation(!showCorrelation)} />
+        </ToggleSection>
       </div>
 
       {loading && (
@@ -721,14 +1344,6 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               />
               <ReferenceLine y={firstPrice} stroke="var(--text3)" strokeDasharray="3 3" strokeOpacity={0.5} />
 
-              {/* 52-Week High/Low Lines */}
-              {show52WeekHL && high52Week && (
-                <ReferenceLine y={high52Week} stroke={COLORS.high52Week} strokeDasharray="6 3" strokeWidth={1.5} label={{ value: '52W High', fill: COLORS.high52Week, fontSize: 9, position: 'right' }} />
-              )}
-              {show52WeekHL && low52Week && (
-                <ReferenceLine y={low52Week} stroke={COLORS.low52Week} strokeDasharray="6 3" strokeWidth={1.5} label={{ value: '52W Low', fill: COLORS.low52Week, fontSize: 9, position: 'right' }} />
-              )}
-
               {/* Bollinger Bands */}
               {showBollinger && (
                 <>
@@ -738,6 +1353,57 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                   <Line type="monotone" dataKey="bbLower" stroke={COLORS.bbLower} strokeWidth={1} strokeDasharray="3 3" dot={false} connectNulls={false} />
                 </>
               )}
+
+              {/* VWAP Bands */}
+              {showVWAPBands && (
+                <>
+                  <Line type="monotone" dataKey="vwapUpper1" stroke={COLORS.vwapBand1} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.8} />
+                  <Line type="monotone" dataKey="vwapLower1" stroke={COLORS.vwapBand1} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.8} />
+                  <Line type="monotone" dataKey="vwapUpper2" stroke={COLORS.vwapBand2} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.6} />
+                  <Line type="monotone" dataKey="vwapLower2" stroke={COLORS.vwapBand2} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.6} />
+                  <Line type="monotone" dataKey="vwapUpper3" stroke={COLORS.vwapBand3} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.4} />
+                  <Line type="monotone" dataKey="vwapLower3" stroke={COLORS.vwapBand3} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.4} />
+                </>
+              )}
+
+              {/* Fibonacci Retracement Levels */}
+              {showFibonacci && fibonacciLevels && fibonacciLevels.levels.map((fib, i) => (
+                <ReferenceLine
+                  key={`fib-${i}`}
+                  y={fib.price}
+                  stroke={COLORS.fibonacci}
+                  strokeDasharray="6 4"
+                  strokeWidth={1}
+                  strokeOpacity={fib.level === 0.5 || fib.level === 0.618 ? 1 : 0.5}
+                  label={{ value: fib.label, fill: COLORS.fibonacci, fontSize: 8, position: 'right' }}
+                />
+              ))}
+
+              {/* Support Levels */}
+              {showSupportResistance && supportResistance.supports.map((level, i) => (
+                <ReferenceLine
+                  key={`support-${i}`}
+                  y={level}
+                  stroke={COLORS.support}
+                  strokeDasharray="8 4"
+                  strokeWidth={1.5}
+                  strokeOpacity={0.7}
+                  label={{ value: `S${i + 1}`, fill: COLORS.support, fontSize: 8, position: 'left' }}
+                />
+              ))}
+
+              {/* Resistance Levels */}
+              {showSupportResistance && supportResistance.resistances.map((level, i) => (
+                <ReferenceLine
+                  key={`resistance-${i}`}
+                  y={level}
+                  stroke={COLORS.resistance}
+                  strokeDasharray="8 4"
+                  strokeWidth={1.5}
+                  strokeOpacity={0.7}
+                  label={{ value: `R${i + 1}`, fill: COLORS.resistance, fontSize: 8, position: 'left' }}
+                />
+              ))}
 
               {/* Main price line */}
               <Area
@@ -866,10 +1532,10 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1, display: 'flex', gap: 8 }}>
                 <span>Relative Performance:</span>
                 <span style={{ color: chartColor }}>{symbol}</span>
-                {showSPY && <span style={{ color: COLORS.spy }}>SPY</span>}
-                {showQQQ && <span style={{ color: COLORS.qqq }}>QQQ</span>}
-                {showGold && <span style={{ color: COLORS.gold }}>Gold</span>}
-                {showBTC && <span style={{ color: COLORS.btc }}>BTC</span>}
+                {showSPY && <span style={{ color: COLORS.spy }}>vs. SPY</span>}
+                {showQQQ && <span style={{ color: COLORS.qqq }}>vs. QQQ</span>}
+                {showGold && <span style={{ color: COLORS.gold }}>vs. Gold</span>}
+                {showBTC && <span style={{ color: COLORS.btc }}>vs. BTC</span>}
               </div>
               <ResponsiveContainer width="100%" height={subChartHeight + 20}>
                 <LineChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
@@ -955,14 +1621,6 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               />
               <ReferenceLine y={firstPrice} stroke="var(--text3)" strokeDasharray="3 3" strokeOpacity={0.5} />
 
-              {/* 52-Week High/Low Lines */}
-              {show52WeekHL && high52Week && (
-                <ReferenceLine y={high52Week} stroke={COLORS.high52Week} strokeDasharray="6 3" strokeWidth={1.5} label={{ value: '52W High', fill: COLORS.high52Week, fontSize: 9, position: 'right' }} />
-              )}
-              {show52WeekHL && low52Week && (
-                <ReferenceLine y={low52Week} stroke={COLORS.low52Week} strokeDasharray="6 3" strokeWidth={1.5} label={{ value: '52W Low', fill: COLORS.low52Week, fontSize: 9, position: 'right' }} />
-              )}
-
               {/* Bollinger Bands */}
               {showBollinger && (
                 <>
@@ -972,6 +1630,57 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
                   <Line type="monotone" dataKey="bbLower" stroke={COLORS.bbLower} strokeWidth={1} strokeDasharray="3 3" dot={false} connectNulls={false} />
                 </>
               )}
+
+              {/* VWAP Bands */}
+              {showVWAPBands && (
+                <>
+                  <Line type="monotone" dataKey="vwapUpper1" stroke={COLORS.vwapBand1} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.8} />
+                  <Line type="monotone" dataKey="vwapLower1" stroke={COLORS.vwapBand1} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.8} />
+                  <Line type="monotone" dataKey="vwapUpper2" stroke={COLORS.vwapBand2} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.6} />
+                  <Line type="monotone" dataKey="vwapLower2" stroke={COLORS.vwapBand2} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.6} />
+                  <Line type="monotone" dataKey="vwapUpper3" stroke={COLORS.vwapBand3} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.4} />
+                  <Line type="monotone" dataKey="vwapLower3" stroke={COLORS.vwapBand3} strokeWidth={1} strokeDasharray="4 2" dot={false} connectNulls={false} strokeOpacity={0.4} />
+                </>
+              )}
+
+              {/* Fibonacci Retracement Levels */}
+              {showFibonacci && fibonacciLevels && fibonacciLevels.levels.map((fib, i) => (
+                <ReferenceLine
+                  key={`fib-candle-${i}`}
+                  y={fib.price}
+                  stroke={COLORS.fibonacci}
+                  strokeDasharray="6 4"
+                  strokeWidth={1}
+                  strokeOpacity={fib.level === 0.5 || fib.level === 0.618 ? 1 : 0.5}
+                  label={{ value: fib.label, fill: COLORS.fibonacci, fontSize: 8, position: 'right' }}
+                />
+              ))}
+
+              {/* Support Levels */}
+              {showSupportResistance && supportResistance.supports.map((level, i) => (
+                <ReferenceLine
+                  key={`support-candle-${i}`}
+                  y={level}
+                  stroke={COLORS.support}
+                  strokeDasharray="8 4"
+                  strokeWidth={1.5}
+                  strokeOpacity={0.7}
+                  label={{ value: `S${i + 1}`, fill: COLORS.support, fontSize: 8, position: 'left' }}
+                />
+              ))}
+
+              {/* Resistance Levels */}
+              {showSupportResistance && supportResistance.resistances.map((level, i) => (
+                <ReferenceLine
+                  key={`resistance-candle-${i}`}
+                  y={level}
+                  stroke={COLORS.resistance}
+                  strokeDasharray="8 4"
+                  strokeWidth={1.5}
+                  strokeOpacity={0.7}
+                  label={{ value: `R${i + 1}`, fill: COLORS.resistance, fontSize: 8, position: 'left' }}
+                />
+              ))}
 
               {/* Candlesticks */}
               <Bar
@@ -1095,10 +1804,10 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1, display: 'flex', gap: 8 }}>
                 <span>Relative Performance:</span>
                 <span style={{ color: chartColor }}>{symbol}</span>
-                {showSPY && <span style={{ color: COLORS.spy }}>SPY</span>}
-                {showQQQ && <span style={{ color: COLORS.qqq }}>QQQ</span>}
-                {showGold && <span style={{ color: COLORS.gold }}>Gold</span>}
-                {showBTC && <span style={{ color: COLORS.btc }}>BTC</span>}
+                {showSPY && <span style={{ color: COLORS.spy }}>vs. SPY</span>}
+                {showQQQ && <span style={{ color: COLORS.qqq }}>vs. QQQ</span>}
+                {showGold && <span style={{ color: COLORS.gold }}>vs. Gold</span>}
+                {showBTC && <span style={{ color: COLORS.btc }}>vs. BTC</span>}
               </div>
               <ResponsiveContainer width="100%" height={subChartHeight + 20}>
                 <LineChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
@@ -1130,186 +1839,677 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         </>
       )}
 
-      {/* Indicator Guide */}
-      {!loading && !error && chartData.length > 0 && (
-        <details open style={{ marginTop: 12 }}>
-          <summary style={{
-            cursor: 'pointer',
-            fontSize: 11,
-            color: 'var(--text3)',
-            userSelect: 'none',
-            padding: '4px 0',
-          }}>
-            Indicator Guide
-          </summary>
-          <div style={{
-            marginTop: 8,
-            padding: 12,
-            background: 'var(--surface2)',
-            borderRadius: 8,
-            fontSize: 11,
-            lineHeight: 1.6,
-          }}>
-            <div style={{ display: 'grid', gap: 12 }}>
-              {/* Moving Averages */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.sma20, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.sma50, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.sma200, borderRadius: 1 }} />
-                  Simple Moving Averages (SMA)
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  <strong>SMA 20</strong> (short-term): Captures recent momentum. Price above = bullish short-term trend.
-                  <strong> SMA 50</strong> (medium-term): Institutional benchmark for intermediate trend.
-                  <strong> SMA 200</strong> (long-term): Defines secular bull/bear markets.
-                  <em> Golden Cross</em> (50 crosses above 200) signals bullish reversal; <em>Death Cross</em> (50 below 200) signals bearish reversal.
-                  Widely watched by funds for trend confirmation and mean-reversion entries.
-                </div>
-              </div>
+      {/* Range High/Low */}
+      {!loading && !error && chartData.length > 0 && rangeHigh && rangeLow && (
+        <div style={{
+          marginTop: 12,
+          padding: '10px 14px',
+          background: 'var(--surface2)',
+          borderRadius: 8,
+          fontSize: 11,
+        }}>
+          <div style={{ color: 'var(--text3)', marginBottom: 6, fontWeight: 500 }}>{rangeLabel} Range</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ color: COLORS.rangeLow, fontWeight: 600 }}>${rangeLow.toFixed(2)}</span>
+            <div style={{
+              flex: 1,
+              height: 4,
+              background: 'var(--border)',
+              borderRadius: 2,
+              position: 'relative',
+            }}>
+              <div style={{
+                position: 'absolute',
+                left: `${((lastPrice - rangeLow) / (rangeHigh - rangeLow)) * 100}%`,
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 8,
+                height: 8,
+                background: chartColor,
+                borderRadius: '50%',
+                border: '2px solid var(--surface)',
+              }} />
+            </div>
+            <span style={{ color: COLORS.rangeHigh, fontWeight: 600 }}>${rangeHigh.toFixed(2)}</span>
+          </div>
+        </div>
+      )}
 
-              {/* Bollinger Bands */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.bbUpper, borderRadius: 1 }} />
-                  Bollinger Bands (20, 2σ)
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Volatility envelope: middle band = 20-day SMA, upper/lower bands = ±2 standard deviations.
-                  <strong> Band squeeze</strong> (narrow bands) indicates low volatility, often preceding breakouts.
-                  <strong> Band expansion</strong> signals increased volatility. Price touching upper band suggests overbought conditions (mean reversion likely);
-                  lower band suggests oversold. <em>Walk the band</em>: trending markets can ride upper/lower band for extended periods.
-                  Use with RSI for confirmation.
-                </div>
+      {/* Risk Metrics Panel */}
+      {!loading && !error && chartData.length > 0 && showRiskMetrics && (
+        <div style={{
+          marginTop: 12,
+          padding: '12px 14px',
+          background: 'var(--surface2)',
+          borderRadius: 8,
+          fontSize: 11,
+        }}>
+          <div style={{ color: 'var(--text)', marginBottom: 10, fontWeight: 600 }}>Risk & Performance Metrics</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+            {/* Sharpe Ratio */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Sharpe Ratio (Ann.)</div>
+              <div style={{ color: sharpeRatio !== null && sharpeRatio > 1 ? '#22c55e' : sharpeRatio !== null && sharpeRatio < 0 ? '#ef4444' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
+                {sharpeRatio !== null ? sharpeRatio.toFixed(2) : '—'}
               </div>
-
-              {/* VWAP */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.vwap, borderRadius: 1, borderStyle: 'dashed' }} />
-                  VWAP (Volume Weighted Average Price)
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Institutional execution benchmark. Calculated as cumulative (price × volume) ÷ cumulative volume.
-                  <strong> Price above VWAP</strong>: buyers in control, institutions likely accumulated at favorable prices.
-                  <strong> Price below VWAP</strong>: sellers dominating, distribution phase.
-                  Algorithms target VWAP for order execution. Intraday traders use as dynamic support/resistance.
-                  Most relevant on shorter timeframes (1W, 1M); loses significance on longer periods.
-                </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>{sharpeRatio !== null && sharpeRatio > 1 ? 'Good' : sharpeRatio !== null && sharpeRatio > 0 ? 'Moderate' : sharpeRatio !== null ? 'Negative' : ''}</div>
+            </div>
+            {/* Sortino Ratio */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Sortino Ratio (Ann.)</div>
+              <div style={{ color: sortinoRatio !== null && sortinoRatio > 1.5 ? '#22c55e' : sortinoRatio !== null && sortinoRatio < 0 ? '#ef4444' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
+                {sortinoRatio !== null ? sortinoRatio.toFixed(2) : '—'}
               </div>
-
-              {/* Volume */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
-                  Volume
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Confirms price moves. <strong>Rising price + high volume</strong> = strong conviction, sustainable trend.
-                  <strong> Rising price + declining volume</strong> = weakening momentum, potential reversal.
-                  <strong> Breakout on high volume</strong> validates the move; low volume breakouts often fail.
-                  Volume spikes indicate institutional activity or news-driven events.
-                  Compare current volume to 20-day average for relative significance.
-                </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>Downside risk-adjusted</div>
+            </div>
+            {/* Max Drawdown */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Max Drawdown</div>
+              <div style={{ color: '#ef4444', fontWeight: 600, fontSize: 14 }}>
+                {maxDrawdown ? `-${(maxDrawdown.maxDrawdown * 100).toFixed(1)}%` : '—'}
               </div>
-
-              {/* RSI */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.rsi, borderRadius: 1 }} />
-                  RSI (Relative Strength Index, 14-period)
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Momentum oscillator (0-100). <strong>Above 70</strong>: overbought—price extended, pullback likely but not guaranteed in strong trends.
-                  <strong> Below 30</strong>: oversold—potential bounce, but can stay oversold in downtrends.
-                  <strong> Divergence</strong>: price makes new high but RSI doesn't = bearish divergence (momentum weakening);
-                  price makes new low but RSI doesn't = bullish divergence (selling exhaustion).
-                  Most effective in range-bound markets; use trend filters in trending markets.
-                </div>
-              </div>
-
-              {/* MACD */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.macd, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.macdSignal, borderRadius: 1 }} />
-                  MACD (12, 26, 9)
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Trend-following momentum indicator. <strong>MACD line</strong> (blue) = 12-day EMA − 26-day EMA.
-                  <strong> Signal line</strong> (red) = 9-day EMA of MACD. <strong>Histogram</strong> = MACD − Signal (momentum strength).
-                  <em>Bullish signal</em>: MACD crosses above signal line, histogram turns positive.
-                  <em>Bearish signal</em>: MACD crosses below signal, histogram turns negative.
-                  <strong>Zero-line crossover</strong>: MACD above zero = bullish trend, below = bearish.
-                  Divergences between MACD and price predict reversals. Lagging indicator—confirms trends rather than predicting them.
-                </div>
-              </div>
-
-              {/* ATR */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.atr, borderRadius: 1 }} />
-                  ATR (Average True Range, 14-period)
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Volatility indicator measuring the average range between high and low prices.
-                  <strong> Higher ATR</strong> = greater volatility, wider price swings. <strong>Lower ATR</strong> = calmer market, tighter ranges.
-                  <strong> Position sizing</strong>: use ATR to set stop-losses (e.g., 2× ATR below entry) and calculate position size for consistent risk.
-                  <strong> Breakout confirmation</strong>: ATR expansion during breakout confirms genuine move; contraction suggests false break.
-                  Not directional—shows magnitude of moves, not direction. Often used with trend indicators for complete picture.
-                </div>
-              </div>
-
-              {/* 52-Week High/Low */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.high52Week, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.low52Week, borderRadius: 1 }} />
-                  52-Week High/Low
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Key psychological and technical levels. <strong>Near 52W high</strong>: momentum stocks often break higher; resistance level for mean-reversion.
-                  <strong> Near 52W low</strong>: potential value zone or falling knife—context matters. <strong>Breakout above 52W high</strong> is bullish signal often
-                  attracting momentum buyers. <strong>New 52W low</strong> can trigger selling cascade. Institutions track these levels for entry/exit decisions.
-                  Compare current price to 52W range for relative valuation context.
-                </div>
-              </div>
-
-              {/* Comparison */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, background: COLORS.spy, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.qqq, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.gold, borderRadius: 1 }} />
-                  <span style={{ width: 12, height: 2, background: COLORS.btc, borderRadius: 1 }} />
-                  Relative Performance Comparison
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Compare stock performance against major benchmarks. Shows percentage change from period start.
-                  <strong> SPY</strong> (S&P 500): broad market benchmark — outperformance = generating alpha.
-                  <strong> QQQ</strong> (NASDAQ-100): tech-heavy benchmark — useful for growth stocks comparison.
-                  <strong> Gold</strong> (GLD): safe-haven asset — inverse correlation indicates risk-on behavior.
-                  <strong> BTC</strong> (Bitcoin): crypto benchmark — useful for crypto-correlated equities like BMNR.
-                  Overlaying multiple comparisons reveals correlation patterns and relative strength across asset classes.
-                </div>
-              </div>
-
-              {/* Log Scale */}
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
-                  Log Scale
-                </div>
-                <div style={{ color: 'var(--text3)' }}>
-                  Logarithmic Y-axis scale. Shows percentage changes equally regardless of price level.
-                  <strong> Linear scale</strong>: $10 → $20 move looks same as $100 → $110 (same dollar amount).
-                  <strong> Log scale</strong>: $10 → $20 (100% gain) looks same as $100 → $200 (100% gain).
-                  Essential for long-term charts or comparing stocks at different price levels.
-                  Reveals true return patterns and makes trend channels more consistent over time.
-                </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>
+                {maxDrawdown?.recoveryDays ? `Recovered in ${maxDrawdown.recoveryDays}d` : maxDrawdown ? 'Not recovered' : ''}
               </div>
             </div>
+            {/* VaR */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Value at Risk (95%)</div>
+              <div style={{ color: '#ef4444', fontWeight: 600, fontSize: 14 }}>
+                {valueAtRisk !== null ? `${valueAtRisk.toFixed(2)}%` : '—'}
+              </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>Daily worst case</div>
+            </div>
+            {/* Beta */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Beta vs SPY</div>
+              <div style={{ color: betaVsSPY !== null && Math.abs(betaVsSPY) > 1.5 ? '#f59e0b' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
+                {betaVsSPY !== null ? betaVsSPY.toFixed(2) : '—'}
+              </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>
+                {betaVsSPY !== null ? (betaVsSPY > 1 ? 'More volatile than market' : betaVsSPY < 1 ? 'Less volatile' : 'Market-like') : ''}
+              </div>
+            </div>
+            {/* Rolling Volatility */}
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Volatility (Ann.)</div>
+              <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>
+                {volatility30d[volatility30d.length - 1] !== null ? `${volatility30d[volatility30d.length - 1]!.toFixed(1)}%` : '—'}
+              </div>
+              <div style={{ color: 'var(--text3)', fontSize: 9 }}>30-day rolling</div>
+            </div>
           </div>
-        </details>
+        </div>
+      )}
+
+      {/* Correlation Matrix */}
+      {!loading && !error && chartData.length > 0 && showCorrelation && (
+        <div style={{
+          marginTop: 12,
+          padding: '12px 14px',
+          background: 'var(--surface2)',
+          borderRadius: 8,
+          fontSize: 11,
+        }}>
+          <div style={{ color: 'var(--text)', marginBottom: 10, fontWeight: 600 }}>Correlation Matrix</div>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            {correlations.spy !== null && (
+              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
+                <div style={{ color: COLORS.spy, fontSize: 10, marginBottom: 2 }}>vs SPY</div>
+                <div style={{
+                  fontWeight: 600,
+                  fontSize: 16,
+                  color: Math.abs(correlations.spy) > 0.7 ? '#22c55e' : Math.abs(correlations.spy) < 0.3 ? '#ef4444' : 'var(--text)'
+                }}>
+                  {correlations.spy.toFixed(2)}
+                </div>
+              </div>
+            )}
+            {correlations.qqq !== null && (
+              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
+                <div style={{ color: COLORS.qqq, fontSize: 10, marginBottom: 2 }}>vs QQQ</div>
+                <div style={{
+                  fontWeight: 600,
+                  fontSize: 16,
+                  color: Math.abs(correlations.qqq) > 0.7 ? '#22c55e' : Math.abs(correlations.qqq) < 0.3 ? '#ef4444' : 'var(--text)'
+                }}>
+                  {correlations.qqq.toFixed(2)}
+                </div>
+              </div>
+            )}
+            {correlations.gold !== null && (
+              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
+                <div style={{ color: COLORS.gold, fontSize: 10, marginBottom: 2 }}>vs Gold</div>
+                <div style={{
+                  fontWeight: 600,
+                  fontSize: 16,
+                  color: Math.abs(correlations.gold) > 0.7 ? '#22c55e' : Math.abs(correlations.gold) < 0.3 ? '#ef4444' : 'var(--text)'
+                }}>
+                  {correlations.gold.toFixed(2)}
+                </div>
+              </div>
+            )}
+            {correlations.btc !== null && (
+              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
+                <div style={{ color: COLORS.btc, fontSize: 10, marginBottom: 2 }}>vs BTC</div>
+                <div style={{
+                  fontWeight: 600,
+                  fontSize: 16,
+                  color: Math.abs(correlations.btc) > 0.7 ? '#22c55e' : Math.abs(correlations.btc) < 0.3 ? '#ef4444' : 'var(--text)'
+                }}>
+                  {correlations.btc.toFixed(2)}
+                </div>
+              </div>
+            )}
+          </div>
+          <div style={{ color: 'var(--text3)', fontSize: 9, marginTop: 8 }}>
+            Green = highly correlated (&gt;0.7), Red = low correlation (&lt;0.3)
+          </div>
+        </div>
+      )}
+
+      {/* Volume Profile */}
+      {!loading && !error && chartData.length > 0 && showVolumeProfile && volumeProfile.length > 0 && (
+        <div style={{
+          marginTop: 12,
+          padding: '12px 14px',
+          background: 'var(--surface2)',
+          borderRadius: 8,
+          fontSize: 11,
+        }}>
+          <div style={{ color: 'var(--text)', marginBottom: 10, fontWeight: 600 }}>Volume Profile (Top Price Levels)</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {volumeProfile.slice(0, 5).map((level, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ width: 60, color: 'var(--text)', fontWeight: 500 }}>${level.priceLevel.toFixed(2)}</span>
+                <div style={{ flex: 1, height: 12, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${level.percentage}%`,
+                    height: '100%',
+                    background: level.priceLevel <= lastPrice ? COLORS.support : COLORS.resistance,
+                    opacity: 0.7,
+                  }} />
+                </div>
+                <span style={{ width: 40, color: 'var(--text3)', textAlign: 'right' }}>{level.percentage.toFixed(1)}%</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ color: 'var(--text3)', fontSize: 9, marginTop: 8 }}>
+            High volume price levels often act as support/resistance
+          </div>
+        </div>
       )}
     </div>
+
+      {/* Chart Guide - Separate Card */}
+      {!loading && !error && chartData.length > 0 && (
+        <>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-guide</div>
+        <div className="card">
+          <div
+            onClick={() => setShowChartGuide(!showChartGuide)}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+            role="button"
+            tabIndex={0}
+            aria-expanded={showChartGuide}
+            aria-label="Toggle Chart Guide"
+            onKeyDown={(e) => e.key === 'Enter' && setShowChartGuide(!showChartGuide)}
+          >
+            <div className="card-title">Chart Guide</div>
+            <span style={{ color: 'var(--text3)', fontSize: 18 }}>{showChartGuide ? '−' : '+'}</span>
+          </div>
+          {showChartGuide && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: 32,
+              fontSize: 11,
+              lineHeight: 1.8,
+              color: 'var(--text3)',
+            }}>
+
+              {/* LEFT COLUMN */}
+              <div>
+
+              {/* INDICATORS */}
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: 16,
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Indicators
+                </div>
+                <div style={{ display: 'grid', gap: 20 }}>
+
+                  {/* SMA 20/50/200 */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.sma20, borderRadius: 1 }} />
+                      <span style={{ width: 12, height: 2, background: COLORS.sma50, borderRadius: 1 }} />
+                      <span style={{ width: 12, height: 2, background: COLORS.sma200, borderRadius: 1 }} />
+                      SMA 20 / SMA 50 / SMA 200
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Simple Moving Averages</strong> smooth price action to reveal underlying trend direction. The 20-day SMA captures short-term momentum and is favored by swing traders for mean-reversion setups. The 50-day SMA serves as the institutional benchmark for intermediate-term trend—mutual funds and pension managers commonly use this as a tactical allocation trigger. The 200-day SMA defines the secular trend: price consistently above indicates a bull market regime, below signals bear market conditions.
+                      <br /><br />
+                      <strong>Key signals:</strong> The <em>Golden Cross</em> (50-day crossing above 200-day) historically precedes sustained rallies and triggers systematic buying from trend-following CTAs. The <em>Death Cross</em> (50 below 200) signals regime change to bearish and activates risk-off protocols. <strong>Price relationship to SMAs</strong> determines position bias: above all three = strong uptrend, increasing position; below all three = downtrend, reduce exposure or short.
+                      <br /><br />
+                      <strong>Institutional usage:</strong> Many quant funds use SMA crossovers as one factor in multi-signal models. The slope of the 200-day SMA (rising vs. falling) is itself a trend filter—flat or declining 200-day suggests range-bound or bearish environment where momentum strategies underperform.
+                    </div>
+                  </div>
+
+                  {/* Bollinger */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.bbUpper, borderRadius: 1 }} />
+                      Bollinger Bands
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Volatility-based envelope</strong> consisting of 20-period SMA (middle band) with upper and lower bands at ±2 standard deviations. Bands dynamically expand during high volatility and contract during consolidation.
+                      <br /><br />
+                      <strong>The Squeeze:</strong> When bands narrow significantly (low volatility), it signals accumulation of energy before a breakout. This is the highest-probability setup—breakout direction is determined by fundamentals or price action, but the move's magnitude is often proportional to the squeeze duration. Volatility compression periods of 20+ days often precede major moves.
+                      <br /><br />
+                      <strong>Band touches:</strong> Price touching the upper band isn't automatically "overbought"—in strong uptrends, price can "walk the band" for extended periods. Conversely, oversold bounces from lower band are only reliable in range-bound markets. <strong>Professional interpretation:</strong> Use bands for volatility regime classification, not mechanical buy/sell signals. Combine with RSI divergence for higher-probability reversals.
+                      <br /><br />
+                      <strong>Width analysis:</strong> Bollinger Band Width (BBW) below historical 20th percentile = extreme compression, breakout imminent. Width expansion from squeeze confirms breakout validity.
+                    </div>
+                  </div>
+
+                  {/* VWAP */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.vwap, borderRadius: 1 }} />
+                      VWAP
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Volume Weighted Average Price</strong> represents the true average price paid by all market participants, weighted by volume. This is the benchmark institutional traders use to evaluate execution quality—buying below VWAP or selling above indicates favorable fills.
+                      <br /><br />
+                      <strong>Institutional mechanics:</strong> Large orders are often executed via VWAP algorithms that slice orders throughout the day to minimize market impact. This creates natural support/resistance at VWAP as institutions defend their average entry prices. Prop desks and market makers use VWAP deviation for mean-reversion strategies.
+                      <br /><br />
+                      <strong>Trading applications:</strong> Price above VWAP = buyers control the tape, institutions accumulated at favorable prices, bullish bias. Price below VWAP = sellers dominant, distribution underway, bearish bias. The first test of VWAP after a gap often determines day's direction. <strong>Reclaim/rejection</strong> of VWAP after extended deviation is high-probability entry.
+                      <br /><br />
+                      <strong>Timeframe note:</strong> VWAP resets daily in traditional usage. On this chart, VWAP calculates from the start of the selected period—most relevant for 1D-1M timeframes, loses significance on longer periods.
+                    </div>
+                  </div>
+
+                  {/* Volume */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
+                      Volume
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Volume confirms price action</strong>—it reveals the conviction behind moves and distinguishes sustainable trends from false breakouts. Richard Wyckoff's century-old principle remains valid: "Volume is the fuel that drives the market."
+                      <br /><br />
+                      <strong>Volume-price relationships:</strong>
+                      <br />• <em>Rising price + Rising volume</em> = Strong demand, trend likely to continue. Institutions accumulating.
+                      <br />• <em>Rising price + Declining volume</em> = Weakening momentum, bearish divergence. Smart money distribution likely.
+                      <br />• <em>Falling price + Rising volume</em> = Panic selling or institutional distribution. Capitulation may signal bottom if extreme.
+                      <br />• <em>Falling price + Declining volume</em> = Selling exhaustion, potential bottoming process.
+                      <br /><br />
+                      <strong>Breakout validation:</strong> Genuine breakouts occur on volume 150%+ above 20-day average. Low-volume breakouts have 60%+ failure rate. Volume climax (extreme spike) often marks exhaustion points—buying climax at tops, selling climax at bottoms.
+                      <br /><br />
+                      <strong>Institutional footprints:</strong> Unusual volume (3x+ average) without news indicates informed trading—block trades, dark pool activity, or pre-announcement positioning. Track volume patterns around key levels for institutional intent.
+                    </div>
+                  </div>
+
+                  {/* RSI */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.rsi, borderRadius: 1 }} />
+                      RSI
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Relative Strength Index</strong> (14-period) measures momentum as a ratio of average gains to average losses, normalized to 0-100 scale. Created by J. Welles Wilder, it remains one of the most widely-used oscillators among professional traders.
+                      <br /><br />
+                      <strong>Level interpretation:</strong>
+                      <br />• <em>Above 70 (Overbought)</em>: Not a sell signal—strong trends can remain overbought for weeks. It means momentum is stretched; look for divergence or failure swings for reversal signals.
+                      <br />• <em>Below 30 (Oversold)</em>: Not a buy signal—stocks can stay oversold in downtrends. Indicates selling pressure exhaustion; wait for bullish divergence or reclaim of 30 level.
+                      <br />• <em>40-60 Range</em>: Neutral zone. Break above 60 confirms bullish momentum; break below 40 confirms bearish.
+                      <br /><br />
+                      <strong>Divergences (highest-probability signals):</strong>
+                      <br />• <em>Bearish divergence</em>: Price makes higher high, RSI makes lower high = momentum weakening despite new price highs. Precedes 70%+ of major tops.
+                      <br />• <em>Bullish divergence</em>: Price makes lower low, RSI makes higher low = selling exhaustion. Precedes major reversals.
+                      <br /><br />
+                      <strong>Failure swings:</strong> RSI crossing above 70, pulling back (not below 50), then making lower high below 70 = failure swing top. Opposite for bottoms. These are Wilder's original, often-overlooked signals.
+                    </div>
+                  </div>
+
+                  {/* MACD */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.macd, borderRadius: 1 }} />
+                      <span style={{ width: 12, height: 2, background: COLORS.macdSignal, borderRadius: 1 }} />
+                      MACD
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Moving Average Convergence Divergence</strong> (12, 26, 9) is a trend-following momentum indicator that shows the relationship between two EMAs. MACD Line = 12-day EMA − 26-day EMA; Signal Line = 9-day EMA of MACD; Histogram = MACD − Signal.
+                      <br /><br />
+                      <strong>Signal hierarchy (by reliability):</strong>
+                      <br />1. <em>Zero-line crossover</em>: MACD crossing above zero = 12 EMA crossed above 26 EMA, confirming bullish trend change. Most significant but slowest signal.
+                      <br />2. <em>Signal line crossover</em>: MACD crossing above signal line = bullish momentum shift. Below = bearish. Faster but more prone to whipsaws.
+                      <br />3. <em>Histogram direction</em>: Rising histogram = accelerating momentum. Falling = decelerating. Fastest signal, best for timing entries in direction of larger trend.
+                      <br /><br />
+                      <strong>Divergence analysis:</strong> MACD divergences are highly reliable for major reversals. Bullish divergence (price lower lows, MACD higher lows) at oversold RSI = high-probability long entry. Multiple timeframe divergence (daily + weekly) increases conviction significantly.
+                      <br /><br />
+                      <strong>Histogram patterns:</strong> Histogram peak/trough often precedes signal line cross by 1-3 bars—early warning for position adjustment. Histogram "saucer" pattern (gradual curve vs. sharp spike) indicates sustainable move vs. exhaustion.
+                    </div>
+                  </div>
+
+                  {/* ATR */}
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.atr, borderRadius: 1 }} />
+                      ATR
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Average True Range</strong> (14-period) measures volatility by averaging the "true range" (greatest of: current high-low, |high-previous close|, |low-previous close|). Unlike standard deviation, ATR accounts for gaps.
+                      <br /><br />
+                      <strong>Position sizing (Kelly-adjacent):</strong> ATR enables volatility-normalized position sizing. Formula: Position Size = (Account Risk %) / (ATR × Multiplier). Example: 1% account risk, $2 ATR, 2× multiplier = risk $4 per share, so position = (0.01 × Account) / $4. This equalizes risk across volatile and stable positions.
+                      <br /><br />
+                      <strong>Stop-loss placement:</strong> Standard practice: Initial stop = Entry ± (2 × ATR). This accounts for normal price noise while protecting against adverse moves. Trailing stops often use 1.5-3× ATR from swing highs/lows. Wider stops in higher-volatility regimes.
+                      <br /><br />
+                      <strong>Volatility regime analysis:</strong>
+                      <br />• <em>ATR expansion</em>: Increasing volatility—trend acceleration or distribution/accumulation. Breakouts during ATR expansion are more reliable.
+                      <br />• <em>ATR contraction</em>: Decreasing volatility—consolidation, often precedes explosive moves. Similar signal to Bollinger squeeze.
+                      <br />• <em>ATR percentile ranking</em>: Current ATR vs. 252-day range indicates regime. Below 20th percentile = extreme compression, above 80th = extreme volatility.
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* SCALE */}
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Scale
+                </div>
+                <div style={{ display: 'grid', gap: 16 }}>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Arithmetic (Linear) Scale</div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Default scale</strong> where equal vertical distances represent equal dollar amounts. A $10 move always appears the same size regardless of price level.
+                      <br /><br />
+                      <strong>When to use Arithmetic:</strong>
+                      <br />• <em>Short-term trading (1D–1M)</em>: Day traders and swing traders care about absolute dollar P&L, not percentages.
+                      <br />• <em>Options analysis</em>: Strike prices are evenly spaced in dollar terms—linear scale shows this correctly.
+                      <br />• <em>Support/resistance levels</em>: Key price levels ($50, $100, $200) are easier to identify.
+                      <br />• <em>Range-bound stocks</em>: When price oscillates within a fixed dollar range, arithmetic shows the true trading band.
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Logarithmic Scale</div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Percentage-based scale</strong> where equal vertical distances represent equal percentage changes. A 50% move always appears the same size.
+                      <br /><br />
+                      <strong>When to use Log:</strong>
+                      <br />• <em>Long-term charts (1Y+)</em>: Essential for viewing multi-year price history without distortion.
+                      <br />• <em>High-growth stocks</em>: A stock that went from $10→$1000 shows proportional moves, not a hockey stick.
+                      <br />• <em>Comparing assets</em>: Fairly compare a $5 stock vs $500 stock—both show equivalent percentage moves equally.
+                      <br />• <em>Trend analysis</em>: Consistent 20%/year growth appears as a straight line, making trend breaks obvious.
+                      <br /><br />
+                      <strong>Key insight:</strong> On arithmetic scale, $10→$20 (+100%) looks the same as $100→$110 (+10%). This makes early gains appear insignificant and recent volatility appear exaggerated. Log scale corrects this distortion.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* COMPARE */}
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Compare
+                </div>
+                <div style={{ display: 'grid', gap: 20 }}>
+                  <div style={{ color: 'var(--text3)', marginBottom: 4 }}>
+                    <strong>Relative performance analysis</strong> overlays benchmark returns (normalized to 0% at period start) against the stock. This reveals alpha generation, correlation patterns, and relative strength regimes. Outperformance vs. relevant benchmark is the fundamental measure of active management value.
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.spy, borderRadius: 1 }} />
+                      vs. SPY (S&P 500)
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      The definitive benchmark for U.S. equities and most hedge fund performance reporting. Consistent outperformance indicates genuine alpha; underperformance suggests negative stock selection or sector headwinds.
+                      <br /><br />
+                      <strong>Interpretation:</strong> Stock rising while SPY falling = relative strength, potential defensive play or idiosyncratic catalyst. Both falling but stock less = relative outperformance. Calculate rolling alpha (excess return) and information ratio for quantitative assessment.
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.qqq, borderRadius: 1 }} />
+                      vs. QQQ (NASDAQ-100)
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Tech-heavy, growth-oriented benchmark. Essential comparison for growth stocks, SaaS, and technology names. QQQ has higher beta than SPY—underperformance during rallies but outperformance in selloffs may indicate defensive characteristics.
+                      <br /><br />
+                      <strong>Sector rotation signal:</strong> When a tech stock underperforms QQQ while outperforming SPY, it suggests sector rotation out of growth. Monitor for regime change signals.
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.gold, borderRadius: 1 }} />
+                      vs. Gold (GLD)
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Traditional safe-haven and inflation hedge. Gold typically has negative or low correlation to equities. Strong positive correlation with gold may indicate the stock is perceived as a defensive asset or has commodity exposure.
+                      <br /><br />
+                      <strong>Risk regime indicator:</strong> When stock correlates inversely with gold during stress, it's a pure risk asset. When both rise together, possible inflation trade or flight-to-quality in the stock.
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.btc, borderRadius: 1 }} />
+                      vs. BTC (Bitcoin)
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      Digital asset benchmark and crypto market proxy. Highly relevant for crypto-adjacent equities (miners, treasury companies, exchanges) and increasingly for high-beta tech names that correlate with risk appetite.
+                      <br /><br />
+                      <strong>Beta to BTC:</strong> For crypto treasury companies, the key metric is leveraged vs. direct BTC exposure. Underperformance during BTC rallies indicates NAV discount or operational issues; outperformance suggests premium valuation or yield advantage.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              </div>
+
+              {/* RIGHT COLUMN */}
+              <div>
+
+              {/* PRO */}
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Professional Tools
+                </div>
+                <div style={{ display: 'grid', gap: 20 }}>
+
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.fibonacci, borderRadius: 1 }} />
+                      Fibonacci Retracements
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Mathematical price levels</strong> derived from Fibonacci sequence ratios (23.6%, 38.2%, 50%, 61.8%, 78.6%). These levels represent potential support/resistance zones where retracements often pause or reverse.
+                      <br /><br />
+                      <strong>Level significance:</strong>
+                      <br />• <em>38.2%</em>: Shallow retracement—strong trend, buyers eager to accumulate. First line of defense.
+                      <br />• <em>50%</em>: Psychological half-way point. Not a true Fibonacci ratio but widely watched.
+                      <br />• <em>61.8%</em>: The "golden ratio"—most significant level. Deep retracement that often marks final support before trend resumption. Failure here often leads to full retracement.
+                      <br />• <em>78.6%</em>: Last-chance support. Breach typically signals trend reversal rather than retracement.
+                      <br /><br />
+                      <strong>Confluence trading:</strong> Fibonacci levels gain significance when they align with other technical levels (horizontal support/resistance, moving averages, trendlines). Multiple-factor confluence at a level increases probability of reaction.
+                      <br /><br />
+                      <strong>Extensions:</strong> Beyond 100%, Fibonacci extensions (127.2%, 161.8%, 261.8%) project potential profit targets for trend continuation. The 161.8% extension is particularly significant for wave analysis.
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.vwapBand1, borderRadius: 1 }} />
+                      VWAP Standard Deviation Bands
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Statistical price zones</strong> showing 1σ, 2σ, and 3σ deviations from VWAP. Based on normal distribution properties, these bands define probability zones for price reversion.
+                      <br /><br />
+                      <strong>Statistical interpretation:</strong>
+                      <br />• <em>±1σ band</em>: Contains ~68% of price action. Touches are common; mean-reversion trades have moderate probability.
+                      <br />• <em>±2σ band</em>: Contains ~95% of price action. Touches are significant—extended deviation indicating unusual buying/selling pressure.
+                      <br />• <em>±3σ band</em>: Contains ~99.7% of price action. Touches are rare, extreme events. High-probability mean-reversion setups but require catalyst confirmation (not just statistical).
+                      <br /><br />
+                      <strong>Institutional application:</strong> Prop desks use VWAP bands for intraday mean-reversion strategies. Entry at 2σ with target at VWAP, stop at 3σ provides defined risk/reward. More effective in range-bound markets; trending markets can exceed 2σ for extended periods.
+                      <br /><br />
+                      <strong>Trend filter:</strong> Consistent closes above +1σ = strong uptrend. Closes below -1σ = strong downtrend. Use bands with trend direction, not against it.
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.support, borderRadius: 1 }} />
+                      <span style={{ width: 12, height: 2, background: COLORS.resistance, borderRadius: 1 }} />
+                      Support / Resistance (S/R)
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Auto-detected price levels</strong> where historical buying (support) or selling (resistance) pressure emerged. Algorithm identifies local minima/maxima and clusters nearby levels to find significant zones.
+                      <br /><br />
+                      <strong>Why S/R works:</strong> Market memory—traders remember previous decision points. Those who bought at support defend positions; those who missed the move wait to buy pullbacks to the level. This creates self-fulfilling supply/demand zones.
+                      <br /><br />
+                      <strong>Level strength factors:</strong>
+                      <br />• <em>Number of touches</em>: More touches = more significant level. Each touch that holds reinforces the level.
+                      <br />• <em>Recency</em>: Recent levels more relevant than old ones. Market participants change.
+                      <br />• <em>Volume at level</em>: High volume at S/R indicates institutional participation.
+                      <br />• <em>Time at level</em>: Consolidation around level creates stronger zone.
+                      <br /><br />
+                      <strong>Role reversal:</strong> Broken resistance becomes support (previous sellers become buyers defending breakout entry). Broken support becomes resistance (trapped longs sell into rallies). This principle is fundamental to price action trading.
+                      <br /><br />
+                      <strong>S1/S2/S3 and R1/R2/R3</strong> labels indicate relative strength ranking of detected levels.
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 12, height: 2, background: COLORS.volumeProfile, borderRadius: 1 }} />
+                      Volume Profile
+                    </div>
+                    <div style={{ color: 'var(--text3)' }}>
+                      <strong>Horizontal volume histogram</strong> showing cumulative volume traded at each price level. Unlike time-based volume (vertical bars), this reveals where market participants have positioned—the "auction profile" of the instrument.
+                      <br /><br />
+                      <strong>Key concepts:</strong>
+                      <br />• <em>High Volume Nodes (HVN)</em>: Price levels with significant volume—areas of acceptance where buyers and sellers agreed on fair value. Act as magnets that attract price and provide support/resistance.
+                      <br />• <em>Low Volume Nodes (LVN)</em>: Price levels with minimal volume—areas of rejection or rapid transit. Price moves quickly through LVNs; they offer little support/resistance but can act as acceleration zones.
+                      <br />• <em>Point of Control (POC)</em>: The single price with highest volume—strongest equilibrium level. Not shown but would be the top bar in the profile.
+                      <br /><br />
+                      <strong>Trading applications:</strong>
+                      <br />• <em>Entry/exit zones</em>: Enter long at HVN support below current price; exit at HVN resistance above.
+                      <br />• <em>Stop placement</em>: Place stops beyond significant HVNs—breaking through HVN indicates trend strength.
+                      <br />• <em>Gap fill probability</em>: Gaps leaving behind LVNs are more likely to fill than gaps through HVNs.
+                      <br /><br />
+                      <strong>Market profile integration:</strong> Volume profile is derived from Market Profile methodology. The profile shape (P-shape, b-shape, D-shape) indicates market type and likely future behavior.
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* RISK METRICS */}
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Risk Metrics
+                </div>
+                <div>
+                    <strong>Quantitative risk analytics</strong> used by institutional investors to evaluate risk-adjusted performance and portfolio allocation decisions.
+                    <br /><br />
+                    <strong>Sharpe Ratio</strong> (annualized): Excess return per unit of total volatility. Formula: (Return - Risk-free Rate) / Standard Deviation. Interpretation: &lt;1.0 = suboptimal risk-adjusted return; 1.0-2.0 = good; 2.0-3.0 = excellent; &gt;3.0 = exceptional or possibly over-fitted. Most hedge funds target Sharpe of 1.5+. Calculated here using 4% risk-free rate assumption.
+                    <br /><br />
+                    <strong>Sortino Ratio</strong> (annualized): Like Sharpe but uses only downside deviation—doesn't penalize upside volatility. More appropriate for asymmetric return distributions. Higher Sortino vs. Sharpe indicates positive skew (larger up moves than down moves).
+                    <br /><br />
+                    <strong>Maximum Drawdown</strong>: Largest peak-to-trough decline during the period. Critical for sizing and survival analysis. Recovery time shown indicates how long capital was impaired. Rule of thumb: Expect 2x historical max drawdown in future.
+                    <br /><br />
+                    <strong>Value at Risk (VaR 95%)</strong>: The daily loss level that won't be exceeded 95% of the time. Historical VaR uses actual return distribution (non-parametric). Example: -3% VaR means 1-in-20 days you can expect losses of 3%+. Use for position sizing: scale positions so VaR equals acceptable daily loss.
+                    <br /><br />
+                    <strong>Beta vs SPY</strong>: Sensitivity to market moves. Beta 1.5 means stock moves 1.5% for every 1% SPY move. High beta (&gt;1.5) amplifies returns but increases drawdowns. Beta &lt;1 provides defensive characteristics. Negative beta (rare) indicates inverse relationship.
+                    <br /><br />
+                    <strong>Rolling Volatility</strong> (30-day annualized): Current volatility regime. Compare to historical average for regime classification. Elevated volatility = wider stops, smaller positions. Compressed volatility = potential for expansion.
+                </div>
+              </div>
+
+              {/* CORRELATION */}
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: 16,
+                  paddingBottom: 8,
+                  borderBottom: '1px solid var(--border)',
+                }}>
+                  Correlation
+                </div>
+                <div>
+                    <strong>Pearson correlation coefficients</strong> measuring linear relationship strength between the stock and enabled benchmarks. Range: -1 (perfect inverse) to +1 (perfect positive).
+                    <br /><br />
+                    <strong>Interpretation thresholds:</strong>
+                    <br />• <em>|0.7 - 1.0|</em> (Green): Strong correlation—assets move together (or opposite if negative). Limited diversification benefit.
+                    <br />• <em>|0.3 - 0.7|</em>: Moderate correlation—some independent movement.
+                    <br />• <em>|0.0 - 0.3|</em> (Red): Weak/no correlation—assets move independently. Maximum diversification benefit.
+                    <br /><br />
+                    <strong>Portfolio applications:</strong>
+                    <br />• <em>Diversification</em>: Low correlation assets reduce portfolio volatility. Adding 0.3 correlation asset to portfolio improves risk-adjusted returns.
+                    <br />• <em>Pair trading</em>: High correlation pairs (0.8+) that diverge present mean-reversion opportunities.
+                    <br />• <em>Regime detection</em>: Correlation changes signal regime shifts. Correlations converge toward 1.0 during crises (diversification fails when needed most).
+                    <br /><br />
+                    <strong>Dynamic nature:</strong> Correlations are not stable—they shift with market regimes, monetary policy, and sector rotations. Rolling 60-day correlation captures recent relationship; compare to longer-term (252-day) for regime change detection.
+                </div>
+              </div>
+
+              </div>
+
+            </div>
+          )}
+        </div>
+        </>
+      )}
+    </>
   );
 }
