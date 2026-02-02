@@ -1922,7 +1922,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
       {/* Chart Guide - Separate Card */}
       {!loading && !error && chartData.length > 0 && (
         <>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 16 }}>#chart-guide</div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-guide</div>
         <div className="card">
           <div
             onClick={() => setShowChartGuide(!showChartGuide)}
