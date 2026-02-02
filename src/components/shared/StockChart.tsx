@@ -1931,21 +1931,21 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
             aria-label="Toggle Chart Guide"
             onKeyDown={(e) => e.key === 'Enter' && setShowChartGuide(!showChartGuide)}
           >
-            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
-              Chart Guide
+            <div>
+              <div className="card-title">Chart Guide</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>Reference for all chart indicators and tools</div>
             </div>
             <span style={{ color: 'var(--text3)', fontSize: 18 }}>{showChartGuide ? '−' : '+'}</span>
           </div>
           {showChartGuide && (
             <div style={{
-              marginTop: 16,
               fontSize: 11,
               lineHeight: 1.8,
               color: 'var(--text3)',
             }}>
 
               {/* INDICATORS */}
-              <div style={{ marginBottom: 32 }}>
+              <div>
                 <div style={{
                   fontSize: 11,
                   fontWeight: 600,
@@ -2098,14 +2098,13 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               </div>
 
               {/* SCALE */}
-              <div style={{ marginBottom: 32 }}>
+              <div>
                 <div style={{
                   fontSize: 11,
                   fontWeight: 600,
                   color: 'var(--text)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  marginBottom: 16,
                   paddingBottom: 8,
                   borderBottom: '1px solid var(--border)',
                 }}>
@@ -2129,14 +2128,13 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               </div>
 
               {/* COMPARE */}
-              <div style={{ marginBottom: 32 }}>
+              <div>
                 <div style={{
                   fontSize: 11,
                   fontWeight: 600,
                   color: 'var(--text)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  marginBottom: 16,
                   paddingBottom: 8,
                   borderBottom: '1px solid var(--border)',
                 }}>
@@ -2198,14 +2196,13 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               </div>
 
               {/* PRO */}
-              <div style={{ marginBottom: 32 }}>
+              <div>
                 <div style={{
                   fontSize: 11,
                   fontWeight: 600,
                   color: 'var(--text)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  marginBottom: 16,
                   paddingBottom: 8,
                   borderBottom: '1px solid var(--border)',
                 }}>
@@ -2301,14 +2298,13 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
               </div>
 
               {/* RISK METRICS */}
-              <div style={{ marginBottom: 32 }}>
+              <div>
                 <div style={{
                   fontSize: 11,
                   fontWeight: 600,
                   color: 'var(--text)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  marginBottom: 16,
                   paddingBottom: 8,
                   borderBottom: '1px solid var(--border)',
                 }}>
