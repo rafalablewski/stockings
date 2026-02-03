@@ -7512,7 +7512,6 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         </div>
 
         {/* How It Works - Institutional Framework */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#value-accrual-mechanics</div>
         <div style={{ padding: 16, background: 'var(--surface)', borderRadius: 8, border: '1px solid var(--border)' }}>
           <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>Value Accrual Mechanics</div>
           <div style={{ fontSize: 11, color: 'var(--text3)' }}>How institutional adoption translates to ETH value — a framework for analyzing network economics</div>
