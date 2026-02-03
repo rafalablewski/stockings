@@ -3049,12 +3049,26 @@ function CRCLModel() {
   const [currentUSDC, setCurrentUSDC] = useState(USDC_DATA.usdcCirculation);  // From @/data/crcl/company.ts
   const [currentMarketShare, setCurrentMarketShare] = useState(USDC_DATA.marketShare);  // From @/data/crcl/company.ts
 
+  // Chart refresh key - increment to trigger chart data refresh
+  const [chartRefreshKey, setChartRefreshKey] = useState(0);
+
   // Live price refresh hook
   const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
     'CRCL',
     MARKET.price,
     { onPriceUpdate: (price) => setCurrentStockPrice(price) }
   );
+
+  // Combined refresh handler - updates both price and chart
+  const handleRefreshAll = useCallback(async () => {
+    await refreshPrice();
+    setChartRefreshKey(k => k + 1);
+  }, [refreshPrice]);
+
+  // Auto-fetch live price and chart on mount
+  useEffect(() => {
+    handleRefreshAll();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleSection = (section: string) => {
     const next = new Set(investmentSections);
@@ -3269,9 +3283,9 @@ function CRCLModel() {
               <div className="price-big" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 ${currentStockPrice.toFixed(2)}
                 <button
-                  onClick={refreshPrice}
+                  onClick={handleRefreshAll}
                   disabled={priceLoading}
-                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price'}
+                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price & chart'}
                   style={{
                     background: 'transparent',
                     border: 'none',
@@ -3554,7 +3568,7 @@ function CRCLModel() {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
               <h3 className="section-head">Stock Chart</h3>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
-              <StockChart symbol="CRCL" />
+              <StockChart symbol="CRCL" externalRefreshKey={chartRefreshKey} />
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — Stablecoin Economics" items={[

@@ -38,6 +38,7 @@ interface StockData {
 interface StockChartProps {
   symbol: string;
   height?: number;
+  externalRefreshKey?: number;
 }
 
 const RANGES = [
@@ -776,7 +777,7 @@ const ToggleSection = ({
   </div>
 );
 
-export default function StockChart({ symbol, height = 280 }: StockChartProps) {
+export default function StockChart({ symbol, height = 280, externalRefreshKey = 0 }: StockChartProps) {
   const [data, setData] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -853,7 +854,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     };
 
     fetchData();
-  }, [symbol, range, refreshKey]);
+  }, [symbol, range, refreshKey, externalRefreshKey]);
 
   // Fetch comparison data when enabled
   useEffect(() => {

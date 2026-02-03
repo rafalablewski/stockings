@@ -684,12 +684,26 @@ const ASTSAnalysis = () => {
   // Update indicator visibility toggle
   const [showIndicators, setShowIndicators] = useState(true);
 
+  // Chart refresh key - increment to trigger chart data refresh
+  const [chartRefreshKey, setChartRefreshKey] = useState(0);
+
   // Live price refresh hook
   const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
     'ASTS',
     DEFAULTS.currentStockPrice,
     { onPriceUpdate: (price) => setCurrentStockPrice(price) }
   );
+
+  // Combined refresh handler - updates both price and chart
+  const handleRefreshAll = useCallback(async () => {
+    await refreshPrice();
+    setChartRefreshKey(k => k + 1);
+  }, [refreshPrice]);
+
+  // Auto-fetch live price and chart on mount
+  useEffect(() => {
+    handleRefreshAll();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Use imported data from @/data/asts
   const partners = PARTNERS;
@@ -788,9 +802,9 @@ const ASTSAnalysis = () => {
               <div className="price-big" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 ${currentStockPrice.toFixed(2)}
                 <button
-                  onClick={refreshPrice}
+                  onClick={handleRefreshAll}
                   disabled={priceLoading}
-                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price'}
+                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price & chart'}
                   style={{
                     background: 'transparent',
                     border: 'none',
@@ -904,7 +918,7 @@ const ASTSAnalysis = () => {
         <main className="main">
           {/* Update Source Legend - Shows what each indicator color means */}
           <UpdateLegend />
-          {activeTab === 'overview' && <OverviewTab calc={calc} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} block1Sats={block1Sats} block2Sats={block2Sats} targetSats2026={targetSats2026} contractedRevenue={contractedRevenue} partnerReach={partnerReach} penetrationRate={penetrationRate} />}
+          {activeTab === 'overview' && <OverviewTab calc={calc} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} block1Sats={block1Sats} block2Sats={block2Sats} targetSats2026={targetSats2026} contractedRevenue={contractedRevenue} partnerReach={partnerReach} penetrationRate={penetrationRate} chartRefreshKey={chartRefreshKey} />}
           {activeTab === 'catalysts' && <CatalystsTab upcomingCatalysts={upcomingCatalysts} completedMilestones={completedMilestones} />}
           {activeTab === 'constellation' && <ConstellationTab calc={calc} block1Sats={block1Sats} setBlock1Sats={setBlock1Sats} block2Sats={block2Sats} setBlock2Sats={setBlock2Sats} targetSats2026={targetSats2026} setTargetSats2026={setTargetSats2026} launchFailureRate={launchFailureRate} setLaunchFailureRate={setLaunchFailureRate} />}
           {activeTab === 'subscribers' && <SubscribersTab calc={calc} partnerReach={partnerReach} setPartnerReach={setPartnerReach} penetrationRate={penetrationRate} setPenetrationRate={setPenetrationRate} blendedARPU={blendedARPU} setBlendedARPU={setBlendedARPU} partners={partners} />}
@@ -1094,7 +1108,7 @@ const OverviewParameterCard = ({
   );
 };
 
-const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterlyBurn, totalDebt, setTotalDebt, block1Sats, block2Sats, targetSats2026, contractedRevenue, partnerReach, penetrationRate }) => {
+const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterlyBurn, totalDebt, setTotalDebt, block1Sats, block2Sats, targetSats2026, contractedRevenue, partnerReach, penetrationRate, chartRefreshKey }) => {
   const [chartType, setChartType] = useState('constellation');
 
   // Chart data - HISTORICAL ONLY
@@ -1324,7 +1338,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
     <h3 className="section-head">Stock Chart</h3>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
-    <StockChart symbol="ASTS" />
+    <StockChart symbol="ASTS" externalRefreshKey={chartRefreshKey} />
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — Space-Based Cellular" items={[

@@ -714,12 +714,26 @@ const BMNRDilutionAnalysis = () => {
   // Update indicator visibility toggle
   const [showIndicators, setShowIndicators] = useState(true);
 
+  // Chart refresh key - increment to trigger chart data refresh
+  const [chartRefreshKey, setChartRefreshKey] = useState(0);
+
   // Live price refresh hook
   const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
     'BMNR',
     DEFAULTS.currentStockPrice,
     { onPriceUpdate: (price) => setCurrentStockPrice(price) }
   );
+
+  // Combined refresh handler - updates both price and chart
+  const handleRefreshAll = useCallback(async () => {
+    await refreshPrice();
+    setChartRefreshKey(k => k + 1);
+  }, [refreshPrice]);
+
+  // Auto-fetch live price and chart on mount
+  useEffect(() => {
+    handleRefreshAll();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Use imported data from @/data/bmnr
   const historicalETH = HISTORICAL_ETH;
@@ -834,9 +848,9 @@ const BMNRDilutionAnalysis = () => {
               <div className="price-big" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 ${currentStockPrice.toFixed(2)}
                 <button
-                  onClick={refreshPrice}
+                  onClick={handleRefreshAll}
                   disabled={priceLoading}
-                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price'}
+                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price & chart'}
                   style={{
                     background: 'transparent',
                     border: 'none',
@@ -950,7 +964,7 @@ const BMNRDilutionAnalysis = () => {
         <main className="main">
         {/* Update Source Legend - Shows what each indicator color means */}
         <UpdateLegend />
-        {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} />}
+        {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} chartRefreshKey={chartRefreshKey} />}
         {activeTab === 'model' && <ModelTab currentETH={currentETH} setCurrentETH={setCurrentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
         {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
         {activeTab === 'staking' && <StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} />}
@@ -1827,7 +1841,7 @@ const OverviewParameterCard = ({
 };
 
 // OVERVIEW TAB with CFA Guide
-const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend }) => {
+const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend, chartRefreshKey }) => {
   // Chart data - HISTORICAL ONLY
   // BMNR pivoted to ETH treasury in July 2025 (was BTC mining before)
   const holdingsData = [
@@ -2008,7 +2022,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
     <h3 className="section-head">Stock Chart</h3>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
-    <StockChart symbol="BMNR" />
+    <StockChart symbol="BMNR" externalRefreshKey={chartRefreshKey} />
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — ETH Treasury Fundamentals" items={[
