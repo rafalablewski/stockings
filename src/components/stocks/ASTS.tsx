@@ -115,7 +115,7 @@
 
 import React, { useState, useMemo, useRef, useEffect, useCallback, Component, ErrorInfo, ReactNode } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
-import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
+import { SharedWallStreetTab, AnalystCoverage } from '../shared';
 import StockChart from '../shared/StockChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ComposedChart, Cell, PieChart, Pie, Legend, ReferenceLine } from 'recharts';
 
@@ -686,24 +686,18 @@ const ASTSAnalysis = () => {
 
   // Chart refresh key - increment to trigger chart data refresh
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
+  const [priceLastUpdated, setPriceLastUpdated] = useState<Date | null>(null);
 
-  // Live price refresh hook
-  const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
-    'ASTS',
-    DEFAULTS.currentStockPrice,
-    { onPriceUpdate: (price) => setCurrentStockPrice(price) }
-  );
+  // Handler for price updates from chart - this ensures big price matches chart
+  const handlePriceUpdate = useCallback((price: number) => {
+    setCurrentStockPrice(price);
+    setPriceLastUpdated(new Date());
+  }, []);
 
-  // Combined refresh handler - updates both price and chart
-  const handleRefreshAll = useCallback(async () => {
-    await refreshPrice();
+  // Refresh handler - triggers chart refresh which will update price
+  const handleRefreshAll = useCallback(() => {
     setChartRefreshKey(k => k + 1);
-  }, [refreshPrice]);
-
-  // Auto-fetch live price and chart on mount
-  useEffect(() => {
-    handleRefreshAll();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // Use imported data from @/data/asts
   const partners = PARTNERS;
@@ -803,22 +797,21 @@ const ASTSAnalysis = () => {
                 ${currentStockPrice.toFixed(2)}
                 <button
                   onClick={handleRefreshAll}
-                  disabled={priceLoading}
                   title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price & chart'}
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    cursor: priceLoading ? 'wait' : 'pointer',
+                    cursor: 'pointer',
                     padding: 8,
                     borderRadius: 8,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     transition: 'all 0.2s',
-                    opacity: priceLoading ? 0.5 : 0.6,
+                    opacity: 0.6,
                   }}
-                  onMouseEnter={(e) => { if (!priceLoading) e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'var(--surface2)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.opacity = priceLoading ? '0.5' : '0.6'; e.currentTarget.style.background = 'transparent'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'var(--surface2)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.6'; e.currentTarget.style.background = 'transparent'; }}
                 >
                   <svg
                     width="18"
@@ -829,10 +822,7 @@ const ASTSAnalysis = () => {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    style={{
-                      color: 'var(--text3)',
-                      animation: priceLoading ? 'spin 1s linear infinite' : 'none',
-                    }}
+                    style={{ color: 'var(--text3)' }}
                   >
                     <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                     <path d="M3 3v5h5" />
@@ -1338,7 +1328,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
     <h3 className="section-head">Stock Chart</h3>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
-    <StockChart symbol="ASTS" externalRefreshKey={chartRefreshKey} onRefresh={refreshPrice} />
+    <StockChart symbol="ASTS" externalRefreshKey={chartRefreshKey} onPriceUpdate={handlePriceUpdate} />
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — Space-Based Cellular" items={[

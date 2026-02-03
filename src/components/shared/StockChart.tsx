@@ -39,7 +39,7 @@ interface StockChartProps {
   symbol: string;
   height?: number;
   externalRefreshKey?: number;
-  onRefresh?: () => void;
+  onPriceUpdate?: (price: number) => void;
 }
 
 const RANGES = [
@@ -778,7 +778,7 @@ const ToggleSection = ({
   </div>
 );
 
-export default function StockChart({ symbol, height = 280, externalRefreshKey = 0, onRefresh }: StockChartProps) {
+export default function StockChart({ symbol, height = 280, externalRefreshKey = 0, onPriceUpdate }: StockChartProps) {
   const [data, setData] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -809,10 +809,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
   // Refresh trigger
   const [refreshKey, setRefreshKey] = useState(0);
-  const handleRefresh = () => {
-    setRefreshKey(k => k + 1);
-    onRefresh?.();
-  };
+  const handleRefresh = () => setRefreshKey(k => k + 1);
 
   // Comparison toggles
   const [showSPY, setShowSPY] = useState(false);
@@ -849,6 +846,9 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
         }
         const json = await res.json();
         setData(json);
+        if (json.regularMarketPrice && onPriceUpdate) {
+          onPriceUpdate(json.regularMarketPrice);
+        }
       } catch (err) {
         setError('Failed to load chart data');
         console.error(err);
