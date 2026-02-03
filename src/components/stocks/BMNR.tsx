@@ -1986,8 +1986,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters-header</div>
     <h3 className="section-head">Parameters</h3>
-
-    <h4 style={{ color: 'var(--cyan)', fontSize: 13, fontWeight: 600, marginBottom: 12, marginTop: 8 }}>Treasury Assets</h4>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#treasury-assets</div>
     <div className="g2">
       <OverviewParameterCard
         title="ETH Holdings"
@@ -2008,8 +2007,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         currentValue={DEFAULTS.ethPrice}
       />
     </div>
-
-    <h4 style={{ color: 'var(--mint)', fontSize: 13, fontWeight: 600, marginBottom: 12, marginTop: 20 }}>Capital Structure</h4>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-structure</div>
     <div className="g2">
       <OverviewParameterCard
         title="Shares (M)"
@@ -2030,8 +2028,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         showCurrentIndicator={false}
       />
     </div>
-
-    <h4 style={{ color: 'var(--violet)', fontSize: 13, fontWeight: 600, marginBottom: 12, marginTop: 20 }}>Dividend Income</h4>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dividend-income</div>
     <div className="g2">
       <OverviewParameterCard
         title="Qtr Dividend ($)"
