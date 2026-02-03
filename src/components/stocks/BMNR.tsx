@@ -7468,6 +7468,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       </div>
 
       {/* Future of Finance Thesis */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#fut-header</div>
       <h3>Is Ethereum the Future of Finance?</h3>
 
       {/* Institutional Adoption Evidence */}
