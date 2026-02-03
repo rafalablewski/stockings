@@ -383,7 +383,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 .g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-.g5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.g5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; }
 
 /* Highlight Boxes */
 .highlight {
@@ -1240,7 +1240,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-top: 1px solid var(--border);
 }
 .timeline-item.expanded .timeline-details {
-  max-height: 500px;
+  max-height: 2000px;
   padding: 20px;
 }
 .t-details-content {
@@ -1402,4 +1402,10 @@ input[type="range"]::-webkit-slider-thumb {
 .update-legend-item .dot.sec { background: rgba(34, 211, 238, 0.85); }
 .update-legend-item .dot.ws { background: rgba(167, 139, 250, 0.85); }
 .update-legend-item .dot.market { background: rgba(74, 222, 128, 0.85); }
+
+/* ═══ REFRESH BUTTON ANIMATION ═══ */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 `;

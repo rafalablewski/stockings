@@ -109,9 +109,9 @@
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  */
 
-import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback, Component, ErrorInfo, ReactNode } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
-import { SharedWallStreetTab, AnalystCoverage } from '../shared';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import StockChart from '../shared/StockChart';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
@@ -1753,9 +1753,11 @@ const ScenariosTab = () => {
 
   return (
     <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenarios-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Scenario Simulation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* Highlight Box */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenarios-intro</div>
       <div className="highlight">
         <h3>Multi-Year Projections</h3>
         <p className="text-sm">
@@ -1766,6 +1768,7 @@ const ScenariosTab = () => {
       </div>
 
       {/* Controls */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-controls</div>
       <div className="g2" style={{ }}>
         {/* Target Year Selector */}
         <div className="card">
@@ -1852,6 +1855,7 @@ const ScenariosTab = () => {
             </div>
 
             {/* Key Metrics */}
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-metrics</div>
             <div className="g4" style={{ }}>
               <div className="big-stat">
                 <div className="num" style={{ color: selected.color }}>${projection.sharePrice.toLocaleString()}</div>
@@ -1878,6 +1882,7 @@ const ScenariosTab = () => {
             </div>
 
             {/* Financial Projections Table */}
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-projections</div>
             <div className="card" style={{ }}>
               <div className="card-title">Financial Projections — {selected.name} Scenario</div>
               <div style={{ overflowX: 'auto' }}>
@@ -2017,6 +2022,7 @@ const ScenariosTab = () => {
             </div>
 
             {/* Assumptions & Catalysts */}
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-assumptions</div>
             <div className="g2" style={{ }}>
               <div className="card">
                 <div className="card-title">Key Assumptions</div>
@@ -2050,6 +2056,7 @@ const ScenariosTab = () => {
       })()}
 
       {/* Probability-Weighted Expected Value */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#expected-value</div>
       <div className="highlight" style={{ }}>
         <h3>Probability-Weighted Expected Value — {targetYear}</h3>
         <p style={{ color: 'var(--text2)' }}>
@@ -2275,6 +2282,7 @@ const ScenariosTab = () => {
         </div>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Scenario Modeling" items={[
         { term: 'Scenario Framework', def: 'Define discrete future states (Bull/Base/Bear) with specific assumptions for each. More structured than point estimates.' },
         { term: 'Revenue Drivers', def: 'For Circle: USDC circulation × interest rate × Circle\'s share. Decompose into controllable vs market-driven factors.' },
@@ -2320,8 +2328,10 @@ const DCFTab = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>DCF<UpdateIndicators sources="SEC" /></h2>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-intro</div>
       <div className="highlight">
         <h3>DCF Valuation</h3>
         <p className="text-sm">
@@ -2331,6 +2341,7 @@ const DCFTab = () => {
         </p>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-scenarios</div>
       <div className="g3" style={{ }}>
         {SCENARIOS.map(sc => (
           <div
@@ -2347,6 +2358,7 @@ const DCFTab = () => {
         ))}
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-inputs</div>
       <div className="g2">
         <div className="card">
           <div className="card-title">Model Inputs</div>
@@ -2362,6 +2374,7 @@ const DCFTab = () => {
       </div>
 
       {/* Financial Projections Table */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-projections</div>
       <div className="card">
         <div className="card-title">Projections</div>
         <div style={{ overflowX: 'auto' }}>
@@ -2425,6 +2438,7 @@ const DCFTab = () => {
         </div>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — DCF Valuation" items={[
         { term: 'Discounted Cash Flow', def: 'Present value of future free cash flows + terminal value. Most rigorous valuation method. Sensitive to assumptions.' },
         { term: 'WACC (Weighted Average Cost of Capital)', def: 'Blended cost of equity and debt. Used as discount rate. Higher WACC = lower present value.' },
@@ -3035,6 +3049,27 @@ function CRCLModel() {
   const [currentUSDC, setCurrentUSDC] = useState(USDC_DATA.usdcCirculation);  // From @/data/crcl/company.ts
   const [currentMarketShare, setCurrentMarketShare] = useState(USDC_DATA.marketShare);  // From @/data/crcl/company.ts
 
+  // Chart refresh key - increment to trigger chart data refresh
+  const [chartRefreshKey, setChartRefreshKey] = useState(0);
+
+  // Live price refresh hook - gets price from chart's API response
+  const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
+    'CRCL',
+    MARKET.price,
+    { onPriceUpdate: (price) => setCurrentStockPrice(price) }
+  );
+
+  // Combined refresh handler - updates both price and chart
+  const handleRefreshAll = useCallback(async () => {
+    await refreshPrice();
+    setChartRefreshKey(k => k + 1);
+  }, [refreshPrice]);
+
+  // Auto-fetch live price and chart on mount
+  useEffect(() => {
+    handleRefreshAll();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const toggleSection = (section: string) => {
     const next = new Set(investmentSections);
     if (next.has(section)) next.delete(section);
@@ -3245,10 +3280,56 @@ function CRCLModel() {
               </p>
             </div>
             <div className="price-block">
-              <div className="price-big">${MARKET.price.toFixed(2)}</div>
+              <div className="price-big" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                ${currentStockPrice.toFixed(2)}
+                <button
+                  onClick={handleRefreshAll}
+                  disabled={priceLoading}
+                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price & chart'}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: priceLoading ? 'wait' : 'pointer',
+                    padding: 8,
+                    borderRadius: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s',
+                    opacity: priceLoading ? 0.5 : 0.6,
+                  }}
+                  onMouseEnter={(e) => { if (!priceLoading) e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'var(--surface2)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = priceLoading ? '0.5' : '0.6'; e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{
+                      color: 'var(--text3)',
+                      animation: priceLoading ? 'spin 1s linear infinite' : 'none',
+                    }}
+                  >
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                    <path d="M16 21h5v-5" />
+                  </svg>
+                </button>
+              </div>
               <span className={`price-badge ${ipoReturn >= 0 ? 'up' : 'down'}`}>
                 {ipoReturn >= 0 ? '↑' : '↓'} {Math.abs(ipoReturn).toFixed(0)}% since IPO
               </span>
+              {priceLastUpdated && (
+                <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>
+                  Updated: {priceLastUpdated.toLocaleTimeString()}
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -3487,7 +3568,7 @@ function CRCLModel() {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
               <h3 className="section-head">Stock Chart</h3>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
-              <StockChart symbol="CRCL" />
+              <StockChart symbol="CRCL" externalRefreshKey={chartRefreshKey} onPriceUpdate={(price) => setCurrentStockPrice(price)} />
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — Stablecoin Economics" items={[
@@ -4732,7 +4813,8 @@ function CRCLModel() {
                   </div>
                 </div>
               </div>
-              
+
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — USDC Economics" items={[
                 { term: 'Reserve Yield Model', def: 'USDC reserves invested in T-bills and cash earn risk-free rate. Revenue = Circulation × Yield Rate. Simple but powerful business model.' },
                 { term: 'Circulation Drivers', def: 'Crypto market activity, DeFi usage, cross-border payments, institutional adoption. Tracks crypto market sentiment but growing secular use cases.' },

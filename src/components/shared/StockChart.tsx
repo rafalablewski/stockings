@@ -38,6 +38,8 @@ interface StockData {
 interface StockChartProps {
   symbol: string;
   height?: number;
+  externalRefreshKey?: number;
+  onPriceUpdate?: (price: number) => void;
 }
 
 const RANGES = [
@@ -776,7 +778,7 @@ const ToggleSection = ({
   </div>
 );
 
-export default function StockChart({ symbol, height = 280 }: StockChartProps) {
+export default function StockChart({ symbol, height = 280, externalRefreshKey = 0, onPriceUpdate }: StockChartProps) {
   const [data, setData] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -844,6 +846,9 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
         }
         const json = await res.json();
         setData(json);
+        if (json.regularMarketPrice && onPriceUpdate) {
+          onPriceUpdate(json.regularMarketPrice);
+        }
       } catch (err) {
         setError('Failed to load chart data');
         console.error(err);
@@ -853,7 +858,7 @@ export default function StockChart({ symbol, height = 280 }: StockChartProps) {
     };
 
     fetchData();
-  }, [symbol, range, refreshKey]);
+  }, [symbol, range, refreshKey, externalRefreshKey]);
 
   // Fetch comparison data when enabled
   useEffect(() => {

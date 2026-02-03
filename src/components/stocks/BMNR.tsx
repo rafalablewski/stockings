@@ -14,9 +14,15 @@
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
  * ║  BMNR (BitMine Immersion Technologies) Financial Analysis Model               ║
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
- * ║  Version: 2.4.9                                                               ║
- * ║  Last Updated: January 26, 2026                                               ║
+ * ║  Version: 2.5.0                                                               ║
+ * ║  Last Updated: February 2, 2026                                               ║
  * ║  Maintainer: Rafal (via Claude AI)                                            ║
+ * ║                                                                               ║
+ * ║  CHANGELOG v2.5.0:                                                            ║
+ * ║  - Feb 2, 2026 PR: 4.285M ETH, $10.7B total, staking hits 2.897M (67.6%)      ║
+ * ║  - Acquired 41,788 ETH in past week, now 3.55% of supply (~71% to 5%)         ║
+ * ║  - Cash: $586M, ETH price $2,317, #105 most traded ($1.1B/day)                ║
+ * ║  - Annualized staking revenue: $188M, MAVAN on track Q1 2026                  ║
  * ║                                                                               ║
  * ║  CHANGELOG v2.4.9:                                                            ║
  * ║  - Jan 26, 2026 PR: 4.243M ETH, $12.8B total, staking hits 2.009M (47.4%)     ║
@@ -194,9 +200,9 @@
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  */
 
-import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback, Component, ErrorInfo, ReactNode } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
-import { SharedWallStreetTab, AnalystCoverage } from '../shared';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import StockChart from '../shared/StockChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
@@ -645,21 +651,21 @@ const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
 CFANotes.displayName = 'CFANotes';
 
 /*
- * DEFAULT PARAMETERS - Based on latest official data (Jan 26, 2026 PR)
+ * DEFAULT PARAMETERS - Based on latest official data (Feb 2, 2026 PR)
  * Update these when new weekly holdings PRs are released
  *
  * Current defaults reflect:
- * - ETH Holdings: 4,243,338 (Jan 26, 2026 PR - 3.52% of 120.7M ETH supply)
- * - Shares Outstanding: 434M fully diluted (Jan 26, 2026 PR)
- * - Stock Price: ~$27.15 (Jan 26, 2026) - UPDATE REGULARLY
- * - ETH Price: $2,839 (Jan 25, 2026 Coinbase)
- * - Staking Ratio: 47.36% (2,009,267 ETH staked via 3 providers, Jan 25)
+ * - ETH Holdings: 4,285,125 (Feb 2, 2026 PR - 3.55% of 120.7M ETH supply)
+ * - Shares Outstanding: 434M fully diluted (Feb 2, 2026 PR)
+ * - Stock Price: ~$27.15 (Feb 2, 2026) - UPDATE REGULARLY
+ * - ETH Price: $2,317 (Feb 1, 2026 Coinbase)
+ * - Staking Ratio: 67.6% (2,897,459 ETH staked via 3 providers, Feb 1)
  * - Base Staking APY: 2.81% (CESR rate)
- * - Total Cash: $682M
+ * - Total Cash: $586M
  * - BTC Holdings: 193 BTC
- * - Moonshots: $19M (Eightco ORBS stake)
+ * - Moonshots: $20M (Eightco ORBS stake)
  * - Strategic Investments: $200M (Beast Industries - MrBeast, CLOSED Jan 17)
- * - Total Holdings: $12.8B (crypto + cash + moonshots + strategic investments)
+ * - Total Holdings: $10.7B (crypto + cash + moonshots + strategic investments)
  *
  * COMPANY INFO (SEC EDGAR):
  * - CIK: 0001829311
@@ -669,7 +675,7 @@ CFANotes.displayName = 'CFANotes';
  * - Fiscal Year End: August 31
  */
 const BMNRDilutionAnalysis = () => {
-  // === DATA FRESHNESS: Last updated Jan 26, 2026 ===
+  // === DATA FRESHNESS: Last updated Feb 2, 2026 ===
   // Update prices regularly - stale data affects all NAV calculations
   const [currentETH, setCurrentETH] = useState(DEFAULTS.currentETH);  // From @/data/bmnr/company.ts
   const [currentShares, setCurrentShares] = useState(DEFAULTS.currentShares);  // From @/data/bmnr/company.ts
@@ -707,6 +713,27 @@ const BMNRDilutionAnalysis = () => {
 
   // Update indicator visibility toggle
   const [showIndicators, setShowIndicators] = useState(true);
+
+  // Chart refresh key - increment to trigger chart data refresh
+  const [chartRefreshKey, setChartRefreshKey] = useState(0);
+
+  // Live price refresh hook - gets price from chart's API response
+  const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
+    'BMNR',
+    DEFAULTS.currentStockPrice,
+    { onPriceUpdate: (price) => setCurrentStockPrice(price) }
+  );
+
+  // Combined refresh handler - updates both price and chart
+  const handleRefreshAll = useCallback(async () => {
+    await refreshPrice();
+    setChartRefreshKey(k => k + 1);
+  }, [refreshPrice]);
+
+  // Auto-fetch live price and chart on mount
+  useEffect(() => {
+    handleRefreshAll();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Use imported data from @/data/bmnr
   const historicalETH = HISTORICAL_ETH;
@@ -818,10 +845,56 @@ const BMNRDilutionAnalysis = () => {
               </p>
             </div>
             <div className="price-block">
-              <div className="price-big">${currentStockPrice.toFixed(2)}</div>
+              <div className="price-big" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                ${currentStockPrice.toFixed(2)}
+                <button
+                  onClick={handleRefreshAll}
+                  disabled={priceLoading}
+                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price & chart'}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: priceLoading ? 'wait' : 'pointer',
+                    padding: 8,
+                    borderRadius: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s',
+                    opacity: priceLoading ? 0.5 : 0.6,
+                  }}
+                  onMouseEnter={(e) => { if (!priceLoading) e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'var(--surface2)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = priceLoading ? '0.5' : '0.6'; e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{
+                      color: 'var(--text3)',
+                      animation: priceLoading ? 'spin 1s linear infinite' : 'none',
+                    }}
+                  >
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                    <path d="M16 21h5v-5" />
+                  </svg>
+                </button>
+              </div>
               <div className={`price-badge ${calc.navPremium >= 0 ? 'up' : 'down'}`}>
                 {calc.navPremium >= 0 ? '↑' : '↓'} {Math.abs(calc.navPremium).toFixed(1)}% vs NAV
               </div>
+              {priceLastUpdated && (
+                <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>
+                  Updated: {priceLastUpdated.toLocaleTimeString()}
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -830,7 +903,7 @@ const BMNRDilutionAnalysis = () => {
         <div className="stats-row">
           <Stat label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} color="violet" updateSource={['PR', 'MARKET']} />
           <Stat label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(1)}B`} updateSource="MARKET" />
-          <Stat label="ETH Holdings" value={`${(currentETH / 1e6).toFixed(2)}M`} color="violet" updateSource="PR" />
+          <Stat label="ETH Holdings" value={`${(currentETH / 1e6).toFixed(2)}M (${(currentETH / 120700000 * 100).toFixed(2)}% / 5%)`} color="violet" updateSource="PR" />
           <Stat label="ETH Price" value={`$${ethPrice.toLocaleString()}`} updateSource="MARKET" />
           <Stat label="Staking Yield" value={`${calc.effectiveAPY.toFixed(2)}%`} color="mint" updateSource="PR" />
           <Stat label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} color="sky" updateSource="PR" />
@@ -891,7 +964,7 @@ const BMNRDilutionAnalysis = () => {
         <main className="main">
         {/* Update Source Legend - Shows what each indicator color means */}
         <UpdateLegend />
-        {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} />}
+        {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} chartRefreshKey={chartRefreshKey} />}
         {activeTab === 'model' && <ModelTab currentETH={currentETH} setCurrentETH={setCurrentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
         {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
         {activeTab === 'staking' && <StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} />}
@@ -1624,6 +1697,7 @@ const OverviewParameterCard = ({
   onChange,
   format = '',
   currentValue,
+  showCurrentIndicator = true,
 }: {
   title: string;
   explanation: string;
@@ -1632,6 +1706,7 @@ const OverviewParameterCard = ({
   onChange: (v: number) => void;
   format?: string;
   currentValue?: number;
+  showCurrentIndicator?: boolean;
 }) => {
   const [customMode, setCustomMode] = useState(false);
   const [customInput, setCustomInput] = useState('');
@@ -1694,7 +1769,7 @@ const OverviewParameterCard = ({
                 overflow: 'hidden',
               }}
             >
-              {isCurrent && (
+              {showCurrentIndicator && isCurrent && (
                 <div style={{
                   position: 'absolute',
                   top: 4,
@@ -1754,13 +1829,27 @@ const OverviewParameterCard = ({
               fontSize: 12,
               fontWeight: isCustomValue ? 600 : 400,
               color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
+              position: 'relative',
             }}
           >
+            {/* Position indicator dot - shows when current real value is custom (not a preset) */}
+            {showCurrentIndicator && currentValue !== undefined && !options.slice(0, 6).includes(currentValue) && (
+              <div style={{
+                position: 'absolute',
+                top: 4,
+                right: 4,
+                width: 4,
+                height: 4,
+                borderRadius: '50%',
+                background: 'var(--text3)',
+                opacity: 0.4,
+              }} />
+            )}
             {isCustomValue ? formatValue(value) : '...'}
           </div>
         )}
       </div>
-      <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>
+      <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 8 }}>
         ← Bearish | Bullish →
       </div>
     </div>
@@ -1768,7 +1857,7 @@ const OverviewParameterCard = ({
 };
 
 // OVERVIEW TAB with CFA Guide
-const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend }) => {
+const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurrentShares, currentStockPrice, setCurrentStockPrice, ethPrice, setEthPrice, quarterlyDividend, setQuarterlyDividend, chartRefreshKey }) => {
   // Chart data - HISTORICAL ONLY
   // BMNR pivoted to ETH treasury in July 2025 (was BTC mining before)
   const holdingsData = [
@@ -1895,8 +1984,9 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       </div>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters-header</div>
     <h3 className="section-head">Parameters</h3>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#treasury-assets</div>
     <div className="g2">
       <OverviewParameterCard
         title="ETH Holdings"
@@ -1917,7 +2007,8 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         currentValue={DEFAULTS.ethPrice}
       />
     </div>
-    <div className="g3">
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-structure</div>
+    <div className="g2">
       <OverviewParameterCard
         title="Shares (M)"
         explanation="Total diluted shares. Higher count dilutes ETH/share and NAV/share."
@@ -1934,7 +2025,11 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         onChange={setCurrentStockPrice}
         format="$"
         currentValue={DEFAULTS.currentStockPrice}
+        showCurrentIndicator={false}
       />
+    </div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dividend-income</div>
+    <div className="g2">
       <OverviewParameterCard
         title="Qtr Dividend ($)"
         explanation="Per-share quarterly dividend. Higher dividend = better yield for income investors."
@@ -1949,15 +2044,20 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
     <h3 className="section-head">Stock Chart</h3>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
-    <StockChart symbol="BMNR" />
+    <StockChart symbol="BMNR" externalRefreshKey={chartRefreshKey} onPriceUpdate={(price) => setCurrentStockPrice(price)} />
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — ETH Treasury Fundamentals" items={[
-      { term: 'Net Asset Value (NAV)', def: 'The per-share intrinsic value = (Total ETH Holdings × ETH Price) ÷ Shares Outstanding. Represents liquidation value — what each share would be worth if all ETH were sold today. This is the fundamental anchor for valuation.' },
-      { term: 'Premium/Discount to NAV', def: 'The % difference between stock price and NAV. Premium (positive) means market prices in future appreciation, management alpha, or scarcity. Discount (negative) suggests market doubts or liquidity concerns. MSTR historically trades 1.5-2.5x NAV.' },
-      { term: 'ETH per Share (Backing Ratio)', def: 'Your fractional ETH ownership = Total ETH ÷ Shares. If this increases (via buybacks or accretive offerings), shareholders gain value even if ETH price is flat.' },
-      { term: 'Dividend Yield', def: 'Annual Dividend ÷ Stock Price. BMNR announced its first dividend ($0.01/share quarterly) in Nov 2025, becoming the first large-cap crypto treasury to pay dividends. Funded by staking income.' },
-      { term: 'Market Cap vs NAV', def: 'Market Cap = Shares × Stock Price. Compare to total ETH value to understand market sentiment. Premium indicates growth expectations; discount indicates skepticism.' },
+      { term: 'Net Asset Value (NAV)', def: 'Intrinsic value of underlying assets = (ETH Holdings × ETH Price + Cash + Other Assets). NOT dependent on stock price. NAV is what the company owns; stock price is what market will pay for it.' },
+      { term: 'NAV/Share', def: 'NAV ÷ Shares Outstanding. The per-share liquidation value. Example: $10.5B NAV ÷ 434M shares = $24.23/share. This is independent of where stock trades.' },
+      { term: 'mNAV (NAV Multiple)', def: 'Stock Price ÷ NAV/Share. If stock = $27 and NAV = $24, mNAV = 1.125x (12.5% premium). mNAV > 1 = premium, mNAV < 1 = discount. MSTR trades 2-3x; GBTC traded at -40% discount for years.' },
+      { term: 'Premium/Discount Drivers', def: 'Premiums reflect: management alpha, scarcity value, institutional access, yield generation. Discounts reflect: liquidity concerns, management fees, redemption restrictions, market skepticism.' },
+      { term: 'ETH/Share (Backing Ratio)', def: 'ETH Holdings ÷ Shares. Your fractional ETH ownership. If this rises (buybacks, accretive offerings), you gain even if ETH is flat. Dilution reduces this; accretion increases it.' },
+      { term: 'Accretive vs Dilutive Issuance', def: 'Issuing shares above NAV is ACCRETIVE (increases ETH/share for existing holders). Below NAV is DILUTIVE. At 1.5x mNAV, selling $100 of stock buys $150 of ETH equivalent.' },
+      { term: 'Staking Yield (CESR)', def: 'Composite Ethereum Staking Rate — the benchmark yield for staking ETH (~2.81%). BMNR earns this on staked ETH. At 2.9M ETH staked × 2.81% = ~$188M/yr annualized income.' },
+      { term: 'Staking Ratio', def: '% of ETH holdings that are staked. Higher = more yield income. BMNR at 67.6% (2.9M of 4.3M). Target is near 100% via MAVAN. Unstaked ETH earns nothing.' },
+      { term: 'Flywheel Effect', def: 'Premium → Issue shares → Buy ETH → NAV grows → Premium sustained → Repeat. Only works while mNAV > 1. This is how MSTR accumulated 470K+ BTC.' },
+      { term: 'NAV Floor', def: 'Theoretical minimum value = liquidation value. In practice, discounts can persist (GBTC). Buybacks at discount are value-accretive and can defend NAV floor.' },
     ]} />
   </div>
   );
@@ -2623,43 +2723,53 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Staking<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-intro</div>
       <div className="highlight"><h3>ETH Staking Yield</h3>
-        <p className="text-sm">BMNR generates yield by staking ETH through validators. Compare staking strategies and model compounding returns over time.</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>BMNR generates yield by staking ETH through validators. Compare staking strategies and model compounding returns over time.</p>
       </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-strategy</div>
       <div className="g3">
-        <button onClick={() => setStakingType('solo')} className={`p-4 rounded-xl border text-left ${stakingType === 'solo' ? 'bg-violet-600/20 border-violet-500' : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'}`}>
-          <div className="flex justify-between mb-2"><span className="font-medium">Solo Staking</span><span className="text-lg font-bold text-green-400">{soloAPY.toFixed(1)}%</span></div>
-          <p className="text-xs text-slate-400">Run validators. +0.5% MEV/tips.</p><p className="text-xs text-orange-400 mt-1">Higher risk: slashing, technical</p>
-        </button>
-        <button onClick={() => setStakingType('liquid')} className={`p-4 rounded-xl border text-left ${stakingType === 'liquid' ? 'bg-violet-600/20 border-violet-500' : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'}`}>
-          <div className="flex justify-between mb-2"><span className="font-medium">Liquid Staking</span><span className="text-lg font-bold text-green-400">{liquidAPY.toFixed(1)}%</span></div>
-          <p className="text-xs text-slate-400">Lido (stETH), Rocket Pool (rETH)</p><p className="text-xs text-yellow-400 mt-1">Medium risk: smart contract</p>
-        </button>
-        <button onClick={() => setStakingType('restaking')} className={`p-4 rounded-xl border text-left ${stakingType === 'restaking' ? 'bg-violet-600/20 border-violet-500' : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'}`}>
-          <div className="flex justify-between mb-2"><span className="font-medium">Restaking</span><span className="text-lg font-bold text-green-400">{restakingAPY.toFixed(1)}%</span></div>
-          <p className="text-xs text-slate-400">EigenLayer + LSTs. +{restakingBonus}% bonus.</p><p className="text-xs text-red-400 mt-1">Higher risk: AVS slashing</p>
-        </button>
+        <div onClick={() => setStakingType('solo')} style={{ padding: 16, borderRadius: 12, border: stakingType === 'solo' ? '2px solid var(--violet)' : '1px solid var(--border)', background: stakingType === 'solo' ? 'var(--violet-dim)' : 'var(--surface2)', cursor: 'pointer', textAlign: 'left' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><span style={{ fontWeight: 500 }}>Solo Staking</span><span style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>{soloAPY.toFixed(1)}%</span></div>
+          <p style={{ fontSize: 12, color: 'var(--text3)' }}>Run validators. +0.5% MEV/tips.</p><p style={{ fontSize: 12, color: 'var(--gold)', marginTop: 4 }}>Higher risk: slashing, technical</p>
+        </div>
+        <div onClick={() => setStakingType('liquid')} style={{ padding: 16, borderRadius: 12, border: stakingType === 'liquid' ? '2px solid var(--violet)' : '1px solid var(--border)', background: stakingType === 'liquid' ? 'var(--violet-dim)' : 'var(--surface2)', cursor: 'pointer', textAlign: 'left' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><span style={{ fontWeight: 500 }}>Liquid Staking</span><span style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>{liquidAPY.toFixed(1)}%</span></div>
+          <p style={{ fontSize: 12, color: 'var(--text3)' }}>Lido (stETH), Rocket Pool (rETH)</p><p style={{ fontSize: 12, color: 'var(--gold)', marginTop: 4 }}>Medium risk: smart contract</p>
+        </div>
+        <div onClick={() => setStakingType('restaking')} style={{ padding: 16, borderRadius: 12, border: stakingType === 'restaking' ? '2px solid var(--violet)' : '1px solid var(--border)', background: stakingType === 'restaking' ? 'var(--violet-dim)' : 'var(--surface2)', cursor: 'pointer', textAlign: 'left' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><span style={{ fontWeight: 500 }}>Restaking</span><span style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>{restakingAPY.toFixed(1)}%</span></div>
+          <p style={{ fontSize: 12, color: 'var(--text3)' }}>EigenLayer + LSTs. +{restakingBonus}% bonus.</p><p style={{ fontSize: 12, color: 'var(--coral)', marginTop: 4 }}>Higher risk: AVS slashing</p>
+        </div>
       </div>
-      <div className="card"><div className="card-title">Parameters</div><div className="grid grid-cols-2 md:grid-cols-4 gap-4"><Input label="Base APY (%)" value={baseStakingAPY} onChange={setBaseStakingAPY} step={0.1} /><Input label="Restaking Bonus (%)" value={restakingBonus} onChange={setRestakingBonus} step={0.1} /><Input label="% ETH Staked" value={stakingRatio} onChange={setStakingRatio} max={100} /><Input label="Slashing Risk (%/yr)" value={slashingRisk} onChange={setSlashingRisk} step={0.1} /></div></div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-params</div>
+      <div className="card"><div className="card-title">Parameters</div><div className="g4"><Input label="Base APY (%)" value={baseStakingAPY} onChange={setBaseStakingAPY} step={0.1} /><Input label="Restaking Bonus (%)" value={restakingBonus} onChange={setRestakingBonus} step={0.1} /><Input label="% ETH Staked" value={stakingRatio} onChange={setStakingRatio} max={100} /><Input label="Slashing Risk (%/yr)" value={slashingRisk} onChange={setSlashingRisk} step={0.1} /></div></div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-output</div>
+      <div className="g4">
         <Card label="Effective APY" value={`${calc.effectiveAPY.toFixed(2)}%`} sub="Net annual yield" color="green" updateSource="PR" />
         <Card label="Staked ETH" value={`${(calc.stakedETH / 1e6).toFixed(2)}M`} sub={`${stakingRatio}% of holdings`} color="blue" updateSource="PR" />
         <Card label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} sub="Before slashing" color="yellow" updateSource="PR" />
         <Card label="Yield Value" value={`$${(calc.annualYieldUSD / 1e6).toFixed(1)}M`} sub="At current price" color="purple" updateSource={['PR', 'MARKET']} />
       </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-projections</div>
       <div className="card"><div className="card-title">Yield Projections (Compounding)</div>
         <table className="tbl"><thead><tr><th>Year</th><th className="r">Yield ETH</th><th className="r">Total ETH</th><th className="r">NAV/Share</th></tr></thead>
         <tbody>{projections.map(p => (<tr key={p.year}><td>{p.year}Y</td><td className="r mint">+{Math.round(p.yieldETH).toLocaleString()}</td><td className="r">{(p.totalETH / 1e6).toFixed(2)}M</td><td className="r" style={{ fontWeight: 500 }}>${p.nav.toFixed(2)}</td></tr>))}</tbody></table>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Staking & Yield" items={[
-        { term: 'MAVAN (Made in America Validator Network)', def: 'BMNR\'s proprietary staking infrastructure targeting Q1 2026 launch. Currently working with 3 staking providers. At scale: $374M annual staking fee (~$1M+/day).' },
-        { term: 'Proof-of-Stake Staking', def: 'Locking ETH to validate Ethereum consensus. Validators earn ~3-5% APY from block rewards and transaction fees. Unlike BTC, ETH generates yield — a structural advantage for ETH treasuries.' },
-        { term: 'Solo Staking (+0.5%)', def: 'Run your own validators (32 ETH each). Higher yield from MEV + priority tips, but requires technical expertise and faces direct slashing risk if nodes misbehave.' },
-        { term: 'Liquid Staking (Base APY)', def: 'Deposit to Lido (stETH) or Rocket Pool (rETH). Get liquid tokens tradeable instantly. Trade-off: ~10% fee to protocol, smart contract risk.' },
-        { term: 'Restaking (EigenLayer)', def: 'Stake LSTs on EigenLayer to secure additional protocols (AVS). Bonus yield but compounds slashing risk — if an AVS fails, you can lose staked ETH.' },
-        { term: 'Compounding Effect', def: `${calc.effectiveAPY.toFixed(1)}% APY over 5 years = ${((Math.pow(1 + calc.effectiveAPY/100, 5) - 1) * 100).toFixed(1)}% cumulative NAV growth, even if ETH price is flat.` },
+        { term: 'CESR (Composite ETH Staking Rate)', def: 'Industry benchmark staking yield (~2.81%), administered by Quatrefoil. Like SOFR for ETH staking. BMNR uses this as reference rate for staking income projections.' },
+        { term: 'Staking Income vs ETH Appreciation', def: 'Two return sources: (1) Staking yield — predictable ~3% APY income stream; (2) ETH price — volatile capital gains. Staking provides income floor even if ETH is flat.' },
+        { term: 'MAVAN (Made in America Validator Network)', def: 'BMNR\'s proprietary staking infrastructure (Q1 2026). Eliminates third-party fees, improves margins. At 100% staking: $374M/yr income at current holdings.' },
+        { term: 'Slashing Risk', def: 'Validators lose staked ETH if they misbehave (double-signing, downtime). Solo staking has higher risk; liquid staking spreads risk across many validators. BMNR uses 3 providers to diversify.' },
+        { term: 'Validator Economics', def: '32 ETH minimum per validator. Rewards from: block proposals, attestations, sync committees, MEV tips. Larger operators get more consistent returns (law of large numbers).' },
+        { term: 'Liquid Staking Tokens (LSTs)', def: 'stETH (Lido), rETH (Rocket Pool) — tokens representing staked ETH. Trade freely while underlying ETH earns yield. ~10% protocol fee. Smart contract risk.' },
+        { term: 'Restaking (EigenLayer)', def: 'Re-use staked ETH to secure other protocols (AVS). Bonus yield but compounds slashing risk. BMNR currently not restaking — conservative approach.' },
+        { term: 'Yield on Cost vs Current Yield', def: 'Yield on cost = income ÷ purchase price. If you bought at $1,500/ETH and earn 3%, your yield on cost rises as ETH appreciates. Current yield = income ÷ current price.' },
+        { term: 'Compounding Effect', def: `${calc.effectiveAPY.toFixed(1)}% APY over 5 years = ${((Math.pow(1 + calc.effectiveAPY/100, 5) - 1) * 100).toFixed(1)}% cumulative NAV growth from staking alone, even if ETH price is flat.` },
       ]} />
     </div>
   );
@@ -2698,40 +2808,49 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Dilution<UpdateIndicators sources="SEC" /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-intro</div>
       <div className="highlight"><h3>Equity Dilution Analysis</h3>
-        <p className="text-sm">Model the impact of share issuance on NAV per share. Accretive when issued above NAV; dilutive when below.</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>Model the impact of share issuance on NAV per share. Accretive when issued above NAV; dilutive when below.</p>
       </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#single-tranche</div>
       <div className="card"><div className="card-title">Single Tranche</div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4"><Input label="Dilution %" value={dilutionPercent} onChange={setDilutionPercent} max={100} /><Input label="Sale Discount %" value={saleDiscount} onChange={setSaleDiscount} max={50} /><Input label="NAV Multiple" value={navMultiple} onChange={setNavMultiple} step={0.1} /><div className="text-sm"><div className="text-slate-400 mb-1">Available</div><div className="font-medium">{(maxAuthorizedShares - currentShares).toLocaleString()}M</div></div></div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="g4"><Input label="Dilution %" value={dilutionPercent} onChange={setDilutionPercent} max={100} /><Input label="Sale Discount %" value={saleDiscount} onChange={setSaleDiscount} max={50} /><Input label="NAV Multiple" value={navMultiple} onChange={setNavMultiple} step={0.1} /><div style={{ fontSize: 14 }}><div style={{ color: 'var(--text3)' }}>Available</div><div style={{ fontWeight: 500 }}>{(maxAuthorizedShares - currentShares).toLocaleString()}M</div></div></div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-output</div>
+        <div className="g4">
           <Card label="New Shares" value={`${singleTranche.newShares.toFixed(0)}M`} sub="Issued" color="blue" />
           <Card label="Proceeds" value={`$${(singleTranche.proceeds / 1e9).toFixed(2)}B`} sub="Raised" color="green" />
           <Card label="ETH Bought" value={`${(singleTranche.ethBought / 1e6).toFixed(2)}M`} sub="Purchased" color="yellow" />
           <Card label="NAV Change" value={`${singleTranche.navChange >= 0 ? '+' : ''}${singleTranche.navChange.toFixed(1)}%`} sub={singleTranche.navChange >= 0 ? 'Accretive ✓' : 'Dilutive ✗'} color={singleTranche.navChange >= 0 ? 'green' : 'red'} />
         </div>
       </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#multi-tranche</div>
       <div className="card"><div className="card-title">Multi-Tranche Schedule</div>
-        <div className="space-y-3">{tranches.map(t => (
-          <div key={t.id} className={`p-3 rounded-lg border flex items-center gap-4 ${t.enabled ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-900/50 border-slate-800 opacity-60'}`}>
-            <input type="checkbox" checked={t.enabled} onChange={e => updateTranche(t.id, 'enabled', e.target.checked)} className="w-4 h-4" />
-            <div className="grid grid-cols-4 gap-3 flex-1">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{tranches.map(t => (
+          <div key={t.id} style={{ padding: 12, borderRadius: 8, border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 16, background: t.enabled ? 'var(--surface2)' : 'var(--surface)', opacity: t.enabled ? 1 : 0.6 }}>
+            <input type="checkbox" checked={t.enabled} onChange={e => updateTranche(t.id, 'enabled', e.target.checked)} style={{ width: 16, height: 16 }} />
+            <div className="g4" style={{ flex: 1 }}>
               <Input label="Year" value={t.year} onChange={v => updateTranche(t.id, 'year', v)} step={0.5} />
               <Input label="Shares (M)" value={t.sharesM} onChange={v => updateTranche(t.id, 'sharesM', v)} />
               <Input label="ETH Price ($)" value={t.ethPrice} onChange={v => updateTranche(t.id, 'ethPrice', v)} />
-              {multiTranche.results.find(r => r.id === t.id) && <div className="text-sm"><div className="text-slate-400">Accretion</div><div className={multiTranche.results.find(r => r.id === t.id)?.accretion >= 0 ? 'text-green-400' : 'text-red-400'}>{multiTranche.results.find(r => r.id === t.id)?.accretion >= 0 ? '+' : ''}{multiTranche.results.find(r => r.id === t.id)?.accretion.toFixed(1)}%</div></div>}
+              {multiTranche.results.find(r => r.id === t.id) && <div style={{ fontSize: 14 }}><div style={{ color: 'var(--text3)' }}>Accretion</div><div style={{ color: multiTranche.results.find(r => r.id === t.id)?.accretion >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{multiTranche.results.find(r => r.id === t.id)?.accretion >= 0 ? '+' : ''}{multiTranche.results.find(r => r.id === t.id)?.accretion.toFixed(1)}%</div></div>}
             </div>
           </div>
         ))}</div>
-        <div className="mt-4 pt-4 border-t border-slate-700 flex justify-between"><span className="text-slate-400">Active: {tranches.filter(t => t.enabled).length}</span><div className="text-right"><div className="text-slate-400 text-sm">Cumulative</div><div className={`text-xl font-bold ${multiTranche.totalAccretion >= 0 ? 'text-green-400' : 'text-red-400'}`}>{multiTranche.totalAccretion >= 0 ? '+' : ''}{multiTranche.totalAccretion.toFixed(1)}%</div></div></div>
+        <div style={{ borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Active: {tranches.filter(t => t.enabled).length}</span><div style={{ textAlign: 'right' }}><div style={{ color: 'var(--text3)', fontSize: 14 }}>Cumulative</div><div style={{ fontSize: 20, fontWeight: 700, color: multiTranche.totalAccretion >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{multiTranche.totalAccretion >= 0 ? '+' : ''}{multiTranche.totalAccretion.toFixed(1)}%</div></div></div>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Dilution & Accretion" items={[
-        { term: 'Accretive vs Dilutive', def: 'Accretive = shares issued ABOVE NAV, proceeds buy more ETH per share than dilution costs, NAV/share increases. Dilutive = shares below NAV or proceeds not deployed efficiently, NAV/share decreases.' },
-        { term: 'Premium Capture', def: 'If stock trades at 1.5x NAV and you issue at that price, you\'re buying $1.50 of ETH for every $1 of NAV dilution. This premium capture drives accretion.' },
-        { term: 'Multi-Tranche Strategy', def: 'Staged raises allow selling into strength. Higher ETH price = more USD per share = more ETH bought. Each tranche calculates accretion based on cumulative prior ETH/shares.' },
-        { term: 'Risk Adjustments', def: `Slashing (${slashingRisk}%) reduces ETH holdings. Liquidity discount (${liquidityDiscount}%) penalizes staked ETH illiquidity. Regulatory (${regulatoryRisk}%) for legal uncertainty.` },
-        { term: 'Available Capacity', def: 'Authorized shares minus outstanding = available for future offerings. ATM programs draw from this capacity over time.' },
+        { term: 'The Accretion Formula', def: 'If Stock Price > NAV/Share, issuing shares is ACCRETIVE. Example: NAV = $24, Stock = $30. Sell 10M shares at $30 = $300M. Buy $300M/$2,317 = 129.5K ETH. New NAV/share rises because you added more ETH value than share dilution.' },
+        { term: 'Break-Even mNAV', def: 'At mNAV = 1.0x (stock = NAV), issuance is neutral. Above 1.0x = accretive. Below 1.0x = dilutive. The higher the premium, the more accretive each dollar raised.' },
+        { term: 'ATM (At-The-Market) Offering', def: 'Sell shares gradually into market at prevailing prices. More flexible than fixed offerings. BMNR has $24.5B ATM shelf capacity. Avoids single-day price impact.' },
+        { term: 'Premium Capture Math', def: 'At 1.5x mNAV: sell $1 of stock → buy $1 of ETH → but only diluted NAV by $0.67. Net gain = $0.33 per dollar raised. This is the flywheel that built MSTR.' },
+        { term: 'Authorized vs Outstanding', def: 'Authorized shares = maximum allowed by charter (now 50B after 81% YES vote). Outstanding = actually issued (434M). Difference = capacity for future raises without shareholder approval.' },
+        { term: 'ETH/Share Tracking', def: 'The key metric: Total ETH ÷ Total Shares. Accretive actions increase this; dilutive decrease it. Even if ETH price falls, rising ETH/share means you own more of the asset.' },
+        { term: 'Risk Adjustments', def: `Slashing (${slashingRisk}%) reduces ETH holdings. Liquidity discount (${liquidityDiscount}%) for staked ETH illiquidity. Regulatory (${regulatoryRisk}%) for legal uncertainty.` },
+        { term: 'Death Spiral Risk', def: 'If stock falls below NAV and company must raise capital, forced dilutive issuance → lower NAV → lower stock → more dilution. Avoided by maintaining cash buffer and buyback authorization.' },
       ]} />
     </div>
   );
@@ -2744,24 +2863,30 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Debt<UpdateIndicators sources="SEC" /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-intro</div>
       <div className="highlight"><h3>Leverage & Convertible Debt</h3>
-        <p className="text-sm">Model convertible debt financing and analyze LTV covenant risks. Track death spiral trigger prices.</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>Model convertible debt financing and analyze LTV covenant risks. Track death spiral trigger prices.</p>
       </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-params</div>
       <div className="card"><div className="card-title">Debt Parameters</div>
-        <label className="flex items-center gap-2 mb-4 cursor-pointer"><input type="checkbox" checked={useDebt} onChange={e => setUseDebt(e.target.checked)} className="w-4 h-4" /><span>Enable Convertible Debt</span></label>
-        {useDebt && <div className="grid grid-cols-2 md:grid-cols-5 gap-4"><Input label="Principal ($M)" value={debtAmount} onChange={setDebtAmount} /><Input label="Coupon (%)" value={debtRate} onChange={setDebtRate} step={0.1} /><Input label="Maturity (Yrs)" value={debtMaturity} onChange={setDebtMaturity} /><Input label="Conv. Premium (%)" value={conversionPremium} onChange={setConversionPremium} /><Input label="LTV Covenant (%)" value={debtCovenantLTV} onChange={setDebtCovenantLTV} /></div>}
+        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}><input type="checkbox" checked={useDebt} onChange={e => setUseDebt(e.target.checked)} style={{ width: 16, height: 16 }} /><span>Enable Convertible Debt</span></label>
+        {useDebt && <div className="g5"><Input label="Principal ($M)" value={debtAmount} onChange={setDebtAmount} /><Input label="Coupon (%)" value={debtRate} onChange={setDebtRate} step={0.1} /><Input label="Maturity (Yrs)" value={debtMaturity} onChange={setDebtMaturity} /><Input label="Conv. Premium (%)" value={conversionPremium} onChange={setConversionPremium} /><Input label="LTV Covenant (%)" value={debtCovenantLTV} onChange={setDebtCovenantLTV} /></div>}
       </div>
       {useDebt && (<>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-metrics</div>
+        <div className="g4">
           <Card label="Leverage" value={`${(calc.leverageRatio * 100).toFixed(1)}%`} sub="Debt/Mkt Cap" color="blue" />
           <Card label="Current LTV" value={`${(calc.ltv * 100).toFixed(1)}%`} sub={`Covenant: ${debtCovenantLTV}%`} color={calc.ltv * 100 < debtCovenantLTV * 0.8 ? 'green' : calc.ltv * 100 < debtCovenantLTV ? 'yellow' : 'red'} />
           <Card label="Conv. Price" value={`$${calc.conversionPrice.toFixed(2)}`} sub={`+${conversionPremium}%`} color="purple" />
           <Card label="Death Spiral" value={`$${calc.deathSpiralETHPrice.toFixed(0)}`} sub="ETH trigger" color="red" />
         </div>
-        <div className="card"><div className="card-title">LTV Under Drawdown</div><div className="grid grid-cols-5 gap-2">{drawdown.map(d => (<div key={d.drawdown} className={`p-3 rounded-lg text-center ${d.breach ? 'bg-red-900/30 border border-red-500' : 'bg-slate-800/50'}`}><div className="text-xs text-slate-400">{d.drawdown === 0 ? 'Current' : `${d.drawdown}%`}</div><div className="font-medium">${d.ethPrice.toFixed(0)}</div><div className={`text-lg font-bold ${d.breach ? 'text-red-400' : 'text-green-400'}`}>{d.ltv.toFixed(0)}%</div>{d.breach && <div className="text-xs text-red-400">⚠️ BREACH</div>}</div>))}</div></div>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ltv-drawdown</div>
+        <div className="card"><div className="card-title">LTV Under Drawdown</div><div className="g5">{drawdown.map(d => (<div key={d.drawdown} style={{ padding: 12, borderRadius: 8, textAlign: 'center', background: d.breach ? 'var(--coral-dim)' : 'var(--surface2)', border: d.breach ? '1px solid var(--coral)' : '1px solid var(--border)' }}><div style={{ fontSize: 12, color: 'var(--text3)' }}>{d.drawdown === 0 ? 'Current' : `${d.drawdown}%`}</div><div style={{ fontWeight: 500 }}>${d.ethPrice.toFixed(0)}</div><div style={{ fontSize: 18, fontWeight: 700, color: d.breach ? 'var(--coral)' : 'var(--mint)' }}>{d.ltv.toFixed(0)}%</div>{d.breach && <div style={{ fontSize: 12, color: 'var(--coral)' }}>⚠️ BREACH</div>}</div>))}</div></div>
       </>)}
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Debt & Leverage" items={[
         { term: 'Convertible Debt Strategy', def: 'Borrow at low rates (2-3%) to buy ETH. If ETH appreciates 15%+, leverage amplifies returns. Bondholders can convert to equity at premium, capping issuer upside but providing downside protection.' },
         { term: 'Loan-to-Value (LTV)', def: 'Debt ÷ ETH Value. If LTV exceeds covenant (e.g., 50%), lender can force liquidation. Critical risk metric for levered crypto treasuries.' },
@@ -3374,18 +3499,23 @@ const SensitivityTab = ({ calc, currentETH, currentShares, ethPrice }) => {
   const matrix = useMemo(() => [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0].map(em => ({ ethMult: em, ethPrice: ethPrice * em, scenarios: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(nm => ({ navMult: nm, price: ((currentETH * ethPrice * em) / (currentShares * 1e6)) * nm })) })), [currentETH, currentShares, ethPrice]);
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sensitivity-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sensitivity-intro</div>
       <div className="highlight"><h3>Price Matrix & Tornado</h3>
-        <p className="text-sm">Two-variable sensitivity showing stock price at different ETH prices and NAV multiples. Tornado chart shows parameter impact ranking.</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>Two-variable sensitivity showing stock price at different ETH prices and NAV multiples. Tornado chart shows parameter impact ranking.</p>
       </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#price-matrix</div>
       <div className="card"><div className="card-title">Price Matrix</div>
         <table className="tbl"><thead><tr><th>ETH</th>{[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(nm => <th key={nm} className="c">{nm}x NAV</th>)}</tr></thead>
         <tbody>{matrix.map(row => (<tr key={row.ethMult} style={row.ethMult === 1.0 ? { background: 'var(--accent-dim)' } : undefined}><td style={{ fontWeight: 500 }}>${row.ethPrice.toLocaleString()} ({row.ethMult}x)</td>{row.scenarios.map(s => (<td key={s.navMult} className="c" style={row.ethMult === 1.0 && s.navMult === 1.0 ? { background: 'var(--accent-dim)', fontWeight: 600 } : undefined}><span style={{ color: s.price >= calc.currentNAV ? 'var(--mint)' : 'var(--coral)' }}>${s.price.toFixed(2)}</span></td>))}</tr>))}</tbody></table>
       </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#tornado-chart</div>
       <div className="card"><div className="card-title">Tornado Chart (±20%)</div>
-        <div className="space-y-3">{[{ param: 'ETH Price', down: -20, up: 20 }, { param: 'NAV Multiple', down: -20, up: 20 }, { param: 'ETH Holdings', down: -20, up: 20 }, { param: 'Shares Out', down: 25, up: -17 }].map(t => (<div key={t.param} className="flex items-center gap-4"><div className="w-28 text-sm text-slate-300">{t.param}</div><div className="flex-1 h-8 bg-slate-900 rounded relative"><div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-600" /><div className="absolute h-full bg-red-500/50" style={{ right: '50%', width: `${Math.abs(Math.min(t.down, 0)) * 2}%` }} /><div className="absolute h-full bg-green-500/50" style={{ left: '50%', width: `${Math.max(t.up, 0) * 2}%` }} /><div className="absolute inset-0 flex items-center justify-center text-xs font-medium"><span className="text-red-400 mr-6">{t.down}%</span><span className="text-green-400">{t.up > 0 ? '+' : ''}{t.up}%</span></div></div></div>))}</div>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>{[{ param: 'ETH Price', down: -20, up: 20 }, { param: 'NAV Multiple', down: -20, up: 20 }, { param: 'ETH Holdings', down: -20, up: 20 }, { param: 'Shares Out', down: 25, up: -17 }].map(t => (<div key={t.param} style={{ display: 'flex', alignItems: 'center' }}><div style={{ width: 112, fontSize: 14, color: 'var(--text2)' }}>{t.param}</div><div style={{ flex: 1, height: 32, background: 'var(--surface)', borderRadius: 4, position: 'relative' }}><div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: 'var(--border)' }} /><div style={{ position: 'absolute', height: '100%', background: 'var(--coral-dim)', right: '50%', width: `${Math.abs(Math.min(t.down, 0)) * 2}%` }} /><div style={{ position: 'absolute', height: '100%', background: 'var(--mint-dim)', left: '50%', width: `${Math.max(t.up, 0) * 2}%` }} /><div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 500 }}><span style={{ color: 'var(--coral)' }}>{t.down}%</span><span style={{ color: 'var(--mint)' }}>{t.up > 0 ? '+' : ''}{t.up}%</span></div></div></div>))}</div>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Sensitivity Analysis" items={[
         { term: 'Two-Variable Matrix', def: 'Rows = ETH price (0.25x to 3x current). Columns = NAV multiple (0.5x discount to 2x premium). Cell = implied stock price at that combination.' },
         { term: 'Bull/Bear Scenarios', def: 'Bull case = top right (ETH 3x, NAV 2x). Bear case = bottom left (ETH 0.25x, NAV 0.5x). Current state highlighted in matrix.' },
@@ -3415,23 +3545,29 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Backtest<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-intro</div>
       <div className="highlight"><h3>Historical NAV Simulation</h3>
-        <p className="text-sm">What would NAV have been at historical ETH prices? Toggle staking yield to see compounding effect. Caveat: illustrative only.</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>What would NAV have been at historical ETH prices? Toggle staking yield to see compounding effect. Caveat: illustrative only.</p>
       </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-settings</div>
       <div className="card"><div className="card-title">Settings</div>
-        <div className="flex flex-wrap gap-6 items-center">
-          <div className="flex items-center gap-2"><label className="text-sm text-slate-400">Start:</label><select value={startYear} onChange={e => setStartYear(Number(e.target.value))} className="bg-slate-900 border border-slate-700 rounded px-3 py-1 text-sm">{[2020, 2021, 2022, 2023, 2024].map(y => <option key={y} value={y}>{y}</option>)}</select></div>
-          <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={includeYield} onChange={e => setIncludeYield(e.target.checked)} className="w-4 h-4" /><span className="text-sm">Include Yield ({baseStakingAPY}%)</span></label>
-          <div className="flex items-center gap-2"><label className="text-sm text-slate-400">NAV Multiple:</label><input type="number" value={assumedMult} onChange={e => setAssumedMult(Number(e.target.value))} step={0.1} min={0.5} max={3} className="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm" /></div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}><label style={{ fontSize: 14, color: 'var(--text3)' }}>Start:</label><select value={startYear} onChange={e => setStartYear(Number(e.target.value))} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: '4px 12px', fontSize: 14, color: 'var(--text1)' }}>{[2020, 2021, 2022, 2023, 2024].map(y => <option key={y} value={y}>{y}</option>)}</select></div>
+          <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}><input type="checkbox" checked={includeYield} onChange={e => setIncludeYield(e.target.checked)} style={{ width: 16, height: 16 }} /><span style={{ fontSize: 14 }}>Include Yield ({baseStakingAPY}%)</span></label>
+          <div style={{ display: 'flex', alignItems: 'center' }}><label style={{ fontSize: 14, color: 'var(--text3)' }}>NAV Multiple:</label><input type="number" value={assumedMult} onChange={e => setAssumedMult(Number(e.target.value))} step={0.1} min={0.5} max={3} style={{ width: 80, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: '4px 8px', fontSize: 14, color: 'var(--text1)' }} /></div>
         </div>
       </div>
-      {stats && (<><div className="grid grid-cols-2 lg:grid-cols-4 gap-3"><Card label="Total Return" value={`${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(0)}%`} sub={`Since ${startYear}`} color={stats.totalReturn >= 0 ? 'green' : 'red'} /><Card label="Current NAV" value={`$${stats.currentNav.toFixed(2)}`} sub="Latest" color="blue" /><Card label="Stock Price" value={`$${stats.currentPrice.toFixed(2)}`} sub={`At ${assumedMult.toFixed(1)}x`} color="green" /><Card label="Max Drawdown" value={`${stats.maxDD.toFixed(0)}%`} sub="Peak to trough" color="red" /></div>
+      {stats && (<><div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-results</div>
+      <div className="g4"><Card label="Total Return" value={`${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(0)}%`} sub={`Since ${startYear}`} color={stats.totalReturn >= 0 ? 'green' : 'red'} /><Card label="Current NAV" value={`$${stats.currentNav.toFixed(2)}`} sub="Latest" color="blue" /><Card label="Stock Price" value={`$${stats.currentPrice.toFixed(2)}`} sub={`At ${assumedMult.toFixed(1)}x`} color="green" /><Card label="Max Drawdown" value={`${stats.maxDD.toFixed(0)}%`} sub="Peak to trough" color="red" /></div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-chart</div>
       <div className="card"><div className="card-title">Historical NAV & Stock Price</div>
         <ResponsiveContainer width="100%" height={350}><AreaChart data={data.data}><defs><linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/><stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/></linearGradient><linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" tick={{ fontSize: 10 }} interval="preserveStartEnd" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: '8px' }} formatter={(v, name) => [`$${v.toFixed(2)}`, name === 'nav' ? 'NAV' : 'Stock']} /><Area type="monotone" dataKey="nav" stroke="var(--violet)" strokeWidth={2} fill="url(#navGrad)" name="nav" /><Area type="monotone" dataKey="stockPrice" stroke="var(--mint)" strokeWidth={2} fill="url(#priceGrad)" name="stockPrice" /></AreaChart></ResponsiveContainer>
-        <div className="flex justify-center gap-8 mt-2 text-xs"><div className="flex items-center gap-2"><div className="w-3 h-0.5 bg-violet-500" /> NAV</div><div className="flex items-center gap-2"><div className="w-3 h-0.5 bg-green-500" /> Stock ({assumedMult.toFixed(1)}x)</div></div>
+        <div style={{ display: 'flex', justifyContent: 'center', fontSize: 12 }}><div style={{ display: 'flex', alignItems: 'center' }}><div style={{ width: 12, height: 2, background: 'var(--violet)' }} /> NAV</div><div style={{ display: 'flex', alignItems: 'center' }}><div style={{ width: 12, height: 2, background: 'var(--mint)' }} /> Stock ({assumedMult.toFixed(1)}x)</div></div>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Historical Backtest" items={[
         { term: 'Hypothetical Analysis', def: 'Shows what NAV and stock price would have been if today\'s ETH holdings existed at historical prices. Caveat: BMNR didn\'t exist then — illustrative only.' },
         { term: 'Yield Toggle', def: 'With yield = staking compounds monthly, showing how yield adds NAV even in flat/down markets. Without = pure ETH price exposure.' },
@@ -4261,18 +4397,18 @@ const SECFilingTracker = () => {
     // Key dates
     firstFiling: 'October 27, 2020',
     firstFilingNote: 'As Sandy Springs Holdings (renamed Jul 2021)',
-    latestEvent: '4.243M ETH Holdings — $12.8B Total',
-    latestEventDate: 'Jan 26, 2026',
+    latestEvent: '4.285M ETH Holdings — $10.7B Total',
+    latestEventDate: 'Feb 2, 2026',
 
     // Last press release processed (for tracking)
-    lastPressRelease: 'January 26, 2026',
-    lastPressReleaseTitle: '4,243,338 ETH Holdings Update — $12.8B Total',
+    lastPressRelease: 'February 2, 2026',
+    lastPressReleaseTitle: '4,285,125 ETH Holdings Update — $10.7B Total',
 
     // Latest filings by type
     filings: {
       '10-K': { date: 'Nov 21, 2025', description: 'FY 2025', color: 'blue' },
       '10-Q': { date: 'Jan 13, 2026', description: 'Q1 FY2026', color: 'purple' },
-      '8-K': { date: 'Jan 26, 2026', description: '4.243M ETH Holdings', color: 'yellow' },
+      '8-K': { date: 'Feb 2, 2026', description: '4.285M ETH Holdings', color: 'yellow' },
       'S-3ASR': { date: 'Jul 9, 2025', description: '$2B ATM Shelf', color: 'green' },
       '424B5': { date: 'Sep 22, 2025', description: '$365M @ $70 + Warrants', color: 'orange' },
       'DEF 14A': { date: '—', description: 'Proxy (Annual)', color: 'cyan' },
@@ -4372,22 +4508,22 @@ const InvestmentTab = () => {
   
   // Current Investment Summary
   const current = {
-    date: '2026-01-26',
-    source: 'January 26, 2026 — PR: 4.243M ETH Holdings + $12.8B Total',
+    date: '2026-02-02',
+    source: 'February 2, 2026 — PR: 4.285M ETH Holdings + $10.7B Total',
     verdict: 'STRONG BUY',
     verdictColor: 'green',
     tagline: 'The ETH Supercycle Play',
 
     // Investment Scorecard — Unified 8-category framework (matches ASTS/CRCL)
     scorecard: [
-      { category: 'Financial Strength', rating: 'A+', color: 'var(--mint)', detail: 'Fortress: $12.8B total holdings, $682M cash, zero debt' },
-      { category: 'Profitability', rating: 'A', color: 'var(--mint)', detail: 'Staking yield: $566M/yr run rate (47.4% deployed), dividend initiated' },
-      { category: 'Growth', rating: 'A+', color: 'var(--mint)', detail: '3.52% ETH supply, ~70% to "Alchemy of 5%", $24.5B ATM capacity' },
-      { category: 'Valuation', rating: 'B+', color: 'var(--sky)', detail: 'Near NAV (~1.0x), MSTR trades 2-3x — gap closure = significant upside' },
+      { category: 'Financial Strength', rating: 'A', color: 'var(--mint)', detail: 'Solid: $10.7B total holdings, $586M cash, zero debt (ETH down to $2,317)' },
+      { category: 'Profitability', rating: 'A+', color: 'var(--mint)', detail: 'Staking yield: $188M/yr annualized (67.6% deployed), dividend initiated' },
+      { category: 'Growth', rating: 'A+', color: 'var(--mint)', detail: '3.55% ETH supply, ~71% to "Alchemy of 5%", $24.5B ATM capacity' },
+      { category: 'Valuation', rating: 'A', color: 'var(--mint)', detail: 'Below NAV at $2,317 ETH — strong buying opportunity, MSTR trades 2-3x' },
       { category: 'Competitive Position', rating: 'A+', color: 'var(--mint)', detail: '#1 ETH treasury globally, 4yr+ head start, scale nearly unassailable' },
-      { category: 'Execution', rating: 'A+', color: 'var(--mint)', detail: 'Flawless pivot, Young Kim CFO/COO, 81% YES shareholder vote' },
-      { category: 'Regulatory/External', rating: 'B+', color: 'var(--sky)', detail: 'Pro-crypto admin, but SEC/staking risk persists; GENIUS Act tailwind' },
-      { category: 'Capital Structure', rating: 'A', color: 'var(--mint)', detail: '500K+ stockholders, #91 most traded, $200M Beast Industries closed' },
+      { category: 'Execution', rating: 'A+', color: 'var(--mint)', detail: 'Flawless pivot, Young Kim CFO/COO, 81% YES shareholder vote, MAVAN Q1' },
+      { category: 'Regulatory/External', rating: 'B+', color: 'var(--sky)', detail: 'Pro-crypto admin, GENIUS Act passed; SEC/staking risk persists' },
+      { category: 'Capital Structure', rating: 'A', color: 'var(--mint)', detail: '500K+ stockholders, #105 most traded, $200M Beast Industries closed' },
     ],
     
     // Ecosystem Health Rating (summarizes Ethereum tab metrics)
@@ -4401,7 +4537,7 @@ const InvestmentTab = () => {
         { metric: 'Supply Growth', value: '-0.2%', signal: 'Deflationary', weight: '15%', color: 'var(--mint)' },
         { metric: 'Protocol Progress', value: 'Fusaka Live', signal: 'Upgraded', weight: '20%', color: 'var(--mint)' },
       ],
-      summary: 'Strong ecosystem tailwinds. Beast Industries ($200M investment) expands reach to GenZ/Millennials via MrBeast (450M+ subscribers). Tom Lee cites: US government crypto support, Wall Street stablecoin adoption, tokenization growth, AI authentication demand, younger generation adoption. Davos 2026 consensus: digital assets central to future of financial system.',
+      summary: 'Strong ecosystem tailwinds despite ETH price weakness. Ethereum daily txns hit ATH (2.5M), active addresses ATH (1M daily). Tom Lee: ETH fundamentals strong, price weakness due to leverage/gold rotation. GENIUS Act transformational. Beast Industries ($200M) expands GenZ reach.',
     },
 
     // Executive Summary — Unified schema (matches ASTS/CRCL)
@@ -4409,34 +4545,35 @@ const InvestmentTab = () => {
       headline: `BMNR is the single best way to play the Ethereum supercycle with downside protection.`,
       thesis: `This is not just another crypto stock. BMNR has created something unprecedented: a yield-generating, dividend-paying, institutionally-accessible vehicle for leveraged ETH exposure.
 
-They own 3.52% of all Ethereum in existence — 4.243 million tokens. They're nearly 70% of the way to 5%. No one else is even close.
+They own 3.55% of all Ethereum in existence — 4.285 million tokens. They're over 71% of the way to 5%. No one else is even close.
 
-The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset — and paying you to wait. With $682M cash and $24.5B ATM capacity, the accumulation machine keeps running. Staking surged to 2.0M ETH (47.4% of holdings). Davos 2026: Wall Street has embraced crypto — Larry Fink, David Sacks, Bill Winters all bullish on tokenization and blockchain convergence.`,
-      bottomLine: `If you believe ETH goes higher, BMNR is the trade. If you're wrong, $12.8B in assets, staking income ($566M/yr at current 47.4% staked), and NAV floor limit your downside. Asymmetric.`,
+The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset — and paying you to wait. With $586M cash and $24.5B ATM capacity, the accumulation machine keeps running. Staking exploded to 2.9M ETH (67.6% of holdings). Tom Lee: ETH fundamentals strengthening (ATH txns, ATH active addresses) while price weakness is non-fundamental (leverage, gold rotation). MAVAN on track Q1 2026.`,
+      bottomLine: `If you believe ETH goes higher, BMNR is the trade. If you're wrong, $10.7B in assets, staking income ($188M/yr annualized at 67.6% staked, $374M at scale), and NAV floor limit your downside. Asymmetric.`,
       whatsNew: [
-        'Acquired 40,302 ETH in past week — now 3.52% of supply',
-        'Staking surged to 2.0M ETH (47.4% of holdings, +171K in one week)',
-        'Davos 2026: Larry Fink, David Sacks, Bill Winters all bullish on blockchain/tokenization',
-        '#91 most traded US stock ($1.2B/day), ahead of PepsiCo',
+        'Acquired 41,788 ETH in past week — now 3.55% of supply (71% to 5%)',
+        'Staking exploded to 2.9M ETH (67.6% of holdings, +888K in one week)',
+        'ETH fundamentals strong: ATH daily txns (2.5M), ATH active addresses (1M)',
+        'Annualized staking revenue: $188M, up 18% week-over-week',
+        '#105 most traded US stock ($1.1B/day), MAVAN on track Q1 2026',
       ],
     },
     
     // Growth Drivers (CRCL-style)
     growthDrivers: [
-      { driver: 'ETH Price Appreciation', impact: 'Critical', description: 'Every $1,000 ETH move = $4.2B NAV change. At $10K ETH, NAV/share hits $96+.', color: 'var(--mint)' },
-      { driver: 'Staking Income Scale', impact: 'High', description: '2.0M ETH staked ($5.7B, 47.4% of holdings). Current run rate: $566M/yr (>$1.5M/day).', color: 'var(--mint)' },
-      { driver: 'NAV Premium Expansion', impact: 'High', description: 'Currently near NAV. MSTR trades 2-3x. Gap closure = 2-3x upside.', color: 'var(--sky)' },
-      { driver: 'Continued Accumulation', impact: 'High', description: '$682M cash + $24.5B ATM capacity. 81% YES vote unlocks massive share authorization.', color: 'var(--sky)' },
-      { driver: 'Dividend Growth', impact: 'Medium', description: 'Started at $0.04/yr. As staking scales, expect 10-20% annual dividend growth.', color: 'var(--gold)' },
+      { driver: 'ETH Price Appreciation', impact: 'Critical', description: 'Every $1,000 ETH move = $4.3B NAV change. At $10K ETH, NAV/share hits $99+.', color: 'var(--mint)' },
+      { driver: 'Staking Income Scale', impact: 'High', description: '2.9M ETH staked ($6.7B, 67.6% of holdings). Annualized: $188M (up 18% WoW), $374M at full scale.', color: 'var(--mint)' },
+      { driver: 'NAV Premium Expansion', impact: 'High', description: 'Currently below NAV at $2,317 ETH. MSTR trades 2-3x. Gap closure = significant upside.', color: 'var(--sky)' },
+      { driver: 'Continued Accumulation', impact: 'High', description: '$586M cash + $24.5B ATM capacity. 81% YES vote unlocks massive share authorization.', color: 'var(--sky)' },
+      { driver: 'Dividend Growth', impact: 'Medium', description: 'Started at $0.04/yr. As staking scales (now 67.6%), expect 10-20% annual dividend growth.', color: 'var(--gold)' },
     ],
     
     // Competitive Moat (CRCL-style with sources and threats)
     moatSources: [
-      { source: 'Scale Dominance', strength: 'Strong', detail: '4.243M ETH = 3.52% of total supply. #1 ETH treasury, #2 global crypto treasury behind MSTR.', color: 'var(--mint)' },
-      { source: 'Yield Advantage', strength: 'Strong', detail: 'Only ETH treasury generating staking yield AND paying dividends. 2.0M ETH staked, $566M/yr run rate.', color: 'var(--mint)' },
-      { source: 'Capital Access', strength: 'Strong', detail: '$682M cash + $24.5B ATM + 81% shareholder YES vote unlocks massive issuance capacity.', color: 'var(--mint)' },
+      { source: 'Scale Dominance', strength: 'Strong', detail: '4.285M ETH = 3.55% of total supply. #1 ETH treasury, #2 global crypto treasury behind MSTR.', color: 'var(--mint)' },
+      { source: 'Yield Advantage', strength: 'Strong', detail: 'Only ETH treasury generating staking yield AND paying dividends. 2.9M ETH staked, $188M/yr annualized.', color: 'var(--mint)' },
+      { source: 'Capital Access', strength: 'Strong', detail: '$586M cash + $24.5B ATM + 81% shareholder YES vote unlocks massive issuance capacity.', color: 'var(--mint)' },
       { source: 'Management Depth', strength: 'Strong', detail: 'Tom Lee (Chairman) + Young Kim CFO/COO (MIT/HBS, 20yr institutional PM). Backed by ARK, Founders Fund, Pantera, Galaxy, Bill Miller III.', color: 'var(--mint)' },
-      { source: 'Retail Base', strength: 'Strong', detail: '500K+ individual stockholders. #91 most traded US stock ($1.2B/day). Deep liquidity.', color: 'var(--mint)' },
+      { source: 'Retail Base', strength: 'Strong', detail: '500K+ individual stockholders. #105 most traded US stock ($1.1B/day). Deep liquidity.', color: 'var(--mint)' },
     ],
     moatThreats: [
       { threat: 'ETH Price Collapse', risk: 'Critical', detail: '-70% drawdown would devastate NAV. At $1K ETH, NAV/share drops to ~$9.70.', color: 'var(--coral)' },
@@ -4449,19 +4586,19 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
     catalysts: [
       { event: 'Shareholder Vote', timing: 'Jan 15, 2026 ✅ COMPLETED', impact: '81% YES on Proposal 2 (52.2% turnout) — share authorization approved', color: 'var(--mint)' },
       { event: 'Beast Industries', timing: 'Jan 17, 2026 ✅ CLOSED', impact: '$200M equity investment in MrBeast\'s company — GenZ/Millennial reach + DeFi integration', color: 'var(--mint)' },
-      { event: 'MAVAN Launch', timing: 'Q1 2026', impact: 'Proprietary staking = margin expansion, largest staking provider in crypto', color: 'var(--mint)' },
-      { event: 'Dividend Increase', timing: 'Q1 2026', impact: 'Likely 2-3x current rate as staking scales (43.7% now staked)', color: 'var(--sky)' },
+      { event: 'MAVAN Launch', timing: 'Q1 2026', impact: 'Proprietary staking = margin expansion, largest staking provider in crypto (on track)', color: 'var(--mint)' },
+      { event: 'Dividend Increase', timing: 'Q1 2026', impact: 'Likely 2-3x current rate as staking scales (67.6% now staked)', color: 'var(--sky)' },
       { event: 'Index Inclusion', timing: 'Jun 2026', impact: 'Russell 2000 inclusion forces passive buying', color: 'var(--sky)' },
-      { event: '5% ETH Target', timing: '2026', impact: 'Would own ~6.0M ETH — "Alchemy of 5%" complete (currently 70% there)', color: 'var(--gold)' },
+      { event: '5% ETH Target', timing: '2026', impact: 'Would own ~6.0M ETH — "Alchemy of 5%" complete (currently 71% there)', color: 'var(--gold)' },
     ],
     
     // Risk Matrix (CRCL-style)
     risks: [
-      { risk: 'ETH Price Collapse', severity: 'Critical', likelihood: 'Low', impact: 'High', detail: 'The existential risk. A -70% drawdown would devastate NAV. At $1,000 ETH, NAV/share drops to ~$9.60. This is a leveraged ETH bet.', mitigation: 'Staking income ($374M/yr at scale) provides cushion; NAV floor via $1B buyback authorization.' },
-      { risk: 'NAV Premium Evaporation', severity: 'High', likelihood: 'Medium', impact: 'High', detail: 'Currently near NAV. If sentiment shifts, could drop to 0.5x. GBTC traded at -40% discount for years.', mitigation: '$1B buyback at discount provides floor; dividend yield supports valuation.' },
+      { risk: 'ETH Price Collapse', severity: 'Critical', likelihood: 'Low', impact: 'High', detail: 'The existential risk. A -70% drawdown would devastate NAV. At $1,000 ETH, NAV/share drops to ~$9.90. This is a leveraged ETH bet.', mitigation: 'Staking income ($374M/yr at scale) provides cushion; NAV floor via $1B buyback authorization.' },
+      { risk: 'NAV Premium Evaporation', severity: 'High', likelihood: 'Medium', impact: 'High', detail: 'Currently below NAV at $2,317 ETH. If sentiment shifts further, could drop to 0.5x. GBTC traded at -40% discount for years.', mitigation: '$1B buyback at discount provides floor; dividend yield supports valuation.' },
       { risk: 'Regulatory Crackdown', severity: 'Medium', likelihood: 'Low', impact: 'High', detail: 'SEC declares ETH a security, bans staking, or targets crypto treasuries. Current environment favorable but politics change.', mitigation: 'Diversified staking providers; compliance-first approach; MAVAN US-based.' },
-      { risk: 'MAVAN Execution Failure', severity: 'Medium', likelihood: 'Low', impact: 'Medium', detail: 'Delays or technical issues with proprietary staking. On track for Q1 2026 launch.', mitigation: 'Third-party providers already operational (2.0M staked); upside risk, not existential.' },
-      { risk: 'Dilution Fatigue', severity: 'Low', likelihood: 'Low', impact: 'Medium', detail: 'Market stops funding ATMs at premium. Would slow accumulation but not fatal.', mitigation: '$682M cash + staking income ($566M/yr run rate) provides runway without issuance.' },
+      { risk: 'MAVAN Execution Failure', severity: 'Medium', likelihood: 'Low', impact: 'Medium', detail: 'Delays or technical issues with proprietary staking. On track for Q1 2026 launch.', mitigation: 'Third-party providers already operational (2.9M staked); upside risk, not existential.' },
+      { risk: 'Dilution Fatigue', severity: 'Low', likelihood: 'Low', impact: 'Medium', detail: 'Market stops funding ATMs at premium. Would slow accumulation but not fatal.', mitigation: '$586M cash + staking income ($188M/yr annualized) provides runway without issuance.' },
     ],
     
     // Three Perspectives (CRCL-style)
@@ -4520,6 +4657,35 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   
   // Archive - Full historical investment summaries (generous detail for each period)
   const archive = [
+    {
+      date: '2026-02-02',
+      source: 'PR: 4.285M ETH Holdings + $10.7B Total + Staking 67.6%',
+      verdict: 'STRONG BUY',
+      verdictColor: 'green',
+      summary: '4.285M ETH ($9.9B @ $2,317). 2.9M ETH staked (67.6%). +41,788 ETH acquired. 3.55% of supply. $586M cash. #105 most traded US stock ($1.1B/day). ETH fundamentals strong despite price drop.',
+      fullAnalysis: {
+        context: 'February 2, 2026 PR shows ETH price dropped sharply ($3,000→$2,317) but fundamentals strengthening: Ethereum daily txns hit ATH (2.5M), active addresses ATH (1M daily). Tom Lee: non-fundamental factors (leverage, gold rotation) explain weakness. Staking exploded +888K ETH in one week to 2.9M (67.6%). MAVAN on track Q1 2026. GENIUS Act transformational.',
+        keyHighlights: [
+          'ETH holdings: 4,285,125 ETH @ $2,317 = $9.9B (3.55% of 120.7M supply)',
+          'Total holdings: $10.7B (ETH + cash + BTC + moonshots + Beast Industries)',
+          'Cash position: $586M (down from $682M)',
+          'Staked ETH: 2,897,459 ($6.7B) — up 888,192 in one week (+44%)',
+          'Staking ratio: 67.6% of holdings now staked (was 47.4%)',
+          'Annualized staking revenue: $188M (up 18% WoW), $374M at scale (2.81% CESR)',
+          'Acquired 41,788 ETH in past week',
+          '#105 most traded US stock ($1.1B/day avg)',
+          'MAVAN launch on track for Q1 2026 (working with 3 staking providers)',
+          'Ethereum fundamentals: ATH daily txns (2.5M), ATH active addresses (1M)',
+          'Tom Lee: ETH price weakness is non-fundamental (leverage, gold rotation)',
+          'Gold -9% on Jan 30 (4th largest daily drop) — potential near-term top signal',
+          'GENIUS Act + SEC Project Crypto "transformational to financial services"',
+        ],
+        verdict: 'Accumulation continues during price weakness. Staking exploded to 67.6% of holdings. ETH fundamentals (txns, addresses) at ATH while price depressed. Asymmetric opportunity.',
+        scorecard: 9.4,
+        risks: 'ETH price collapsed from $3,000 to $2,317 (-23%). Total holdings down from $12.8B to $10.7B. Cash position declining ($682M→$586M). NAV compression risk.',
+        strategy: 'STRONG BUY. ETH price weakness = accumulation opportunity. Fundamentals strengthening. Staking at 67.6% generates real income. MAVAN imminent.'
+      }
+    },
     {
       date: '2026-01-26',
       source: 'PR: 4.243M ETH Holdings + $12.8B Total + Davos 2026',
@@ -4874,18 +5040,18 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>NAV/Share</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$29.49</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>@ $2,839 ETH</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$24.23</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)' }}>@ $2,317 ETH</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Total Holdings</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$12.8B</div>
-              <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.243M ETH + $682M Cash</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$10.7B</div>
+              <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.285M ETH + $586M Cash</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Staked ETH</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>2.01M</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)' }}>$5.7B Value (47.4%)</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>2.90M</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)' }}>$6.7B Value (67.6%)</div>
             </div>
           </div>
         </div>
@@ -7168,6 +7334,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   const V1 = () => (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Hero: BMNR-ETH Correlation */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-correlation</div>
       <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(59,130,246,0.15))', borderRadius: 16, padding: 24, border: '1px solid rgba(139,92,246,0.3)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
@@ -7180,6 +7347,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
           </div>
         </div>
         
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-metrics</div>
         <div className="g4">
           <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12 }}>
             <div style={{ fontSize: 11, color: 'var(--text3)' }}>NAV per Share</div>
@@ -7209,6 +7377,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       </div>
       
       {/* Ecosystem Metrics */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#network-metrics</div>
       <div className="card">
         <div className="card-title">Ethereum Network Metrics</div>
         <div className="g4" style={{ }}>
@@ -7268,6 +7437,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       </div>
       
       {/* ETF Flows */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#etf-flows</div>
       <div className="card">
         <div className="card-title">Institutional Flows (ETH ETFs)</div>
         <div className="g2" style={{ }}>
@@ -7282,11 +7452,11 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>7-Day Net Flows</div>
           </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {etfData.topHolders.map((etf, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
               <span style={{ fontSize: 13, color: 'var(--text)' }}>{etf.name}</span>
-              <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={{ fontSize: 13, fontFamily: 'Space Mono', color: 'var(--text2)' }}>${etf.aum}B</span>
                 <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: etf.change >= 0 ? 'var(--mint)' : 'var(--coral)', minWidth: 60, textAlign: 'right' }}>
                   {etf.change >= 0 ? '+' : ''}{etf.change}%
@@ -7296,16 +7466,242 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
           ))}
         </div>
       </div>
-      
+
+      {/* Future of Finance Thesis */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#fut-header</div>
+      <h3>Is Ethereum the Future of Finance?</h3>
+
+      {/* Institutional Adoption Evidence */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#institutional-adoption</div>
+      <div className="card">
+        <div className="card-title">Institutional Adoption Evidence</div>
+        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,212,170,0.1))', borderRadius: 8 }}>
+          <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6, fontStyle: 'italic' }}>
+            "The evidence suggests a fundamental shift: the world's largest financial institutions are no longer asking <em>if</em> they should build on Ethereum, but <em>how fast</em> they can deploy."
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {/* Evidence Point 1 */}
+          <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--violet)' }}>
+            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>💰 TradFi Giants Are All-In</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+              BlackRock ($10T+ AUM) launched BUIDL tokenized fund on Ethereum, now filing for staked ETH ETF. Fidelity ($5.8T AUM) launching FIDD stablecoin on Ethereum. Franklin Templeton preparing institutional money market funds for tokenized distribution. These aren't experiments — they're production deployments.
+            </div>
+          </div>
+
+          {/* Evidence Point 2 */}
+          <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--mint)' }}>
+            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>🏛️ Regulatory Clarity Enabling Scale</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+              The GENIUS Act provides clear stablecoin guardrails. Telcoin launched the first US bank-issued stablecoin (eUSD) under this framework. Franklin Templeton retrofitting Rule 2a-7 funds for compliance. Regulation is now an enabler, not a blocker.
+            </div>
+          </div>
+
+          {/* Evidence Point 3 */}
+          <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--sky)' }}>
+            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>🌍 Global Payment Rails Integrating</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+              Mastercard partnering with ADI Foundation for stablecoin payments. HSBC, Ant International & Swift completed cross-border tokenized deposits POC using EVM/ERC-20 standards. Shift4 offering Ethereum stablecoin settlement to hundreds of thousands of merchants.
+            </div>
+          </div>
+
+          {/* Evidence Point 4 */}
+          <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--gold)' }}>
+            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>🌐 Emerging Markets Onboarding</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+              ADI Chain (Ethereum L2) partnering with M-Pesa to bring 60M+ African users onchain. Abu Dhabi's IHC backing institutional L2 infrastructure. UAE Central Bank regulating Dirham stablecoin. Financial inclusion happening on Ethereum rails.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Value Accrual Mechanics */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#value-accrual-mechanics</div>
+      <div className="card">
+        <div className="card-title">Value Accrual Mechanics</div>
+        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: -8 }}>How institutional adoption translates to ETH value — a framework for analyzing network economics</div>
+
+        {/* Step 1: Settlement Layer Capture */}
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--violet)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>1. Settlement Layer Market Capture</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Tokenized assets require blockchain settlement infrastructure</div>
+            </div>
+            <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(139,92,246,0.2)', color: 'var(--violet)', borderRadius: 4 }}>TAM Analysis</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Current State</div>
+              <div>• Stablecoin market: ~$310B supply</div>
+              <div>• Tokenized treasuries: ~$3B (BUIDL, BENJI, etc.)</div>
+              <div>• Ethereum L1+L2 settlement share: ~65%</div>
+            </div>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>2030 Projections</div>
+              <div>• Stablecoin market: $2T+ (Citi, Standard Chartered)</div>
+              <div>• Tokenized RWAs: $16T (BCG), $30T (Standard Chartered)</div>
+              <div>• Global settlement volume addressable: $500T+/year</div>
+            </div>
+          </div>
+          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+            <span style={{ color: 'var(--text3)' }}>Settlement Capture Rate = </span>
+            <span style={{ color: 'var(--mint)' }}>(ETH L1/L2 Volume ÷ Total Tokenized Volume)</span>
+            <span style={{ color: 'var(--text3)' }}> × </span>
+            <span style={{ color: 'var(--violet)' }}>Fee Revenue per $1 Settled</span>
+          </div>
+        </div>
+
+        {/* Step 2: EIP-1559 Burn Mechanics */}
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--mint)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>2. EIP-1559 Deflationary Mechanics</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Transaction fees create permanent supply reduction</div>
+            </div>
+            <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(0,212,170,0.2)', color: 'var(--mint)', borderRadius: 4 }}>Monetary Policy</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Burn Mechanism</div>
+              <div>• Base fee burned per transaction (not paid to validators)</div>
+              <div>• ~4.3M ETH burned since EIP-1559 (Aug 2021)</div>
+              <div>• High activity periods: net deflationary supply</div>
+            </div>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Economic Model</div>
+              <div>• Issuance: ~0.5-1% annually (PoS rewards)</div>
+              <div>• Burn rate: variable based on network demand</div>
+              <div>• Net supply change = Issuance − Burn</div>
+            </div>
+          </div>
+          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+            <span style={{ color: 'var(--text3)' }}>Supply Impact = </span>
+            <span style={{ color: 'var(--coral)' }}>−(Base Fee × Gas Used)</span>
+            <span style={{ color: 'var(--text3)' }}> + </span>
+            <span style={{ color: 'var(--mint)' }}>(Block Reward × Validators)</span>
+            <span style={{ color: 'var(--text3)' }}> → </span>
+            <span style={{ color: 'var(--gold)' }}>Deflationary when Burn {'>'} Issuance</span>
+          </div>
+        </div>
+
+        {/* Step 3: Staking Yield Economics */}
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--sky)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>3. Staking Yield as Risk-Free Rate Proxy</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>ETH staking provides protocol-native yield analogous to sovereign bonds</div>
+            </div>
+            <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(100,149,237,0.2)', color: 'var(--sky)', borderRadius: 4 }}>Yield Analysis</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Yield Components</div>
+              <div>• Consensus rewards: ~2.8% base APY</div>
+              <div>• Execution layer tips: +0.5-1.5% variable</div>
+              <div>• MEV revenue share: +0.3-0.8% variable</div>
+            </div>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Institutional Comparison</div>
+              <div>• US 10Y Treasury: ~4.5% (USD denominated)</div>
+              <div>• ETH Staking: ~3.5-4.5% (ETH denominated)</div>
+              <div>• Key difference: ETH yield + price appreciation</div>
+            </div>
+          </div>
+          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+            <span style={{ color: 'var(--text3)' }}>Total Return = </span>
+            <span style={{ color: 'var(--sky)' }}>Staking APY</span>
+            <span style={{ color: 'var(--text3)' }}> + </span>
+            <span style={{ color: 'var(--mint)' }}>ETH Price Δ</span>
+            <span style={{ color: 'var(--text3)' }}> − </span>
+            <span style={{ color: 'var(--coral)' }}>Slashing Risk (~0.001%)</span>
+          </div>
+        </div>
+
+        {/* Step 4: Network Effects & Moat */}
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--gold)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>4. Network Effects & Competitive Moat</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Metcalfe's Law dynamics create winner-take-most outcomes in settlement infrastructure</div>
+            </div>
+            <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(255,193,7,0.2)', color: 'var(--gold)', borderRadius: 4 }}>Moat Analysis</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Network Effect Drivers</div>
+              <div>• Liquidity depth: $50B+ DEX volume/month</div>
+              <div>• Developer ecosystem: 4,000+ monthly active devs</div>
+              <div>• Composability: 2,500+ DeFi protocols</div>
+            </div>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Switching Cost Factors</div>
+              <div>• Smart contract migration complexity</div>
+              <div>• Liquidity fragmentation risk</div>
+              <div>• Security track record (9+ years)</div>
+            </div>
+          </div>
+          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+            <span style={{ color: 'var(--text3)' }}>Network Value ∝ </span>
+            <span style={{ color: 'var(--gold)' }}>n²</span>
+            <span style={{ color: 'var(--text3)' }}> where n = </span>
+            <span style={{ color: 'var(--mint)' }}>(Users × Developers × Liquidity × Integrations)</span>
+          </div>
+        </div>
+
+        {/* Step 5: BMNR Value Capture */}
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--coral)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>5. BMNR Treasury Strategy Value Capture</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Corporate treasury structure provides leveraged exposure to ETH ecosystem growth</div>
+            </div>
+            <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(255,107,107,0.2)', color: 'var(--coral)', borderRadius: 4 }}>BMNR Thesis</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Treasury Economics</div>
+              <div>• Holdings: 4.28M ETH (3.55% of supply)</div>
+              <div>• Staking rate: 67.6% of holdings</div>
+              <div>• Yield generation: ~$120M annually at current rates</div>
+            </div>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Equity Value Drivers</div>
+              <div>• NAV = ETH Holdings × ETH Price</div>
+              <div>• Premium/Discount to NAV (market sentiment)</div>
+              <div>• Operating leverage from capital markets access</div>
+            </div>
+          </div>
+          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+            <span style={{ color: 'var(--text3)' }}>BMNR Return = </span>
+            <span style={{ color: 'var(--mint)' }}>(ETH Δ × Holdings)</span>
+            <span style={{ color: 'var(--text3)' }}> + </span>
+            <span style={{ color: 'var(--sky)' }}>(Staking Yield × Staked %)</span>
+            <span style={{ color: 'var(--text3)' }}> + </span>
+            <span style={{ color: 'var(--violet)' }}>NAV Premium Expansion</span>
+          </div>
+        </div>
+
+        {/* Bottom line */}
+        <div style={{ padding: 12, background: 'linear-gradient(135deg, rgba(0,212,170,0.15), rgba(139,92,246,0.15))', borderRadius: 8, border: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>The Investment Case</div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>
+            When the world's largest asset managers, payment networks, and banks all choose the same settlement layer, that's not speculation — that's infrastructure becoming standard. BMNR's thesis is that owning the asset that secures this infrastructure (ETH) is the trade of the decade.
+          </div>
+        </div>
+      </div>
+
       {/* Protocol Roadmap */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#protocol-roadmap</div>
       <div className="card">
         <div className="card-title">Ethereum Protocol Roadmap</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {protocolRoadmap.map((item, i) => (
             <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: `3px solid ${item.impact === 'Very High' ? 'var(--violet)' : item.impact === 'High' ? 'var(--mint)' : 'var(--sky)'}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{item.name}</span>
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ display: 'flex' }}>
                   <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: item.status === 'Testing' ? 'rgba(0,212,170,0.2)' : item.status === 'Development' ? 'rgba(100,149,237,0.2)' : 'rgba(139,92,246,0.2)', color: item.status === 'Testing' ? 'var(--mint)' : item.status === 'Development' ? 'var(--sky)' : 'var(--violet)' }}>{item.status}</span>
                   <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{item.date}</span>
                 </div>
@@ -7317,12 +7713,14 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       </div>
       
       {/* Ethereum Adoption Timeline - matches Timeline tab structure */}
-      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#adoption-timeline</div>
+      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center' }}>
         <span>Ethereum Adoption Timeline</span>
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredNews.length} events)</span>
       </h3>
 
       {/* Company Filter (like Topic filter in Timeline tab) */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-filter</div>
       <div className="highlight" style={{ padding: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Company</span>
@@ -7359,6 +7757,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       </div>
       
       {/* Category pills row with Expand All button (like Timeline tab) */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#category-filter</div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="pills" style={{ }}>
           {categories.map(cat => (
@@ -7382,12 +7781,13 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#adoption-events</div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
           {filteredNews.map((news, i) => {
             const isExpanded = expandedNews.has(i);
             return (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, cursor: 'pointer', borderLeft: `3px solid ${news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)'}` }}
                 onClick={() => {
                   const next = new Set(expandedNews);
@@ -7398,7 +7798,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 11, color: 'var(--text3)' }}>{news.date}</span>
                       <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(139,92,246,0.2)', color: 'var(--violet)' }}>{news.category}</span>
                       <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(59,130,246,0.2)', color: 'var(--sky)' }}>{news.company}</span>
@@ -7439,6 +7839,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
           })}
         </div>
       
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Ethereum Fundamentals" items={[
         { term: 'ETH as Productive Asset', def: 'Unlike BTC, ETH generates yield via staking (~3-4% APY). Network also burns fees (EIP-1559), creating potential deflation. Both increase fundamental value.' },
         { term: 'Network Effects', def: 'Ethereum hosts 60%+ of DeFi TVL, majority of NFTs, and most L2s. Developer mindshare and liquidity create strong network effects and switching costs.' },
@@ -7452,6 +7853,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ethereum-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Ethereum Ecosystem<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <V1 />
     </div>
@@ -7488,7 +7890,7 @@ const TimelineTab = () => {
     cik: '0001829311',
     ticker: 'BMNR',
     exchange: 'NYSE American',
-    lastPR: { date: 'January 26, 2026', title: '4.243M ETH Holdings + $12.8B Total + Davos 2026' }
+    lastPR: { date: 'February 2, 2026', title: '4.285M ETH Holdings + $10.7B Total + Staking 67.6%' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {
@@ -7548,6 +7950,27 @@ const TimelineTab = () => {
   // NEWEST ENTRIES AT TOP - maintain descending chronological order
   const timelineEvents = [
     // [PR_CHECKLIST_EVENT_TIMELINE] - Add new PR entry here at top!
+    // === FEBRUARY 2, 2026 - ETH HOLDINGS + STAKING SURGE ===
+    {
+      date: '2026-02-02',
+      source: 'PRNewswire',
+      category: 'Holdings',
+      title: '📊 ETH Holdings Reach 4.285M — $10.7B Total, Staking Explodes to 67.6%',
+      changes: [
+        { metric: 'ETH Holdings', previous: '4,243,338', new: '4,285,125', change: '+41,787 (+1.0%)' },
+        { metric: 'ETH Price', previous: '$2,839', new: '$2,317', change: '-18.4% (Coinbase)' },
+        { metric: 'ETH Supply %', previous: '3.52%', new: '3.55%', change: '+0.03pp (71% to 5%)' },
+        { metric: 'Staked ETH', previous: '2,009,267', new: '2,897,459', change: '+888,192 (+44.2%)' },
+        { metric: 'Staking Ratio', previous: '47.4%', new: '67.6%', change: '+20.2pp' },
+        { metric: 'Total Cash', previous: '$682M', new: '$586M', change: '-$96M' },
+        { metric: 'Eightco (ORBS)', previous: '$19M', new: '$20M', change: '+$1M' },
+        { metric: 'Trading Rank', previous: '#91', new: '#105', change: '-14 ($1.1B/day)' },
+        { metric: 'Total Holdings', previous: '$12.8B', new: '$10.7B', change: '-$2.1B (ETH price)' },
+        { metric: 'Staking Revenue', previous: 'N/A', new: '$188M/yr', change: '+18% WoW annualized' },
+      ],
+      notes: 'ETH price dropped sharply (~$3,000→$2,317) but fundamentals strengthening: Ethereum daily txns hit ATH (2.5M via theblock.co), active addresses soared to ATH (1M daily). Tom Lee: "non-fundamental factors" explain weakness — leverage not returned since Oct 10th, gold "vortex" pulling risk appetite. Gold -9% on Jan 30 (4th largest daily drop) may signal near-term top (similar to Jan 22, 1980 pattern). Staking exploded +888K ETH to 2.9M (67.6% of holdings, largest staker in world). Annualized staking revenue $188M (up 18% WoW). MAVAN on track Q1 2026 (3 staking providers). GENIUS Act + SEC Project Crypto "transformational." Beast $200M closed. 193 BTC held.',
+      impact: 'neutral'
+    },
     // === JANUARY 26, 2026 - ETH HOLDINGS + DAVOS 2026 ===
     {
       date: '2026-01-26',
@@ -8732,11 +9155,11 @@ const TimelineTab = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>5% ETH Supply Target</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.52% (~6.04M ETH needed)</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.55% (~6.04M ETH needed)</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>70%</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~1.79M ETH to go</div>
+                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>71%</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~1.75M ETH to go</div>
               </div>
             </div>
           </div>
@@ -8749,6 +9172,13 @@ const TimelineTab = () => {
             {/* [PR_CHECKLIST_RECENT_PRESS_RELEASES] - Add new PR at top! */}
             <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Feb 2, 2026</span>
+                <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,285,125 — 3.55% of Supply, $10.7B, Staking 67.6%</div>
+            </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 26, 2026</span>
