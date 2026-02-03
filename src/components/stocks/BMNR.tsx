@@ -7468,9 +7468,12 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       </div>
 
       {/* Future of Finance Thesis */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#future-of-finance</div>
+      <h3>Is Ethereum the Future of Finance?</h3>
+
+      {/* Institutional Adoption Evidence */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#institutional-adoption</div>
       <div className="card">
-        <div className="card-title">Is Ethereum the Future of Finance?</div>
+        <div className="card-title">Institutional Adoption Evidence</div>
         <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,212,170,0.1))', borderRadius: 8 }}>
           <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6, fontStyle: 'italic' }}>
             "The evidence suggests a fundamental shift: the world's largest financial institutions are no longer asking <em>if</em> they should build on Ethereum, but <em>how fast</em> they can deploy."
@@ -7510,12 +7513,13 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
             </div>
           </div>
         </div>
+      </div>
 
-        {/* How It Works - Institutional Framework */}
-        <div style={{ padding: 16, background: 'var(--surface)', borderRadius: 8, border: '1px solid var(--border)' }}>
-          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>Value Accrual Mechanics</div>
-          <div style={{ fontSize: 11, color: 'var(--text3)' }}>How institutional adoption translates to ETH value — a framework for analyzing network economics</div>
-        </div>
+      {/* Value Accrual Mechanics */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#value-accrual-mechanics</div>
+      <div className="card">
+        <div className="card-title">Value Accrual Mechanics</div>
+        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: -8 }}>How institutional adoption translates to ETH value — a framework for analyzing network economics</div>
 
         {/* Step 1: Settlement Layer Capture */}
         <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--violet)' }}>
