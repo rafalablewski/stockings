@@ -17,3 +17,6 @@ export * from './capitalTypes';
 
 // Timeline/SEC Filings Types
 export * from './timelineTypes';
+
+// Live Price Hook and Component
+export { useLiveStockPrice, LivePriceDisplay } from './LivePrice';

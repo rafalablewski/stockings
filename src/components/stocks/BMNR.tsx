@@ -200,9 +200,9 @@
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  */
 
-import React, { useState, useMemo, useRef, useEffect, Component, ErrorInfo, ReactNode } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback, Component, ErrorInfo, ReactNode } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
-import { SharedWallStreetTab, AnalystCoverage } from '../shared';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import StockChart from '../shared/StockChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
@@ -714,6 +714,13 @@ const BMNRDilutionAnalysis = () => {
   // Update indicator visibility toggle
   const [showIndicators, setShowIndicators] = useState(true);
 
+  // Live price refresh hook
+  const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
+    'BMNR',
+    DEFAULTS.currentStockPrice,
+    { onPriceUpdate: (price) => setCurrentStockPrice(price) }
+  );
+
   // Use imported data from @/data/bmnr
   const historicalETH = HISTORICAL_ETH;
   // Build comparables dynamically with current user values for BMNR
@@ -824,10 +831,56 @@ const BMNRDilutionAnalysis = () => {
               </p>
             </div>
             <div className="price-block">
-              <div className="price-big">${currentStockPrice.toFixed(2)}</div>
+              <div className="price-big" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                ${currentStockPrice.toFixed(2)}
+                <button
+                  onClick={refreshPrice}
+                  disabled={priceLoading}
+                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price'}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: priceLoading ? 'wait' : 'pointer',
+                    padding: 8,
+                    borderRadius: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s',
+                    opacity: priceLoading ? 0.5 : 0.6,
+                  }}
+                  onMouseEnter={(e) => { if (!priceLoading) e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'var(--surface2)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = priceLoading ? '0.5' : '0.6'; e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{
+                      color: 'var(--text3)',
+                      animation: priceLoading ? 'spin 1s linear infinite' : 'none',
+                    }}
+                  >
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                    <path d="M16 21h5v-5" />
+                  </svg>
+                </button>
+              </div>
               <div className={`price-badge ${calc.navPremium >= 0 ? 'up' : 'down'}`}>
                 {calc.navPremium >= 0 ? '↑' : '↓'} {Math.abs(calc.navPremium).toFixed(1)}% vs NAV
               </div>
+              {priceLastUpdated && (
+                <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>
+                  Updated: {priceLastUpdated.toLocaleTimeString()}
+                </div>
+              )}
             </div>
           </div>
         </header>

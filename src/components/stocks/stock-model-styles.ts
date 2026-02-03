@@ -1402,4 +1402,10 @@ input[type="range"]::-webkit-slider-thumb {
 .update-legend-item .dot.sec { background: rgba(34, 211, 238, 0.85); }
 .update-legend-item .dot.ws { background: rgba(167, 139, 250, 0.85); }
 .update-legend-item .dot.market { background: rgba(74, 222, 128, 0.85); }
+
+/* ═══ REFRESH BUTTON ANIMATION ═══ */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 `;
