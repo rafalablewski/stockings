@@ -7511,30 +7511,171 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
           </div>
         </div>
 
-        {/* How It Works */}
+        {/* How It Works - Institutional Framework */}
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#value-accrual-mechanics</div>
         <div style={{ padding: 16, background: 'var(--surface)', borderRadius: 8, border: '1px solid var(--border)' }}>
-          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>How This Thesis Plays Out</div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: 'var(--mint)', fontFamily: 'Space Mono' }}>1.</span>
-              <span style={{ fontSize: 12, color: 'var(--text2)' }}>Tokenized assets (treasuries, RWAs, stablecoins) settle on Ethereum L1/L2</span>
+          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>Value Accrual Mechanics</div>
+          <div style={{ fontSize: 11, color: 'var(--text3)' }}>How institutional adoption translates to ETH value — a framework for analyzing network economics</div>
+        </div>
+
+        {/* Step 1: Settlement Layer Capture */}
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--violet)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>1. Settlement Layer Market Capture</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Tokenized assets require blockchain settlement infrastructure</div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: 'var(--mint)', fontFamily: 'Space Mono' }}>2.</span>
-              <span style={{ fontSize: 12, color: 'var(--text2)' }}>Transaction volume generates fees → ETH burned → deflationary pressure</span>
+            <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(139,92,246,0.2)', color: 'var(--violet)', borderRadius: 4 }}>TAM Analysis</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Current State</div>
+              <div>• Stablecoin market: ~$310B supply</div>
+              <div>• Tokenized treasuries: ~$3B (BUIDL, BENJI, etc.)</div>
+              <div>• Ethereum L1+L2 settlement share: ~65%</div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: 'var(--mint)', fontFamily: 'Space Mono' }}>3.</span>
-              <span style={{ fontSize: 12, color: 'var(--text2)' }}>ETH becomes productive collateral (staking yield, DeFi composability)</span>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>2030 Projections</div>
+              <div>• Stablecoin market: $2T+ (Citi, Standard Chartered)</div>
+              <div>• Tokenized RWAs: $16T (BCG), $30T (Standard Chartered)</div>
+              <div>• Global settlement volume addressable: $500T+/year</div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: 'var(--mint)', fontFamily: 'Space Mono' }}>4.</span>
-              <span style={{ fontSize: 12, color: 'var(--text2)' }}>Network effects compound as more institutions build on shared infrastructure</span>
+          </div>
+          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+            <span style={{ color: 'var(--text3)' }}>Settlement Capture Rate = </span>
+            <span style={{ color: 'var(--mint)' }}>(ETH L1/L2 Volume ÷ Total Tokenized Volume)</span>
+            <span style={{ color: 'var(--text3)' }}> × </span>
+            <span style={{ color: 'var(--violet)' }}>Fee Revenue per $1 Settled</span>
+          </div>
+        </div>
+
+        {/* Step 2: EIP-1559 Burn Mechanics */}
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--mint)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>2. EIP-1559 Deflationary Mechanics</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Transaction fees create permanent supply reduction</div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: 'var(--mint)', fontFamily: 'Space Mono' }}>5.</span>
-              <span style={{ fontSize: 12, color: 'var(--text2)' }}>BMNR captures this via treasury strategy: ETH appreciation + staking yield</span>
+            <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(0,212,170,0.2)', color: 'var(--mint)', borderRadius: 4 }}>Monetary Policy</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Burn Mechanism</div>
+              <div>• Base fee burned per transaction (not paid to validators)</div>
+              <div>• ~4.3M ETH burned since EIP-1559 (Aug 2021)</div>
+              <div>• High activity periods: net deflationary supply</div>
             </div>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Economic Model</div>
+              <div>• Issuance: ~0.5-1% annually (PoS rewards)</div>
+              <div>• Burn rate: variable based on network demand</div>
+              <div>• Net supply change = Issuance − Burn</div>
+            </div>
+          </div>
+          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+            <span style={{ color: 'var(--text3)' }}>Supply Impact = </span>
+            <span style={{ color: 'var(--coral)' }}>−(Base Fee × Gas Used)</span>
+            <span style={{ color: 'var(--text3)' }}> + </span>
+            <span style={{ color: 'var(--mint)' }}>(Block Reward × Validators)</span>
+            <span style={{ color: 'var(--text3)' }}> → </span>
+            <span style={{ color: 'var(--gold)' }}>Deflationary when Burn {'>'} Issuance</span>
+          </div>
+        </div>
+
+        {/* Step 3: Staking Yield Economics */}
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--sky)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>3. Staking Yield as Risk-Free Rate Proxy</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>ETH staking provides protocol-native yield analogous to sovereign bonds</div>
+            </div>
+            <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(100,149,237,0.2)', color: 'var(--sky)', borderRadius: 4 }}>Yield Analysis</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Yield Components</div>
+              <div>• Consensus rewards: ~2.8% base APY</div>
+              <div>• Execution layer tips: +0.5-1.5% variable</div>
+              <div>• MEV revenue share: +0.3-0.8% variable</div>
+            </div>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Institutional Comparison</div>
+              <div>• US 10Y Treasury: ~4.5% (USD denominated)</div>
+              <div>• ETH Staking: ~3.5-4.5% (ETH denominated)</div>
+              <div>• Key difference: ETH yield + price appreciation</div>
+            </div>
+          </div>
+          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+            <span style={{ color: 'var(--text3)' }}>Total Return = </span>
+            <span style={{ color: 'var(--sky)' }}>Staking APY</span>
+            <span style={{ color: 'var(--text3)' }}> + </span>
+            <span style={{ color: 'var(--mint)' }}>ETH Price Δ</span>
+            <span style={{ color: 'var(--text3)' }}> − </span>
+            <span style={{ color: 'var(--coral)' }}>Slashing Risk (~0.001%)</span>
+          </div>
+        </div>
+
+        {/* Step 4: Network Effects & Moat */}
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--gold)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>4. Network Effects & Competitive Moat</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Metcalfe's Law dynamics create winner-take-most outcomes in settlement infrastructure</div>
+            </div>
+            <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(255,193,7,0.2)', color: 'var(--gold)', borderRadius: 4 }}>Moat Analysis</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Network Effect Drivers</div>
+              <div>• Liquidity depth: $50B+ DEX volume/month</div>
+              <div>• Developer ecosystem: 4,000+ monthly active devs</div>
+              <div>• Composability: 2,500+ DeFi protocols</div>
+            </div>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Switching Cost Factors</div>
+              <div>• Smart contract migration complexity</div>
+              <div>• Liquidity fragmentation risk</div>
+              <div>• Security track record (9+ years)</div>
+            </div>
+          </div>
+          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+            <span style={{ color: 'var(--text3)' }}>Network Value ∝ </span>
+            <span style={{ color: 'var(--gold)' }}>n²</span>
+            <span style={{ color: 'var(--text3)' }}> where n = </span>
+            <span style={{ color: 'var(--mint)' }}>(Users × Developers × Liquidity × Integrations)</span>
+          </div>
+        </div>
+
+        {/* Step 5: BMNR Value Capture */}
+        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--coral)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>5. BMNR Treasury Strategy Value Capture</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>Corporate treasury structure provides leveraged exposure to ETH ecosystem growth</div>
+            </div>
+            <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(255,107,107,0.2)', color: 'var(--coral)', borderRadius: 4 }}>BMNR Thesis</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Treasury Economics</div>
+              <div>• Holdings: 4.28M ETH (3.55% of supply)</div>
+              <div>• Staking rate: 67.6% of holdings</div>
+              <div>• Yield generation: ~$120M annually at current rates</div>
+            </div>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Equity Value Drivers</div>
+              <div>• NAV = ETH Holdings × ETH Price</div>
+              <div>• Premium/Discount to NAV (market sentiment)</div>
+              <div>• Operating leverage from capital markets access</div>
+            </div>
+          </div>
+          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+            <span style={{ color: 'var(--text3)' }}>BMNR Return = </span>
+            <span style={{ color: 'var(--mint)' }}>(ETH Δ × Holdings)</span>
+            <span style={{ color: 'var(--text3)' }}> + </span>
+            <span style={{ color: 'var(--sky)' }}>(Staking Yield × Staked %)</span>
+            <span style={{ color: 'var(--text3)' }}> + </span>
+            <span style={{ color: 'var(--violet)' }}>NAV Premium Expansion</span>
           </div>
         </div>
 
