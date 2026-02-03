@@ -1697,6 +1697,7 @@ const OverviewParameterCard = ({
   onChange,
   format = '',
   currentValue,
+  showCurrentIndicator = true,
 }: {
   title: string;
   explanation: string;
@@ -1705,6 +1706,7 @@ const OverviewParameterCard = ({
   onChange: (v: number) => void;
   format?: string;
   currentValue?: number;
+  showCurrentIndicator?: boolean;
 }) => {
   const [customMode, setCustomMode] = useState(false);
   const [customInput, setCustomInput] = useState('');
@@ -1767,7 +1769,7 @@ const OverviewParameterCard = ({
                 overflow: 'hidden',
               }}
             >
-              {isCurrent && (
+              {showCurrentIndicator && isCurrent && (
                 <div style={{
                   position: 'absolute',
                   top: 4,
@@ -1831,7 +1833,7 @@ const OverviewParameterCard = ({
             }}
           >
             {/* Position indicator dot - shows when current real value is custom (not a preset) */}
-            {currentValue !== undefined && !options.slice(0, 6).includes(currentValue) && (
+            {showCurrentIndicator && currentValue !== undefined && !options.slice(0, 6).includes(currentValue) && (
               <div style={{
                 position: 'absolute',
                 top: 4,
@@ -2021,6 +2023,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         onChange={setCurrentStockPrice}
         format="$"
         currentValue={DEFAULTS.currentStockPrice}
+        showCurrentIndicator={false}
       />
       <OverviewParameterCard
         title="Qtr Dividend ($)"
