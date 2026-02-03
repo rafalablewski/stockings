@@ -769,9 +769,13 @@ const BMNRDilutionAnalysis = () => {
     const dividendYield = currentStockPrice > 0 ? (annualDividend / currentStockPrice) * 100 : 0;
     const totalAnnualDividendPayout = annualDividend * totalShares;
     const dividendPayoutRatio = annualYieldUSD > 0 ? (totalAnnualDividendPayout / annualYieldUSD) * 100 : 0;
+    // 5% ETH supply goal calculations (target = 6.035M ETH = 5% of 120.7M)
+    const ethSupplyPercent = (currentETH / 120700000) * 100;
+    const goalProgress = (currentETH / 6035000) * 100;
+    const ethToGo = 6035000 - currentETH;
     // Ensure all outputs are finite numbers
     const safe = (v) => (isFinite(v) ? v : 0);
-    return { currentNAV: safe(currentNAV), ethPerShare: safe(ethPerShare), marketCap: safe(marketCap), navPremium: safe(navPremium), impliedStockPrice: safe(impliedStockPrice), effectiveAPY, stakedETH, annualYieldETH: safe(annualYieldETH), annualYieldUSD: safe(annualYieldUSD), debtUSD, leverageRatio: safe(leverageRatio), ltv: safe(ltv), conversionPrice: safe(conversionPrice), deathSpiralETHPrice: safe(deathSpiralETHPrice), totalShares, annualDividend, dividendYield: safe(dividendYield), totalAnnualDividendPayout: safe(totalAnnualDividendPayout), dividendPayoutRatio: safe(dividendPayoutRatio) };
+    return { currentNAV: safe(currentNAV), ethPerShare: safe(ethPerShare), marketCap: safe(marketCap), navPremium: safe(navPremium), impliedStockPrice: safe(impliedStockPrice), effectiveAPY, stakedETH, annualYieldETH: safe(annualYieldETH), annualYieldUSD: safe(annualYieldUSD), debtUSD, leverageRatio: safe(leverageRatio), ltv: safe(ltv), conversionPrice: safe(conversionPrice), deathSpiralETHPrice: safe(deathSpiralETHPrice), totalShares, annualDividend, dividendYield: safe(dividendYield), totalAnnualDividendPayout: safe(totalAnnualDividendPayout), dividendPayoutRatio: safe(dividendPayoutRatio), ethSupplyPercent: safe(ethSupplyPercent), goalProgress: safe(goalProgress), ethToGo: safe(ethToGo) };
   }, [currentETH, currentShares, currentStockPrice, ethPrice, navMultiple, stakingType, baseStakingAPY, restakingBonus, stakingRatio, useDebt, debtAmount, conversionPremium, debtCovenantLTV, quarterlyDividend]);
 
   // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
@@ -8908,11 +8912,11 @@ const TimelineTab = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>5% ETH Supply Target</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at {(currentETH / 120700000 * 100).toFixed(2)}% (~6.04M ETH needed)</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at {calc.ethSupplyPercent.toFixed(2)}% (~6.04M ETH needed)</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>{Math.round(currentETH / 6035000 * 100)}%</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~{((6035000 - currentETH) / 1e6).toFixed(2)}M ETH to go</div>
+                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>{Math.round(calc.goalProgress)}%</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~{(calc.ethToGo / 1e6).toFixed(2)}M ETH to go</div>
               </div>
             </div>
           </div>
