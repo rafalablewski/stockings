@@ -1984,8 +1984,10 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       </div>
     </div>
 
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters-header</div>
     <h3 className="section-head">Parameters</h3>
+
+    <h4 style={{ color: 'var(--cyan)', fontSize: 13, fontWeight: 600, marginBottom: 12, marginTop: 8 }}>Treasury Assets</h4>
     <div className="g2">
       <OverviewParameterCard
         title="ETH Holdings"
@@ -2006,7 +2008,9 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         currentValue={DEFAULTS.ethPrice}
       />
     </div>
-    <div className="g3">
+
+    <h4 style={{ color: 'var(--mint)', fontSize: 13, fontWeight: 600, marginBottom: 12, marginTop: 20 }}>Capital Structure</h4>
+    <div className="g2">
       <OverviewParameterCard
         title="Shares (M)"
         explanation="Total diluted shares. Higher count dilutes ETH/share and NAV/share."
@@ -2025,6 +2029,10 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         currentValue={DEFAULTS.currentStockPrice}
         showCurrentIndicator={false}
       />
+    </div>
+
+    <h4 style={{ color: 'var(--violet)', fontSize: 13, fontWeight: 600, marginBottom: 12, marginTop: 20 }}>Dividend Income</h4>
+    <div className="g2">
       <OverviewParameterCard
         title="Qtr Dividend ($)"
         explanation="Per-share quarterly dividend. Higher dividend = better yield for income investors."
