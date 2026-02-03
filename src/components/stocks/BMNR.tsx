@@ -7471,16 +7471,16 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#future-of-finance</div>
       <div className="card">
         <div className="card-title">Is Ethereum the Future of Finance?</div>
-        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,212,170,0.1))', borderRadius: 8, marginBottom: 16 }}>
+        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,212,170,0.1))', borderRadius: 8 }}>
           <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6, fontStyle: 'italic' }}>
             "The evidence suggests a fundamental shift: the world's largest financial institutions are no longer asking <em>if</em> they should build on Ethereum, but <em>how fast</em> they can deploy."
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {/* Evidence Point 1 */}
           <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--violet)' }}>
-            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14, marginBottom: 8 }}>💰 TradFi Giants Are All-In</div>
+            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>💰 TradFi Giants Are All-In</div>
             <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
               BlackRock ($10T+ AUM) launched BUIDL tokenized fund on Ethereum, now filing for staked ETH ETF. Fidelity ($5.8T AUM) launching FIDD stablecoin on Ethereum. Franklin Templeton preparing institutional money market funds for tokenized distribution. These aren't experiments — they're production deployments.
             </div>
@@ -7488,7 +7488,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
 
           {/* Evidence Point 2 */}
           <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--mint)' }}>
-            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14, marginBottom: 8 }}>🏛️ Regulatory Clarity Enabling Scale</div>
+            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>🏛️ Regulatory Clarity Enabling Scale</div>
             <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
               The GENIUS Act provides clear stablecoin guardrails. Telcoin launched the first US bank-issued stablecoin (eUSD) under this framework. Franklin Templeton retrofitting Rule 2a-7 funds for compliance. Regulation is now an enabler, not a blocker.
             </div>
@@ -7496,7 +7496,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
 
           {/* Evidence Point 3 */}
           <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--sky)' }}>
-            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14, marginBottom: 8 }}>🌍 Global Payment Rails Integrating</div>
+            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>🌍 Global Payment Rails Integrating</div>
             <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
               Mastercard partnering with ADI Foundation for stablecoin payments. HSBC, Ant International & Swift completed cross-border tokenized deposits POC using EVM/ERC-20 standards. Shift4 offering Ethereum stablecoin settlement to hundreds of thousands of merchants.
             </div>
@@ -7504,7 +7504,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
 
           {/* Evidence Point 4 */}
           <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--gold)' }}>
-            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14, marginBottom: 8 }}>🌐 Emerging Markets Onboarding</div>
+            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>🌐 Emerging Markets Onboarding</div>
             <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
               ADI Chain (Ethereum L2) partnering with M-Pesa to bring 60M+ African users onchain. Abu Dhabi's IHC backing institutional L2 infrastructure. UAE Central Bank regulating Dirham stablecoin. Financial inclusion happening on Ethereum rails.
             </div>
@@ -7512,26 +7512,26 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         </div>
 
         {/* How It Works */}
-        <div style={{ marginTop: 16, padding: 16, background: 'var(--surface)', borderRadius: 8, border: '1px solid var(--border)' }}>
-          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14, marginBottom: 12 }}>How This Thesis Plays Out</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ padding: 16, background: 'var(--surface)', borderRadius: 8, border: '1px solid var(--border)' }}>
+          <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>How This Thesis Plays Out</div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={{ fontSize: 12, color: 'var(--mint)', fontFamily: 'Space Mono' }}>1.</span>
               <span style={{ fontSize: 12, color: 'var(--text2)' }}>Tokenized assets (treasuries, RWAs, stablecoins) settle on Ethereum L1/L2</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={{ fontSize: 12, color: 'var(--mint)', fontFamily: 'Space Mono' }}>2.</span>
               <span style={{ fontSize: 12, color: 'var(--text2)' }}>Transaction volume generates fees → ETH burned → deflationary pressure</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={{ fontSize: 12, color: 'var(--mint)', fontFamily: 'Space Mono' }}>3.</span>
               <span style={{ fontSize: 12, color: 'var(--text2)' }}>ETH becomes productive collateral (staking yield, DeFi composability)</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={{ fontSize: 12, color: 'var(--mint)', fontFamily: 'Space Mono' }}>4.</span>
               <span style={{ fontSize: 12, color: 'var(--text2)' }}>Network effects compound as more institutions build on shared infrastructure</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={{ fontSize: 12, color: 'var(--mint)', fontFamily: 'Space Mono' }}>5.</span>
               <span style={{ fontSize: 12, color: 'var(--text2)' }}>BMNR captures this via treasury strategy: ETH appreciation + staking yield</span>
             </div>
@@ -7539,8 +7539,8 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         </div>
 
         {/* Bottom line */}
-        <div style={{ marginTop: 16, padding: 12, background: 'linear-gradient(135deg, rgba(0,212,170,0.15), rgba(139,92,246,0.15))', borderRadius: 8, border: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 12, color: 'var(--mint)', fontWeight: 600, marginBottom: 4 }}>The Investment Case</div>
+        <div style={{ padding: 12, background: 'linear-gradient(135deg, rgba(0,212,170,0.15), rgba(139,92,246,0.15))', borderRadius: 8, border: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>The Investment Case</div>
           <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>
             When the world's largest asset managers, payment networks, and banks all choose the same settlement layer, that's not speculation — that's infrastructure becoming standard. BMNR's thesis is that owning the asset that secures this infrastructure (ETH) is the trade of the decade.
           </div>
