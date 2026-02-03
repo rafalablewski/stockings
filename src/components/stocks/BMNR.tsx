@@ -7329,11 +7329,11 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>7-Day Net Flows</div>
           </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {etfData.topHolders.map((etf, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
               <span style={{ fontSize: 13, color: 'var(--text)' }}>{etf.name}</span>
-              <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={{ fontSize: 13, fontFamily: 'Space Mono', color: 'var(--text2)' }}>${etf.aum}B</span>
                 <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: etf.change >= 0 ? 'var(--mint)' : 'var(--coral)', minWidth: 60, textAlign: 'right' }}>
                   {etf.change >= 0 ? '+' : ''}{etf.change}%
@@ -7347,12 +7347,12 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       {/* Protocol Roadmap */}
       <div className="card">
         <div className="card-title">Ethereum Protocol Roadmap</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {protocolRoadmap.map((item, i) => (
             <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: `3px solid ${item.impact === 'Very High' ? 'var(--violet)' : item.impact === 'High' ? 'var(--mint)' : 'var(--sky)'}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{item.name}</span>
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ display: 'flex' }}>
                   <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: item.status === 'Testing' ? 'rgba(0,212,170,0.2)' : item.status === 'Development' ? 'rgba(100,149,237,0.2)' : 'rgba(139,92,246,0.2)', color: item.status === 'Testing' ? 'var(--mint)' : item.status === 'Development' ? 'var(--sky)' : 'var(--violet)' }}>{item.status}</span>
                   <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{item.date}</span>
                 </div>
@@ -7364,7 +7364,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       </div>
       
       {/* Ethereum Adoption Timeline - matches Timeline tab structure */}
-      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center' }}>
         <span>Ethereum Adoption Timeline</span>
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredNews.length} events)</span>
       </h3>
@@ -7429,7 +7429,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
           {filteredNews.map((news, i) => {
             const isExpanded = expandedNews.has(i);
             return (
@@ -7445,7 +7445,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 11, color: 'var(--text3)' }}>{news.date}</span>
                       <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(139,92,246,0.2)', color: 'var(--violet)' }}>{news.category}</span>
                       <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(59,130,246,0.2)', color: 'var(--sky)' }}>{news.company}</span>
