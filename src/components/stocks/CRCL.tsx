@@ -1753,9 +1753,11 @@ const ScenariosTab = () => {
 
   return (
     <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenarios-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Scenario Simulation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
 
       {/* Highlight Box */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenarios-intro</div>
       <div className="highlight">
         <h3>Multi-Year Projections</h3>
         <p className="text-sm">
@@ -1766,6 +1768,7 @@ const ScenariosTab = () => {
       </div>
 
       {/* Controls */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-controls</div>
       <div className="g2" style={{ }}>
         {/* Target Year Selector */}
         <div className="card">
@@ -1852,6 +1855,7 @@ const ScenariosTab = () => {
             </div>
 
             {/* Key Metrics */}
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-metrics</div>
             <div className="g4" style={{ }}>
               <div className="big-stat">
                 <div className="num" style={{ color: selected.color }}>${projection.sharePrice.toLocaleString()}</div>
@@ -1878,6 +1882,7 @@ const ScenariosTab = () => {
             </div>
 
             {/* Financial Projections Table */}
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-projections</div>
             <div className="card" style={{ }}>
               <div className="card-title">Financial Projections — {selected.name} Scenario</div>
               <div style={{ overflowX: 'auto' }}>
@@ -2017,6 +2022,7 @@ const ScenariosTab = () => {
             </div>
 
             {/* Assumptions & Catalysts */}
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-assumptions</div>
             <div className="g2" style={{ }}>
               <div className="card">
                 <div className="card-title">Key Assumptions</div>
@@ -2050,6 +2056,7 @@ const ScenariosTab = () => {
       })()}
 
       {/* Probability-Weighted Expected Value */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#expected-value</div>
       <div className="highlight" style={{ }}>
         <h3>Probability-Weighted Expected Value — {targetYear}</h3>
         <p style={{ color: 'var(--text2)' }}>
@@ -2275,6 +2282,7 @@ const ScenariosTab = () => {
         </div>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Scenario Modeling" items={[
         { term: 'Scenario Framework', def: 'Define discrete future states (Bull/Base/Bear) with specific assumptions for each. More structured than point estimates.' },
         { term: 'Revenue Drivers', def: 'For Circle: USDC circulation × interest rate × Circle\'s share. Decompose into controllable vs market-driven factors.' },
@@ -2320,8 +2328,10 @@ const DCFTab = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>DCF<UpdateIndicators sources="SEC" /></h2>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-intro</div>
       <div className="highlight">
         <h3>DCF Valuation</h3>
         <p className="text-sm">
@@ -2331,6 +2341,7 @@ const DCFTab = () => {
         </p>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-scenarios</div>
       <div className="g3" style={{ }}>
         {SCENARIOS.map(sc => (
           <div
@@ -2347,6 +2358,7 @@ const DCFTab = () => {
         ))}
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-inputs</div>
       <div className="g2">
         <div className="card">
           <div className="card-title">Model Inputs</div>
@@ -2362,6 +2374,7 @@ const DCFTab = () => {
       </div>
 
       {/* Financial Projections Table */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-projections</div>
       <div className="card">
         <div className="card-title">Projections</div>
         <div style={{ overflowX: 'auto' }}>
@@ -2425,6 +2438,7 @@ const DCFTab = () => {
         </div>
       </div>
 
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — DCF Valuation" items={[
         { term: 'Discounted Cash Flow', def: 'Present value of future free cash flows + terminal value. Most rigorous valuation method. Sensitive to assumptions.' },
         { term: 'WACC (Weighted Average Cost of Capital)', def: 'Blended cost of equity and debt. Used as discount rate. Higher WACC = lower present value.' },
@@ -4732,7 +4746,8 @@ function CRCLModel() {
                   </div>
                 </div>
               </div>
-              
+
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — USDC Economics" items={[
                 { term: 'Reserve Yield Model', def: 'USDC reserves invested in T-bills and cash earn risk-free rate. Revenue = Circulation × Yield Rate. Simple but powerful business model.' },
                 { term: 'Circulation Drivers', def: 'Crypto market activity, DeFi usage, cross-border payments, institutional adoption. Tracks crypto market sentiment but growing secular use cases.' },
