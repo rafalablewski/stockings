@@ -383,7 +383,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 .g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-.g5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.g5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; }
 
 /* Highlight Boxes */
 .highlight {

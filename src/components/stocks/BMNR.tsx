@@ -2636,24 +2636,24 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Staking<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3>ETH Staking Yield</h3>
-        <p className="text-sm">BMNR generates yield by staking ETH through validators. Compare staking strategies and model compounding returns over time.</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>BMNR generates yield by staking ETH through validators. Compare staking strategies and model compounding returns over time.</p>
       </div>
       <div className="g3">
-        <button onClick={() => setStakingType('solo')} className={`p-4 rounded-xl border text-left ${stakingType === 'solo' ? 'bg-violet-600/20 border-violet-500' : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'}`}>
-          <div className="flex justify-between mb-2"><span className="font-medium">Solo Staking</span><span className="text-lg font-bold text-green-400">{soloAPY.toFixed(1)}%</span></div>
-          <p className="text-xs text-slate-400">Run validators. +0.5% MEV/tips.</p><p className="text-xs text-orange-400 mt-1">Higher risk: slashing, technical</p>
-        </button>
-        <button onClick={() => setStakingType('liquid')} className={`p-4 rounded-xl border text-left ${stakingType === 'liquid' ? 'bg-violet-600/20 border-violet-500' : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'}`}>
-          <div className="flex justify-between mb-2"><span className="font-medium">Liquid Staking</span><span className="text-lg font-bold text-green-400">{liquidAPY.toFixed(1)}%</span></div>
-          <p className="text-xs text-slate-400">Lido (stETH), Rocket Pool (rETH)</p><p className="text-xs text-yellow-400 mt-1">Medium risk: smart contract</p>
-        </button>
-        <button onClick={() => setStakingType('restaking')} className={`p-4 rounded-xl border text-left ${stakingType === 'restaking' ? 'bg-violet-600/20 border-violet-500' : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'}`}>
-          <div className="flex justify-between mb-2"><span className="font-medium">Restaking</span><span className="text-lg font-bold text-green-400">{restakingAPY.toFixed(1)}%</span></div>
-          <p className="text-xs text-slate-400">EigenLayer + LSTs. +{restakingBonus}% bonus.</p><p className="text-xs text-red-400 mt-1">Higher risk: AVS slashing</p>
-        </button>
+        <div onClick={() => setStakingType('solo')} style={{ padding: 16, borderRadius: 12, border: stakingType === 'solo' ? '2px solid var(--violet)' : '1px solid var(--border)', background: stakingType === 'solo' ? 'var(--violet-dim)' : 'var(--surface2)', cursor: 'pointer', textAlign: 'left' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><span style={{ fontWeight: 500 }}>Solo Staking</span><span style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>{soloAPY.toFixed(1)}%</span></div>
+          <p style={{ fontSize: 12, color: 'var(--text3)' }}>Run validators. +0.5% MEV/tips.</p><p style={{ fontSize: 12, color: 'var(--gold)', marginTop: 4 }}>Higher risk: slashing, technical</p>
+        </div>
+        <div onClick={() => setStakingType('liquid')} style={{ padding: 16, borderRadius: 12, border: stakingType === 'liquid' ? '2px solid var(--violet)' : '1px solid var(--border)', background: stakingType === 'liquid' ? 'var(--violet-dim)' : 'var(--surface2)', cursor: 'pointer', textAlign: 'left' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><span style={{ fontWeight: 500 }}>Liquid Staking</span><span style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>{liquidAPY.toFixed(1)}%</span></div>
+          <p style={{ fontSize: 12, color: 'var(--text3)' }}>Lido (stETH), Rocket Pool (rETH)</p><p style={{ fontSize: 12, color: 'var(--gold)', marginTop: 4 }}>Medium risk: smart contract</p>
+        </div>
+        <div onClick={() => setStakingType('restaking')} style={{ padding: 16, borderRadius: 12, border: stakingType === 'restaking' ? '2px solid var(--violet)' : '1px solid var(--border)', background: stakingType === 'restaking' ? 'var(--violet-dim)' : 'var(--surface2)', cursor: 'pointer', textAlign: 'left' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><span style={{ fontWeight: 500 }}>Restaking</span><span style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>{restakingAPY.toFixed(1)}%</span></div>
+          <p style={{ fontSize: 12, color: 'var(--text3)' }}>EigenLayer + LSTs. +{restakingBonus}% bonus.</p><p style={{ fontSize: 12, color: 'var(--coral)', marginTop: 4 }}>Higher risk: AVS slashing</p>
+        </div>
       </div>
-      <div className="card"><div className="card-title">Parameters</div><div className="grid grid-cols-2 md:grid-cols-4 gap-4"><Input label="Base APY (%)" value={baseStakingAPY} onChange={setBaseStakingAPY} step={0.1} /><Input label="Restaking Bonus (%)" value={restakingBonus} onChange={setRestakingBonus} step={0.1} /><Input label="% ETH Staked" value={stakingRatio} onChange={setStakingRatio} max={100} /><Input label="Slashing Risk (%/yr)" value={slashingRisk} onChange={setSlashingRisk} step={0.1} /></div></div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="card"><div className="card-title">Parameters</div><div className="g4"><Input label="Base APY (%)" value={baseStakingAPY} onChange={setBaseStakingAPY} step={0.1} /><Input label="Restaking Bonus (%)" value={restakingBonus} onChange={setRestakingBonus} step={0.1} /><Input label="% ETH Staked" value={stakingRatio} onChange={setStakingRatio} max={100} /><Input label="Slashing Risk (%/yr)" value={slashingRisk} onChange={setSlashingRisk} step={0.1} /></div></div>
+      <div className="g4">
         <Card label="Effective APY" value={`${calc.effectiveAPY.toFixed(2)}%`} sub="Net annual yield" color="green" updateSource="PR" />
         <Card label="Staked ETH" value={`${(calc.stakedETH / 1e6).toFixed(2)}M`} sub={`${stakingRatio}% of holdings`} color="blue" updateSource="PR" />
         <Card label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} sub="Before slashing" color="yellow" updateSource="PR" />
@@ -2714,11 +2714,11 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Dilution<UpdateIndicators sources="SEC" /></h2>
       <div className="highlight"><h3>Equity Dilution Analysis</h3>
-        <p className="text-sm">Model the impact of share issuance on NAV per share. Accretive when issued above NAV; dilutive when below.</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>Model the impact of share issuance on NAV per share. Accretive when issued above NAV; dilutive when below.</p>
       </div>
       <div className="card"><div className="card-title">Single Tranche</div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4"><Input label="Dilution %" value={dilutionPercent} onChange={setDilutionPercent} max={100} /><Input label="Sale Discount %" value={saleDiscount} onChange={setSaleDiscount} max={50} /><Input label="NAV Multiple" value={navMultiple} onChange={setNavMultiple} step={0.1} /><div className="text-sm"><div className="text-slate-400 mb-1">Available</div><div className="font-medium">{(maxAuthorizedShares - currentShares).toLocaleString()}M</div></div></div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="g4" style={{ marginBottom: 16 }}><Input label="Dilution %" value={dilutionPercent} onChange={setDilutionPercent} max={100} /><Input label="Sale Discount %" value={saleDiscount} onChange={setSaleDiscount} max={50} /><Input label="NAV Multiple" value={navMultiple} onChange={setNavMultiple} step={0.1} /><div style={{ fontSize: 14 }}><div style={{ color: 'var(--text3)', marginBottom: 4 }}>Available</div><div style={{ fontWeight: 500 }}>{(maxAuthorizedShares - currentShares).toLocaleString()}M</div></div></div>
+        <div className="g4">
           <Card label="New Shares" value={`${singleTranche.newShares.toFixed(0)}M`} sub="Issued" color="blue" />
           <Card label="Proceeds" value={`$${(singleTranche.proceeds / 1e9).toFixed(2)}B`} sub="Raised" color="green" />
           <Card label="ETH Bought" value={`${(singleTranche.ethBought / 1e6).toFixed(2)}M`} sub="Purchased" color="yellow" />
@@ -2726,18 +2726,18 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
         </div>
       </div>
       <div className="card"><div className="card-title">Multi-Tranche Schedule</div>
-        <div className="space-y-3">{tranches.map(t => (
-          <div key={t.id} className={`p-3 rounded-lg border flex items-center gap-4 ${t.enabled ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-900/50 border-slate-800 opacity-60'}`}>
-            <input type="checkbox" checked={t.enabled} onChange={e => updateTranche(t.id, 'enabled', e.target.checked)} className="w-4 h-4" />
-            <div className="grid grid-cols-4 gap-3 flex-1">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{tranches.map(t => (
+          <div key={t.id} style={{ padding: 12, borderRadius: 8, border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 16, background: t.enabled ? 'var(--surface2)' : 'var(--surface)', opacity: t.enabled ? 1 : 0.6 }}>
+            <input type="checkbox" checked={t.enabled} onChange={e => updateTranche(t.id, 'enabled', e.target.checked)} style={{ width: 16, height: 16 }} />
+            <div className="g4" style={{ flex: 1 }}>
               <Input label="Year" value={t.year} onChange={v => updateTranche(t.id, 'year', v)} step={0.5} />
               <Input label="Shares (M)" value={t.sharesM} onChange={v => updateTranche(t.id, 'sharesM', v)} />
               <Input label="ETH Price ($)" value={t.ethPrice} onChange={v => updateTranche(t.id, 'ethPrice', v)} />
-              {multiTranche.results.find(r => r.id === t.id) && <div className="text-sm"><div className="text-slate-400">Accretion</div><div className={multiTranche.results.find(r => r.id === t.id)?.accretion >= 0 ? 'text-green-400' : 'text-red-400'}>{multiTranche.results.find(r => r.id === t.id)?.accretion >= 0 ? '+' : ''}{multiTranche.results.find(r => r.id === t.id)?.accretion.toFixed(1)}%</div></div>}
+              {multiTranche.results.find(r => r.id === t.id) && <div style={{ fontSize: 14 }}><div style={{ color: 'var(--text3)' }}>Accretion</div><div style={{ color: multiTranche.results.find(r => r.id === t.id)?.accretion >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{multiTranche.results.find(r => r.id === t.id)?.accretion >= 0 ? '+' : ''}{multiTranche.results.find(r => r.id === t.id)?.accretion.toFixed(1)}%</div></div>}
             </div>
           </div>
         ))}</div>
-        <div className="mt-4 pt-4 border-t border-slate-700 flex justify-between"><span className="text-slate-400">Active: {tranches.filter(t => t.enabled).length}</span><div className="text-right"><div className="text-slate-400 text-sm">Cumulative</div><div className={`text-xl font-bold ${multiTranche.totalAccretion >= 0 ? 'text-green-400' : 'text-red-400'}`}>{multiTranche.totalAccretion >= 0 ? '+' : ''}{multiTranche.totalAccretion.toFixed(1)}%</div></div></div>
+        <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Active: {tranches.filter(t => t.enabled).length}</span><div style={{ textAlign: 'right' }}><div style={{ color: 'var(--text3)', fontSize: 14 }}>Cumulative</div><div style={{ fontSize: 20, fontWeight: 700, color: multiTranche.totalAccretion >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{multiTranche.totalAccretion >= 0 ? '+' : ''}{multiTranche.totalAccretion.toFixed(1)}%</div></div></div>
       </div>
       
       <CFANotes title="CFA Level III — Dilution & Accretion" items={[
@@ -2763,20 +2763,20 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Debt<UpdateIndicators sources="SEC" /></h2>
       <div className="highlight"><h3>Leverage & Convertible Debt</h3>
-        <p className="text-sm">Model convertible debt financing and analyze LTV covenant risks. Track death spiral trigger prices.</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>Model convertible debt financing and analyze LTV covenant risks. Track death spiral trigger prices.</p>
       </div>
       <div className="card"><div className="card-title">Debt Parameters</div>
-        <label className="flex items-center gap-2 mb-4 cursor-pointer"><input type="checkbox" checked={useDebt} onChange={e => setUseDebt(e.target.checked)} className="w-4 h-4" /><span>Enable Convertible Debt</span></label>
-        {useDebt && <div className="grid grid-cols-2 md:grid-cols-5 gap-4"><Input label="Principal ($M)" value={debtAmount} onChange={setDebtAmount} /><Input label="Coupon (%)" value={debtRate} onChange={setDebtRate} step={0.1} /><Input label="Maturity (Yrs)" value={debtMaturity} onChange={setDebtMaturity} /><Input label="Conv. Premium (%)" value={conversionPremium} onChange={setConversionPremium} /><Input label="LTV Covenant (%)" value={debtCovenantLTV} onChange={setDebtCovenantLTV} /></div>}
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, cursor: 'pointer' }}><input type="checkbox" checked={useDebt} onChange={e => setUseDebt(e.target.checked)} style={{ width: 16, height: 16 }} /><span>Enable Convertible Debt</span></label>
+        {useDebt && <div className="g5"><Input label="Principal ($M)" value={debtAmount} onChange={setDebtAmount} /><Input label="Coupon (%)" value={debtRate} onChange={setDebtRate} step={0.1} /><Input label="Maturity (Yrs)" value={debtMaturity} onChange={setDebtMaturity} /><Input label="Conv. Premium (%)" value={conversionPremium} onChange={setConversionPremium} /><Input label="LTV Covenant (%)" value={debtCovenantLTV} onChange={setDebtCovenantLTV} /></div>}
       </div>
       {useDebt && (<>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="g4">
           <Card label="Leverage" value={`${(calc.leverageRatio * 100).toFixed(1)}%`} sub="Debt/Mkt Cap" color="blue" />
           <Card label="Current LTV" value={`${(calc.ltv * 100).toFixed(1)}%`} sub={`Covenant: ${debtCovenantLTV}%`} color={calc.ltv * 100 < debtCovenantLTV * 0.8 ? 'green' : calc.ltv * 100 < debtCovenantLTV ? 'yellow' : 'red'} />
           <Card label="Conv. Price" value={`$${calc.conversionPrice.toFixed(2)}`} sub={`+${conversionPremium}%`} color="purple" />
           <Card label="Death Spiral" value={`$${calc.deathSpiralETHPrice.toFixed(0)}`} sub="ETH trigger" color="red" />
         </div>
-        <div className="card"><div className="card-title">LTV Under Drawdown</div><div className="grid grid-cols-5 gap-2">{drawdown.map(d => (<div key={d.drawdown} className={`p-3 rounded-lg text-center ${d.breach ? 'bg-red-900/30 border border-red-500' : 'bg-slate-800/50'}`}><div className="text-xs text-slate-400">{d.drawdown === 0 ? 'Current' : `${d.drawdown}%`}</div><div className="font-medium">${d.ethPrice.toFixed(0)}</div><div className={`text-lg font-bold ${d.breach ? 'text-red-400' : 'text-green-400'}`}>{d.ltv.toFixed(0)}%</div>{d.breach && <div className="text-xs text-red-400">⚠️ BREACH</div>}</div>))}</div></div>
+        <div className="card"><div className="card-title">LTV Under Drawdown</div><div className="g5">{drawdown.map(d => (<div key={d.drawdown} style={{ padding: 12, borderRadius: 8, textAlign: 'center', background: d.breach ? 'var(--coral-dim)' : 'var(--surface2)', border: d.breach ? '1px solid var(--coral)' : '1px solid var(--border)' }}><div style={{ fontSize: 12, color: 'var(--text3)' }}>{d.drawdown === 0 ? 'Current' : `${d.drawdown}%`}</div><div style={{ fontWeight: 500 }}>${d.ethPrice.toFixed(0)}</div><div style={{ fontSize: 18, fontWeight: 700, color: d.breach ? 'var(--coral)' : 'var(--mint)' }}>{d.ltv.toFixed(0)}%</div>{d.breach && <div style={{ fontSize: 12, color: 'var(--coral)' }}>⚠️ BREACH</div>}</div>))}</div></div>
       </>)}
       
       <CFANotes title="CFA Level III — Debt & Leverage" items={[
@@ -3393,14 +3393,14 @@ const SensitivityTab = ({ calc, currentETH, currentShares, ethPrice }) => {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3>Price Matrix & Tornado</h3>
-        <p className="text-sm">Two-variable sensitivity showing stock price at different ETH prices and NAV multiples. Tornado chart shows parameter impact ranking.</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>Two-variable sensitivity showing stock price at different ETH prices and NAV multiples. Tornado chart shows parameter impact ranking.</p>
       </div>
       <div className="card"><div className="card-title">Price Matrix</div>
         <table className="tbl"><thead><tr><th>ETH</th>{[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(nm => <th key={nm} className="c">{nm}x NAV</th>)}</tr></thead>
         <tbody>{matrix.map(row => (<tr key={row.ethMult} style={row.ethMult === 1.0 ? { background: 'var(--accent-dim)' } : undefined}><td style={{ fontWeight: 500 }}>${row.ethPrice.toLocaleString()} ({row.ethMult}x)</td>{row.scenarios.map(s => (<td key={s.navMult} className="c" style={row.ethMult === 1.0 && s.navMult === 1.0 ? { background: 'var(--accent-dim)', fontWeight: 600 } : undefined}><span style={{ color: s.price >= calc.currentNAV ? 'var(--mint)' : 'var(--coral)' }}>${s.price.toFixed(2)}</span></td>))}</tr>))}</tbody></table>
       </div>
       <div className="card"><div className="card-title">Tornado Chart (±20%)</div>
-        <div className="space-y-3">{[{ param: 'ETH Price', down: -20, up: 20 }, { param: 'NAV Multiple', down: -20, up: 20 }, { param: 'ETH Holdings', down: -20, up: 20 }, { param: 'Shares Out', down: 25, up: -17 }].map(t => (<div key={t.param} className="flex items-center gap-4"><div className="w-28 text-sm text-slate-300">{t.param}</div><div className="flex-1 h-8 bg-slate-900 rounded relative"><div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-600" /><div className="absolute h-full bg-red-500/50" style={{ right: '50%', width: `${Math.abs(Math.min(t.down, 0)) * 2}%` }} /><div className="absolute h-full bg-green-500/50" style={{ left: '50%', width: `${Math.max(t.up, 0) * 2}%` }} /><div className="absolute inset-0 flex items-center justify-center text-xs font-medium"><span className="text-red-400 mr-6">{t.down}%</span><span className="text-green-400">{t.up > 0 ? '+' : ''}{t.up}%</span></div></div></div>))}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{[{ param: 'ETH Price', down: -20, up: 20 }, { param: 'NAV Multiple', down: -20, up: 20 }, { param: 'ETH Holdings', down: -20, up: 20 }, { param: 'Shares Out', down: 25, up: -17 }].map(t => (<div key={t.param} style={{ display: 'flex', alignItems: 'center', gap: 16 }}><div style={{ width: 112, fontSize: 14, color: 'var(--text2)' }}>{t.param}</div><div style={{ flex: 1, height: 32, background: 'var(--surface)', borderRadius: 4, position: 'relative' }}><div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: 'var(--border)' }} /><div style={{ position: 'absolute', height: '100%', background: 'var(--coral-dim)', right: '50%', width: `${Math.abs(Math.min(t.down, 0)) * 2}%` }} /><div style={{ position: 'absolute', height: '100%', background: 'var(--mint-dim)', left: '50%', width: `${Math.max(t.up, 0) * 2}%` }} /><div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 500 }}><span style={{ color: 'var(--coral)', marginRight: 24 }}>{t.down}%</span><span style={{ color: 'var(--mint)' }}>{t.up > 0 ? '+' : ''}{t.up}%</span></div></div></div>))}</div>
       </div>
       
       <CFANotes title="CFA Level III — Sensitivity Analysis" items={[
@@ -3434,19 +3434,19 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Backtest<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <div className="highlight"><h3>Historical NAV Simulation</h3>
-        <p className="text-sm">What would NAV have been at historical ETH prices? Toggle staking yield to see compounding effect. Caveat: illustrative only.</p>
+        <p style={{ fontSize: 14, color: 'var(--text2)' }}>What would NAV have been at historical ETH prices? Toggle staking yield to see compounding effect. Caveat: illustrative only.</p>
       </div>
       <div className="card"><div className="card-title">Settings</div>
-        <div className="flex flex-wrap gap-6 items-center">
-          <div className="flex items-center gap-2"><label className="text-sm text-slate-400">Start:</label><select value={startYear} onChange={e => setStartYear(Number(e.target.value))} className="bg-slate-900 border border-slate-700 rounded px-3 py-1 text-sm">{[2020, 2021, 2022, 2023, 2024].map(y => <option key={y} value={y}>{y}</option>)}</select></div>
-          <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={includeYield} onChange={e => setIncludeYield(e.target.checked)} className="w-4 h-4" /><span className="text-sm">Include Yield ({baseStakingAPY}%)</span></label>
-          <div className="flex items-center gap-2"><label className="text-sm text-slate-400">NAV Multiple:</label><input type="number" value={assumedMult} onChange={e => setAssumedMult(Number(e.target.value))} step={0.1} min={0.5} max={3} className="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm" /></div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><label style={{ fontSize: 14, color: 'var(--text3)' }}>Start:</label><select value={startYear} onChange={e => setStartYear(Number(e.target.value))} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: '4px 12px', fontSize: 14, color: 'var(--text1)' }}>{[2020, 2021, 2022, 2023, 2024].map(y => <option key={y} value={y}>{y}</option>)}</select></div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}><input type="checkbox" checked={includeYield} onChange={e => setIncludeYield(e.target.checked)} style={{ width: 16, height: 16 }} /><span style={{ fontSize: 14 }}>Include Yield ({baseStakingAPY}%)</span></label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><label style={{ fontSize: 14, color: 'var(--text3)' }}>NAV Multiple:</label><input type="number" value={assumedMult} onChange={e => setAssumedMult(Number(e.target.value))} step={0.1} min={0.5} max={3} style={{ width: 80, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: '4px 8px', fontSize: 14, color: 'var(--text1)' }} /></div>
         </div>
       </div>
-      {stats && (<><div className="grid grid-cols-2 lg:grid-cols-4 gap-3"><Card label="Total Return" value={`${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(0)}%`} sub={`Since ${startYear}`} color={stats.totalReturn >= 0 ? 'green' : 'red'} /><Card label="Current NAV" value={`$${stats.currentNav.toFixed(2)}`} sub="Latest" color="blue" /><Card label="Stock Price" value={`$${stats.currentPrice.toFixed(2)}`} sub={`At ${assumedMult.toFixed(1)}x`} color="green" /><Card label="Max Drawdown" value={`${stats.maxDD.toFixed(0)}%`} sub="Peak to trough" color="red" /></div>
+      {stats && (<><div className="g4" style={{ marginBottom: 16 }}><Card label="Total Return" value={`${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(0)}%`} sub={`Since ${startYear}`} color={stats.totalReturn >= 0 ? 'green' : 'red'} /><Card label="Current NAV" value={`$${stats.currentNav.toFixed(2)}`} sub="Latest" color="blue" /><Card label="Stock Price" value={`$${stats.currentPrice.toFixed(2)}`} sub={`At ${assumedMult.toFixed(1)}x`} color="green" /><Card label="Max Drawdown" value={`${stats.maxDD.toFixed(0)}%`} sub="Peak to trough" color="red" /></div>
       <div className="card"><div className="card-title">Historical NAV & Stock Price</div>
         <ResponsiveContainer width="100%" height={350}><AreaChart data={data.data}><defs><linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/><stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/></linearGradient><linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" tick={{ fontSize: 10 }} interval="preserveStartEnd" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: '8px' }} formatter={(v, name) => [`$${v.toFixed(2)}`, name === 'nav' ? 'NAV' : 'Stock']} /><Area type="monotone" dataKey="nav" stroke="var(--violet)" strokeWidth={2} fill="url(#navGrad)" name="nav" /><Area type="monotone" dataKey="stockPrice" stroke="var(--mint)" strokeWidth={2} fill="url(#priceGrad)" name="stockPrice" /></AreaChart></ResponsiveContainer>
-        <div className="flex justify-center gap-8 mt-2 text-xs"><div className="flex items-center gap-2"><div className="w-3 h-0.5 bg-violet-500" /> NAV</div><div className="flex items-center gap-2"><div className="w-3 h-0.5 bg-green-500" /> Stock ({assumedMult.toFixed(1)}x)</div></div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 32, marginTop: 8, fontSize: 12 }}><div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 12, height: 2, background: 'var(--violet)' }} /> NAV</div><div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 12, height: 2, background: 'var(--mint)' }} /> Stock ({assumedMult.toFixed(1)}x)</div></div>
       </div>
       
       <CFANotes title="CFA Level III — Historical Backtest" items={[
