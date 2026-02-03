@@ -39,6 +39,7 @@ interface StockChartProps {
   symbol: string;
   height?: number;
   externalRefreshKey?: number;
+  onRefresh?: () => void;
 }
 
 const RANGES = [
@@ -777,7 +778,7 @@ const ToggleSection = ({
   </div>
 );
 
-export default function StockChart({ symbol, height = 280, externalRefreshKey = 0 }: StockChartProps) {
+export default function StockChart({ symbol, height = 280, externalRefreshKey = 0, onRefresh }: StockChartProps) {
   const [data, setData] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -808,7 +809,10 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
   // Refresh trigger
   const [refreshKey, setRefreshKey] = useState(0);
-  const handleRefresh = () => setRefreshKey(k => k + 1);
+  const handleRefresh = () => {
+    setRefreshKey(k => k + 1);
+    onRefresh?.();
+  };
 
   // Comparison toggles
   const [showSPY, setShowSPY] = useState(false);

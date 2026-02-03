@@ -2022,7 +2022,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
     <h3 className="section-head">Stock Chart</h3>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
-    <StockChart symbol="BMNR" externalRefreshKey={chartRefreshKey} />
+    <StockChart symbol="BMNR" externalRefreshKey={chartRefreshKey} onRefresh={refreshPrice} />
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
     <CFANotes title="CFA Level III — ETH Treasury Fundamentals" items={[

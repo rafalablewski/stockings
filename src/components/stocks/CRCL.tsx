@@ -3568,7 +3568,7 @@ function CRCLModel() {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
               <h3 className="section-head">Stock Chart</h3>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
-              <StockChart symbol="CRCL" externalRefreshKey={chartRefreshKey} />
+              <StockChart symbol="CRCL" externalRefreshKey={chartRefreshKey} onRefresh={refreshPrice} />
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — Stablecoin Economics" items={[
