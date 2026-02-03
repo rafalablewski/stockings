@@ -8898,11 +8898,11 @@ const TimelineTab = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>5% ETH Supply Target</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.52% (~6.04M ETH needed)</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at {(currentETH / 120700000 * 100).toFixed(2)}% (~6.04M ETH needed)</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>70%</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~1.79M ETH to go</div>
+                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>{Math.round(currentETH / 6035000 * 100)}%</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~{((6035000 - currentETH) / 1e6).toFixed(2)}M ETH to go</div>
               </div>
             </div>
           </div>
