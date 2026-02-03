@@ -2634,7 +2634,9 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Staking<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-intro</div>
       <div className="highlight"><h3>ETH Staking Yield</h3>
         <p style={{ fontSize: 14, color: 'var(--text2)' }}>BMNR generates yield by staking ETH through validators. Compare staking strategies and model compounding returns over time.</p>
       </div>
@@ -2667,7 +2669,8 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
         <table className="tbl"><thead><tr><th>Year</th><th className="r">Yield ETH</th><th className="r">Total ETH</th><th className="r">NAV/Share</th></tr></thead>
         <tbody>{projections.map(p => (<tr key={p.year}><td>{p.year}Y</td><td className="r mint">+{Math.round(p.yieldETH).toLocaleString()}</td><td className="r">{(p.totalETH / 1e6).toFixed(2)}M</td><td className="r" style={{ fontWeight: 500 }}>${p.nav.toFixed(2)}</td></tr>))}</tbody></table>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-cfa</div>
       <CFANotes title="CFA Level III — Staking & Yield" items={[
         { term: 'CESR (Composite ETH Staking Rate)', def: 'Industry benchmark staking yield (~2.81%), administered by Quatrefoil. Like SOFR for ETH staking. BMNR uses this as reference rate for staking income projections.' },
         { term: 'Staking Income vs ETH Appreciation', def: 'Two return sources: (1) Staking yield — predictable ~3% APY income stream; (2) ETH price — volatile capital gains. Staking provides income floor even if ETH is flat.' },
@@ -2716,7 +2719,9 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Dilution<UpdateIndicators sources="SEC" /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-intro</div>
       <div className="highlight"><h3>Equity Dilution Analysis</h3>
         <p style={{ fontSize: 14, color: 'var(--text2)' }}>Model the impact of share issuance on NAV per share. Accretive when issued above NAV; dilutive when below.</p>
       </div>
@@ -2746,7 +2751,8 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
         ))}</div>
         <div style={{ borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Active: {tranches.filter(t => t.enabled).length}</span><div style={{ textAlign: 'right' }}><div style={{ color: 'var(--text3)', fontSize: 14 }}>Cumulative</div><div style={{ fontSize: 20, fontWeight: 700, color: multiTranche.totalAccretion >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{multiTranche.totalAccretion >= 0 ? '+' : ''}{multiTranche.totalAccretion.toFixed(1)}%</div></div></div>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-cfa</div>
       <CFANotes title="CFA Level III — Dilution & Accretion" items={[
         { term: 'The Accretion Formula', def: 'If Stock Price > NAV/Share, issuing shares is ACCRETIVE. Example: NAV = $24, Stock = $30. Sell 10M shares at $30 = $300M. Buy $300M/$2,317 = 129.5K ETH. New NAV/share rises because you added more ETH value than share dilution.' },
         { term: 'Break-Even mNAV', def: 'At mNAV = 1.0x (stock = NAV), issuance is neutral. Above 1.0x = accretive. Below 1.0x = dilutive. The higher the premium, the more accretive each dollar raised.' },
@@ -2768,7 +2774,9 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Debt<UpdateIndicators sources="SEC" /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-intro</div>
       <div className="highlight"><h3>Leverage & Convertible Debt</h3>
         <p style={{ fontSize: 14, color: 'var(--text2)' }}>Model convertible debt financing and analyze LTV covenant risks. Track death spiral trigger prices.</p>
       </div>
@@ -2788,7 +2796,8 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ltv-drawdown</div>
         <div className="card"><div className="card-title">LTV Under Drawdown</div><div className="g5">{drawdown.map(d => (<div key={d.drawdown} style={{ padding: 12, borderRadius: 8, textAlign: 'center', background: d.breach ? 'var(--coral-dim)' : 'var(--surface2)', border: d.breach ? '1px solid var(--coral)' : '1px solid var(--border)' }}><div style={{ fontSize: 12, color: 'var(--text3)' }}>{d.drawdown === 0 ? 'Current' : `${d.drawdown}%`}</div><div style={{ fontWeight: 500 }}>${d.ethPrice.toFixed(0)}</div><div style={{ fontSize: 18, fontWeight: 700, color: d.breach ? 'var(--coral)' : 'var(--mint)' }}>{d.ltv.toFixed(0)}%</div>{d.breach && <div style={{ fontSize: 12, color: 'var(--coral)' }}>⚠️ BREACH</div>}</div>))}</div></div>
       </>)}
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-cfa</div>
       <CFANotes title="CFA Level III — Debt & Leverage" items={[
         { term: 'Convertible Debt Strategy', def: 'Borrow at low rates (2-3%) to buy ETH. If ETH appreciates 15%+, leverage amplifies returns. Bondholders can convert to equity at premium, capping issuer upside but providing downside protection.' },
         { term: 'Loan-to-Value (LTV)', def: 'Debt ÷ ETH Value. If LTV exceeds covenant (e.g., 50%), lender can force liquidation. Critical risk metric for levered crypto treasuries.' },
@@ -3401,7 +3410,9 @@ const SensitivityTab = ({ calc, currentETH, currentShares, ethPrice }) => {
   const matrix = useMemo(() => [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0].map(em => ({ ethMult: em, ethPrice: ethPrice * em, scenarios: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(nm => ({ navMult: nm, price: ((currentETH * ethPrice * em) / (currentShares * 1e6)) * nm })) })), [currentETH, currentShares, ethPrice]);
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sensitivity-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sensitivity-intro</div>
       <div className="highlight"><h3>Price Matrix & Tornado</h3>
         <p style={{ fontSize: 14, color: 'var(--text2)' }}>Two-variable sensitivity showing stock price at different ETH prices and NAV multiples. Tornado chart shows parameter impact ranking.</p>
       </div>
@@ -3414,7 +3425,8 @@ const SensitivityTab = ({ calc, currentETH, currentShares, ethPrice }) => {
       <div className="card"><div className="card-title">Tornado Chart (±20%)</div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>{[{ param: 'ETH Price', down: -20, up: 20 }, { param: 'NAV Multiple', down: -20, up: 20 }, { param: 'ETH Holdings', down: -20, up: 20 }, { param: 'Shares Out', down: 25, up: -17 }].map(t => (<div key={t.param} style={{ display: 'flex', alignItems: 'center' }}><div style={{ width: 112, fontSize: 14, color: 'var(--text2)' }}>{t.param}</div><div style={{ flex: 1, height: 32, background: 'var(--surface)', borderRadius: 4, position: 'relative' }}><div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: 'var(--border)' }} /><div style={{ position: 'absolute', height: '100%', background: 'var(--coral-dim)', right: '50%', width: `${Math.abs(Math.min(t.down, 0)) * 2}%` }} /><div style={{ position: 'absolute', height: '100%', background: 'var(--mint-dim)', left: '50%', width: `${Math.max(t.up, 0) * 2}%` }} /><div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 500 }}><span style={{ color: 'var(--coral)' }}>{t.down}%</span><span style={{ color: 'var(--mint)' }}>{t.up > 0 ? '+' : ''}{t.up}%</span></div></div></div>))}</div>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sensitivity-cfa</div>
       <CFANotes title="CFA Level III — Sensitivity Analysis" items={[
         { term: 'Two-Variable Matrix', def: 'Rows = ETH price (0.25x to 3x current). Columns = NAV multiple (0.5x discount to 2x premium). Cell = implied stock price at that combination.' },
         { term: 'Bull/Bear Scenarios', def: 'Bull case = top right (ETH 3x, NAV 2x). Bear case = bottom left (ETH 0.25x, NAV 0.5x). Current state highlighted in matrix.' },
@@ -3444,7 +3456,9 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Backtest<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-intro</div>
       <div className="highlight"><h3>Historical NAV Simulation</h3>
         <p style={{ fontSize: 14, color: 'var(--text2)' }}>What would NAV have been at historical ETH prices? Toggle staking yield to see compounding effect. Caveat: illustrative only.</p>
       </div>
@@ -3463,7 +3477,8 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
         <ResponsiveContainer width="100%" height={350}><AreaChart data={data.data}><defs><linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/><stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/></linearGradient><linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" tick={{ fontSize: 10 }} interval="preserveStartEnd" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: '8px' }} formatter={(v, name) => [`$${v.toFixed(2)}`, name === 'nav' ? 'NAV' : 'Stock']} /><Area type="monotone" dataKey="nav" stroke="var(--violet)" strokeWidth={2} fill="url(#navGrad)" name="nav" /><Area type="monotone" dataKey="stockPrice" stroke="var(--mint)" strokeWidth={2} fill="url(#priceGrad)" name="stockPrice" /></AreaChart></ResponsiveContainer>
         <div style={{ display: 'flex', justifyContent: 'center', fontSize: 12 }}><div style={{ display: 'flex', alignItems: 'center' }}><div style={{ width: 12, height: 2, background: 'var(--violet)' }} /> NAV</div><div style={{ display: 'flex', alignItems: 'center' }}><div style={{ width: 12, height: 2, background: 'var(--mint)' }} /> Stock ({assumedMult.toFixed(1)}x)</div></div>
       </div>
-      
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-cfa</div>
       <CFANotes title="CFA Level III — Historical Backtest" items={[
         { term: 'Hypothetical Analysis', def: 'Shows what NAV and stock price would have been if today\'s ETH holdings existed at historical prices. Caveat: BMNR didn\'t exist then — illustrative only.' },
         { term: 'Yield Toggle', def: 'With yield = staking compounds monthly, showing how yield adds NAV even in flat/down markets. Without = pure ETH price exposure.' },
@@ -7524,6 +7539,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ethereum-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Ethereum Ecosystem<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <V1 />
     </div>
