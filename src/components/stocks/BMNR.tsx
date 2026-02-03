@@ -903,7 +903,7 @@ const BMNRDilutionAnalysis = () => {
         <div className="stats-row">
           <Stat label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} color="violet" updateSource={['PR', 'MARKET']} />
           <Stat label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(1)}B`} updateSource="MARKET" />
-          <Stat label="ETH Holdings" value={`${(currentETH / 1e6).toFixed(2)}M`} color="violet" updateSource="PR" />
+          <Stat label="ETH Holdings" value={`${(currentETH / 1e6).toFixed(2)}M (${Math.round((currentETH / (ETH_HOLDINGS.targetSupplyPercent / 100 * 120700000)) * 100)}% → 5%)`} color="violet" updateSource="PR" />
           <Stat label="ETH Price" value={`$${ethPrice.toLocaleString()}`} updateSource="MARKET" />
           <Stat label="Staking Yield" value={`${calc.effectiveAPY.toFixed(2)}%`} color="mint" updateSource="PR" />
           <Stat label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} color="sky" updateSource="PR" />
@@ -1737,6 +1737,13 @@ const OverviewParameterCard = ({
     }
   };
 
+  // Calculate position indicator for current value on the scale (0-100%)
+  const sortedOptions = [...options.slice(0, 6)].sort((a, b) => a - b);
+  const minOpt = sortedOptions[0];
+  const maxOpt = sortedOptions[sortedOptions.length - 1];
+  const clampedValue = Math.max(minOpt, Math.min(maxOpt, value));
+  const positionPercent = maxOpt !== minOpt ? ((clampedValue - minOpt) / (maxOpt - minOpt)) * 100 : 50;
+
   return (
     <div className="card">
       <div className="card-title">{title}</div>
@@ -1832,6 +1839,37 @@ const OverviewParameterCard = ({
             {isCustomValue ? formatValue(value) : '...'}
           </div>
         )}
+      </div>
+      {/* Position indicator bar showing where current value falls on the scale */}
+      <div style={{
+        position: 'relative',
+        height: 6,
+        background: 'var(--surface2)',
+        borderRadius: 3,
+        marginTop: 8,
+        marginBottom: 2,
+      }}>
+        {/* Gradient track */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: 3,
+          background: 'linear-gradient(to right, var(--coral), #f97316, var(--gold), #a3e635, var(--mint), #22c55e)',
+          opacity: 0.3,
+        }} />
+        {/* Current value indicator dot */}
+        <div style={{
+          position: 'absolute',
+          left: `calc(${positionPercent}% - 5px)`,
+          top: -2,
+          width: 10,
+          height: 10,
+          borderRadius: '50%',
+          background: isCustomValue ? 'var(--violet)' : 'var(--accent)',
+          border: '2px solid var(--bg)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+          transition: 'left 0.2s ease',
+        }} />
       </div>
       <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>
         ← Bearish | Bullish →
