@@ -3364,7 +3364,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
     // ═══════════════════════════════════════════════════════════════════════════
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // STRATEGY (FKA MICROSTRATEGY) - BTC TREASURY
+    // STRATEGY - DIGITAL CREDIT ROC (Return of Capital)
     // ═══════════════════════════════════════════════════════════════════════════
     {
       date: '2026-02-02',
@@ -3386,6 +3386,10 @@ const CompsTab = ({ comparables, ethPrice }) => {
       storyId: 'mstr-digital-credit-2025',
       storyTitle: 'Strategy Digital Credit Program'
     },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - Q4 2025 EARNINGS ANNOUNCEMENT
+    // ═══════════════════════════════════════════════════════════════════════════
     {
       date: '2026-01-15',
       competitor: 'mstr',
@@ -3405,6 +3409,10 @@ const CompsTab = ({ comparables, ethPrice }) => {
       storyId: 'mstr-earnings-q4-2025',
       storyTitle: 'Strategy Q4 2025 Earnings'
     },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - USD RESERVE & 650K BTC HOLDINGS
+    // ═══════════════════════════════════════════════════════════════════════════
     {
       date: '2025-12-01',
       competitor: 'mstr',
