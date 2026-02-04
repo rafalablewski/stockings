@@ -6807,6 +6807,18 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   // Ethereum Adoption Timeline - Institutional & Enterprise adoption events
   // Each entry includes: date, category, company, title, summary (detailed), significance, bmnrImplication, impact, source
   const adoptionTimeline = [
+    // === FEBRUARY 2026 ===
+    {
+      date: '2026-02-04',
+      category: 'Enterprise',
+      company: 'Figment',
+      title: 'Figment Achieves Full NORS Certification for Ethereum - First in North America and Europe',
+      summary: 'Figment, the largest independent provider of institutional staking infrastructure, achieves Full Certification under the Node Operator Risk Standard (NORS) for Ethereum. NORS is an independent, industry-recognized framework evaluating node operators across security, operational resilience, and governance. Figment is the first entity in North America and Europe to complete NORS certification. The standard establishes enterprise-grade criteria across slashing prevention, validator diversity, key management practices, and operational security/resilience. Unlike self-attested best practices, NORS requires operators to demonstrate real operating procedures through audited documentation, technical evidence, and validated controls. Annalea Sanders, Figment COO/CISO: "Institutional staking requires more than strong performance claims — it requires objective, independently validated operational excellence." Chris Matta, CEO at Liquid Collective: "Figment\'s Full Certification demonstrates the maturity of its controls and the rigor of its operational practices in meeting enterprise-grade expectations." NORS certification joins Figment\'s portfolio including SOC 1 Type I, SOC 2 Type II, ISO 27001, and OFAC-compliant MEV relays.',
+      significance: 'First Ethereum staking infrastructure certification in North America and Europe. NORS establishes enterprise-grade standard for institutional staking providers. Certification covers critical operational risks: slashing, validator diversity, key management. Independent validation (vs. self-attestation) provides institutional-grade assurance for staking allocation decisions.',
+      bmnrImplication: 'NORS certification validates Ethereum staking as institutional-grade infrastructure. Enterprise-grade standards for node operators supports BMNR staking thesis. More certified staking infrastructure = more institutional confidence in ETH staking = supports BMNR\'s staked ETH strategy.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
     // === JANUARY 2026 ===
     {
       date: '2026-01-30',
@@ -6818,6 +6830,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Ethereum Foundation advisor joining Abu Dhabi family office reinforces MENA region\'s growing institutional commitment to Ethereum ecosystem. Policy expertise integration suggests long-term strategic positioning around Ethereum governance. Complements ADI Chain and ADGM institutional activity in the region.',
       impact: 'Bullish',
       source: 'ACCESS Newswire'
+    },
+    {
+      date: '2026-01-29',
+      category: 'Enterprise',
+      company: 'Chronicle',
+      title: 'Chronicle Proof of Asset Powers MoonPay Enterprise Stablecoin Issuance on M0 Platform',
+      summary: 'Chronicle, a leading provider of oracle infrastructure and verifiable onchain finance, announces its role in MoonPay\'s enterprise stablecoin services built on the M0 platform. Chronicle\'s oracle technology ensures secure and accurate minting and redemption of MoonPay-issued stablecoins, providing continuous verification of underlying assets backing. As MoonPay scales stablecoin issuance to enterprises across United States, Asia, and Latin America, Chronicle\'s verification layer delivers transparency and security required for institutional adoption. Chronicle provides: continuous underlying asset verification (1:1 parity), secure minting authorization (preventing over-issuance), redemption accuracy validation, and multi-chain support. Nik Kunkel, Chronicle Founder: "Stablecoins require precise, independently verifiable issuance and redemption mechanisms. Our role in the M0 ecosystem ensures that every MoonPay stablecoin minted or redeemed is backed by verifiable underlying assets in real-time." Ivan Soto-Wright, MoonPay CEO: "Together, we enable transparent, secure, and compliant stablecoin operations for enterprise partners." Chronicle was built by the team at MakerDAO that invented the first Oracle on Ethereum in 2017.',
+      significance: 'Chronicle (original Ethereum oracle inventors from MakerDAO) powering enterprise stablecoin infrastructure. M0 platform + MoonPay (30M+ customers, 180 countries) creates full-stack stablecoin issuance infrastructure. Real-time proof of reserves addresses institutional transparency requirements.',
+      bmnrImplication: 'Enterprise stablecoin infrastructure on Ethereum validates network for institutional payment rails. Chronicle\'s oracle technology (from MakerDAO origins) provides battle-tested verification layer. More enterprise stablecoin adoption = more Ethereum ecosystem utility.',
+      impact: 'Bullish',
+      source: 'Business Wire'
     },
     {
       date: '2026-01-28',
@@ -6852,7 +6875,51 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       impact: 'Bullish',
       source: 'Business Wire'
     },
+    {
+      date: '2026-01-09',
+      category: 'Institutional',
+      company: 'BitGo',
+      title: 'BitGo Provides Custody and Trading for iPower Digital Asset Treasury',
+      summary: 'BitGo Holdings Inc., the digital asset infrastructure company, announces support for iPower Inc. (Nasdaq: IPW) in execution and custody of its digital asset treasury transactions. iPower completed purchases of Bitcoin (BTC) and Ethereum (ETH) through BitGo Bank & Trust, National Association. Transactions executed using BitGo Prime\'s over-the-counter (OTC) trading services for institutional liquidity and discreet execution, with BitGo\'s custody platform for long-term storage. Mike Belshe, BitGo CEO: "Corporate treasury participation in digital assets requires strong security, governance, and operational rigor. BitGo provides infrastructure that supports these requirements across custody and transaction execution." Lawrence Tan, iPower CEO: "As we evaluated our approach to digital asset treasury activity, we focused on governance, security and operational discipline. We believe BitGo\'s infrastructure provides a framework aligned with our internal controls." BitGo platform supports institutional digital asset activity with multi-signature security, policy controls, and operational workflows.',
+      significance: 'Nasdaq-listed company (IPW) establishing digital asset treasury with both BTC and ETH through regulated infrastructure. BitGo Bank & Trust provides institutional-grade custody with bank charter. Demonstrates growing corporate treasury adoption of ETH alongside BTC.',
+      bmnrImplication: 'Public company adding ETH to corporate treasury validates BMNR\'s thesis. BitGo institutional infrastructure supports corporate treasury adoption. More corporate ETH treasuries = broader institutional recognition of ETH as treasury asset.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
+    {
+      date: '2026-01-07',
+      category: 'Enterprise',
+      company: 'World Liberty Financial',
+      title: 'World Liberty Financial Files for National Trust Bank Charter to Issue USD1 Stablecoins',
+      summary: 'World Liberty Financial announces WLTC Holdings LLC filed de novo application to the Office of the Comptroller of the Currency (OCC) to establish World Liberty Trust Company, National Association (WLTC), a proposed national trust bank purpose-built for stablecoin operations. Charter will position WLTC to issue USD1, the dollar-backed stablecoin that has reached over $3.3 billion in circulation in its first year — fastest-growing stablecoin in history. Trust company plans to serve institutional customers including cryptocurrency exchanges, market makers, and investment firms. Will offer digital asset custody and stablecoin conversion services. Zach Witkoff, proposed President and Chairman: "USD1 grew faster in its first year than any other stablecoin in history. Institutions are already using USD1 for cross-border payments, settlement, and treasury operations. A national trust charter will allow us to bring issuance, custody, and conversion together as a full-stack offering under one highly regulated entity." WLTC plans three core services: stablecoin issuance/redemption, on-ramp/off-ramp services, custody and conversion. USD1 operates across ten blockchain networks including Ethereum, Solana, BNB Smart Chain, TRON, Aptos, and AB Core. BitGo serves as key strategic partner.',
+      significance: 'Fastest-growing stablecoin in history ($3.3B in first year) seeking national trust bank charter from OCC. Full-stack regulated stablecoin infrastructure: issuance, custody, conversion under federal supervision. GENIUS Act compliance structure. Multi-chain support including Ethereum.',
+      bmnrImplication: 'USD1 operating on Ethereum (among 10 chains) brings fast-growing stablecoin to Ethereum ecosystem. National trust charter provides regulatory clarity for institutional stablecoin adoption. More regulated stablecoins on Ethereum = more institutional confidence in Ethereum settlement layer.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
+    {
+      date: '2026-01-07',
+      category: 'Enterprise',
+      company: 'CoinFlip',
+      title: 'CoinFlip Launches Gradual - Payroll Crypto Conversion Including Ethereum',
+      summary: 'CoinFlip, a leading U.S.-based global digital currency platform company, announces launch of CoinFlip Gradual, a workplace perk enabling employees to invest in cryptocurrency directly through payroll purchases on recurring, automated basis. Program allows employees to convert portion of paycheck into digital assets including Bitcoin, Ethereum, SOL, USDC, and USDT. Investments made automatically and consistently, with assets delivered to personal digital wallet for full ownership and control. Ben Weiss, CoinFlip CEO: "By giving employees easy, secure access to cryptocurrency through their paycheck, we\'re helping more people take their first step into the digital economy—on their terms. We are excited to offer a practical way for companies to invest in their team\'s financial well-being and demonstrate a commitment to innovation, inclusion and increased economic opportunity." Paycheck allocations start from $25, with flexibility to set up recurring purchases across multiple assets simultaneously. CoinFlip operates world\'s largest network of cryptocurrency kiosks by transaction volume with 5,500+ kiosks across 49 U.S. states and 11 countries.',
+      significance: 'Major crypto platform (5,500+ kiosks, largest by volume) launching payroll conversion product. ETH included alongside BTC in employee benefit programs. Mainstream adoption pathway: payroll → crypto wallet → DeFi potential. Recurring purchases create consistent demand.',
+      bmnrImplication: 'Payroll ETH conversion expands retail investor base through passive accumulation. Employee benefit programs normalize ETH as mainstream asset. Recurring payroll purchases create steady ETH demand. More accessible ETH = broader adoption = ecosystem growth.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
     // === DECEMBER 2025 ===
+    {
+      date: '2025-12-26',
+      category: 'Enterprise',
+      company: 'Telcoin',
+      title: 'Telcoin Digital Asset Bank Launches eUSD - First Regulated Bank-Issued Stablecoin on Ethereum',
+      summary: 'Following final charter approval of Telcoin Digital Asset Bank by the Nebraska Department of Banking and Finance, Telcoin begins initial blockchain banking operations with launch of eUSD stablecoin on Ethereum and Polygon blockchains. Initial minting of $10 million eUSD marks first phase of banking operations. Paul Neuner, Telcoin CEO: "This is the crucial first step toward offering blockchain-native bank accounts through our Nebraska charter." Company expects to start onboarding customers in early 2026 through personal and business account offerings via Telcoin Wallet V5. Patrick Gerhart, President of Banking Operations: "Today eUSD transitions from development to live issuance as a foundational step. As we continue our rollout into the new year, our focus is on preparing to responsibly bring Digital Cash to customers through our regulated blockchain banking infrastructure." As the first Digital Asset Depository Institution in the United States under the Nebraska Financial Innovation Act and in line with federal GENIUS Act guidelines, Telcoin is uniquely positioned to issue stablecoins, accept customer deposits, and process eUSD payments, all under the same charter.',
+      significance: 'FIRST regulated bank-issued U.S. dollar stablecoin launching on Ethereum. Telcoin operates as first Digital Asset Depository Institution under Nebraska charter. GENIUS Act-compliant stablecoin infrastructure. Full banking services (deposits, payments, stablecoin issuance) under single charter.',
+      bmnrImplication: 'Bank-issued stablecoin on Ethereum validates network for regulated banking infrastructure. First DADI charter creates regulatory template for bank-blockchain integration. More regulated bank stablecoins = more institutional confidence in Ethereum settlement layer.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
     {
       date: '2025-12-24',
       category: 'Enterprise',
@@ -6874,6 +6941,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Regulated fiat gateways for ADI Chain (Ethereum L2) enable real-world adoption. More accessible infrastructure = more users = more Ethereum ecosystem value.',
       impact: 'Bullish',
       source: 'Fasset / ADI Foundation Press Release'
+    },
+    {
+      date: '2025-12-23',
+      category: 'Institutional',
+      company: 'iPower',
+      title: 'iPower Launches $30M Digital Asset Treasury Strategy with Bitcoin and Ethereum',
+      summary: 'iPower Inc. (Nasdaq: IPW) announces $30 million convertible note financing facility to launch its Digital Asset Treasury ("DAT") strategy. Of initial $9 million committed funding, approximately $4.4 million will establish Digital Asset Treasury holding combination of Bitcoin and Ethereum. For subsequent tranches, approximately 80% of proceeds intended for digital asset acquisition. Transaction represents iPower\'s first concrete step executing broader crypto strategy, building on foundation as established operating business with $59 million in trailing 12-month revenue. Lawrence Tan, iPower CEO: "Our Digital Asset Treasury is designed to be a strategic bridge between e-commerce and digital assets. By combining our platform capabilities, operating experience, and ecosystem relationships, we are focused on integrating digital assets into everyday commerce in a way that supports real economic activity and long-term value creation, rather than short-term speculation." Company also evaluating: strategic acquisitions using enhanced balance sheet, working with regulated providers to develop consumer-facing digital asset products leveraging existing digital platforms.',
+      significance: 'Nasdaq-listed company ($59M revenue) establishing multi-asset digital treasury including ETH. Convertible note structure enables ongoing digital asset accumulation. Company positioning at intersection of e-commerce and digital assets. Corporate treasury diversification beyond BTC-only strategies.',
+      bmnrImplication: 'Public company adding ETH to corporate treasury alongside BTC validates BMNR thesis. DAT strategy with ETH exposure demonstrates growing corporate interest in Ethereum as treasury asset. More corporate ETH adoption = broader institutional recognition.',
+      impact: 'Bullish',
+      source: 'Business Wire'
     },
     {
       date: '2025-12-16',
