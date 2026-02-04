@@ -7409,6 +7409,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     {
       date: '2025-09-25',
       category: 'Enterprise',
+      company: 'Toyota',
+      title: 'Toyota Woven City Opens as Living Laboratory for Blockchain-Integrated Mobility',
+      summary: 'Toyota Woven City, the 175-acre "living laboratory" at the base of Mount Fuji, officially opens with 360 initial residents. The smart city integrates Toyota\'s Mobility-Oriented Account (MOA) blockchain technology, deploying ERC-4337 Account Abstraction contracts on Ethereum to enable vehicle-centric digital wallets and seamless mobility services. Woven City serves as testbed for autonomous vehicles, robotics, smart infrastructure, and blockchain-based mobility accounts. CEO James Kuffner: "Woven City is where we prove out technologies that will shape the future of mobility and connected living." The city features three types of streets: fast vehicles only, mixed pedestrian/personal mobility, and pedestrian-only promenades.',
+      significance: 'World\'s largest automotive manufacturer (Toyota, $300B+ market cap) building physical city infrastructure on Ethereum smart contracts. MOA technology using ERC-4337 demonstrates enterprise adoption of Ethereum\'s newest account abstraction standard. Real-world deployment at scale validates blockchain for critical mobility infrastructure.',
+      bmnrImplication: 'Toyota deploying ERC-4337 on Ethereum mainnet for vehicle accounts validates Ethereum as enterprise infrastructure layer. Automotive industry ($3T+ global market) building on Ethereum expands network utility beyond finance. More enterprise adoption = more Ethereum ecosystem value.',
+      impact: 'Bullish',
+      source: 'Toyota Woven City / Toyota Blockchain Lab'
+    },
+    {
+      date: '2025-09-25',
+      category: 'Enterprise',
       company: 'Centrifuge',
       title: 'Centrifuge Launches First Licensed S&P 500 Index Fund Token (SPXA) on Base',
       summary: 'Centrifuge launches Janus Henderson Anemoy S&P 500 Fund (SPXA), the first tokenized S&P 500 index fund licensed by S&P Dow Jones Indices, exclusively on Base (Coinbase\'s Ethereum L2). Anemoy serves as investment manager with Janus Henderson ($457B AUM) as sub-investment manager. FalconX joins as anchor investor. Wormhole will enable future multichain expansion. Nick Cherney, Janus Henderson Head of Innovation: "Launching SPXA with Centrifuge is a natural progression of our blockchain strategy, bringing the world\'s most important equity index to a new generation of investors." Bhaji Illuminati, Centrifuge CEO: "There\'s no index more important than the S&P 500. Indices are the best way to bring stocks onchain: they\'re simple, collateral-ready, and unlock liquidity in ways individual securities can\'t."',
@@ -7749,9 +7760,20 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       impact: 'Bullish', 
       source: 'Societe Generale-FORGE' 
     },
-    { 
-      date: '2024-07-25', 
-      category: 'Enterprise', 
+    {
+      date: '2024-07-25',
+      category: 'Enterprise',
+      company: 'Toyota',
+      title: 'Toyota Blockchain Lab Deploys Mobility-Oriented Account (MOA) on Ethereum Mainnet',
+      summary: 'Toyota Blockchain Lab publishes technical paper and deploys Mobility-Oriented Account (MOA) smart contracts on Ethereum mainnet using ERC-4337 Account Abstraction standard. MOA creates vehicle-centric digital wallets enabling: KeyToken Contracts (ERC-721) for usage rights management, flexible payment delegation, and seamless mobility service integration. The system allows vehicles to have their own blockchain accounts, enabling autonomous payments for charging, tolls, parking, and maintenance. Toyota Motor Corporation partnered with other consortium members including Toyota Financial Services. Technical implementation includes modular account architecture supporting multiple signers, session keys, and programmable spending rules. Paul Brody, EY Global Blockchain Leader who has collaborated with Toyota: "This represents one of the most sophisticated enterprise ERC-4337 deployments we\'ve seen."',
+      significance: 'World\'s largest automotive manufacturer ($300B+ market cap) deploying production smart contracts on Ethereum public mainnet. First major automaker to implement ERC-4337 Account Abstraction for vehicle accounts. Toyota Blockchain Lab\'s choice of public Ethereum over private/consortium chains signals confidence in network security and decentralization.',
+      bmnrImplication: 'Toyota\'s MOA deployment validates Ethereum for automotive industry ($3T+ global market). ERC-4337 adoption by major enterprise demonstrates Account Abstraction standard maturity. More enterprise deployment = more Ethereum ecosystem value and network utility.',
+      impact: 'Bullish',
+      source: 'Toyota Blockchain Lab Technical Paper'
+    },
+    {
+      date: '2024-07-25',
+      category: 'Enterprise',
       company: 'Paysafe',
       title: 'Paysafe Partners with Alchemy Pay for Crypto On-Ramp Across 130 Countries', 
       summary: 'Paysafe (NYSE: PSFE), global payments platform with $140B annualized transaction volume, partners with Alchemy Pay to expand fiat-crypto on-ramp capabilities. Integration adds Paysafe\'s Skrill and NETELLER digital wallets (millions of users globally) plus multiple local payment methods (LPMs) across 130 countries and 40+ fiat currencies for BTC and ETH purchases. Includes open banking in UK and 15 European countries for direct bank account purchases. Phase 2 expansion planned for Latin America. SVP of Crypto & Digital Assets Micah Kershner: "The Skrill and NETELLER wallets\' large user-base and popularity among crypto holders along with integration of local payment methods will power Alchemy Pay\'s Fiat On-ramp with more payment options."',
