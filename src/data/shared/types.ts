@@ -137,6 +137,29 @@ export interface Partner {
 }
 
 /**
+ * Partner news entry for tracking MNO partner activities
+ * AI AGENT: Add from partner press releases that impact ASTS ecosystem
+ */
+export interface PartnerNewsEntry {
+  /** ISO date string (YYYY-MM-DD) */
+  date: string;
+  /** Partner company name (must match PARTNERS array) */
+  partner: string;
+  /** News category (e.g., "IoT", "Expansion", "Technology", "Partnership", "Financial") */
+  category: string;
+  /** Headline/title of the news */
+  headline: string;
+  /** Detailed summary of the news */
+  summary: string;
+  /** Relevance to ASTS (how this news impacts ASTS thesis) */
+  astsRelevance: string;
+  /** Impact assessment: "Bullish", "Bearish", "Neutral" */
+  impact: 'Bullish' | 'Bearish' | 'Neutral';
+  /** Source of the news */
+  source: string;
+}
+
+/**
  * Comparable company for peer analysis
  * AI AGENT: Update prices periodically, holdings from earnings reports
  */

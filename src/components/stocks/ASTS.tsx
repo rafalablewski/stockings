@@ -123,6 +123,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import {
   DEFAULTS,
   PARTNERS,
+  PARTNER_NEWS,
   REVENUE_SOURCES,
   UPCOMING_CATALYSTS,
   COMPLETED_MILESTONES,
@@ -1916,7 +1917,47 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           </div>
         </div>
       </div>
-      
+
+      {/* Partner Ecosystem News */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-news</div>
+      <div className="card">
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
+          📡 Partner Ecosystem News<UpdateIndicators sources="PR" />
+        </div>
+        <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 16 }}>
+          Tracking MNO partner activities that impact ASTS's commercial ecosystem. Partner expansion in IoT, connected vehicles, and coverage demonstrates growing demand for ubiquitous connectivity.
+        </p>
+        {PARTNER_NEWS.length > 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {PARTNER_NEWS.map((news, idx) => (
+              <div key={idx} style={{ padding: 16, background: 'rgba(34,211,238,0.05)', border: '1px solid rgba(34,211,238,0.2)', borderRadius: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                  <div>
+                    <span className="pill" style={{ fontSize: 10, marginRight: 8, background: 'rgba(34,211,238,0.2)', color: 'var(--cyan)' }}>{news.partner}</span>
+                    <span className="pill" style={{ fontSize: 10, background: 'rgba(168,85,247,0.2)', color: 'var(--violet)' }}>{news.category}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 11, color: news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--red)' : 'var(--text3)' }}>
+                      {news.impact === 'Bullish' ? '▲' : news.impact === 'Bearish' ? '▼' : '●'} {news.impact}
+                    </span>
+                    <span style={{ fontSize: 11, color: 'var(--text3)' }}>{news.date}</span>
+                  </div>
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text1)', marginBottom: 8 }}>{news.headline}</div>
+                <div style={{ fontSize: 12, color: 'var(--text2)', marginBottom: 12, lineHeight: 1.5 }}>{news.summary}</div>
+                <div style={{ padding: 12, background: 'rgba(16,185,129,0.1)', borderRadius: 8, border: '1px solid rgba(16,185,129,0.2)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--mint)', marginBottom: 4 }}>ASTS Relevance:</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.4 }}>{news.astsRelevance}</div>
+                </div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 8, opacity: 0.7 }}>Source: {news.source}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ padding: 24, textAlign: 'center', color: 'var(--text3)' }}>No partner news available</div>
+        )}
+      </div>
+
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Partnership Analysis" items={[
         { term: 'Definitive vs MoU', def: 'Definitive = binding commercial agreement with financial terms. MoU = memorandum of understanding, non-binding intent.' },

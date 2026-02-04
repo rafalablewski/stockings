@@ -26,6 +26,7 @@ export {
 export {
   PARTNERS_METADATA,
   PARTNERS,
+  PARTNER_NEWS,
   REVENUE_SOURCES,
   getTotalPrepayments,
   getTotalSubscriberReach,
@@ -69,6 +70,7 @@ export {
 // Re-export types for convenience
 export type {
   Partner,
+  PartnerNewsEntry,
   ShareClass,
   MajorShareholder,
   EquityOffering,

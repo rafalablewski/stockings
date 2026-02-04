@@ -20,7 +20,7 @@
  * 4. Update subs count from partner's latest earnings
  */
 
-import type { Partner, RevenueSource, DataMetadata } from '../shared/types';
+import type { Partner, RevenueSource, DataMetadata, PartnerNewsEntry } from '../shared/types';
 
 // ============================================================================
 // METADATA
@@ -160,6 +160,33 @@ export const REVENUE_SOURCES: RevenueSource[] = [
     source: 'Spectrum Rights',
     description: 'L-band, S-band monetization',
     status: 'Future',
+  },
+];
+
+// ============================================================================
+// PARTNER NEWS
+// ============================================================================
+
+/**
+ * Partner ecosystem news tracking
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Track news from ASTS MNO partners that impacts the ecosystem
+ * - Focus on: IoT expansion, connected vehicle, 5G rollouts, coverage expansion
+ * - Partner news shows health of ASTS's commercial partner ecosystem
+ * - Relevance: How does this news impact ASTS's commercial prospects?
+ */
+export const PARTNER_NEWS: PartnerNewsEntry[] = [
+  // === FEBRUARY 2026 ===
+  {
+    date: '2026-02-04',
+    partner: 'Vodafone',
+    category: 'IoT',
+    headline: 'Vodafone IoT Partners with Hyundai Motor Group for Connected Cars in 5 Middle East Countries',
+    summary: 'Hyundai Motor Group (Hyundai, Kia, Genesis) partners with Vodafone IoT to deploy regulatory-compliant in-car connectivity across Bahrain, Kingdom of Saudi Arabia, Kuwait, Qatar, and UAE. Vodafone IoT\'s Global SIM+ solution provides local network credentials, data routing, compliance with national laws, and seamless cross-border connectivity. Partnership with local network providers including e& UAE assures compliance and network resilience. Customers gain access to remote vehicle control, real-time status monitoring, and enhanced convenience services. Erik Brenneis, CEO of Vodafone IoT: "We are proud to partner with Hyundai Motor Group to deliver innovative in-car connectivity powered by our Global SIM+ which provides local credentials and a seamless cross-border service." Hyunwoo Go, Head of Connectivity Business, Hyundai Motor Group: "The launch represents a meaningful step toward delivering intelligent, personalized mobility experiences." Vodafone IoT has 220M+ devices connected across 180+ countries with 760+ network partnerships worldwide.',
+    astsRelevance: 'Vodafone is a key ASTS partner with 500M subscribers and definitive agreement through 2034. Vodafone\'s expansion of IoT and connected vehicle services demonstrates growing demand for ubiquitous connectivity - exactly the use case ASTS enables in areas without terrestrial coverage. Connected vehicles traveling through remote areas would benefit from satellite direct-to-device backup connectivity. Vodafone\'s Middle East expansion aligns with ASTS\'s stc Group partnership ($1.8B commitment) in the same region.',
+    impact: 'Bullish',
+    source: 'PRNewswire / Vodafone'
   },
 ];
 
