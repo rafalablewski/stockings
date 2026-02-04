@@ -3525,7 +3525,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
     ? COMPETITOR_NEWS
     : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter);
 
-  // Group news by storyId
+  // Group news by storyId, with ungrouped items in their own "group"
   const groupedNews = React.useMemo(() => {
     const groups: Record<string, { title: string; entries: (BMNRCompetitorNewsEntry & { originalIdx: number })[] }> = {};
 
@@ -3540,26 +3540,38 @@ const CompsTab = ({ comparables, ethPrice }) => {
       groups[storyKey].entries.push({ ...news, originalIdx: idx });
     });
 
-    return Object.entries(groups).map(([key, group]) => ({
-      key,
-      title: group.title,
-      entries: group.entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-      latestDate: group.entries.reduce((latest, e) =>
-        new Date(e.date) > new Date(latest) ? e.date : latest, group.entries[0].date
-      )
-    })).sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
+    // Sort entries within each group chronologically (oldest first for timeline progression)
+    Object.values(groups).forEach(group => {
+      group.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    });
+
+    // Convert to array and sort groups by most recent entry (newest story first)
+    return Object.entries(groups)
+      .map(([storyId, group]) => ({
+        storyId,
+        title: group.title,
+        entries: group.entries,
+        latestDate: group.entries[group.entries.length - 1]?.date || ''
+      }))
+      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
   }, [filteredNews]);
 
-  // Get implication styling
+  // Get competitor display name
+  const getCompetitorName = (id: BMNRCompetitorId): string => {
+    const profile = COMPETITOR_PROFILES.find(p => p.id === id);
+    return profile?.name || id;
+  };
+
+  // Implication styling - using design tokens
   const getImplicationStyle = (impl: BMNRImplication) => {
-    switch(impl) {
-      case 'positive': return { bg: 'var(--mint-dim)', color: 'var(--mint)', icon: '✅' };
-      case 'negative': return { bg: 'var(--coral-dim)', color: 'var(--coral)', icon: '⚠️' };
-      default: return { bg: 'var(--surface2)', color: 'var(--text3)', icon: '➖' };
+    switch (impl) {
+      case 'positive': return { bg: 'var(--mint-dim)', color: 'var(--mint)', label: '✓ Good for BMNR' };
+      case 'negative': return { bg: 'var(--coral-dim)', color: 'var(--coral)', label: '⚠ Threat to BMNR' };
+      default: return { bg: 'var(--surface3)', color: 'var(--text3)', label: '○ Neutral' };
     }
   };
 
-  // Category styling
+  // Category styling - using design tokens
   const getCategoryStyle = (cat: BMNRCompetitorNewsCategory) => {
     const styles: Record<BMNRCompetitorNewsCategory, { bg: string; color: string }> = {
       'Acquisition': { bg: 'var(--mint-dim)', color: 'var(--mint)' },
@@ -3569,9 +3581,9 @@ const CompsTab = ({ comparables, ethPrice }) => {
       'Technology': { bg: 'var(--cyan-dim)', color: 'var(--cyan)' },
       'Partnership': { bg: 'var(--sky-dim)', color: 'var(--sky)' },
       'Financial': { bg: 'var(--emerald-dim)', color: 'var(--emerald)' },
-      'Strategy': { bg: 'var(--violet-dim)', color: 'var(--violet)' },
+      'Strategy': { bg: 'var(--accent-dim)', color: 'var(--accent)' },
     };
-    return styles[cat] || { bg: 'var(--surface2)', color: 'var(--text3)' };
+    return styles[cat] || { bg: 'var(--surface3)', color: 'var(--text3)' };
   };
 
   const compsData = comparables.map(c => {
@@ -3814,262 +3826,266 @@ const CompsTab = ({ comparables, ethPrice }) => {
         </div>
       </div>
 
-      {/* Competitor Intelligence Placeholder */}
+      {/* Competitor News Intelligence Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
       <div className="highlight">
-        <h3>📰 Competitor Intelligence</h3>
-        <p>Track competitor developments to assess BMNR competitive position in the crypto treasury space.</p>
+        <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
+        <p>Track competitor developments to assess BMNR competitive position</p>
       </div>
 
-      {/* Competitor Filter Buttons */}
+      {/* Filter Bar */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-        <button
-          onClick={() => setCompetitorFilter('all')}
-          className={`filter-btn ${competitorFilter === 'all' ? 'active' : ''}`}
-        >
-          All ({COMPETITOR_NEWS.length})
-        </button>
-        {COMPETITOR_PROFILES.map(comp => {
-          const count = COMPETITOR_NEWS.filter(n => n.competitor === comp.id).length;
-          if (count === 0) return null;
-          return (
-            <button
-              key={comp.id}
-              onClick={() => setCompetitorFilter(comp.id)}
-              className={`filter-btn ${competitorFilter === comp.id ? 'active' : ''}`}
-            >
-              {comp.ticker} ({count})
-            </button>
-          );
-        })}
-        {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (
+      <div className="card" style={{ padding: '12px 16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
           <button
-            onClick={() => setCompetitorFilter('other')}
-            className={`filter-btn ${competitorFilter === 'other' ? 'active' : ''}`}
+            onClick={() => setCompetitorFilter('all')}
+            className={`filter-btn ${competitorFilter === 'all' ? 'active' : ''}`}
           >
-            Other ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
+            All ({COMPETITOR_NEWS.length})
           </button>
-        )}
+          {COMPETITOR_PROFILES.map(comp => {
+            const count = COMPETITOR_NEWS.filter(n => n.competitor === comp.id).length;
+            if (count === 0) return null;
+            return (
+              <button
+                key={comp.id}
+                onClick={() => setCompetitorFilter(comp.id)}
+                className={`filter-btn ${competitorFilter === comp.id ? 'active' : ''}`}
+              >
+                {comp.name.split(' ')[0]} ({count})
+              </button>
+            );
+          })}
+          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (
+            <button
+              onClick={() => setCompetitorFilter('other')}
+              className={`filter-btn ${competitorFilter === 'other' ? 'active' : ''}`}
+            >
+              Other ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Competitor News Timeline */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* News Timeline - Grouped by Story */}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         {groupedNews.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: 40 }}>
             <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
           </div>
         ) : (
           groupedNews.map((story) => (
-            <div key={story.key} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div key={story.storyId} className="card" style={{ padding: 0, overflow: 'hidden' }}>
               {/* Story Header */}
-              <div
-                style={{
-                  padding: '16px 20px',
-                  background: 'var(--surface2)',
-                  borderBottom: '1px solid var(--border)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-                onClick={() => setExpandedNews(expandedNews === story.key ? null : story.key)}
-              >
+              <div style={{
+                padding: '16px 20px',
+                background: 'var(--surface2)',
+                borderBottom: '1px solid var(--border)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: 15 }}>{story.title}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
-                    {story.entries.length} update{story.entries.length > 1 ? 's' : ''} · Latest: {story.latestDate}
+                  <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{story.title}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text3)' }}>
+                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[0]?.date} → {story.entries[story.entries.length - 1]?.date}
                   </div>
                 </div>
-                <div style={{ fontSize: 18, color: 'var(--text3)' }}>
-                  {expandedNews === story.key ? '▼' : '▶'}
-                </div>
+                <span style={{
+                  fontSize: '10px',
+                  padding: '4px 10px',
+                  borderRadius: '4px',
+                  background: 'var(--surface3)',
+                  color: 'var(--text2)',
+                  fontWeight: 600
+                }}>
+                  {getCompetitorName(story.entries[0]?.competitor).split(' ')[0]}
+                </span>
               </div>
 
-              {/* Story Entries */}
-              {(expandedNews === story.key || story.entries.length === 1) && (
-                <div style={{ padding: '0' }}>
-                  {story.entries.map((news, idx) => {
-                    const implStyle = getImplicationStyle(news.implication);
-                    const catStyle = getCategoryStyle(news.category);
-                    const comp = COMPETITOR_PROFILES.find(c => c.id === news.competitor);
+              {/* Story Entries - Chronological */}
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {story.entries.map((news, entryIdx) => {
+                  const implStyle = getImplicationStyle(news.implication);
+                  const catStyle = getCategoryStyle(news.category);
+                  const expandKey = `${story.storyId}-${entryIdx}`;
+                  const isExpanded = expandedNews === expandKey;
 
-                    return (
+                  return (
+                    <div
+                      key={entryIdx}
+                      style={{
+                        borderBottom: entryIdx < story.entries.length - 1 ? '1px solid var(--border)' : 'none',
+                        background: isExpanded ? 'var(--surface2)' : 'transparent',
+                        transition: 'background 0.2s'
+                      }}
+                    >
                       <div
-                        key={idx}
+                        onClick={() => setExpandedNews(isExpanded ? null : expandKey)}
                         style={{
-                          padding: '16px 20px',
-                          borderBottom: idx < story.entries.length - 1 ? '1px solid var(--border)' : 'none'
+                          display: 'grid',
+                          gridTemplateColumns: '90px 100px 1fr auto auto',
+                          gap: 12,
+                          padding: '14px 20px',
+                          cursor: 'pointer',
+                          alignItems: 'center'
                         }}
                       >
-                        {/* Entry Header */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                            <span style={{
-                              padding: '2px 8px',
-                              borderRadius: 4,
-                              fontSize: 11,
-                              fontWeight: 600,
-                              background: catStyle.bg,
-                              color: catStyle.color
-                            }}>
-                              {news.category}
-                            </span>
-                            <span style={{
-                              padding: '2px 8px',
-                              borderRadius: 4,
-                              fontSize: 11,
-                              fontWeight: 500,
-                              background: 'var(--surface)',
-                              color: 'var(--text2)'
-                            }}>
-                              {comp?.ticker || news.competitor.toUpperCase()}
-                            </span>
-                            <span style={{ fontSize: 12, color: 'var(--text3)' }}>{news.date}</span>
-                          </div>
-                          <span style={{
-                            padding: '2px 8px',
-                            borderRadius: 4,
-                            fontSize: 11,
-                            fontWeight: 500,
-                            background: implStyle.bg,
-                            color: implStyle.color
-                          }}>
-                            {implStyle.icon} {news.implication === 'positive' ? 'Bullish for BMNR' : news.implication === 'negative' ? 'Watch' : 'Neutral'}
-                          </span>
-                        </div>
+                        {/* Date */}
+                        <span className="t-date" style={{ fontSize: 12 }}>{news.date}</span>
+
+                        {/* Category */}
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            background: catStyle.bg,
+                            color: catStyle.color,
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}
+                        >
+                          {news.category}
+                        </span>
 
                         {/* Headline */}
-                        <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 8 }}>{news.headline}</div>
+                        <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{news.headline}</span>
 
-                        {/* Details */}
-                        <ul style={{ margin: '0 0 12px 0', paddingLeft: 20, fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
-                          {news.details.map((d, i) => <li key={i}>{d}</li>)}
-                        </ul>
+                        {/* Implication Badge */}
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            background: implStyle.bg,
+                            color: implStyle.color,
+                            fontWeight: 600
+                          }}
+                        >
+                          {news.implication === 'positive' ? '✓' : news.implication === 'negative' ? '⚠' : '○'}
+                        </span>
 
-                        {/* BMNR Comparison */}
-                        {news.bmnrComparison && (
-                          <div style={{
-                            padding: 12,
-                            background: 'var(--accent-dim)',
-                            borderRadius: 8,
-                            fontSize: 13,
-                            color: 'var(--text2)',
-                            borderLeft: '3px solid var(--accent)'
-                          }}>
-                            <strong style={{ color: 'var(--accent)' }}>BMNR Comparison:</strong> {news.bmnrComparison}
-                          </div>
-                        )}
-
-                        {/* Source */}
-                        {news.source && (
-                          <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
-                            Source: {news.sourceUrl ? (
-                              <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
-                                {news.source}
-                              </a>
-                            ) : news.source}
-                          </div>
-                        )}
+                        {/* Toggle */}
+                        <span style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: 6,
+                          background: isExpanded ? 'var(--accent)' : 'var(--surface3)',
+                          color: isExpanded ? 'var(--bg)' : 'var(--text3)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 14,
+                          transition: 'all 0.2s'
+                        }}>
+                          {isExpanded ? '−' : '+'}
+                        </span>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
+
+                      {/* Expanded Details */}
+                      {isExpanded && (
+                        <div style={{ padding: '0 20px 16px 20px' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 20 }}>
+                            <div>
+                              <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
+                                {news.details.map((d, i) => (
+                                  <li key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: 'var(--text2)' }}>
+                                    <span style={{ color: 'var(--accent)' }}>•</span>
+                                    {d}
+                                  </li>
+                                ))}
+                              </ul>
+                              {news.bmnrComparison && (
+                                <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--accent-dim)', borderRadius: 6, borderLeft: '3px solid var(--accent)' }}>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent)' }}>
+                                    BMNR Comparison
+                                  </div>
+                                  <div style={{ fontSize: 13, color: 'var(--text)' }}>{news.bmnrComparison}</div>
+                                </div>
+                              )}
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 140 }}>
+                              <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
+                                <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Impact</div>
+                                <div style={{ fontSize: 12, fontWeight: 600, color: implStyle.color }}>
+                                  {news.implication === 'positive' ? 'Favorable' : news.implication === 'negative' ? 'Threat' : 'Neutral'}
+                                </div>
+                              </div>
+                              {news.source && (
+                                <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Source</div>
+                                  <div style={{ fontSize: 11 }}>
+                                    {news.sourceUrl ? (
+                                      <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
+                                        {news.source} ↗
+                                      </a>
+                                    ) : news.source}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           ))
         )}
       </div>
 
-      {/* Competitor Capability Matrix */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#competitor-capabilities</div>
+      {/* Competitor Profiles (Collapsible) */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-profiles</div>
       <div className="card">
-        <div className="card-title">Competitor Capability Matrix</div>
-        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Compare BMNR's advantages vs crypto treasury competitors</p>
-        <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th className="c">Crypto</th>
-                <th className="c">Staking Yield</th>
-                <th className="c">Treasury Focus</th>
-                <th className="c">Mining Ops</th>
-                <th className="c">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style={{ background: 'var(--accent-dim)' }}>
-                <td><strong>BMNR</strong></td>
-                <td className="c"><span style={{ color: 'var(--violet)' }}>ETH</span></td>
-                <td className="c"><span style={{ color: 'var(--mint)' }}>✓ 3-5%</span></td>
-                <td className="c"><span style={{ color: 'var(--mint)' }}>✓</span></td>
-                <td className="c"><span style={{ color: 'var(--text3)' }}>—</span></td>
-                <td className="c" style={{ fontSize: 12 }}>Active accumulation + staking</td>
-              </tr>
-              {COMPETITOR_PROFILES.map(comp => (
-                <tr key={comp.id}>
-                  <td>
-                    <div style={{ fontWeight: 500 }}>{comp.name}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{comp.ticker}</div>
-                  </td>
-                  <td className="c">
-                    <span style={{ color: comp.cryptoType === 'ETH' ? 'var(--violet)' : comp.cryptoType === 'BTC' ? 'var(--gold)' : 'var(--text2)' }}>
-                      {comp.cryptoType}
-                    </span>
-                  </td>
-                  <td className="c">
-                    {comp.capabilities.stakingYield ? (
-                      <span style={{ color: 'var(--mint)' }}>✓</span>
-                    ) : (
-                      <span style={{ color: 'var(--coral)' }}>✗</span>
-                    )}
-                  </td>
-                  <td className="c">
-                    {comp.capabilities.treasuryFocus ? (
-                      <span style={{ color: 'var(--mint)' }}>✓</span>
-                    ) : (
-                      <span style={{ color: 'var(--text3)' }}>—</span>
-                    )}
-                  </td>
-                  <td className="c">
-                    {comp.capabilities.miningOperations ? (
-                      <span style={{ color: 'var(--sky)' }}>✓</span>
-                    ) : (
-                      <span style={{ color: 'var(--text3)' }}>—</span>
-                    )}
-                  </td>
-                  <td className="c" style={{ fontSize: 12 }}>{comp.currentStatus}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* BMNR Competitive Moat */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitive-moat</div>
-      <div className="highlight" style={{ background: 'var(--mint-dim)', borderColor: 'var(--mint)' }}>
-        <h3 style={{ color: 'var(--mint)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span>🏰</span> BMNR Competitive Moat
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginTop: 12 }}>
-          <div>
-            <div style={{ fontWeight: 600, color: 'var(--text1)', marginBottom: 4 }}>ETH Staking Yield</div>
-            <div style={{ fontSize: 13, color: 'var(--text2)' }}>3-5% APY vs BTC's 0% — compounds NAV even in flat markets</div>
-          </div>
-          <div>
-            <div style={{ fontWeight: 600, color: 'var(--text1)', marginBottom: 4 }}>Scale Advantage</div>
-            <div style={{ fontSize: 13, color: 'var(--text2)' }}>4.3M+ ETH (~3.5% of supply) — would take years and billions to replicate</div>
-          </div>
-          <div>
-            <div style={{ fontWeight: 600, color: 'var(--text1)', marginBottom: 4 }}>Pure Treasury Model</div>
-            <div style={{ fontSize: 13, color: 'var(--text2)' }}>No mining OpEx risk — cleaner exposure vs miner hybrids</div>
-          </div>
-          <div>
-            <div style={{ fontWeight: 600, color: 'var(--text1)', marginBottom: 4 }}>Institutional Access</div>
-            <div style={{ fontSize: 13, color: 'var(--text2)' }}>NYSE-listed, regulated entity for ETH exposure without custody complexity</div>
-          </div>
+        <div className="card-title">📋 Competitor Profiles</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {COMPETITOR_PROFILES.map(comp => (
+            <div key={comp.id} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--text)' }}>{comp.name}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text2)' }}>{comp.description}</div>
+                </div>
+                <span style={{
+                  padding: '4px 10px',
+                  borderRadius: 4,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  background: comp.cryptoType === 'ETH' ? 'var(--violet-dim)' : comp.cryptoType === 'BTC' ? 'var(--gold-dim)' : 'var(--surface3)',
+                  color: comp.cryptoType === 'ETH' ? 'var(--violet)' : comp.cryptoType === 'BTC' ? 'var(--gold)' : 'var(--text2)'
+                }}>
+                  {comp.cryptoType}
+                </span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
+                <div>
+                  <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Ticker</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.ticker}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Status</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.currentStatus}</div>
+                </div>
+                {comp.keyMetrics?.holdings && (
+                  <div>
+                    <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Holdings</div>
+                    <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.keyMetrics.holdings}</div>
+                  </div>
+                )}
+                {comp.keyMetrics?.yieldRate && (
+                  <div>
+                    <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Yield</div>
+                    <div style={{ fontSize: 12, color: comp.keyMetrics.yieldRate === '0%' ? 'var(--coral)' : 'var(--mint)' }}>{comp.keyMetrics.yieldRate}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
