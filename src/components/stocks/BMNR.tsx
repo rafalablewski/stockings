@@ -302,6 +302,57 @@ interface ErrorBoundaryState {
 /** Individual analyst report entry */
 // AnalystCoverage type imported from '../shared' (wallStreetTypes.ts)
 
+// ============================================================================
+// COMPETITOR INTELLIGENCE - BMNR Crypto Treasury Competitors
+// ============================================================================
+
+/** Competitor identifiers for crypto treasury space */
+type BMNRCompetitorId = 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'other';
+
+/** News category types for crypto treasury competitors */
+type BMNRCompetitorNewsCategory = 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy';
+
+/** Implication for BMNR competitive position */
+type BMNRImplication = 'positive' | 'neutral' | 'negative';
+
+/** Individual competitor news entry */
+interface BMNRCompetitorNewsEntry {
+  date: string;
+  competitor: BMNRCompetitorId;
+  category: BMNRCompetitorNewsCategory;
+  headline: string;
+  details: string[];
+  implication: BMNRImplication;
+  bmnrComparison?: string;  // How this compares to BMNR position
+  source?: string;
+  sourceUrl?: string;
+  storyId?: string;         // Groups related news entries
+  storyTitle?: string;      // Display title for the story group
+}
+
+/** Competitor profile with capabilities */
+interface BMNRCompetitorProfile {
+  id: BMNRCompetitorId;
+  name: string;
+  ticker: string;
+  description: string;
+  cryptoType: 'BTC' | 'ETH' | 'Mixed';
+  currentStatus: string;
+  capabilities: {
+    stakingYield: boolean;
+    treasuryFocus: boolean;
+    miningOperations: boolean;
+    publicCompany: boolean;
+    institutionalAccess: boolean;
+  };
+  keyMetrics?: {
+    holdings?: string;
+    marketCap?: string;
+    navPremium?: string;
+    yieldRate?: string;
+  };
+}
+
 /** Rating normalization map */
 const RATING_NORMALIZATION: Record<string, 'bullish' | 'neutral' | 'bearish'> = {
   // Bullish ratings
@@ -3221,6 +3272,307 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 const CompsTab = ({ comparables, ethPrice }) => {
   const btcPrice = 100000;
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [competitorFilter, setCompetitorFilter] = useState<BMNRCompetitorId | 'all'>('all');
+  const [expandedNews, setExpandedNews] = useState<string | null>(null);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPETITOR PROFILES - Crypto Treasury Competitors
+  // Update status and metrics as new information emerges
+  // ═══════════════════════════════════════════════════════════════════════════
+  const COMPETITOR_PROFILES: BMNRCompetitorProfile[] = [
+    {
+      id: 'mstr',
+      name: 'MicroStrategy',
+      ticker: 'MSTR',
+      description: 'Pioneer BTC treasury company, largest corporate bitcoin holder',
+      cryptoType: 'BTC',
+      currentStatus: 'Active accumulation, convertible debt strategy',
+      capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: false, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '~528K BTC', marketCap: '~$90B', navPremium: '+100%', yieldRate: '0%' }
+    },
+    {
+      id: 'mara',
+      name: 'Marathon Digital',
+      ticker: 'MARA',
+      description: 'Bitcoin miner and treasury holder with significant BTC reserves',
+      cryptoType: 'BTC',
+      currentStatus: 'Mining + treasury accumulation strategy',
+      capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: true, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '~46K BTC', marketCap: '~$8B', navPremium: '+80%', yieldRate: '0%' }
+    },
+    {
+      id: 'riot',
+      name: 'Riot Platforms',
+      ticker: 'RIOT',
+      description: 'Bitcoin miner and treasury company, expanding infrastructure',
+      cryptoType: 'BTC',
+      currentStatus: 'Mining operations with treasury accumulation',
+      capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: true, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '~18K BTC', marketCap: '~$4B', navPremium: '+60%', yieldRate: '0%' }
+    },
+    {
+      id: 'coin',
+      name: 'Coinbase',
+      ticker: 'COIN',
+      description: 'Leading crypto exchange with treasury holdings',
+      cryptoType: 'Mixed',
+      currentStatus: 'Exchange + institutional custody + treasury',
+      capabilities: { stakingYield: true, treasuryFocus: false, miningOperations: false, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: 'Mixed crypto', marketCap: '~$70B', navPremium: 'N/A', yieldRate: 'Varies' }
+    },
+    {
+      id: 'clsk',
+      name: 'CleanSpark',
+      ticker: 'CLSK',
+      description: 'Bitcoin miner focused on sustainable energy',
+      cryptoType: 'BTC',
+      currentStatus: 'Mining with clean energy focus',
+      capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: true, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '~10K BTC', marketCap: '~$4B', navPremium: '+50%', yieldRate: '0%' }
+    },
+    {
+      id: 'hut8',
+      name: 'Hut 8 Mining',
+      ticker: 'HUT',
+      description: 'North American bitcoin miner and treasury holder',
+      cryptoType: 'BTC',
+      currentStatus: 'Mining + HODL strategy',
+      capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: true, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '~10K BTC', marketCap: '~$2B', navPremium: '+40%', yieldRate: '0%' }
+    }
+  ];
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPETITOR NEWS - Add new entries at TOP (newest first)
+  // NEVER delete old entries - this is an audit trail
+  // ═══════════════════════════════════════════════════════════════════════════
+  const COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ADD NEW COMPETITOR NEWS ENTRIES HERE (newest first)
+    // Format:
+    // {
+    //   date: 'YYYY-MM-DD',
+    //   competitor: 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'other',
+    //   category: 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy',
+    //   headline: 'Brief headline',
+    //   details: ['Bullet point 1', 'Bullet point 2'],
+    //   implication: 'positive' | 'neutral' | 'negative',  // for BMNR
+    //   bmnrComparison: 'How this compares to BMNR',
+    //   source: 'Source name',
+    //   sourceUrl: 'https://...'
+    // },
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MICROSTRATEGY - BTC TREASURY
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-27',
+      competitor: 'mstr',
+      category: 'Acquisition',
+      headline: 'MicroStrategy acquires additional 10,107 BTC for ~$1.1B',
+      details: [
+        'Total holdings now exceed 528,000 BTC',
+        'Average acquisition price ~$106,000 per BTC',
+        'Funded through convertible notes and ATM equity',
+        'Continues aggressive "21/21" accumulation plan',
+        'Remains largest corporate BTC holder globally'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'MSTR accumulates BTC at 0% yield. BMNR\'s ETH generates 3-5% staking yield, compounding NAV even in flat markets.',
+      source: 'MicroStrategy 8-K',
+      sourceUrl: 'https://www.microstrategy.com/press',
+      storyId: 'mstr-btc-accumulation-2026',
+      storyTitle: 'MicroStrategy BTC Treasury Expansion'
+    },
+    {
+      date: '2026-01-15',
+      competitor: 'mstr',
+      category: 'Financial',
+      headline: 'MicroStrategy trades at 2.1x NAV premium despite 0% yield',
+      details: [
+        'Stock price implies significant premium over BTC holdings',
+        'Market values MSTR management and strategy at >$40B premium',
+        'Premium justified by institutional access and liquidity',
+        'No native yield generation on BTC holdings',
+        'Some analysts question sustainability of premium'
+      ],
+      implication: 'positive',
+      bmnrComparison: 'BMNR trades at lower premium but generates real yield. As staking yield compounds, fundamental value gap should close.',
+      source: 'Bloomberg',
+      storyId: 'mstr-nav-premium-analysis',
+      storyTitle: 'MSTR NAV Premium Analysis'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MARATHON DIGITAL - BTC MINING + TREASURY
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-20',
+      competitor: 'mara',
+      category: 'Acquisition',
+      headline: 'Marathon Digital increases BTC holdings to 46,000+',
+      details: [
+        'Combined mining production and open market purchases',
+        'Mining generates ~15-20 BTC per day at current hashrate',
+        'Follows full HODL strategy - no BTC sales',
+        'Considering expansion into ETH infrastructure',
+        'Q4 2025 production exceeded expectations'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'MARA\'s mining produces BTC but at high OpEx cost. BMNR\'s pure treasury model with staking has lower operational risk.',
+      source: 'Marathon Digital PR',
+      sourceUrl: 'https://ir.mara.com/',
+      storyId: 'mara-treasury-2026',
+      storyTitle: 'Marathon Digital Treasury Growth'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // RIOT PLATFORMS - BTC MINING
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-18',
+      competitor: 'riot',
+      category: 'Strategy',
+      headline: 'Riot Platforms announces $500M facility expansion',
+      details: [
+        'New mining facility in Texas to increase hashrate 50%',
+        'Expected online by Q3 2026',
+        'Will increase BTC production capacity significantly',
+        'Focus on renewable energy partnerships',
+        'Maintains HODL strategy on mined BTC'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Riot\'s CapEx-intensive mining model contrasts with BMNR\'s capital-efficient staking. Mining faces halving headwinds; staking does not.',
+      source: 'Riot Platforms PR',
+      sourceUrl: 'https://www.riotplatforms.com/news',
+      storyId: 'riot-expansion-2026',
+      storyTitle: 'Riot Platforms Expansion'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // COINBASE - CRYPTO EXCHANGE
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-22',
+      competitor: 'coin',
+      category: 'Regulatory',
+      headline: 'Coinbase secures expanded staking license in Singapore',
+      details: [
+        'Regulatory approval for institutional staking services',
+        'Expands ETH staking offerings to Asian institutions',
+        'Competitive pressure on independent staking providers',
+        'Part of global regulatory compliance expansion',
+        'Strengthens institutional custody + staking bundle'
+      ],
+      implication: 'negative',
+      bmnrComparison: 'Coinbase expanding staking services increases competition but validates ETH staking as institutional strategy. BMNR\'s scale advantage remains.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog',
+      storyId: 'coin-staking-expansion',
+      storyTitle: 'Coinbase Staking Expansion'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CLEANSPARK - BTC MINING
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-10',
+      competitor: 'clsk',
+      category: 'Acquisition',
+      headline: 'CleanSpark acquires mining facility, adds 2 EH/s hashrate',
+      details: [
+        'Acquisition increases total hashrate by 15%',
+        'Continues consolidation of mining industry',
+        'Focus on low-cost, sustainable power sources',
+        'BTC holdings increase to ~10,000 BTC',
+        'Trades at lower NAV premium than MSTR'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'CleanSpark\'s mining growth increases BTC supply competition. No yield generation - purely price appreciation play vs BMNR\'s yield + appreciation.',
+      source: 'CleanSpark PR',
+      sourceUrl: 'https://www.cleanspark.com/news',
+      storyId: 'clsk-acquisition-2026',
+      storyTitle: 'CleanSpark Mining Expansion'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INDUSTRY - REGULATORY
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-05',
+      competitor: 'other',
+      category: 'Regulatory',
+      headline: 'SEC approves spot ETH ETF staking for institutional products',
+      details: [
+        'Major regulatory milestone for ETH ecosystem',
+        'ETH ETFs can now include staking yield',
+        'Increases institutional demand for staked ETH',
+        'Validates staking as compliant investment strategy',
+        'Expected to drive significant ETH inflows'
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Regulatory clarity validates BMNR\'s ETH staking strategy. As a pure-play ETH treasury, BMNR benefits directly from increased institutional adoption.',
+      source: 'SEC Filing',
+      sourceUrl: 'https://www.sec.gov/news',
+      storyId: 'sec-eth-staking-approval',
+      storyTitle: 'SEC ETH Staking Approval'
+    }
+  ];
+
+  // Filter news by competitor
+  const filteredNews = competitorFilter === 'all'
+    ? COMPETITOR_NEWS
+    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter);
+
+  // Group news by storyId
+  const groupedNews = React.useMemo(() => {
+    const groups: Record<string, { title: string; entries: (BMNRCompetitorNewsEntry & { originalIdx: number })[] }> = {};
+
+    filteredNews.forEach((news, idx) => {
+      const storyKey = news.storyId || `ungrouped-${idx}`;
+      if (!groups[storyKey]) {
+        groups[storyKey] = {
+          title: news.storyTitle || news.headline,
+          entries: []
+        };
+      }
+      groups[storyKey].entries.push({ ...news, originalIdx: idx });
+    });
+
+    return Object.entries(groups).map(([key, group]) => ({
+      key,
+      title: group.title,
+      entries: group.entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+      latestDate: group.entries.reduce((latest, e) =>
+        new Date(e.date) > new Date(latest) ? e.date : latest, group.entries[0].date
+      )
+    })).sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
+  }, [filteredNews]);
+
+  // Get implication styling
+  const getImplicationStyle = (impl: BMNRImplication) => {
+    switch(impl) {
+      case 'positive': return { bg: 'var(--mint-dim)', color: 'var(--mint)', icon: '✅' };
+      case 'negative': return { bg: 'var(--coral-dim)', color: 'var(--coral)', icon: '⚠️' };
+      default: return { bg: 'var(--surface2)', color: 'var(--text3)', icon: '➖' };
+    }
+  };
+
+  // Category styling
+  const getCategoryStyle = (cat: BMNRCompetitorNewsCategory) => {
+    const styles: Record<BMNRCompetitorNewsCategory, { bg: string; color: string }> = {
+      'Acquisition': { bg: 'var(--mint-dim)', color: 'var(--mint)' },
+      'Funding': { bg: 'var(--sky-dim)', color: 'var(--sky)' },
+      'Yield': { bg: 'var(--violet-dim)', color: 'var(--violet)' },
+      'Regulatory': { bg: 'var(--gold-dim)', color: 'var(--gold)' },
+      'Technology': { bg: 'var(--cyan-dim)', color: 'var(--cyan)' },
+      'Partnership': { bg: 'var(--sky-dim)', color: 'var(--sky)' },
+      'Financial': { bg: 'var(--emerald-dim)', color: 'var(--emerald)' },
+      'Strategy': { bg: 'var(--violet-dim)', color: 'var(--violet)' },
+    };
+    return styles[cat] || { bg: 'var(--surface2)', color: 'var(--text3)' };
+  };
 
   const compsData = comparables.map(c => {
     // Handle mixed holdings (COIN has string)
@@ -3469,17 +3821,256 @@ const CompsTab = ({ comparables, ethPrice }) => {
         <p>Track competitor developments to assess BMNR competitive position in the crypto treasury space.</p>
       </div>
 
+      {/* Competitor Filter Buttons */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
-      <div className="card" style={{ padding: 32, textAlign: 'center' }}>
-        <div style={{ fontSize: 48, opacity: 0.3 }}>🔜</div>
-        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)' }}>Competitor Intelligence Coming Soon</div>
-        <p style={{ color: 'var(--text3)', fontSize: 13, maxWidth: 500, margin: '0 auto' }}>
-          This section will track news and developments from crypto treasury competitors including MicroStrategy (MSTR),
-          Marathon Digital (MARA), Riot Platforms (RIOT), and other BTC/ETH treasury companies.
-          <br /><br />
-          Key tracking areas: acquisition announcements, funding rounds, regulatory developments,
-          yield strategies, and market positioning changes.
-        </p>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+        <button
+          onClick={() => setCompetitorFilter('all')}
+          className={`filter-btn ${competitorFilter === 'all' ? 'active' : ''}`}
+        >
+          All ({COMPETITOR_NEWS.length})
+        </button>
+        {COMPETITOR_PROFILES.map(comp => {
+          const count = COMPETITOR_NEWS.filter(n => n.competitor === comp.id).length;
+          if (count === 0) return null;
+          return (
+            <button
+              key={comp.id}
+              onClick={() => setCompetitorFilter(comp.id)}
+              className={`filter-btn ${competitorFilter === comp.id ? 'active' : ''}`}
+            >
+              {comp.ticker} ({count})
+            </button>
+          );
+        })}
+        {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (
+          <button
+            onClick={() => setCompetitorFilter('other')}
+            className={`filter-btn ${competitorFilter === 'other' ? 'active' : ''}`}
+          >
+            Other ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
+          </button>
+        )}
+      </div>
+
+      {/* Competitor News Timeline */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {groupedNews.length === 0 ? (
+          <div className="card" style={{ textAlign: 'center', padding: 40 }}>
+            <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
+          </div>
+        ) : (
+          groupedNews.map((story) => (
+            <div key={story.key} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+              {/* Story Header */}
+              <div
+                style={{
+                  padding: '16px 20px',
+                  background: 'var(--surface2)',
+                  borderBottom: '1px solid var(--border)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
+                onClick={() => setExpandedNews(expandedNews === story.key ? null : story.key)}
+              >
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 15 }}>{story.title}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+                    {story.entries.length} update{story.entries.length > 1 ? 's' : ''} · Latest: {story.latestDate}
+                  </div>
+                </div>
+                <div style={{ fontSize: 18, color: 'var(--text3)' }}>
+                  {expandedNews === story.key ? '▼' : '▶'}
+                </div>
+              </div>
+
+              {/* Story Entries */}
+              {(expandedNews === story.key || story.entries.length === 1) && (
+                <div style={{ padding: '0' }}>
+                  {story.entries.map((news, idx) => {
+                    const implStyle = getImplicationStyle(news.implication);
+                    const catStyle = getCategoryStyle(news.category);
+                    const comp = COMPETITOR_PROFILES.find(c => c.id === news.competitor);
+
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          padding: '16px 20px',
+                          borderBottom: idx < story.entries.length - 1 ? '1px solid var(--border)' : 'none'
+                        }}
+                      >
+                        {/* Entry Header */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                            <span style={{
+                              padding: '2px 8px',
+                              borderRadius: 4,
+                              fontSize: 11,
+                              fontWeight: 600,
+                              background: catStyle.bg,
+                              color: catStyle.color
+                            }}>
+                              {news.category}
+                            </span>
+                            <span style={{
+                              padding: '2px 8px',
+                              borderRadius: 4,
+                              fontSize: 11,
+                              fontWeight: 500,
+                              background: 'var(--surface)',
+                              color: 'var(--text2)'
+                            }}>
+                              {comp?.ticker || news.competitor.toUpperCase()}
+                            </span>
+                            <span style={{ fontSize: 12, color: 'var(--text3)' }}>{news.date}</span>
+                          </div>
+                          <span style={{
+                            padding: '2px 8px',
+                            borderRadius: 4,
+                            fontSize: 11,
+                            fontWeight: 500,
+                            background: implStyle.bg,
+                            color: implStyle.color
+                          }}>
+                            {implStyle.icon} {news.implication === 'positive' ? 'Bullish for BMNR' : news.implication === 'negative' ? 'Watch' : 'Neutral'}
+                          </span>
+                        </div>
+
+                        {/* Headline */}
+                        <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 8 }}>{news.headline}</div>
+
+                        {/* Details */}
+                        <ul style={{ margin: '0 0 12px 0', paddingLeft: 20, fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+                          {news.details.map((d, i) => <li key={i}>{d}</li>)}
+                        </ul>
+
+                        {/* BMNR Comparison */}
+                        {news.bmnrComparison && (
+                          <div style={{
+                            padding: 12,
+                            background: 'var(--accent-dim)',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            color: 'var(--text2)',
+                            borderLeft: '3px solid var(--accent)'
+                          }}>
+                            <strong style={{ color: 'var(--accent)' }}>BMNR Comparison:</strong> {news.bmnrComparison}
+                          </div>
+                        )}
+
+                        {/* Source */}
+                        {news.source && (
+                          <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
+                            Source: {news.sourceUrl ? (
+                              <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
+                                {news.source}
+                              </a>
+                            ) : news.source}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Competitor Capability Matrix */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#competitor-capabilities</div>
+      <div className="card">
+        <div className="card-title">Competitor Capability Matrix</div>
+        <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 16 }}>Compare BMNR's advantages vs crypto treasury competitors</p>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th className="c">Crypto</th>
+                <th className="c">Staking Yield</th>
+                <th className="c">Treasury Focus</th>
+                <th className="c">Mining Ops</th>
+                <th className="c">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ background: 'var(--accent-dim)' }}>
+                <td><strong>BMNR</strong></td>
+                <td className="c"><span style={{ color: 'var(--violet)' }}>ETH</span></td>
+                <td className="c"><span style={{ color: 'var(--mint)' }}>✓ 3-5%</span></td>
+                <td className="c"><span style={{ color: 'var(--mint)' }}>✓</span></td>
+                <td className="c"><span style={{ color: 'var(--text3)' }}>—</span></td>
+                <td className="c" style={{ fontSize: 12 }}>Active accumulation + staking</td>
+              </tr>
+              {COMPETITOR_PROFILES.map(comp => (
+                <tr key={comp.id}>
+                  <td>
+                    <div style={{ fontWeight: 500 }}>{comp.name}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{comp.ticker}</div>
+                  </td>
+                  <td className="c">
+                    <span style={{ color: comp.cryptoType === 'ETH' ? 'var(--violet)' : comp.cryptoType === 'BTC' ? 'var(--gold)' : 'var(--text2)' }}>
+                      {comp.cryptoType}
+                    </span>
+                  </td>
+                  <td className="c">
+                    {comp.capabilities.stakingYield ? (
+                      <span style={{ color: 'var(--mint)' }}>✓</span>
+                    ) : (
+                      <span style={{ color: 'var(--coral)' }}>✗</span>
+                    )}
+                  </td>
+                  <td className="c">
+                    {comp.capabilities.treasuryFocus ? (
+                      <span style={{ color: 'var(--mint)' }}>✓</span>
+                    ) : (
+                      <span style={{ color: 'var(--text3)' }}>—</span>
+                    )}
+                  </td>
+                  <td className="c">
+                    {comp.capabilities.miningOperations ? (
+                      <span style={{ color: 'var(--sky)' }}>✓</span>
+                    ) : (
+                      <span style={{ color: 'var(--text3)' }}>—</span>
+                    )}
+                  </td>
+                  <td className="c" style={{ fontSize: 12 }}>{comp.currentStatus}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* BMNR Competitive Moat */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitive-moat</div>
+      <div className="highlight" style={{ background: 'var(--mint-dim)', borderColor: 'var(--mint)' }}>
+        <h3 style={{ color: 'var(--mint)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span>🏰</span> BMNR Competitive Moat
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginTop: 12 }}>
+          <div>
+            <div style={{ fontWeight: 600, color: 'var(--text1)', marginBottom: 4 }}>ETH Staking Yield</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>3-5% APY vs BTC's 0% — compounds NAV even in flat markets</div>
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, color: 'var(--text1)', marginBottom: 4 }}>Scale Advantage</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>4.3M+ ETH (~3.5% of supply) — would take years and billions to replicate</div>
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, color: 'var(--text1)', marginBottom: 4 }}>Pure Treasury Model</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>No mining OpEx risk — cleaner exposure vs miner hybrids</div>
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, color: 'var(--text1)', marginBottom: 4 }}>Institutional Access</div>
+            <div style={{ fontSize: 13, color: 'var(--text2)' }}>NYSE-listed, regulated entity for ETH exposure without custody complexity</div>
+          </div>
+        </div>
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
