@@ -3435,6 +3435,101 @@ const CompsTab = ({ comparables, ethPrice }) => {
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - 8-K LARGEST WEEKLY BTC PURCHASE (22,305 BTC / $2.1B)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-20',
+      competitor: 'mstr',
+      category: 'Acquisition',
+      headline: 'Strategy purchases 22,305 BTC for $2.1B in largest weekly acquisition',
+      details: [
+        'Purchased 22,305 BTC for $2,125.3M at average price of $95,284',
+        'Total holdings now 709,715 BTC at average cost of $75,979',
+        'Aggregate purchase price: $53.92B',
+        'Sold 2,945,371 STRC shares ($294.5M), 38,796 STRK shares ($3.9M)',
+        'Sold 10,399,650 MSTR shares for $1,827.3M net proceeds',
+        'Total net proceeds from ATM: $2,125M'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy\'s massive $2.1B weekly BTC purchase shows aggressive accumulation. No yield generation — purely price appreciation play vs BMNR\'s staking yield.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - 8-K BTC PURCHASE (13,627 BTC / $1.25B)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-12',
+      competitor: 'mstr',
+      category: 'Acquisition',
+      headline: 'Strategy purchases 13,627 BTC for $1.25B via ATM program',
+      details: [
+        'Purchased 13,627 BTC for $1,247.1M at average price of $91,519',
+        'Total holdings now 687,410 BTC at average cost of $75,353',
+        'Aggregate purchase price: $51.80B',
+        'Sold 1,192,262 STRC shares ($119.2M)',
+        'Sold 6,827,695 MSTR shares for $1,128.5M net proceeds',
+        'Total net proceeds from ATM: $1,247.6M'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy continues aggressive BTC accumulation via ATM dilution. BMNR\'s ETH staking generates yield without continuous share issuance.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - Q4 2025 FINANCIALS + USD RESERVE $2.25B
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-05',
+      competitor: 'mstr',
+      category: 'Financial',
+      headline: 'Strategy reports Q4 2025 financials: $17.4B unrealized loss, $2.25B USD Reserve',
+      details: [
+        'Q4 2025: $17.44B unrealized loss on digital assets',
+        'Q4 2025: $5.01B associated deferred tax benefit',
+        'FY 2025: $5.40B unrealized loss, $1.55B deferred tax benefit',
+        'As of Dec 31, 2025: $58.85B digital asset carrying value',
+        '$2.42B related deferred tax liability',
+        'USD Reserve increased to $2.25B as of Jan 4, 2026'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy\'s $17.4B Q4 unrealized loss shows BTC volatility exposure. BMNR\'s ETH staking provides steady yield regardless of price movements.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - STRC DIVIDEND RATE INCREASE TO 11%
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-31',
+      competitor: 'mstr',
+      category: 'Funding',
+      headline: 'Strategy increases STRC dividend rate from 10.75% to 11.00%',
+      details: [
+        'STRC (Variable Rate Stretch Preferred) dividend increased to 11.00%',
+        'Effective for monthly periods commencing on or after Jan 1, 2026',
+        'Cash dividend of $0.916666667 per share declared for Jan 31, 2026',
+        'Record date: 5:00 PM NYC time on Jan 15, 2026',
+        'Payment date: Jan 31, 2026'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy raising STRC dividend to 11% increases funding costs. BMNR\'s ETH staking generates 3-5% yield to cover costs without rate pressure.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // STRATEGY - USD RESERVE & 650K BTC HOLDINGS
     // ═══════════════════════════════════════════════════════════════════════════
     {
