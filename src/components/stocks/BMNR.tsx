@@ -8544,14 +8544,11 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         <span>Ethereum Adoption Timeline</span>
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredNews.length} events)</span>
       </h3>
-      <div className="highlight" style={{ marginBottom: 16 }}>
-        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track news about the <strong>ETH ecosystem</strong> — institutional adoption, stablecoin launches, L2 growth, protocol upgrades, and enterprise partnerships building on Ethereum</p>
-        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>Asset-level news affecting ETH value and BMNR's NAV</p>
-      </div>
-
       {/* Company Filter (like Topic filter in Timeline tab) */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-filter</div>
       <div className="highlight" style={{ padding: 16 }}>
+        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track news about the <strong>ETH ecosystem</strong> — institutional adoption, stablecoin launches, L2 growth, protocol upgrades, and enterprise partnerships building on Ethereum</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginBottom: 16 }}>Asset-level news affecting ETH value and BMNR's NAV</p>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Company</span>
           {companyFilter !== 'All' && (
