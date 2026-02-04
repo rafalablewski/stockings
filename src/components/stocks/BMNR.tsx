@@ -7606,6 +7606,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'Business Wire'
     },
     {
+      date: '2025-04-03',
+      category: 'Enterprise',
+      company: 'EY',
+      title: 'EY Upgrades Nightfall_4 - Zero-Knowledge Roll-Up for Private Ethereum Transactions',
+      summary: 'EY (Big Four accounting firm) releases Nightfall_4, major update to its open-source zero-knowledge roll-up enabling private transactions on public Ethereum. Key upgrade: replaces optimistic roll-up with ZK version for near-instant finality without challenge periods. Enterprises can orchestrate private transactions on Ethereum mainnet without compromising transparency, data immutability, and security. Simplified architecture eliminates need to accommodate incorrect block challenges or provide liquidity services. Uses x509 enterprise identity certificates for access. Source code in public domain on GitHub. EY has contributed Nightfall to public domain since 2019 — this is the fourth major update. EY OpsChain and blockchain services delivered through Blockchain.ey.com platform. Paul Brody, EY Global Blockchain Leader: "This update provides the same privacy and scaling that version 3 enabled, but now with near-instant finality and a simplified architecture. We believe we will see accelerating adoption in the coming year by enterprise users."',
+      significance: 'Big Four professional services firm providing open-source privacy infrastructure for enterprise Ethereum. ZK roll-up technology enables private business transactions on public blockchain. Public domain release demonstrates commitment to Ethereum ecosystem development.',
+      bmnrImplication: 'EY building privacy infrastructure on Ethereum validates network for enterprise confidential transactions. Big Four firm commitment signals institutional acceptance. More enterprise privacy tools = more enterprise adoption = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'EY Press Release'
+    },
+    {
       date: '2025-03-26',
       category: 'Institutional',
       company: 'Interactive Brokers',
@@ -7768,10 +7779,21 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'BlackRock launches the BlackRock USD Institutional Digital Liquidity Fund (BUIDL), the first tokenized money market fund from the world\'s largest asset manager on a public blockchain. BUIDL tokens are issued on Ethereum mainnet, representing shares in a fund holding U.S. Treasury bills, repurchase agreements, and cash. Built with Securitize (tokenization), BNY Mellon (custody), and Coinbase Prime (infrastructure). Settlement in USDC enables 24/7/365 transfers between whitelisted addresses. Initial partners include Anchorage Digital, BitGo, Coinbase, and Fireblocks for distribution. Minimum investment: $5M for qualified purchasers. Target yield: Fed Funds rate minus 50bps.',
       significance: 'WATERSHED MOMENT for institutional tokenization. BlackRock ($10T+ AUM) choosing Ethereum over private blockchains or competitors sends unmistakable signal: Ethereum is the institutional settlement layer. Securitize CEO: "This is the starting gun for tokenized securities." Opens door for subsequent launches (Franklin, WisdomTree, etc.).',
       bmnrImplication: 'BlackRock\'s BUIDL launch is arguably the most important single event validating ETH for institutional use. Legitimizes holding ETH as exposure to institutional-grade infrastructure. Sets precedent that BMNR\'s ETH treasury strategy builds upon - "if BlackRock is building on Ethereum, why wouldn\'t we hold ETH?"',
-      impact: 'Bullish', 
-      source: 'BlackRock Press Release' 
+      impact: 'Bullish',
+      source: 'BlackRock Press Release'
     },
-    { 
+    {
+      date: '2024-04-17',
+      category: 'Enterprise',
+      company: 'EY',
+      title: 'EY Launches OpsChain Contract Manager - Smart Contracts for Enterprise on Public Ethereum',
+      summary: 'EY (Big Four accounting firm) launches EY OpsChain Contract Manager (OCM), blockchain-enabled solution for enterprise contract management running on public Ethereum. Addresses enterprise challenge of managing multi-party business agreements across internal/external siloed systems. Features: synchronizes data across business partners, uniformly enforces key terms (pricing, volume discounts, rebates, strike prices), uses Zero Knowledge Circuits for privacy. Supports complex contract types: volume purchase agreements, standardized rate cards, volume discounts, rebates, market data-dependent price models. First users implementing Power Purchasing Agreements (PPAs) with market prices, strike prices, min/max criteria. Benefits: decentralized operation in trustworthy environment, no strategic advantage to buyer/seller, eliminates private network costs, avoids centralized industry portal risks. Zion Market Research projects global smart contracts market reaching $1B by 2030 (24% CAGR 2023-2030). Paul Brody, EY Global Blockchain Leader: "Contract automation can improve accuracy while cutting cycle times by more than 90%, and overall contract administration costs by nearly 40%. With our zero-knowledge privacy technology, we have industrialized this capability."',
+      significance: 'Big Four professional services firm deploying production enterprise solution on public Ethereum. Smart contract automation addresses real enterprise pain points (contract leakage, fragmented spend). Zero-knowledge privacy enables confidential business terms on public blockchain.',
+      bmnrImplication: 'EY building enterprise contract infrastructure on public Ethereum validates network for core business operations. Big Four firm commitment signals enterprise readiness. More enterprise use cases = more Ethereum ecosystem value.',
+      impact: 'Bullish',
+      source: 'EY Press Release'
+    },
+    {
       date: '2024-02-07', 
       category: 'Enterprise', 
       company: 'UBS',
