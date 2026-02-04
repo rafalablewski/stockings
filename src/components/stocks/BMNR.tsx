@@ -3383,8 +3383,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'MSTR pays 9.6% dividend on preferred but BTC generates 0% yield — funded by dilution. BMNR\'s ETH staking generates real 3-5% yield to cover costs.',
       source: 'Strategy PR',
       sourceUrl: 'https://www.strategy.com/investor-relations',
-      storyId: 'mstr-digital-credit-2025',
-      storyTitle: 'Strategy Digital Credit Program'
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -3406,8 +3406,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Strategy continues to position as BTC treasury leader. BMNR differentiates with ETH + staking yield model.',
       source: 'Strategy PR',
       sourceUrl: 'https://www.strategy.com/investor-relations',
-      storyId: 'mstr-earnings-q4-2025',
-      storyTitle: 'Strategy Q4 2025 Earnings'
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -3430,8 +3430,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'MSTR holds 3.1% of BTC supply vs BMNR\'s ~3.5% of ETH supply. MSTR needs USD Reserve for dividends since BTC yields 0%; BMNR\'s staking covers yield natively.',
       source: 'Strategy PR',
       sourceUrl: 'https://www.strategy.com/investor-relations',
-      storyId: 'mstr-usd-reserve-2025',
-      storyTitle: 'Strategy USD Reserve & 650K BTC'
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
