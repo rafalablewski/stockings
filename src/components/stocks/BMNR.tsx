@@ -7680,10 +7680,21 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'HSBC ($3.2T assets) successfully trials first application of quantum-secure technology for buying and selling tokenized physical gold. HSBC was first global bank to offer tokenized physical gold to institutional investors (2023), followed by HSBC Gold Token for retail investors in Hong Kong (2024, fractional ownership). Built on HSBC Orion digital assets platform. Tested interoperability using post-quantum cryptography (PQC) to move digital assets safely across distributed ledgers. Key capability: can convert HSBC gold tokens to ERC-20 fungible tokens for enhanced distribution and interoperability with other DLTs and digital wallets. Partner: Quantinuum (world\'s largest integrated quantum computing company). Protects against "store now, decrypt-later" (SNDL) cyber attacks using PQC algorithms and quantum randomness technology. Philip Intallura (Global Head Quantum Technologies): "HSBC was the first international bank to offer tokenised physical gold and is now building on that innovation with cutting-edge cybersecurity protection for the future."',
       significance: 'FIRST global bank tokenized gold (2023) now adding quantum-secure protection. ERC-20 conversion capability enables Ethereum ecosystem interoperability. Demonstrates institutional commitment to both blockchain tokenization AND next-generation security. Quantinuum partnership brings quantum computing expertise to financial services.',
       bmnrImplication: 'HSBC gold tokens convertible to ERC-20 creates direct bridge to Ethereum ecosystem. Tokenized gold interoperability expands Ethereum utility for real-world assets. Quantum-safe security addresses future institutional concerns. More tokenized RWAs on Ethereum = network value.',
-      impact: 'Bullish', 
-      source: 'HSBC Press Release' 
+      impact: 'Bullish',
+      source: 'HSBC Press Release'
     },
-    { 
+    {
+      date: '2024-09-12',
+      category: 'L2',
+      company: 'Coinbase',
+      title: 'Coinbase Wrapped BTC (cbBTC) Launches on Base and Ethereum',
+      summary: 'Coinbase launches cbBTC, an ERC-20 token backed 1:1 by Bitcoin held in Coinbase custody. Available on Base and Ethereum at launch with plans for more chains. Coinbase has 10+ year record securely custodying billions in Bitcoin. When users send BTC from Coinbase to Base/Ethereum address, it automatically converts 1:1 to cbBTC. Day one DeFi integrations: DEXs (Aerodrome, Curve, Matcha, Uniswap), Lending (Aave, Compound, Morpho, Moonwell, Spark), Yield Vaults (Mellow, Veda), Cross-chain swaps (DeBridge, DeFinitive), Oracles (Chronicle Labs), RWA (Maple). Available in US (excl NY), UK, EEA, Australia, Brazil. cbBTC now also on Solana and Arbitrum. Contract address same across Base/Ethereum/Arbitrum: 0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf. Coinbase: "cbBTC is moving money forward. We\'re one step closer to bringing 1 billion people onchain."',
+      significance: 'Major exchange bringing deep off-chain Bitcoin liquidity to Ethereum ecosystem. Coinbase custody backing provides institutional-grade trust vs decentralized alternatives. Day one integrations across major DeFi protocols demonstrate immediate utility. Links $1T+ BTC market cap to Ethereum DeFi rails.',
+      bmnrImplication: 'cbBTC brings Bitcoin liquidity to Ethereum ecosystem, expanding DeFi TVL and utility. More assets on Ethereum L1/L2 = more network activity = ETH ecosystem value. Coinbase institutional backing could attract conservative capital that avoided decentralized wrapped BTC.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
       date: '2024-09-04', 
       category: 'Enterprise', 
       company: 'Siemens',
