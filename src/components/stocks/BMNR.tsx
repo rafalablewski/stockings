@@ -3288,7 +3288,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       cryptoType: 'BTC',
       currentStatus: 'Active accumulation via Digital Credit + ATM programs',
       capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: false, publicCompany: true, institutionalAccess: true },
-      keyMetrics: { holdings: '~650K BTC', marketCap: '~$90B', navPremium: '+100%', yieldRate: '0%' }
+      keyMetrics: { holdings: '713,502 BTC', marketCap: '~$90B', navPremium: '+100%', yieldRate: '0%' }
     },
     {
       id: 'mara',
@@ -3364,6 +3364,30 @@ const CompsTab = ({ comparables, ethPrice }) => {
     // ═══════════════════════════════════════════════════════════════════════════
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - 8-K BTC HOLDINGS UPDATE (713,502 BTC)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-02',
+      competitor: 'mstr',
+      category: 'Acquisition',
+      headline: 'Strategy now holds 713,502 BTC after purchasing 855 BTC',
+      details: [
+        'Purchased 855 BTC for $75.3M at average price of $87,974',
+        'Total holdings now 713,502 BTC at average cost of $76,052',
+        'Aggregate purchase price: $54.26B',
+        'STRC dividend rate increased from 11.00% to 11.25%',
+        'Sold 673,527 MSTR shares for $106.1M net proceeds',
+        'No preferred stock sold during the period'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy continues accumulating BTC at 0% yield. BMNR\'s ETH staking generates 3-5% yield, compounding value without requiring continuous capital raises.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // STRATEGY - DIGITAL CREDIT ROC (Return of Capital)
     // ═══════════════════════════════════════════════════════════════════════════
     {
@@ -3430,6 +3454,75 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'MSTR holds 3.1% of BTC supply vs BMNR\'s ~3.5% of ETH supply. MSTR needs USD Reserve for dividends since BTC yields 0%; BMNR\'s staking covers yield natively.',
       source: 'Strategy PR',
       sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - STRE STOCK IPO (€620M / ~$715M)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-07',
+      competitor: 'mstr',
+      category: 'Funding',
+      headline: 'Strategy prices STRE Stock IPO at €620M (~$715M) with 10% dividend',
+      details: [
+        'IPO of euro-denominated STRE preferred stock at €620M (~$715M)',
+        'Perpetual 10% dividend rate with 105% liquidation preference',
+        'Closes November 12, 2025 on the Frankfurt Stock Exchange',
+        'Broadens access to bitcoin exposure via European capital markets',
+        'Raises cumulative bitcoin capital to approximately $11B since November 2024'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy tapping European markets at 10% perpetual dividend cost. BMNR\'s ETH staking generates yield without requiring such high dividend obligations.',
+      source: 'Strategy PR',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - S&P B- ISSUER CREDIT RATING
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-27',
+      competitor: 'mstr',
+      category: 'Financial',
+      headline: 'S&P assigns B- issuer credit rating to Strategy',
+      details: [
+        'S&P assigns B- issuer credit rating with stable outlook',
+        'Rating reflects bitcoin holdings as capital for planned financing activities',
+        'Unique financing strategy utilizing BTC as treasury asset',
+        'Credit rating enables access to debt capital markets',
+        'Demonstrates institutional acceptance of BTC treasury model'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy\'s B- rating reflects higher risk BTC volatility exposure. BMNR\'s ETH staking yield provides more stable cash flow for debt servicing.',
+      source: 'Strategy PR',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - ATM/BTC ACTIVITY (640,250 BTC @ $74K AVG)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-13',
+      competitor: 'mstr',
+      category: 'Acquisition',
+      headline: 'Strategy holds 640,250 BTC after purchasing 220 BTC at $74K average',
+      details: [
+        'Purchased 220 BTC for $16.3M at average price of $74,000',
+        'Total holdings now 640,250 BTC at average cost of $73,024',
+        'Aggregate purchase price: $46.75B',
+        'Sold 273,843 MSTR shares for $53.8M net proceeds',
+        'No preferred stock sold during the period'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy steadily accumulating BTC with no yield. BMNR\'s staking model generates continuous 3-5% yield on ETH holdings.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
       storyId: 'strategy-btc-treasury',
       storyTitle: 'Strategy (MSTR)'
     },
