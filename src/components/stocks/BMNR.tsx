@@ -6942,6 +6942,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'WisdomTree Press Release'
     },
     {
+      date: '2025-12-04',
+      category: 'L2',
+      company: 'Base',
+      title: 'Base-Solana Bridge Launches - Secured by Chainlink CCIP and Coinbase',
+      summary: 'Base launches mainnet bridge to Solana, enabling cross-chain asset movement between Ethereum L2 and Solana ecosystems. Bridge secured by Chainlink\'s Cross-Chain Interoperability Protocol (CCIP) alongside Coinbase verification. Coinbase and Chainlink node operators independently verify all messages. Rolling out in apps including Zora, Aerodrome, Virtuals, Flaunch, and Relay. Users can trade SOL, CHILLHOUSE, TRENCHER, and other Solana assets on Base. Bridge enables: depositing SOL in Base apps, importing Solana assets into Base, exporting Base assets to Solana. Open-source on GitHub for developer integration.',
+      significance: 'Major Ethereum L2 bridging to Solana expands cross-chain liquidity and interoperability. Chainlink CCIP + Coinbase dual verification provides institutional-grade security. "Bridge, not an island" philosophy enables users to access value across chains.',
+      bmnrImplication: 'Base-Solana bridge expands Ethereum L2 ecosystem reach to Solana users and assets. Cross-chain interoperability increases overall crypto network effects. More users/assets flowing through Ethereum L2 = more ecosystem value.',
+      impact: 'Bullish',
+      source: 'Base Blog'
+    },
+    {
       date: '2025-12-01',
       category: 'Enterprise',
       company: 'Sony Bank',
@@ -7429,6 +7440,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'Openbank Press Release'
     },
     {
+      date: '2025-09-15',
+      category: 'L2',
+      company: 'Base',
+      title: 'Base Exploring Network Token Launch After Years of Ruling It Out',
+      summary: 'Coinbase confirms at Basecamp event in Vermont that Base, its Ethereum L2 network, is "exploring a network token" after years of saying it wasn\'t actively considering one. Head of Base Jesse Pollak announced the exploration during a presentation. Base posted: "We\'re in the early phases of exploration, and don\'t have any specifics to share around timing, design, or governance. We\'re committed to bringing the community along with us, and building in the open." Coinbase CEO Brian Armstrong had told Decrypt in late 2023 that the company was "not planning to make any token" for Base. Change attributed to shift in US regulatory environment under Trump administration. Luke Youngblood (Moonwell founder, former Coinbase): "I think everything has shifted with the change in administration. I never thought they would let Jesse launch a token just because there\'s too much regulatory risk." Base is among most used Ethereum L2s with 13M daily transactions, $5B TVL, ranking 6th overall by TVL.',
+      significance: 'Major Ethereum L2 potentially adding token economics. Regulatory shift enabling what was previously considered too risky. Base already dominant L2 by transaction volume — token could accelerate ecosystem growth and governance decentralization.',
+      bmnrImplication: 'Base token exploration signals regulatory confidence in Ethereum L2 ecosystem. Network token could drive additional activity and value accrual to Ethereum L2 infrastructure. More successful L2s = more settlement to Ethereum L1 = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Decrypt'
+    },
+    {
       date: '2025-09-03',
       category: 'Enterprise',
       company: 'Ondo Finance',
@@ -7496,6 +7518,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'The Block / Bitwise'
     },
     {
+      date: '2025-07-16',
+      category: 'L2',
+      company: 'Base',
+      title: 'Base Evolves From Chain to Open Stack - Launches Base App, Base Pay, Flashblocks',
+      summary: 'Base announces major evolution from "chain to open stack" at A New Day One event. Three-part stack: Base Chain (Ethereum L2 with new Flashblocks reducing block times from 2 seconds to 200 milliseconds — 10x faster), Base Build (developer tools), and Base App (formerly Coinbase Wallet, now an "everything app" for social, apps, chat, payments, trading). Base App features: open social network powered by Farcaster where creators own content and earn directly, mini apps in feed (Remix, Noice, Decentralized Pictures), millions of coins tradable, USDC rewards up to 4.1% APY. Base Account provides universal identity across apps/chains. Base Pay enables express USDC checkout, now available to Shopify merchants (1% cashback for US customers coming later). Rolling out in beta with waitlist at base.app.',
+      significance: 'Major Ethereum L2 expanding from infrastructure to full consumer platform. Flashblocks makes Base 10x faster. Social features (Farcaster integration) and payments (Base Pay) create comprehensive ecosystem. Shopify integration brings millions of merchants to Ethereum L2.',
+      bmnrImplication: 'Base evolving into comprehensive platform strengthens Ethereum L2 ecosystem. Consumer-facing features drive mass adoption. Shopify integration brings mainstream commerce to Ethereum. More users + merchants on Ethereum L2 = more ecosystem value.',
+      impact: 'Bullish',
+      source: 'Base Blog'
+    },
+    {
       date: '2025-07-15',
       category: 'L2',
       company: 'Ant Digital Technologies',
@@ -7525,12 +7558,34 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'HSBC ($3.2T assets, Hong Kong\'s largest note-issuing bank) completes HKMA Project e-HKD+ experimental testing on multiple public blockchains: Arbitrum, Ethereum, Linea, and Polygon. Also developed private DLT on Hyperledger Besu — all Ethereum-compatible. Focus areas: DLT for storing/transferring value, privacy via Privacy Enhancing Technology (PET), decentralized identity, payments at scale. Survey of 700+ Hong Kong individuals: 90% acknowledge privacy importance in e-HKD; 65% professional investors familiar with concept; ~33% willing to use for digital asset trading. Recently launched Tokenised Deposit Service — Hong Kong\'s first bank-led blockchain settlement service. CEO Luanne Lim: "As Hong Kong\'s largest note-issuing bank, we will continue our efforts in driving financial innovation." John O\'Neill (Group Head Digital Assets): "Our experimental work on Project e-HKD+ aims to support the HKMA in assessing options for real-world use of digital currencies." HSBC Global Director confirmed private chain is EVM-compatible and ERC-20 standard.',
       significance: 'Major global bank ($3.2T assets) testing on PUBLIC Ethereum ecosystem (Ethereum, Arbitrum, Linea, Polygon). HSBC historically cautious on public chains — this is notable shift. Private chain EVM/ERC-20 compatibility enables future public chain interoperability. Hong Kong\'s first bank-led blockchain settlement service launched.',
       bmnrImplication: 'HSBC testing on public Ethereum L1 and L2s (Arbitrum, Linea, Polygon) validates ecosystem for institutional use. EVM-compatible private chain creates bridge to public networks. More institutional CBDC/deposit experimentation on Ethereum = network validation = ETH ecosystem value.',
-      impact: 'Bullish', 
-      source: 'HSBC Press Release / Ledger Insights' 
+      impact: 'Bullish',
+      source: 'HSBC Press Release / Ledger Insights'
     },
-    { 
-      date: '2025-06-17', 
-      category: 'Enterprise', 
+    {
+      date: '2025-06-25',
+      category: 'L2',
+      company: 'Base',
+      title: 'Coinbase Launches Wrapped Cardano (cbADA) and Litecoin (cbLTC) on Base',
+      summary: 'Coinbase launches wrapped tokens for Cardano (cbADA) and Litecoin (cbLTC) on Base, its Ethereum L2 network. Each synthetic token is backed 1:1 by underlying assets held in Coinbase custody with proof-of-reserves pages showing on-chain addresses. Initial issuance: 11,364 LTC and 2,963,259 ADA on Base. Follows early June launches of wrapped Dogecoin (cbDOGE) and XRP (cbXRP), completing four-asset bundle previewed on May 13. Coinbase already issues cbBTC (24% of synthetic BTC market) and cbETH (7% of staked ETH). ADA and LTC deposits held in segregated cold storage under same controls as cbETH and cbBTC. Quarterly attestations planned for all Coinbase Wrapped assets. No conversion fees during introductory period. Base is second-largest Ethereum L2 with $12B+ secured (L2Beat).',
+      significance: 'Major exchange bringing more non-EVM assets to Ethereum L2 ecosystem. Coinbase Wrapped tokens create ERC-20 gateways to six of ten largest non-stablecoins by market cap. Proof-of-reserves and custody infrastructure provide institutional-grade backing.',
+      bmnrImplication: 'More assets available on Base expands Ethereum L2 utility. Cross-chain asset bridging via wrapped tokens increases DeFi composability. Coinbase custody backing provides institutional confidence. More assets on Ethereum ecosystem = more network value.',
+      impact: 'Bullish',
+      source: 'CryptoSlate'
+    },
+    {
+      date: '2025-06-23',
+      category: 'Enterprise',
+      company: 'Coinbase',
+      title: 'Coinbase State of Crypto Summit 2025: Major USDC Payments Infrastructure Announcements',
+      summary: 'Coinbase hosts State of Crypto Summit 2025 announcing major payments infrastructure: Coinbase Business (SMB/startup crypto account for payments and asset management), Coinbase Payments (plug-and-play stablecoin payments stack with API-first USDC integration), Shopify partnership bringing USDC payments on Base to millions of merchants, DEX trading integrated into main Coinbase app (starting with Base assets), and Coinbase One Card (up to 4% bitcoin back, metal card with Genesis Block code). Summit highlights: 81% of crypto-aware SMBs interested in stablecoins, 3x more Fortune 500 executives planning stablecoin use vs 2024, stablecoin supply reached $227B (54% YoY increase). Brian Armstrong: "The mission of Coinbase is to enable economic freedom in the world." Following Deribit acquisition announcement, Coinbase positioning as comprehensive crypto derivatives exchange.',
+      significance: 'Major exchange building comprehensive stablecoin payments infrastructure. Shopify integration brings USDC payments to millions of merchants. SMB and Fortune 500 stablecoin interest demonstrates mainstream adoption trajectory. Product suite spans trading, payments, cards, and business accounts.',
+      bmnrImplication: 'Coinbase building USDC payments on Base strengthens Ethereum L2 ecosystem. Shopify integration brings mass merchant adoption to Ethereum. More stablecoin infrastructure = more on-chain activity = ETH ecosystem value. 54% YoY stablecoin growth validates network utility thesis.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-06-17',
+      category: 'Enterprise',
       company: 'Deutsche Bank',
       title: 'Deutsche Bank DAMA 2 - Institutional Tokenization Blueprint on Ethereum L2', 
       summary: 'Deutsche Bank, Axelar Network (Interop Labs), and Memento Blockchain publish litepaper for Digital Asset Management Access (DAMA) 2 platform — a next-generation tokenization platform built on public blockchains with regulatory alignment and privacy as core design principles. Key features: Blockchain-as-a-Service model minimizing upfront investment, privacy-enabled Layer 2 using zkSync ZK Chain technology, managed token issuance across multiple blockchains via Axelar, and app store for fund smart contract designs. Platform targets tokenized funds, stablecoins, and RWAs for asset managers, wealth managers, and investment advisors. Innovation Lead Boon-Hiong Chan: "DAMA 2 represents how public chains have evolved for institutional finance\'s use." MVP launch targeted H2 2025. Context: $84T in global wealth shifting to digital-native generations by 2045 (Cerulli Associates).',
