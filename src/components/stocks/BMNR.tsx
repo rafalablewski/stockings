@@ -4048,7 +4048,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
       <div className="highlight">
         <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
-        <p>Track competitor developments to assess BMNR competitive position</p>
+        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track what <strong>peer companies</strong> are doing — treasury purchases, financing activities, strategic moves by crypto treasury competitors (Strategy, Marathon, Riot, etc.)</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>Company-level news affecting BMNR's relative positioning vs competitors</p>
       </div>
 
       {/* Filter Bar */}
@@ -8543,6 +8544,10 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         <span>Ethereum Adoption Timeline</span>
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredNews.length} events)</span>
       </h3>
+      <div className="highlight" style={{ marginBottom: 16 }}>
+        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track news about the <strong>ETH ecosystem</strong> — institutional adoption, stablecoin launches, L2 growth, protocol upgrades, and enterprise partnerships building on Ethereum</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>Asset-level news affecting ETH value and BMNR's NAV</p>
+      </div>
 
       {/* Company Filter (like Topic filter in Timeline tab) */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-filter</div>
