@@ -3282,13 +3282,13 @@ const CompsTab = ({ comparables, ethPrice }) => {
   const COMPETITOR_PROFILES: BMNRCompetitorProfile[] = [
     {
       id: 'mstr',
-      name: 'MicroStrategy',
+      name: 'Strategy',
       ticker: 'MSTR',
-      description: 'Pioneer BTC treasury company, largest corporate bitcoin holder',
+      description: 'Pioneer BTC treasury company (fka MicroStrategy), largest corporate bitcoin holder',
       cryptoType: 'BTC',
-      currentStatus: 'Active accumulation, convertible debt strategy',
+      currentStatus: 'Active accumulation via Digital Credit + ATM programs',
       capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: false, publicCompany: true, institutionalAccess: true },
-      keyMetrics: { holdings: '~528K BTC', marketCap: '~$90B', navPremium: '+100%', yieldRate: '0%' }
+      keyMetrics: { holdings: '~650K BTC', marketCap: '~$90B', navPremium: '+100%', yieldRate: '0%' }
     },
     {
       id: 'mara',
@@ -3364,44 +3364,66 @@ const CompsTab = ({ comparables, ethPrice }) => {
     // ═══════════════════════════════════════════════════════════════════════════
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // MICROSTRATEGY - BTC TREASURY
+    // STRATEGY (FKA MICROSTRATEGY) - BTC TREASURY
     // ═══════════════════════════════════════════════════════════════════════════
     {
-      date: '2026-01-27',
+      date: '2026-02-02',
       competitor: 'mstr',
-      category: 'Acquisition',
-      headline: 'MicroStrategy acquires additional 10,107 BTC for ~$1.1B',
+      category: 'Funding',
+      headline: 'Strategy announces 2025 preferred distributions 100% return of capital',
       details: [
-        'Total holdings now exceed 528,000 BTC',
-        'Average acquisition price ~$106,000 per BTC',
-        'Funded through convertible notes and ATM equity',
-        'Continues aggressive "21/21" accumulation plan',
-        'Remains largest corporate BTC holder globally'
+        '100% of 2025 distributions on preferred equity treated as ROC for tax purposes',
+        'Raised $5.5B in Digital Credit (preferred equity) IPOs in 2025',
+        'Additional $1.9B raised via ATM programs for preferred instruments',
+        '$413M in cumulative distributions paid across all instruments',
+        '9.6% blended annual dividend rate on preferred securities',
+        'Expects ROC treatment to continue for 10+ years (no E&P)'
       ],
       implication: 'neutral',
-      bmnrComparison: 'MSTR accumulates BTC at 0% yield. BMNR\'s ETH generates 3-5% staking yield, compounding NAV even in flat markets.',
-      source: 'MicroStrategy 8-K',
-      sourceUrl: 'https://www.microstrategy.com/press',
-      storyId: 'mstr-btc-accumulation-2026',
-      storyTitle: 'MicroStrategy BTC Treasury Expansion'
+      bmnrComparison: 'MSTR pays 9.6% dividend on preferred but BTC generates 0% yield — funded by dilution. BMNR\'s ETH staking generates real 3-5% yield to cover costs.',
+      source: 'Strategy PR',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'mstr-digital-credit-2025',
+      storyTitle: 'Strategy Digital Credit Program'
     },
     {
       date: '2026-01-15',
       competitor: 'mstr',
       category: 'Financial',
-      headline: 'MicroStrategy trades at 2.1x NAV premium despite 0% yield',
+      headline: 'Strategy announces Q4 2025 earnings date: February 5, 2026',
       details: [
-        'Stock price implies significant premium over BTC holdings',
-        'Market values MSTR management and strategy at >$40B premium',
-        'Premium justified by institutional access and liquidity',
-        'No native yield generation on BTC holdings',
-        'Some analysts question sustainability of premium'
+        'Q4 2025 results to be released after market close Feb 5, 2026',
+        'Live video webinar scheduled for 5:00 PM ET',
+        'Now trades under multiple tickers: STRF/STRC/STRK/STRD/MSTR',
+        'Rebranded from MicroStrategy to Strategy',
+        'Describes itself as "world\'s first Bitcoin Treasury Company"'
       ],
-      implication: 'positive',
-      bmnrComparison: 'BMNR trades at lower premium but generates real yield. As staking yield compounds, fundamental value gap should close.',
-      source: 'Bloomberg',
-      storyId: 'mstr-nav-premium-analysis',
-      storyTitle: 'MSTR NAV Premium Analysis'
+      implication: 'neutral',
+      bmnrComparison: 'Strategy continues to position as BTC treasury leader. BMNR differentiates with ETH + staking yield model.',
+      source: 'Strategy PR',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'mstr-earnings-q4-2025',
+      storyTitle: 'Strategy Q4 2025 Earnings'
+    },
+    {
+      date: '2025-12-01',
+      competitor: 'mstr',
+      category: 'Strategy',
+      headline: 'Strategy establishes $1.44B USD Reserve, now holds 650,000 BTC',
+      details: [
+        'Established $1.44B USD Reserve to cover 21 months of dividends',
+        'Now holds 650,000 BTC — approximately 3.1% of total 21M supply',
+        'Goal to grow USD Reserve to cover 24+ months of dividends',
+        'Updated FY2025 BTC Yield Target: 22-26%',
+        'Updated FY2025 BTC $ Gain Target: $8.4B-$12.8B',
+        'Guidance based on assumed BTC price range of $85,000-$110,000'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'MSTR holds 3.1% of BTC supply vs BMNR\'s ~3.5% of ETH supply. MSTR needs USD Reserve for dividends since BTC yields 0%; BMNR\'s staking covers yield natively.',
+      source: 'Strategy PR',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'mstr-usd-reserve-2025',
+      storyTitle: 'Strategy USD Reserve & 650K BTC'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
