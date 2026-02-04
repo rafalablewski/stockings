@@ -7692,11 +7692,22 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       significance: 'Major global wealth manager ($5.7T AUM) launching production tokenized fund on Ethereum. Progression from 2023 pilot to 2024 production demonstrates institutional commitment. Institutional-grade money market fund on public blockchain sets precedent for larger fund tokenization.',
       bmnrImplication: 'UBS production tokenized fund validates Ethereum for institutional asset management. More tokenized funds = more on-chain settlement = ETH ecosystem value. UBS\'s multi-year commitment (2017 consortium → 2023 pilots → 2024 production) demonstrates long-term institutional thesis.',
       impact: 'Bullish', 
-      source: 'UBS Asset Management Press Release' 
+      source: 'UBS Asset Management Press Release'
     },
-    { 
-      date: '2024-10-03', 
-      category: 'Enterprise', 
+    {
+      date: '2024-10-02',
+      category: 'Enterprise',
+      company: 'Automobili Lamborghini',
+      title: 'Lamborghini and Animoca Brands Launch Fast ForWorld - Interoperable Blockchain Gaming Platform',
+      summary: 'Automobili Lamborghini and Animoca Brands announce collaboration to shape the future of immersive brand engagement in the automotive industry. Partnership creates Automobili Lamborghini\'s upcoming immersive platform, Fast ForWorld, where fans, gamers and owners can experiment, play, interact, and collect digital collectibles while being rewarded for engagement. First interoperable blockchain-based implementation of Lamborghini iconic vehicles in gaming. Working with Animoca\'s subsidiary Motorverse to deliver first-of-its-kind gaming experience with interoperable digital car collectibles. Players can buy, sell, own, and drive Lamborghini super sports cars across multiple gaming platforms including Torque Drift 2, REVV Racing, and Motorverse Hub. Platform designed, developed and deployed by Gravitaslabs. First version launching November 7th features 3D wallet for storing digital items and interoperable features. Entry requires securing first-ever digital Lamborghini Revuelto, bundled with Genesis Capsule unlocking exclusive benefits.',
+      significance: 'Iconic luxury automotive brand ($2.3B revenue) entering blockchain gaming through partnership with Animoca Brands (major Web3 gaming company). First interoperable digital vehicles from a major automaker. Demonstrates blockchain use case for brand engagement and digital collectibles beyond finance. Gaming/collectibles sector bridges mainstream consumers to blockchain.',
+      bmnrImplication: 'Lamborghini blockchain gaming validates Ethereum ecosystem for luxury brand digital engagement. Animoca Brands (built on Ethereum) brings major automotive partner. Interoperable digital assets expand blockchain utility beyond finance. More mainstream brand adoption = broader Ethereum ecosystem recognition.',
+      impact: 'Bullish',
+      source: 'Automobili Lamborghini Press Release'
+    },
+    {
+      date: '2024-10-03',
+      category: 'Enterprise',
       company: 'Visa',
       title: 'Visa Launches VTAP - Tokenized Asset Platform on Ethereum', 
       summary: 'Visa introduces the Visa Tokenized Asset Platform (VTAP), a B2B solution enabling banks to mint, burn, and transfer fiat-backed tokens on blockchain networks. VTAP provides API-based integration for participating financial institutions to issue tokenized deposits and stablecoins. Platform supports programmability via smart contracts for automated workflows and real-world asset transactions. BBVA (Spain\'s second-largest bank) announced as first partner, testing VTAP sandbox throughout 2024 with plans to launch BBVA Euro stablecoin pilot in 2025 on public Ethereum mainnet.',
@@ -8137,7 +8148,18 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'EIB Press Release' 
     },
     // === 2022 HISTORICAL PROTOCOL EVENTS ===
-    { 
+    {
+      date: '2022-09-29',
+      category: 'Enterprise',
+      company: 'Deutsche Telekom',
+      title: 'Deutsche Telekom Deploys Ethereum Validator Infrastructure via T-Systems MMS',
+      summary: 'Deutsche Telekom expands blockchain activities by including Ethereum, the second largest blockchain in the world. T-Systems MMS (Deutsche Telekom subsidiary) provides Ethereum Network with infrastructure in the form of validation nodes. Additionally, Deutsche Telekom subsidiary cooperates with StakeWise for liquid staking pools, allowing users to stake ETH tokens without operating validator nodes themselves. T-Systems MMS participates in StakeWise governance through the DAO, contributing to transparency and security. Dirk Röder, Head of Blockchain Solutions Center at T-Systems MMS: "Our cooperation partner StakeWise collects individual Ether tokens from many different owners and merges them into validator nodes. These validator nodes are provided and operated as infrastructure by T-Systems MMS." Kirill Kutakov, co-founder of StakeWise: "With the move to Proof-of-Stake, we expect strong demand and significantly increasing capital flows in the Ethereum network. We are therefore pleased that T-Systems MMS, as an infrastructure provider, is giving our protocol more reliability and making the Ethereum ecosystem safer overall."',
+      significance: 'Major European telecom ($90B+ market cap, €110B+ revenue) operating Ethereum validator infrastructure. T-Systems MMS already supported Flow, Celo, and Polkadot — now adding Ethereum. First DAO governance participation for Deutsche Telekom. Corporate validator operation validates Ethereum PoS security model for enterprise.',
+      bmnrImplication: 'Deutsche Telekom operating Ethereum validators legitimizes staking infrastructure as enterprise-grade service. Major telecom infrastructure provider validates Ethereum PoS security model. Corporate validator participation = more decentralized, secure network = supports BMNR staking thesis.',
+      impact: 'Bullish',
+      source: 'Deutsche Telekom Media'
+    },
+    {
       date: '2022-09-15', 
       category: 'Protocol', 
       company: 'Other',
