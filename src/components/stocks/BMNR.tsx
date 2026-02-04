@@ -7989,10 +7989,21 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Bank of China International (BOCI) successfully issues CNH 200 million fully digital structured notes, becoming the first Chinese financial institution to issue a tokenized security in Hong Kong. Product originated by UBS and placed to Asia Pacific clients via UBS Tokenize platform. First product under Hong Kong and Swiss law tokenized on Ethereum mainnet — successfully introducing regulated securities onto a public blockchain. Builds on UBS\'s December 2022 issuance of USD 50M tokenized fixed rate note. BOCI Deputy CEO Ying Wang: "Working together with UBS, we are driving the simplification of digital asset markets and products, for customers in Asia Pacific through the development of blockchain-based digital structured products." UBS Global Head of MTN Trading Aurelian Troendle: "High-frequency issuance activity can benefit from vast efficiency gains through the use of blockchain technology."',
       significance: 'FIRST Chinese financial institution issuing tokenized security in Hong Kong. First product under Hong Kong AND Swiss law on Ethereum mainnet. Demonstrates cross-border legal framework compatibility for tokenized securities. Bank of China subsidiary validates Chinese institutional interest in Ethereum tokenization.',
       bmnrImplication: 'Chinese institutional adoption of Ethereum for tokenized securities expands global institutional footprint. Hong Kong + Swiss law compatibility proves multi-jurisdictional regulatory framework viability. More APAC institutional activity = more Ethereum network validation.',
-      impact: 'Bullish', 
-      source: 'UBS / BOCI Press Release' 
+      impact: 'Bullish',
+      source: 'UBS / BOCI Press Release'
     },
-    { 
+    {
+      date: '2023-06-15',
+      category: 'Enterprise',
+      company: 'SAP',
+      title: 'SAP Launches Digital Currency Hub - USDC/EUROC Cross-Border Payments for SMEs',
+      summary: 'SAP launches preview of SAP Digital Currency Hub, enabling cross-border payments using USDC and EUROC stablecoins (issued by Circle) on blockchain. Solution addresses major SME pain points: traditional cross-border payments cost up to $50 per transaction, take up to 7 days, and lack transparency. With Digital Currency Hub, business partners settle transactions via self-custody wallets without intermediaries. Technical flow: buyer opens wallet, creates transaction with seller\'s wallet address, signs with private key, sends to blockchain for validation. Settlement occurs in minutes. Solution links payments to business objects (business partners, invoice numbers) and will integrate with SAP ERP systems (SAP Business One, Business ByDesign, S/4HANA Cloud) for autonomous reconciliation. Test drive available using test USDC on test network for experimental purposes.',
+      significance: 'Enterprise software giant ($200B+ market cap) building stablecoin payment infrastructure for its massive SME customer base. SAP serves 440,000+ customers in 180+ countries. Integration with ERP systems could bring blockchain payments to mainstream business operations.',
+      bmnrImplication: 'SAP bringing stablecoin payments to SME customers validates Ethereum ecosystem for enterprise finance. USDC/EUROC settlement expands network utility beyond crypto-native users. More enterprise stablecoin adoption = more on-chain activity = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'SAP Community Blog'
+    },
+    {
       date: '2023-05-15', 
       category: 'Institutional', 
       company: 'Visa',
@@ -8068,10 +8079,21 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Ethereum successfully completes "The Merge," the most significant technological upgrade in its history, transitioning the network\'s consensus mechanism from Proof of Work (PoW) to Proof of Stake (PoS). The upgrade merged the original Ethereum mainnet (execution layer) with the Beacon Chain (consensus layer), ending energy-intensive mining operations. The Merge reduced Ethereum\'s energy consumption by approximately 99.95%. At the time, 15.9 million ETH had been staked on the Beacon Chain, representing roughly 13.2% of total supply. Validators who stake 32 ETH can now earn rewards for securing the network, with staking yields of approximately 3-5% APY from block rewards and transaction fees.',
       significance: 'Watershed moment for blockchain technology. The Merge addressed Ethereum\'s largest criticism (energy consumption) while enabling native yield generation through staking. This transformed ETH from a pure commodity to a yield-bearing asset, fundamentally changing institutional valuation frameworks. The successful execution of such a complex upgrade demonstrated Ethereum\'s technical maturity and developer ecosystem strength.',
       bmnrImplication: 'THE foundational event enabling BMNR\'s entire business model. Without The Merge, there would be no staking yields, no MAVAN validator network, and no dividend strategy. BMNR\'s thesis — that ETH treasuries can generate sustainable yield while appreciating — is only possible because of PoS. The Merge transformed ETH from "digital commodity" to "productive asset."',
-      impact: 'Bullish', 
-      source: 'Visa Crypto Research' 
+      impact: 'Bullish',
+      source: 'Visa Crypto Research'
     },
-    { 
+    {
+      date: '2022-07-21',
+      category: 'Enterprise',
+      company: 'Aura Blockchain Consortium',
+      title: 'Aura Blockchain Consortium Partners with Temera for Luxury Supply Chain Traceability',
+      summary: 'Aura Blockchain Consortium (founded by LVMH, Prada Group, Cartier/Richemont, OTB Group, Mercedes-Benz) announces strategic collaboration with Temera for luxury product traceability. Temera brings expertise via proprietary Stylewhere platform and RFID/NFC technology. Aura enables brands to tag products with secure, unique blockchain-based identities tracking manufacture and supply from raw materials through end consumers. Aura SaaS offering allows brands to quickly onboard, maximizing value for customer journey and digital innovation. Partnership provides both upstream (raw material sourcing) and downstream (direct-to-consumer) traceability. Temera CMO Guido Mengoni: "The expertise of Aura Blockchain Consortium Founding Members combined with our desire to innovate... will become fundamental for consumers in the coming years: full transparency of the product life cycle."',
+      significance: 'Major luxury conglomerates (LVMH, Prada, Cartier, Mercedes-Benz) deepening blockchain infrastructure for supply chain transparency. Aura built on ConsenSys/Ethereum technology. Partnership demonstrates enterprise blockchain use case beyond finance — product authentication and sustainability.',
+      bmnrImplication: 'Luxury brands building on Ethereum infrastructure validates network for enterprise non-financial use cases. Supply chain traceability expands Ethereum utility beyond DeFi/payments. More enterprise adoption = more ecosystem value.',
+      impact: 'Bullish',
+      source: 'Aura Blockchain Consortium Press Release'
+    },
+    {
       date: '2022-06-13', 
       category: 'Institutional', 
       company: 'Goldman Sachs',
@@ -8090,10 +8112,32 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'State Street Corporation ($42.6T AUC, $3.9T AUM), one of the world\'s largest custodians, announces State Street Digital has entered licensing agreement with Copper.co to develop institutional-grade digital custody. The collaboration leverages Copper.co\'s technology (450+ crypto assets, 40+ exchanges) to build secure storage and settlement infrastructure for digital assets. Head of State Street Digital Nadine Chakar: "As institutional investors\' interest in digital assets continues to grow, we are building the financial infrastructure needed to support our clients\' allocations to this new asset class." Subject to regulatory approvals for launch.',
       significance: 'World\'s largest custodian building crypto infrastructure signals institutional adoption has reached critical mass. State Street custody network serves the largest institutional investors globally. Their entry validates digital assets as a permanent institutional asset class requiring proper custody infrastructure.',
       bmnrImplication: 'State Street building digital custody infrastructure removes a key barrier to institutional ETH allocation. As the custodian for massive pension funds, endowments, and asset managers, their infrastructure buildout enables the institutional capital flows that support BMNR\'s thesis. Custody infrastructure is foundational to corporate treasury strategies.',
-      impact: 'Bullish', 
-      source: 'State Street Press Release' 
+      impact: 'Bullish',
+      source: 'State Street Press Release'
     },
-    { 
+    {
+      date: '2022-01-20',
+      category: 'Enterprise',
+      company: 'Aura Blockchain Consortium',
+      title: 'Hennessy Joins Aura Blockchain Consortium - First Spirits Brand on Luxury Blockchain',
+      summary: 'Hennessy, the world\'s best-selling cognac (founded 1765, LVMH brand), becomes first luxury spirits brand to join Aura Blockchain Consortium. Partnership provides full traceability across supply chain from distillery to consumer. First consumer use case launched for Chinese New Year 2022: collector\'s edition Hennessy Paradis sold in China with unique blockchain-authenticated certificate via WeChat. Limited edition inspired by artist Zhang Enli\'s "Poetry and Wine Welcome the Tiger" artwork, produced by French porcelain maker Bernardaud. Each buyer receives authenticated certificate through WeChat experience. Hennessy CEO Laurent Boillot: "The Aura Blockchain Consortium\'s vision to push the boundaries of technology to publish a blockchain platform that will ensure the full traceability of products... aligns with our goal to establish Hennessy as not only a market-leading product but a securely and equitably produced product."',
+      significance: 'First spirits industry brand on Aura blockchain expands use case beyond fashion/jewelry. LVMH deploying blockchain across its brand portfolio (Louis Vuitton, Bulgari, Hublot, now Hennessy). WeChat integration demonstrates blockchain utility for Chinese luxury market authentication.',
+      bmnrImplication: 'Luxury brands expanding blockchain use cases validates Ethereum infrastructure for diverse enterprise applications. LVMH portfolio-wide deployment demonstrates serious institutional commitment. More brand adoption = more blockchain ecosystem value.',
+      impact: 'Bullish',
+      source: 'Aura Blockchain Consortium Press Release'
+    },
+    {
+      date: '2022-01-13',
+      category: 'Enterprise',
+      company: 'Aura Blockchain Consortium',
+      title: 'Aura Blockchain Consortium Launches Aura SaaS - Cloud-Based Blockchain for Luxury Brands',
+      summary: 'Aura Blockchain Consortium (LVMH, Prada Group, Cartier/Richemont, OTB Group) launches Aura SaaS, first blockchain-based cloud platform designed for luxury brands. Platform has 15+ million digital tokens on private permissioned blockchain with upstream and downstream supply chain traceability. Aura SaaS is no-code solution with lower upfront costs and quick onboarding. Features: smart contract generator (no coding needed), product registration on blockchain, product events/rich content management, product history, ownership acquisition/transfer. Brands access Aura Blockchain via APIs connecting to their IT systems. White-label front-end interfaces customizable to each brand\'s UX. Addresses: authenticity, ownership, warranty, transparency, traceability. Secretary General Daniela Ott: "Aura SaaS provides a game-changing toolbox for the luxury industry... suitable for luxury brands of any size."',
+      significance: 'Major luxury houses democratizing blockchain access for smaller brands via SaaS model. 15M+ digital tokens demonstrates production scale. No-code approach lowers barrier to enterprise blockchain adoption. Consortium model (LVMH + Prada + Cartier + OTB) creates industry standard.',
+      bmnrImplication: 'Enterprise SaaS blockchain platform built on ConsenSys/Ethereum technology validates network for institutional use. 15M+ tokens in production proves enterprise blockchain viability. More enterprise adoption = more Ethereum ecosystem value.',
+      impact: 'Bullish',
+      source: 'Aura Blockchain Consortium Press Release'
+    },
+    {
       date: '2022-03-24', 
       category: 'Enterprise', 
       company: 'ANZ',
@@ -8135,8 +8179,19 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Goldman Sachs ($150B+ market cap) formally announces formation of its cryptocurrency trading desk, marking the official start of the crypto trading era on Wall Street. Internal memo from partner Rajesh Venkataramani confirms the team successfully traded Bitcoin NDFs and CME BTC futures (cash-settled). The crypto team operates within Global Currencies and Emerging Markets division, part of the broader Digital Assets effort led by Mathew McDermott. Goldman also launched Digital Assets dashboard providing daily/intraday crypto market data to clients. CEO David Solomon: firm is "selectively onboarding crypto trading institutions" to expand offerings. The bank had mulled a Bitcoin trading desk since 2017, tabled plans initially, then restarted in March 2021. Note: "The firm is not in a position to trade bitcoin, or any cryptocurrency (including Ethereum) on a physical basis" — only derivatives initially.',
       significance: 'WATERSHED MOMENT for institutional crypto adoption. Goldman Sachs — Wall Street\'s dominant investment bank for fixed income and equities trading — formally acknowledging crypto trading operations. First major Wall Street bank to do so publicly. Signals crypto has achieved "tradeable asset class" status for institutional capital. Opens door for rival banks (Morgan Stanley, JPMorgan) to follow.',
       bmnrImplication: 'Goldman\'s 2021 trading desk launch was the first domino in Wall Street\'s crypto adoption. The progression: trading desk (2021) → ETH derivatives (2022) → $2B+ ETF holdings (2025) → tokenization infrastructure (2025). This institutional infrastructure buildout is what enables corporate treasury strategies like BMNR\'s. Goldman\'s early entry validated crypto for traditional finance.',
-      impact: 'Bullish', 
-      source: 'CNBC / Goldman Internal Memo' 
+      impact: 'Bullish',
+      source: 'CNBC / Goldman Internal Memo'
+    },
+    {
+      date: '2021-04-20',
+      category: 'Enterprise',
+      company: 'Aura Blockchain Consortium',
+      title: 'LVMH, Prada, and Cartier Form Aura Blockchain Consortium on ConsenSys/Ethereum',
+      summary: 'LVMH, Prada Group, and Cartier (Richemont) announce creation of Aura Blockchain Consortium — first global blockchain dedicated to luxury industry. Single solution addresses shared challenges of authenticity, responsible sourcing, and sustainability. Technology: multi-nodal private blockchain secured by ConsenSys technology and Microsoft. Records information in secure, non-reproducible manner generating unique certificates. Brands already active: Bulgari, Cartier, Hublot, Louis Vuitton, Prada. Enables direct-to-consumer access to product history and proof of authenticity. LVMH Managing Director Toni Belloni: "The Aura Blockchain Consortium is a great opportunity for our sector to strengthen our connection with customers by offering them simple solutions to get to know our products better." Cartier CEO Cyrille Vigneron: "The Aura Consortium represents an unprecedented cooperation in the luxury industry. Blockchain is a key technology to enhance customer service, relationship with partners and traceability."',
+      significance: 'THREE of the world\'s largest luxury conglomerates (LVMH, Prada, Richemont/Cartier) forming joint blockchain consortium represents unprecedented industry collaboration. ConsenSys (Ethereum infrastructure leader) providing technology validates Ethereum ecosystem for enterprise. Open to all luxury brands globally.',
+      bmnrImplication: 'Major luxury houses building on ConsenSys/Ethereum infrastructure validates network for enterprise supply chain applications. Industry consortium approach creates network effects — more brands joining = more ecosystem value. Non-financial use case (authentication, traceability) expands Ethereum utility beyond DeFi.',
+      impact: 'Bullish',
+      source: 'Aura Blockchain Consortium Press Release'
     },
     // === 2020 HISTORICAL PROTOCOL EVENTS ===
     { 
