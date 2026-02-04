@@ -6831,6 +6831,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'The Block'
     },
     {
+      date: '2026-01-15',
+      category: 'Enterprise',
+      company: 'State Street',
+      title: 'State Street Launches Digital Asset Platform for Tokenized Finance',
+      summary: 'State Street Corporation (NYSE: STT), with $51.7 trillion in assets under custody/administration and $5.4 trillion in AUM, launches its Digital Asset Platform — secure, scalable infrastructure for tokenized assets positioning State Street as the bridge between traditional and digital finance. Platform enables development of tokenized Money Market Funds (MMFs), ETFs, tokenized assets, and cash products including tokenized deposits and stablecoins. Includes wallet management, custodial, and cash capabilities supporting both private and public permissioned blockchain networks. Joerg Ambrosius, President of Investment Services: "We are moving beyond experimentation and into practical, scalable solutions that meet the highest standards of security and compliance. By pairing blockchain connectivity with robust controls and global servicing expertise, we\'re enabling institutions to confidently embrace tokenization as part of their core strategy." Donna Milrod, Chief Product Officer: "This platform delivers that foundation in a way that is secure, interoperable and integrated so institutions can scale with confidence."',
+      significance: 'World\'s second-largest custodian bank ($51.7T AUM/AUC) launching production tokenization infrastructure. State Street joins BlackRock, BNY Mellon in building institutional tokenized finance stack. Platform supports public permissioned blockchains, likely including Ethereum ecosystem. Move from "experimentation" to "practical, scalable solutions" signals institutional tokenization inflection point.',
+      bmnrImplication: 'State Street building tokenization infrastructure validates institutional demand for blockchain-based asset management. Major custodian supporting public blockchain networks reinforces Ethereum ecosystem positioning. More institutional infrastructure = more tokenized assets = Ethereum network effect strengthening.',
+      impact: 'Bullish',
+      source: 'State Street Press Release'
+    },
+    {
       date: '2026-01-13',
       category: 'Institutional',
       company: 'Franklin Templeton',
@@ -7406,6 +7417,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'Visa Crypto Research' 
     },
     // === SEPTEMBER 2025 ===
+    {
+      date: '2025-09-29',
+      category: 'Enterprise',
+      company: 'Swift',
+      title: 'Swift Announces Blockchain-Based Shared Ledger with Consensys and 30+ Global Banks',
+      summary: 'Swift announces it will add a blockchain-based shared ledger to its technology infrastructure, enabling instant, 24/7 cross-border transactions at unprecedented scale. Working with 30+ financial institutions globally to design and build the ledger, with Consensys creating the conceptual prototype. Coalition banks include: JP Morgan Chase, Bank of America, Citi, HSBC, Deutsche Bank, BNP Paribas, BNY, Wells Fargo, Standard Chartered, Societe Generale-FORGE, UOB, DBS Bank, MUFG, ANZ, Westpac, NatWest, Royal Bank of Canada, TD Bank Group, Banco Santander, BBVA, Crédit Agricole, Commerzbank, Emirates NBD, First Abu Dhabi Bank, Mizuho, Shinhan Bank, and others across 16 countries. Ledger will facilitate banks\' trusted movement of regulated tokenised value across digital ecosystems, recording/validating transactions and enforcing rules through smart contracts. CEO Javier Pérez-Tasso: "We provide powerful and effective rails today and are moving at a rapid pace with our community to create the infrastructure stack of the future."',
+      significance: 'WATERSHED MOMENT for global financial infrastructure. Swift (11,500+ institutions in 200+ countries) choosing Consensys (Ethereum-native company behind MetaMask, Infura, Linea) to build blockchain prototype signals Ethereum ecosystem positioning. 30+ of world\'s largest banks actively collaborating on design. Real-time 24/7 cross-border payments at global scale.',
+      bmnrImplication: 'Swift partnering with Consensys (Ethereum infrastructure leader) positions Ethereum technology at core of global payment messaging upgrade. Coalition includes virtually every major global bank. Swift\'s blockchain ledger built on Ethereum technology = massive validation for ETH ecosystem. Global correspondent banking infrastructure ($150T+ annually) moving toward blockchain rails.',
+      impact: 'Bullish',
+      source: 'Swift Press Release / Sibos 2025'
+    },
     {
       date: '2025-09-25',
       category: 'Enterprise',
