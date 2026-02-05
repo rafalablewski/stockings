@@ -6809,6 +6809,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   const adoptionTimeline = [
     // === FEBRUARY 2026 ===
     {
+      date: '2026-02-05',
+      category: 'Protocol',
+      company: 'Ethereum Foundation',
+      title: 'Vitalik Proposes New Forms of State for 1000x Ethereum Scaling',
+      summary: 'Vitalik Buterin publishes comprehensive post outlining path to 1000x Ethereum scaling by introducing new forms of state. Key insight: execution and data can scale 1000x (via ZK-EVMs and PeerDAS), but state can only scale ~10-20x with current architecture due to syncing constraints and database efficiency limits. Proposes "barbell solution": (1) Keep existing permanent storage but allow it to become relatively more expensive; (2) Create new cheaper but more restrictive state types. New state forms proposed: TEMPORARY STORAGE - state that expires after ~1 month, ideal for auctions, governance votes, games, fraud proofs. UTXO MODEL - records created and immediately pushed to history, with permanent bitfield tracking spent/unspent status. Implementation details include resurrection mechanisms using tree indexes and bitfields allowing out-of-order balance recovery. Developer impact: accounts and contract code stay in permanent storage, NFTs/ERC20 balances move to UTXOs or temporary storage, defi core contracts permanent but individual positions (CDPs) in temporary storage. Vitalik: "If we can deliver developer-friendly abstractions that allow ~95% of state to move to UTXOs without significant pain, we can get most of the scaling benefit of UTXOs and most of the developer-friendliness of Ethereum-style accounts."',
+      significance: 'MAJOR SCALING ROADMAP UPDATE from Ethereum co-founder. Addresses the one resource (state) that lacks a "magic bullet" solution like ZK-EVMs (execution) or PeerDAS (data). Proposes concrete technical path to 1000x scaling across ALL resources. Shows Ethereum Foundation actively solving hardest remaining scaling problems. Backwards-compatible approach: existing apps can continue as-is (higher cost) while new apps opt into cheaper tiers.',
+      bmnrImplication: 'Vitalik\'s state scaling proposal removes the last major bottleneck to 1000x Ethereum scaling. With ZK-EVMs, PeerDAS, AND new state forms, Ethereum has credible path to scale ALL resources by 1000x. This positions Ethereum to handle massive institutional adoption without congestion or high fees. BMNR thesis that ETH is institutional-grade infrastructure gets stronger with clear long-term scaling roadmap.',
+      impact: 'Bullish',
+      source: 'Vitalik.eth Blog'
+    },
+    {
       date: '2026-02-04',
       category: 'Institutional',
       company: 'Fidelity',
