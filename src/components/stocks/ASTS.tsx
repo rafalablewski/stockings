@@ -9256,6 +9256,28 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // AMAZON LEO (fka Project Kuiper) - LEO BROADBAND (TERMINAL-BASED)
     // ═══════════════════════════════════════════════════════════════════════════
     {
+      date: '2026-02-04',
+      competitor: 'amazon-leo',
+      category: 'Partnership',
+      headline: 'AT&T partners with Amazon Leo for fixed broadband to business customers',
+      details: [
+        'AT&T to use Amazon Leo for fixed broadband services to business customers',
+        'Extends AT&T connectivity to areas needing broadband services',
+        'Part of broader AT&T/AWS collaboration for cloud modernization',
+        'AT&T migrating workloads to AWS Outposts (managed hybrid cloud)',
+        'AT&T connecting AWS data centers with high-capacity fiber',
+        'Amazon Leo: 3,000+ satellite constellation with Leo Nano/Pro/Ultra terminals',
+        'Announced at MWC 2026',
+        'AT&T covers 99%+ of US population terrestrially'
+      ],
+      implication: 'neutral',
+      astsComparison: 'AT&T using Amazon Leo for FIXED broadband (terminal-based) to business customers. This is DIFFERENT from ASTS D2D to smartphones. AT&T has ASTS partnership for direct-to-device cellular (unmodified phones). AT&T hedging: Amazon Leo for fixed enterprise backhaul, ASTS for mobile D2D. Complementary not competing.',
+      source: 'AT&T/Amazon',
+      sourceUrl: 'https://www.businesswire.com/news/home/20260204att-aws-amazon-leo',
+      storyId: 'amazon-leo-att',
+      storyTitle: 'Amazon Leo AT&T Partnership'
+    },
+    {
       date: '2026-01-30',
       competitor: 'amazon-leo',
       category: 'Launch',
@@ -9426,6 +9448,28 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // IRIDIUM NTN DIRECT - STANDARDS-BASED D2D/IoT
     // ═══════════════════════════════════════════════════════════════════════════
     {
+      date: '2026-01-21',
+      competitor: 'iridium',
+      category: 'Technology',
+      headline: 'Iridium NTN Direct begins on-air testing - first two-way message transmission',
+      details: [
+        'Successful on-air testing of Iridium NTN Direct with two-way messages',
+        'First message: "To Iridium and Beyond"',
+        'Uses Nordic Semiconductor nRF9151 low-power NB-IoT/NTN module',
+        '5G waveform algorithms implemented on software-defined satellites',
+        'NB-IoT standards-based protocol per 3GPP',
+        'Beta testing and commercial service planned for 2026',
+        'Target: emergency messaging, asset tracking, automotive, utilities, agriculture',
+        'Designed for 100% global coverage leveraging existing 66-satellite constellation'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium NTN Direct progressing toward commercial launch. Key differentiator: Iridium = NB-IoT narrowband (low-power IoT sensors, messaging), ASTS = broadband cellular (voice/video/data). Iridium has truly global coverage advantage but narrowband only. ASTS regional but broadband. Different use cases, minimal direct overlap.',
+      source: 'Iridium',
+      sourceUrl: 'https://www.iridium.com/press-release/iridium-ntn-direct-on-air-trials/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+    {
       date: '2025-11-04',
       competitor: 'iridium',
       category: 'Partnership',
@@ -9538,6 +9582,28 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // SKYLO TECHNOLOGIES - NB-NTN VIA GEO (GOOGLE PIXEL, VERIZON)
     // ═══════════════════════════════════════════════════════════════════════════
     {
+      date: '2026-01-28',
+      competitor: 'skylo',
+      category: 'Partnership',
+      headline: 'Skylo partners with Vodafone IoT for NTN NB-IoT satellite connectivity trial',
+      details: [
+        'Vodafone IoT to trial Skylo NTN NB-IoT for global hybrid connectivity',
+        'Single Vodafone SIM enables seamless switch between cellular and satellite',
+        'Skylo network: 36 countries, 70M sq km coverage',
+        'Use cases: asset tracking, energy, environmental monitoring, fleet management',
+        'Vodafone IoT: 220M+ devices across 180+ countries',
+        'Managed via Vodafone IoT Managed Connectivity Platform',
+        'Skylo orchestrates across multiple satellite constellations',
+        'Commercial service planned after trial phase'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Notable: Vodafone IoT now partnering with BOTH Iridium (Nov 2025) AND Skylo (Jan 2026) for NB-IoT. Shows Vodafone hedging with multiple narrowband providers. ASTS relationship is with Vodafone Group (smartphones/broadband), not IoT division. Market segmentation: Skylo/Iridium = narrowband IoT sensors, ASTS = broadband cellular to smartphones.',
+      source: 'Skylo/Vodafone IoT',
+      sourceUrl: 'https://iot.vodafone.com/news-and-insights/vodafone-iot-partners-with-skylo',
+      storyId: 'skylo-vodafone-iot',
+      storyTitle: 'Skylo Vodafone IoT Partnership'
+    },
+    {
       date: '2025-08-20',
       competitor: 'skylo',
       category: 'Product',
@@ -9646,6 +9712,29 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://www.keysight.com/us/en/about/newsroom/news-releases/2026/0108-pr26-007-keysight-samsung-nr-ntn.html',
       storyId: 'ntn-industry-standards',
       storyTitle: 'NTN Industry Standards Progress'
+    },
+    {
+      date: '2025-09-15',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Space42 and Viasat to launch Equatys - "space tower company" for global D2D services',
+      details: [
+        'Equatys: jointly held entity for global D2D and 5G NTN services',
+        'Expected to support 100+ MHz of harmonized MSS spectrum across 160+ markets',
+        '"Space tower company" model: shared multi-tenant infrastructure',
+        '3GPP NTN Release compliant platform for smartphones and IoT',
+        'Commercial rollout targeted within 3 years',
+        'Enables governments to maintain data sovereignty',
+        'Lean infrastructure provider reducing redundant investments',
+        'Financial investors offered infrastructure-grade returns',
+        'Follows March 2025 MOU between Space42 and Viasat'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Space42/Viasat creating competing D2D infrastructure. "Space tower company" model differs from ASTS owned-and-operated approach. Equatys targeting MSS spectrum vs ASTS using MNO spectrum. 3-year timeline to commercial means 2028+ competition. ASTS has first-mover advantage with commercial service in 2025-2026. Multi-tenant model could fragment market or provide infrastructure partners.',
+      source: 'Space42/Viasat',
+      sourceUrl: 'https://space42.ai/space42-viasat-equatys/',
+      storyId: 'space42-viasat-equatys',
+      storyTitle: 'Space42/Viasat Equatys Venture'
     },
     {
       date: '2025-03-11',
