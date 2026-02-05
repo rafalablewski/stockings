@@ -10293,6 +10293,28 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // UNITED AIRLINES - STARLINK AVIATION
     // ═══════════════════════════════════════════════════════════════════════════
     {
+      date: '2026-02-02',
+      competitor: 'starlink-tmobile',
+      category: 'Coverage',
+      headline: 'United completes Starlink on 300+ regional aircraft, 800+ total by end 2026',
+      details: [
+        '300+ two-cabin regional aircraft equipped with Starlink in less than a year',
+        'Expects 500+ mainline aircraft by end 2026 (800+ total)',
+        '25%+ of daily departures (1,200 flights) now have Starlink',
+        '7M+ passengers flown on Starlink aircraft, 3.7M devices connected',
+        'Wi-Fi customer satisfaction scores nearly doubled on Starlink planes',
+        'Big Game (Super Bowl) ad campaign showcasing Starlink capabilities',
+        'Seeking FAA approval for Boeing 737-900ER, Airbus A321, Boeing 777',
+        'Gate-to-gate connectivity enables streaming, gaming, video calls'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi - different market from ASTS D2D cellular. United passengers can stream/game at 30,000 feet but ASTS addresses phones on ground in coverage gaps. Starlink aviation success validates satellite connectivity demand but not directly competitive.',
+      source: 'United Airlines',
+      sourceUrl: 'https://www.prnewswire.com/news-releases/united-spotlights-starlink-wi-fi-302393847.html',
+      storyId: 'united-starlink-aviation',
+      storyTitle: 'United Airlines Starlink Aviation'
+    },
+    {
       date: '2024-09-13',
       competitor: 'starlink-tmobile',
       category: 'Partnership',
