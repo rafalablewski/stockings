@@ -225,6 +225,19 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     impact: 'Bullish',
     source: 'Vodafone Press Release'
   },
+
+  // === OCTOBER 2024 ===
+  {
+    date: '2024-10-18',
+    partner: 'Ericsson/3GPP',
+    category: '3GPP/NTN',
+    headline: '3GPP Rel-19 Adopts Regenerative Payload Architecture for 5G NTN - Complete gNB on Satellite',
+    summary: 'After year-long intensive discussions, 3GPP Rel-19 specifies "regenerative" NTN payload architecture placing complete gNB (base station) on satellite - major evolution from Rel-17/18 "transparent" bent-pipe approach. Key benefits: (1) Full 5G RAN functionality leveraged including inter-gNB mobility, resource coordination, energy saving; (2) Native support for inter-satellite links via Xn interface enabling global coverage; (3) Packet switching directly in payload without ground segment; (4) Significant RTT reductions for random access and HARQ; (5) Enables "store and forward" for IoT UEs with core network on satellite; (6) Path toward "data centers in the sky" and full 5G integration. Ericsson successfully advocated for gNB-on-board over gNB-DU split alternative, citing: better signaling efficiency, native ISL support, evolutionary path to 6G. Consensus reached December 2023 after discussions at four TSG RAN meetings.',
+    astsRelevance: 'Critical standards foundation for ASTS\'s technology. 3GPP Rel-19 regenerative payload architecture aligns with ASTS\'s approach of placing complete base station functionality on BlueBird satellites. Nokia (ASTS\'s key equipment partner) is major 3GPP contributor alongside Ericsson. These standards enable: seamless satellite-terrestrial handoffs, inter-satellite connectivity, and full 5G integration that ASTS demonstrates with partners like Vodafone and AT&T. The 6G evolution path discussion validates long-term NTN integration into mobile networks - ASTS is building this infrastructure now.',
+    impact: 'Bullish',
+    source: 'Ericsson Blog',
+    url: 'https://www.ericsson.com/en/blog/2024/10/ntn-payload-architecture'
+  },
 ];
 
 // ============================================================================
