@@ -10457,9 +10457,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       groups[storyKey].entries.push({ ...news, originalIdx: idx });
     });
 
-    // Sort entries within each group chronologically (oldest first for timeline progression)
+    // Sort entries within each group chronologically (newest first)
     Object.values(groups).forEach(group => {
-      group.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      group.entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     });
 
     // Convert to array and sort groups by most recent entry (newest story first)
@@ -10468,7 +10468,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         storyId,
         title: group.title,
         entries: group.entries,
-        latestDate: group.entries[group.entries.length - 1]?.date || ''
+        latestDate: group.entries[0]?.date || ''  // First entry is newest after sort
       }))
       .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
   }, [filteredNews]);

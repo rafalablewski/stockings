@@ -3738,10 +3738,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
     }
   ];
 
-  // Filter news by competitor
-  const filteredNews = competitorFilter === 'all'
+  // Filter news by competitor, sort by date (newest first)
+  const filteredNews = (competitorFilter === 'all'
     ? COMPETITOR_NEWS
-    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter);
+    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter)
+  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Group news by storyId, with ungrouped items in their own "group"
   const groupedNews = React.useMemo(() => {
