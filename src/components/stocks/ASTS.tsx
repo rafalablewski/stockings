@@ -2129,12 +2129,12 @@ const CompetitorsTab = () => {
   const categories = ['All', ...Array.from(new Set(COMPETITOR_NEWS.map(n => n.category)))];
   const competitorNames = ['All', ...Array.from(new Set(COMPETITOR_NEWS.map(n => n.competitor)))];
 
-  // Filter competitor news by category and competitor
+  // Filter competitor news by category and competitor, sort by date (newest first)
   const filteredCompetitorNews = COMPETITOR_NEWS.filter(n => {
     const categoryMatch = categoryFilter === 'All' || n.category === categoryFilter;
     const competitorMatch = competitorFilter === 'All' || n.competitor === competitorFilter;
     return categoryMatch && competitorMatch;
-  });
+  }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Key competitors overview
   const keyCompetitors = [
@@ -10436,10 +10436,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     }
   ];
 
-  // Filter news by competitor
-  const filteredNews = competitorFilter === 'all'
+  // Filter news by competitor, sort by date (newest first)
+  const filteredNews = (competitorFilter === 'all'
     ? COMPETITOR_NEWS
-    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter);
+    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter)
+  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Group news by storyId, with ungrouped items in their own "group"
   const groupedNews = React.useMemo(() => {
