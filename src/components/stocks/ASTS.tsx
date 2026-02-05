@@ -730,12 +730,12 @@ const ASTSAnalysis = () => {
   }, [currentShares, currentStockPrice, cashOnHand, quarterlyBurn, totalDebt, block1Sats, block2Sats, targetSats2026, partnerReach, penetrationRate, blendedARPU, revenueShare, govRevenue, partners]);
 
   // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
-  // Order: Overview first, then Partners (like BMNR Ethereum), then stock-specific projections, common projections, then tracking
+  // Order: Overview first, then stock-specific projections (Partners first like BMNR Ethereum), common projections, then tracking
   // group: optional grouping for nested display (stock-specific tabs)
   const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
     { id: 'overview', label: 'Overview', type: 'tracking' },
-    { id: 'partners', label: 'Partners', type: 'projection' },
-    // Stock-specific projections (grouped under "ASTS Analysis")
+    // Stock-specific projections (grouped under "ASTS Analysis") - Partners FIRST like BMNR Ethereum
+    { id: 'partners', label: 'Partners', type: 'projection', group: 'ASTS Analysis' },
     { id: 'catalysts', label: 'Catalysts', type: 'projection', group: 'ASTS Analysis' },
     { id: 'constellation', label: 'Constellation', type: 'projection', group: 'ASTS Analysis' },
     { id: 'subscribers', label: 'Subscribers', type: 'projection', group: 'ASTS Analysis' },
