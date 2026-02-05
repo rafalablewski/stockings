@@ -1572,6 +1572,20 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
 const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) => {
   // State for expandable partner news (matching BMNR adoption-events pattern)
   const [expandedPartnerNews, setExpandedPartnerNews] = useState<Set<number>>(new Set());
+  // Filters for partner news timeline (matching BMNR adoption-timeline pattern)
+  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [partnerFilter, setPartnerFilter] = useState('All');
+
+  // Extract unique categories and partners from PARTNER_NEWS for filters
+  const categories = ['All', ...Array.from(new Set(PARTNER_NEWS.map(n => n.category)))];
+  const partnerNames = ['All', ...Array.from(new Set(PARTNER_NEWS.map(n => n.partner)))];
+
+  // Filter partner news by category and partner
+  const filteredPartnerNews = PARTNER_NEWS.filter(n => {
+    const categoryMatch = categoryFilter === 'All' || n.category === categoryFilter;
+    const partnerMatch = partnerFilter === 'All' || n.partner === partnerFilter;
+    return categoryMatch && partnerMatch;
+  });
 
   // Definitive Commercial Agreements (binding contracts with prepayments/commitments)
   const definitiveAgreements = [
@@ -1968,17 +1982,77 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         </div>
       </div>
 
-      {/* Partner Ecosystem News */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-news</div>
-      <div className="highlight">
-        <h3 style={{ display: 'flex', alignItems: 'center' }}>📡 Partner Ecosystem News<UpdateIndicators sources="PR" /></h3>
-        <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-          Tracking MNO partner activities that impact ASTS's commercial ecosystem. Partner expansion in IoT, connected vehicles, and coverage demonstrates growing demand for ubiquitous connectivity.
-        </p>
+      {/* Partner Ecosystem News Timeline - matches BMNR Ethereum Adoption Timeline structure */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-timeline</div>
+      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center' }}>
+        <span>Partner Ecosystem Timeline</span>
+        <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredPartnerNews.length} events)</span>
+      </h3>
+
+      {/* Partner Filter */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-filter</div>
+      <div className="highlight" style={{ padding: 16 }}>
+        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track news about <strong>ASTS MNO partners</strong> — IoT expansion, connected vehicles, 5G rollouts, coverage expansion, and commercial activities</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginBottom: 16 }}>Partner ecosystem health impacts ASTS commercial prospects</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Partner</span>
+          {partnerFilter !== 'All' && (
+            <button
+              onClick={() => setPartnerFilter('All')}
+              className="pill"
+              style={{ fontSize: 11 }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="pills">
+          {partnerNames.map(partner => {
+            const isSelected = partnerFilter === partner;
+            const count = PARTNER_NEWS.filter(n => n.partner === partner).length;
+            return (
+              <button
+                key={partner}
+                onClick={() => setPartnerFilter(partner)}
+                className={`pill ${isSelected ? 'active' : ''}`}
+              >
+                {partner} ({partner === 'All' ? PARTNER_NEWS.length : count})
+              </button>
+            );
+          })}
+        </div>
       </div>
+
+      {/* Category Filter */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#category-filter</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="pills" style={{ }}>
+          {categories.map(cat => (
+            <button key={cat} className={`pill ${categoryFilter === cat ? 'active' : ''}`} onClick={() => setCategoryFilter(cat)}>
+              {cat === 'All' ? `All (${PARTNER_NEWS.length})` : `${cat} (${PARTNER_NEWS.filter(n => n.category === cat).length})`}
+            </button>
+          ))}
+        </div>
+        <button
+          className="pill"
+          onClick={() => {
+            if (expandedPartnerNews.size === filteredPartnerNews.length) {
+              setExpandedPartnerNews(new Set());
+            } else {
+              setExpandedPartnerNews(new Set(filteredPartnerNews.map((_, i) => i)));
+            }
+          }}
+          style={{ whiteSpace: 'nowrap' }}
+        >
+          {expandedPartnerNews.size === filteredPartnerNews.length ? '⊟ Collapse All' : '⊞ Expand All'}
+        </button>
+      </div>
+
+      {/* Partner News Events */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-news</div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {PARTNER_NEWS.length > 0 ? (
-          PARTNER_NEWS.map((news, i) => {
+        {filteredPartnerNews.length > 0 ? (
+          filteredPartnerNews.map((news, i) => {
             const isExpanded = expandedPartnerNews.has(i);
             return (
               <div
@@ -2025,7 +2099,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             );
           })
         ) : (
-          <div style={{ padding: 24, textAlign: 'center', color: 'var(--text3)' }}>No partner news available</div>
+          <div style={{ padding: 24, textAlign: 'center', color: 'var(--text3)' }}>No partner news matching filters</div>
         )}
       </div>
 
