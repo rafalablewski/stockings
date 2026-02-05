@@ -262,6 +262,19 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     url: 'https://www.ericsson.com/en/blog/2024/10/ntn-payload-architecture'
   },
 
+  // === SEPTEMBER 2023 ===
+  {
+    date: '2023-09-05',
+    partner: 'Vodafone/Amazon',
+    category: 'Partnership',
+    headline: 'Vodafone Partners with Amazon Project Kuiper for Satellite Backhaul in Europe and Africa',
+    summary: 'Vodafone and Vodacom announce strategic collaboration with Amazon\'s Project Kuiper to extend 4G/5G network reach using LEO satellite backhaul. Key points: (1) Kuiper will connect geographically dispersed cellular antennas back to core telecom networks - NOT direct-to-device; (2) Targets areas "challenging and prohibitively expensive to serve via traditional fibre or microwave"; (3) Amazon to partner with Vodafone on high-speed broadband to unserved communities; (4) Exploring enterprise backup service and remote infrastructure connectivity; (5) Beta testing planned end of 2024 as Amazon production satellites come online. Margherita Della Valle: "These connections will be complemented further through our own work on direct-to-smartphone satellite services." Dave Limp (Amazon): "Teaming with a leading international service provider like Vodafone allows us to make a bigger impact faster in closing the digital divide."',
+    astsRelevance: 'Shows Vodafone\'s multi-pronged satellite strategy - DIFFERENT use cases. Kuiper = satellite backhaul (connecting cell towers in remote areas). ASTS = direct-to-device (connecting phones directly where no towers exist). Vodafone CEO explicitly references "our own work on direct-to-smartphone satellite services" - that\'s ASTS. Not competing solutions but complementary. Kuiper still pre-launch at this time; ASTS has BlueWalker 3 in orbit conducting tests (first voice call Apr 2023). Vodafone hedging across satellite solutions while ASTS focuses on D2D differentiation.',
+    impact: 'Neutral',
+    source: 'Vodafone',
+    url: 'https://www.vodafone.com/news/technology/vodafone-and-amazons-project-kuiper-to-extend-connectivity-in-africa-and-europe'
+  },
+
   // === DECEMBER 2022 ===
   {
     date: '2022-12-12',
