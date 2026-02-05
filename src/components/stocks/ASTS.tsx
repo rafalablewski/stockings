@@ -9178,11 +9178,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     {
       id: 'starlink-tmobile',
       name: 'Starlink / T-Mobile',
-      description: 'SpaceX satellite constellation partnered with T-Mobile for direct-to-cell service',
-      technology: 'Modified Starlink V2 satellites with cellular capability',
-      currentStatus: 'Live with text messaging in beta, voice/data roadmap unclear',
+      description: 'SpaceX Direct-to-Cell service - text live, voice/data planned 2025',
+      technology: 'Starlink V2mini with 2.7x2.3m phased arrays, custom silicon, LTE/4G protocols',
+      currentStatus: 'Text beta live (Jan 2024), 7 MNO partners, voice/data roadmap 2025',
       capabilities: { voice: false, text: true, data: false, video: false, unmodifiedPhones: true, globalCoverage: false },
-      keyMetrics: { satellites: 7000, coverage: 'Continental US (partial)', subscribers: 'Beta testing', funding: 'SpaceX backed' }
+      keyMetrics: { satellites: '7000+ (D2C subset)', coverage: 'US + partner countries', subscribers: 'Beta testing', funding: 'SpaceX vertical integration' }
     },
     {
       id: 'lynk',
@@ -9214,11 +9214,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     {
       id: 'iridium',
       name: 'Iridium',
-      description: 'Legacy satellite phone provider, potential D2D pivot',
-      technology: 'LEO constellation, proprietary spectrum',
-      currentStatus: 'Satellite phones only, D2D partnership discussions',
+      description: 'Legacy sat phone provider + NTN Direct (3GPP NB-IoT) for D2D/IoT',
+      technology: '66-sat LEO constellation, L-band MSS spectrum, NB-IoT NTN via software update',
+      currentStatus: 'Sat phones live, NTN Direct (Project Stardust) testing 2025, service 2026',
       capabilities: { voice: true, text: true, data: true, video: false, unmodifiedPhones: false, globalCoverage: true },
-      keyMetrics: { satellites: 66, coverage: 'Global', subscribers: '2.1M', funding: 'Public (IRDM)' }
+      keyMetrics: { satellites: 66, coverage: 'Truly global (incl. poles)', subscribers: '2.2M (1.7M IoT)', funding: 'Public (IRDM)' }
     },
     {
       id: 'amazon-leo',
@@ -9371,6 +9371,147 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
       storyId: 'amazon-leo-constellation',
       storyTitle: 'Amazon Leo Constellation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STARLINK DIRECT-TO-CELL - CORE D2D COMPETITOR
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2024-01-08',
+      competitor: 'starlink-tmobile',
+      category: 'Technology',
+      headline: 'Starlink/T-Mobile send first text messages via Direct to Cell satellites',
+      details: [
+        'First text messages sent/received using T-Mobile spectrum through D2C satellites',
+        'Launched first 6 D2C satellites on Jan 2, 2024 - less than 6 days to first texts',
+        'Custom silicon + 2.7m x 2.3m phased arrays for phone connectivity from space',
+        'Validates link budget closes - system works with unmodified phones (0.2W transmit)',
+        'Plans: text service 2024, voice/data/IoT in 2025',
+        'MNO partners: T-Mobile, Rogers (Canada), Optus (Australia), One NZ, KDDI (Japan), Salt (Switzerland), Entel (Chile/Peru)',
+        'Leverages existing Starlink infrastructure: laser backhaul, ground stations, PoPs',
+        'SpaceX claims unique position with vertical integration (launch + satellite production)'
+      ],
+      implication: 'negative',
+      astsComparison: 'Direct competitor milestone. Starlink\'s 6.2m² antenna vs ASTS 64m² BlueBird arrays. Starlink starting with text-only, limited bandwidth. ASTS demonstrated 5G broadband voice/video with BW3. Different approach: Starlink betting on massive constellation (hundreds of D2C sats), ASTS betting on fewer large high-throughput satellites.',
+      source: 'SpaceX',
+      sourceUrl: 'https://direct.starlink.com/',
+      storyId: 'starlink-d2c-launch',
+      storyTitle: 'Starlink Direct-to-Cell Launch'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // IRIDIUM NTN DIRECT - STANDARDS-BASED D2D/IoT
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-05-29',
+      competitor: 'iridium',
+      category: 'Partnership',
+      headline: 'Iridium partners with Syniverse to bring NTN Direct to MNOs worldwide',
+      details: [
+        'Syniverse to support Iridium NTN Direct rollout with mobile network operators',
+        '85% of MNOs seeking LEO solution for global coverage (GSMA 2025 survey)',
+        'Syniverse serves ~600 carriers in 170 countries, connects 830+ mobile operators',
+        'Iridium NTN Direct: truly global, standards-based D2D and NB-IoT messaging/SOS',
+        'Part of 3GPP Release 19 - first devices planned for 2026',
+        'Syniverse handles roaming, authentication, billing for seamless MNO integration',
+        'Target: consumer devices, automobiles, industrial IoT (agriculture, transport, energy)'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium pursuing NB-IoT/messaging niche vs ASTS broadband. Iridium has truly global coverage (66 sats) but narrowband only. ASTS offers broadband throughput but regional coverage initially. Different markets: Iridium for SOS/messaging, ASTS for full cellular experience.',
+      source: 'Iridium',
+      sourceUrl: 'https://www.iridium.com/blog/iridium-and-syniverse-partner/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+    {
+      date: '2024-10-09',
+      competitor: 'iridium',
+      category: 'Partnership',
+      headline: 'Iridium collaborates with Nordic Semiconductor on NTN Direct chipset integration',
+      details: [
+        'Nordic Semiconductor for early integration of Iridium NTN Direct',
+        'Nordic: global leader in cellular IoT (LTE-M, NB-IoT) modules/chipsets',
+        'Part of 3GPP Release 19 NTN roadmap',
+        'Planned: world\'s first truly global NB-IoT service',
+        'nRF9151 chipset to connect to Iridium satellite network',
+        'Target: consumer/industrial devices with universal connectivity',
+        '3GPP Release 19 expected completed end of 2025'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium building ecosystem for NB-IoT standards devices. ASTS works with existing LTE/5G phones - no special chipset needed. Iridium targeting IoT mass market; ASTS targeting smartphone users.',
+      source: 'Iridium',
+      sourceUrl: 'https://www.iridium.com/blog/iridium-nordic-semiconductor-collaboration/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+    {
+      date: '2024-01-10',
+      competitor: 'iridium',
+      category: 'Technology',
+      headline: 'Iridium unveils Project Stardust - NB-IoT NTN service for existing constellation',
+      details: [
+        'Announces NB-IoT NTN standards-based service development',
+        'Will upload capability to existing 66-satellite LEO constellation',
+        'Targeting smartphones, OEMs, chipmakers, MNOs',
+        'Initial offering: 5G NTN messaging and SOS for smartphones, tablets, cars',
+        'Collaborating with device manufacturers on requirements',
+        'Testing planned 2025, service in 2026',
+        '2.2 million existing users, 1.7 million IoT customers',
+        'Only network providing true global coverage including poles'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium leveraging existing constellation for NB-IoT - capital efficient but narrowband. ASTS requires new satellite builds but offers broadband. Iridium\'s L-band spectrum vs ASTS using MNO spectrum. Iridium = global messaging/SOS, ASTS = regional broadband cellular.',
+      source: 'Iridium',
+      sourceUrl: 'https://www.iridium.com/project-stardust/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INDUSTRY / OTHER - NTN ECOSYSTEM DEVELOPMENTS
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-08',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Keysight + Samsung achieve live NR-NTN connection in n252 band with SAT-to-SAT mobility',
+      details: [
+        'Live NR-NTN connection in 3GPP Release 19 band n252 at CES 2026',
+        'Samsung next-generation modem chipset validated',
+        'Includes satellite-to-satellite mobility using commercial-grade silicon',
+        'All major NR-NTN FR1 bands now validated: n252, n255, n256',
+        'Cross-vendor interoperability demonstrated',
+        'Commercial NTN services expected to scale in 2026',
+        'Keysight NTN Network Emulator recreates multi-orbit LEO conditions'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Industry validation of 3GPP NTN standards accelerates ecosystem. Benefits all D2D players including ASTS. Samsung chipset readiness means device support for NTN services. Standards maturity reduces technical risk for commercial deployments.',
+      source: 'Keysight Technologies',
+      sourceUrl: 'https://www.keysight.com/us/en/about/newsroom/news-releases/2026/0108-pr26-007-keysight-samsung-nr-ntn.html',
+      storyId: 'ntn-industry-standards',
+      storyTitle: 'NTN Industry Standards Progress'
+    },
+    {
+      date: '2025-03-11',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Space42 and Viasat announce MOU for shared 5G NTN infrastructure',
+      details: [
+        'MOU to explore ecosystem partnership for 5G NTN development',
+        'Multi-tenant, multi-orbit infrastructure with open architecture',
+        'D2D, NB-IoT, and next-gen MSS services targeted',
+        'L-band and S-band spectrum utilization',
+        'Independent research projects $50B D2D satellite market by 2032',
+        '3GPP standards-based for global roaming',
+        'Space42 (UAE) + Viasat building coalition of partners',
+        'Follows Viasat alliance with ESA for NTN D2D systems'
+      ],
+      implication: 'neutral',
+      astsComparison: 'More players entering D2D validates market opportunity. Space42/Viasat pursuing different architecture (multi-orbit, GEO+LEO hybrid). ASTS focused on LEO with massive arrays. Market large enough for multiple approaches - $50B projection supports ASTS TAM thesis.',
+      source: 'Space42/Viasat',
+      sourceUrl: 'https://space42.ai/space42-and-viasat-announce-partnership/',
+      storyId: 'ntn-industry-partnerships',
+      storyTitle: 'NTN Industry Partnerships'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
