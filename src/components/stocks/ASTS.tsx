@@ -737,7 +737,6 @@ const ASTSAnalysis = () => {
     { id: 'overview', label: 'Overview', type: 'tracking' },
     // Stock-specific projections (grouped under "ASTS Analysis") - Partners FIRST like BMNR Ethereum
     { id: 'partners', label: 'Partners', type: 'projection', group: 'ASTS Analysis' },
-    { id: 'competitors', label: 'Competitors', type: 'projection', group: 'ASTS Analysis' },
     { id: 'catalysts', label: 'Catalysts', type: 'projection', group: 'ASTS Analysis' },
     { id: 'constellation', label: 'Constellation', type: 'projection', group: 'ASTS Analysis' },
     { id: 'subscribers', label: 'Subscribers', type: 'projection', group: 'ASTS Analysis' },
@@ -927,7 +926,6 @@ const ASTSAnalysis = () => {
           {activeTab === 'subscribers' && <SubscribersTab calc={calc} partnerReach={partnerReach} setPartnerReach={setPartnerReach} penetrationRate={penetrationRate} setPenetrationRate={setPenetrationRate} blendedARPU={blendedARPU} setBlendedARPU={setBlendedARPU} partners={partners} />}
           {activeTab === 'revenue' && <RevenueTab calc={calc} revenueShare={revenueShare} setRevenueShare={setRevenueShare} govRevenue={govRevenue} setGovRevenue={setGovRevenue} revenueSources={revenueSources} contractedRevenue={contractedRevenue} />}
           {activeTab === 'partners' && <PartnersTab partners={partners} revenueShare={revenueShare} blendedARPU={blendedARPU} penetrationRate={penetrationRate} />}
-          {activeTab === 'competitors' && <CompetitorsTab />}
           {activeTab === 'runway' && <RunwayTab calc={calc} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} debtRate={debtRate} setDebtRate={setDebtRate} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
           {activeTab === 'capital' && <CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} />}
           {activeTab === 'model' && <ModelTab
@@ -9928,10 +9926,103 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     return styles[cat] || { bg: 'var(--surface3)', color: 'var(--text3)' };
   };
 
+  // Key competitors with threat levels for colored borders
+  const keyCompetitors = [
+    {
+      name: 'SpaceX Starlink',
+      type: 'LEO Broadband + D2D',
+      status: 'Operational',
+      focus: 'Terminal-based broadband, D2D partnership with T-Mobile',
+      threat: 'High',
+      notes: 'Largest LEO constellation. D2D beta with T-Mobile for texts/calls. Not full broadband D2D yet.'
+    },
+    {
+      name: 'Amazon Leo',
+      type: 'LEO Broadband',
+      status: '212 Satellites (Jan 2026)',
+      focus: 'Terminal-based broadband (Leo Nano/Pro/Ultra terminals)',
+      threat: 'Medium',
+      notes: 'Rebranded from Project Kuiper Nov 2025. 7 missions in 2025, enterprise preview live. Not D2D - different market.'
+    },
+    {
+      name: 'Lynk Global',
+      type: 'D2D (Text/IoT)',
+      status: 'Limited Service',
+      focus: 'Text messaging and IoT to unmodified phones',
+      threat: 'Low',
+      notes: 'Text-only. No voice/data. Limited satellite count. More complementary than competitive.'
+    },
+    {
+      name: 'Apple/Globalstar',
+      type: 'Emergency SOS',
+      status: 'Operational',
+      focus: 'Emergency messaging for iPhone only',
+      threat: 'Low',
+      notes: 'iPhone-only. Emergency texts only. Not commercial service. Different use case.'
+    },
+  ];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        .comp-competitor-card {
+          background: var(--bg2);
+          border: 1px solid var(--stroke);
+          border-radius: 12px;
+          padding: 16px;
+        }
+        .comp-threat-high { border-left: 3px solid var(--red); }
+        .comp-threat-medium { border-left: 3px solid var(--gold); }
+        .comp-threat-low { border-left: 3px solid var(--mint); }
+        .comp-competitor-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .comp-competitor-name {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--text1);
+        }
+        .comp-competitor-type {
+          font-size: 11px;
+          color: var(--text3);
+          padding: 2px 8px;
+          background: var(--bg3);
+          border-radius: 4px;
+        }
+        .comp-competitor-detail {
+          font-size: 12px;
+          color: var(--text2);
+          margin-bottom: 4px;
+        }
+        .comp-competitor-notes {
+          font-size: 11px;
+          color: var(--text3);
+          font-style: italic;
+        }
+      `}</style>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
+
+      {/* Key Competitors Overview - Colored Border Cards */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-competitors</div>
+      <div className="highlight"><h3>🛰️ Key Competitors<UpdateIndicators sources="PR" /></h3><p>Major players in satellite connectivity - threat level indicates competitive overlap with ASTS D2D</p></div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
+        {keyCompetitors.map((comp, i) => (
+          <div key={i} className={`comp-competitor-card comp-threat-${comp.threat.toLowerCase()}`}>
+            <div className="comp-competitor-header">
+              <span className="comp-competitor-name">{comp.name}</span>
+              <span className="comp-competitor-type">{comp.type}</span>
+            </div>
+            <div className="comp-competitor-detail"><strong>Status:</strong> {comp.status}</div>
+            <div className="comp-competitor-detail"><strong>Focus:</strong> {comp.focus}</div>
+            <div className="comp-competitor-detail"><strong>Threat Level:</strong> <span style={{ color: comp.threat === 'High' ? 'var(--red)' : comp.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{comp.threat}</span></div>
+            <div className="comp-competitor-notes">{comp.notes}</div>
+          </div>
+        ))}
+      </div>
 
       {/* Valuation Comparables Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-comparables</div>
