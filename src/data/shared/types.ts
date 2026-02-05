@@ -155,8 +155,37 @@ export interface PartnerNewsEntry {
   astsRelevance: string;
   /** Impact assessment: "Bullish", "Bearish", "Neutral" */
   impact: 'Bullish' | 'Bearish' | 'Neutral';
-  /** Source of the news */
+  /** Source of the news (publication name) */
   source: string;
+  /** URL to the original source article (optional) */
+  url?: string;
+}
+
+/**
+ * Ethereum adoption timeline entry for BMNR
+ * AI AGENT: Add from press releases, protocol announcements, and enterprise news
+ */
+export interface EthereumAdoptionEntry {
+  /** ISO date string (YYYY-MM-DD) */
+  date: string;
+  /** Category: "Institutional", "Enterprise", "Protocol", "Government", "DeFi" */
+  category: string;
+  /** Company or organization name */
+  company: string;
+  /** Event title/headline */
+  title: string;
+  /** Detailed summary of the announcement */
+  summary: string;
+  /** Broader significance for Ethereum ecosystem */
+  significance: string;
+  /** Implications for BMNR investment thesis */
+  bmnrImplication: string;
+  /** Impact assessment: "Bullish", "Bearish", "Neutral" */
+  impact: 'Bullish' | 'Bearish' | 'Neutral';
+  /** Source publication name */
+  source: string;
+  /** URL to the original source article (optional) */
+  url?: string;
 }
 
 /**
@@ -223,12 +252,14 @@ export interface TimelineEntry {
   event: string;
   /** Impact description */
   impact: string;
-  /** Source document */
+  /** Source document (publication name) */
   source: string;
   /** Verdict/sentiment */
   verdict: 'positive' | 'negative' | 'neutral' | 'mixed';
   /** Detailed description */
   details: string;
+  /** URL to the original source article (optional) */
+  url?: string;
 }
 
 // ============================================================================
