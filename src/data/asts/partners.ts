@@ -200,6 +200,18 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     impact: 'Bullish',
     source: 'Nokia Blog'
   },
+
+  // === JANUARY 2025 ===
+  {
+    date: '2025-01-29',
+    partner: 'Vodafone',
+    category: 'Milestone',
+    headline: 'Vodafone Makes World\'s First Space Video Call Using Standard Smartphones and AST SpaceMobile BlueBird Satellites',
+    summary: 'Vodafone engineer Rowan Chesmer made historic first space video call from remote Wales (no mobile coverage) to Vodafone CEO Margherita Della Valle in Newbury, UK. Astronaut Tim Peake joined for unveiling of first European space-to-land gateway connecting BlueBird satellites to Vodafone\'s terrestrial network. Key achievements: (1) World\'s first space video call using standard 4G/5G smartphones; (2) Only satellite service offering mobile broadband to multiple normal smartphones; (3) Users get full mobile broadband - video calls, internet, messaging - without special dishes or satellite phones; (4) Seamless switching between space and ground networks. Margherita Della Valle: "Vodafone\'s job is to get everyone connected, no matter where they are. Our advanced European 5G network will now be complemented with cutting-edge satellite technology." Abel Avellan: "This historic milestone marks another significant step forward in our partnership with Vodafone... Together, we have achieved several world firsts including first-ever space-based voice call, first-ever 4G download above 10 Mbps, and first-ever 5G voice call." Commercial launch planned for Europe later 2025 and 2026.',
+    astsRelevance: 'This is ASTS\'s technology in action with their key European partner Vodafone. The milestone validates ASTS\'s entire value proposition: standard smartphones, full mobile broadband (not just texts), multiple simultaneous users, seamless network switching. The European gateway infrastructure positions ASTS for commercial service across Europe. Vodafone has been an ASTS investor since 2019 and this demonstrates their deep commitment. The timing (40 years after Vodafone\'s first UK mobile call in 1985) creates powerful marketing narrative for commercial launch.',
+    impact: 'Bullish',
+    source: 'Vodafone Press Release'
+  },
 ];
 
 // ============================================================================
