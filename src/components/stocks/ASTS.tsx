@@ -9186,12 +9186,12 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     },
     {
       id: 'lynk',
-      name: 'Lynk Global',
-      description: 'Direct-to-standard-phone satellite service, similar B2B model to ASTS',
-      technology: 'Small form-factor satellites, basic connectivity (not broadband)',
-      currentStatus: 'SMS commercial, voice demonstrated (Jul 2023), 35+ MNO partners',
+      name: 'Lynk Global (+ Omnispace)',
+      description: 'D2D provider merging with Omnispace (Oct 2025), SES as major shareholder',
+      technology: 'Small sats + Omnispace 60 MHz S-band spectrum, multi-spectrum platform',
+      currentStatus: 'Merger pending, FCC US license (Apr 2025), 50+ MNO partners, 50+ countries',
       capabilities: { voice: true, text: true, data: true, video: false, unmodifiedPhones: true, globalCoverage: false },
-      keyMetrics: { satellites: 15, coverage: 'Equatorial + select regions', subscribers: 'B2B via MNOs', funding: '$150M raised' }
+      keyMetrics: { satellites: 15, coverage: 'S-band: 1B+ people (Americas/Europe/Africa/Asia)', subscribers: 'B2B via MNOs', funding: 'SES-backed post-merger' }
     },
     {
       id: 'apple-globalstar',
@@ -9402,6 +9402,50 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // ═══════════════════════════════════════════════════════════════════════════
     // IRIDIUM NTN DIRECT - STANDARDS-BASED D2D/IoT
     // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-04',
+      competitor: 'iridium',
+      category: 'Partnership',
+      headline: 'Vodafone IoT partners with Iridium for NTN NB-IoT connectivity',
+      details: [
+        'Vodafone IoT to integrate Iridium NTN Direct service',
+        'Extends Vodafone IoT coverage to most remote locations globally',
+        'Vodafone IoT: 215 million devices connected across 180+ countries',
+        'Commercial launch planned 2026',
+        'Use cases: windfarms, oil pipelines, shipping tracking, emergency services',
+        'Vodafone IoT network spans 760+ networks worldwide',
+        'Iridium provides truly global L-band coverage including poles',
+        'Standards-based 3GPP NB-IoT integration'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Notable: Vodafone IoT choosing Iridium for IoT while Vodafone Group partners with ASTS for D2D smartphone service. Different divisions, different use cases. IoT = narrowband sensors/tracking (Iridium strength). Smartphones = broadband voice/data (ASTS strength). Validates segmented market approach.',
+      source: 'Iridium/Vodafone IoT',
+      sourceUrl: 'https://www.iridium.com/blog/vodafone-iot-partnership/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+    {
+      date: '2025-09-16',
+      competitor: 'iridium',
+      category: 'Partnership',
+      headline: 'Iridium begins NTN Direct integration with Deutsche Telekom',
+      details: [
+        'Deutsche Telekom to gain roaming access to Iridium NTN Direct',
+        'First MNO to begin integrating Iridium NTN Direct with terrestrial infrastructure',
+        '3GPP standards-based 5G service for NB-IoT D2D connectivity',
+        'Coverage from pole to pole via Iridium constellation',
+        'Use cases: cargo logistics, utility monitoring, smart agriculture, emergency response',
+        'Commercial launch planned 2026',
+        'Affordable 3GPP-standardized 5G devices work across terrestrial and NTN',
+        'Deutsche Telekom at forefront of standards-based IoT innovation'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Deutsche Telekom choosing Iridium for IoT coverage extension. ASTS has Deutsche Telekom as a shareholder but different focus: ASTS = smartphone broadband, Iridium = narrowband IoT. Both can coexist - different service tiers for different use cases.',
+      source: 'Iridium',
+      sourceUrl: 'https://www.iridium.com/blog/deutsche-telekom-partnership/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
     {
       date: '2025-05-29',
       competitor: 'iridium',
@@ -10125,6 +10169,49 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // ═══════════════════════════════════════════════════════════════════════════
     // LYNK GLOBAL - D2D SATELLITE (SMALL SATELLITES)
     // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-22',
+      competitor: 'lynk',
+      category: 'Financial',
+      headline: 'Lynk and Omnispace announce merger plans - SES becomes major strategic shareholder',
+      details: [
+        'Lynk Global and Omnispace to merge for comprehensive D2D solution',
+        'SES (major satellite operator) becomes major strategic shareholder',
+        'Omnispace contributes 60 MHz globally coordinated S-band spectrum',
+        'Largest S-band market access footprint: 1B+ people across Americas, Europe, Africa, Asia',
+        'Lynk brings patented, proven, low-cost multi-spectrum satellite technology',
+        'Combined: 50+ MNO customers across 50+ countries',
+        '3GPP NTN-compliant spectrum for standards-based D2D',
+        'SES provides multi-orbit network access and global ground infrastructure',
+        'Target close: late 2025 or early 2026'
+      ],
+      implication: 'negative',
+      astsComparison: 'Significant consolidation in D2D space. Lynk+Omnispace+SES creates formidable competitor with spectrum, technology, and MNO relationships. However, still small satellite approach vs ASTS broadband arrays. Key question: can merged entity match ASTS throughput for voice/video? S-band spectrum valuable but Lynk tech historically limited to messaging.',
+      source: 'Lynk Global/Omnispace',
+      sourceUrl: 'https://www.businesswire.com/news/home/20251022791234/en/',
+      storyId: 'lynk-omnispace-merger',
+      storyTitle: 'Lynk-Omnispace Merger'
+    },
+    {
+      date: '2025-04-30',
+      competitor: 'lynk',
+      category: 'Regulatory',
+      headline: 'FCC grants Lynk license modification for commercial D2D service in US',
+      details: [
+        'Second D2D provider licensed for commercial service in US (after Starlink)',
+        'License modification enables service in US territories',
+        'Partnership with DOCOMO Pacific for Guam and Northern Mariana Islands',
+        'Previously held world\'s first commercial license for international satellite D2D',
+        'Targets underserved areas out of reach from conventional mobile networks',
+        'Lynk: "taking great strides on our mission to connect everyone, everywhere"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Lynk gaining US regulatory approval - validates D2D regulatory path. ASTS has FCC experimental licenses and MNO partnerships for US coverage. Lynk starting in US territories (small market); ASTS targeting continental US with major carriers.',
+      source: 'Lynk Global',
+      sourceUrl: 'https://www.businesswire.com/news/home/20250430287453/en/',
+      storyId: 'lynk-regulatory-progress',
+      storyTitle: 'Lynk Regulatory Progress'
+    },
     {
       date: '2023-07-25',
       competitor: 'lynk',
