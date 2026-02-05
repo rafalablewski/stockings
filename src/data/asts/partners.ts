@@ -189,6 +189,19 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     source: 'PRNewswire / Vodafone'
   },
 
+  // === OCTOBER 2025 ===
+  {
+    date: '2025-10-02',
+    partner: 'Vodafone',
+    category: 'Partnership',
+    headline: 'Vodafone, AST SpaceMobile, and University of Málaga Open Europe\'s First Space-Land Network Lab',
+    summary: 'Vodafone, AST SpaceMobile, and University of Málaga opened Europe\'s first research laboratory dedicated to developing integrated LEO space and land-based mobile broadband services. Located at Vodafone\'s European innovation centre in Málaga, Spain, supported by initial grant from Spanish Space Agency. First project: collaboration with Meta to optimize WhatsApp audio/video calls for hybrid space-terrestrial networks. Lab will test/validate hardware and software for seamless satellite-to-4G/5G handoffs using existing smartphones. Results feed into SatCo joint venture, which has received expressions of interest from operators in 21 EU member states. Nadia Benabdallah, Vodafone: "Building harmonious space and earth networks to close coverage gaps across Europe. This will advance national and European-wide digital sovereignty." Chris Ivory, AST SpaceMobile CCO: "This innovation hub demonstrates what\'s possible when visionary partners come together with a shared commitment to eliminate connectivity gaps once and for all."',
+    astsRelevance: 'Major milestone for ASTS European commercial strategy. Lab validates deep Vodafone partnership and path to SatCo joint venture commercialization. Meta collaboration (WhatsApp optimization) shows real-world app preparation for commercial launch. Spanish Space Agency support demonstrates government backing. 21 EU member states expressing interest in SatCo shows massive European market opportunity. This is infrastructure building for European commercial service.',
+    impact: 'Bullish',
+    source: 'Vodafone',
+    url: 'https://www.vodafone.com/news/newsroom/technology/vodafone-ast-space-mobile-and-the-university-of-malaga-open-the-doors-to-europe-s-first-space-and-land-based-network-lab'
+  },
+
   // === SEPTEMBER 2025 ===
   {
     date: '2025-09-05',
