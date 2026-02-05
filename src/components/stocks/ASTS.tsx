@@ -730,16 +730,16 @@ const ASTSAnalysis = () => {
   }, [currentShares, currentStockPrice, cashOnHand, quarterlyBurn, totalDebt, block1Sats, block2Sats, targetSats2026, partnerReach, penetrationRate, blendedARPU, revenueShare, govRevenue, partners]);
 
   // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
-  // Order: Overview first, then stock-specific projections, common projections, then tracking
+  // Order: Overview first, then Partners (like BMNR Ethereum), then stock-specific projections, common projections, then tracking
   // group: optional grouping for nested display (stock-specific tabs)
   const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
     { id: 'overview', label: 'Overview', type: 'tracking' },
+    { id: 'partners', label: 'Partners', type: 'projection' },
     // Stock-specific projections (grouped under "ASTS Analysis")
     { id: 'catalysts', label: 'Catalysts', type: 'projection', group: 'ASTS Analysis' },
     { id: 'constellation', label: 'Constellation', type: 'projection', group: 'ASTS Analysis' },
     { id: 'subscribers', label: 'Subscribers', type: 'projection', group: 'ASTS Analysis' },
     { id: 'revenue', label: 'Revenue', type: 'projection', group: 'ASTS Analysis' },
-    { id: 'partners', label: 'Partners', type: 'projection', group: 'ASTS Analysis' },
     { id: 'runway', label: 'Cash Runway', type: 'projection', group: 'ASTS Analysis' },
     // Unified valuation model (combines Scenarios + DCF)
     { id: 'model', label: 'Model', type: 'projection' },
@@ -1570,6 +1570,9 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
 
 // ENHANCED PARTNERS TAB - Institutional grade with full spectrum, contracts, and financial details
 const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) => {
+  // State for expandable partner news (matching BMNR adoption-events pattern)
+  const [expandedPartnerNews, setExpandedPartnerNews] = useState<Set<number>>(new Set());
+
   // Definitive Commercial Agreements (binding contracts with prepayments/commitments)
   const definitiveAgreements = [
     { 
@@ -1718,14 +1721,61 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
 
       {/* Key Metrics */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-metrics</div>
-      <div className="card" style={{ }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g5">
-          <Card label="Contracted Rev" value="$1B+" sub="Commercial commitments" color="green" />
-          <Card label="Prepayments" value={`$${totalPrepay}M`} sub="Non-dilutive" color="cyan" />
-          <Card label="Definitive MNOs" value="4" sub={`${totalDefinitiveSubs}M subs`} color="blue" />
-          <Card label="Total MNOs" value="50+" sub={`~3.2B subs`} color="purple" />
-          <Card label="US Spectrum" value="80+ MHz" sub="Owned + partner" color="yellow" />
+      <div className="card">
+        <div className="card-title">Partner & Spectrum Metrics</div>
+        <div className="g4" style={{ }}>
+          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--mint)', fontWeight: 600 }}>$1B+</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Contracted Revenue</div>
+          </div>
+          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--cyan)', fontWeight: 600 }}>${totalPrepay}M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Prepayments</div>
+          </div>
+          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--violet)', fontWeight: 600 }}>50+</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>MNO Partners</div>
+          </div>
+          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--gold)', fontWeight: 600 }}>3.2B</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Addressable Subs</div>
+          </div>
+        </div>
+        <div className="g3">
+          <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Definitive Partners</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>4</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Definitive Subs</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>{totalDefinitiveSubs}M</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Revenue Share</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>50/50</span>
+            </div>
+          </div>
+          <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>US Spectrum (Owned)</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--mint)' }}>45 MHz</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Global Tunable</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--cyan)' }}>1,150 MHz</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>S-band ITU Priority</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>60 MHz</span>
+            </div>
+          </div>
+          <div style={{ padding: 12, background: 'linear-gradient(135deg, rgba(0,212,170,0.1), rgba(139,92,246,0.1))', borderRadius: 8, border: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>Why This Matters for ASTS</div>
+            <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.5 }}>
+              More MNO partners → More spectrum access → Larger addressable market → Revenue share acceleration → Stock price appreciation
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1920,39 +1970,60 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
 
       {/* Partner Ecosystem News */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-news</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
-          📡 Partner Ecosystem News<UpdateIndicators sources="PR" />
-        </div>
-        <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 16 }}>
+      <div className="highlight">
+        <h3 style={{ display: 'flex', alignItems: 'center' }}>📡 Partner Ecosystem News<UpdateIndicators sources="PR" /></h3>
+        <p style={{ fontSize: 13, color: 'var(--text2)' }}>
           Tracking MNO partner activities that impact ASTS's commercial ecosystem. Partner expansion in IoT, connected vehicles, and coverage demonstrates growing demand for ubiquitous connectivity.
         </p>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         {PARTNER_NEWS.length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {PARTNER_NEWS.map((news, idx) => (
-              <div key={idx} style={{ padding: 16, background: 'rgba(34,211,238,0.05)', border: '1px solid rgba(34,211,238,0.2)', borderRadius: 12 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                  <div>
-                    <span className="pill" style={{ fontSize: 10, marginRight: 8, background: 'rgba(34,211,238,0.2)', color: 'var(--cyan)' }}>{news.partner}</span>
-                    <span className="pill" style={{ fontSize: 10, background: 'rgba(168,85,247,0.2)', color: 'var(--violet)' }}>{news.category}</span>
+          PARTNER_NEWS.map((news, i) => {
+            const isExpanded = expandedPartnerNews.has(i);
+            return (
+              <div
+                key={i}
+                style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, cursor: 'pointer', borderLeft: `3px solid ${news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)'}` }}
+                onClick={() => {
+                  const next = new Set(expandedPartnerNews);
+                  if (isExpanded) next.delete(i);
+                  else next.add(i);
+                  setExpandedPartnerNews(next);
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{news.date}</span>
+                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(34,211,238,0.2)', color: 'var(--cyan)' }}>{news.partner}</span>
+                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(139,92,246,0.2)', color: 'var(--violet)' }}>{news.category}</span>
+                    </div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{news.headline}</div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 11, color: news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--red)' : 'var(--text3)' }}>
-                      {news.impact === 'Bullish' ? '▲' : news.impact === 'Bearish' ? '▼' : '●'} {news.impact}
-                    </span>
-                    <span style={{ fontSize: 11, color: 'var(--text3)' }}>{news.date}</span>
+                  <span style={{ fontSize: 12, color: news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)', marginLeft: 12, whiteSpace: 'nowrap' }}>
+                    {news.impact === 'Bullish' ? '↑' : news.impact === 'Bearish' ? '↓' : '→'} {news.impact}
+                  </span>
+                </div>
+                {isExpanded && (
+                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+                    {/* Summary */}
+                    <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>{news.summary}</div>
+
+                    {/* ASTS Relevance */}
+                    {news.astsRelevance && (
+                      <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 8, borderLeft: '3px solid var(--mint)' }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--mint)' }}>📡 ASTS RELEVANCE</div>
+                        <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.astsRelevance}</div>
+                      </div>
+                    )}
+
+                    {/* Source */}
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>Source: {news.source}</div>
                   </div>
-                </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text1)', marginBottom: 8 }}>{news.headline}</div>
-                <div style={{ fontSize: 12, color: 'var(--text2)', marginBottom: 12, lineHeight: 1.5 }}>{news.summary}</div>
-                <div style={{ padding: 12, background: 'rgba(16,185,129,0.1)', borderRadius: 8, border: '1px solid rgba(16,185,129,0.2)' }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--mint)', marginBottom: 4 }}>ASTS Relevance:</div>
-                  <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.4 }}>{news.astsRelevance}</div>
-                </div>
-                <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 8, opacity: 0.7 }}>Source: {news.source}</div>
+                )}
               </div>
-            ))}
-          </div>
+            );
+          })
         ) : (
           <div style={{ padding: 24, textAlign: 'center', color: 'var(--text3)' }}>No partner news available</div>
         )}
