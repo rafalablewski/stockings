@@ -9178,11 +9178,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     {
       id: 'starlink-tmobile',
       name: 'Starlink / T-Mobile',
-      description: 'SpaceX Direct-to-Cell service - text live, voice/data planned 2025',
-      technology: 'Starlink V2mini with 2.7x2.3m phased arrays, custom silicon, LTE/4G protocols',
-      currentStatus: 'Text beta live (Jan 2024), 7 MNO partners, voice/data roadmap 2025',
+      description: 'SpaceX Direct-to-Cell - SMS commercial in US + Europe (Ukraine), voice/data roadmap',
+      technology: '650+ D2C satellites, 2.7x2.3m phased arrays, custom silicon, LTE/4G protocols',
+      currentStatus: 'SMS live (US beta, Ukraine commercial Nov 2025), 8+ MNO partners, voice/data coming',
       capabilities: { voice: false, text: true, data: false, video: false, unmodifiedPhones: true, globalCoverage: false },
-      keyMetrics: { satellites: '7000+ (D2C subset)', coverage: 'US + partner countries', subscribers: 'Beta testing', funding: 'SpaceX vertical integration' }
+      keyMetrics: { satellites: '650+ D2C', coverage: 'US + Europe (Ukraine first)', subscribers: 'Kyivstar 22.5M eligible', funding: 'SpaceX vertical integration' }
     },
     {
       id: 'lynk',
@@ -9397,6 +9397,29 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://direct.starlink.com/',
       storyId: 'starlink-d2c-launch',
       storyTitle: 'Starlink Direct-to-Cell Launch'
+    },
+    {
+      date: '2025-11-24',
+      competitor: 'starlink-tmobile',
+      category: 'Coverage',
+      headline: 'Kyivstar launches Starlink Direct to Cell in Ukraine - first in Europe',
+      details: [
+        'Ukraine becomes first European country with Starlink D2C commercial service',
+        'Kyivstar (22.5M mobile customers) partnered with SpaceX',
+        'SMS messaging available now; voice/data planned for future phases',
+        '650+ D2C satellites in LEO constellation',
+        'Works with existing 4G LTE Android phones (iOS coming soon)',
+        'Critical for wartime: blackouts, damaged infrastructure, de-occupied territories',
+        'Free to all Kyivstar subscribers under existing plans',
+        'Coverage: entire Ukraine except occupied/combat zones',
+        'Starlink D2C described as "world\'s largest 4G coverage provider"'
+      ],
+      implication: 'negative',
+      astsComparison: 'Starlink D2C commercial expansion into Europe - ASTS target market. However, still SMS-only (no voice/data yet). Ukraine unique wartime use case - damaged terrestrial infrastructure makes satellite critical. ASTS targeting European commercial launch via Vodafone/SatCo JV with broadband capability (voice/video demonstrated). Different value propositions: Starlink = emergency texts, ASTS = full cellular experience.',
+      source: 'Kyivstar/SpaceX',
+      sourceUrl: 'https://investors.kyivstar.ua/news/',
+      storyId: 'starlink-d2c-europe',
+      storyTitle: 'Starlink D2C European Expansion'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
