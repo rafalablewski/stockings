@@ -237,6 +237,19 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     source: 'EY-Parthenon'
   },
 
+  // === JUNE 2025 ===
+  {
+    date: '2025-06-13',
+    partner: 'Ligado/Inmarsat/Viasat',
+    category: 'Spectrum',
+    headline: 'AST SpaceMobile Announces Settlement Term Sheet for 45 MHz L-Band Spectrum from Ligado - $550M Deal',
+    summary: 'Multi-party Settlement Term Sheet with Ligado Networks, Viasat, and Inmarsat provides AST SpaceMobile long-term access to up to 45 MHz of premium lower mid-band spectrum in US and Canada. Key terms: (1) 80+ year spectrum usage rights to up to 40 MHz L-Band MSS spectrum in US and Canada held by Ligado; (2) Additional 5 MHz access in 1670-1675 MHz Band in US; (3) Inmarsat provides affirmative regulatory support for ASTS\'s FCC and ISED applications; (4) $550M consideration via non-recourse senior-secured delayed-draw term loan facility to SPV; (5) Payment schedule: $420M to Inmarsat on Oct 31, 2025, $100M on Mar 31, 2026, $15M at regulatory close; (6) Backstop commitment from financial sponsors ensures refund if regulatory approvals not obtained. This is the largest available block of high-quality nationwide spectrum in the US. Block 2 BlueBirds with 2,400 sq ft arrays designed to enable peak 120 Mbps speeds with this spectrum.',
+    astsRelevance: 'TRANSFORMATIONAL spectrum acquisition. Pairs existing low-band MNO spectrum partnerships (superior penetration/coverage) with 45 MHz of owned mid-band spectrum (superior throughput). Enables peak 120 Mbps - competitive with terrestrial LTE. 80+ year usage rights provide long-term asset value beyond MNO partnerships. Non-recourse financing highlights standalone spectrum value. Inmarsat/Viasat support resolves potential L-band interference objections. This significantly de-risks US commercial rollout and provides spectrum optionality independent of MNO partnerships. Block 2 BlueBirds specifically designed for this spectrum.',
+    impact: 'Bullish',
+    source: 'AST SpaceMobile',
+    url: 'https://www.businesswire.com/news/home/20250613520945/en/'
+  },
+
   // === JANUARY 2025 ===
   {
     date: '2025-01-29',
