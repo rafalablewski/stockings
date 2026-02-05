@@ -246,10 +246,23 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     category: '3GPP/NTN',
     headline: '3GPP Rel-19 Adopts Regenerative Payload Architecture for 5G NTN - Complete gNB on Satellite',
     summary: 'After year-long intensive discussions, 3GPP Rel-19 specifies "regenerative" NTN payload architecture placing complete gNB (base station) on satellite - major evolution from Rel-17/18 "transparent" bent-pipe approach. Key benefits: (1) Full 5G RAN functionality leveraged including inter-gNB mobility, resource coordination, energy saving; (2) Native support for inter-satellite links via Xn interface enabling global coverage; (3) Packet switching directly in payload without ground segment; (4) Significant RTT reductions for random access and HARQ; (5) Enables "store and forward" for IoT UEs with core network on satellite; (6) Path toward "data centers in the sky" and full 5G integration. Ericsson successfully advocated for gNB-on-board over gNB-DU split alternative, citing: better signaling efficiency, native ISL support, evolutionary path to 6G. Consensus reached December 2023 after discussions at four TSG RAN meetings.',
-    astsRelevance: 'Critical standards foundation for ASTS\'s technology. 3GPP Rel-19 regenerative payload architecture aligns with ASTS\'s approach of placing complete base station functionality on BlueBird satellites. Nokia (ASTS\'s key equipment partner) is major 3GPP contributor alongside Ericsson. These standards enable: seamless satellite-terrestrial handoffs, inter-satellite connectivity, and full 5G integration that ASTS demonstrates with partners like Vodafone and AT&T. The 6G evolution path discussion validates long-term NTN integration into mobile networks - ASTS is building this infrastructure now.',
+    astsRelevance: '[Oct 2024 context] Critical standards foundation for ASTS\'s technology. BlueBird 1-5 just launched Sep 2024; BlueWalker 3 has demonstrated voice/data with AT&T and Vodafone since 2023. 3GPP Rel-19 regenerative payload architecture aligns with ASTS\'s approach of placing complete base station functionality on satellites. Nokia (ASTS\'s key equipment partner) is major 3GPP contributor alongside Ericsson. These standards enable: seamless satellite-terrestrial handoffs, inter-satellite connectivity, and full 5G integration. The 6G evolution path validates long-term NTN integration into mobile networks.',
     impact: 'Bullish',
     source: 'Ericsson Blog',
     url: 'https://www.ericsson.com/en/blog/2024/10/ntn-payload-architecture'
+  },
+
+  // === DECEMBER 2022 ===
+  {
+    date: '2022-12-12',
+    partner: 'Industry/Meta',
+    category: 'Industry Shift',
+    headline: 'Meta Shuts Down Connectivity Division After Nearly a Decade - Big Tech Exits Satellite Internet',
+    summary: 'Meta (formerly Facebook) shutters its Connectivity arm, splitting remaining staff across Infrastructure and Central Products teams. Division launched in 2013 to get more people online. Key failures: (1) Aquila high-altitude drone project shut down 2018 after crashes; (2) LEO satellite internet project staff acquired by Amazon in 2021; (3) Free Basics internet faced net neutrality backlash. Meta continues heavy metaverse spending. Telecom Infra Project (TIP) involvement continues. At peak, Meta Connectivity claimed 300M+ users via free internet services (though WSJ found billing issues). Division eliminated as part of Nov 2022 layoffs cutting 11,000 jobs.',
+    astsRelevance: '[Dec 2022 context] Big Tech finding satellite connectivity too difficult/expensive validates specialized approach. At this time: ASTS has BlueWalker 3 in orbit (launched Sep 2022, world\'s largest commercial array), conducting initial tests. Amazon Kuiper (which acquired Meta\'s satellite team) still pre-launch. Starlink/T-Mobile D2D just announced Aug 2022, no service yet. ASTS is pre-commercial, ~$500M market cap, proving technology works while Big Tech retreats. Meta\'s exit leaves Amazon as only Big Tech satellite player - but Kuiper is terminal-based broadband, not D2D like ASTS.',
+    impact: 'Bullish',
+    source: 'The Verge / Light Reading',
+    url: 'https://www.theverge.com/2022/12/12/23505875/meta-connectivity-division-shut-down-layoffs'
   },
 ];
 
