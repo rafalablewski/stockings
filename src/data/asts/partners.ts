@@ -189,6 +189,19 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     source: 'PRNewswire / Vodafone'
   },
 
+  // === NOVEMBER 2025 ===
+  {
+    date: '2025-11-17',
+    partner: 'Industry/Research',
+    category: 'Market Analysis',
+    headline: 'DIGITIMES: D2D Poised to Redefine Mobile-Satellite Integration - $10B+ Market by 2030',
+    summary: 'DIGITIMES Asia research report positions direct-to-device (D2D) as "cornerstone for integrating mobile and satellite communications." Key findings: (1) D2D extends terrestrial network coverage into space, addressing connectivity gaps in remote, maritime, and disaster regions; (2) US DoD allocated $134M in FY2025 for commercial satellite bandwidth (SpaceX, Iridium, Viasat); (3) SpaceX Starship could reduce launch costs to <$200/kg once operational; (4) Global players advancing D2D: SpaceX/T-Mobile (launched initial services), AST SpaceMobile and Lynk Global (expanding constellations); (5) 3GPP Release 19 expected finalized ~2027, D2D voice/real-time apps commercial by 2028; (6) Vehicle networking next growth wave - IoT-NTN for emergency rescue by 2027, NR-NTN for real-time voice after 2030; (7) Market could enter rapid expansion by 2030 with annual revenues projected to surpass $10 billion. Key dependencies: AST SpaceMobile commercial rollout and 3GPP Release 19 finalization.',
+    astsRelevance: 'Major third-party validation of ASTS\'s market opportunity. Report explicitly names AST SpaceMobile alongside SpaceX as key D2D player. $10B+ market projection by 2030 supports ASTS revenue thesis. DoD satellite spending validates government market. Vehicle networking opportunity aligns with ASTS IoT potential. Report identifies ASTS commercial rollout as key market catalyst - positions ASTS as industry bellwether.',
+    impact: 'Bullish',
+    source: 'DIGITIMES Asia',
+    url: 'https://www.digitimes.com/news/a20251107PD205/leo-satellite-commercial-5g-spacex-technology.html'
+  },
+
   // === OCTOBER 2025 ===
   {
     date: '2025-10-02',
