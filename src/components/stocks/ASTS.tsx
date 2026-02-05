@@ -9205,11 +9205,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     {
       id: 'skylo',
       name: 'Skylo Technologies',
-      description: 'NB-IoT satellite connectivity using existing GEO satellites',
-      technology: 'Software-based, uses existing satellite infrastructure',
-      currentStatus: 'Commercial, focused on IoT not consumer phones',
-      capabilities: { voice: false, text: false, data: true, video: false, unmodifiedPhones: false, globalCoverage: true },
-      keyMetrics: { satellites: 0, coverage: 'Global via partners', subscribers: 'IoT focused', funding: '$116M raised' }
+      description: 'NB-NTN via GEO satellites - powers Google Pixel + Verizon satellite SOS/SMS',
+      technology: '3GPP NB-NTN on existing GEO sats, licensed MSS L-band spectrum, cloud-native vRAN',
+      currentStatus: 'Pixel 9/10 satellite SOS, Pixel Watch 4 (first smartwatch), Verizon SMS live',
+      capabilities: { voice: false, text: true, data: true, video: false, unmodifiedPhones: true, globalCoverage: true },
+      keyMetrics: { satellites: 'GEO partners', coverage: 'US, Canada, EU, Australia', subscribers: 'Pixel 9/10 + Verizon users', funding: '$116M raised' }
     },
     {
       id: 'iridium',
@@ -9532,6 +9532,95 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://www.iridium.com/project-stardust/',
       storyId: 'iridium-ntn-direct',
       storyTitle: 'Iridium NTN Direct Development'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SKYLO TECHNOLOGIES - NB-NTN VIA GEO (GOOGLE PIXEL, VERIZON)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-08-20',
+      competitor: 'skylo',
+      category: 'Product',
+      headline: 'Google/Skylo expand satellite connectivity to Pixel 10 + launch Pixel Watch 4 with satellite SOS',
+      details: [
+        'Pixel 10 Series with satellite SOS + first satellite-based location sharing in Android 16',
+        'Pixel Watch 4: world\'s first smartwatch with 2-way satellite emergency messaging',
+        'Qualcomm Snapdragon W5 Gen 2 enables standalone satellite SOS without phone',
+        'Skylo NB-NTN service powers all satellite features',
+        'Pixel 9 won "Best Smartphone" at MWC Barcelona 2025 (satellite cited)',
+        'Skylo named "Best NTN Provider" at MWC for second consecutive year',
+        'Coverage: US, Canada, Europe, Australia (Watch 4 US first, expanding)',
+        'Features: emergency SOS, location sharing via satellite, SMS (carrier-dependent)'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Skylo expanding consumer reach via Google partnership - validates D2D market. However, Skylo = NB-NTN narrowband (emergency SOS/SMS only). ASTS = broadband voice/video/data. Different service tiers: Skylo for "when all else fails" emergencies, ASTS for "full cellular experience anywhere." Pixel Watch shows wearables market opportunity ASTS could address with MNO partners.',
+      source: 'Skylo',
+      sourceUrl: 'https://www.skylo.tech/blog/google-and-skylo-expand-satellite-connectivity-pixel-10-pixel-watch-4',
+      storyId: 'skylo-google-partnership',
+      storyTitle: 'Skylo Google Partnership'
+    },
+    {
+      date: '2025-04-28',
+      competitor: 'skylo',
+      category: 'Partnership',
+      headline: 'Skylo partners with Syniverse to implement SMS over satellite for Verizon',
+      details: [
+        'Syniverse Evolved Mobility enables seamless SMS over satellite integration',
+        'First time MNO can integrate SMS over NTN with no architecture changes',
+        'Skylo uses licensed MSS L-band spectrum (avoids interference with terrestrial)',
+        'Verizon first MNO worldwide to commercially launch on Skylo NTN',
+        'Same Diameter Protocol MNOs use for terrestrial network integration',
+        'Cloud-deployed, scalable solution',
+        'Extends Skylo emergency messaging launched 2024 to full SMS capability'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Syniverse enabling Skylo-Verizon integration - same Syniverse partnering with Iridium for NTN Direct. Shows Syniverse as key NTN integration enabler. Skylo using own MSS spectrum vs ASTS using MNO spectrum. Skylo narrowband SMS vs ASTS broadband - complementary not competing for Verizon.',
+      source: 'Syniverse/Skylo',
+      sourceUrl: 'https://www.businesswire.com/news/home/20250428skylo',
+      storyId: 'skylo-verizon-partnership',
+      storyTitle: 'Skylo Verizon Partnership'
+    },
+    {
+      date: '2025-03-19',
+      competitor: 'skylo',
+      category: 'Coverage',
+      headline: 'Verizon launches first US satellite texting to ANY device with Samsung S25 and Pixel 9',
+      details: [
+        'First in US to enable satellite texting to any recipient device (not just emergency)',
+        'Available on Samsung Galaxy S25 series and Google Pixel 9 series',
+        'Powered by Skylo NTN network',
+        'Verizon network covers 99% of US population terrestrially',
+        'Satellite extends coverage to remaining areas',
+        'Also testing data services and video calling via satellite',
+        'Using satellite for emergency portable assets, temporary backhaul, IoT'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Verizon expanding Skylo from emergency-only to general SMS. Still narrowband text only (no voice/video). ASTS partnership with AT&T targets broadband voice/data. Verizon hedging with multiple satellite approaches: Skylo (narrowband), own testing (data/video). Market validating need for satellite connectivity.',
+      source: 'Verizon',
+      sourceUrl: 'https://www.verizon.com/about/news/verizon-customers-satellite-texting-select-android-smartphones',
+      storyId: 'skylo-verizon-partnership',
+      storyTitle: 'Skylo Verizon Partnership'
+    },
+    {
+      date: '2024-08-28',
+      competitor: 'skylo',
+      category: 'Partnership',
+      headline: 'Verizon partners with Skylo to launch commercial direct-to-device messaging',
+      details: [
+        'Verizon first MNO worldwide to commercially launch on Skylo NTN',
+        'Emergency messaging and location sharing available fall 2024',
+        'Two-way texting via satellite planned for 2025',
+        'Skylo uses dedicated licensed MSS spectrum (no interference with cellular)',
+        'Successful IoT satellite roaming proof-of-concept completed',
+        'Use cases: agriculture, maritime, asset tracking, environmental monitoring',
+        'Verizon-enabled IoT device can roam to satellite when out of terrestrial range'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Verizon launching narrowband satellite messaging with Skylo. Different market from ASTS broadband approach. Skylo = emergency/IoT messaging via GEO. ASTS = full cellular experience via LEO. Verizon not exclusive to Skylo - could still partner with ASTS for broadband service tier.',
+      source: 'Verizon/Skylo',
+      sourceUrl: 'https://www.verizon.com/about/news/verizon-skylo-direct-to-device',
+      storyId: 'skylo-verizon-partnership',
+      storyTitle: 'Skylo Verizon Partnership'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
