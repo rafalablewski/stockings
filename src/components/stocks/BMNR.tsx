@@ -6810,6 +6810,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     // === FEBRUARY 2026 ===
     {
       date: '2026-02-04',
+      category: 'Institutional',
+      company: 'Fidelity',
+      title: 'Fidelity Launches FIDD Stablecoin on Ethereum - $12T Asset Manager Goes Live',
+      summary: 'Fidelity Digital Assets officially launches the Fidelity Digital Dollar (FIDD), a USD-pegged stablecoin, on the Ethereum blockchain. FIDD is issued by Fidelity Digital Assets, National Association, and each token is redeemable 1:1 for U.S. dollars. Reserves backing FIDD include cash, U.S. Treasury bills, and repurchase agreements managed internally by Fidelity. Available to both retail and institutional users through Fidelity platforms and select cryptocurrency exchanges. FIDD is designed for on-chain payments, settlements, and use as digital cash equivalent within blockchain-based financial products. Can be purchased and redeemed directly through Fidelity\'s crypto services with integration to brokerage and institutional accounts. No initial supply cap disclosed - issuance will expand based on demand. Launch follows years of blockchain experimentation by Fidelity (started 2014, digital asset subsidiary 2018). Regulatory clarity from federal stablecoin legislation in 2025 (GENIUS Act) accelerated the launch. Market observers note Fidelity\'s brand and regulatory footing may appeal to risk-conscious users.',
+      significance: 'FIDELITY GOES LIVE. $12 trillion asset manager\'s stablecoin is now operational on Ethereum mainnet. First major TradFi stablecoin actually in production (not just announced). Fidelity\'s massive retail customer base and institutional relationships provide built-in distribution. Treasury-backed reserves with internal management = institutional-grade risk profile.',
+      bmnrImplication: 'Fidelity FIDD going live validates Ethereum as THE institutional stablecoin platform. $12T asset manager now has operational skin in the game on Ethereum. Tokenized funds and RWA settlement use cases get a new stable asset option. More institutional liquidity on Ethereum = stronger network effects = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Bitcoin.com / CoinGecko'
+    },
+    {
+      date: '2026-02-04',
       category: 'Enterprise',
       company: 'Figment',
       title: 'Figment Achieves Full NORS Certification for Ethereum - First in North America and Europe',
