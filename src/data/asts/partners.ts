@@ -188,6 +188,18 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     impact: 'Bullish',
     source: 'PRNewswire / Vodafone'
   },
+
+  // === SEPTEMBER 2025 ===
+  {
+    date: '2025-09-05',
+    partner: 'Nokia',
+    category: '6G/NTN',
+    headline: 'Nokia: 6G Will Put Satellite Connectivity in Every Smartphone and Device',
+    summary: 'Nokia outlines vision for 6G where Non-Terrestrial Networks (NTN) become a fundamental component in every device - like Wi-Fi or GPS today. Key points: (1) NTN already happening in 5G with 3GPP Release 17, enabled in Google Pixel 9 and Samsung S25 for emergency texts; (2) Release 18 adds VSAT device types and enhanced mobility for maritime/aeronautical; (3) Release 19 introduces regenerative satellite payloads; (4) 6G advancements include NTN in every single device as standard, no GNSS needed (eliminating jamming vulnerability), and seamless TN-NTN interworking. Nokia states: "The sky is no longer the limit. With 6G and NTN, we\'re building a future where connectivity is truly global - always available, always resilient and built for the moments when it matters most." This is part of Nokia\'s single technology stack vision.',
+    astsRelevance: 'Nokia is ASTS\'s key network equipment partner providing the radio access network technology for BlueWalker 3 and BlueBird satellites. Nokia\'s vision for NTN as standard in every 6G device validates ASTS\'s entire business thesis of direct-to-device satellite connectivity. Nokia explicitly endorses NTN for: emergency response, disaster relief, bridging digital divide, remote healthcare, education, and commerce. This positions ASTS as building the infrastructure that Nokia\'s 6G vision requires. Nokia\'s 3GPP standards work directly benefits ASTS\'s technology roadmap.',
+    impact: 'Bullish',
+    source: 'Nokia Blog'
+  },
 ];
 
 // ============================================================================
