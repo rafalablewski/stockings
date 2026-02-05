@@ -9221,13 +9221,13 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       keyMetrics: { satellites: 66, coverage: 'Global', subscribers: '2.1M', funding: 'Public (IRDM)' }
     },
     {
-      id: 'amazon-kuiper',
-      name: 'Amazon Kuiper',
-      description: 'Amazon\'s satellite internet constellation, potential D2D threat',
-      technology: 'LEO broadband constellation under development',
-      currentStatus: 'First satellites launched 2023, D2D not announced',
-      capabilities: { voice: false, text: false, data: false, video: false, unmodifiedPhones: false, globalCoverage: false },
-      keyMetrics: { satellites: 2, coverage: 'Testing', subscribers: 'N/A', funding: '$10B committed' }
+      id: 'amazon-leo',
+      name: 'Amazon Leo',
+      description: 'Amazon\'s LEO satellite broadband (fka Project Kuiper) - terminal-based, NOT D2D',
+      technology: 'LEO constellation with Leo Nano/Pro/Ultra terminals (100Mbps-1Gbps)',
+      currentStatus: '212 satellites launched (Jan 2026), enterprise preview live',
+      capabilities: { voice: false, text: false, data: true, video: false, unmodifiedPhones: false, globalCoverage: false },
+      keyMetrics: { satellites: 212, coverage: 'Building to 3,232', subscribers: 'Enterprise preview', funding: '$10B committed' }
     }
   ];
 
@@ -9241,7 +9241,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // Format:
     // {
     //   date: 'YYYY-MM-DD',
-    //   competitor: 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-kuiper' | 'other',
+    //   competitor: 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-leo' | 'other',
     //   category: 'Launch' | 'Partnership' | 'Technology' | 'Regulatory' | 'Financial' | 'Coverage' | 'Product',
     //   headline: 'Brief headline',
     //   details: ['Bullet point 1', 'Bullet point 2'],
@@ -9251,6 +9251,127 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     //   sourceUrl: 'https://...'
     // },
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // AMAZON LEO (fka Project Kuiper) - LEO BROADBAND (TERMINAL-BASED)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-30',
+      competitor: 'amazon-leo',
+      category: 'Launch',
+      headline: 'Amazon Leo preparing for 8th mission - 212 satellites launched, LE-01 with Arianespace Feb 12',
+      details: [
+        'LE-01 mission on Feb 12, 2026 - first launch with Arianespace on Ariane 64',
+        'Will add 32 satellites bringing total to 212 spacecraft in orbit',
+        '8th mission overall, first of 18 planned Arianespace launches',
+        'Previous 7 missions: KA-01 (Apr), KA-02 (Jun), KF-01 (Jul), KF-02 (Aug), KA-03 (Sep), KF-03 (Oct), LA-04 (Dec)',
+        'Targeting 3,000+ satellite constellation with 80+ launches secured',
+        'Launch providers: Arianespace, Blue Origin, SpaceX, ULA'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon Leo is TERMINAL-BASED broadband (dishes/antennas), NOT direct-to-device. Their Leo Ultra terminal requires installation. ASTS addresses different market: unmodified smartphones.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2025-11-24',
+      competitor: 'amazon-leo',
+      category: 'Product',
+      headline: 'Amazon Leo debuts gigabit-speed "Ultra" antenna, begins enterprise preview',
+      details: [
+        'Leo Ultra: enterprise terminal up to 1 Gbps down, 400 Mbps up',
+        '"Fastest commercial phased array antenna in production"',
+        'Three tiers: Leo Nano (100 Mbps), Leo Pro (400 Mbps), Leo Ultra (1 Gbps)',
+        'Enterprise features: Direct to AWS (D2A), private network interconnect',
+        'Customers: JetBlue, Vanu Inc., Hunt Energy Network, Connected Farms',
+        'Enterprise preview testing before broader 2026 rollout'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon targeting enterprise/government with premium terminals - different segment than ASTS consumer mobile. Leo Ultra requires professional installation. ASTS delivers to EXISTING smartphones.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2025-11-13',
+      competitor: 'amazon-leo',
+      category: 'Technology',
+      headline: 'Project Kuiper rebranded to "Amazon Leo" - permanent identity for satellite network',
+      details: [
+        'Official rebrand from Project Kuiper to Amazon Leo',
+        'Nod to Low Earth Orbit constellation',
+        '150+ satellites in orbit at rebrand',
+        'Production line up to 5 satellites/day at Kirkland facility',
+        'Customers signed: JetBlue, L3Harris, DIRECTV Latin America, Sky Brasil, NBN Co. Australia'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Rebranding signals Amazon\'s long-term commitment. Still terminal-based system - not direct competition to ASTS\'s D2D approach. Both building toward "connectivity everywhere" via different paths.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2025-09-04',
+      competitor: 'amazon-leo',
+      category: 'Partnership',
+      headline: 'JetBlue chooses Amazon Project Kuiper for free in-flight Wi-Fi starting 2027',
+      details: [
+        'First airline to implement Amazon satellite internet',
+        'Will enhance JetBlue\'s free Fly-Fi service beginning 2027',
+        'Aviation terminal supports up to 1 Gbps downloads',
+        'Amazon also signed agreement with Airbus to integrate into aircraft catalog',
+        'Over 100 satellites in orbit at time of announcement'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon targeting aviation with dedicated terminals. ASTS has different angle: enabling passengers\' existing phones to work via satellite over coverage gaps. Amazon requires aircraft modification.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2025-04-28',
+      competitor: 'amazon-leo',
+      category: 'Launch',
+      headline: 'Amazon Project Kuiper completes first full-scale launch - 27 production satellites deployed',
+      details: [
+        'KA-01 mission: first batch of 27 production satellites',
+        'ULA Atlas V 551 from Cape Canaveral',
+        'Transition from prototype testing to full-scale deployment',
+        'First of 80+ planned missions for 3,232-satellite constellation',
+        'Manufacturing: up to 5 satellites/day capacity',
+        '"Largest commercial procurement of launch vehicles in history"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon beginning serious constellation deployment. ASTS has technology lead with 5G broadband calls on BlueBird. Amazon\'s scale impressive but solving different problem than ASTS D2D.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2021-11-01',
+      competitor: 'amazon-leo',
+      category: 'Launch',
+      headline: 'Amazon Kuiper announces KuiperSat-1 and KuiperSat-2 prototype satellites',
+      details: [
+        'FCC application to launch two prototype satellites',
+        'Testing phased array and parabolic antennas, modems, terminals',
+        'Partnership with ABL Space Systems for RS1 rocket',
+        '750+ people working on Project Kuiper',
+        'Active deorbit plans for responsible space stewardship'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon Kuiper is terminal-based LEO broadband (like Starlink), NOT direct-to-device. Targets home/business internet vs ASTS mobile subscribers in coverage gaps.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // FLYDUBAI - STARLINK AVIATION
