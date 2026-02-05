@@ -6833,6 +6833,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     },
     {
       date: '2026-01-29',
+      category: 'Protocol',
+      company: 'Ethereum Foundation',
+      title: 'ERC-8004 Trustless Agents Standard Goes Live on Ethereum Mainnet',
+      summary: 'ERC-8004, the Ethereum standard for Trustless Agents, officially launches on Ethereum mainnet. The standard defines three on-chain registries enabling AI agents to operate as accountable economic actors: (1) Identity Registry using ERC-721 tokens for unique agent identification, (2) Reputation Registry for permanent, immutable feedback on agent performance, (3) Validation Registry for third-party verification of agent work. Authored by Marco De Rossi (MetaMask AI Lead), Davide Crapis (Ethereum Foundation Head of AI), Jordan Ellis (Google Software Engineer), and Erik Reppel (Coinbase Head of Engineering), with feedback from 80+ teams. Integrates with x402 for programmable payments. During testnet: 10,000+ agents registered, 20,000+ feedback entries exchanged. Audited by Cyfrin, Nethermind, and Ethereum Foundation Security Team. Marco De Rossi: "Humanity needs credibly neutral infrastructure for the AI age: open protocols, controlled by no one, where economic actors (humans and AIs) can discover each other and exchange trust signals freely." Davide Crapis: "Ethereum is in the unique position to be the platform that secures and settles AI-to-AI interactions." Deploying on Base, Optimism, Polygon, Linea, Arbitrum, Monad, Gnosis, Celo, and Scroll in coming weeks.',
+      significance: 'WATERSHED MOMENT for AI-blockchain convergence. First standardized on-chain infrastructure for AI agent identity, reputation, and validation. Authored by leaders from MetaMask, Ethereum Foundation, Google, and Coinbase. Creates foundation for AI-native economy: agents discovering agents, verifying track records, purchasing services autonomously. Opens new business models: autonomous service marketplaces, agent-to-agent SaaS, AI supply chains.',
+      bmnrImplication: 'ERC-8004 positions Ethereum as THE settlement layer for AI agent economy. AI agents become economic actors on Ethereum — identity, reputation, payments all on-chain. Massive new use case for Ethereum beyond human transactions. x402 payment integration = more ETH transaction volume. Multi-chain deployment validates Ethereum L2 ecosystem as AI infrastructure.',
+      impact: 'Bullish',
+      source: 'ERC-8004.org / Ethereum Foundation'
+    },
+    {
+      date: '2026-01-29',
       category: 'Enterprise',
       company: 'Chronicle',
       title: 'Chronicle Proof of Asset Powers MoonPay Enterprise Stablecoin Issuance on M0 Platform',
