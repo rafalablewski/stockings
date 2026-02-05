@@ -124,6 +124,7 @@ import {
   DEFAULTS,
   PARTNERS,
   PARTNER_NEWS,
+  COMPETITOR_NEWS,
   REVENUE_SOURCES,
   UPCOMING_CATALYSTS,
   COMPLETED_MILESTONES,
@@ -736,6 +737,7 @@ const ASTSAnalysis = () => {
     { id: 'overview', label: 'Overview', type: 'tracking' },
     // Stock-specific projections (grouped under "ASTS Analysis") - Partners FIRST like BMNR Ethereum
     { id: 'partners', label: 'Partners', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'competitors', label: 'Competitors', type: 'projection', group: 'ASTS Analysis' },
     { id: 'catalysts', label: 'Catalysts', type: 'projection', group: 'ASTS Analysis' },
     { id: 'constellation', label: 'Constellation', type: 'projection', group: 'ASTS Analysis' },
     { id: 'subscribers', label: 'Subscribers', type: 'projection', group: 'ASTS Analysis' },
@@ -925,6 +927,7 @@ const ASTSAnalysis = () => {
           {activeTab === 'subscribers' && <SubscribersTab calc={calc} partnerReach={partnerReach} setPartnerReach={setPartnerReach} penetrationRate={penetrationRate} setPenetrationRate={setPenetrationRate} blendedARPU={blendedARPU} setBlendedARPU={setBlendedARPU} partners={partners} />}
           {activeTab === 'revenue' && <RevenueTab calc={calc} revenueShare={revenueShare} setRevenueShare={setRevenueShare} govRevenue={govRevenue} setGovRevenue={setGovRevenue} revenueSources={revenueSources} contractedRevenue={contractedRevenue} />}
           {activeTab === 'partners' && <PartnersTab partners={partners} revenueShare={revenueShare} blendedARPU={blendedARPU} penetrationRate={penetrationRate} />}
+          {activeTab === 'competitors' && <CompetitorsTab />}
           {activeTab === 'runway' && <RunwayTab calc={calc} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} debtRate={debtRate} setDebtRate={setDebtRate} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
           {activeTab === 'capital' && <CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} />}
           {activeTab === 'model' && <ModelTab
@@ -2112,6 +2115,323 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         { term: 'Revenue Share Economics', def: 'Typically 50/50 split. ASTS provides space infrastructure, MNO provides spectrum, distribution, billing.' },
         { term: 'Partner Concentration', def: 'Top 5 partners represent ~50% of addressable subs. Diversification reduces single-partner risk.' },
       ]} />
+    </div>
+  );
+};
+
+// COMPETITOR INTELLIGENCE TAB - Track competitor activities in satellite D2D space
+const CompetitorsTab = () => {
+  // State for expandable competitor news
+  const [expandedCompetitorNews, setExpandedCompetitorNews] = useState<Set<number>>(new Set());
+  // Filters for competitor news timeline
+  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [competitorFilter, setCompetitorFilter] = useState('All');
+
+  // Extract unique categories and competitors from COMPETITOR_NEWS for filters
+  const categories = ['All', ...Array.from(new Set(COMPETITOR_NEWS.map(n => n.category)))];
+  const competitorNames = ['All', ...Array.from(new Set(COMPETITOR_NEWS.map(n => n.competitor)))];
+
+  // Filter competitor news by category and competitor
+  const filteredCompetitorNews = COMPETITOR_NEWS.filter(n => {
+    const categoryMatch = categoryFilter === 'All' || n.category === categoryFilter;
+    const competitorMatch = competitorFilter === 'All' || n.competitor === competitorFilter;
+    return categoryMatch && competitorMatch;
+  });
+
+  // Key competitors overview
+  const keyCompetitors = [
+    {
+      name: 'SpaceX Starlink',
+      type: 'LEO Broadband + D2D',
+      status: 'Operational',
+      focus: 'Terminal-based broadband, D2D partnership with T-Mobile',
+      threat: 'High',
+      notes: 'Largest LEO constellation. D2D beta with T-Mobile for texts/calls. Not full broadband D2D yet.'
+    },
+    {
+      name: 'Amazon Kuiper',
+      type: 'LEO Broadband',
+      status: 'Deploying',
+      focus: 'Terminal-based broadband (like Starlink)',
+      threat: 'Medium',
+      notes: 'Requires dishes/terminals. Not D2D. Amazon scale and resources are long-term risk.'
+    },
+    {
+      name: 'Lynk Global',
+      type: 'D2D (Text/IoT)',
+      status: 'Limited Service',
+      focus: 'Text messaging and IoT to unmodified phones',
+      threat: 'Low',
+      notes: 'Text-only. No voice/data. Limited satellite count. More complementary than competitive.'
+    },
+    {
+      name: 'Apple/Globalstar',
+      type: 'Emergency SOS',
+      status: 'Operational',
+      focus: 'Emergency messaging for iPhone only',
+      threat: 'Low',
+      notes: 'iPhone-only. Emergency texts only. Not commercial service. Different use case.'
+    },
+  ];
+
+  return (
+    <div className="tab-content">
+      <style>{`
+        .competitor-card {
+          background: var(--bg2);
+          border: 1px solid var(--stroke);
+          border-radius: 12px;
+          padding: 16px;
+          margin-bottom: 12px;
+        }
+        .threat-high { border-left: 3px solid var(--red); }
+        .threat-medium { border-left: 3px solid var(--gold); }
+        .threat-low { border-left: 3px solid var(--mint); }
+        .competitor-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .competitor-name {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--text1);
+        }
+        .competitor-type {
+          font-size: 11px;
+          color: var(--text3);
+          padding: 2px 8px;
+          background: var(--bg3);
+          border-radius: 4px;
+        }
+        .competitor-detail {
+          font-size: 12px;
+          color: var(--text2);
+          margin-bottom: 4px;
+        }
+        .competitor-notes {
+          font-size: 11px;
+          color: var(--text3);
+          font-style: italic;
+        }
+        .news-entry {
+          background: var(--bg2);
+          border: 1px solid var(--stroke);
+          border-radius: 8px;
+          margin-bottom: 8px;
+          overflow: hidden;
+          transition: all 0.2s ease;
+        }
+        .news-entry:hover {
+          border-color: var(--text3);
+        }
+        .news-header {
+          padding: 12px 16px;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .news-title {
+          font-size: 13px;
+          color: var(--text1);
+          font-weight: 500;
+          flex: 1;
+        }
+        .news-meta {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          flex-shrink: 0;
+        }
+        .news-date {
+          font-size: 11px;
+          color: var(--text3);
+        }
+        .news-impact {
+          font-size: 10px;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-weight: 500;
+        }
+        .impact-bullish { background: rgba(16, 185, 129, 0.2); color: var(--mint); }
+        .impact-bearish { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+        .impact-neutral { background: rgba(148, 163, 184, 0.2); color: var(--text3); }
+        .news-body {
+          padding: 0 16px 16px 16px;
+          border-top: 1px solid var(--stroke);
+        }
+        .news-summary {
+          font-size: 12px;
+          color: var(--text2);
+          line-height: 1.6;
+          margin-bottom: 12px;
+        }
+        .news-implication {
+          font-size: 12px;
+          color: var(--sky);
+          padding: 8px 12px;
+          background: rgba(56, 189, 248, 0.1);
+          border-radius: 6px;
+          margin-bottom: 8px;
+        }
+        .news-source {
+          font-size: 11px;
+          color: var(--text3);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .news-source a {
+          color: var(--sky);
+          text-decoration: none;
+        }
+        .news-source a:hover {
+          text-decoration: underline;
+        }
+      `}</style>
+
+      {/* Key Competitors Overview */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-overview</div>
+      <h2 className="section-head">Key Competitors</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
+        {keyCompetitors.map((comp, i) => (
+          <div key={i} className={`competitor-card threat-${comp.threat.toLowerCase()}`}>
+            <div className="competitor-header">
+              <span className="competitor-name">{comp.name}</span>
+              <span className="competitor-type">{comp.type}</span>
+            </div>
+            <div className="competitor-detail"><strong>Status:</strong> {comp.status}</div>
+            <div className="competitor-detail"><strong>Focus:</strong> {comp.focus}</div>
+            <div className="competitor-detail"><strong>Threat Level:</strong> <span style={{ color: comp.threat === 'High' ? 'var(--red)' : comp.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{comp.threat}</span></div>
+            <div className="competitor-notes">{comp.notes}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Competitor News Timeline */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-timeline</div>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span>Competitor Intelligence ({filteredCompetitorNews.length} events)</span>
+      </h2>
+
+      {/* Competitor Filter */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
+      <div style={{ marginBottom: 12 }}>
+        <span style={{ fontSize: 11, color: 'var(--text3)', marginRight: 8 }}>Filter by Competitor:</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {competitorNames.map(comp => {
+            const isSelected = competitorFilter === comp;
+            const count = COMPETITOR_NEWS.filter(n => n.competitor === comp).length;
+            return (
+              <button
+                key={comp}
+                onClick={() => setCompetitorFilter(comp)}
+                className={`pill ${isSelected ? 'active' : ''}`}
+              >
+                {comp} ({comp === 'All' ? COMPETITOR_NEWS.length : count})
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Category Filter */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#category-filter</div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16, alignItems: 'center' }}>
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setCategoryFilter(cat)}
+            className={`pill ${categoryFilter === cat ? 'active' : ''}`}
+          >
+            {cat === 'All' ? `All (${COMPETITOR_NEWS.length})` : `${cat} (${COMPETITOR_NEWS.filter(n => n.category === cat).length})`}
+          </button>
+        ))}
+        <button
+          className="pill"
+          onClick={() => {
+            if (expandedCompetitorNews.size === filteredCompetitorNews.length) {
+              setExpandedCompetitorNews(new Set());
+            } else {
+              setExpandedCompetitorNews(new Set(filteredCompetitorNews.map((_, i) => i)));
+            }
+          }}
+        >
+          {expandedCompetitorNews.size === filteredCompetitorNews.length ? 'Collapse All' : 'Expand All'}
+        </button>
+      </div>
+
+      {/* News Entries */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
+      {filteredCompetitorNews.map((news, i) => {
+        const isExpanded = expandedCompetitorNews.has(i);
+        return (
+          <div key={i} className="news-entry" style={{ borderLeft: `3px solid ${news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--red)' : 'var(--text3)'}` }}>
+            <div
+              className="news-header"
+              onClick={() => {
+                const newExpanded = new Set(expandedCompetitorNews);
+                if (isExpanded) {
+                  newExpanded.delete(i);
+                } else {
+                  newExpanded.add(i);
+                }
+                setExpandedCompetitorNews(newExpanded);
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>
+                  <span style={{ color: 'var(--gold)' }}>{news.competitor}</span> • {news.category}
+                </div>
+                <div className="news-title">{news.headline}</div>
+              </div>
+              <div className="news-meta">
+                <span className="news-date">{news.date}</span>
+                <span className={`news-impact impact-${news.impact.toLowerCase()}`}>
+                  {news.impact === 'Bullish' ? '↑ Good for ASTS' : news.impact === 'Bearish' ? '↓ Risk for ASTS' : '— Neutral'}
+                </span>
+                <span style={{ color: 'var(--text3)' }}>{isExpanded ? '▼' : '▶'}</span>
+              </div>
+            </div>
+            {isExpanded && (
+              <div className="news-body">
+                <div className="news-summary">{news.summary}</div>
+                <div className="news-implication">
+                  <strong>ASTS Implication:</strong> {news.astsImplication}
+                </div>
+                <div className="news-source">
+                  <span>Source: {news.source}</span>
+                  {news.url && (
+                    <a href={news.url} target="_blank" rel="noopener noreferrer">View Original →</a>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {filteredCompetitorNews.length === 0 && (
+        <div style={{ textAlign: 'center', padding: 40, color: 'var(--text3)' }}>
+          No competitor news matching current filters
+        </div>
+      )}
+
+      {/* Competitive Moat Summary */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#competitive-moat</div>
+      <h2 className="section-head">ASTS Competitive Advantages</h2>
+      <div className="competitor-card" style={{ borderLeft: '3px solid var(--mint)' }}>
+        <div style={{ display: 'grid', gap: 12 }}>
+          <div className="competitor-detail"><strong>🛰️ True D2D Broadband:</strong> Only solution offering full mobile broadband (voice, data, video) to unmodified smartphones. Starlink D2D is text/voice only.</div>
+          <div className="competitor-detail"><strong>📡 MNO Partnerships:</strong> 50+ carrier agreements covering 3.2B+ subscribers. Deep integration vs. Starlink's single T-Mobile deal.</div>
+          <div className="competitor-detail"><strong>📶 Spectrum Access:</strong> 1,150+ MHz tunable across partners + owned L-band/S-band. Regulatory moat vs. new entrants.</div>
+          <div className="competitor-detail"><strong>🎯 First Mover:</strong> First to demonstrate 5G broadband from space to standard phones. Technology lead of 2+ years.</div>
+          <div className="competitor-detail"><strong>🏛️ Government Contracts:</strong> SDA, DIU, MDA SHIELD contracts validate defense use case. Additional revenue stream.</div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -33,6 +33,12 @@ export {
   getDefinitivePartners,
 } from './partners';
 
+// Competitor Intelligence
+export {
+  COMPETITORS_METADATA,
+  COMPETITOR_NEWS,
+} from './competitors';
+
 // Catalysts & Milestones
 export {
   CATALYSTS_METADATA,
@@ -71,6 +77,7 @@ export {
 export type {
   Partner,
   PartnerNewsEntry,
+  CompetitorNewsEntry,
   ShareClass,
   MajorShareholder,
   EquityOffering,

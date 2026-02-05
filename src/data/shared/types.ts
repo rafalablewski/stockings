@@ -162,6 +162,31 @@ export interface PartnerNewsEntry {
 }
 
 /**
+ * Competitor news entry for tracking ASTS competitor activities
+ * AI AGENT: Add from competitor press releases, product announcements, and industry news
+ */
+export interface CompetitorNewsEntry {
+  /** ISO date string (YYYY-MM-DD) */
+  date: string;
+  /** Competitor company name */
+  competitor: string;
+  /** News category (e.g., "Launch", "Technology", "Partnership", "Financial", "Regulatory", "Product") */
+  category: string;
+  /** Headline/title of the news */
+  headline: string;
+  /** Detailed summary of the news */
+  summary: string;
+  /** Competitive implications for ASTS */
+  astsImplication: string;
+  /** Impact assessment for ASTS: "Bullish" (good for ASTS), "Bearish" (bad for ASTS), "Neutral" */
+  impact: 'Bullish' | 'Bearish' | 'Neutral';
+  /** Source publication name */
+  source: string;
+  /** URL to the original source article (optional) */
+  url?: string;
+}
+
+/**
  * Ethereum adoption timeline entry for BMNR
  * AI AGENT: Add from press releases, protocol announcements, and enterprise news
  */
