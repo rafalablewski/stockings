@@ -226,6 +226,16 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     impact: 'Bullish',
     source: 'Nokia Blog'
   },
+  {
+    date: '2025-09-01',
+    partner: 'Industry/Research',
+    category: 'Market Analysis',
+    headline: 'EY-Parthenon: LEO Satellite Broadband in Europe - Four Scenarios from Rural Niche to Urban Competition',
+    summary: 'EY-Parthenon analysis of European LEO satellite broadband market. Key findings: (1) Starlink dominates with ~7,000 satellites (ambition 42,000), ~658,000 European subscribers early 2025 (~143% YoY growth); (2) Eutelsat-OneWeb ~650 satellites, focused on enterprise/government/backhaul; (3) Four future scenarios outlined - from rural-only (Scenario 1) to full FTTP/5G competitor everywhere (Scenario 4); (4) Current trajectory: Scenario 1/2 (rural primary, some urban niche); (5) D2D partnerships highlighted as key opportunity - T-Mobile/Starlink US, Vodafone/AST SpaceMobile Europe, Orange/OneWeb; (6) Threat to rural telcos but opportunity via partnerships; (7) Europe strong in midstream/downstream value chain (ground stations, terminals, VAS); (8) Full urban competition (Scenario 4) depends on densification, spectrum, tech advances, ground infra, adoption curves. Urban capacity constraints noted (e.g., SE England/London). Starlink speeds trending toward 1 Gbps/15-20ms target but real-world 100-300 Mbps/20-40ms.',
+    astsRelevance: 'Major European market analysis explicitly names Vodafone/AST SpaceMobile as key D2D partnership example alongside T-Mobile/Starlink. Report frames D2D as "opportunity" for telcos - validates ASTS\'s partner-with-MNOs strategy vs. competing against them. Starlink\'s urban capacity constraints and rural focus confirm ASTS addresses different market segment (coverage gaps via existing phones). Four-scenario framework shows LEO not yet threatening urban fibre - ASTS\'s complementary positioning validated. Europe\'s strong terrestrial infrastructure means D2D partnerships (like SatCo JV) are the path forward, not standalone satellite broadband.',
+    impact: 'Bullish',
+    source: 'EY-Parthenon'
+  },
 
   // === JANUARY 2025 ===
   {
@@ -246,7 +256,7 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     category: '3GPP/NTN',
     headline: '3GPP Rel-19 Adopts Regenerative Payload Architecture for 5G NTN - Complete gNB on Satellite',
     summary: 'After year-long intensive discussions, 3GPP Rel-19 specifies "regenerative" NTN payload architecture placing complete gNB (base station) on satellite - major evolution from Rel-17/18 "transparent" bent-pipe approach. Key benefits: (1) Full 5G RAN functionality leveraged including inter-gNB mobility, resource coordination, energy saving; (2) Native support for inter-satellite links via Xn interface enabling global coverage; (3) Packet switching directly in payload without ground segment; (4) Significant RTT reductions for random access and HARQ; (5) Enables "store and forward" for IoT UEs with core network on satellite; (6) Path toward "data centers in the sky" and full 5G integration. Ericsson successfully advocated for gNB-on-board over gNB-DU split alternative, citing: better signaling efficiency, native ISL support, evolutionary path to 6G. Consensus reached December 2023 after discussions at four TSG RAN meetings.',
-    astsRelevance: '[Oct 2024 context] Critical standards foundation for ASTS\'s technology. BlueBird 1-5 just launched Sep 2024; BlueWalker 3 has demonstrated voice/data with AT&T and Vodafone since 2023. 3GPP Rel-19 regenerative payload architecture aligns with ASTS\'s approach of placing complete base station functionality on satellites. Nokia (ASTS\'s key equipment partner) is major 3GPP contributor alongside Ericsson. These standards enable: seamless satellite-terrestrial handoffs, inter-satellite connectivity, and full 5G integration. The 6G evolution path validates long-term NTN integration into mobile networks.',
+    astsRelevance: 'Critical standards foundation for ASTS\'s technology. BlueBird 1-5 just launched Sep 2024; BlueWalker 3 demonstrated voice/data with AT&T and Vodafone since 2023. 3GPP Rel-19 regenerative payload architecture aligns with ASTS\'s approach of placing complete base station functionality on satellites. Nokia (ASTS\'s key equipment partner) is major 3GPP contributor alongside Ericsson. These standards enable: seamless satellite-terrestrial handoffs, inter-satellite connectivity, and full 5G integration. The 6G evolution path validates long-term NTN integration into mobile networks.',
     impact: 'Bullish',
     source: 'Ericsson Blog',
     url: 'https://www.ericsson.com/en/blog/2024/10/ntn-payload-architecture'
@@ -259,7 +269,7 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     category: 'Industry Shift',
     headline: 'Meta Shuts Down Connectivity Division After Nearly a Decade - Big Tech Exits Satellite Internet',
     summary: 'Meta (formerly Facebook) shutters its Connectivity arm, splitting remaining staff across Infrastructure and Central Products teams. Division launched in 2013 to get more people online. Key failures: (1) Aquila high-altitude drone project shut down 2018 after crashes; (2) LEO satellite internet project staff acquired by Amazon in 2021; (3) Free Basics internet faced net neutrality backlash. Meta continues heavy metaverse spending. Telecom Infra Project (TIP) involvement continues. At peak, Meta Connectivity claimed 300M+ users via free internet services (though WSJ found billing issues). Division eliminated as part of Nov 2022 layoffs cutting 11,000 jobs.',
-    astsRelevance: '[Dec 2022 context] Big Tech finding satellite connectivity too difficult/expensive validates specialized approach. At this time: ASTS has BlueWalker 3 in orbit (launched Sep 2022, world\'s largest commercial array), conducting initial tests. Amazon Kuiper (which acquired Meta\'s satellite team) still pre-launch. Starlink/T-Mobile D2D just announced Aug 2022, no service yet. ASTS is pre-commercial, ~$500M market cap, proving technology works while Big Tech retreats. Meta\'s exit leaves Amazon as only Big Tech satellite player - but Kuiper is terminal-based broadband, not D2D like ASTS.',
+    astsRelevance: 'Big Tech finding satellite connectivity too difficult/expensive validates specialized approach. ASTS has BlueWalker 3 in orbit (launched Sep 2022, world\'s largest commercial array), conducting initial tests. Amazon Kuiper (which acquired Meta\'s satellite team) still pre-launch. Starlink/T-Mobile D2D just announced Aug 2022, no service yet. ASTS is pre-commercial, ~$500M market cap, proving technology works while Big Tech retreats. Meta\'s exit leaves Amazon as only Big Tech satellite player - but Kuiper is terminal-based broadband, not D2D like ASTS.',
     impact: 'Bullish',
     source: 'The Verge / Light Reading',
     url: 'https://www.theverge.com/2022/12/12/23505875/meta-connectivity-division-shut-down-layoffs'
