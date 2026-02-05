@@ -2149,12 +2149,12 @@ const CompetitorsTab = () => {
       notes: 'Largest LEO constellation. D2D beta with T-Mobile for texts/calls. Not full broadband D2D yet.'
     },
     {
-      name: 'Amazon Kuiper',
+      name: 'Amazon Leo',
       type: 'LEO Broadband',
-      status: 'Deploying',
-      focus: 'Terminal-based broadband (like Starlink)',
+      status: '212 Satellites (Jan 2026)',
+      focus: 'Terminal-based broadband (Leo Nano/Pro/Ultra terminals)',
       threat: 'Medium',
-      notes: 'Requires dishes/terminals. Not D2D. Amazon scale and resources are long-term risk.'
+      notes: 'Rebranded from Project Kuiper Nov 2025. 7 missions in 2025, enterprise preview live. Not D2D - different market.'
     },
     {
       name: 'Lynk Global',
