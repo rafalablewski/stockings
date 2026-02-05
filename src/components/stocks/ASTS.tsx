@@ -9188,10 +9188,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       id: 'lynk',
       name: 'Lynk Global',
       description: 'Direct-to-standard-phone satellite service, similar B2B model to ASTS',
-      technology: 'Small satellites, limited bandwidth per satellite',
-      currentStatus: 'Commercial agreements signed, limited coverage',
-      capabilities: { voice: false, text: true, data: false, video: false, unmodifiedPhones: true, globalCoverage: false },
-      keyMetrics: { satellites: 10, coverage: 'Equatorial regions', subscribers: '<100K', funding: '$150M raised' }
+      technology: 'Small form-factor satellites, basic connectivity (not broadband)',
+      currentStatus: 'SMS commercial, voice demonstrated (Jul 2023), 35+ MNO partners',
+      capabilities: { voice: true, text: true, data: true, video: false, unmodifiedPhones: true, globalCoverage: false },
+      keyMetrics: { satellites: 15, coverage: 'Equatorial + select regions', subscribers: 'B2B via MNOs', funding: '$150M raised' }
     },
     {
       id: 'apple-globalstar',
@@ -9979,6 +9979,31 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://www.airbaltic.com/en/airbaltic-starlink-announcement',
       storyId: 'airbaltic-starlink-aviation',
       storyTitle: 'airBaltic Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LYNK GLOBAL - D2D SATELLITE (SMALL SATELLITES)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2023-07-25',
+      competitor: 'lynk',
+      category: 'Technology',
+      headline: 'Lynk Demonstrates First-Ever Two-Way Standard Phone Voice Calls by Satellite',
+      details: [
+        'Claims "first-ever" two-way satellite voice calls with standard phones',
+        'Demo via software update to existing Lynk-02 satellites already in orbit',
+        'Announced 12 satellites in orbit (15 total launched), 36 more approved for 2024',
+        'Voice adds to existing text (SMS) and IoT data services',
+        'Working with 35+ MNO partners in 50+ countries',
+        'Voice capability described as "relatively simple software update"',
+        'Focusing on areas with zero cellular coverage initially'
+      ],
+      implication: 'neutral',
+      astsComparison: 'ASTS demonstrated voice calls with BlueWalker 3 in April 2023 - before Lynk\'s July announcement. Key difference: ASTS uses massive 64m² phased arrays for broadband-grade throughput; Lynk uses small form-factor satellites for basic connectivity. ASTS targets MNO-integrated coverage expansion; Lynk targets emergency/gap coverage.',
+      source: 'Lynk Global',
+      sourceUrl: 'https://lynk.world/news/lynk-demonstrates-first-ever-two-way-standard-phone-voice-calls-by-satellite',
+      storyId: 'lynk-voice-capability',
+      storyTitle: 'Lynk Voice Capability'
     }
   ];
 
