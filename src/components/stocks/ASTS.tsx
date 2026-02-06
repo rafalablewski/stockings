@@ -9479,31 +9479,6 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // ORANGE / SKYLO - D2D SMS IN EUROPE
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-11-18',
-      competitor: 'skylo',
-      category: 'Product',
-      headline: 'Orange becomes first European operator to offer satellite SMS via D2D with Skylo',
-      details: [
-        'Orange France launches "Message Satellite" — D2D satellite SMS and geolocation service',
-        'First European operator to offer satellite SMS using D2D technology',
-        'Partnership with Skylo (NTN operator) using GEO satellite infrastructure',
-        'Available Dec 11, 2025 for consumers; 2026 for business',
-        'Initially exclusive to Orange 5G/5G+ customers with Google Pixel 9 or 10',
-        'Available in France and 36 countries (Skylo coverage area)',
-        'Pricing: free for first 6 months, then €5/month',
-        'Targets outdoor adventurers, remote areas, emergency services, logistics'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Validates D2D satellite market in Europe and MNO demand. However, this is SMS-only on limited devices (Pixel 9/10 only) at €5/month — narrow compared to ASTS broadband voice/data ambition. Skylo uses existing GEO satellites for narrowband NTN. ASTS offers fundamentally different value: broadband voice, video, data on any smartphone. Risk: if SMS-only satisfies most consumer demand, could reduce urgency for ASTS broadband D2D.',
-      source: 'Orange',
-      storyId: 'orange-skylo-d2d-europe',
-      storyTitle: 'Orange/Skylo D2D SMS Europe'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
     // SES / LYNK GLOBAL - D2D PARTNERSHIP
     // ═══════════════════════════════════════════════════════════════════════════
     {
