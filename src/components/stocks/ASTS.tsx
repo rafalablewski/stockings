@@ -9967,6 +9967,45 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyId: 'skylo-verizon-partnership',
       storyTitle: 'Skylo Verizon Partnership'
     },
+    {
+      date: '2024-11-26',
+      competitor: 'skylo',
+      category: 'Technology',
+      headline: 'Deutsche Telekom, Skylo and Qualcomm complete first operator-native NB-NTN SMS over satellite in Europe',
+      details: [
+        'First time in Europe an operator terrestrial mobile network integrated into satellite for D2H texting',
+        'End-to-end trial of SMS send/receipt over GEO satellite based on 3GPP Release 17 specs',
+        'Proof-of-concept conducted at Deutsche Telekom\'s Cosmote network in Greece',
+        'Device powered by Snapdragon X80 5G Modem-RF System with integrated NB-NTN',
+        'Skylo NTN commercially available network integrated into Cosmote production network',
+        'Uses dedicated licensed MSS spectrum — pan-European, no cross-border spectrum coordination needed',
+        'DT SVP Antje Williams: "Direct-to-handset will be an add-on to our mobile networks"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Deutsche Telekom is an ASTS shareholder but testing Skylo for narrowband SMS. Different tier: Skylo = NB-NTN text-only via GEO, ASTS = broadband voice/video/data via LEO. DT hedging bets across multiple D2D solutions. Pan-European MSS spectrum advantage for Skylo avoids regulatory hurdles ASTS faces with MNO terrestrial spectrum. Validates European MNO demand for satellite connectivity.',
+      source: 'Deutsche Telekom / Skylo / Qualcomm',
+      storyId: 'skylo-qualcomm-ntn',
+      storyTitle: 'Skylo Qualcomm NB-NTN Ecosystem'
+    },
+    {
+      date: '2024-09-12',
+      competitor: 'skylo',
+      category: 'Technology',
+      headline: 'Skylo introduces satellite connectivity for smartphones with Qualcomm Snapdragon X80',
+      details: [
+        'Snapdragon X80 5G Modem-RF System completed all testing and is Skylo certified',
+        'Enables two-way peer-to-peer text messaging, location sharing, and SOS via satellite',
+        'Skylo global NTN: dedicated MSS spectrum, 9 earth stations, 6+ partner constellations',
+        '50M+ sq km of satellite coverage for seamless cellular-to-satellite switching',
+        'MSS spectrum avoids carriers allocating terrestrial spectrum or regulatory hurdles',
+        'Qualcomm VP Francesco Grilli: "First we brought seamless NTN to IoT and together, we\'re making significant strides in smartphone connectivity"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Skylo + Qualcomm chipset integration is significant ecosystem milestone for NB-NTN. However, still narrowband (SMS/SOS only) — not broadband voice/video/data like ASTS. Snapdragon X80 NB-NTN support means more devices can connect to Skylo, but the service tier is fundamentally limited vs ASTS broadband capability.',
+      source: 'Skylo / Qualcomm',
+      storyId: 'skylo-qualcomm-ntn',
+      storyTitle: 'Skylo Qualcomm NB-NTN Ecosystem'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // INDUSTRY / OTHER - NTN ECOSYSTEM DEVELOPMENTS
@@ -10036,6 +10075,47 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://space42.ai/space42-and-viasat-announce-partnership/',
       storyId: 'ntn-industry-partnerships',
       storyTitle: 'NTN Industry Partnerships'
+    },
+    {
+      date: '2025-08-20',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Qualcomm Snapdragon W5+ Gen 2 becomes first wearable platform with NB-NTN satellite support',
+      details: [
+        'Snapdragon W5+ Gen 2 and W5 Gen 2: first wearable platforms with NB-NTN emergency satellite comms',
+        'Smartwatches can transmit/receive emergency messages via satellite without phone',
+        'Cutting-edge RFFE solution for NB-NTN connectivity on wrist-sized devices',
+        'Optimized power efficiency critical for limited wearable batteries',
+        'Supports Wi-Fi 6, Bluetooth 5.3, and NB-NTN satellite',
+        'Use cases: hiker distress signals, disaster area comms, remote location tracking',
+        'Builds on Snapdragon X80 NB-NTN foundation, extending to new device categories'
+      ],
+      implication: 'neutral',
+      astsComparison: 'NB-NTN expanding from smartphones to wearables validates growing satellite connectivity ecosystem. However, wearable NB-NTN is emergency SOS/messaging only — extreme narrowband. ASTS broadband D2D targets smartphones with full voice/video/data capability. Wearable NB-NTN and ASTS broadband address completely different use cases.',
+      source: 'Qualcomm',
+      storyId: 'qualcomm-ntn-chipsets',
+      storyTitle: 'Qualcomm NTN Chipset Ecosystem'
+    },
+    {
+      date: '2024-02-26',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Qualcomm unveils Snapdragon X80 — first 5G modem with fully integrated NB-NTN satellite support',
+      details: [
+        'Snapdragon X80 5G Modem-RF System: 7th gen modem-to-antenna solution',
+        'World\'s first 5G modem with fully integrated NB-NTN satellite communications support',
+        'Dedicated 5G AI Processor and 5G-Advanced-ready architecture',
+        'Also first: 6-antenna architecture for smartphones, 6X carrier aggregation',
+        'AI-based mmWave range extension for fixed wireless access CPE',
+        'Dedicated tensor accelerator for AI optimization of throughput, QoS, coverage, latency',
+        '5G Advanced capabilities across smartphones, PCs, XR, automotive, industrial IoT',
+        'Commercial devices launched second half of 2024'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Qualcomm integrating NB-NTN into flagship modem is a major ecosystem enabler — means every premium smartphone chipset will support satellite connectivity natively. This benefits Skylo (NB-NTN) but also validates the broader satellite D2D market ASTS operates in. Key distinction: X80 supports NB-NTN (narrowband SMS/SOS), while ASTS requires standard LTE/5G NR capability already in phones — no special NTN modem needed for ASTS broadband service.',
+      source: 'Qualcomm',
+      storyId: 'qualcomm-ntn-chipsets',
+      storyTitle: 'Qualcomm NTN Chipset Ecosystem'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
