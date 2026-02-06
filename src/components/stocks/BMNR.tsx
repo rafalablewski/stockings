@@ -3364,6 +3364,33 @@ const CompsTab = ({ comparables, ethPrice }) => {
     // ═══════════════════════════════════════════════════════════════════════════
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - Q4 2025 EARNINGS RELEASE (Feb 5, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'mstr',
+      category: 'Financial',
+      headline: 'Strategy Q4 2025: 713,502 BTC, $25.3B raised FY2025, largest US equity issuer',
+      details: [
+        '713,502 BTC as of Feb 1, 2026 — $54.26B cost basis ($76,052 avg), $59.75B market value',
+        'Largest US equity issuer in FY2025 — ~8% of total US equity issuance',
+        '$25.3B capital raised in FY2025 via ATM and five preferred IPOs (STRK/STRF/STRD/STRC/STRE)',
+        'STRC scaled to $3.4B at 11.25% dividend, $413M cumulative distributions (9.6% blended)',
+        '$2.25B USD Reserve provides 2.5 years dividend/interest coverage',
+        'Q4: $17.4B operating loss (incl $17.4B unrealized digital asset loss), $12.4B net loss',
+        'FY2025 BTC Yield: 22.8% (101,873 BTC Gain, $8.9B BTC $ Gain)',
+        'ROC tax treatment expected 10+ years — no E&P expected',
+        'Software: $123M revenue (+1.9% YoY), Subscription +62.1% YoY'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy raised $25.3B to accumulate BTC yielding 0%. Now pays 9.6-11.25% on $6.9B preferred equity funded by dilution. BMNR\'s ETH staking generates real 3-5% yield.',
+      source: 'Strategy Q4 2025 Earnings',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // STRATEGY - 8-K BTC HOLDINGS UPDATE (713,502 BTC)
     // ═══════════════════════════════════════════════════════════════════════════
     {
