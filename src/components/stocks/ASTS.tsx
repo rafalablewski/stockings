@@ -9524,6 +9524,26 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
     },
+    {
+      date: '2023-05-15',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology partners with iot squared (stc Group/PIF JV) for satellite IoT services in Saudi Arabia',
+      details: [
+        'MoU with iot squared — 50:50 JV between stc Group and Saudi PIF (SR492M funded)',
+        'OQ to provide satellite IoT connectivity services and products in Saudi Arabia',
+        'Target sectors: traffic management, energy, safety, waste management, smart cities',
+        'OQ supported by Aramco Wa\'ed Ventures, established local presence in Al Khobar',
+        'OQ CEO: "Only 25% of Earth\'s land mass covered by cell towers — OQ addressing this via LEO nanosatellites"',
+        'Aligns with Saudi Arabia\'s national digital transformation objectives',
+        'iot squared positioned as regional IoT hub for MENA'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Notable: iot squared is a stc Group JV, and stc Group has a $1.8B agreement with ASTS. stc hedging with both OQ (narrowband IoT) and ASTS (broadband D2D) — different service tiers for different use cases. OQ targets IoT sensors/smart city while ASTS targets smartphone broadband for stc subscribers. Aramco backing gives OQ Saudi enterprise foothold. Market segmentation: OQ for machine connectivity, ASTS for human connectivity.',
+      source: 'OQ Technology / iot squared',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // VIASAT / INMARSAT - MULTI-ORBIT SATELLITE PLATFORM
