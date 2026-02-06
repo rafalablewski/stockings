@@ -257,7 +257,7 @@ interface ErrorBoundaryState {
 // ============================================================================
 
 /** Competitor identifiers for D2D/satellite space */
-type CompetitorId = 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-kuiper' | 'other';
+type CompetitorId = 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-leo' | 'echostar' | 'other';
 
 /** News category types */
 type CompetitorNewsCategory = 'Launch' | 'Partnership' | 'Technology' | 'Regulatory' | 'Financial' | 'Coverage' | 'Product';
@@ -9260,6 +9260,272 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     //   sourceUrl: 'https://...'
     // },
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TERRESTAR - HYBRID SATELLITE-CELLULAR IoT (CANADA)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'other',
+      category: 'Product',
+      headline: 'Terrestar launches hybrid IoT service on standards-based open network platform in Canada',
+      details: [
+        'Terrestar Solutions launches Hybrid IoT connectivity service in Canada',
+        'First Canadian-controlled hybrid satellite-cellular IoT platform on open 3GPP NTN standards',
+        'Seamless switching between cellular and satellite networks across urban, rural, remote regions',
+        'LUBEX validated service over 32 weeks in Abitibi-Témiscamingue for equipment monitoring',
+        'Delivered over Canadian-licenced S-band spectrum via Echostar T1 satellite',
+        'Practical first step toward D2D satellite connectivity in Canada'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Terrestar focused on narrowband IoT (asset tracking, equipment monitoring) using single GEO satellite — not broadband D2D to smartphones. ASTS targets broadband voice/data to unmodified smartphones via LEO constellation. Validates 3GPP NTN standards approach but fundamentally different scale and capability.',
+      source: 'Terrestar Solutions',
+      sourceUrl: 'https://terrestarsolutions.ca',
+      storyId: 'terrestar-hybrid-iot',
+      storyTitle: 'Terrestar Hybrid IoT'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INDUSTRY D2D MARKET ANALYSIS
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-12',
+      competitor: 'other',
+      category: 'Coverage',
+      headline: 'MEF: Satellite D2D promises 100% geographic coverage, wholesale market evolution ahead',
+      details: [
+        'Orange France launched "Message Satellite" D2D SMS service with Skylo (€5/month after 6-month free trial)',
+        'GSMA survey: 32% of consumers would pay up to 5% extra for satellite connectivity',
+        '61% willing to pay more, 47% would switch operators for D2D coverage',
+        'Starlink has ~7,600 LEOs with D2D partnerships across 9+ operators (Verizon, T-Mobile, Rogers, etc.)',
+        'Amazon Leo targeting 3,000+ satellites',
+        'D2D described as "early signal of a wholesale market evolution"',
+        'New wholesale frameworks needed for satellite-enabled roaming and hybrid settlement'
+      ],
+      implication: 'positive',
+      astsComparison: 'Strongly validates ASTS thesis: massive consumer demand for D2D with willingness to pay and even switch operators. The 47% switching intent is a powerful negotiating lever for ASTS in MNO partnership discussions. Most Starlink D2D services are SMS-only; ASTS targets broadband voice/data.',
+      source: 'MEF',
+      storyId: 'mef-d2d-market-analysis',
+      storyTitle: 'D2D Market Analysis'
+    },
+    {
+      date: '2025-12-03',
+      competitor: 'other',
+      category: 'Coverage',
+      headline: 'Viasat/GSMA report: 60% of consumers would pay more for D2D satellite, 47% would switch providers',
+      details: [
+        'Survey of 12,390 mobile phone users across 12 markets (US, UK, France, India, Japan, etc.)',
+        'More than a third lose basic mobile service at least twice monthly',
+        '60%+ globally willing to pay extra for satellite-enabled smartphone services',
+        'Willingness varies: India 89%, Indonesia 82%, US 56%, France 48%',
+        'Consumers willing to pay 5-7% more on monthly bill',
+        'Nearly half (47%) would switch operators if D2D coverage included',
+        'India compelling: $2.35 ARPU but larger population and higher willingness-to-pay',
+        'MNOs face "marketing gap" — balancing excitement without over-promising'
+      ],
+      implication: 'positive',
+      astsComparison: 'Highly bullish for ASTS. The 47% switching intent and 60%+ willingness-to-pay validate that D2D is must-have for MNOs. Directly supports ASTS MNO partnership value proposition. High enthusiasm in emerging markets aligns with ASTS global strategy. "Marketing gap" concern about data-rich services favors ASTS over SMS-only competitors.',
+      source: 'Viasat / GSMA Intelligence',
+      storyId: 'mef-d2d-market-analysis',
+      storyTitle: 'D2D Market Analysis'
+    },
+    {
+      date: '2025-07-17',
+      competitor: 'other',
+      category: 'Coverage',
+      headline: 'Kaleido Intelligence: D2D IoT connections to reach 30M by 2030, smartphone ARPU capped at $6/mo',
+      details: [
+        'Satellite D2D IoT connections will reach 30 million by 2030 (up from under 500K end of 2025)',
+        'Key IoT use cases: asset tracking, energy/utilities, agriculture (60% of connections)',
+        '51% of IoT enterprises view D2D as viable WAN connectivity solution',
+        'Since 2015, satellite payloads launched into orbit increased 1,105%',
+        'At least 60,000 satellites expected in LEO orbit',
+        'Monthly smartphone D2D ARPU unlikely to exceed $6 globally by 2030',
+        '6 million smartphone D2D users expected by end of 2025',
+        'OEM subsidies for satellite connectivity could drive smartphone traction'
+      ],
+      implication: 'neutral',
+      astsComparison: '$6/month global ARPU ceiling for smartphone D2D is concerning for ASTS revenue model. However, 30M IoT connections by 2030 validates growing demand. ASTS differentiates with large satellite arrays (BlueBird) that compensate for smartphone antenna limitations. LEO congestion warnings (60K+ sats) could favor ASTS approach of fewer, larger satellites.',
+      source: 'Kaleido Intelligence',
+      storyId: 'mef-d2d-market-analysis',
+      storyTitle: 'D2D Market Analysis'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // OQ TECHNOLOGY - 5G NTN NB-IoT LEO OPERATOR
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-08',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Monogoto adds OQ Technology LEO constellation to hybrid connectivity platform at CES 2026',
+      details: [
+        'OQ Technology and Monogoto announce strategic partnership at CES 2026',
+        'Adds OQ LEO constellation to Monogoto hybrid ecosystem (cellular + Wi-Fi + GEO + LEO)',
+        'Single SIM, unified IP addressing, consistent APIs across all networks',
+        'OQ operates 3GPP-compliant 5G NTN NB-IoT service using 60 MHz MSS S-band',
+        'First European company to operate LEO constellation for D2D services',
+        'Targets energy, logistics, maritime, agriculture, utilities'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ Technology is NB-IoT focused (narrowband, low-data IoT) — not broadband D2D like ASTS. Targets industrial IoT verticals with low-bandwidth needs, not smartphone voice/data. S-band spectrum validates band for NTN services. Not a direct competitive threat to ASTS broadband smartphone D2D market.',
+      source: 'OQ Technology / Monogoto',
+      sourceUrl: 'https://www.oqtec.com',
+      storyId: 'oq-technology-iot',
+      storyTitle: 'OQ Technology IoT'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VIASAT / INMARSAT - MULTI-ORBIT SATELLITE PLATFORM
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-06',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Evergreen Marine confirms fleetwide rollout of Inmarsat NexusWave bonded connectivity',
+      details: [
+        'Evergreen Marine upgrades entire fleet to NexusWave bonded connectivity from Inmarsat Maritime (Viasat)',
+        'First Taiwanese operator to adopt NexusWave across full fleet',
+        'Unlimited data, always-on performance with bonded multi-network connectivity',
+        'Enables predictive analytics, real-time reefer monitoring, integrated IoT',
+        'Leverages ViaSat-3 ultra-high-capacity network',
+        'Follows Viasat\'s May 2023 acquisition of Inmarsat'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Maritime connectivity is not D2D to smartphones. Viasat\'s scale could fund their Equatys D2D venture with Space42. Maritime fleet connectivity is fundamentally different from ASTS consumer smartphone D2D.',
+      source: 'Viasat / Inmarsat Maritime',
+      storyId: 'viasat-multi-orbit',
+      storyTitle: 'Viasat Multi-Orbit Platform'
+    },
+    {
+      date: '2025-11-18',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Etihad Airways deploys Viasat Amara connectivity across entire fleet including LEO partner satellites',
+      details: [
+        'Etihad deploying Viasat Amara connectivity across A321LR, A350, and Boeing 787 Dreamliner fleet',
+        'Enables streaming, Live TV, social media, browsing via Viasat Ka-band satellites + upcoming LEO partners',
+        'Factory-installed on new Airbus fleet from April 2025',
+        'Multi-network, multi-orbit systems with guaranteed quality of service',
+        'Mention of "upcoming LEO partner satellites" signals Viasat building multi-orbit capability'
+      ],
+      implication: 'neutral',
+      astsComparison: 'In-flight connectivity is different from D2D. Viasat\'s multi-orbit infrastructure could extend to D2D through Equatys venture. Not a direct threat to ASTS smartphone D2D market.',
+      source: 'Viasat',
+      storyId: 'viasat-multi-orbit',
+      storyTitle: 'Viasat Multi-Orbit Platform'
+    },
+    {
+      date: '2025-11-17',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Viasat to integrate Telesat Lightspeed LEO into JetXP business aviation broadband',
+      details: [
+        'Viasat integrating Telesat Lightspeed LEO capacity into JetXP in-flight broadband',
+        'Combines Viasat GEO (ViaSat-3) with LEO capacity for enhanced performance',
+        'Intelligent routing between GEO and LEO optimizing for latency-sensitive applications',
+        'Multi-orbit capabilities (GEO+LEO+HEO) as single offering',
+        'HEO payloads for Arctic coverage from 2026',
+        'Commercial LEO integration service scheduled late 2027',
+        'Currently deployed on 5,000+ business jets worldwide'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Multi-orbit orchestration (GEO+LEO+HEO) could be transferable to D2D services via Equatys. Business aviation is niche market (5K jets). ASTS targets billions of smartphone users — fundamentally larger addressable market.',
+      source: 'Viasat',
+      storyId: 'viasat-multi-orbit',
+      storyTitle: 'Viasat Multi-Orbit Platform'
+    },
+    {
+      date: '2025-11-13',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Viasat successfully tests HaloNet launch telemetry solution for NASA on Blue Origin New Glenn',
+      details: [
+        'First flight test of launch telemetry data relay service on Blue Origin NG-2 mission',
+        'Part of NASA Communications Services Project (CSP)',
+        'HaloNet uses Viasat global L-band satellite network with GEO satellites',
+        'Maintained persistent connection during launch for real-time flight data',
+        'Part of NASA effort to replace Tracking and Data Relay Satellite fleet by 2031',
+        'Second Blue Origin demo planned early 2026, additional HaloNet missions planned'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Launch telemetry has no direct relevance to D2D smartphones. Demonstrates Viasat L-band infrastructure and government relationships that could support Equatys D2D venture. Indirect competitive signal: Viasat investing across multiple satellite verticals.',
+      source: 'Viasat',
+      storyId: 'viasat-multi-orbit',
+      storyTitle: 'Viasat Multi-Orbit Platform'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // BAHRAIN - D2D REGULATORY MILESTONE
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-24',
+      competitor: 'other',
+      category: 'Regulatory',
+      headline: 'Bahrain becomes first GCC country to authorize satellite direct-to-device services',
+      details: [
+        'Bahrain TRA authorizes Satellite D2D services — first GCC country to do so',
+        'Licensed MNOs can partner with Starlink and AST SpaceMobile specifically mentioned',
+        'TRA: "ensures people remain connected even beyond reach of terrestrial networks"',
+        'Standard smartphones communicate directly with LEO satellites, no specialized equipment',
+        'Bahrain ranked #1 in MENA/GCC in Global Network Excellence Index for 4G/5G',
+        'Could catalyze similar frameworks across Saudi Arabia, UAE, Qatar, other Gulf states'
+      ],
+      implication: 'positive',
+      astsComparison: 'Directly bullish — Bahrain regulatory framework explicitly names AST SpaceMobile as potential D2D partner. Concrete regulatory pathway for ASTS in Gulf market. GCC countries = high-ARPU markets with maritime/desert coverage gaps ideal for satellite D2D. First GCC D2D authorization could catalyze region-wide adoption.',
+      source: 'Gulf Daily News / Bahrain TRA',
+      storyId: 'bahrain-d2d-regulatory',
+      storyTitle: 'Bahrain D2D Authorization'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ORANGE / SKYLO - D2D SMS IN EUROPE
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-18',
+      competitor: 'skylo',
+      category: 'Product',
+      headline: 'Orange becomes first European operator to offer satellite SMS via D2D with Skylo',
+      details: [
+        'Orange France launches "Message Satellite" — D2D satellite SMS and geolocation service',
+        'First European operator to offer satellite SMS using D2D technology',
+        'Partnership with Skylo (NTN operator) using GEO satellite infrastructure',
+        'Available Dec 11, 2025 for consumers; 2026 for business',
+        'Initially exclusive to Orange 5G/5G+ customers with Google Pixel 9 or 10',
+        'Available in France and 36 countries (Skylo coverage area)',
+        'Pricing: free for first 6 months, then €5/month',
+        'Targets outdoor adventurers, remote areas, emergency services, logistics'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Validates D2D satellite market in Europe and MNO demand. However, this is SMS-only on limited devices (Pixel 9/10 only) at €5/month — narrow compared to ASTS broadband voice/data ambition. Skylo uses existing GEO satellites for narrowband NTN. ASTS offers fundamentally different value: broadband voice, video, data on any smartphone. Risk: if SMS-only satisfies most consumer demand, could reduce urgency for ASTS broadband D2D.',
+      source: 'Orange',
+      storyId: 'orange-skylo-d2d-europe',
+      storyTitle: 'Orange/Skylo D2D SMS Europe'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SES / LYNK GLOBAL - D2D PARTNERSHIP
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-03-10',
+      competitor: 'lynk',
+      category: 'Financial',
+      headline: 'SES and Lynk Global announce strategic partnership with Series B funding and MEO-relay for D2D',
+      details: [
+        'SES provides Series B funding for Lynk D2D constellation',
+        'MEO-Relay: routes D2D traffic between LEO and SES MEO network, reducing ground infrastructure',
+        'Network-as-a-Service: global ground network gateway access and GEO-based TTC&M',
+        'Strategic channel partnership for government, MNO, and automotive customers',
+        'SES and Lynk to collaborate on satellite manufacturing in US and Europe',
+        'Precursor to October 2025 Lynk-Omnispace merger with SES as major shareholder'
+      ],
+      implication: 'negative',
+      astsComparison: 'SES investment in Lynk validates D2D market but strengthens a direct competitor. Lynk gains SES MEO relay (reducing ground station needs) and channel partnerships. Lynk remains focused on messaging/voice with smaller satellites; ASTS targets broadband D2D. SES "multi-orbit" approach is innovative but unproven at scale.',
+      source: 'SES / Lynk Global',
+      sourceUrl: 'https://www.ses.com',
+      storyId: 'lynk-omnispace-merger',
+      storyTitle: 'Lynk-Omnispace Merger'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // ECHOSTAR - MDA AURORA D2D LEO CONSTELLATION ($5B PROJECT)
