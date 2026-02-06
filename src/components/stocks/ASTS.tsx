@@ -9539,7 +9539,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         'iot squared positioned as regional IoT hub for MENA'
       ],
       implication: 'neutral',
-      astsComparison: 'Notable: iot squared is a stc Group JV, and stc Group has a $1.8B agreement with ASTS. stc hedging with both OQ (narrowband IoT) and ASTS (broadband D2D) — different service tiers for different use cases. OQ targets IoT sensors/smart city while ASTS targets smartphone broadband for stc subscribers. Aramco backing gives OQ Saudi enterprise foothold. Market segmentation: OQ for machine connectivity, ASTS for human connectivity.',
+      astsComparison: 'Notable: iot squared is a stc Group / PIF joint venture. stc is one of the largest telcos in the Middle East and a potential ASTS partner market. OQ targeting IoT sensors/smart city in Saudi Arabia while ASTS targets smartphone broadband D2D. Aramco Wa\'ed Ventures backing gives OQ Saudi enterprise foothold. Different service tiers: OQ for machine connectivity (narrowband IoT), ASTS for human connectivity (broadband).',
       source: 'OQ Technology / iot squared',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -9662,7 +9662,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         'Network-as-a-Service: global ground network gateway access and GEO-based TTC&M',
         'Strategic channel partnership for government, MNO, and automotive customers',
         'SES and Lynk to collaborate on satellite manufacturing in US and Europe',
-        'Precursor to October 2025 Lynk-Omnispace merger with SES as major shareholder'
+        'Could signal deeper SES involvement in D2D market long-term'
       ],
       implication: 'negative',
       astsComparison: 'SES investment in Lynk validates D2D market but strengthens a direct competitor. Lynk gains SES MEO relay (reducing ground station needs) and channel partnerships. Lynk remains focused on messaging/voice with smaller satellites; ASTS targets broadband D2D. SES "multi-orbit" approach is innovative but unproven at scale.',
