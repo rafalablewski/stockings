@@ -9241,11 +9241,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     {
       id: 'oq-technology',
       name: 'OQ Technology',
-      description: 'European LEO 5G NTN operator for NB-IoT and D2D — Luxembourg-based, sovereign EU positioning',
-      technology: '10 LEO sats (30 more by end 2026), 60 MHz MSS S-band + upper C-band, 3GPP NTN NB-IoT/D2D',
-      currentStatus: '10 sats in orbit, IoT commercial, D2D emergency broadcast demo Nov 2025, D2D messaging late 2026',
+      description: 'European LEO 5G NTN operator for NB-IoT and D2D — Luxembourg-based (founded 2016 by Omar Qaise, ex-SES), sovereign EU positioning',
+      technology: '10 LEO 6U cubesats, 60 MHz MSS S-band + upper C-band + IMT band, 3GPP NTN NB-IoT/D2D, in-house RAN stack + 5G core',
+      currentStatus: '10 sats in orbit, IoT commercial (20+ MNO roaming), D2D emergency broadcast Nov 2025, 5NETSAT mission Aug 2025, D2D messaging targeting 2026, 30 new sats planned by end 2026',
       capabilities: { voice: false, text: true, data: true, video: false, unmodifiedPhones: true, globalCoverage: false },
-      keyMetrics: { satellites: '10 (100 target in 2-3 yrs)', coverage: 'Global IoT, expanding D2D', subscribers: '15 MNO roaming partners (DT, KPN, Telefónica)', funding: '€2.5M EIC grant + private' }
+      keyMetrics: { satellites: '10 (30 more by end 2026, 100 target in 2-3 yrs)', coverage: 'Global IoT + expanding D2D, licensed in AU/LU/DE/SA/NG/RW', subscribers: '20+ MNO roaming (DT, KPN, Telefónica, Transatel, Emnify)', funding: '€13M Series A (Aramco) + LSSD convertible (SES) + €17.5M EIC; Series B targeting €35-40M' }
     }
   ];
 
@@ -9362,7 +9362,31 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
     // ═══════════════════════════════════════════════════════════════════════════
     // OQ TECHNOLOGY - EUROPEAN 5G NTN LEO OPERATOR (IoT + D2D)
+    // Founded 2016 Luxembourg by Omar Qaise (ex-SES). 10 LEO 6U cubesats,
+    // 60 MHz MSS S-band. Backed by Aramco Wa'ed, SES/LSSD, EIC. 20+ MNO roaming.
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // --- 2026 ---
+    {
+      date: '2026-01-20',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology and Eseye partner for global 5G IoT via seamless satellite-terrestrial integration',
+      details: [
+        'Strategic partnership with UK-based Eseye for ubiquitous IoT connectivity',
+        'OQ LEO constellation integrated with Eseye AnyNet Connectivity Hub',
+        'Single SIM solution bridging terrestrial and satellite networks',
+        '3GPP Release 17 multi-RAT connectivity — automatic roam between cellular and satellite',
+        'Global uninterrupted 5G IoT for maritime, logistics, energy, mining, agriculture',
+        'OQ LEO satellites in S-band deliver low-latency connectivity for M2M applications',
+        'Targets maritime, logistics, energy, mining, agriculture, environmental monitoring'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ continuing to build IoT partnership ecosystem. Eseye integration is similar to Monogoto partnership (announced same month) — extending OQ reach through connectivity platforms. Still NB-IoT focused, not broadband D2D. Growing IoT footprint could support OQ\'s transition to D2D services.',
+      source: 'New Electronics / Via Satellite',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
     {
       date: '2026-01-08',
       competitor: 'oq-technology',
@@ -9373,13 +9397,34 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         'Adds OQ LEO constellation to Monogoto hybrid ecosystem (cellular + Wi-Fi + GEO + LEO)',
         'Single SIM, unified IP addressing, consistent APIs across all networks',
         'OQ operates 3GPP-compliant 5G NTN NB-IoT service using 60 MHz MSS S-band',
-        'First European company to operate LEO constellation for D2D services',
+        'Monogoto: "For the first time, LEO is joining the hybrid connectivity landscape"',
         'Targets energy, logistics, maritime, agriculture, utilities'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ expanding IoT connectivity ecosystem via partnerships. Still NB-IoT focused but growing D2D ambitions. Not direct competition to ASTS broadband smartphone D2D yet.',
+      astsComparison: 'OQ expanding IoT connectivity ecosystem via partnerships. Still NB-IoT focused but growing D2D ambitions following Nov 2025 emergency broadcast demo. Not direct competition to ASTS broadband smartphone D2D yet.',
       source: 'OQ Technology / Monogoto',
-      sourceUrl: 'https://www.oqtec.com',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+
+    // --- 2025 ---
+    {
+      date: '2025-12-17',
+      competitor: 'oq-technology',
+      category: 'Technology',
+      headline: 'OQ Technology certifies Nordic Semiconductor nRF9151 for NTN NB-IoT — first standard module-to-LEO connection',
+      details: [
+        'Successful end-to-end NB-IoT connection from Nordic nRF9151 module to OQ LEO constellation',
+        'Powered entirely by OQ\'s own 3GPP NTN NB-IoT RAN stack and 5G core — full vertical integration',
+        'Nordic module connects directly to OQ satellites without hardware modifications',
+        'Validates readiness of mass-market NTN IoT for broad commercial deployment',
+        'OQ claims "unparalleled control over performance, reliability" via vertical integration',
+        'Enables industries in remote sectors (energy, mining, logistics, agriculture)',
+        '75%+ of world landmass and maritime waters lack cellular coverage — OQ addresses this gap'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ validating NB-IoT standards-based connectivity from mass-market modules to LEO satellites. Nordic is also Iridium\'s NTN Direct chipset partner — OQ and Iridium competing for same NB-IoT ecosystem. OQ\'s vertical integration (own RAN + core) gives more control vs ASTS which works with MNO infrastructure. Different markets: OQ IoT sensors, ASTS smartphones.',
+      source: 'Nordic Semiconductor / Via Satellite',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
     },
@@ -9390,19 +9435,96 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       headline: 'OQ Technology achieves Europe\'s first D2D emergency broadcast from space — plans 30 sats and D2D messaging by end 2026',
       details: [
         'First European satellite operator to deliver D2D emergency broadcast from LEO to unmodified iPhones and Androids',
-        'Live demo in Luxembourg — transmitted without hardware/software modifications',
+        'Live demo in Luxembourg at Space Tech Europe (Bremen) — transmitted without hardware/software modifications',
         '10 LEO satellites currently in orbit, 30 more planned by end 2026 (5 launches)',
         'D2D text messaging service expected by end 2026, voice services to follow',
-        '15 MNO roaming partners including Deutsche Telekom, KPN, Telefónica, Emnify',
         '60 MHz MSS S-band spectrum + upper C-band + IMT band partnerships',
         'Targeting 100 satellites in constellation within 2-3 years',
         'Positioning as "clear European sovereign operator for D2D connectivity"',
         'Interested in EU 2GHz MSS spectrum renewal in 2027 (currently held by Inmarsat/Solaris Mobile)',
-        'Backed by Luxembourg Space Agency, ESA, European Innovation Council, EU Cassini Accelerator'
+        'Backed by Luxembourg Space Agency, ESA, European Innovation Council, EU Cassini Accelerator',
+        'Has contributed to multiple 3GPP working groups shaping NTN standards'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ Technology is evolving from IoT-only to a serious European D2D contender. 30 new sats by 2026 + D2D messaging/voice plans increase competitive overlap with ASTS. Key differences: OQ targets narrowband D2D (messaging/voice) while ASTS targets broadband (video/data). OQ\'s 15 MNO partners and EU sovereign positioning compete with ASTS/Vodafone SatCo JV for European market. OQ eyeing EU 2GHz spectrum renewal creates potential spectrum conflict. Scale mismatch: OQ targeting 100 sats vs ASTS constellation of much larger, higher-throughput BlueBirds.',
-      source: 'OQ Technology / Light Reading',
+      astsComparison: 'OQ Technology is evolving from IoT-only to a serious European D2D contender. 30 new sats by 2026 + D2D messaging/voice plans increase competitive overlap with ASTS. Key differences: OQ targets narrowband D2D (messaging/voice) while ASTS targets broadband (video/data). OQ\'s 20+ MNO partners and EU sovereign positioning compete with ASTS/Vodafone SatCo JV for European market. OQ eyeing EU 2GHz MSS spectrum renewal creates potential spectrum conflict. Scale mismatch: OQ targeting 100 sats vs ASTS constellation of much larger, higher-throughput BlueBirds.',
+      source: 'GlobeNewswire / Light Reading / Via Satellite',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2025-11-05',
+      competitor: 'oq-technology',
+      category: 'Regulatory',
+      headline: 'OQ Technology granted official Luxembourg government concession for satellite 5G NTN and D2D services',
+      details: [
+        'Official government concession from Luxembourg for satellite-based 5G D2D and IoT',
+        'Issued by Minister Elisabeth Margue (Media and Connectivity)',
+        'Authorized to deploy and operate satellite networks for D2D and IoT connectivity',
+        'Standard 5G smartphones and NB-IoT devices connect via satellite without custom hardware',
+        'Luxembourg among first European countries to authorize 5G NTN and D2D operations',
+        'Grants regulatory rights under internationally coordinated ITU frequency/orbit filings',
+        'Linked to 5NETSAT mission backed by €2.5M EIC grant'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Luxembourg concession gives OQ official regulatory authority for European D2D — a competitive advantage in European market vs ASTS/SatCo which operates through MNO spectrum partnerships. OQ building sovereign EU regulatory position while ASTS relies on MNO agreements. Different regulatory paths to same market.',
+      source: 'Advanced Television / SpaceWatch Global',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2025-10-01',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology joins Mobile Satellite Services Association (MSSA) for D2D and NTN spectrum advocacy',
+      details: [
+        'OQ Technology joins MSSA — industry body progressing D2D IoT and NTN connectivity',
+        'MSSA launched Feb 2024 to develop global ecosystem using L- and S-band spectrum',
+        'Focus on spectrum already allocated and licensed for mobile satellite services',
+        'MSSA Board Chairman Mark Dankberg (Viasat): "very pleased to welcome OQ Technology"',
+        'OQ described as "industry leader and provider in 5G non-terrestrial network connectivity"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ joining MSSA alongside other satellite players strengthens industry coalition for D2D spectrum. MSSA focuses on L- and S-band, different from ASTS which uses MNO spectrum via partnerships. OQ accumulating industry group memberships and regulatory positions in European D2D market.',
+      source: 'SatellitePro ME',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2025-09-30',
+      competitor: 'oq-technology',
+      category: 'Coverage',
+      headline: 'OQ Technology expands satellite IoT services to Australia — S-band spectrum license secured from ACMA',
+      details: [
+        'Official launch into Australian market with new office',
+        'Secured S-band spectrum license from Australian Communications and Media Authority (ACMA)',
+        'Australia joins Luxembourg, Germany, Saudi Arabia, Rwanda, Nigeria in OQ\'s licensed countries',
+        'Services delivered through own spectrum + 20+ MNO roaming agreements worldwide',
+        'Enterprise customers include Aramco',
+        'Targeting agriculture, mining, oil & gas, logistics, utilities, emergency response',
+        'Claims 80% cost reduction vs providers requiring proprietary hardware'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ expanding geographically — Australia is a key market for satellite connectivity due to vast rural areas. ASTS also targets Australia via MNO partnerships (Telstra MOU). OQ focused on NB-IoT enterprise market while ASTS targets consumer smartphone broadband. Different use cases but competing for "satellite connectivity" narrative in same geography.',
+      source: 'SpaceNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2025-09-29',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology and KPN sign roaming agreement for global 5G IoT coverage',
+      details: [
+        'Strategic roaming agreement with Dutch telecom KPN',
+        'KPN customers seamlessly roam onto OQ satellite network when terrestrial unavailable',
+        'KPN\'s second satellite-IoT partnership in 2025 (after Skylo in April)',
+        'LEO satellites provide global coverage including polar regions above 70° and remote ocean routes',
+        'Advantage over GEO systems in high-latitude and obstructed environments',
+        'Targets maritime, logistics, energy, agriculture customers'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ building MNO roaming partnerships similar to ASTS MNO partnership model. KPN is not an ASTS partner. OQ focused on IoT connectivity extension while ASTS targets smartphone broadband. OQ\'s LEO advantage in polar regions is relevant for maritime/logistics verticals.',
+      source: 'Via Satellite / SpaceNews',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
     },
@@ -9426,101 +9548,225 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2025-09-01',
+      date: '2025-08-14',
       competitor: 'oq-technology',
-      category: 'Regulatory',
-      headline: 'OQ Technology granted Luxembourg government concession for satellite 5G NTN and D2D services globally',
+      category: 'Launch',
+      headline: 'OQ Technology launches 5NETSAT mission — Europe\'s first 5G NTN LEO service demo, backed by €2.5M EIC grant',
       details: [
-        'Official government concession from Luxembourg for satellite-based 5G D2D and IoT',
-        'Authorized to deploy and operate satellite networks for D2D and IoT connectivity',
-        'Standard 5G smartphones and NB-IoT devices connect via satellite without custom hardware',
-        'Luxembourg among first European countries to authorize 5G NTN and D2D operations',
-        'Grants regulatory rights under internationally coordinated ITU filings',
-        'Minister Margue: "Supporting innovation that brings tangible added-value to Luxembourg space ecosystem"',
-        'Linked to 5NETSAT mission backed by €2.5M EIC grant'
+        'Official launch of flagship 5NETSAT mission supported by €2.5M EIC Accelerator grant',
+        'Also selected for equity investment by EIC Fund',
+        'Demonstrates D2D capabilities: emergency SMS and broadcast alerts to standard 5G devices using IMT spectrum',
+        'Europe\'s first service demonstration of a 5G NTN in LEO',
+        'OQ is first Luxembourg space company to receive EIC Accelerator funding',
+        'Only 4 out of 71 EIC-selected companies this year were space-related'
       ],
       implication: 'neutral',
-      astsComparison: 'Luxembourg concession gives OQ official regulatory authority for European D2D — a competitive advantage in European market vs ASTS/SatCo which operates through MNO spectrum partnerships. OQ building sovereign EU regulatory position while ASTS relies on MNO agreements. Different regulatory paths to same market.',
+      astsComparison: 'OQ achieving key EU milestones — 5NETSAT is Europe\'s first 5G NTN LEO service demo. EU institutional backing (EIC) positions OQ as Europe\'s preferred sovereign D2D operator. ASTS competing for European market through Vodafone SatCo JV and MNO partnerships; OQ building direct EU institutional support. Scale remains very different: OQ 6U cubesats vs ASTS 64m² BlueBird arrays.',
+      source: 'SatNews / telecoms.com',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2025-03-04',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology becomes commercial roaming partner of Deutsche Telekom at MWC 2025',
+      details: [
+        'Commercial roaming agreement signed with Deutsche Telekom at MWC 2025',
+        'DT users can roam into OQ\'s NTN globally for enterprise IoT',
+        'Builds on MoU announced at MWC 2024',
+        'Targets utilities, logistics, maritime, and energy sectors',
+        'OQ integrated into Deutsche Telekom\'s network infrastructure'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Deutsche Telekom is a Tier-1 European MNO — OQ securing DT as commercial roaming partner strengthens European IoT position. Different service tiers: OQ provides NB-IoT for enterprise sensors, ASTS targets smartphone broadband via large-array satellites. Both competing for MNO mindshare in the NTN space.',
       source: 'OQ Technology',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2025-08-01',
-      competitor: 'oq-technology',
-      category: 'Coverage',
-      headline: 'OQ Technology launches in Australia with satellite 5G IoT for mining, agriculture, and emergency services',
-      details: [
-        'Official launch into Australian market, opened OQ Technology Australia subsidiary in Sydney',
-        '10 satellites in orbit providing enterprise-grade 3GPP NB-IoT connectivity',
-        'Targeting agriculture, mining, oil & gas, logistics, utilities, emergency response',
-        'Dual-use: commercial and government applications including bushfire monitoring and emergency comms',
-        '5NETSAT mission: Europe\'s first direct-to-mobile satellite network backed by €2.5M EIC grant',
-        'Claims 80% cost reduction vs providers requiring proprietary hardware',
-        'Aligned with Australian LEOSat Working Group for digital inclusion and First Nations connectivity',
-        'Assembling local business and engineering teams'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ expanding geographically — Australia is a key market for satellite connectivity due to vast rural areas. ASTS also targets Australia via MNO partnerships (Telstra MOU). OQ focused on NB-IoT enterprise market while ASTS targets consumer smartphone broadband. Different use cases but competing for "satellite connectivity" narrative in same geography.',
-      source: 'OQ Technology',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-    {
-      date: '2025-06-01',
+      date: '2025-02-26',
       competitor: 'oq-technology',
       category: 'Partnership',
-      headline: 'OQ Technology and KPN enable worldwide 5G IoT connectivity via satellite-terrestrial roaming',
+      headline: 'OQ Technology signs distributor agreement with Aramco Digital for NTN IoT in Saudi Arabia',
       details: [
-        'Strategic roaming partnership with Dutch telecom KPN',
-        'KPN customers seamlessly connect to OQ satellite network when terrestrial unavailable',
-        'LEO satellites provide global coverage including polar regions and remote ocean routes',
-        'Bridges gap in GEO satellite coverage at extreme latitudes (>70° where GEO struggles)',
-        'Targets maritime, logistics, energy, agriculture customers',
-        'Single solution combining KPN terrestrial + GEO + OQ LEO coverage'
+        'Aramco Digital to act as official distributor of OQ NTN IoT solutions in Saudi Arabia',
+        'Deepens existing Aramco-OQ relationship (Wa\'ed Ventures led Series A in 2022)',
+        'Enables satellite-powered IoT connectivity for Saudi industries',
+        'Aramco Digital is the digital innovation arm of Saudi Aramco',
+        'OQ already has local Saudi presence in Al Khobar'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ building MNO roaming partnerships similar to ASTS MNO partnership model. KPN is not an ASTS partner. OQ focused on IoT connectivity extension while ASTS targets smartphone broadband. OQ\'s LEO advantage in polar regions is relevant for maritime/logistics verticals.',
-      source: 'OQ Technology / KPN',
+      astsComparison: 'OQ deepening Saudi enterprise foothold via Aramco relationship. Aramco is one of world\'s largest companies — distribution agreement validates OQ\'s IoT service for energy sector. ASTS pursuing Middle East through MNO partnerships; OQ has direct enterprise channel via Aramco. Different markets: OQ for industrial IoT, ASTS for consumer broadband.',
+      source: 'OQ Technology / SatellitePro ME',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2025-05-01',
+      date: '2025-02-19',
+      competitor: 'oq-technology',
+      category: 'Financial',
+      headline: 'OQ Technology secures up to €17.5M from EU EIC Accelerator for direct-to-smartphone satellite efforts',
+      details: [
+        'Package includes secured €2.5M grant and up to €15M in equity financing for Series B',
+        'Supports OQ\'s efforts to connect unmodified smartphones via small satellite constellation',
+        'Series B aims to raise €35-40M total, backed by Luxembourg government (LSSD)',
+        'Existing 10 cubesats need significant payload and software upgrades for smartphone connectivity',
+        'Successfully tested upgraded payload in representative environment',
+        'First enhanced satellite targeting 2026 launch',
+        'First Luxembourg space company to receive EIC Accelerator funding'
+      ],
+      implication: 'neutral',
+      astsComparison: 'EU funding validates OQ\'s D2D smartphone ambitions but €17.5M is modest compared to ASTS\'s capital raises (hundreds of millions raised publicly). OQ needs significant payload upgrades to go from IoT cubesats to smartphone connectivity — ASTS designed BlueBird arrays specifically for smartphone broadband from the start. OQ\'s EU institutional backing is a competitive advantage in European market.',
+      source: 'SpaceNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+
+    // --- 2024 ---
+    {
+      date: '2024-10-21',
+      competitor: 'oq-technology',
+      category: 'Financial',
+      headline: 'OQ Technology secures convertible investment from LSSD fund (SES + Luxembourg Gov\'t) in Series B',
+      details: [
+        'Convertible loan investment from Luxembourg Space Sector Development fund (LSSD)',
+        'LSSD co-led by SES S.A. and Luxembourg government',
+        'Existing shareholders Wa\'ed Ventures (Aramco VC) and Phaistos (Greece) also participated',
+        'Previous Series A raised €13M in 2022',
+        'SES backing notable: world\'s largest GEO satellite operator investing in LEO NTN startup',
+        'CEO: "backed by both the world\'s largest satellite operator and the VC arm of the oil and gas giant"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'SES investment in OQ is notable — world\'s largest GEO operator backing OQ\'s LEO NTN IoT. OQ funding scale (€13M Series A + convertible) remains modest compared to ASTS which has raised hundreds of millions. However, institutional backing (SES, Aramco, Luxembourg Gov\'t) gives OQ significant credibility in European market.',
+      source: 'SpaceNews / SatNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2024-05-05',
       competitor: 'oq-technology',
       category: 'Partnership',
-      headline: 'OQ Technology and Eseye partner for global 5G IoT via seamless satellite-terrestrial integration',
+      headline: 'OQ Technology and Transatel collaborate for global converged satellite 5G IoT connectivity',
       details: [
-        'Strategic partnership with UK-based Eseye for ubiquitous IoT connectivity',
-        'OQ LEO constellation integrated with Eseye AnyNet Connectivity Hub',
-        'Single SIM solution bridging terrestrial and satellite networks',
-        '3GPP Release 17 multi-RAT connectivity — automatic roam between cellular and satellite',
-        'Global uninterrupted 5G IoT for maritime, logistics, energy, mining, agriculture',
-        'OQ LEO satellites in S-band deliver low-latency connectivity for M2M applications'
+        'Collaboration for converged mobile satellite connectivity service',
+        'Transatel offers global 5G roaming, enabling NB-IoT solutions worldwide',
+        'Hybrid terrestrial + NTN combined solution on compatible devices',
+        'OQ has 10 satellites in orbit with more planned',
+        'Targets low-latency, large capacity IoT communication'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ continuing to build IoT partnership ecosystem. Eseye integration is similar to Monogoto partnership — extending OQ reach through connectivity platforms. Still NB-IoT focused, not broadband D2D. Growing IoT footprint could support OQ\'s transition to D2D services.',
-      source: 'OQ Technology / Eseye',
+      astsComparison: 'OQ continuing to build MNO/MVNO roaming partnerships. Transatel is a global IoT MVNO — different from ASTS\'s MNO partnerships with AT&T, Vodafone. OQ consistently adding connectivity platform integrations for IoT. Still IoT-only at this stage, not smartphone D2D.',
+      source: 'SatNews / Transatel',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2025-04-01',
+      date: '2024-03-12',
+      competitor: 'oq-technology',
+      category: 'Launch',
+      headline: 'OQ Technology launches Tiger-7 and Tiger-8 — constellation reaches 10 LEO satellites',
+      details: [
+        'Tiger-7 and Tiger-8 launched on SpaceX Falcon 9 Transporter-10 rideshare',
+        'Both 6U nanosatellites carry NB-IoT payloads, facilitated by Nanoavionics',
+        'Only 3 months after Tiger-5 & Tiger-6 on Transporter-9',
+        'OQ constellation reaches 10 satellites total — Series A milestone achieved',
+        'CEO: "leading the pack as fastest-growing LEO NTN NB-IoT 3GPP standard constellation"',
+        'Now preparing for batch-2 satellites with enhanced capabilities'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ reaching 10-satellite milestone with 6U cubesats. Very different scale: ASTS building large phased-array satellites (planned BlueBird production sats) for broadband D2D. OQ cubesats designed for narrowband IoT; ASTS arrays designed for broadband voice/data. OQ rapid launch cadence (4 sats in ~4 months) enabled by small form factor and rideshare missions.',
+      source: 'SatellitePro ME',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2024-03-05',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology signs MoU with Deutsche Telekom IoT for converged satellite-cellular service at MWC 2024',
+      details: [
+        'MoU with Deutsche Telekom IoT (DT IoT) announced at MWC 2024',
+        'DT IoT to offer converged mobile satellite connectivity service',
+        'OQ satellite network integrates with DT T IoT Hub and Core Network',
+        'Provides global IoT network coverage for DT enterprise customers',
+        'Significant milestone: DT is one of Europe\'s largest telcos'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Deutsche Telekom is a Tier-1 European MNO — MoU with OQ validates satellite-IoT roaming model. ASTS also pursues large MNO partnerships but for smartphone broadband. OQ steadily building MNO ecosystem for narrowband IoT. Different value propositions: OQ extends IoT to remote areas, ASTS delivers broadband where there are coverage gaps.',
+      source: 'GSMA / IoT Insider',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2024-02-08',
       competitor: 'oq-technology',
       category: 'Technology',
-      headline: 'OQ Technology and Nordic Semiconductor achieve first NB-IoT connection from standard module to LEO satellite',
+      headline: 'OQ Technology receives ESA/Luxembourg contract to study direct-to-smartphone capability from LEO',
       details: [
-        'Successful end-to-end NB-IoT connection from Nordic nRF9151 module to OQ LEO constellation',
-        'Powered entirely by OQ\'s own 3GPP NTN NB-IoT RAN stack and 5G core — full vertical integration',
-        'Nordic module connects directly to OQ satellites without hardware modifications',
-        'Validates readiness of mass-market NTN IoT for broad commercial deployment',
-        'OQ claims "unparalleled control over performance, reliability" via vertical integration',
-        'Enables industries in remote sectors (energy, mining, logistics, agriculture)',
-        '75%+ of world landmass and maritime waters lack cellular coverage — OQ addresses this gap'
+        'Six-month feasibility contract funded by Luxembourg via LuxImpulse innovation program',
+        'Study ways to connect unmodified smartphones from OQ\'s LEO constellation',
+        'Current 8 cubesats can connect IoT devices but smartphones need more satellite power + Doppler management',
+        'CEO anticipates D2D satellite or hosted payload within two years, pending funding',
+        'Marks OQ\'s formal pivot from IoT-only to smartphone D2D ambitions'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ validating NB-IoT standards-based connectivity from mass-market modules to LEO satellites. Nordic is also Iridium\'s NTN Direct chipset partner — OQ and Iridium competing for same NB-IoT ecosystem. OQ\'s vertical integration (own RAN + core) gives more control vs ASTS which works with MNO infrastructure. Different markets: OQ IoT sensors, ASTS smartphones.',
-      source: 'OQ Technology / Nordic Semiconductor',
+      astsComparison: 'OQ beginning to study D2D smartphone capability — still at feasibility stage. ASTS has been designing specifically for smartphone D2D from inception, with BW3 test satellite already in orbit (since Sep 2023). OQ would need significantly more powerful satellites to reach smartphones from its 6U cubesat platform. Years behind ASTS in D2D smartphone development.',
+      source: 'SpaceNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+
+    // --- 2023 ---
+    {
+      date: '2023-11-11',
+      competitor: 'oq-technology',
+      category: 'Launch',
+      headline: 'OQ Technology launches Tiger-5 and Tiger-6 on SpaceX Transporter-9 — constellation grows to 8 satellites',
+      details: [
+        'Tiger-5 and Tiger-6 launched on SpaceX Falcon 9 Transporter-9 rideshare',
+        'Both 6U nanosatellites carry NB-IoT payloads',
+        'Constellation grows to 8 satellites total',
+        'CEO: "on track completing batch 1 of 10 satellites to serve critical clients globally"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ adding IoT satellites steadily via rideshare missions. ASTS BW3 test satellite launched same period (Sep 2023) with fundamentally different approach — single large 64m² array vs many small cubesats. OQ for narrowband IoT sensors, ASTS for broadband smartphone D2D.',
+      source: 'SatNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2023-11-01',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'O2 Telefónica partners with OQ Technology for worldwide satellite IoT coverage',
+      details: [
+        'O2 Telefónica expands IoT network coverage for business customers via OQ partnership',
+        'Worldwide 5G roaming for NB-IoT solutions from Q2 2024',
+        'OQ satellite network integrated via Telefónica IPX cloud and Kite IoT platform',
+        'Enables IoT connectivity across all continents and oceans',
+        'Telefónica is one of Europe\'s largest telcos with global IoT reach'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Telefónica/O2 is a major European MNO. OQ winning Telefónica for IoT roaming shows OQ building competitive European MNO footprint. OQ provides narrowband IoT while ASTS pursues broadband smartphone D2D via its own MNO partnerships (AT&T, Vodafone). Both competing for MNO attention in overlapping markets.',
+      source: 'Telefónica Germany',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2023-07-01',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology signs new MoU with Aramco for automation and satellite IoT at remote sites',
+      details: [
+        'New MoU strengthening existing Aramco-OQ collaboration',
+        'Focus on automation and satellite IoT connectivity for Aramco remote site infrastructure',
+        'Builds on Wa\'ed Ventures (Aramco VC) leading OQ\'s Series A in 2022',
+        'Aramco is world\'s largest oil company — validates satellite IoT for energy sector'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ deepening relationship with world\'s largest oil company for industrial IoT. ASTS focused on consumer/MNO broadband, not industrial IoT. OQ carving out niche in energy/enterprise satellite IoT that doesn\'t directly compete with ASTS consumer D2D plans.',
+      source: 'SatNews',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
     },
@@ -9541,6 +9787,61 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'Notable: iot squared is a stc Group / PIF joint venture. stc is one of the largest telcos in the Middle East and a potential ASTS partner market. OQ targeting IoT sensors/smart city in Saudi Arabia while ASTS targets smartphone broadband D2D. Aramco Wa\'ed Ventures backing gives OQ Saudi enterprise foothold. Different service tiers: OQ for machine connectivity (narrowband IoT), ASTS for human connectivity (broadband).',
       source: 'OQ Technology / iot squared',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2023-03-01',
+      competitor: 'oq-technology',
+      category: 'Launch',
+      headline: 'OQ Technology orders five 6U nanosatellites (Tiger-4 through Tiger-8) for constellation expansion',
+      details: [
+        'Five additional 6U nanosatellites ordered: Tiger-4 to Tiger-8',
+        'Tiger-4, Tiger-7, Tiger-8 built by Kongsberg NanoAvionics',
+        'Tiger-5, Tiger-6 built by Space Inventor (Denmark)',
+        'All launches planned through 2023-2024',
+        'CEO: "well ahead in the 5G IoT NTN market, continuing expansion of global coverage"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ expanding with small 6U cubesats for IoT — very different constellation strategy from ASTS which is building large phased-array satellites for broadband D2D. OQ cubesat approach is faster/cheaper to deploy but fundamentally limited in capability. Different target markets: OQ for IoT sensors, ASTS for smartphones.',
+      source: 'SatellitePro ME',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+
+    // --- 2022 ---
+    {
+      date: '2022-09-01',
+      competitor: 'oq-technology',
+      category: 'Financial',
+      headline: 'OQ Technology closes ~€13M Series A led by Aramco\'s Wa\'ed Ventures',
+      details: [
+        '~€13 million Series A funding round closed',
+        'Led by Wa\'ed Ventures, venture capital arm of Saudi Aramco',
+        'Participation from Phaistos Investment Fund (Greece)',
+        'Funds constellation expansion to 10 satellites and commercial IoT deployment',
+        'Establishes OQ\'s strategic link to Saudi energy ecosystem'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ\'s €13M Series A is modest — ASTS is publicly traded with much larger fundraising capabilities. Aramco VC backing gives OQ strategic access to energy sector IoT market. Different scale of ambition: OQ building narrowband IoT service, ASTS building broadband D2D infrastructure.',
+      source: 'SpaceNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2022-03-03',
+      competitor: 'oq-technology',
+      category: 'Technology',
+      headline: 'Alif Semiconductor and OQ Technology collaborate on AI-enabled NB-IoT connectivity for hybrid networks',
+      details: [
+        'Collaboration to deploy NB-IoT connectivity for hybrid terrestrial-satellite networks',
+        'AI-enabled, standardized solution for significant cost reduction vs existing satellite connectivity',
+        'Uses 3GPP NTN standards for interoperability',
+        'Targets cost-effective IoT in remote areas without cellular coverage'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ building chipset partnerships for IoT ecosystem. ASTS focused on smartphone broadband via existing phone chipsets. Different technology strategies: OQ needs IoT-specific chipset partners for NB-IoT modules, ASTS leverages existing smartphone chipset ecosystem (Qualcomm, MediaTek).',
+      source: 'OQ Technology',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
     },
