@@ -9374,6 +9374,27 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyId: 'oq-technology-iot',
       storyTitle: 'OQ Technology IoT'
     },
+    {
+      date: '2025-12-15',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'OQ Technology achieves Europe\'s first direct-to-mobile emergency broadcast message from space',
+      details: [
+        'First European satellite operator to deliver D2D emergency broadcast from LEO satellite to unmodified smartphones',
+        'Live demo in Luxembourg: transmitted to both iPhone and Android devices without hardware/software mods',
+        'Uses OQ\'s own LEO satellite constellation with 60 MHz MSS S-band spectrum rights',
+        'Also holds upper C-band and IMT band partnerships',
+        '100% European-led, headquartered in Luxembourg, backed by Luxembourg Space Agency, ESA, EU',
+        'Aligned with 3GPP NTN Releases 17 and 18 for interoperability with existing smartphones',
+        'Next milestone: direct-to-mobile voice services planned within coming year',
+        'Targeting sovereign, secure European D2D network for public safety and disaster response'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ Technology advancing from IoT-only to D2D emergency broadcast and planning voice services. Their 60 MHz S-band spectrum and operational LEO constellation make them a growing European competitor. However, still early stage (emergency broadcast demo, not commercial service) and focused on European sovereignty/public safety niche. ASTS targets global commercial broadband D2D with MNO partnerships. OQ voice plans could increase competitive overlap with ASTS, but scale and throughput differences remain significant.',
+      source: 'OQ Technology',
+      storyId: 'oq-technology-iot',
+      storyTitle: 'OQ Technology IoT'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // VIASAT / INMARSAT - MULTI-ORBIT SATELLITE PLATFORM
@@ -9555,6 +9576,29 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://www.businesswire.com/news/home/20260204att-aws-amazon-leo',
       storyId: 'amazon-leo-att',
       storyTitle: 'Amazon Leo AT&T Partnership'
+    },
+    {
+      date: '2026-02-03',
+      competitor: 'amazon-leo',
+      category: 'Regulatory',
+      headline: 'Amazon Leo seeks 24-month FCC extension due to launch shortages — only 180 of 1,618 sats deployed',
+      details: [
+        'Amazon requests deadline extension from July 2026 to July 2028 for half-constellation (1,618 sats)',
+        'Cites "near-term shortage of available rockets" despite $10B+ investment',
+        'Only 180 satellites in orbit; projects ~700 by original July 2026 deadline — less than half required',
+        'Original strategy bet on unproven rockets (Vulcan, Ariane 6, New Glenn) — all faced delays',
+        'SpaceX initially excluded from bidding; 2023 shareholder lawsuit alleged Bezos rivalry caused "bad faith"',
+        'Late pivot: booked 3 Falcon 9 launches (Dec 2023), added 10 more + 12 New Glenn (Jan 2026)',
+        'Only 7 of 20+ planned 2025 launches completed due to manufacturing disruptions and rocket delays',
+        'Manufacturing at 30 sats/week capacity — producing faster than rockets can carry them',
+        'Starlink comparison: 9,000+ satellites, ~9M customers vs Amazon Leo 180 satellites',
+        'Industry rumors of potential spinoff of Amazon Leo to Blue Origin'
+      ],
+      implication: 'positive',
+      astsComparison: 'Amazon Leo\'s execution struggles highlight how difficult constellation deployment is at scale. ASTS faces similar launch dependency risks but has fundamentally different approach: fewer, larger satellites (each BlueBird covers more area). Amazon still terminal-based broadband, not D2D — but their regulatory struggles and delayed timeline reduce competitive pressure on the broader satellite connectivity market. FCC extension request shows even $10B cannot overcome launch bottleneck.',
+      source: 'FCC Filing / Industry Analysis',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
     },
     {
       date: '2026-01-30',
@@ -9814,6 +9858,27 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'Iridium NTN Direct Development'
     },
     {
+      date: '2025-03-03',
+      competitor: 'iridium',
+      category: 'Technology',
+      headline: 'Iridium and Gatehouse Satcom advance NTN Direct RAN infrastructure for global NB-IoT',
+      details: [
+        'Gatehouse Satcom chosen to deliver NodeB for Iridium NTN Direct Radio Access Network',
+        'NodeB handles uplink/downlink transmissions, modulation, encoding, scheduling',
+        'First 3GPP standards-based satellite D2D and NB-IoT service with truly global coverage',
+        'Gatehouse also conducted feasibility study validating the technical concept',
+        'Iridium constellation (66 LEO sats) will receive software upgrade for NB-IoT capability',
+        'Runs both traditional Iridium services and NB-IoT NTN Direct on same network',
+        'On-air testing planned around mid-2025, commercial service 2026',
+        'Gatehouse CEO: "Growth of satellite industry will be driven by 3GPP standards"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium NTN Direct advancing toward deployment by building out RAN infrastructure. Software upgrade to existing 66-sat constellation is capital-efficient approach. However, NB-IoT only — narrowband messaging/SOS/IoT, not broadband voice/video/data. ASTS and Iridium target fundamentally different service tiers. Iridium global coverage advantage for IoT; ASTS broadband advantage for smartphones.',
+      source: 'Gatehouse Satcom / Iridium',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+    {
       date: '2024-10-09',
       competitor: 'iridium',
       category: 'Partnership',
@@ -9945,6 +10010,49 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://www.verizon.com/about/news/verizon-customers-satellite-texting-select-android-smartphones',
       storyId: 'skylo-verizon-partnership',
       storyTitle: 'Skylo Verizon Partnership'
+    },
+    {
+      date: '2025-02-27',
+      competitor: 'skylo',
+      category: 'Financial',
+      headline: 'Skylo raises $30M oversubscribed round led by NGP Capital — expands to Brazil, Australia, NZ',
+      details: [
+        '$30M oversubscribed funding round led by NGP Capital',
+        'Westly Group joined; Intel Capital, BMW i Ventures, Samsung Catalyst Fund, Next47 participated',
+        'Expanded coverage: Brazil, Australia, New Zealand + full US (Alaska, Hawaii, territories)',
+        'Geographic expansion in partnership with Viasat satellite infrastructure',
+        'World\'s largest standards-based D2D network — millions of messages sent globally',
+        'Played pivotal role during US hurricanes and wildfires for emergency messaging',
+        'NGP Capital: "Skylo stands apart as the category leader in D2D satellite connectivity"',
+        'Demonstrating SOS, SMS, and AI chat over satellite at MWC Barcelona 2025'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Skylo raising $30M is modest compared to ASTS ($1B+ raised). Shows Skylo operating lean but also capital-constrained vs ASTS. Skylo expanding geographic coverage via Viasat partnership — uses existing GEO sats, not own constellation. ASTS building proprietary LEO constellation for broadband. Skylo\'s emergency use case validation during natural disasters supports overall D2D market thesis that benefits ASTS too.',
+      source: 'BusinessWire / Skylo',
+      storyId: 'skylo-growth-ecosystem',
+      storyTitle: 'Skylo Growth & Ecosystem'
+    },
+    {
+      date: '2025-01-08',
+      competitor: 'skylo',
+      category: 'Product',
+      headline: 'Skylo declares itself world\'s largest commercial standards-based D2D network at CES 2025',
+      details: [
+        'Skylo claims "world\'s largest commercial standards-based direct-to-device network"',
+        'Unlocked satellite connectivity potential for 1B+ devices across multiple categories',
+        'Survey: 76% of Americans frustrated/anxious/unsafe due to cellular coverage gaps',
+        '59% consistently face poor signals, 20% experience it daily',
+        '70% said most critical use case is emergency services or navigation',
+        '46% face coverage gaps in neighborhoods, commuting, or visiting friends/family',
+        'Skylo connects to multiple satellite constellations — provides overlay without urban coverage gaps',
+        'Ecosystem built from ground up: chipsets, modules, device manufacturers, SIM providers, carriers',
+        'Uses MSS spectrum — existing worldwide regulatory framework, no carrier spectrum needed'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Skylo\'s consumer survey validates massive demand for satellite connectivity — 76% frustrated by coverage gaps. This is the exact problem ASTS solves, but at broadband level vs Skylo narrowband SMS. Skylo\'s "1B+ devices" potential is aspirational — still NB-NTN only. Key Skylo advantage: MSS spectrum with global regulatory framework already in place. ASTS using MNO terrestrial spectrum requires per-market regulatory coordination.',
+      source: 'Skylo',
+      storyId: 'skylo-growth-ecosystem',
+      storyTitle: 'Skylo Growth & Ecosystem'
     },
     {
       date: '2024-08-28',
