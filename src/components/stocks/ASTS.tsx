@@ -9228,6 +9228,15 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       currentStatus: '212 satellites launched (Jan 2026), enterprise preview live',
       capabilities: { voice: false, text: false, data: true, video: false, unmodifiedPhones: false, globalCoverage: false },
       keyMetrics: { satellites: 212, coverage: 'Building to 3,232', subscribers: 'Enterprise preview', funding: '$10B committed' }
+    },
+    {
+      id: 'echostar',
+      name: 'EchoStar / Hughes',
+      description: 'D2D LEO constellation via MDA AURORA - broadband NTN to 5G NTN devices, 2029 service',
+      technology: 'MDA AURORA software-defined LEO sats, 2GHz S-band/AWS-4 spectrum, Open RAN 5G, 3GPP NTN',
+      currentStatus: 'Contract signed Aug 2025, satellites 2028, commercial service 2029',
+      capabilities: { voice: true, text: true, data: true, video: true, unmodifiedPhones: true, globalCoverage: true },
+      keyMetrics: { satellites: '200 initial (scalable to 1000s)', coverage: 'US + global (2GHz spectrum)', subscribers: 'Pre-launch', funding: '$5B LEO project, $18B total NTN since 2012' }
     }
   ];
 
@@ -9241,7 +9250,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // Format:
     // {
     //   date: 'YYYY-MM-DD',
-    //   competitor: 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-leo' | 'other',
+    //   competitor: 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-leo' | 'echostar' | 'other',
     //   category: 'Launch' | 'Partnership' | 'Technology' | 'Regulatory' | 'Financial' | 'Coverage' | 'Product',
     //   headline: 'Brief headline',
     //   details: ['Bullet point 1', 'Bullet point 2'],
@@ -9251,6 +9260,35 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     //   sourceUrl: 'https://...'
     // },
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ECHOSTAR - MDA AURORA D2D LEO CONSTELLATION ($5B PROJECT)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-08-01',
+      competitor: 'echostar',
+      category: 'Technology',
+      headline: 'EchoStar selects MDA Space for world\'s first Open RAN broadband NTN LEO constellation',
+      details: [
+        'EchoStar selects MDA Space as prime contractor for D2D LEO constellation',
+        'Initial $1.3B contract for 100+ MDA AURORA software-defined D2D satellites',
+        'Full initial config: 200 satellites, scalable to thousands',
+        'Total LEO project cost: $5 billion (total NTN investment since 2012: $18B+)',
+        'Coverage: 350M Americans + 7B globally',
+        'Services: Talk, text, broadband data, video to standard 5G NTN devices',
+        'Spectrum: 2GHz S-band/AWS-4 with highest ITU priority (up to 25x20 MHz)',
+        '3GPP NTN compliant — works with current NTN devices without modifications',
+        'Satellites delivery: 2028, commercial service: 2029',
+        'EchoStar already delivering texting in Europe via 2GHz (Lyra sats)',
+        'North America texting via existing GEO planned H1 2026'
+      ],
+      implication: 'negative',
+      astsComparison: 'EchoStar is a serious D2D competitor with $5B LEO investment, $18B total NTN spend, and highest-priority 2GHz spectrum globally. Key difference: 2029 commercial service vs ASTS 2025-2026 launches. ASTS has 3-4 year head start. However, EchoStar\'s MDA AURORA is purpose-built D2D broadband (voice+text+data+video) like ASTS, not just SMS. EchoStar\'s Open RAN 5G and existing US 5G network provide terrestrial integration. Long-term threat.',
+      source: 'EchoStar PR',
+      sourceUrl: 'https://www.prnewswire.com/news-releases/echostar-selects-mda-space-for-worlds-first-open-ran-broadband-ntn-leo-constellation-302519409.html',
+      storyId: 'echostar-mda-leo',
+      storyTitle: 'EchoStar MDA AURORA D2D LEO'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // AMAZON LEO (fka Project Kuiper) - LEO BROADBAND (TERMINAL-BASED)
