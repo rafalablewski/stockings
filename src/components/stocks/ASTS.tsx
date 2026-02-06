@@ -9262,6 +9262,365 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // ═══════════════════════════════════════════════════════════════════════════
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // TERRESTAR - HYBRID IOT LAUNCH IN CANADA (Feb 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'other',
+      category: 'Product',
+      headline: 'Terrestar launches hybrid satellite-cellular IoT service on open 3GPP NTN standards in Canada',
+      details: [
+        'First Canadian-controlled hybrid satellite-cellular IoT platform on open 3GPP NTN standards',
+        'Seamless switching between cellular and satellite networks across urban, rural, remote, and northern Canada',
+        'Validated over 32 weeks by LUBEX in Abitibi-Témiscamingue for industrial equipment monitoring',
+        'Delivered over Canadian-licenced S-band spectrum via EchoStar T1 GEO satellite',
+        'Described as first step toward D2D satellite connectivity in Canada',
+        'André Tremblay, Chairman: "Open standards are what turned basic phones into the global ecosystem we rely on today"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Terrestar is narrowband IoT (asset tracking, monitoring) using a single GEO satellite — not broadband D2D to smartphones. ASTS targets broadband voice/data to unmodified smartphones via LEO constellation. Different scale and capability. Validates 3GPP NTN standards approach that ASTS also uses.',
+      source: 'Terrestar Solutions',
+      sourceUrl: 'https://terrestarsolutions.ca',
+      storyId: 'terrestar-hybrid-iot',
+      storyTitle: 'Terrestar Hybrid IoT Canada'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MEF - D2D MARKET ANALYSIS (Jan 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-12',
+      competitor: 'other',
+      category: 'Coverage',
+      headline: 'MEF: D2D satellite promises 100% geographic coverage, wholesale market evolution ahead',
+      details: [
+        'GSMA survey: 32% would pay 5% extra for satellite connectivity, 61% willing to pay more',
+        '47% of consumers would switch operators if D2D coverage included in subscription',
+        'Orange France launched "Message Satellite" D2D SMS with Skylo at €5/month',
+        'Starlink has ~7,600 LEOs with D2D partnerships: Verizon, T-Mobile, Rogers, Entel, Kyivstar, KDDI, One NZ, SmarTone, 3 HK',
+        'D2D described as "early signal of wholesale market evolution" redefining connectivity pricing',
+        'New wholesale frameworks needed for satellite-enabled roaming and hybrid settlement',
+        'Amazon Leo targeting 3,000+ satellites for broadband (terminal-based, not D2D)'
+      ],
+      implication: 'positive',
+      astsComparison: 'Strongly validates ASTS thesis: massive consumer demand with willingness to pay and switch operators. 47% switching intent is powerful leverage for ASTS MNO partnerships. Most Starlink D2D is SMS-only; ASTS targets broadband voice/data. Wholesale evolution supports ASTS MNO partnership model.',
+      source: 'MEF',
+      storyId: 'mef-d2d-analysis-2026',
+      storyTitle: 'MEF D2D Market Analysis'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KEYSIGHT / SAMSUNG - NR-NTN n252 S-BAND VALIDATION (CES 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-08',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Keysight and Samsung achieve live NR-NTN connectivity in n252 S-band at CES 2026',
+      details: [
+        'Live NR-NTN connection in 3GPP Release 19 band n252 (S-Band) using Samsung next-gen modem chipset',
+        'First public validation of n252 in an NTN system — new band for next-gen LEO constellations',
+        'Includes live SAT-to-SAT mobility using commercial-grade modem silicon',
+        'Cross-vendor interoperability demonstrated',
+        'All major NR-NTN FR1 bands now validated end-to-end (n252, n255, n256)',
+        'Peng Cao, VP Keysight: "Ecosystem clearly accelerating toward direct-to-cell satellite connectivity to mass-market devices"'
+      ],
+      implication: 'positive',
+      astsComparison: 'Samsung NR-NTN chipset maturity means more devices will natively support satellite connectivity, expanding ASTS addressable market. n252 S-band validation is directly relevant to ASTS spectrum. SAT-to-SAT mobility testing validates multi-satellite handover ASTS needs for LEO constellation.',
+      source: 'Keysight Technologies',
+      storyId: 'keysight-samsung-ntn-2026',
+      storyTitle: 'Keysight/Samsung NR-NTN CES 2026'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // OQ TECHNOLOGY / MONOGOTO - LEO NB-IoT PARTNERSHIP (CES 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-08',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Monogoto adds OQ Technology LEO constellation to hybrid connectivity platform',
+      details: [
+        'OQ Technology (Luxembourg) 5G NTN satellite operator for NB-IoT and D2D',
+        'First European company to operate LEO constellation dedicated to D2D services',
+        'Uses 60 MHz of MSS S-band spectrum with 3GPP-compliant 5G NTN NB-IoT',
+        'Monogoto platform: single SIM connects across cellular, Wi-Fi, GEO, and LEO',
+        'Targets energy, logistics, maritime, agriculture, and utilities',
+        'Monogoto CTO: "LEO will drive a fundamental shift in global communications"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ Technology is NB-IoT focused (narrowband, low-data IoT) — not broadband D2D like ASTS. Targets industrial IoT verticals with low-bandwidth needs, not smartphone voice/data. S-band spectrum usage validates S-band for NTN. Not a direct competitive threat.',
+      source: 'OQ Technology / Monogoto',
+      sourceUrl: 'https://www.oqtec.com',
+      storyId: 'oq-monogoto-ces2026',
+      storyTitle: 'OQ Technology / Monogoto CES 2026'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VIASAT / INMARSAT - EVERGREEN MARINE NEXUSWAVE (Jan 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-06',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Evergreen Marine confirms fleetwide Inmarsat NexusWave bonded connectivity rollout',
+      details: [
+        'First Taiwanese operator to upgrade entire fleet to NexusWave from Inmarsat Maritime (Viasat)',
+        'Bonded multi-network connectivity with unlimited data and always-on performance',
+        'Enables predictive analytics, real-time reefer monitoring, fully integrated fleet IoT',
+        'Secure-by-design, leveraging ViaSat-3 ultra-high-capacity network',
+        'Follows Viasat May 2023 acquisition of Inmarsat combining satellite capabilities'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Viasat/Inmarsat maritime dominance grows their multi-orbit platform. While maritime connectivity is not D2D to smartphones, infrastructure scale could fund their Equatys D2D venture with Space42. Fundamentally different business than ASTS consumer smartphone D2D.',
+      source: 'Viasat / Inmarsat Maritime',
+      storyId: 'viasat-maritime-expansion',
+      storyTitle: 'Viasat Maritime Expansion'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // BAHRAIN - FIRST GCC D2D AUTHORIZATION (Dec 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-24',
+      competitor: 'other',
+      category: 'Regulatory',
+      headline: 'Bahrain becomes first GCC country to authorize satellite D2D services — names ASTS',
+      details: [
+        'Bahrain TRA launches Satellite D2D services — first GCC country to authorize',
+        'Framework explicitly names Starlink and AST SpaceMobile as potential D2D partners for local MNOs',
+        'Standard smartphones can communicate directly with LEO satellites without specialized equipment',
+        'TRA General Director Philip Marnick: "supports safety, economic activity and national resilience"',
+        'Bahrain ranked #1 in MENA/GCC in Global Network Excellence Index for 4G/5G',
+        'Covers maritime zones and isolated land areas in the kingdom'
+      ],
+      implication: 'positive',
+      astsComparison: 'Directly bullish — Bahrain explicitly names AST SpaceMobile as a D2D partner for MNOs. Concrete regulatory pathway for Gulf market. GCC = high-ARPU with maritime/desert coverage gaps ideal for satellite D2D. Could catalyze similar frameworks across Saudi Arabia, UAE, Qatar.',
+      source: 'Gulf Daily News / Bahrain TRA',
+      storyId: 'bahrain-d2d-authorization',
+      storyTitle: 'Bahrain D2D Authorization'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VIASAT/GSMA - D2D CONSUMER DEMAND REPORT (Dec 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-03',
+      competitor: 'other',
+      category: 'Coverage',
+      headline: 'Viasat/GSMA: 60% would pay more for D2D satellite, 47% would switch providers',
+      details: [
+        'Survey of 12,390 mobile users across 12 markets (incl. US, UK, India, Japan, Brazil)',
+        'More than a third lose basic mobile service at least twice monthly',
+        '60%+ globally willing to pay extra for satellite-enabled smartphone services',
+        'Willingness: India 89%, Indonesia 82%, US 56%, France 48%',
+        'Average willingness-to-pay: 5-7% more on monthly bill; India at 9%',
+        '47% would switch operators if D2D coverage included',
+        'India: $2.35 ARPU but larger population + higher willingness = substantial opportunity',
+        'MNOs face "marketing gap" — balancing excitement vs over-promising data-rich services'
+      ],
+      implication: 'positive',
+      astsComparison: 'Highly bullish. 47% switching intent and 60%+ willingness-to-pay validate that D2D is a must-have for MNOs. Supports ASTS value proposition to MNO partners. High enthusiasm in emerging markets (India 89%, Indonesia 82%) aligns with ASTS global coverage strategy.',
+      source: 'Viasat / GSMA Intelligence',
+      storyId: 'viasat-gsma-d2d-report',
+      storyTitle: 'Viasat/GSMA D2D Consumer Report'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ORANGE / SKYLO - FIRST EUROPEAN D2D SMS (Nov 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-18',
+      competitor: 'skylo',
+      category: 'Product',
+      headline: 'Orange becomes first European operator to offer satellite SMS via D2D with Skylo',
+      details: [
+        'Orange France launches "Message Satellite" — D2D satellite SMS and geolocation service',
+        'First European operator to offer satellite SMS using Direct-to-Device technology',
+        'Available from Dec 11, 2025 for consumers, 2026 for business',
+        'Exclusive to Orange 5G/5G+ customers with Google Pixel 9 or 10',
+        'Service available in France and 36 countries (Skylo coverage area)',
+        'Pricing: free for first 6 months, then €5/month',
+        'Uses smartphone direct satellite connection for SMS when mobile/Wi-Fi unavailable'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Validates D2D market in Europe and shows MNO demand. But SMS-only on limited devices (Pixel 9/10 only) at €5/month — narrow vs ASTS broadband. Skylo uses GEO satellite infrastructure for narrowband NTN. ASTS broadband capability (voice, video, data) on any smartphone is fundamentally different.',
+      source: 'Orange',
+      storyId: 'orange-skylo-d2d',
+      storyTitle: 'Orange/Skylo D2D SMS Europe'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VIASAT - ETIHAD AIRWAYS FLEET CONNECTIVITY (Nov 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-18',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Etihad Airways deploys Viasat Amara connectivity across entire fleet including LEO partners',
+      details: [
+        'Viasat Amara deployed on entire fleet: widebody and narrowbody (A321LR, A350, 787)',
+        'Enables streaming, Live TV on seatback, social media via Ka-band + upcoming LEO partner satellites',
+        'Factory-installed on new Airbus fleet from April 2025 and Boeing 787s since 2023',
+        'Multi-network, multi-orbit systems with guaranteed quality of service',
+        'Viasat CCO: "Airlines can invest in a platform that allows for scalability and brand ownership"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Viasat aviation expansion shows growing multi-vertical satellite platform. "Upcoming LEO partner satellites" signals multi-orbit (GEO+LEO) capability. Not direct D2D competition but strengthens Viasat platform that could support Equatys D2D venture.',
+      source: 'Viasat',
+      storyId: 'viasat-aviation-expansion',
+      storyTitle: 'Viasat Aviation Expansion'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VIASAT - JETXP MULTI-ORBIT WITH TELESAT LEO (Nov 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-17',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Viasat to integrate Telesat Lightspeed LEO into JetXP business aviation broadband',
+      details: [
+        'Telesat Lightspeed LEO capacity added to JetXP in-flight broadband for business aviation',
+        'Combines ViaSat-3 GEO with LEO for intelligent real-time data routing between orbits',
+        'Optimizes for latency-sensitive applications: gaming, HD video conferencing, cloud collaboration',
+        'Single multi-orbit offering eliminates multiple subscriptions',
+        'Also includes HEO payloads for Arctic coverage from 2026',
+        'LEO integration commercial service scheduled late 2027',
+        'Currently deployed on 5,000+ business jets worldwide'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Viasat multi-orbit (GEO+LEO+HEO) strategy shows evolving network architecture potentially transferable to D2D via Equatys. But business aviation (5K jets) is a niche market vs ASTS targeting billions of smartphone users.',
+      source: 'Viasat',
+      storyId: 'viasat-aviation-expansion',
+      storyTitle: 'Viasat Aviation Expansion'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VIASAT - HALONET NASA LAUNCH TELEMETRY (Nov 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-13',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Viasat tests HaloNet launch telemetry for NASA on Blue Origin New Glenn',
+      details: [
+        'First flight test of launch telemetry data relay service on Blue Origin NG-2 mission',
+        'Part of NASA Communications Services Project (CSP) to replace TDRS fleet by 2031',
+        'HaloNet uses Viasat global L-band network with GEO satellites for persistent launch connectivity',
+        'Successfully maintained connection during launch, transmitting real-time flight data',
+        'Second demonstration with Blue Origin planned early 2026, more missions later in 2026'
+      ],
+      implication: 'neutral',
+      astsComparison: 'NASA partnership shows Viasat expanding government/space capabilities. Launch telemetry not relevant to D2D smartphones, but strengthens overall Viasat satellite platform supporting their Equatys D2D venture.',
+      source: 'Viasat',
+      storyId: 'viasat-government-space',
+      storyTitle: 'Viasat Government & Space'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LYNK / OMNISPACE - MERGER WITH SES (Oct 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-22',
+      competitor: 'lynk',
+      category: 'Partnership',
+      headline: 'Lynk Global and Omnispace announce merger for next-gen global D2D, SES as major shareholder',
+      details: [
+        'Lynk Global and Omnispace merging with SES as major strategic shareholder',
+        'Omnispace contributes 60 MHz globally coordinated S-band spectrum with high-priority ITU filings',
+        'Largest S-band market access footprint: 1B+ people across Americas, Europe, Africa, Asia',
+        '3GPP NTN compliant spectrum for non-terrestrial networks',
+        'Lynk contributes patented, proven D2D technology for 7B+ unmodified smartphones',
+        'Lynk has 50+ MNO customers across 50+ countries',
+        'SES provides multi-orbit network and ground infrastructure access',
+        'Ramu Potarazu (Lynk CEO) to lead combined entity',
+        'Transaction expected to close late 2025 or early 2026'
+      ],
+      implication: 'negative',
+      astsComparison: 'Significant competitive development. 60 MHz S-band spectrum + 50+ MNO relationships directly compete with ASTS. However, Lynk is messaging/voice with small LEO sats; ASTS targets broadband data including video/streaming via larger arrays. SES backing provides financial muscle but also validates D2D market. ASTS advantages: broadband capability, existing tier-1 MNO partnerships (Vodafone, AT&T).',
+      source: 'Lynk Global / Omnispace / SES',
+      sourceUrl: 'https://www.lynk.world',
+      storyId: 'lynk-omnispace-merger',
+      storyTitle: 'Lynk/Omnispace/SES Merger'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SPACE42 / VIASAT - EQUATYS D2D VENTURE (Sep 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-15',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Space42 and Viasat to launch Equatys D2D venture with 100+ MHz across 160+ markets',
+      details: [
+        'Joint venture "Equatys" for global D2D services evolving MSS to 5G NTN environment',
+        'Supports 100+ MHz harmonized MSS spectrum across 160+ markets — potentially largest D2D spectrum globally',
+        'Operates as "space tower" company — shared multi-tenant infrastructure, neutral provider',
+        '3GPP NTN Release compliant for standard smartphones and IoT devices',
+        'Commercial rollout targeted within 3 years',
+        'Viasat CEO: "Equatys will uniquely make possible a shared multi-orbit network of scale"',
+        'Enables governments to maintain data sovereignty with local infrastructure',
+        'Phased equity offerings planned for additional strategic/financial partners'
+      ],
+      implication: 'negative',
+      astsComparison: 'Potentially most significant competitive threat. 100+ MHz spectrum across 160+ markets is formidable. "Space tower" model competes with ASTS MNO approach. However, Equatys is 3 years from commercial vs ASTS operational satellites today. Key ASTS advantages: technology lead, existing MNO partnerships, operational BlueBird satellites demonstrating broadband D2D now.',
+      source: 'Space42 / Viasat',
+      storyId: 'equatys-d2d-venture',
+      storyTitle: 'Equatys (Space42/Viasat) D2D Venture'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KALEIDO - D2D IOT MARKET RESEARCH (Jul 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-07-17',
+      competitor: 'other',
+      category: 'Coverage',
+      headline: 'Kaleido: D2D IoT connections to reach 30M by 2030, smartphone ARPU capped at $6/month',
+      details: [
+        'Satellite D2D IoT connections: 30M by 2030, up from under 500K at end of 2025',
+        'Skylo leads NTN IoT space; key use cases: asset tracking, energy/utilities, agriculture (60% of connections)',
+        '51% of IoT enterprises view D2D as viable WAN connectivity solution',
+        'Airtime pricing poses significant barriers slowing adoption',
+        'Since 2015, satellite payloads launched up 1,105%, almost all targeting LEO',
+        '60,000+ satellites expected in LEO orbit — sustainability concerns',
+        'Smartphone D2D: 6M users expected by end 2025, but antenna/radio constraints limit use cases',
+        'Monthly smartphone D2D ARPU unlikely to exceed $6 globally by 2030'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Mixed: $6/month ARPU ceiling is concerning for ASTS revenue model. But 30M IoT connections and 6M smartphone users validate demand. ASTS differentiates: large satellite arrays compensate for smartphone antenna limitations, enabling broadband vs just messaging. LEO congestion (60K+ sats) could favor ASTS fewer-larger-satellites approach.',
+      source: 'Kaleido Intelligence',
+      storyId: 'kaleido-d2d-outlook',
+      storyTitle: 'Kaleido D2D Market Outlook'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SES / LYNK GLOBAL - STRATEGIC PARTNERSHIP (Mar 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-03-10',
+      competitor: 'lynk',
+      category: 'Partnership',
+      headline: 'SES and Lynk Global announce strategic partnership with Series B funding and MEO-Relay',
+      details: [
+        'SES provides Series B funding for Lynk D2D constellation',
+        'MEO-Relay: routes D2D traffic between LEO and SES MEO network, reducing ground station needs',
+        'Network-as-a-Service: global ground network gateway access + GEO-based TTC&M services',
+        'SES becomes strategic channel partner for government, MNO, and automotive customers',
+        'Collaboration on network architecture development and satellite manufacturing in US + Europe',
+        'Lynk CEO: "This long-term collaboration deeply integrates our networks and validates our LEO D2D"',
+        'SES CEO: "D2D is an exciting growth opportunity that complements our multi-orbit network"'
+      ],
+      implication: 'negative',
+      astsComparison: 'SES investment validates D2D market but strengthens direct competitor. Lynk gains MEO relay (reduces ground station costs), global infrastructure, and government/automotive channel. Precursor to Oct 2025 Lynk-Omnispace merger. Lynk remains messaging/voice focused; ASTS targets broadband D2D.',
+      source: 'SES / Lynk Global',
+      sourceUrl: 'https://www.ses.com',
+      storyId: 'lynk-omnispace-merger',
+      storyTitle: 'Lynk/Omnispace/SES Merger'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // ECHOSTAR - MDA AURORA D2D LEO CONSTELLATION ($5B PROJECT)
     // ═══════════════════════════════════════════════════════════════════════════
     {
