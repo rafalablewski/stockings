@@ -2912,9 +2912,9 @@ function CRCLModel() {
       { category: 'Profitability', rating: 'B+', color: 'var(--sky)', detail: '39% RLDC margin, Coinbase cost overhang (54%)' },
       { category: 'Growth', rating: 'A', color: 'var(--mint)', detail: '66% rev YoY, 108% USDC YoY, Rule of 40: 105' },
       { category: 'Valuation', rating: 'A-', color: 'var(--mint)', detail: '6.4x P/S vs 16x peers, 50%+ discount to payment networks' },
-      { category: 'Competitive Position', rating: 'B+', color: 'var(--sky)', detail: 'Regulatory moat, but Tether 65% share; OCC charter pending' },
+      { category: 'Competitive Position', rating: 'B+', color: 'var(--sky)', detail: 'Regulatory moat, but Tether 65% share; OCC charter approved Dec 2025' },
       { category: 'Execution', rating: 'A', color: 'var(--mint)', detail: 'Strong board (ex-Goldman, ex-CFTC), founder-led, CPN/Arc scaling' },
-      { category: 'Regulatory/External', rating: 'B', color: 'var(--sky)', detail: 'GENIUS Act tailwind, OCC pending; rate sensitivity risk' },
+      { category: 'Regulatory/External', rating: 'A-', color: 'var(--mint)', detail: 'GENIUS Act tailwind, OCC charter approved Dec 2025; rate sensitivity risk' },
       { category: 'Capital Structure', rating: 'A-', color: 'var(--mint)', detail: 'Class B founders, Coinbase equity stake, no dilution needed' },
     ],
 
@@ -2942,7 +2942,7 @@ function CRCLModel() {
 
     // Competitive Moat
     moatSources: [
-      { source: 'Regulatory Compliance', strength: 'Strong', detail: 'Only fully transparent stablecoin. Monthly attestations, SEC-registered, OCC charter pending.', color: 'var(--mint)' },
+      { source: 'Regulatory Compliance', strength: 'Strong', detail: 'Only fully transparent stablecoin. Monthly attestations, SEC-registered, OCC charter approved Dec 2025.', color: 'var(--mint)' },
       { source: 'TradFi Relationships', strength: 'Strong', detail: 'BlackRock reserve management, BNY Mellon custody, major bank partnerships.', color: 'var(--mint)' },
       { source: 'Multi-Chain Infrastructure', strength: 'Building', detail: 'Native USDC on 15+ chains. CCTP enables seamless cross-chain transfers.', color: 'var(--sky)' },
       { source: 'Developer Ecosystem', strength: 'Building', detail: 'Programmable Wallets, Circle Mint APIs, embedded finance toolkit.', color: 'var(--sky)' },
@@ -3009,7 +3009,7 @@ function CRCLModel() {
 
     // Price Targets
     priceTargets: [
-      { period: '0-6 months', range: '$65-95', outlook: 'Volatile', detail: 'Lock-up expiry Dec 2025 creates near-term pressure. Q4 earnings catalyst.' },
+      { period: '0-6 months', range: '$65-95', outlook: 'Volatile', detail: 'Lock-up expiry Dec 2025 passed. Q4 earnings catalyst.' },
       { period: '6-18 months', range: '$90-130', outlook: 'Bullish', detail: 'OCC charter, Coinbase renegotiation progress, continued USDC growth.' },
       { period: '18-36 months', range: '$130-200+', outlook: 'Very Bullish', detail: '$100B+ USDC, margin expansion, payment network multiple re-rate.' },
     ],
@@ -4333,7 +4333,7 @@ function CRCLModel() {
                               { event: 'Lock-up Expiry', date: 'Dec 2025', color: 'var(--coral)' },
                               { event: 'Q4/FY25 Earnings', date: 'Feb 2026', color: 'var(--mint)' },
                               { event: 'Arc Mainnet', date: 'H1 2026', color: 'var(--mint)' },
-                              { event: 'OCC Charter', date: 'H1 2026', color: 'var(--mint)' },
+                              { event: 'OCC Charter', date: 'Dec 2025 ✓', color: 'var(--mint)' },
                             ].map((c, i) => (
                               <div key={i} style={{ background: 'var(--bg)', padding: '6px 12px', borderRadius: 6, fontSize: 12 }}>
                                 <span style={{ color: 'var(--text)' }}>{c.event}</span>

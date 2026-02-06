@@ -9886,7 +9886,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         'SpaceX claims unique position with vertical integration (launch + satellite production)'
       ],
       implication: 'negative',
-      astsComparison: 'Direct competitor milestone. Starlink\'s 6.2m² antenna vs ASTS 64m² BlueBird arrays. Starlink starting with text-only, limited bandwidth. ASTS demonstrated 5G broadband voice/video with BW3. Different approach: Starlink betting on massive constellation (hundreds of D2C sats), ASTS betting on fewer large high-throughput satellites.',
+      astsComparison: 'Direct competitor milestone. Starlink\'s 6.2m² antenna vs ASTS planned 64m² arrays. Starlink starting with text-only, limited bandwidth. ASTS demonstrated 5G broadband voice/video with BW3 in 2023. Different approach: Starlink betting on massive constellation (hundreds of D2C sats), ASTS betting on fewer large high-throughput satellites.',
       source: 'SpaceX',
       sourceUrl: 'https://direct.starlink.com/',
       storyId: 'starlink-d2c-launch',
