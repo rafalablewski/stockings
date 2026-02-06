@@ -9452,7 +9452,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2025-11-05',
+      date: '2025-11-04',
       competitor: 'oq-technology',
       category: 'Regulatory',
       headline: 'OQ Technology granted official Luxembourg government concession for satellite 5G NTN and D2D services',
@@ -9472,7 +9472,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2025-10-01',
+      date: '2025-10-17',
       competitor: 'oq-technology',
       category: 'Partnership',
       headline: 'OQ Technology joins Mobile Satellite Services Association (MSSA) for D2D and NTN spectrum advocacy',
@@ -9490,7 +9490,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2025-09-30',
+      date: '2025-10-02',
       competitor: 'oq-technology',
       category: 'Coverage',
       headline: 'OQ Technology expands satellite IoT services to Australia — S-band spectrum license secured from ACMA',
@@ -9510,7 +9510,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2025-09-29',
+      date: '2025-09-30',
       competitor: 'oq-technology',
       category: 'Partnership',
       headline: 'OQ Technology and KPN sign roaming agreement for global 5G IoT coverage',
@@ -9548,7 +9548,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2025-08-14',
+      date: '2025-08-13',
       competitor: 'oq-technology',
       category: 'Launch',
       headline: 'OQ Technology launches 5NETSAT mission — Europe\'s first 5G NTN LEO service demo, backed by €2.5M EIC grant',
@@ -9644,7 +9644,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2024-05-05',
+      date: '2024-05-06',
       competitor: 'oq-technology',
       category: 'Partnership',
       headline: 'OQ Technology and Transatel collaborate for global converged satellite 5G IoT connectivity',
@@ -9662,7 +9662,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2024-03-12',
+      date: '2024-03-10',
       competitor: 'oq-technology',
       category: 'Launch',
       headline: 'OQ Technology launches Tiger-7 and Tiger-8 — constellation reaches 10 LEO satellites',
@@ -9681,7 +9681,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2024-03-05',
+      date: '2024-03-06',
       competitor: 'oq-technology',
       category: 'Partnership',
       headline: 'OQ Technology signs MoU with Deutsche Telekom IoT for converged satellite-cellular service at MWC 2024',
@@ -9719,7 +9719,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
     // --- 2023 ---
     {
-      date: '2023-11-11',
+      date: '2023-11-14',
       competitor: 'oq-technology',
       category: 'Launch',
       headline: 'OQ Technology launches Tiger-5 and Tiger-6 on SpaceX Transporter-9 — constellation grows to 8 satellites',
@@ -9736,7 +9736,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2023-11-01',
+      date: '2023-11-19',
       competitor: 'oq-technology',
       category: 'Partnership',
       headline: 'O2 Telefónica partners with OQ Technology for worldwide satellite IoT coverage',
@@ -9754,7 +9754,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2023-07-01',
+      date: '2023-07-19',
       competitor: 'oq-technology',
       category: 'Partnership',
       headline: 'OQ Technology signs new MoU with Aramco for automation and satellite IoT at remote sites',
@@ -9791,7 +9791,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'OQ Technology D2D & IoT'
     },
     {
-      date: '2023-03-01',
+      date: '2023-03-13',
       competitor: 'oq-technology',
       category: 'Launch',
       headline: 'OQ Technology orders five 6U nanosatellites (Tiger-4 through Tiger-8) for constellation expansion',
