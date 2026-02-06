@@ -6203,10 +6203,103 @@ const CompsTab = () => {
   const [selectedPeerGroup, setSelectedPeerGroup] = useState<string>('crypto');
   const currentPeers = PEER_GROUPS[selectedPeerGroup as keyof typeof PEER_GROUPS];
 
+  // Key competitors with threat levels for colored borders
+  const keyCompetitors = [
+    {
+      name: 'Tether (USDT)',
+      type: 'Stablecoin',
+      status: '$140B AUM',
+      focus: 'Dominant stablecoin, offshore operations, no US compliance',
+      threat: 'High',
+      notes: 'Market leader by AUM but regulatory risk. No US bank relationships. CRCL advantage: transparency + compliance.'
+    },
+    {
+      name: 'Coinbase (COIN)',
+      type: 'Exchange + USDC Partner',
+      status: 'Partner via Coinbase One',
+      focus: 'Exchange + custody + 50% USDC distribution',
+      threat: 'Medium',
+      notes: 'Key distribution partner but also competitor. USDC revenue share creates alignment but limits margin.'
+    },
+    {
+      name: 'PayPal USD (PYUSD)',
+      type: 'Stablecoin',
+      status: '~$1B AUM',
+      focus: 'PayPal\'s stablecoin attempt',
+      threat: 'Low',
+      notes: 'Distribution advantage via PayPal but limited adoption. CRCL\'s multi-chain approach and DeFi integration superior.'
+    },
+    {
+      name: 'First Digital USD (FDUSD)',
+      type: 'Stablecoin',
+      status: '~$4B AUM',
+      focus: 'Binance-aligned stablecoin',
+      threat: 'Low',
+      notes: 'Binance partnership but geographically limited. CRCL has broader US + global institutional access.'
+    },
+  ];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        .comp-competitor-card {
+          background: var(--bg2);
+          border: 1px solid var(--stroke);
+          border-radius: 12px;
+          padding: 16px;
+        }
+        .comp-threat-high { border-left: 3px solid var(--red); }
+        .comp-threat-medium { border-left: 3px solid var(--gold); }
+        .comp-threat-low { border-left: 3px solid var(--mint); }
+        .comp-competitor-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .comp-competitor-name {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--text1);
+        }
+        .comp-competitor-type {
+          font-size: 11px;
+          color: var(--text3);
+          padding: 2px 8px;
+          background: var(--bg3);
+          border-radius: 4px;
+        }
+        .comp-competitor-detail {
+          font-size: 12px;
+          color: var(--text2);
+          margin-bottom: 4px;
+        }
+        .comp-competitor-notes {
+          font-size: 11px;
+          color: var(--text3);
+          font-style: italic;
+        }
+      `}</style>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['WS']} /></h2>
+
+      {/* Key Competitors Overview - Colored Border Cards */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-competitors</div>
+      <div className="highlight"><h3>💵 Key Competitors<UpdateIndicators sources="PR" /></h3><p>Stablecoin and payments competitors - threat level indicates competitive overlap with CRCL's USDC model</p></div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
+        {keyCompetitors.map((comp, i) => (
+          <div key={i} className={`comp-competitor-card comp-threat-${comp.threat.toLowerCase()}`}>
+            <div className="comp-competitor-header">
+              <span className="comp-competitor-name">{comp.name}</span>
+              <span className="comp-competitor-type">{comp.type}</span>
+            </div>
+            <div className="comp-competitor-detail"><strong>Status:</strong> {comp.status}</div>
+            <div className="comp-competitor-detail"><strong>Focus:</strong> {comp.focus}</div>
+            <div className="comp-competitor-detail"><strong>Threat Level:</strong> <span style={{ color: comp.threat === 'High' ? 'var(--red)' : comp.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{comp.threat}</span></div>
+            <div className="comp-competitor-notes">{comp.notes}</div>
+          </div>
+        ))}
+      </div>
 
       {/* Highlight Box */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#peer-analysis</div>

@@ -26,11 +26,18 @@ export {
 export {
   PARTNERS_METADATA,
   PARTNERS,
+  PARTNER_NEWS,
   REVENUE_SOURCES,
   getTotalPrepayments,
   getTotalSubscriberReach,
   getDefinitivePartners,
 } from './partners';
+
+// Competitor Intelligence
+export {
+  COMPETITORS_METADATA,
+  COMPETITOR_NEWS,
+} from './competitors';
 
 // Catalysts & Milestones
 export {
@@ -69,6 +76,8 @@ export {
 // Re-export types for convenience
 export type {
   Partner,
+  PartnerNewsEntry,
+  CompetitorNewsEntry,
   ShareClass,
   MajorShareholder,
   EquityOffering,

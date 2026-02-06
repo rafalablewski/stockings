@@ -137,6 +137,83 @@ export interface Partner {
 }
 
 /**
+ * Partner news entry for tracking MNO partner activities
+ * AI AGENT: Add from partner press releases that impact ASTS ecosystem
+ */
+export interface PartnerNewsEntry {
+  /** ISO date string (YYYY-MM-DD) */
+  date: string;
+  /** Partner company name (must match PARTNERS array) */
+  partner: string;
+  /** News category (e.g., "IoT", "Expansion", "Technology", "Partnership", "Financial") */
+  category: string;
+  /** Headline/title of the news */
+  headline: string;
+  /** Detailed summary of the news */
+  summary: string;
+  /** Relevance to ASTS (how this news impacts ASTS thesis) */
+  astsRelevance: string;
+  /** Impact assessment: "Bullish", "Bearish", "Neutral" */
+  impact: 'Bullish' | 'Bearish' | 'Neutral';
+  /** Source of the news (publication name) */
+  source: string;
+  /** URL to the original source article (optional) */
+  url?: string;
+}
+
+/**
+ * Competitor news entry for tracking ASTS competitor activities
+ * AI AGENT: Add from competitor press releases, product announcements, and industry news
+ */
+export interface CompetitorNewsEntry {
+  /** ISO date string (YYYY-MM-DD) */
+  date: string;
+  /** Competitor company name */
+  competitor: string;
+  /** News category (e.g., "Launch", "Technology", "Partnership", "Financial", "Regulatory", "Product") */
+  category: string;
+  /** Headline/title of the news */
+  headline: string;
+  /** Detailed summary of the news */
+  summary: string;
+  /** Competitive implications for ASTS */
+  astsImplication: string;
+  /** Impact assessment for ASTS: "Bullish" (good for ASTS), "Bearish" (bad for ASTS), "Neutral" */
+  impact: 'Bullish' | 'Bearish' | 'Neutral';
+  /** Source publication name */
+  source: string;
+  /** URL to the original source article (optional) */
+  url?: string;
+}
+
+/**
+ * Ethereum adoption timeline entry for BMNR
+ * AI AGENT: Add from press releases, protocol announcements, and enterprise news
+ */
+export interface EthereumAdoptionEntry {
+  /** ISO date string (YYYY-MM-DD) */
+  date: string;
+  /** Category: "Institutional", "Enterprise", "Protocol", "Government", "DeFi" */
+  category: string;
+  /** Company or organization name */
+  company: string;
+  /** Event title/headline */
+  title: string;
+  /** Detailed summary of the announcement */
+  summary: string;
+  /** Broader significance for Ethereum ecosystem */
+  significance: string;
+  /** Implications for BMNR investment thesis */
+  bmnrImplication: string;
+  /** Impact assessment: "Bullish", "Bearish", "Neutral" */
+  impact: 'Bullish' | 'Bearish' | 'Neutral';
+  /** Source publication name */
+  source: string;
+  /** URL to the original source article (optional) */
+  url?: string;
+}
+
+/**
  * Comparable company for peer analysis
  * AI AGENT: Update prices periodically, holdings from earnings reports
  */
@@ -200,12 +277,14 @@ export interface TimelineEntry {
   event: string;
   /** Impact description */
   impact: string;
-  /** Source document */
+  /** Source document (publication name) */
   source: string;
   /** Verdict/sentiment */
   verdict: 'positive' | 'negative' | 'neutral' | 'mixed';
   /** Detailed description */
   details: string;
+  /** URL to the original source article (optional) */
+  url?: string;
 }
 
 // ============================================================================

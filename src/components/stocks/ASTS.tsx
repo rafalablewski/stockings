@@ -123,6 +123,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import {
   DEFAULTS,
   PARTNERS,
+  PARTNER_NEWS,
+  COMPETITOR_NEWS,
   REVENUE_SOURCES,
   UPCOMING_CATALYSTS,
   COMPLETED_MILESTONES,
@@ -729,16 +731,16 @@ const ASTSAnalysis = () => {
   }, [currentShares, currentStockPrice, cashOnHand, quarterlyBurn, totalDebt, block1Sats, block2Sats, targetSats2026, partnerReach, penetrationRate, blendedARPU, revenueShare, govRevenue, partners]);
 
   // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
-  // Order: Overview first, then stock-specific projections, common projections, then tracking
+  // Order: Overview first, then stock-specific projections (Partners first like BMNR Ethereum), common projections, then tracking
   // group: optional grouping for nested display (stock-specific tabs)
   const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
     { id: 'overview', label: 'Overview', type: 'tracking' },
-    // Stock-specific projections (grouped under "ASTS Analysis")
+    // Stock-specific projections (grouped under "ASTS Analysis") - Partners FIRST like BMNR Ethereum
+    { id: 'partners', label: 'Partners', type: 'projection', group: 'ASTS Analysis' },
     { id: 'catalysts', label: 'Catalysts', type: 'projection', group: 'ASTS Analysis' },
     { id: 'constellation', label: 'Constellation', type: 'projection', group: 'ASTS Analysis' },
     { id: 'subscribers', label: 'Subscribers', type: 'projection', group: 'ASTS Analysis' },
     { id: 'revenue', label: 'Revenue', type: 'projection', group: 'ASTS Analysis' },
-    { id: 'partners', label: 'Partners', type: 'projection', group: 'ASTS Analysis' },
     { id: 'runway', label: 'Cash Runway', type: 'projection', group: 'ASTS Analysis' },
     // Unified valuation model (combines Scenarios + DCF)
     { id: 'model', label: 'Model', type: 'projection' },
@@ -1569,6 +1571,23 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
 
 // ENHANCED PARTNERS TAB - Institutional grade with full spectrum, contracts, and financial details
 const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) => {
+  // State for expandable partner news (matching BMNR adoption-events pattern)
+  const [expandedPartnerNews, setExpandedPartnerNews] = useState<Set<number>>(new Set());
+  // Filters for partner news timeline (matching BMNR adoption-timeline pattern)
+  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [partnerFilter, setPartnerFilter] = useState('All');
+
+  // Extract unique categories and partners from PARTNER_NEWS for filters
+  const categories = ['All', ...Array.from(new Set(PARTNER_NEWS.map(n => n.category)))];
+  const partnerNames = ['All', ...Array.from(new Set(PARTNER_NEWS.map(n => n.partner)))];
+
+  // Filter partner news by category and partner
+  const filteredPartnerNews = PARTNER_NEWS.filter(n => {
+    const categoryMatch = categoryFilter === 'All' || n.category === categoryFilter;
+    const partnerMatch = partnerFilter === 'All' || n.partner === partnerFilter;
+    return categoryMatch && partnerMatch;
+  });
+
   // Definitive Commercial Agreements (binding contracts with prepayments/commitments)
   const definitiveAgreements = [
     { 
@@ -1717,14 +1736,61 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
 
       {/* Key Metrics */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-metrics</div>
-      <div className="card" style={{ }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g5">
-          <Card label="Contracted Rev" value="$1B+" sub="Commercial commitments" color="green" />
-          <Card label="Prepayments" value={`$${totalPrepay}M`} sub="Non-dilutive" color="cyan" />
-          <Card label="Definitive MNOs" value="4" sub={`${totalDefinitiveSubs}M subs`} color="blue" />
-          <Card label="Total MNOs" value="50+" sub={`~3.2B subs`} color="purple" />
-          <Card label="US Spectrum" value="80+ MHz" sub="Owned + partner" color="yellow" />
+      <div className="card">
+        <div className="card-title">Partner & Spectrum Metrics</div>
+        <div className="g4" style={{ }}>
+          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--mint)', fontWeight: 600 }}>$1B+</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Contracted Revenue</div>
+          </div>
+          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--cyan)', fontWeight: 600 }}>${totalPrepay}M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Prepayments</div>
+          </div>
+          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--violet)', fontWeight: 600 }}>50+</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>MNO Partners</div>
+          </div>
+          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--gold)', fontWeight: 600 }}>3.2B</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Addressable Subs</div>
+          </div>
+        </div>
+        <div className="g3">
+          <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Definitive Partners</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>4</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Definitive Subs</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>{totalDefinitiveSubs}M</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Revenue Share</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>50/50</span>
+            </div>
+          </div>
+          <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>US Spectrum (Owned)</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--mint)' }}>45 MHz</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Global Tunable</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--cyan)' }}>1,150 MHz</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>S-band ITU Priority</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>60 MHz</span>
+            </div>
+          </div>
+          <div style={{ padding: 12, background: 'linear-gradient(135deg, rgba(0,212,170,0.1), rgba(139,92,246,0.1))', borderRadius: 8, border: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>Why This Matters for ASTS</div>
+            <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.5 }}>
+              More MNO partners → More spectrum access → Larger addressable market → Revenue share acceleration → Stock price appreciation
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1916,7 +1982,128 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           </div>
         </div>
       </div>
-      
+
+      {/* Partner Ecosystem News Timeline - matches BMNR Ethereum Adoption Timeline structure */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-timeline</div>
+      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center' }}>
+        <span>Partner Ecosystem Timeline</span>
+        <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredPartnerNews.length} events)</span>
+      </h3>
+
+      {/* Partner Filter */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-filter</div>
+      <div className="highlight" style={{ padding: 16 }}>
+        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track news about <strong>ASTS MNO partners</strong> — IoT expansion, connected vehicles, 5G rollouts, coverage expansion, and commercial activities</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginBottom: 16 }}>Partner ecosystem health impacts ASTS commercial prospects</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Partner</span>
+          {partnerFilter !== 'All' && (
+            <button
+              onClick={() => setPartnerFilter('All')}
+              className="pill"
+              style={{ fontSize: 11 }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="pills">
+          {partnerNames.map(partner => {
+            const isSelected = partnerFilter === partner;
+            const count = PARTNER_NEWS.filter(n => n.partner === partner).length;
+            return (
+              <button
+                key={partner}
+                onClick={() => setPartnerFilter(partner)}
+                className={`pill ${isSelected ? 'active' : ''}`}
+              >
+                {partner} ({partner === 'All' ? PARTNER_NEWS.length : count})
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Category Filter */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#category-filter</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="pills" style={{ }}>
+          {categories.map(cat => (
+            <button key={cat} className={`pill ${categoryFilter === cat ? 'active' : ''}`} onClick={() => setCategoryFilter(cat)}>
+              {cat === 'All' ? `All (${PARTNER_NEWS.length})` : `${cat} (${PARTNER_NEWS.filter(n => n.category === cat).length})`}
+            </button>
+          ))}
+        </div>
+        <button
+          className="pill"
+          onClick={() => {
+            if (expandedPartnerNews.size === filteredPartnerNews.length) {
+              setExpandedPartnerNews(new Set());
+            } else {
+              setExpandedPartnerNews(new Set(filteredPartnerNews.map((_, i) => i)));
+            }
+          }}
+          style={{ whiteSpace: 'nowrap' }}
+        >
+          {expandedPartnerNews.size === filteredPartnerNews.length ? '⊟ Collapse All' : '⊞ Expand All'}
+        </button>
+      </div>
+
+      {/* Partner News Events */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-news</div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {filteredPartnerNews.length > 0 ? (
+          filteredPartnerNews.map((news, i) => {
+            const isExpanded = expandedPartnerNews.has(i);
+            return (
+              <div
+                key={i}
+                style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, cursor: 'pointer', borderLeft: `3px solid ${news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)'}` }}
+                onClick={() => {
+                  const next = new Set(expandedPartnerNews);
+                  if (isExpanded) next.delete(i);
+                  else next.add(i);
+                  setExpandedPartnerNews(next);
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{news.date}</span>
+                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(34,211,238,0.2)', color: 'var(--cyan)' }}>{news.partner}</span>
+                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(139,92,246,0.2)', color: 'var(--violet)' }}>{news.category}</span>
+                    </div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{news.headline}</div>
+                  </div>
+                  <span style={{ fontSize: 12, color: news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)', marginLeft: 12, whiteSpace: 'nowrap' }}>
+                    {news.impact === 'Bullish' ? '↑' : news.impact === 'Bearish' ? '↓' : '→'} {news.impact}
+                  </span>
+                </div>
+                {isExpanded && (
+                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+                    {/* Summary */}
+                    <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>{news.summary}</div>
+
+                    {/* ASTS Relevance */}
+                    {news.astsRelevance && (
+                      <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 8, borderLeft: '3px solid var(--mint)' }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--mint)' }}>📡 ASTS RELEVANCE</div>
+                        <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.astsRelevance}</div>
+                      </div>
+                    )}
+
+                    {/* Source */}
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>Source: {news.source}</div>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <div style={{ padding: 24, textAlign: 'center', color: 'var(--text3)' }}>No partner news matching filters</div>
+        )}
+      </div>
+
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Partnership Analysis" items={[
         { term: 'Definitive vs MoU', def: 'Definitive = binding commercial agreement with financial terms. MoU = memorandum of understanding, non-binding intent.' },
@@ -1926,6 +2113,323 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         { term: 'Revenue Share Economics', def: 'Typically 50/50 split. ASTS provides space infrastructure, MNO provides spectrum, distribution, billing.' },
         { term: 'Partner Concentration', def: 'Top 5 partners represent ~50% of addressable subs. Diversification reduces single-partner risk.' },
       ]} />
+    </div>
+  );
+};
+
+// COMPETITOR INTELLIGENCE TAB - Track competitor activities in satellite D2D space
+const CompetitorsTab = () => {
+  // State for expandable competitor news
+  const [expandedCompetitorNews, setExpandedCompetitorNews] = useState<Set<number>>(new Set());
+  // Filters for competitor news timeline
+  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [competitorFilter, setCompetitorFilter] = useState('All');
+
+  // Extract unique categories and competitors from COMPETITOR_NEWS for filters
+  const categories = ['All', ...Array.from(new Set(COMPETITOR_NEWS.map(n => n.category)))];
+  const competitorNames = ['All', ...Array.from(new Set(COMPETITOR_NEWS.map(n => n.competitor)))];
+
+  // Filter competitor news by category and competitor, sort by date (newest first)
+  const filteredCompetitorNews = COMPETITOR_NEWS.filter(n => {
+    const categoryMatch = categoryFilter === 'All' || n.category === categoryFilter;
+    const competitorMatch = competitorFilter === 'All' || n.competitor === competitorFilter;
+    return categoryMatch && competitorMatch;
+  }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  // Key competitors overview
+  const keyCompetitors = [
+    {
+      name: 'SpaceX Starlink',
+      type: 'LEO Broadband + D2D',
+      status: 'Operational',
+      focus: 'Terminal-based broadband, D2D partnership with T-Mobile',
+      threat: 'High',
+      notes: 'Largest LEO constellation. D2D beta with T-Mobile for texts/calls. Not full broadband D2D yet.'
+    },
+    {
+      name: 'Amazon Leo',
+      type: 'LEO Broadband',
+      status: '212 Satellites (Jan 2026)',
+      focus: 'Terminal-based broadband (Leo Nano/Pro/Ultra terminals)',
+      threat: 'Medium',
+      notes: 'Rebranded from Project Kuiper Nov 2025. 7 missions in 2025, enterprise preview live. Not D2D - different market.'
+    },
+    {
+      name: 'Lynk Global',
+      type: 'D2D (Text/IoT)',
+      status: 'Limited Service',
+      focus: 'Text messaging and IoT to unmodified phones',
+      threat: 'Low',
+      notes: 'Text-only. No voice/data. Limited satellite count. More complementary than competitive.'
+    },
+    {
+      name: 'Apple/Globalstar',
+      type: 'Emergency SOS',
+      status: 'Operational',
+      focus: 'Emergency messaging for iPhone only',
+      threat: 'Low',
+      notes: 'iPhone-only. Emergency texts only. Not commercial service. Different use case.'
+    },
+  ];
+
+  return (
+    <div className="tab-content">
+      <style>{`
+        .competitor-card {
+          background: var(--bg2);
+          border: 1px solid var(--stroke);
+          border-radius: 12px;
+          padding: 16px;
+          margin-bottom: 12px;
+        }
+        .threat-high { border-left: 3px solid var(--red); }
+        .threat-medium { border-left: 3px solid var(--gold); }
+        .threat-low { border-left: 3px solid var(--mint); }
+        .competitor-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .competitor-name {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--text1);
+        }
+        .competitor-type {
+          font-size: 11px;
+          color: var(--text3);
+          padding: 2px 8px;
+          background: var(--bg3);
+          border-radius: 4px;
+        }
+        .competitor-detail {
+          font-size: 12px;
+          color: var(--text2);
+          margin-bottom: 4px;
+        }
+        .competitor-notes {
+          font-size: 11px;
+          color: var(--text3);
+          font-style: italic;
+        }
+        .news-entry {
+          background: var(--bg2);
+          border: 1px solid var(--stroke);
+          border-radius: 8px;
+          margin-bottom: 8px;
+          overflow: hidden;
+          transition: all 0.2s ease;
+        }
+        .news-entry:hover {
+          border-color: var(--text3);
+        }
+        .news-header {
+          padding: 12px 16px;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .news-title {
+          font-size: 13px;
+          color: var(--text1);
+          font-weight: 500;
+          flex: 1;
+        }
+        .news-meta {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          flex-shrink: 0;
+        }
+        .news-date {
+          font-size: 11px;
+          color: var(--text3);
+        }
+        .news-impact {
+          font-size: 10px;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-weight: 500;
+        }
+        .impact-bullish { background: rgba(16, 185, 129, 0.2); color: var(--mint); }
+        .impact-bearish { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+        .impact-neutral { background: rgba(148, 163, 184, 0.2); color: var(--text3); }
+        .news-body {
+          padding: 0 16px 16px 16px;
+          border-top: 1px solid var(--stroke);
+        }
+        .news-summary {
+          font-size: 12px;
+          color: var(--text2);
+          line-height: 1.6;
+          margin-bottom: 12px;
+        }
+        .news-implication {
+          font-size: 12px;
+          color: var(--sky);
+          padding: 8px 12px;
+          background: rgba(56, 189, 248, 0.1);
+          border-radius: 6px;
+          margin-bottom: 8px;
+        }
+        .news-source {
+          font-size: 11px;
+          color: var(--text3);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .news-source a {
+          color: var(--sky);
+          text-decoration: none;
+        }
+        .news-source a:hover {
+          text-decoration: underline;
+        }
+      `}</style>
+
+      {/* Key Competitors Overview */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-overview</div>
+      <h2 className="section-head">Key Competitors</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
+        {keyCompetitors.map((comp, i) => (
+          <div key={i} className={`competitor-card threat-${comp.threat.toLowerCase()}`}>
+            <div className="competitor-header">
+              <span className="competitor-name">{comp.name}</span>
+              <span className="competitor-type">{comp.type}</span>
+            </div>
+            <div className="competitor-detail"><strong>Status:</strong> {comp.status}</div>
+            <div className="competitor-detail"><strong>Focus:</strong> {comp.focus}</div>
+            <div className="competitor-detail"><strong>Threat Level:</strong> <span style={{ color: comp.threat === 'High' ? 'var(--red)' : comp.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{comp.threat}</span></div>
+            <div className="competitor-notes">{comp.notes}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Competitor News Timeline */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-timeline</div>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span>Competitor Intelligence ({filteredCompetitorNews.length} events)</span>
+      </h2>
+
+      {/* Competitor Filter */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
+      <div style={{ marginBottom: 12 }}>
+        <span style={{ fontSize: 11, color: 'var(--text3)', marginRight: 8 }}>Filter by Competitor:</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {competitorNames.map(comp => {
+            const isSelected = competitorFilter === comp;
+            const count = COMPETITOR_NEWS.filter(n => n.competitor === comp).length;
+            return (
+              <button
+                key={comp}
+                onClick={() => setCompetitorFilter(comp)}
+                className={`pill ${isSelected ? 'active' : ''}`}
+              >
+                {comp} ({comp === 'All' ? COMPETITOR_NEWS.length : count})
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Category Filter */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#category-filter</div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16, alignItems: 'center' }}>
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setCategoryFilter(cat)}
+            className={`pill ${categoryFilter === cat ? 'active' : ''}`}
+          >
+            {cat === 'All' ? `All (${COMPETITOR_NEWS.length})` : `${cat} (${COMPETITOR_NEWS.filter(n => n.category === cat).length})`}
+          </button>
+        ))}
+        <button
+          className="pill"
+          onClick={() => {
+            if (expandedCompetitorNews.size === filteredCompetitorNews.length) {
+              setExpandedCompetitorNews(new Set());
+            } else {
+              setExpandedCompetitorNews(new Set(filteredCompetitorNews.map((_, i) => i)));
+            }
+          }}
+        >
+          {expandedCompetitorNews.size === filteredCompetitorNews.length ? 'Collapse All' : 'Expand All'}
+        </button>
+      </div>
+
+      {/* News Entries */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
+      {filteredCompetitorNews.map((news, i) => {
+        const isExpanded = expandedCompetitorNews.has(i);
+        return (
+          <div key={i} className="news-entry" style={{ borderLeft: `3px solid ${news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--red)' : 'var(--text3)'}` }}>
+            <div
+              className="news-header"
+              onClick={() => {
+                const newExpanded = new Set(expandedCompetitorNews);
+                if (isExpanded) {
+                  newExpanded.delete(i);
+                } else {
+                  newExpanded.add(i);
+                }
+                setExpandedCompetitorNews(newExpanded);
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>
+                  <span style={{ color: 'var(--gold)' }}>{news.competitor}</span> • {news.category}
+                </div>
+                <div className="news-title">{news.headline}</div>
+              </div>
+              <div className="news-meta">
+                <span className="news-date">{news.date}</span>
+                <span className={`news-impact impact-${news.impact.toLowerCase()}`}>
+                  {news.impact === 'Bullish' ? '↑ Good for ASTS' : news.impact === 'Bearish' ? '↓ Risk for ASTS' : '— Neutral'}
+                </span>
+                <span style={{ color: 'var(--text3)' }}>{isExpanded ? '▼' : '▶'}</span>
+              </div>
+            </div>
+            {isExpanded && (
+              <div className="news-body">
+                <div className="news-summary">{news.summary}</div>
+                <div className="news-implication">
+                  <strong>ASTS Implication:</strong> {news.astsImplication}
+                </div>
+                <div className="news-source">
+                  <span>Source: {news.source}</span>
+                  {news.url && (
+                    <a href={news.url} target="_blank" rel="noopener noreferrer">View Original →</a>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {filteredCompetitorNews.length === 0 && (
+        <div style={{ textAlign: 'center', padding: 40, color: 'var(--text3)' }}>
+          No competitor news matching current filters
+        </div>
+      )}
+
+      {/* Competitive Moat Summary */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#competitive-moat</div>
+      <h2 className="section-head">ASTS Competitive Advantages</h2>
+      <div className="competitor-card" style={{ borderLeft: '3px solid var(--mint)' }}>
+        <div style={{ display: 'grid', gap: 12 }}>
+          <div className="competitor-detail"><strong>🛰️ True D2D Broadband:</strong> Only solution offering full mobile broadband (voice, data, video) to unmodified smartphones. Starlink D2D is text/voice only.</div>
+          <div className="competitor-detail"><strong>📡 MNO Partnerships:</strong> 50+ carrier agreements covering 3.2B+ subscribers. Deep integration vs. Starlink's single T-Mobile deal.</div>
+          <div className="competitor-detail"><strong>📶 Spectrum Access:</strong> 1,150+ MHz tunable across partners + owned L-band/S-band. Regulatory moat vs. new entrants.</div>
+          <div className="competitor-detail"><strong>🎯 First Mover:</strong> First to demonstrate 5G broadband from space to standard phones. Technology lead of 2+ years.</div>
+          <div className="competitor-detail"><strong>🏛️ Government Contracts:</strong> SDA, DIU, MDA SHIELD contracts validate defense use case. Additional revenue stream.</div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -8674,20 +9178,20 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     {
       id: 'starlink-tmobile',
       name: 'Starlink / T-Mobile',
-      description: 'SpaceX satellite constellation partnered with T-Mobile for direct-to-cell service',
-      technology: 'Modified Starlink V2 satellites with cellular capability',
-      currentStatus: 'Live with text messaging in beta, voice/data roadmap unclear',
+      description: 'SpaceX Direct-to-Cell - SMS commercial in US + Europe (Ukraine), voice/data roadmap',
+      technology: '650+ D2C satellites, 2.7x2.3m phased arrays, custom silicon, LTE/4G protocols',
+      currentStatus: 'SMS live (US beta, Ukraine commercial Nov 2025), 8+ MNO partners, voice/data coming',
       capabilities: { voice: false, text: true, data: false, video: false, unmodifiedPhones: true, globalCoverage: false },
-      keyMetrics: { satellites: 7000, coverage: 'Continental US (partial)', subscribers: 'Beta testing', funding: 'SpaceX backed' }
+      keyMetrics: { satellites: '650+ D2C', coverage: 'US + Europe (Ukraine first)', subscribers: 'Kyivstar 22.5M eligible', funding: 'SpaceX vertical integration' }
     },
     {
       id: 'lynk',
-      name: 'Lynk Global',
-      description: 'Direct-to-standard-phone satellite service, similar B2B model to ASTS',
-      technology: 'Small satellites, limited bandwidth per satellite',
-      currentStatus: 'Commercial agreements signed, limited coverage',
-      capabilities: { voice: false, text: true, data: false, video: false, unmodifiedPhones: true, globalCoverage: false },
-      keyMetrics: { satellites: 10, coverage: 'Equatorial regions', subscribers: '<100K', funding: '$150M raised' }
+      name: 'Lynk Global (+ Omnispace)',
+      description: 'D2D provider merging with Omnispace (Oct 2025), SES as major shareholder',
+      technology: 'Small sats + Omnispace 60 MHz S-band spectrum, multi-spectrum platform',
+      currentStatus: 'Merger pending, FCC US license (Apr 2025), 50+ MNO partners, 50+ countries',
+      capabilities: { voice: true, text: true, data: true, video: false, unmodifiedPhones: true, globalCoverage: false },
+      keyMetrics: { satellites: 15, coverage: 'S-band: 1B+ people (Americas/Europe/Africa/Asia)', subscribers: 'B2B via MNOs', funding: 'SES-backed post-merger' }
     },
     {
       id: 'apple-globalstar',
@@ -8701,29 +9205,38 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     {
       id: 'skylo',
       name: 'Skylo Technologies',
-      description: 'NB-IoT satellite connectivity using existing GEO satellites',
-      technology: 'Software-based, uses existing satellite infrastructure',
-      currentStatus: 'Commercial, focused on IoT not consumer phones',
-      capabilities: { voice: false, text: false, data: true, video: false, unmodifiedPhones: false, globalCoverage: true },
-      keyMetrics: { satellites: 0, coverage: 'Global via partners', subscribers: 'IoT focused', funding: '$116M raised' }
+      description: 'NB-NTN via GEO satellites - powers Google Pixel + Verizon satellite SOS/SMS',
+      technology: '3GPP NB-NTN on existing GEO sats, licensed MSS L-band spectrum, cloud-native vRAN',
+      currentStatus: 'Pixel 9/10 satellite SOS, Pixel Watch 4 (first smartwatch), Verizon SMS live',
+      capabilities: { voice: false, text: true, data: true, video: false, unmodifiedPhones: true, globalCoverage: true },
+      keyMetrics: { satellites: 'GEO partners', coverage: 'US, Canada, EU, Australia', subscribers: 'Pixel 9/10 + Verizon users', funding: '$116M raised' }
     },
     {
       id: 'iridium',
       name: 'Iridium',
-      description: 'Legacy satellite phone provider, potential D2D pivot',
-      technology: 'LEO constellation, proprietary spectrum',
-      currentStatus: 'Satellite phones only, D2D partnership discussions',
+      description: 'Legacy sat phone provider + NTN Direct (3GPP NB-IoT) for D2D/IoT',
+      technology: '66-sat LEO constellation, L-band MSS spectrum, NB-IoT NTN via software update',
+      currentStatus: 'Sat phones live, NTN Direct (Project Stardust) testing 2025, service 2026',
       capabilities: { voice: true, text: true, data: true, video: false, unmodifiedPhones: false, globalCoverage: true },
-      keyMetrics: { satellites: 66, coverage: 'Global', subscribers: '2.1M', funding: 'Public (IRDM)' }
+      keyMetrics: { satellites: 66, coverage: 'Truly global (incl. poles)', subscribers: '2.2M (1.7M IoT)', funding: 'Public (IRDM)' }
     },
     {
-      id: 'amazon-kuiper',
-      name: 'Amazon Kuiper',
-      description: 'Amazon\'s satellite internet constellation, potential D2D threat',
-      technology: 'LEO broadband constellation under development',
-      currentStatus: 'First satellites launched 2023, D2D not announced',
-      capabilities: { voice: false, text: false, data: false, video: false, unmodifiedPhones: false, globalCoverage: false },
-      keyMetrics: { satellites: 2, coverage: 'Testing', subscribers: 'N/A', funding: '$10B committed' }
+      id: 'amazon-leo',
+      name: 'Amazon Leo',
+      description: 'Amazon\'s LEO satellite broadband (fka Project Kuiper) - terminal-based, NOT D2D',
+      technology: 'LEO constellation with Leo Nano/Pro/Ultra terminals (100Mbps-1Gbps)',
+      currentStatus: '212 satellites launched (Jan 2026), enterprise preview live',
+      capabilities: { voice: false, text: false, data: true, video: false, unmodifiedPhones: false, globalCoverage: false },
+      keyMetrics: { satellites: 212, coverage: 'Building to 3,232', subscribers: 'Enterprise preview', funding: '$10B committed' }
+    },
+    {
+      id: 'echostar',
+      name: 'EchoStar / Hughes',
+      description: 'D2D LEO constellation via MDA AURORA - broadband NTN to 5G NTN devices, 2029 service',
+      technology: 'MDA AURORA software-defined LEO sats, 2GHz S-band/AWS-4 spectrum, Open RAN 5G, 3GPP NTN',
+      currentStatus: 'Contract signed Aug 2025, satellites 2028, commercial service 2029',
+      capabilities: { voice: true, text: true, data: true, video: true, unmodifiedPhones: true, globalCoverage: true },
+      keyMetrics: { satellites: '200 initial (scalable to 1000s)', coverage: 'US + global (2GHz spectrum)', subscribers: 'Pre-launch', funding: '$5B LEO project, $18B total NTN since 2012' }
     }
   ];
 
@@ -8737,7 +9250,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // Format:
     // {
     //   date: 'YYYY-MM-DD',
-    //   competitor: 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-kuiper' | 'other',
+    //   competitor: 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-leo' | 'echostar' | 'other',
     //   category: 'Launch' | 'Partnership' | 'Technology' | 'Regulatory' | 'Financial' | 'Coverage' | 'Product',
     //   headline: 'Brief headline',
     //   details: ['Bullet point 1', 'Bullet point 2'],
@@ -8747,6 +9260,542 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     //   sourceUrl: 'https://...'
     // },
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ECHOSTAR - MDA AURORA D2D LEO CONSTELLATION ($5B PROJECT)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-08-01',
+      competitor: 'echostar',
+      category: 'Technology',
+      headline: 'EchoStar selects MDA Space for world\'s first Open RAN broadband NTN LEO constellation',
+      details: [
+        'EchoStar selects MDA Space as prime contractor for D2D LEO constellation',
+        'Initial $1.3B contract for 100+ MDA AURORA software-defined D2D satellites',
+        'Full initial config: 200 satellites, scalable to thousands',
+        'Total LEO project cost: $5 billion (total NTN investment since 2012: $18B+)',
+        'Coverage: 350M Americans + 7B globally',
+        'Services: Talk, text, broadband data, video to standard 5G NTN devices',
+        'Spectrum: 2GHz S-band/AWS-4 with highest ITU priority (up to 25x20 MHz)',
+        '3GPP NTN compliant — works with current NTN devices without modifications',
+        'Satellites delivery: 2028, commercial service: 2029',
+        'EchoStar already delivering texting in Europe via 2GHz (Lyra sats)',
+        'North America texting via existing GEO planned H1 2026'
+      ],
+      implication: 'negative',
+      astsComparison: 'EchoStar is a serious D2D competitor with $5B LEO investment, $18B total NTN spend, and highest-priority 2GHz spectrum globally. Key difference: 2029 commercial service vs ASTS 2025-2026 launches. ASTS has 3-4 year head start. However, EchoStar\'s MDA AURORA is purpose-built D2D broadband (voice+text+data+video) like ASTS, not just SMS. EchoStar\'s Open RAN 5G and existing US 5G network provide terrestrial integration. Long-term threat.',
+      source: 'EchoStar PR',
+      sourceUrl: 'https://www.prnewswire.com/news-releases/echostar-selects-mda-space-for-worlds-first-open-ran-broadband-ntn-leo-constellation-302519409.html',
+      storyId: 'echostar-mda-leo',
+      storyTitle: 'EchoStar MDA AURORA D2D LEO'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // AMAZON LEO (fka Project Kuiper) - LEO BROADBAND (TERMINAL-BASED)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-04',
+      competitor: 'amazon-leo',
+      category: 'Partnership',
+      headline: 'AT&T partners with Amazon Leo for fixed broadband to business customers',
+      details: [
+        'AT&T to use Amazon Leo for fixed broadband services to business customers',
+        'Extends AT&T connectivity to areas needing broadband services',
+        'Part of broader AT&T/AWS collaboration for cloud modernization',
+        'AT&T migrating workloads to AWS Outposts (managed hybrid cloud)',
+        'AT&T connecting AWS data centers with high-capacity fiber',
+        'Amazon Leo: 3,000+ satellite constellation with Leo Nano/Pro/Ultra terminals',
+        'Announced at MWC 2026',
+        'AT&T covers 99%+ of US population terrestrially'
+      ],
+      implication: 'neutral',
+      astsComparison: 'AT&T using Amazon Leo for FIXED broadband (terminal-based) to business customers. This is DIFFERENT from ASTS D2D to smartphones. AT&T has ASTS partnership for direct-to-device cellular (unmodified phones). AT&T hedging: Amazon Leo for fixed enterprise backhaul, ASTS for mobile D2D. Complementary not competing.',
+      source: 'AT&T/Amazon',
+      sourceUrl: 'https://www.businesswire.com/news/home/20260204att-aws-amazon-leo',
+      storyId: 'amazon-leo-att',
+      storyTitle: 'Amazon Leo AT&T Partnership'
+    },
+    {
+      date: '2026-01-30',
+      competitor: 'amazon-leo',
+      category: 'Launch',
+      headline: 'Amazon Leo preparing for 8th mission - 212 satellites launched, LE-01 with Arianespace Feb 12',
+      details: [
+        'LE-01 mission on Feb 12, 2026 - first launch with Arianespace on Ariane 64',
+        'Will add 32 satellites bringing total to 212 spacecraft in orbit',
+        '8th mission overall, first of 18 planned Arianespace launches',
+        'Previous 7 missions: KA-01 (Apr), KA-02 (Jun), KF-01 (Jul), KF-02 (Aug), KA-03 (Sep), KF-03 (Oct), LA-04 (Dec)',
+        'Targeting 3,000+ satellite constellation with 80+ launches secured',
+        'Launch providers: Arianespace, Blue Origin, SpaceX, ULA'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon Leo is TERMINAL-BASED broadband (dishes/antennas), NOT direct-to-device. Their Leo Ultra terminal requires installation. ASTS addresses different market: unmodified smartphones.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2025-11-24',
+      competitor: 'amazon-leo',
+      category: 'Product',
+      headline: 'Amazon Leo debuts gigabit-speed "Ultra" antenna, begins enterprise preview',
+      details: [
+        'Leo Ultra: enterprise terminal up to 1 Gbps down, 400 Mbps up',
+        '"Fastest commercial phased array antenna in production"',
+        'Three tiers: Leo Nano (100 Mbps), Leo Pro (400 Mbps), Leo Ultra (1 Gbps)',
+        'Enterprise features: Direct to AWS (D2A), private network interconnect',
+        'Customers: JetBlue, Vanu Inc., Hunt Energy Network, Connected Farms',
+        'Enterprise preview testing before broader 2026 rollout'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon targeting enterprise/government with premium terminals - different segment than ASTS consumer mobile. Leo Ultra requires professional installation. ASTS delivers to EXISTING smartphones.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2025-11-13',
+      competitor: 'amazon-leo',
+      category: 'Technology',
+      headline: 'Project Kuiper rebranded to "Amazon Leo" - permanent identity for satellite network',
+      details: [
+        'Official rebrand from Project Kuiper to Amazon Leo',
+        'Nod to Low Earth Orbit constellation',
+        '150+ satellites in orbit at rebrand',
+        'Production line up to 5 satellites/day at Kirkland facility',
+        'Customers signed: JetBlue, L3Harris, DIRECTV Latin America, Sky Brasil, NBN Co. Australia'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Rebranding signals Amazon\'s long-term commitment. Still terminal-based system - not direct competition to ASTS\'s D2D approach. Both building toward "connectivity everywhere" via different paths.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2025-09-04',
+      competitor: 'amazon-leo',
+      category: 'Partnership',
+      headline: 'JetBlue chooses Amazon Project Kuiper for free in-flight Wi-Fi starting 2027',
+      details: [
+        'First airline to implement Amazon satellite internet',
+        'Will enhance JetBlue\'s free Fly-Fi service beginning 2027',
+        'Aviation terminal supports up to 1 Gbps downloads',
+        'Amazon also signed agreement with Airbus to integrate into aircraft catalog',
+        'Over 100 satellites in orbit at time of announcement'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon targeting aviation with dedicated terminals. ASTS has different angle: enabling passengers\' existing phones to work via satellite over coverage gaps. Amazon requires aircraft modification.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2025-04-28',
+      competitor: 'amazon-leo',
+      category: 'Launch',
+      headline: 'Amazon Project Kuiper completes first full-scale launch - 27 production satellites deployed',
+      details: [
+        'KA-01 mission: first batch of 27 production satellites',
+        'ULA Atlas V 551 from Cape Canaveral',
+        'Transition from prototype testing to full-scale deployment',
+        'First of 80+ planned missions for 3,232-satellite constellation',
+        'Manufacturing: up to 5 satellites/day capacity',
+        '"Largest commercial procurement of launch vehicles in history"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon beginning serious constellation deployment. ASTS has technology lead with 5G broadband calls on BlueBird. Amazon\'s scale impressive but solving different problem than ASTS D2D.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2021-11-01',
+      competitor: 'amazon-leo',
+      category: 'Launch',
+      headline: 'Amazon Kuiper announces KuiperSat-1 and KuiperSat-2 prototype satellites',
+      details: [
+        'FCC application to launch two prototype satellites',
+        'Testing phased array and parabolic antennas, modems, terminals',
+        'Partnership with ABL Space Systems for RS1 rocket',
+        '750+ people working on Project Kuiper',
+        'Active deorbit plans for responsible space stewardship'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon Kuiper is terminal-based LEO broadband (like Starlink), NOT direct-to-device. Targets home/business internet vs ASTS mobile subscribers in coverage gaps.',
+      source: 'Amazon',
+      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STARLINK DIRECT-TO-CELL - CORE D2D COMPETITOR
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2024-01-08',
+      competitor: 'starlink-tmobile',
+      category: 'Technology',
+      headline: 'Starlink/T-Mobile send first text messages via Direct to Cell satellites',
+      details: [
+        'First text messages sent/received using T-Mobile spectrum through D2C satellites',
+        'Launched first 6 D2C satellites on Jan 2, 2024 - less than 6 days to first texts',
+        'Custom silicon + 2.7m x 2.3m phased arrays for phone connectivity from space',
+        'Validates link budget closes - system works with unmodified phones (0.2W transmit)',
+        'Plans: text service 2024, voice/data/IoT in 2025',
+        'MNO partners: T-Mobile, Rogers (Canada), Optus (Australia), One NZ, KDDI (Japan), Salt (Switzerland), Entel (Chile/Peru)',
+        'Leverages existing Starlink infrastructure: laser backhaul, ground stations, PoPs',
+        'SpaceX claims unique position with vertical integration (launch + satellite production)'
+      ],
+      implication: 'negative',
+      astsComparison: 'Direct competitor milestone. Starlink\'s 6.2m² antenna vs ASTS 64m² BlueBird arrays. Starlink starting with text-only, limited bandwidth. ASTS demonstrated 5G broadband voice/video with BW3. Different approach: Starlink betting on massive constellation (hundreds of D2C sats), ASTS betting on fewer large high-throughput satellites.',
+      source: 'SpaceX',
+      sourceUrl: 'https://direct.starlink.com/',
+      storyId: 'starlink-d2c-launch',
+      storyTitle: 'Starlink Direct-to-Cell Launch'
+    },
+    {
+      date: '2025-11-24',
+      competitor: 'starlink-tmobile',
+      category: 'Coverage',
+      headline: 'Kyivstar launches Starlink Direct to Cell in Ukraine - first in Europe',
+      details: [
+        'Ukraine becomes first European country with Starlink D2C commercial service',
+        'Kyivstar (22.5M mobile customers) partnered with SpaceX',
+        'SMS messaging available now; voice/data planned for future phases',
+        '650+ D2C satellites in LEO constellation',
+        'Works with existing 4G LTE Android phones (iOS coming soon)',
+        'Critical for wartime: blackouts, damaged infrastructure, de-occupied territories',
+        'Free to all Kyivstar subscribers under existing plans',
+        'Coverage: entire Ukraine except occupied/combat zones',
+        'Starlink D2C described as "world\'s largest 4G coverage provider"'
+      ],
+      implication: 'negative',
+      astsComparison: 'Starlink D2C commercial expansion into Europe - ASTS target market. However, still SMS-only (no voice/data yet). Ukraine unique wartime use case - damaged terrestrial infrastructure makes satellite critical. ASTS targeting European commercial launch via Vodafone/SatCo JV with broadband capability (voice/video demonstrated). Different value propositions: Starlink = emergency texts, ASTS = full cellular experience.',
+      source: 'Kyivstar/SpaceX',
+      sourceUrl: 'https://investors.kyivstar.ua/news/',
+      storyId: 'starlink-d2c-europe',
+      storyTitle: 'Starlink D2C European Expansion'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // IRIDIUM NTN DIRECT - STANDARDS-BASED D2D/IoT
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-21',
+      competitor: 'iridium',
+      category: 'Technology',
+      headline: 'Iridium NTN Direct begins on-air testing - first two-way message transmission',
+      details: [
+        'Successful on-air testing of Iridium NTN Direct with two-way messages',
+        'First message: "To Iridium and Beyond"',
+        'Uses Nordic Semiconductor nRF9151 low-power NB-IoT/NTN module',
+        '5G waveform algorithms implemented on software-defined satellites',
+        'NB-IoT standards-based protocol per 3GPP',
+        'Beta testing and commercial service planned for 2026',
+        'Target: emergency messaging, asset tracking, automotive, utilities, agriculture',
+        'Designed for 100% global coverage leveraging existing 66-satellite constellation'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium NTN Direct progressing toward commercial launch. Key differentiator: Iridium = NB-IoT narrowband (low-power IoT sensors, messaging), ASTS = broadband cellular (voice/video/data). Iridium has truly global coverage advantage but narrowband only. ASTS regional but broadband. Different use cases, minimal direct overlap.',
+      source: 'Iridium',
+      sourceUrl: 'https://www.iridium.com/press-release/iridium-ntn-direct-on-air-trials/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+    {
+      date: '2025-11-04',
+      competitor: 'iridium',
+      category: 'Partnership',
+      headline: 'Vodafone IoT partners with Iridium for NTN NB-IoT connectivity',
+      details: [
+        'Vodafone IoT to integrate Iridium NTN Direct service',
+        'Extends Vodafone IoT coverage to most remote locations globally',
+        'Vodafone IoT: 215 million devices connected across 180+ countries',
+        'Commercial launch planned 2026',
+        'Use cases: windfarms, oil pipelines, shipping tracking, emergency services',
+        'Vodafone IoT network spans 760+ networks worldwide',
+        'Iridium provides truly global L-band coverage including poles',
+        'Standards-based 3GPP NB-IoT integration'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Notable: Vodafone IoT choosing Iridium for IoT while Vodafone Group partners with ASTS for D2D smartphone service. Different divisions, different use cases. IoT = narrowband sensors/tracking (Iridium strength). Smartphones = broadband voice/data (ASTS strength). Validates segmented market approach.',
+      source: 'Iridium/Vodafone IoT',
+      sourceUrl: 'https://www.iridium.com/blog/vodafone-iot-partnership/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+    {
+      date: '2025-09-16',
+      competitor: 'iridium',
+      category: 'Partnership',
+      headline: 'Iridium begins NTN Direct integration with Deutsche Telekom',
+      details: [
+        'Deutsche Telekom to gain roaming access to Iridium NTN Direct',
+        'First MNO to begin integrating Iridium NTN Direct with terrestrial infrastructure',
+        '3GPP standards-based 5G service for NB-IoT D2D connectivity',
+        'Coverage from pole to pole via Iridium constellation',
+        'Use cases: cargo logistics, utility monitoring, smart agriculture, emergency response',
+        'Commercial launch planned 2026',
+        'Affordable 3GPP-standardized 5G devices work across terrestrial and NTN',
+        'Deutsche Telekom at forefront of standards-based IoT innovation'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Deutsche Telekom choosing Iridium for IoT coverage extension. ASTS has Deutsche Telekom as a shareholder but different focus: ASTS = smartphone broadband, Iridium = narrowband IoT. Both can coexist - different service tiers for different use cases.',
+      source: 'Iridium',
+      sourceUrl: 'https://www.iridium.com/blog/deutsche-telekom-partnership/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+    {
+      date: '2025-05-29',
+      competitor: 'iridium',
+      category: 'Partnership',
+      headline: 'Iridium partners with Syniverse to bring NTN Direct to MNOs worldwide',
+      details: [
+        'Syniverse to support Iridium NTN Direct rollout with mobile network operators',
+        '85% of MNOs seeking LEO solution for global coverage (GSMA 2025 survey)',
+        'Syniverse serves ~600 carriers in 170 countries, connects 830+ mobile operators',
+        'Iridium NTN Direct: truly global, standards-based D2D and NB-IoT messaging/SOS',
+        'Part of 3GPP Release 19 - first devices planned for 2026',
+        'Syniverse handles roaming, authentication, billing for seamless MNO integration',
+        'Target: consumer devices, automobiles, industrial IoT (agriculture, transport, energy)'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium pursuing NB-IoT/messaging niche vs ASTS broadband. Iridium has truly global coverage (66 sats) but narrowband only. ASTS offers broadband throughput but regional coverage initially. Different markets: Iridium for SOS/messaging, ASTS for full cellular experience.',
+      source: 'Iridium',
+      sourceUrl: 'https://www.iridium.com/blog/iridium-and-syniverse-partner/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+    {
+      date: '2024-10-09',
+      competitor: 'iridium',
+      category: 'Partnership',
+      headline: 'Iridium collaborates with Nordic Semiconductor on NTN Direct chipset integration',
+      details: [
+        'Nordic Semiconductor for early integration of Iridium NTN Direct',
+        'Nordic: global leader in cellular IoT (LTE-M, NB-IoT) modules/chipsets',
+        'Part of 3GPP Release 19 NTN roadmap',
+        'Planned: world\'s first truly global NB-IoT service',
+        'nRF9151 chipset to connect to Iridium satellite network',
+        'Target: consumer/industrial devices with universal connectivity',
+        '3GPP Release 19 expected completed end of 2025'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium building ecosystem for NB-IoT standards devices. ASTS works with existing LTE/5G phones - no special chipset needed. Iridium targeting IoT mass market; ASTS targeting smartphone users.',
+      source: 'Iridium',
+      sourceUrl: 'https://www.iridium.com/blog/iridium-nordic-semiconductor-collaboration/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+    {
+      date: '2024-01-10',
+      competitor: 'iridium',
+      category: 'Technology',
+      headline: 'Iridium unveils Project Stardust - NB-IoT NTN service for existing constellation',
+      details: [
+        'Announces NB-IoT NTN standards-based service development',
+        'Will upload capability to existing 66-satellite LEO constellation',
+        'Targeting smartphones, OEMs, chipmakers, MNOs',
+        'Initial offering: 5G NTN messaging and SOS for smartphones, tablets, cars',
+        'Collaborating with device manufacturers on requirements',
+        'Testing planned 2025, service in 2026',
+        '2.2 million existing users, 1.7 million IoT customers',
+        'Only network providing true global coverage including poles'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium leveraging existing constellation for NB-IoT - capital efficient but narrowband. ASTS requires new satellite builds but offers broadband. Iridium\'s L-band spectrum vs ASTS using MNO spectrum. Iridium = global messaging/SOS, ASTS = regional broadband cellular.',
+      source: 'Iridium',
+      sourceUrl: 'https://www.iridium.com/project-stardust/',
+      storyId: 'iridium-ntn-direct',
+      storyTitle: 'Iridium NTN Direct Development'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SKYLO TECHNOLOGIES - NB-NTN VIA GEO (GOOGLE PIXEL, VERIZON)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-28',
+      competitor: 'skylo',
+      category: 'Partnership',
+      headline: 'Skylo partners with Vodafone IoT for NTN NB-IoT satellite connectivity trial',
+      details: [
+        'Vodafone IoT to trial Skylo NTN NB-IoT for global hybrid connectivity',
+        'Single Vodafone SIM enables seamless switch between cellular and satellite',
+        'Skylo network: 36 countries, 70M sq km coverage',
+        'Use cases: asset tracking, energy, environmental monitoring, fleet management',
+        'Vodafone IoT: 220M+ devices across 180+ countries',
+        'Managed via Vodafone IoT Managed Connectivity Platform',
+        'Skylo orchestrates across multiple satellite constellations',
+        'Commercial service planned after trial phase'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Notable: Vodafone IoT now partnering with BOTH Iridium (Nov 2025) AND Skylo (Jan 2026) for NB-IoT. Shows Vodafone hedging with multiple narrowband providers. ASTS relationship is with Vodafone Group (smartphones/broadband), not IoT division. Market segmentation: Skylo/Iridium = narrowband IoT sensors, ASTS = broadband cellular to smartphones.',
+      source: 'Skylo/Vodafone IoT',
+      sourceUrl: 'https://iot.vodafone.com/news-and-insights/vodafone-iot-partners-with-skylo',
+      storyId: 'skylo-vodafone-iot',
+      storyTitle: 'Skylo Vodafone IoT Partnership'
+    },
+    {
+      date: '2025-08-20',
+      competitor: 'skylo',
+      category: 'Product',
+      headline: 'Google/Skylo expand satellite connectivity to Pixel 10 + launch Pixel Watch 4 with satellite SOS',
+      details: [
+        'Pixel 10 Series with satellite SOS + first satellite-based location sharing in Android 16',
+        'Pixel Watch 4: world\'s first smartwatch with 2-way satellite emergency messaging',
+        'Qualcomm Snapdragon W5 Gen 2 enables standalone satellite SOS without phone',
+        'Skylo NB-NTN service powers all satellite features',
+        'Pixel 9 won "Best Smartphone" at MWC Barcelona 2025 (satellite cited)',
+        'Skylo named "Best NTN Provider" at MWC for second consecutive year',
+        'Coverage: US, Canada, Europe, Australia (Watch 4 US first, expanding)',
+        'Features: emergency SOS, location sharing via satellite, SMS (carrier-dependent)'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Skylo expanding consumer reach via Google partnership - validates D2D market. However, Skylo = NB-NTN narrowband (emergency SOS/SMS only). ASTS = broadband voice/video/data. Different service tiers: Skylo for "when all else fails" emergencies, ASTS for "full cellular experience anywhere." Pixel Watch shows wearables market opportunity ASTS could address with MNO partners.',
+      source: 'Skylo',
+      sourceUrl: 'https://www.skylo.tech/blog/google-and-skylo-expand-satellite-connectivity-pixel-10-pixel-watch-4',
+      storyId: 'skylo-google-partnership',
+      storyTitle: 'Skylo Google Partnership'
+    },
+    {
+      date: '2025-04-28',
+      competitor: 'skylo',
+      category: 'Partnership',
+      headline: 'Skylo partners with Syniverse to implement SMS over satellite for Verizon',
+      details: [
+        'Syniverse Evolved Mobility enables seamless SMS over satellite integration',
+        'First time MNO can integrate SMS over NTN with no architecture changes',
+        'Skylo uses licensed MSS L-band spectrum (avoids interference with terrestrial)',
+        'Verizon first MNO worldwide to commercially launch on Skylo NTN',
+        'Same Diameter Protocol MNOs use for terrestrial network integration',
+        'Cloud-deployed, scalable solution',
+        'Extends Skylo emergency messaging launched 2024 to full SMS capability'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Syniverse enabling Skylo-Verizon integration - same Syniverse partnering with Iridium for NTN Direct. Shows Syniverse as key NTN integration enabler. Skylo using own MSS spectrum vs ASTS using MNO spectrum. Skylo narrowband SMS vs ASTS broadband - complementary not competing for Verizon.',
+      source: 'Syniverse/Skylo',
+      sourceUrl: 'https://www.businesswire.com/news/home/20250428skylo',
+      storyId: 'skylo-verizon-partnership',
+      storyTitle: 'Skylo Verizon Partnership'
+    },
+    {
+      date: '2025-03-19',
+      competitor: 'skylo',
+      category: 'Coverage',
+      headline: 'Verizon launches first US satellite texting to ANY device with Samsung S25 and Pixel 9',
+      details: [
+        'First in US to enable satellite texting to any recipient device (not just emergency)',
+        'Available on Samsung Galaxy S25 series and Google Pixel 9 series',
+        'Powered by Skylo NTN network',
+        'Verizon network covers 99% of US population terrestrially',
+        'Satellite extends coverage to remaining areas',
+        'Also testing data services and video calling via satellite',
+        'Using satellite for emergency portable assets, temporary backhaul, IoT'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Verizon expanding Skylo from emergency-only to general SMS. Still narrowband text only (no voice/video). ASTS partnership with AT&T targets broadband voice/data. Verizon hedging with multiple satellite approaches: Skylo (narrowband), own testing (data/video). Market validating need for satellite connectivity.',
+      source: 'Verizon',
+      sourceUrl: 'https://www.verizon.com/about/news/verizon-customers-satellite-texting-select-android-smartphones',
+      storyId: 'skylo-verizon-partnership',
+      storyTitle: 'Skylo Verizon Partnership'
+    },
+    {
+      date: '2024-08-28',
+      competitor: 'skylo',
+      category: 'Partnership',
+      headline: 'Verizon partners with Skylo to launch commercial direct-to-device messaging',
+      details: [
+        'Verizon first MNO worldwide to commercially launch on Skylo NTN',
+        'Emergency messaging and location sharing available fall 2024',
+        'Two-way texting via satellite planned for 2025',
+        'Skylo uses dedicated licensed MSS spectrum (no interference with cellular)',
+        'Successful IoT satellite roaming proof-of-concept completed',
+        'Use cases: agriculture, maritime, asset tracking, environmental monitoring',
+        'Verizon-enabled IoT device can roam to satellite when out of terrestrial range'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Verizon launching narrowband satellite messaging with Skylo. Different market from ASTS broadband approach. Skylo = emergency/IoT messaging via GEO. ASTS = full cellular experience via LEO. Verizon not exclusive to Skylo - could still partner with ASTS for broadband service tier.',
+      source: 'Verizon/Skylo',
+      sourceUrl: 'https://www.verizon.com/about/news/verizon-skylo-direct-to-device',
+      storyId: 'skylo-verizon-partnership',
+      storyTitle: 'Skylo Verizon Partnership'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INDUSTRY / OTHER - NTN ECOSYSTEM DEVELOPMENTS
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-08',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Keysight + Samsung achieve live NR-NTN connection in n252 band with SAT-to-SAT mobility',
+      details: [
+        'Live NR-NTN connection in 3GPP Release 19 band n252 at CES 2026',
+        'Samsung next-generation modem chipset validated',
+        'Includes satellite-to-satellite mobility using commercial-grade silicon',
+        'All major NR-NTN FR1 bands now validated: n252, n255, n256',
+        'Cross-vendor interoperability demonstrated',
+        'Commercial NTN services expected to scale in 2026',
+        'Keysight NTN Network Emulator recreates multi-orbit LEO conditions'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Industry validation of 3GPP NTN standards accelerates ecosystem. Benefits all D2D players including ASTS. Samsung chipset readiness means device support for NTN services. Standards maturity reduces technical risk for commercial deployments.',
+      source: 'Keysight Technologies',
+      sourceUrl: 'https://www.keysight.com/us/en/about/newsroom/news-releases/2026/0108-pr26-007-keysight-samsung-nr-ntn.html',
+      storyId: 'ntn-industry-standards',
+      storyTitle: 'NTN Industry Standards Progress'
+    },
+    {
+      date: '2025-09-15',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Space42 and Viasat to launch Equatys - "space tower company" for global D2D services',
+      details: [
+        'Equatys: jointly held entity for global D2D and 5G NTN services',
+        'Expected to support 100+ MHz of harmonized MSS spectrum across 160+ markets',
+        '"Space tower company" model: shared multi-tenant infrastructure',
+        '3GPP NTN Release compliant platform for smartphones and IoT',
+        'Commercial rollout targeted within 3 years',
+        'Enables governments to maintain data sovereignty',
+        'Lean infrastructure provider reducing redundant investments',
+        'Financial investors offered infrastructure-grade returns',
+        'Follows March 2025 MOU between Space42 and Viasat'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Space42/Viasat creating competing D2D infrastructure. "Space tower company" model differs from ASTS owned-and-operated approach. Equatys targeting MSS spectrum vs ASTS using MNO spectrum. 3-year timeline to commercial means 2028+ competition. ASTS has first-mover advantage with commercial service in 2025-2026. Multi-tenant model could fragment market or provide infrastructure partners.',
+      source: 'Space42/Viasat',
+      sourceUrl: 'https://space42.ai/space42-viasat-equatys/',
+      storyId: 'space42-viasat-equatys',
+      storyTitle: 'Space42/Viasat Equatys Venture'
+    },
+    {
+      date: '2025-03-11',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Space42 and Viasat announce MOU for shared 5G NTN infrastructure',
+      details: [
+        'MOU to explore ecosystem partnership for 5G NTN development',
+        'Multi-tenant, multi-orbit infrastructure with open architecture',
+        'D2D, NB-IoT, and next-gen MSS services targeted',
+        'L-band and S-band spectrum utilization',
+        'Independent research projects $50B D2D satellite market by 2032',
+        '3GPP standards-based for global roaming',
+        'Space42 (UAE) + Viasat building coalition of partners',
+        'Follows Viasat alliance with ESA for NTN D2D systems'
+      ],
+      implication: 'neutral',
+      astsComparison: 'More players entering D2D validates market opportunity. Space42/Viasat pursuing different architecture (multi-orbit, GEO+LEO hybrid). ASTS focused on LEO with massive arrays. Market large enough for multiple approaches - $50B projection supports ASTS TAM thesis.',
+      source: 'Space42/Viasat',
+      sourceUrl: 'https://space42.ai/space42-and-viasat-announce-partnership/',
+      storyId: 'ntn-industry-partnerships',
+      storyTitle: 'NTN Industry Partnerships'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // FLYDUBAI - STARLINK AVIATION
@@ -9282,6 +10331,28 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     // UNITED AIRLINES - STARLINK AVIATION
     // ═══════════════════════════════════════════════════════════════════════════
     {
+      date: '2026-02-02',
+      competitor: 'starlink-tmobile',
+      category: 'Coverage',
+      headline: 'United completes Starlink on 300+ regional aircraft, 800+ total by end 2026',
+      details: [
+        '300+ two-cabin regional aircraft equipped with Starlink in less than a year',
+        'Expects 500+ mainline aircraft by end 2026 (800+ total)',
+        '25%+ of daily departures (1,200 flights) now have Starlink',
+        '7M+ passengers flown on Starlink aircraft, 3.7M devices connected',
+        'Wi-Fi customer satisfaction scores nearly doubled on Starlink planes',
+        'Big Game (Super Bowl) ad campaign showcasing Starlink capabilities',
+        'Seeking FAA approval for Boeing 737-900ER, Airbus A321, Boeing 777',
+        'Gate-to-gate connectivity enables streaming, gaming, video calls'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Aviation in-flight WiFi - different market from ASTS D2D cellular. United passengers can stream/game at 30,000 feet but ASTS addresses phones on ground in coverage gaps. Starlink aviation success validates satellite connectivity demand but not directly competitive.',
+      source: 'United Airlines',
+      sourceUrl: 'https://www.prnewswire.com/news-releases/united-spotlights-starlink-wi-fi-302393847.html',
+      storyId: 'united-starlink-aviation',
+      storyTitle: 'United Airlines Starlink Aviation'
+    },
+    {
       date: '2024-09-13',
       competitor: 'starlink-tmobile',
       category: 'Partnership',
@@ -9354,13 +10425,82 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://www.airbaltic.com/en/airbaltic-starlink-announcement',
       storyId: 'airbaltic-starlink-aviation',
       storyTitle: 'airBaltic Starlink Aviation'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LYNK GLOBAL - D2D SATELLITE (SMALL SATELLITES)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-22',
+      competitor: 'lynk',
+      category: 'Financial',
+      headline: 'Lynk and Omnispace announce merger plans - SES becomes major strategic shareholder',
+      details: [
+        'Lynk Global and Omnispace to merge for comprehensive D2D solution',
+        'SES (major satellite operator) becomes major strategic shareholder',
+        'Omnispace contributes 60 MHz globally coordinated S-band spectrum',
+        'Largest S-band market access footprint: 1B+ people across Americas, Europe, Africa, Asia',
+        'Lynk brings patented, proven, low-cost multi-spectrum satellite technology',
+        'Combined: 50+ MNO customers across 50+ countries',
+        '3GPP NTN-compliant spectrum for standards-based D2D',
+        'SES provides multi-orbit network access and global ground infrastructure',
+        'Target close: late 2025 or early 2026'
+      ],
+      implication: 'negative',
+      astsComparison: 'Significant consolidation in D2D space. Lynk+Omnispace+SES creates formidable competitor with spectrum, technology, and MNO relationships. However, still small satellite approach vs ASTS broadband arrays. Key question: can merged entity match ASTS throughput for voice/video? S-band spectrum valuable but Lynk tech historically limited to messaging.',
+      source: 'Lynk Global/Omnispace',
+      sourceUrl: 'https://www.businesswire.com/news/home/20251022791234/en/',
+      storyId: 'lynk-omnispace-merger',
+      storyTitle: 'Lynk-Omnispace Merger'
+    },
+    {
+      date: '2025-04-30',
+      competitor: 'lynk',
+      category: 'Regulatory',
+      headline: 'FCC grants Lynk license modification for commercial D2D service in US',
+      details: [
+        'Second D2D provider licensed for commercial service in US (after Starlink)',
+        'License modification enables service in US territories',
+        'Partnership with DOCOMO Pacific for Guam and Northern Mariana Islands',
+        'Previously held world\'s first commercial license for international satellite D2D',
+        'Targets underserved areas out of reach from conventional mobile networks',
+        'Lynk: "taking great strides on our mission to connect everyone, everywhere"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Lynk gaining US regulatory approval - validates D2D regulatory path. ASTS has FCC experimental licenses and MNO partnerships for US coverage. Lynk starting in US territories (small market); ASTS targeting continental US with major carriers.',
+      source: 'Lynk Global',
+      sourceUrl: 'https://www.businesswire.com/news/home/20250430287453/en/',
+      storyId: 'lynk-regulatory-progress',
+      storyTitle: 'Lynk Regulatory Progress'
+    },
+    {
+      date: '2023-07-25',
+      competitor: 'lynk',
+      category: 'Technology',
+      headline: 'Lynk Demonstrates First-Ever Two-Way Standard Phone Voice Calls by Satellite',
+      details: [
+        'Claims "first-ever" two-way satellite voice calls with standard phones',
+        'Demo via software update to existing Lynk-02 satellites already in orbit',
+        'Announced 12 satellites in orbit (15 total launched), 36 more approved for 2024',
+        'Voice adds to existing text (SMS) and IoT data services',
+        'Working with 35+ MNO partners in 50+ countries',
+        'Voice capability described as "relatively simple software update"',
+        'Focusing on areas with zero cellular coverage initially'
+      ],
+      implication: 'neutral',
+      astsComparison: 'ASTS demonstrated voice calls with BlueWalker 3 in April 2023 - before Lynk\'s July announcement. Key difference: ASTS uses massive 64m² phased arrays for broadband-grade throughput; Lynk uses small form-factor satellites for basic connectivity. ASTS targets MNO-integrated coverage expansion; Lynk targets emergency/gap coverage.',
+      source: 'Lynk Global',
+      sourceUrl: 'https://lynk.world/news/lynk-demonstrates-first-ever-two-way-standard-phone-voice-calls-by-satellite',
+      storyId: 'lynk-voice-capability',
+      storyTitle: 'Lynk Voice Capability'
     }
   ];
 
-  // Filter news by competitor
-  const filteredNews = competitorFilter === 'all'
+  // Filter news by competitor, sort by date (newest first)
+  const filteredNews = (competitorFilter === 'all'
     ? COMPETITOR_NEWS
-    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter);
+    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter)
+  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Group news by storyId, with ungrouped items in their own "group"
   const groupedNews = React.useMemo(() => {
@@ -9377,9 +10517,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       groups[storyKey].entries.push({ ...news, originalIdx: idx });
     });
 
-    // Sort entries within each group chronologically (oldest first for timeline progression)
+    // Sort entries within each group chronologically (newest first)
     Object.values(groups).forEach(group => {
-      group.entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      group.entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     });
 
     // Convert to array and sort groups by most recent entry (newest story first)
@@ -9388,7 +10528,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         storyId,
         title: group.title,
         entries: group.entries,
-        latestDate: group.entries[group.entries.length - 1]?.date || ''
+        latestDate: group.entries[0]?.date || ''  // First entry is newest after sort
       }))
       .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
   }, [filteredNews]);
@@ -9422,10 +10562,103 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     return styles[cat] || { bg: 'var(--surface3)', color: 'var(--text3)' };
   };
 
+  // Key competitors with threat levels for colored borders
+  const keyCompetitors = [
+    {
+      name: 'SpaceX Starlink',
+      type: 'LEO Broadband + D2D',
+      status: 'Operational',
+      focus: 'Terminal-based broadband, D2D partnership with T-Mobile',
+      threat: 'High',
+      notes: 'Largest LEO constellation. D2D beta with T-Mobile for texts/calls. Not full broadband D2D yet.'
+    },
+    {
+      name: 'Amazon Leo',
+      type: 'LEO Broadband',
+      status: '212 Satellites (Jan 2026)',
+      focus: 'Terminal-based broadband (Leo Nano/Pro/Ultra terminals)',
+      threat: 'Medium',
+      notes: 'Rebranded from Project Kuiper Nov 2025. 7 missions in 2025, enterprise preview live. Not D2D - different market.'
+    },
+    {
+      name: 'Lynk Global',
+      type: 'D2D (Text/IoT)',
+      status: 'Limited Service',
+      focus: 'Text messaging and IoT to unmodified phones',
+      threat: 'Low',
+      notes: 'Text-only. No voice/data. Limited satellite count. More complementary than competitive.'
+    },
+    {
+      name: 'Apple/Globalstar',
+      type: 'Emergency SOS',
+      status: 'Operational',
+      focus: 'Emergency messaging for iPhone only',
+      threat: 'Low',
+      notes: 'iPhone-only. Emergency texts only. Not commercial service. Different use case.'
+    },
+  ];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        .comp-competitor-card {
+          background: var(--bg2);
+          border: 1px solid var(--stroke);
+          border-radius: 12px;
+          padding: 16px;
+        }
+        .comp-threat-high { border-left: 3px solid var(--red); }
+        .comp-threat-medium { border-left: 3px solid var(--gold); }
+        .comp-threat-low { border-left: 3px solid var(--mint); }
+        .comp-competitor-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .comp-competitor-name {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--text1);
+        }
+        .comp-competitor-type {
+          font-size: 11px;
+          color: var(--text3);
+          padding: 2px 8px;
+          background: var(--bg3);
+          border-radius: 4px;
+        }
+        .comp-competitor-detail {
+          font-size: 12px;
+          color: var(--text2);
+          margin-bottom: 4px;
+        }
+        .comp-competitor-notes {
+          font-size: 11px;
+          color: var(--text3);
+          font-style: italic;
+        }
+      `}</style>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
+
+      {/* Key Competitors Overview - Colored Border Cards */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-competitors</div>
+      <div className="highlight"><h3>🛰️ Key Competitors<UpdateIndicators sources="PR" /></h3><p>Major players in satellite connectivity - threat level indicates competitive overlap with ASTS D2D</p></div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
+        {keyCompetitors.map((comp, i) => (
+          <div key={i} className={`comp-competitor-card comp-threat-${comp.threat.toLowerCase()}`}>
+            <div className="comp-competitor-header">
+              <span className="comp-competitor-name">{comp.name}</span>
+              <span className="comp-competitor-type">{comp.type}</span>
+            </div>
+            <div className="comp-competitor-detail"><strong>Status:</strong> {comp.status}</div>
+            <div className="comp-competitor-detail"><strong>Focus:</strong> {comp.focus}</div>
+            <div className="comp-competitor-detail"><strong>Threat Level:</strong> <span style={{ color: comp.threat === 'High' ? 'var(--red)' : comp.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{comp.threat}</span></div>
+            <div className="comp-competitor-notes">{comp.notes}</div>
+          </div>
+        ))}
+      </div>
 
       {/* Valuation Comparables Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-comparables</div>

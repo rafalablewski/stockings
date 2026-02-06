@@ -302,6 +302,57 @@ interface ErrorBoundaryState {
 /** Individual analyst report entry */
 // AnalystCoverage type imported from '../shared' (wallStreetTypes.ts)
 
+// ============================================================================
+// COMPETITOR INTELLIGENCE - BMNR Crypto Treasury Competitors
+// ============================================================================
+
+/** Competitor identifiers for crypto treasury space */
+type BMNRCompetitorId = 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'other';
+
+/** News category types for crypto treasury competitors */
+type BMNRCompetitorNewsCategory = 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy';
+
+/** Implication for BMNR competitive position */
+type BMNRImplication = 'positive' | 'neutral' | 'negative';
+
+/** Individual competitor news entry */
+interface BMNRCompetitorNewsEntry {
+  date: string;
+  competitor: BMNRCompetitorId;
+  category: BMNRCompetitorNewsCategory;
+  headline: string;
+  details: string[];
+  implication: BMNRImplication;
+  bmnrComparison?: string;  // How this compares to BMNR position
+  source?: string;
+  sourceUrl?: string;
+  storyId?: string;         // Groups related news entries
+  storyTitle?: string;      // Display title for the story group
+}
+
+/** Competitor profile with capabilities */
+interface BMNRCompetitorProfile {
+  id: BMNRCompetitorId;
+  name: string;
+  ticker: string;
+  description: string;
+  cryptoType: 'BTC' | 'ETH' | 'Mixed';
+  currentStatus: string;
+  capabilities: {
+    stakingYield: boolean;
+    treasuryFocus: boolean;
+    miningOperations: boolean;
+    publicCompany: boolean;
+    institutionalAccess: boolean;
+  };
+  keyMetrics?: {
+    holdings?: string;
+    marketCap?: string;
+    navPremium?: string;
+    yieldRate?: string;
+  };
+}
+
 /** Rating normalization map */
 const RATING_NORMALIZATION: Record<string, 'bullish' | 'neutral' | 'bearish'> = {
   // Bullish ratings
@@ -3221,6 +3272,565 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 const CompsTab = ({ comparables, ethPrice }) => {
   const btcPrice = 100000;
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [competitorFilter, setCompetitorFilter] = useState<BMNRCompetitorId | 'all'>('all');
+  const [expandedNews, setExpandedNews] = useState<string | null>(null);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPETITOR PROFILES - Crypto Treasury Competitors
+  // Update status and metrics as new information emerges
+  // ═══════════════════════════════════════════════════════════════════════════
+  const COMPETITOR_PROFILES: BMNRCompetitorProfile[] = [
+    {
+      id: 'mstr',
+      name: 'Strategy',
+      ticker: 'MSTR',
+      description: 'Pioneer BTC treasury company (fka MicroStrategy), largest corporate bitcoin holder',
+      cryptoType: 'BTC',
+      currentStatus: 'Active accumulation via Digital Credit + ATM programs',
+      capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: false, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '713,502 BTC', marketCap: '~$90B', navPremium: '+100%', yieldRate: '0%' }
+    },
+    {
+      id: 'mara',
+      name: 'Marathon Digital',
+      ticker: 'MARA',
+      description: 'Bitcoin miner and treasury holder with significant BTC reserves',
+      cryptoType: 'BTC',
+      currentStatus: 'Mining + treasury accumulation strategy',
+      capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: true, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '~46K BTC', marketCap: '~$8B', navPremium: '+80%', yieldRate: '0%' }
+    },
+    {
+      id: 'riot',
+      name: 'Riot Platforms',
+      ticker: 'RIOT',
+      description: 'Bitcoin miner and treasury company, expanding infrastructure',
+      cryptoType: 'BTC',
+      currentStatus: 'Mining operations with treasury accumulation',
+      capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: true, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '~18K BTC', marketCap: '~$4B', navPremium: '+60%', yieldRate: '0%' }
+    },
+    {
+      id: 'coin',
+      name: 'Coinbase',
+      ticker: 'COIN',
+      description: 'Leading crypto exchange with treasury holdings',
+      cryptoType: 'Mixed',
+      currentStatus: 'Exchange + institutional custody + treasury',
+      capabilities: { stakingYield: true, treasuryFocus: false, miningOperations: false, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: 'Mixed crypto', marketCap: '~$70B', navPremium: 'N/A', yieldRate: 'Varies' }
+    },
+    {
+      id: 'clsk',
+      name: 'CleanSpark',
+      ticker: 'CLSK',
+      description: 'Bitcoin miner focused on sustainable energy',
+      cryptoType: 'BTC',
+      currentStatus: 'Mining with clean energy focus',
+      capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: true, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '~10K BTC', marketCap: '~$4B', navPremium: '+50%', yieldRate: '0%' }
+    },
+    {
+      id: 'hut8',
+      name: 'Hut 8 Mining',
+      ticker: 'HUT',
+      description: 'North American bitcoin miner and treasury holder',
+      cryptoType: 'BTC',
+      currentStatus: 'Mining + HODL strategy',
+      capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: true, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '~10K BTC', marketCap: '~$2B', navPremium: '+40%', yieldRate: '0%' }
+    }
+  ];
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPETITOR NEWS - Add new entries at TOP (newest first)
+  // NEVER delete old entries - this is an audit trail
+  // ═══════════════════════════════════════════════════════════════════════════
+  const COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ADD NEW COMPETITOR NEWS ENTRIES HERE (newest first)
+    // Format:
+    // {
+    //   date: 'YYYY-MM-DD',
+    //   competitor: 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'other',
+    //   category: 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy',
+    //   headline: 'Brief headline',
+    //   details: ['Bullet point 1', 'Bullet point 2'],
+    //   implication: 'positive' | 'neutral' | 'negative',  // for BMNR
+    //   bmnrComparison: 'How this compares to BMNR',
+    //   source: 'Source name',
+    //   sourceUrl: 'https://...'
+    // },
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - Q4 2025 EARNINGS RELEASE (Feb 5, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'mstr',
+      category: 'Financial',
+      headline: 'Strategy Q4 2025: 713,502 BTC, $25.3B raised FY2025, largest US equity issuer',
+      details: [
+        '713,502 BTC as of Feb 1, 2026 — $54.26B cost basis ($76,052 avg), $59.75B market value',
+        'Largest US equity issuer in FY2025 — ~8% of total US equity issuance',
+        '$25.3B capital raised in FY2025 via ATM and five preferred IPOs (STRK/STRF/STRD/STRC/STRE)',
+        'STRC scaled to $3.4B at 11.25% dividend, $413M cumulative distributions (9.6% blended)',
+        '$2.25B USD Reserve provides 2.5 years dividend/interest coverage',
+        'Q4: $17.4B operating loss (incl $17.4B unrealized digital asset loss), $12.4B net loss',
+        'FY2025 BTC Yield: 22.8% (101,873 BTC Gain, $8.9B BTC $ Gain)',
+        'ROC tax treatment expected 10+ years — no E&P expected',
+        'Software: $123M revenue (+1.9% YoY), Subscription +62.1% YoY'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy raised $25.3B to accumulate BTC yielding 0%. Now pays 9.6-11.25% on $6.9B preferred equity funded by dilution. BMNR\'s ETH staking generates real 3-5% yield.',
+      source: 'Strategy Q4 2025 Earnings',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - 8-K BTC HOLDINGS UPDATE (713,502 BTC)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-02',
+      competitor: 'mstr',
+      category: 'Acquisition',
+      headline: 'Strategy now holds 713,502 BTC after purchasing 855 BTC',
+      details: [
+        'Purchased 855 BTC for $75.3M at average price of $87,974',
+        'Total holdings now 713,502 BTC at average cost of $76,052',
+        'Aggregate purchase price: $54.26B',
+        'STRC dividend rate increased from 11.00% to 11.25%',
+        'Sold 673,527 MSTR shares for $106.1M net proceeds',
+        'No preferred stock sold during the period'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy continues accumulating BTC at 0% yield. BMNR\'s ETH staking generates 3-5% yield, compounding value without requiring continuous capital raises.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - DIGITAL CREDIT ROC (Return of Capital)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-02',
+      competitor: 'mstr',
+      category: 'Funding',
+      headline: 'Strategy announces 2025 preferred distributions 100% return of capital',
+      details: [
+        '100% of 2025 distributions on preferred equity treated as ROC for tax purposes',
+        'Raised $5.5B in Digital Credit (preferred equity) IPOs in 2025',
+        'Additional $1.9B raised via ATM programs for preferred instruments',
+        '$413M in cumulative distributions paid across all instruments',
+        '9.6% blended annual dividend rate on preferred securities',
+        'Expects ROC treatment to continue for 10+ years (no E&P)'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'MSTR pays 9.6% dividend on preferred but BTC generates 0% yield — funded by dilution. BMNR\'s ETH staking generates real 3-5% yield to cover costs.',
+      source: 'Strategy PR',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - Q4 2025 EARNINGS ANNOUNCEMENT
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-15',
+      competitor: 'mstr',
+      category: 'Financial',
+      headline: 'Strategy announces Q4 2025 earnings date: February 5, 2026',
+      details: [
+        'Q4 2025 results to be released after market close Feb 5, 2026',
+        'Live video webinar scheduled for 5:00 PM ET',
+        'Now trades under multiple tickers: STRF/STRC/STRK/STRD/MSTR',
+        'Rebranded from MicroStrategy to Strategy',
+        'Describes itself as "world\'s first Bitcoin Treasury Company"'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy continues to position as BTC treasury leader. BMNR differentiates with ETH + staking yield model.',
+      source: 'Strategy PR',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - 8-K LARGEST WEEKLY BTC PURCHASE (22,305 BTC / $2.1B)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-20',
+      competitor: 'mstr',
+      category: 'Acquisition',
+      headline: 'Strategy purchases 22,305 BTC for $2.1B in largest weekly acquisition',
+      details: [
+        'Purchased 22,305 BTC for $2,125.3M at average price of $95,284',
+        'Total holdings now 709,715 BTC at average cost of $75,979',
+        'Aggregate purchase price: $53.92B',
+        'Sold 2,945,371 STRC shares ($294.5M), 38,796 STRK shares ($3.9M)',
+        'Sold 10,399,650 MSTR shares for $1,827.3M net proceeds',
+        'Total net proceeds from ATM: $2,125M'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy\'s massive $2.1B weekly BTC purchase shows aggressive accumulation. No yield generation — purely price appreciation play vs BMNR\'s staking yield.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - 8-K BTC PURCHASE (13,627 BTC / $1.25B)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-12',
+      competitor: 'mstr',
+      category: 'Acquisition',
+      headline: 'Strategy purchases 13,627 BTC for $1.25B via ATM program',
+      details: [
+        'Purchased 13,627 BTC for $1,247.1M at average price of $91,519',
+        'Total holdings now 687,410 BTC at average cost of $75,353',
+        'Aggregate purchase price: $51.80B',
+        'Sold 1,192,262 STRC shares ($119.2M)',
+        'Sold 6,827,695 MSTR shares for $1,128.5M net proceeds',
+        'Total net proceeds from ATM: $1,247.6M'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy continues aggressive BTC accumulation via ATM dilution. BMNR\'s ETH staking generates yield without continuous share issuance.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - Q4 2025 FINANCIALS + USD RESERVE $2.25B
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-05',
+      competitor: 'mstr',
+      category: 'Financial',
+      headline: 'Strategy reports Q4 2025 financials: $17.4B unrealized loss, $2.25B USD Reserve',
+      details: [
+        'Q4 2025: $17.44B unrealized loss on digital assets',
+        'Q4 2025: $5.01B associated deferred tax benefit',
+        'FY 2025: $5.40B unrealized loss, $1.55B deferred tax benefit',
+        'As of Dec 31, 2025: $58.85B digital asset carrying value',
+        '$2.42B related deferred tax liability',
+        'USD Reserve increased to $2.25B as of Jan 4, 2026'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy\'s $17.4B Q4 unrealized loss shows BTC volatility exposure. BMNR\'s ETH staking provides steady yield regardless of price movements.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - STRC DIVIDEND RATE INCREASE TO 11%
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-31',
+      competitor: 'mstr',
+      category: 'Funding',
+      headline: 'Strategy increases STRC dividend rate from 10.75% to 11.00%',
+      details: [
+        'STRC (Variable Rate Stretch Preferred) dividend increased to 11.00%',
+        'Effective for monthly periods commencing on or after Jan 1, 2026',
+        'Cash dividend of $0.916666667 per share declared for Jan 31, 2026',
+        'Record date: 5:00 PM NYC time on Jan 15, 2026',
+        'Payment date: Jan 31, 2026'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy raising STRC dividend to 11% increases funding costs. BMNR\'s ETH staking generates 3-5% yield to cover costs without rate pressure.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - USD RESERVE & 650K BTC HOLDINGS
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-01',
+      competitor: 'mstr',
+      category: 'Strategy',
+      headline: 'Strategy establishes $1.44B USD Reserve, now holds 650,000 BTC',
+      details: [
+        'Established $1.44B USD Reserve to cover 21 months of dividends',
+        'Now holds 650,000 BTC — approximately 3.1% of total 21M supply',
+        'Goal to grow USD Reserve to cover 24+ months of dividends',
+        'Updated FY2025 BTC Yield Target: 22-26%',
+        'Updated FY2025 BTC $ Gain Target: $8.4B-$12.8B',
+        'Guidance based on assumed BTC price range of $85,000-$110,000'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'MSTR holds 3.1% of BTC supply vs BMNR\'s ~3.5% of ETH supply. MSTR needs USD Reserve for dividends since BTC yields 0%; BMNR\'s staking covers yield natively.',
+      source: 'Strategy PR',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - STRE STOCK IPO (€620M / ~$715M)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-07',
+      competitor: 'mstr',
+      category: 'Funding',
+      headline: 'Strategy prices STRE Stock IPO at €620M (~$715M) with 10% dividend',
+      details: [
+        'IPO of euro-denominated STRE preferred stock at €620M (~$715M)',
+        'Perpetual 10% dividend rate with 105% liquidation preference',
+        'Closes November 12, 2025 on the Frankfurt Stock Exchange',
+        'Broadens access to bitcoin exposure via European capital markets',
+        'Raises cumulative bitcoin capital to approximately $11B since November 2024'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy tapping European markets at 10% perpetual dividend cost. BMNR\'s ETH staking generates yield without requiring such high dividend obligations.',
+      source: 'Strategy PR',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - S&P B- ISSUER CREDIT RATING
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-27',
+      competitor: 'mstr',
+      category: 'Financial',
+      headline: 'S&P assigns B- issuer credit rating to Strategy',
+      details: [
+        'S&P assigns B- issuer credit rating with stable outlook',
+        'Rating reflects bitcoin holdings as capital for planned financing activities',
+        'Unique financing strategy utilizing BTC as treasury asset',
+        'Credit rating enables access to debt capital markets',
+        'Demonstrates institutional acceptance of BTC treasury model'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy\'s B- rating reflects higher risk BTC volatility exposure. BMNR\'s ETH staking yield provides more stable cash flow for debt servicing.',
+      source: 'Strategy PR',
+      sourceUrl: 'https://www.strategy.com/investor-relations',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRATEGY - ATM/BTC ACTIVITY (640,250 BTC @ $74K AVG)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-13',
+      competitor: 'mstr',
+      category: 'Acquisition',
+      headline: 'Strategy holds 640,250 BTC after purchasing 220 BTC at $74K average',
+      details: [
+        'Purchased 220 BTC for $16.3M at average price of $74,000',
+        'Total holdings now 640,250 BTC at average cost of $73,024',
+        'Aggregate purchase price: $46.75B',
+        'Sold 273,843 MSTR shares for $53.8M net proceeds',
+        'No preferred stock sold during the period'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Strategy steadily accumulating BTC with no yield. BMNR\'s staking model generates continuous 3-5% yield on ETH holdings.',
+      source: 'Strategy 8-K',
+      sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
+      storyId: 'strategy-btc-treasury',
+      storyTitle: 'Strategy (MSTR)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MARATHON DIGITAL - BTC MINING + TREASURY
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-20',
+      competitor: 'mara',
+      category: 'Acquisition',
+      headline: 'Marathon Digital increases BTC holdings to 46,000+',
+      details: [
+        'Combined mining production and open market purchases',
+        'Mining generates ~15-20 BTC per day at current hashrate',
+        'Follows full HODL strategy - no BTC sales',
+        'Considering expansion into ETH infrastructure',
+        'Q4 2025 production exceeded expectations'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'MARA\'s mining produces BTC but at high OpEx cost. BMNR\'s pure treasury model with staking has lower operational risk.',
+      source: 'Marathon Digital PR',
+      sourceUrl: 'https://ir.mara.com/',
+      storyId: 'mara-treasury-2026',
+      storyTitle: 'Marathon Digital Treasury Growth'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // RIOT PLATFORMS - BTC MINING
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-18',
+      competitor: 'riot',
+      category: 'Strategy',
+      headline: 'Riot Platforms announces $500M facility expansion',
+      details: [
+        'New mining facility in Texas to increase hashrate 50%',
+        'Expected online by Q3 2026',
+        'Will increase BTC production capacity significantly',
+        'Focus on renewable energy partnerships',
+        'Maintains HODL strategy on mined BTC'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Riot\'s CapEx-intensive mining model contrasts with BMNR\'s capital-efficient staking. Mining faces halving headwinds; staking does not.',
+      source: 'Riot Platforms PR',
+      sourceUrl: 'https://www.riotplatforms.com/news',
+      storyId: 'riot-expansion-2026',
+      storyTitle: 'Riot Platforms Expansion'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // COINBASE - CRYPTO EXCHANGE
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-22',
+      competitor: 'coin',
+      category: 'Regulatory',
+      headline: 'Coinbase secures expanded staking license in Singapore',
+      details: [
+        'Regulatory approval for institutional staking services',
+        'Expands ETH staking offerings to Asian institutions',
+        'Competitive pressure on independent staking providers',
+        'Part of global regulatory compliance expansion',
+        'Strengthens institutional custody + staking bundle'
+      ],
+      implication: 'negative',
+      bmnrComparison: 'Coinbase expanding staking services increases competition but validates ETH staking as institutional strategy. BMNR\'s scale advantage remains.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog',
+      storyId: 'coin-staking-expansion',
+      storyTitle: 'Coinbase Staking Expansion'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CLEANSPARK - BTC MINING
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-10',
+      competitor: 'clsk',
+      category: 'Acquisition',
+      headline: 'CleanSpark acquires mining facility, adds 2 EH/s hashrate',
+      details: [
+        'Acquisition increases total hashrate by 15%',
+        'Continues consolidation of mining industry',
+        'Focus on low-cost, sustainable power sources',
+        'BTC holdings increase to ~10,000 BTC',
+        'Trades at lower NAV premium than MSTR'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'CleanSpark\'s mining growth increases BTC supply competition. No yield generation - purely price appreciation play vs BMNR\'s yield + appreciation.',
+      source: 'CleanSpark PR',
+      sourceUrl: 'https://www.cleanspark.com/news',
+      storyId: 'clsk-acquisition-2026',
+      storyTitle: 'CleanSpark Mining Expansion'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INDUSTRY - REGULATORY
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-05',
+      competitor: 'other',
+      category: 'Regulatory',
+      headline: 'SEC approves spot ETH ETF staking for institutional products',
+      details: [
+        'Major regulatory milestone for ETH ecosystem',
+        'ETH ETFs can now include staking yield',
+        'Increases institutional demand for staked ETH',
+        'Validates staking as compliant investment strategy',
+        'Expected to drive significant ETH inflows'
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Regulatory clarity validates BMNR\'s ETH staking strategy. As a pure-play ETH treasury, BMNR benefits directly from increased institutional adoption.',
+      source: 'SEC Filing',
+      sourceUrl: 'https://www.sec.gov/news',
+      storyId: 'sec-eth-staking-approval',
+      storyTitle: 'SEC ETH Staking Approval'
+    }
+  ];
+
+  // Filter news by competitor, sort by date (newest first)
+  const filteredNews = (competitorFilter === 'all'
+    ? COMPETITOR_NEWS
+    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter)
+  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  // Group news by storyId, with ungrouped items in their own "group"
+  const groupedNews = React.useMemo(() => {
+    const groups: Record<string, { title: string; entries: (BMNRCompetitorNewsEntry & { originalIdx: number })[] }> = {};
+
+    filteredNews.forEach((news, idx) => {
+      const storyKey = news.storyId || `ungrouped-${idx}`;
+      if (!groups[storyKey]) {
+        groups[storyKey] = {
+          title: news.storyTitle || news.headline,
+          entries: []
+        };
+      }
+      groups[storyKey].entries.push({ ...news, originalIdx: idx });
+    });
+
+    // Sort entries within each group by date (newest first)
+    Object.values(groups).forEach(group => {
+      group.entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    });
+
+    // Convert to array and sort groups by most recent entry (newest story first)
+    return Object.entries(groups)
+      .map(([storyId, group]) => ({
+        storyId,
+        title: group.title,
+        entries: group.entries,
+        latestDate: group.entries[0]?.date || ''
+      }))
+      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
+  }, [filteredNews]);
+
+  // Get competitor display name
+  const getCompetitorName = (id: BMNRCompetitorId): string => {
+    const profile = COMPETITOR_PROFILES.find(p => p.id === id);
+    return profile?.name || id;
+  };
+
+  // Implication styling - using design tokens
+  const getImplicationStyle = (impl: BMNRImplication) => {
+    switch (impl) {
+      case 'positive': return { bg: 'var(--mint-dim)', color: 'var(--mint)', label: '✓ Good for BMNR' };
+      case 'negative': return { bg: 'var(--coral-dim)', color: 'var(--coral)', label: '⚠ Threat to BMNR' };
+      default: return { bg: 'var(--surface3)', color: 'var(--text3)', label: '○ Neutral' };
+    }
+  };
+
+  // Category styling - using design tokens
+  const getCategoryStyle = (cat: BMNRCompetitorNewsCategory) => {
+    const styles: Record<BMNRCompetitorNewsCategory, { bg: string; color: string }> = {
+      'Acquisition': { bg: 'var(--mint-dim)', color: 'var(--mint)' },
+      'Funding': { bg: 'var(--sky-dim)', color: 'var(--sky)' },
+      'Yield': { bg: 'var(--violet-dim)', color: 'var(--violet)' },
+      'Regulatory': { bg: 'var(--gold-dim)', color: 'var(--gold)' },
+      'Technology': { bg: 'var(--cyan-dim)', color: 'var(--cyan)' },
+      'Partnership': { bg: 'var(--sky-dim)', color: 'var(--sky)' },
+      'Financial': { bg: 'var(--emerald-dim)', color: 'var(--emerald)' },
+      'Strategy': { bg: 'var(--accent-dim)', color: 'var(--accent)' },
+    };
+    return styles[cat] || { bg: 'var(--surface3)', color: 'var(--text3)' };
+  };
 
   const compsData = comparables.map(c => {
     // Handle mixed holdings (COIN has string)
@@ -3246,10 +3856,104 @@ const CompsTab = ({ comparables, ethPrice }) => {
     ? compsData
     : compsData.filter(c => c.category === selectedCategory);
 
+  // Key competitors with threat levels for colored borders
+  const keyCompetitors = [
+    {
+      name: 'Strategy (MSTR)',
+      type: 'BTC Treasury',
+      status: '713,502 BTC ($54B+)',
+      focus: 'Pioneer BTC treasury, aggressive accumulation via preferred equity',
+      threat: 'High',
+      notes: 'Largest corporate BTC holder. 0% yield - relies on price appreciation. 9.6% preferred dividend funded by dilution.'
+    },
+    {
+      name: 'Marathon Digital (MARA)',
+      type: 'BTC Miner + Treasury',
+      status: '~46K BTC',
+      focus: 'Mining operations with treasury accumulation',
+      threat: 'Medium',
+      notes: 'Mining generates BTC but no staking yield. Different model than BMNR\'s ETH staking approach.'
+    },
+    {
+      name: 'Coinbase (COIN)',
+      type: 'Exchange',
+      status: 'Mixed Holdings',
+      focus: 'Exchange + institutional custody + staking services',
+      threat: 'Low',
+      notes: 'Exchange model, not pure treasury play. Offers staking services but not same investment vehicle.'
+    },
+    {
+      name: 'Riot Platforms (RIOT)',
+      type: 'BTC Miner + Treasury',
+      status: '~18K BTC',
+      focus: 'Mining with treasury HODL strategy',
+      threat: 'Low',
+      notes: 'Smaller BTC miner. Mining costs vs BMNR\'s staking yield creates structural disadvantage.'
+    },
+  ];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        .comp-competitor-card {
+          background: var(--bg2);
+          border: 1px solid var(--stroke);
+          border-radius: 12px;
+          padding: 16px;
+        }
+        .comp-threat-high { border-left: 3px solid var(--red); }
+        .comp-threat-medium { border-left: 3px solid var(--gold); }
+        .comp-threat-low { border-left: 3px solid var(--mint); }
+        .comp-competitor-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .comp-competitor-name {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--text1);
+        }
+        .comp-competitor-type {
+          font-size: 11px;
+          color: var(--text3);
+          padding: 2px 8px;
+          background: var(--bg3);
+          border-radius: 4px;
+        }
+        .comp-competitor-detail {
+          font-size: 12px;
+          color: var(--text2);
+          margin-bottom: 4px;
+        }
+        .comp-competitor-notes {
+          font-size: 11px;
+          color: var(--text3);
+          font-style: italic;
+        }
+      `}</style>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
+
+      {/* Key Competitors Overview - Colored Border Cards */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-competitors</div>
+      <div className="highlight"><h3>🏦 Key Competitors<UpdateIndicators sources="PR" /></h3><p>Crypto treasury peers - threat level indicates competitive overlap with BMNR's ETH staking model</p></div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
+        {keyCompetitors.map((comp, i) => (
+          <div key={i} className={`comp-competitor-card comp-threat-${comp.threat.toLowerCase()}`}>
+            <div className="comp-competitor-header">
+              <span className="comp-competitor-name">{comp.name}</span>
+              <span className="comp-competitor-type">{comp.type}</span>
+            </div>
+            <div className="comp-competitor-detail"><strong>Status:</strong> {comp.status}</div>
+            <div className="comp-competitor-detail"><strong>Focus:</strong> {comp.focus}</div>
+            <div className="comp-competitor-detail"><strong>Threat Level:</strong> <span style={{ color: comp.threat === 'High' ? 'var(--red)' : comp.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{comp.threat}</span></div>
+            <div className="comp-competitor-notes">{comp.notes}</div>
+          </div>
+        ))}
+      </div>
+
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#peer-comparison</div>
       <div className="highlight">
         <h3>Peer Comparison</h3>
@@ -3462,24 +4166,268 @@ const CompsTab = ({ comparables, ethPrice }) => {
         </div>
       </div>
 
-      {/* Competitor Intelligence Placeholder */}
+      {/* Competitor News Intelligence Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
       <div className="highlight">
-        <h3>📰 Competitor Intelligence</h3>
-        <p>Track competitor developments to assess BMNR competitive position in the crypto treasury space.</p>
+        <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
+        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track what <strong>peer companies</strong> are doing — treasury purchases, financing activities, strategic moves by crypto treasury competitors (Strategy, Marathon, Riot, etc.)</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>Company-level news affecting BMNR's relative positioning vs competitors</p>
       </div>
 
+      {/* Filter Bar */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
-      <div className="card" style={{ padding: 32, textAlign: 'center' }}>
-        <div style={{ fontSize: 48, opacity: 0.3 }}>🔜</div>
-        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)' }}>Competitor Intelligence Coming Soon</div>
-        <p style={{ color: 'var(--text3)', fontSize: 13, maxWidth: 500, margin: '0 auto' }}>
-          This section will track news and developments from crypto treasury competitors including MicroStrategy (MSTR),
-          Marathon Digital (MARA), Riot Platforms (RIOT), and other BTC/ETH treasury companies.
-          <br /><br />
-          Key tracking areas: acquisition announcements, funding rounds, regulatory developments,
-          yield strategies, and market positioning changes.
-        </p>
+      <div className="card" style={{ padding: '12px 16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
+          <button
+            onClick={() => setCompetitorFilter('all')}
+            className={`filter-btn ${competitorFilter === 'all' ? 'active' : ''}`}
+          >
+            All ({COMPETITOR_NEWS.length})
+          </button>
+          {COMPETITOR_PROFILES.map(comp => {
+            const count = COMPETITOR_NEWS.filter(n => n.competitor === comp.id).length;
+            if (count === 0) return null;
+            return (
+              <button
+                key={comp.id}
+                onClick={() => setCompetitorFilter(comp.id)}
+                className={`filter-btn ${competitorFilter === comp.id ? 'active' : ''}`}
+              >
+                {comp.name.split(' ')[0]} ({count})
+              </button>
+            );
+          })}
+          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (
+            <button
+              onClick={() => setCompetitorFilter('other')}
+              className={`filter-btn ${competitorFilter === 'other' ? 'active' : ''}`}
+            >
+              Other ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* News Timeline - Grouped by Story */}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {groupedNews.length === 0 ? (
+          <div className="card" style={{ textAlign: 'center', padding: 40 }}>
+            <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
+          </div>
+        ) : (
+          groupedNews.map((story) => (
+            <div key={story.storyId} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+              {/* Story Header */}
+              <div style={{
+                padding: '16px 20px',
+                background: 'var(--surface2)',
+                borderBottom: '1px solid var(--border)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{story.title}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text3)' }}>
+                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[0]?.date} → {story.entries[story.entries.length - 1]?.date}
+                  </div>
+                </div>
+                <span style={{
+                  fontSize: '10px',
+                  padding: '4px 10px',
+                  borderRadius: '4px',
+                  background: 'var(--surface3)',
+                  color: 'var(--text2)',
+                  fontWeight: 600
+                }}>
+                  {getCompetitorName(story.entries[0]?.competitor).split(' ')[0]}
+                </span>
+              </div>
+
+              {/* Story Entries - Chronological */}
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {story.entries.map((news, entryIdx) => {
+                  const implStyle = getImplicationStyle(news.implication);
+                  const catStyle = getCategoryStyle(news.category);
+                  const expandKey = `${story.storyId}-${entryIdx}`;
+                  const isExpanded = expandedNews === expandKey;
+
+                  return (
+                    <div
+                      key={entryIdx}
+                      style={{
+                        borderBottom: entryIdx < story.entries.length - 1 ? '1px solid var(--border)' : 'none',
+                        background: isExpanded ? 'var(--surface2)' : 'transparent',
+                        transition: 'background 0.2s'
+                      }}
+                    >
+                      <div
+                        onClick={() => setExpandedNews(isExpanded ? null : expandKey)}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '90px 100px 1fr auto auto',
+                          gap: 12,
+                          padding: '14px 20px',
+                          cursor: 'pointer',
+                          alignItems: 'center'
+                        }}
+                      >
+                        {/* Date */}
+                        <span className="t-date" style={{ fontSize: 12 }}>{news.date}</span>
+
+                        {/* Category */}
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            background: catStyle.bg,
+                            color: catStyle.color,
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}
+                        >
+                          {news.category}
+                        </span>
+
+                        {/* Headline */}
+                        <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{news.headline}</span>
+
+                        {/* Implication Badge */}
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            background: implStyle.bg,
+                            color: implStyle.color,
+                            fontWeight: 600
+                          }}
+                        >
+                          {news.implication === 'positive' ? '✓' : news.implication === 'negative' ? '⚠' : '○'}
+                        </span>
+
+                        {/* Toggle */}
+                        <span style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: 6,
+                          background: isExpanded ? 'var(--accent)' : 'var(--surface3)',
+                          color: isExpanded ? 'var(--bg)' : 'var(--text3)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 14,
+                          transition: 'all 0.2s'
+                        }}>
+                          {isExpanded ? '−' : '+'}
+                        </span>
+                      </div>
+
+                      {/* Expanded Details */}
+                      {isExpanded && (
+                        <div style={{ padding: '0 20px 16px 20px' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 20 }}>
+                            <div>
+                              <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
+                                {news.details.map((d, i) => (
+                                  <li key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: 'var(--text2)' }}>
+                                    <span style={{ color: 'var(--accent)' }}>•</span>
+                                    {d}
+                                  </li>
+                                ))}
+                              </ul>
+                              {news.bmnrComparison && (
+                                <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--accent-dim)', borderRadius: 6, borderLeft: '3px solid var(--accent)' }}>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent)' }}>
+                                    BMNR Comparison
+                                  </div>
+                                  <div style={{ fontSize: 13, color: 'var(--text)' }}>{news.bmnrComparison}</div>
+                                </div>
+                              )}
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 140 }}>
+                              <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
+                                <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Impact</div>
+                                <div style={{ fontSize: 12, fontWeight: 600, color: implStyle.color }}>
+                                  {news.implication === 'positive' ? 'Favorable' : news.implication === 'negative' ? 'Threat' : 'Neutral'}
+                                </div>
+                              </div>
+                              {news.source && (
+                                <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Source</div>
+                                  <div style={{ fontSize: 11 }}>
+                                    {news.sourceUrl ? (
+                                      <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
+                                        {news.source} ↗
+                                      </a>
+                                    ) : news.source}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Competitor Profiles (Collapsible) */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-profiles</div>
+      <div className="card">
+        <div className="card-title">📋 Competitor Profiles</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {COMPETITOR_PROFILES.map(comp => (
+            <div key={comp.id} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--text)' }}>{comp.name}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text2)' }}>{comp.description}</div>
+                </div>
+                <span style={{
+                  padding: '4px 10px',
+                  borderRadius: 4,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  background: comp.cryptoType === 'ETH' ? 'var(--violet-dim)' : comp.cryptoType === 'BTC' ? 'var(--gold-dim)' : 'var(--surface3)',
+                  color: comp.cryptoType === 'ETH' ? 'var(--violet)' : comp.cryptoType === 'BTC' ? 'var(--gold)' : 'var(--text2)'
+                }}>
+                  {comp.cryptoType}
+                </span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
+                <div>
+                  <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Ticker</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.ticker}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Status</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.currentStatus}</div>
+                </div>
+                {comp.keyMetrics?.holdings && (
+                  <div>
+                    <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Holdings</div>
+                    <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.keyMetrics.holdings}</div>
+                  </div>
+                )}
+                {comp.keyMetrics?.yieldRate && (
+                  <div>
+                    <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Yield</div>
+                    <div style={{ fontSize: 12, color: comp.keyMetrics.yieldRate === '0%' ? 'var(--coral)' : 'var(--mint)' }}>{comp.keyMetrics.yieldRate}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
@@ -5981,6 +6929,40 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   // Ethereum Adoption Timeline - Institutional & Enterprise adoption events
   // Each entry includes: date, category, company, title, summary (detailed), significance, bmnrImplication, impact, source
   const adoptionTimeline = [
+    // === FEBRUARY 2026 ===
+    {
+      date: '2026-02-05',
+      category: 'Protocol',
+      company: 'Ethereum Foundation',
+      title: 'Vitalik Proposes New Forms of State for 1000x Ethereum Scaling',
+      summary: 'Vitalik Buterin publishes comprehensive post outlining path to 1000x Ethereum scaling by introducing new forms of state. Key insight: execution and data can scale 1000x (via ZK-EVMs and PeerDAS), but state can only scale ~10-20x with current architecture due to syncing constraints and database efficiency limits. Proposes "barbell solution": (1) Keep existing permanent storage but allow it to become relatively more expensive; (2) Create new cheaper but more restrictive state types. New state forms proposed: TEMPORARY STORAGE - state that expires after ~1 month, ideal for auctions, governance votes, games, fraud proofs. UTXO MODEL - records created and immediately pushed to history, with permanent bitfield tracking spent/unspent status. Implementation details include resurrection mechanisms using tree indexes and bitfields allowing out-of-order balance recovery. Developer impact: accounts and contract code stay in permanent storage, NFTs/ERC20 balances move to UTXOs or temporary storage, defi core contracts permanent but individual positions (CDPs) in temporary storage. Vitalik: "If we can deliver developer-friendly abstractions that allow ~95% of state to move to UTXOs without significant pain, we can get most of the scaling benefit of UTXOs and most of the developer-friendliness of Ethereum-style accounts."',
+      significance: 'MAJOR SCALING ROADMAP UPDATE from Ethereum co-founder. Addresses the one resource (state) that lacks a "magic bullet" solution like ZK-EVMs (execution) or PeerDAS (data). Proposes concrete technical path to 1000x scaling across ALL resources. Shows Ethereum Foundation actively solving hardest remaining scaling problems. Backwards-compatible approach: existing apps can continue as-is (higher cost) while new apps opt into cheaper tiers.',
+      bmnrImplication: 'Vitalik\'s state scaling proposal removes the last major bottleneck to 1000x Ethereum scaling. With ZK-EVMs, PeerDAS, AND new state forms, Ethereum has credible path to scale ALL resources by 1000x. This positions Ethereum to handle massive institutional adoption without congestion or high fees. BMNR thesis that ETH is institutional-grade infrastructure gets stronger with clear long-term scaling roadmap.',
+      impact: 'Bullish',
+      source: 'Vitalik.eth Blog'
+    },
+    {
+      date: '2026-02-04',
+      category: 'Institutional',
+      company: 'Fidelity',
+      title: 'Fidelity Launches FIDD Stablecoin on Ethereum - $12T Asset Manager Goes Live',
+      summary: 'Fidelity Digital Assets officially launches the Fidelity Digital Dollar (FIDD), a USD-pegged stablecoin, on the Ethereum blockchain. FIDD is issued by Fidelity Digital Assets, National Association, and each token is redeemable 1:1 for U.S. dollars. Reserves backing FIDD include cash, U.S. Treasury bills, and repurchase agreements managed internally by Fidelity. Available to both retail and institutional users through Fidelity platforms and select cryptocurrency exchanges. FIDD is designed for on-chain payments, settlements, and use as digital cash equivalent within blockchain-based financial products. Can be purchased and redeemed directly through Fidelity\'s crypto services with integration to brokerage and institutional accounts. No initial supply cap disclosed - issuance will expand based on demand. Launch follows years of blockchain experimentation by Fidelity (started 2014, digital asset subsidiary 2018). Regulatory clarity from federal stablecoin legislation in 2025 (GENIUS Act) accelerated the launch. Market observers note Fidelity\'s brand and regulatory footing may appeal to risk-conscious users.',
+      significance: 'FIDELITY GOES LIVE. $12 trillion asset manager\'s stablecoin is now operational on Ethereum mainnet. First major TradFi stablecoin actually in production (not just announced). Fidelity\'s massive retail customer base and institutional relationships provide built-in distribution. Treasury-backed reserves with internal management = institutional-grade risk profile.',
+      bmnrImplication: 'Fidelity FIDD going live validates Ethereum as THE institutional stablecoin platform. $12T asset manager now has operational skin in the game on Ethereum. Tokenized funds and RWA settlement use cases get a new stable asset option. More institutional liquidity on Ethereum = stronger network effects = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Bitcoin.com / CoinGecko'
+    },
+    {
+      date: '2026-02-04',
+      category: 'Enterprise',
+      company: 'Figment',
+      title: 'Figment Achieves Full NORS Certification for Ethereum - First in North America and Europe',
+      summary: 'Figment, the largest independent provider of institutional staking infrastructure, achieves Full Certification under the Node Operator Risk Standard (NORS) for Ethereum. NORS is an independent, industry-recognized framework evaluating node operators across security, operational resilience, and governance. Figment is the first entity in North America and Europe to complete NORS certification. The standard establishes enterprise-grade criteria across slashing prevention, validator diversity, key management practices, and operational security/resilience. Unlike self-attested best practices, NORS requires operators to demonstrate real operating procedures through audited documentation, technical evidence, and validated controls. Annalea Sanders, Figment COO/CISO: "Institutional staking requires more than strong performance claims — it requires objective, independently validated operational excellence." Chris Matta, CEO at Liquid Collective: "Figment\'s Full Certification demonstrates the maturity of its controls and the rigor of its operational practices in meeting enterprise-grade expectations." NORS certification joins Figment\'s portfolio including SOC 1 Type I, SOC 2 Type II, ISO 27001, and OFAC-compliant MEV relays.',
+      significance: 'First Ethereum staking infrastructure certification in North America and Europe. NORS establishes enterprise-grade standard for institutional staking providers. Certification covers critical operational risks: slashing, validator diversity, key management. Independent validation (vs. self-attestation) provides institutional-grade assurance for staking allocation decisions.',
+      bmnrImplication: 'NORS certification validates Ethereum staking as institutional-grade infrastructure. Enterprise-grade standards for node operators supports BMNR staking thesis. More certified staking infrastructure = more institutional confidence in ETH staking = supports BMNR\'s staked ETH strategy.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
     // === JANUARY 2026 ===
     {
       date: '2026-01-30',
@@ -5994,6 +6976,28 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'ACCESS Newswire'
     },
     {
+      date: '2026-01-29',
+      category: 'Protocol',
+      company: 'Ethereum Foundation',
+      title: 'ERC-8004 Trustless Agents Standard Goes Live on Ethereum Mainnet',
+      summary: 'ERC-8004, the Ethereum standard for Trustless Agents, officially launches on Ethereum mainnet. The standard defines three on-chain registries enabling AI agents to operate as accountable economic actors: (1) Identity Registry using ERC-721 tokens for unique agent identification, (2) Reputation Registry for permanent, immutable feedback on agent performance, (3) Validation Registry for third-party verification of agent work. Authored by Marco De Rossi (MetaMask AI Lead), Davide Crapis (Ethereum Foundation Head of AI), Jordan Ellis (Google Software Engineer), and Erik Reppel (Coinbase Head of Engineering), with feedback from 80+ teams. Integrates with x402 for programmable payments. During testnet: 10,000+ agents registered, 20,000+ feedback entries exchanged. Audited by Cyfrin, Nethermind, and Ethereum Foundation Security Team. Marco De Rossi: "Humanity needs credibly neutral infrastructure for the AI age: open protocols, controlled by no one, where economic actors (humans and AIs) can discover each other and exchange trust signals freely." Davide Crapis: "Ethereum is in the unique position to be the platform that secures and settles AI-to-AI interactions." Deploying on Base, Optimism, Polygon, Linea, Arbitrum, Monad, Gnosis, Celo, and Scroll in coming weeks.',
+      significance: 'WATERSHED MOMENT for AI-blockchain convergence. First standardized on-chain infrastructure for AI agent identity, reputation, and validation. Authored by leaders from MetaMask, Ethereum Foundation, Google, and Coinbase. Creates foundation for AI-native economy: agents discovering agents, verifying track records, purchasing services autonomously. Opens new business models: autonomous service marketplaces, agent-to-agent SaaS, AI supply chains.',
+      bmnrImplication: 'ERC-8004 positions Ethereum as THE settlement layer for AI agent economy. AI agents become economic actors on Ethereum — identity, reputation, payments all on-chain. Massive new use case for Ethereum beyond human transactions. x402 payment integration = more ETH transaction volume. Multi-chain deployment validates Ethereum L2 ecosystem as AI infrastructure.',
+      impact: 'Bullish',
+      source: 'ERC-8004.org / Ethereum Foundation'
+    },
+    {
+      date: '2026-01-29',
+      category: 'Enterprise',
+      company: 'Chronicle',
+      title: 'Chronicle Proof of Asset Powers MoonPay Enterprise Stablecoin Issuance on M0 Platform',
+      summary: 'Chronicle, a leading provider of oracle infrastructure and verifiable onchain finance, announces its role in MoonPay\'s enterprise stablecoin services built on the M0 platform. Chronicle\'s oracle technology ensures secure and accurate minting and redemption of MoonPay-issued stablecoins, providing continuous verification of underlying assets backing. As MoonPay scales stablecoin issuance to enterprises across United States, Asia, and Latin America, Chronicle\'s verification layer delivers transparency and security required for institutional adoption. Chronicle provides: continuous underlying asset verification (1:1 parity), secure minting authorization (preventing over-issuance), redemption accuracy validation, and multi-chain support. Nik Kunkel, Chronicle Founder: "Stablecoins require precise, independently verifiable issuance and redemption mechanisms. Our role in the M0 ecosystem ensures that every MoonPay stablecoin minted or redeemed is backed by verifiable underlying assets in real-time." Ivan Soto-Wright, MoonPay CEO: "Together, we enable transparent, secure, and compliant stablecoin operations for enterprise partners." Chronicle was built by the team at MakerDAO that invented the first Oracle on Ethereum in 2017.',
+      significance: 'Chronicle (original Ethereum oracle inventors from MakerDAO) powering enterprise stablecoin infrastructure. M0 platform + MoonPay (30M+ customers, 180 countries) creates full-stack stablecoin issuance infrastructure. Real-time proof of reserves addresses institutional transparency requirements.',
+      bmnrImplication: 'Enterprise stablecoin infrastructure on Ethereum validates network for institutional payment rails. Chronicle\'s oracle technology (from MakerDAO origins) provides battle-tested verification layer. More enterprise stablecoin adoption = more Ethereum ecosystem utility.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
+    {
       date: '2026-01-28',
       category: 'Enterprise',
       company: 'Fidelity',
@@ -6003,6 +7007,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Fidelity launching FIDD on Ethereum validates network as primary settlement layer for institutional stablecoins. Major TradFi firm choosing Ethereum over alternatives reinforces network effect. More institutional stablecoins on Ethereum = more on-chain settlement = ETH ecosystem value growth.',
       impact: 'Bullish',
       source: 'The Block'
+    },
+    {
+      date: '2026-01-15',
+      category: 'Enterprise',
+      company: 'State Street',
+      title: 'State Street Launches Digital Asset Platform for Tokenized Finance',
+      summary: 'State Street Corporation (NYSE: STT), with $51.7 trillion in assets under custody/administration and $5.4 trillion in AUM, launches its Digital Asset Platform — secure, scalable infrastructure for tokenized assets positioning State Street as the bridge between traditional and digital finance. Platform enables development of tokenized Money Market Funds (MMFs), ETFs, tokenized assets, and cash products including tokenized deposits and stablecoins. Includes wallet management, custodial, and cash capabilities supporting both private and public permissioned blockchain networks. Joerg Ambrosius, President of Investment Services: "We are moving beyond experimentation and into practical, scalable solutions that meet the highest standards of security and compliance. By pairing blockchain connectivity with robust controls and global servicing expertise, we\'re enabling institutions to confidently embrace tokenization as part of their core strategy." Donna Milrod, Chief Product Officer: "This platform delivers that foundation in a way that is secure, interoperable and integrated so institutions can scale with confidence."',
+      significance: 'World\'s second-largest custodian bank ($51.7T AUM/AUC) launching production tokenization infrastructure. State Street joins BlackRock, BNY Mellon in building institutional tokenized finance stack. Platform supports public permissioned blockchains, likely including Ethereum ecosystem. Move from "experimentation" to "practical, scalable solutions" signals institutional tokenization inflection point.',
+      bmnrImplication: 'State Street building tokenization infrastructure validates institutional demand for blockchain-based asset management. Major custodian supporting public blockchain networks reinforces Ethereum ecosystem positioning. More institutional infrastructure = more tokenized assets = Ethereum network effect strengthening.',
+      impact: 'Bullish',
+      source: 'State Street Press Release'
     },
     {
       date: '2026-01-13',
@@ -6015,7 +7030,51 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       impact: 'Bullish',
       source: 'Business Wire'
     },
+    {
+      date: '2026-01-09',
+      category: 'Institutional',
+      company: 'BitGo',
+      title: 'BitGo Provides Custody and Trading for iPower Digital Asset Treasury',
+      summary: 'BitGo Holdings Inc., the digital asset infrastructure company, announces support for iPower Inc. (Nasdaq: IPW) in execution and custody of its digital asset treasury transactions. iPower completed purchases of Bitcoin (BTC) and Ethereum (ETH) through BitGo Bank & Trust, National Association. Transactions executed using BitGo Prime\'s over-the-counter (OTC) trading services for institutional liquidity and discreet execution, with BitGo\'s custody platform for long-term storage. Mike Belshe, BitGo CEO: "Corporate treasury participation in digital assets requires strong security, governance, and operational rigor. BitGo provides infrastructure that supports these requirements across custody and transaction execution." Lawrence Tan, iPower CEO: "As we evaluated our approach to digital asset treasury activity, we focused on governance, security and operational discipline. We believe BitGo\'s infrastructure provides a framework aligned with our internal controls." BitGo platform supports institutional digital asset activity with multi-signature security, policy controls, and operational workflows.',
+      significance: 'Nasdaq-listed company (IPW) establishing digital asset treasury with both BTC and ETH through regulated infrastructure. BitGo Bank & Trust provides institutional-grade custody with bank charter. Demonstrates growing corporate treasury adoption of ETH alongside BTC.',
+      bmnrImplication: 'Public company adding ETH to corporate treasury validates BMNR\'s thesis. BitGo institutional infrastructure supports corporate treasury adoption. More corporate ETH treasuries = broader institutional recognition of ETH as treasury asset.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
+    {
+      date: '2026-01-07',
+      category: 'Enterprise',
+      company: 'World Liberty Financial',
+      title: 'World Liberty Financial Files for National Trust Bank Charter to Issue USD1 Stablecoins',
+      summary: 'World Liberty Financial announces WLTC Holdings LLC filed de novo application to the Office of the Comptroller of the Currency (OCC) to establish World Liberty Trust Company, National Association (WLTC), a proposed national trust bank purpose-built for stablecoin operations. Charter will position WLTC to issue USD1, the dollar-backed stablecoin that has reached over $3.3 billion in circulation in its first year — fastest-growing stablecoin in history. Trust company plans to serve institutional customers including cryptocurrency exchanges, market makers, and investment firms. Will offer digital asset custody and stablecoin conversion services. Zach Witkoff, proposed President and Chairman: "USD1 grew faster in its first year than any other stablecoin in history. Institutions are already using USD1 for cross-border payments, settlement, and treasury operations. A national trust charter will allow us to bring issuance, custody, and conversion together as a full-stack offering under one highly regulated entity." WLTC plans three core services: stablecoin issuance/redemption, on-ramp/off-ramp services, custody and conversion. USD1 operates across ten blockchain networks including Ethereum, Solana, BNB Smart Chain, TRON, Aptos, and AB Core. BitGo serves as key strategic partner.',
+      significance: 'Fastest-growing stablecoin in history ($3.3B in first year) seeking national trust bank charter from OCC. Full-stack regulated stablecoin infrastructure: issuance, custody, conversion under federal supervision. GENIUS Act compliance structure. Multi-chain support including Ethereum.',
+      bmnrImplication: 'USD1 operating on Ethereum (among 10 chains) brings fast-growing stablecoin to Ethereum ecosystem. National trust charter provides regulatory clarity for institutional stablecoin adoption. More regulated stablecoins on Ethereum = more institutional confidence in Ethereum settlement layer.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
+    {
+      date: '2026-01-07',
+      category: 'Enterprise',
+      company: 'CoinFlip',
+      title: 'CoinFlip Launches Gradual - Payroll Crypto Conversion Including Ethereum',
+      summary: 'CoinFlip, a leading U.S.-based global digital currency platform company, announces launch of CoinFlip Gradual, a workplace perk enabling employees to invest in cryptocurrency directly through payroll purchases on recurring, automated basis. Program allows employees to convert portion of paycheck into digital assets including Bitcoin, Ethereum, SOL, USDC, and USDT. Investments made automatically and consistently, with assets delivered to personal digital wallet for full ownership and control. Ben Weiss, CoinFlip CEO: "By giving employees easy, secure access to cryptocurrency through their paycheck, we\'re helping more people take their first step into the digital economy—on their terms. We are excited to offer a practical way for companies to invest in their team\'s financial well-being and demonstrate a commitment to innovation, inclusion and increased economic opportunity." Paycheck allocations start from $25, with flexibility to set up recurring purchases across multiple assets simultaneously. CoinFlip operates world\'s largest network of cryptocurrency kiosks by transaction volume with 5,500+ kiosks across 49 U.S. states and 11 countries.',
+      significance: 'Major crypto platform (5,500+ kiosks, largest by volume) launching payroll conversion product. ETH included alongside BTC in employee benefit programs. Mainstream adoption pathway: payroll → crypto wallet → DeFi potential. Recurring purchases create consistent demand.',
+      bmnrImplication: 'Payroll ETH conversion expands retail investor base through passive accumulation. Employee benefit programs normalize ETH as mainstream asset. Recurring payroll purchases create steady ETH demand. More accessible ETH = broader adoption = ecosystem growth.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
     // === DECEMBER 2025 ===
+    {
+      date: '2025-12-26',
+      category: 'Enterprise',
+      company: 'Telcoin',
+      title: 'Telcoin Digital Asset Bank Launches eUSD - First Regulated Bank-Issued Stablecoin on Ethereum',
+      summary: 'Following final charter approval of Telcoin Digital Asset Bank by the Nebraska Department of Banking and Finance, Telcoin begins initial blockchain banking operations with launch of eUSD stablecoin on Ethereum and Polygon blockchains. Initial minting of $10 million eUSD marks first phase of banking operations. Paul Neuner, Telcoin CEO: "This is the crucial first step toward offering blockchain-native bank accounts through our Nebraska charter." Company expects to start onboarding customers in early 2026 through personal and business account offerings via Telcoin Wallet V5. Patrick Gerhart, President of Banking Operations: "Today eUSD transitions from development to live issuance as a foundational step. As we continue our rollout into the new year, our focus is on preparing to responsibly bring Digital Cash to customers through our regulated blockchain banking infrastructure." As the first Digital Asset Depository Institution in the United States under the Nebraska Financial Innovation Act and in line with federal GENIUS Act guidelines, Telcoin is uniquely positioned to issue stablecoins, accept customer deposits, and process eUSD payments, all under the same charter.',
+      significance: 'FIRST regulated bank-issued U.S. dollar stablecoin launching on Ethereum. Telcoin operates as first Digital Asset Depository Institution under Nebraska charter. GENIUS Act-compliant stablecoin infrastructure. Full banking services (deposits, payments, stablecoin issuance) under single charter.',
+      bmnrImplication: 'Bank-issued stablecoin on Ethereum validates network for regulated banking infrastructure. First DADI charter creates regulatory template for bank-blockchain integration. More regulated bank stablecoins = more institutional confidence in Ethereum settlement layer.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
     {
       date: '2025-12-24',
       category: 'Enterprise',
@@ -6037,6 +7096,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Regulated fiat gateways for ADI Chain (Ethereum L2) enable real-world adoption. More accessible infrastructure = more users = more Ethereum ecosystem value.',
       impact: 'Bullish',
       source: 'Fasset / ADI Foundation Press Release'
+    },
+    {
+      date: '2025-12-23',
+      category: 'Institutional',
+      company: 'iPower',
+      title: 'iPower Launches $30M Digital Asset Treasury Strategy with Bitcoin and Ethereum',
+      summary: 'iPower Inc. (Nasdaq: IPW) announces $30 million convertible note financing facility to launch its Digital Asset Treasury ("DAT") strategy. Of initial $9 million committed funding, approximately $4.4 million will establish Digital Asset Treasury holding combination of Bitcoin and Ethereum. For subsequent tranches, approximately 80% of proceeds intended for digital asset acquisition. Transaction represents iPower\'s first concrete step executing broader crypto strategy, building on foundation as established operating business with $59 million in trailing 12-month revenue. Lawrence Tan, iPower CEO: "Our Digital Asset Treasury is designed to be a strategic bridge between e-commerce and digital assets. By combining our platform capabilities, operating experience, and ecosystem relationships, we are focused on integrating digital assets into everyday commerce in a way that supports real economic activity and long-term value creation, rather than short-term speculation." Company also evaluating: strategic acquisitions using enhanced balance sheet, working with regulated providers to develop consumer-facing digital asset products leveraging existing digital platforms.',
+      significance: 'Nasdaq-listed company ($59M revenue) establishing multi-asset digital treasury including ETH. Convertible note structure enables ongoing digital asset accumulation. Company positioning at intersection of e-commerce and digital assets. Corporate treasury diversification beyond BTC-only strategies.',
+      bmnrImplication: 'Public company adding ETH to corporate treasury alongside BTC validates BMNR thesis. DAT strategy with ETH exposure demonstrates growing corporate interest in Ethereum as treasury asset. More corporate ETH adoption = broader institutional recognition.',
+      impact: 'Bullish',
+      source: 'Business Wire'
     },
     {
       date: '2025-12-16',
@@ -6114,6 +7184,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Regulated stETH ETP validates institutional demand for ETH staking exposure. WisdomTree ($2.1B+ crypto ETP AUM) product validates productive ETH thesis similar to BMNR\'s staking strategy.',
       impact: 'Bullish',
       source: 'WisdomTree Press Release'
+    },
+    {
+      date: '2025-12-04',
+      category: 'L2',
+      company: 'Base',
+      title: 'Base-Solana Bridge Launches - Secured by Chainlink CCIP and Coinbase',
+      summary: 'Base launches mainnet bridge to Solana, enabling cross-chain asset movement between Ethereum L2 and Solana ecosystems. Bridge secured by Chainlink\'s Cross-Chain Interoperability Protocol (CCIP) alongside Coinbase verification. Coinbase and Chainlink node operators independently verify all messages. Rolling out in apps including Zora, Aerodrome, Virtuals, Flaunch, and Relay. Users can trade SOL, CHILLHOUSE, TRENCHER, and other Solana assets on Base. Bridge enables: depositing SOL in Base apps, importing Solana assets into Base, exporting Base assets to Solana. Open-source on GitHub for developer integration.',
+      significance: 'Major Ethereum L2 bridging to Solana expands cross-chain liquidity and interoperability. Chainlink CCIP + Coinbase dual verification provides institutional-grade security. "Bridge, not an island" philosophy enables users to access value across chains.',
+      bmnrImplication: 'Base-Solana bridge expands Ethereum L2 ecosystem reach to Solana users and assets. Cross-chain interoperability increases overall crypto network effects. More users/assets flowing through Ethereum L2 = more ecosystem value.',
+      impact: 'Bullish',
+      source: 'Base Blog'
     },
     {
       date: '2025-12-01',
@@ -6570,6 +7651,28 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     },
     // === SEPTEMBER 2025 ===
     {
+      date: '2025-09-29',
+      category: 'Enterprise',
+      company: 'Swift',
+      title: 'Swift Announces Blockchain-Based Shared Ledger with Consensys and 30+ Global Banks',
+      summary: 'Swift announces it will add a blockchain-based shared ledger to its technology infrastructure, enabling instant, 24/7 cross-border transactions at unprecedented scale. Working with 30+ financial institutions globally to design and build the ledger, with Consensys creating the conceptual prototype. Coalition banks include: JP Morgan Chase, Bank of America, Citi, HSBC, Deutsche Bank, BNP Paribas, BNY, Wells Fargo, Standard Chartered, Societe Generale-FORGE, UOB, DBS Bank, MUFG, ANZ, Westpac, NatWest, Royal Bank of Canada, TD Bank Group, Banco Santander, BBVA, Crédit Agricole, Commerzbank, Emirates NBD, First Abu Dhabi Bank, Mizuho, Shinhan Bank, and others across 16 countries. Ledger will facilitate banks\' trusted movement of regulated tokenised value across digital ecosystems, recording/validating transactions and enforcing rules through smart contracts. CEO Javier Pérez-Tasso: "We provide powerful and effective rails today and are moving at a rapid pace with our community to create the infrastructure stack of the future."',
+      significance: 'WATERSHED MOMENT for global financial infrastructure. Swift (11,500+ institutions in 200+ countries) choosing Consensys (Ethereum-native company behind MetaMask, Infura, Linea) to build blockchain prototype signals Ethereum ecosystem positioning. 30+ of world\'s largest banks actively collaborating on design. Real-time 24/7 cross-border payments at global scale.',
+      bmnrImplication: 'Swift partnering with Consensys (Ethereum infrastructure leader) positions Ethereum technology at core of global payment messaging upgrade. Coalition includes virtually every major global bank. Swift\'s blockchain ledger built on Ethereum technology = massive validation for ETH ecosystem. Global correspondent banking infrastructure ($150T+ annually) moving toward blockchain rails.',
+      impact: 'Bullish',
+      source: 'Swift Press Release / Sibos 2025'
+    },
+    {
+      date: '2025-09-25',
+      category: 'Enterprise',
+      company: 'Toyota',
+      title: 'Toyota Woven City Opens as Living Laboratory for Blockchain-Integrated Mobility',
+      summary: 'Toyota Woven City, the 175-acre "living laboratory" at the base of Mount Fuji, officially opens with 360 initial residents. The smart city integrates Toyota\'s Mobility-Oriented Account (MOA) blockchain technology, deploying ERC-4337 Account Abstraction contracts on Ethereum to enable vehicle-centric digital wallets and seamless mobility services. Woven City serves as testbed for autonomous vehicles, robotics, smart infrastructure, and blockchain-based mobility accounts. CEO James Kuffner: "Woven City is where we prove out technologies that will shape the future of mobility and connected living." The city features three types of streets: fast vehicles only, mixed pedestrian/personal mobility, and pedestrian-only promenades.',
+      significance: 'World\'s largest automotive manufacturer (Toyota, $300B+ market cap) building physical city infrastructure on Ethereum smart contracts. MOA technology using ERC-4337 demonstrates enterprise adoption of Ethereum\'s newest account abstraction standard. Real-world deployment at scale validates blockchain for critical mobility infrastructure.',
+      bmnrImplication: 'Toyota deploying ERC-4337 on Ethereum mainnet for vehicle accounts validates Ethereum as enterprise infrastructure layer. Automotive industry ($3T+ global market) building on Ethereum expands network utility beyond finance. More enterprise adoption = more Ethereum ecosystem value.',
+      impact: 'Bullish',
+      source: 'Toyota Woven City / Toyota Blockchain Lab'
+    },
+    {
       date: '2025-09-25',
       category: 'Enterprise',
       company: 'Centrifuge',
@@ -6601,6 +7704,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Bank-integrated crypto trading expands retail investor access to ETH in Europe. MiCA compliance validates regulatory path for European ETH adoption. More accessible ETH = broader investor base = supports ETH ecosystem.',
       impact: 'Bullish',
       source: 'Openbank Press Release'
+    },
+    {
+      date: '2025-09-15',
+      category: 'L2',
+      company: 'Base',
+      title: 'Base Exploring Network Token Launch After Years of Ruling It Out',
+      summary: 'Coinbase confirms at Basecamp event in Vermont that Base, its Ethereum L2 network, is "exploring a network token" after years of saying it wasn\'t actively considering one. Head of Base Jesse Pollak announced the exploration during a presentation. Base posted: "We\'re in the early phases of exploration, and don\'t have any specifics to share around timing, design, or governance. We\'re committed to bringing the community along with us, and building in the open." Coinbase CEO Brian Armstrong had told Decrypt in late 2023 that the company was "not planning to make any token" for Base. Change attributed to shift in US regulatory environment under Trump administration. Luke Youngblood (Moonwell founder, former Coinbase): "I think everything has shifted with the change in administration. I never thought they would let Jesse launch a token just because there\'s too much regulatory risk." Base is among most used Ethereum L2s with 13M daily transactions, $5B TVL, ranking 6th overall by TVL.',
+      significance: 'Major Ethereum L2 potentially adding token economics. Regulatory shift enabling what was previously considered too risky. Base already dominant L2 by transaction volume — token could accelerate ecosystem growth and governance decentralization.',
+      bmnrImplication: 'Base token exploration signals regulatory confidence in Ethereum L2 ecosystem. Network token could drive additional activity and value accrual to Ethereum L2 infrastructure. More successful L2s = more settlement to Ethereum L1 = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Decrypt'
     },
     {
       date: '2025-09-03',
@@ -6670,6 +7784,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'The Block / Bitwise'
     },
     {
+      date: '2025-07-16',
+      category: 'L2',
+      company: 'Base',
+      title: 'Base Evolves From Chain to Open Stack - Launches Base App, Base Pay, Flashblocks',
+      summary: 'Base announces major evolution from "chain to open stack" at A New Day One event. Three-part stack: Base Chain (Ethereum L2 with new Flashblocks reducing block times from 2 seconds to 200 milliseconds — 10x faster), Base Build (developer tools), and Base App (formerly Coinbase Wallet, now an "everything app" for social, apps, chat, payments, trading). Base App features: open social network powered by Farcaster where creators own content and earn directly, mini apps in feed (Remix, Noice, Decentralized Pictures), millions of coins tradable, USDC rewards up to 4.1% APY. Base Account provides universal identity across apps/chains. Base Pay enables express USDC checkout, now available to Shopify merchants (1% cashback for US customers coming later). Rolling out in beta with waitlist at base.app.',
+      significance: 'Major Ethereum L2 expanding from infrastructure to full consumer platform. Flashblocks makes Base 10x faster. Social features (Farcaster integration) and payments (Base Pay) create comprehensive ecosystem. Shopify integration brings millions of merchants to Ethereum L2.',
+      bmnrImplication: 'Base evolving into comprehensive platform strengthens Ethereum L2 ecosystem. Consumer-facing features drive mass adoption. Shopify integration brings mainstream commerce to Ethereum. More users + merchants on Ethereum L2 = more ecosystem value.',
+      impact: 'Bullish',
+      source: 'Base Blog'
+    },
+    {
       date: '2025-07-15',
       category: 'L2',
       company: 'Ant Digital Technologies',
@@ -6699,12 +7824,34 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'HSBC ($3.2T assets, Hong Kong\'s largest note-issuing bank) completes HKMA Project e-HKD+ experimental testing on multiple public blockchains: Arbitrum, Ethereum, Linea, and Polygon. Also developed private DLT on Hyperledger Besu — all Ethereum-compatible. Focus areas: DLT for storing/transferring value, privacy via Privacy Enhancing Technology (PET), decentralized identity, payments at scale. Survey of 700+ Hong Kong individuals: 90% acknowledge privacy importance in e-HKD; 65% professional investors familiar with concept; ~33% willing to use for digital asset trading. Recently launched Tokenised Deposit Service — Hong Kong\'s first bank-led blockchain settlement service. CEO Luanne Lim: "As Hong Kong\'s largest note-issuing bank, we will continue our efforts in driving financial innovation." John O\'Neill (Group Head Digital Assets): "Our experimental work on Project e-HKD+ aims to support the HKMA in assessing options for real-world use of digital currencies." HSBC Global Director confirmed private chain is EVM-compatible and ERC-20 standard.',
       significance: 'Major global bank ($3.2T assets) testing on PUBLIC Ethereum ecosystem (Ethereum, Arbitrum, Linea, Polygon). HSBC historically cautious on public chains — this is notable shift. Private chain EVM/ERC-20 compatibility enables future public chain interoperability. Hong Kong\'s first bank-led blockchain settlement service launched.',
       bmnrImplication: 'HSBC testing on public Ethereum L1 and L2s (Arbitrum, Linea, Polygon) validates ecosystem for institutional use. EVM-compatible private chain creates bridge to public networks. More institutional CBDC/deposit experimentation on Ethereum = network validation = ETH ecosystem value.',
-      impact: 'Bullish', 
-      source: 'HSBC Press Release / Ledger Insights' 
+      impact: 'Bullish',
+      source: 'HSBC Press Release / Ledger Insights'
     },
-    { 
-      date: '2025-06-17', 
-      category: 'Enterprise', 
+    {
+      date: '2025-06-25',
+      category: 'L2',
+      company: 'Base',
+      title: 'Coinbase Launches Wrapped Cardano (cbADA) and Litecoin (cbLTC) on Base',
+      summary: 'Coinbase launches wrapped tokens for Cardano (cbADA) and Litecoin (cbLTC) on Base, its Ethereum L2 network. Each synthetic token is backed 1:1 by underlying assets held in Coinbase custody with proof-of-reserves pages showing on-chain addresses. Initial issuance: 11,364 LTC and 2,963,259 ADA on Base. Follows early June launches of wrapped Dogecoin (cbDOGE) and XRP (cbXRP), completing four-asset bundle previewed on May 13. Coinbase already issues cbBTC (24% of synthetic BTC market) and cbETH (7% of staked ETH). ADA and LTC deposits held in segregated cold storage under same controls as cbETH and cbBTC. Quarterly attestations planned for all Coinbase Wrapped assets. No conversion fees during introductory period. Base is second-largest Ethereum L2 with $12B+ secured (L2Beat).',
+      significance: 'Major exchange bringing more non-EVM assets to Ethereum L2 ecosystem. Coinbase Wrapped tokens create ERC-20 gateways to six of ten largest non-stablecoins by market cap. Proof-of-reserves and custody infrastructure provide institutional-grade backing.',
+      bmnrImplication: 'More assets available on Base expands Ethereum L2 utility. Cross-chain asset bridging via wrapped tokens increases DeFi composability. Coinbase custody backing provides institutional confidence. More assets on Ethereum ecosystem = more network value.',
+      impact: 'Bullish',
+      source: 'CryptoSlate'
+    },
+    {
+      date: '2025-06-23',
+      category: 'Enterprise',
+      company: 'Coinbase',
+      title: 'Coinbase State of Crypto Summit 2025: Major USDC Payments Infrastructure Announcements',
+      summary: 'Coinbase hosts State of Crypto Summit 2025 announcing major payments infrastructure: Coinbase Business (SMB/startup crypto account for payments and asset management), Coinbase Payments (plug-and-play stablecoin payments stack with API-first USDC integration), Shopify partnership bringing USDC payments on Base to millions of merchants, DEX trading integrated into main Coinbase app (starting with Base assets), and Coinbase One Card (up to 4% bitcoin back, metal card with Genesis Block code). Summit highlights: 81% of crypto-aware SMBs interested in stablecoins, 3x more Fortune 500 executives planning stablecoin use vs 2024, stablecoin supply reached $227B (54% YoY increase). Brian Armstrong: "The mission of Coinbase is to enable economic freedom in the world." Following Deribit acquisition announcement, Coinbase positioning as comprehensive crypto derivatives exchange.',
+      significance: 'Major exchange building comprehensive stablecoin payments infrastructure. Shopify integration brings USDC payments to millions of merchants. SMB and Fortune 500 stablecoin interest demonstrates mainstream adoption trajectory. Product suite spans trading, payments, cards, and business accounts.',
+      bmnrImplication: 'Coinbase building USDC payments on Base strengthens Ethereum L2 ecosystem. Shopify integration brings mass merchant adoption to Ethereum. More stablecoin infrastructure = more on-chain activity = ETH ecosystem value. 54% YoY stablecoin growth validates network utility thesis.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-06-17',
+      category: 'Enterprise',
       company: 'Deutsche Bank',
       title: 'Deutsche Bank DAMA 2 - Institutional Tokenization Blueprint on Ethereum L2', 
       summary: 'Deutsche Bank, Axelar Network (Interop Labs), and Memento Blockchain publish litepaper for Digital Asset Management Access (DAMA) 2 platform — a next-generation tokenization platform built on public blockchains with regulatory alignment and privacy as core design principles. Key features: Blockchain-as-a-Service model minimizing upfront investment, privacy-enabled Layer 2 using zkSync ZK Chain technology, managed token issuance across multiple blockchains via Axelar, and app store for fund smart contract designs. Platform targets tokenized funds, stablecoins, and RWAs for asset managers, wealth managers, and investment advisors. Innovation Lead Boon-Hiong Chan: "DAMA 2 represents how public chains have evolved for institutional finance\'s use." MVP launch targeted H2 2025. Context: $84T in global wealth shifting to digital-native generations by 2045 (Cerulli Associates).',
@@ -6723,6 +7870,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'WisdomTree expanding to 13 tokenized funds across 5 Ethereum ecosystem chains validates network for comprehensive institutional fund distribution. Multi-asset tokenization (equities, fixed income, money market) on Ethereum proves network can handle diverse institutional use cases. More tokenized fund AUM on Ethereum = more on-chain value = ETH ecosystem growth.',
       impact: 'Bullish',
       source: 'Business Wire'
+    },
+    {
+      date: '2025-04-03',
+      category: 'Enterprise',
+      company: 'EY',
+      title: 'EY Upgrades Nightfall_4 - Zero-Knowledge Roll-Up for Private Ethereum Transactions',
+      summary: 'EY (Big Four accounting firm) releases Nightfall_4, major update to its open-source zero-knowledge roll-up enabling private transactions on public Ethereum. Key upgrade: replaces optimistic roll-up with ZK version for near-instant finality without challenge periods. Enterprises can orchestrate private transactions on Ethereum mainnet without compromising transparency, data immutability, and security. Simplified architecture eliminates need to accommodate incorrect block challenges or provide liquidity services. Uses x509 enterprise identity certificates for access. Source code in public domain on GitHub. EY has contributed Nightfall to public domain since 2019 — this is the fourth major update. EY OpsChain and blockchain services delivered through Blockchain.ey.com platform. Paul Brody, EY Global Blockchain Leader: "This update provides the same privacy and scaling that version 3 enabled, but now with near-instant finality and a simplified architecture. We believe we will see accelerating adoption in the coming year by enterprise users."',
+      significance: 'Big Four professional services firm providing open-source privacy infrastructure for enterprise Ethereum. ZK roll-up technology enables private business transactions on public blockchain. Public domain release demonstrates commitment to Ethereum ecosystem development.',
+      bmnrImplication: 'EY building privacy infrastructure on Ethereum validates network for enterprise confidential transactions. Big Four firm commitment signals institutional acceptance. More enterprise privacy tools = more enterprise adoption = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'EY Press Release'
     },
     {
       date: '2025-03-26',
@@ -6767,11 +7925,22 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       significance: 'Major global wealth manager ($5.7T AUM) launching production tokenized fund on Ethereum. Progression from 2023 pilot to 2024 production demonstrates institutional commitment. Institutional-grade money market fund on public blockchain sets precedent for larger fund tokenization.',
       bmnrImplication: 'UBS production tokenized fund validates Ethereum for institutional asset management. More tokenized funds = more on-chain settlement = ETH ecosystem value. UBS\'s multi-year commitment (2017 consortium → 2023 pilots → 2024 production) demonstrates long-term institutional thesis.',
       impact: 'Bullish', 
-      source: 'UBS Asset Management Press Release' 
+      source: 'UBS Asset Management Press Release'
     },
-    { 
-      date: '2024-10-03', 
-      category: 'Enterprise', 
+    {
+      date: '2024-10-02',
+      category: 'Enterprise',
+      company: 'Automobili Lamborghini',
+      title: 'Lamborghini and Animoca Brands Launch Fast ForWorld - Interoperable Blockchain Gaming Platform',
+      summary: 'Automobili Lamborghini and Animoca Brands announce collaboration to shape the future of immersive brand engagement in the automotive industry. Partnership creates Automobili Lamborghini\'s upcoming immersive platform, Fast ForWorld, where fans, gamers and owners can experiment, play, interact, and collect digital collectibles while being rewarded for engagement. First interoperable blockchain-based implementation of Lamborghini iconic vehicles in gaming. Working with Animoca\'s subsidiary Motorverse to deliver first-of-its-kind gaming experience with interoperable digital car collectibles. Players can buy, sell, own, and drive Lamborghini super sports cars across multiple gaming platforms including Torque Drift 2, REVV Racing, and Motorverse Hub. Platform designed, developed and deployed by Gravitaslabs. First version launching November 7th features 3D wallet for storing digital items and interoperable features. Entry requires securing first-ever digital Lamborghini Revuelto, bundled with Genesis Capsule unlocking exclusive benefits.',
+      significance: 'Iconic luxury automotive brand ($2.3B revenue) entering blockchain gaming through partnership with Animoca Brands (major Web3 gaming company). First interoperable digital vehicles from a major automaker. Demonstrates blockchain use case for brand engagement and digital collectibles beyond finance. Gaming/collectibles sector bridges mainstream consumers to blockchain.',
+      bmnrImplication: 'Lamborghini blockchain gaming validates Ethereum ecosystem for luxury brand digital engagement. Animoca Brands (built on Ethereum) brings major automotive partner. Interoperable digital assets expand blockchain utility beyond finance. More mainstream brand adoption = broader Ethereum ecosystem recognition.',
+      impact: 'Bullish',
+      source: 'Automobili Lamborghini Press Release'
+    },
+    {
+      date: '2024-10-03',
+      category: 'Enterprise',
       company: 'Visa',
       title: 'Visa Launches VTAP - Tokenized Asset Platform on Ethereum', 
       summary: 'Visa introduces the Visa Tokenized Asset Platform (VTAP), a B2B solution enabling banks to mint, burn, and transfer fiat-backed tokens on blockchain networks. VTAP provides API-based integration for participating financial institutions to issue tokenized deposits and stablecoins. Platform supports programmability via smart contracts for automated workflows and real-world asset transactions. BBVA (Spain\'s second-largest bank) announced as first partner, testing VTAP sandbox throughout 2024 with plans to launch BBVA Euro stablecoin pilot in 2025 on public Ethereum mainnet.',
@@ -6799,10 +7968,21 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'HSBC ($3.2T assets) successfully trials first application of quantum-secure technology for buying and selling tokenized physical gold. HSBC was first global bank to offer tokenized physical gold to institutional investors (2023), followed by HSBC Gold Token for retail investors in Hong Kong (2024, fractional ownership). Built on HSBC Orion digital assets platform. Tested interoperability using post-quantum cryptography (PQC) to move digital assets safely across distributed ledgers. Key capability: can convert HSBC gold tokens to ERC-20 fungible tokens for enhanced distribution and interoperability with other DLTs and digital wallets. Partner: Quantinuum (world\'s largest integrated quantum computing company). Protects against "store now, decrypt-later" (SNDL) cyber attacks using PQC algorithms and quantum randomness technology. Philip Intallura (Global Head Quantum Technologies): "HSBC was the first international bank to offer tokenised physical gold and is now building on that innovation with cutting-edge cybersecurity protection for the future."',
       significance: 'FIRST global bank tokenized gold (2023) now adding quantum-secure protection. ERC-20 conversion capability enables Ethereum ecosystem interoperability. Demonstrates institutional commitment to both blockchain tokenization AND next-generation security. Quantinuum partnership brings quantum computing expertise to financial services.',
       bmnrImplication: 'HSBC gold tokens convertible to ERC-20 creates direct bridge to Ethereum ecosystem. Tokenized gold interoperability expands Ethereum utility for real-world assets. Quantum-safe security addresses future institutional concerns. More tokenized RWAs on Ethereum = network value.',
-      impact: 'Bullish', 
-      source: 'HSBC Press Release' 
+      impact: 'Bullish',
+      source: 'HSBC Press Release'
     },
-    { 
+    {
+      date: '2024-09-12',
+      category: 'L2',
+      company: 'Coinbase',
+      title: 'Coinbase Wrapped BTC (cbBTC) Launches on Base and Ethereum',
+      summary: 'Coinbase launches cbBTC, an ERC-20 token backed 1:1 by Bitcoin held in Coinbase custody. Available on Base and Ethereum at launch with plans for more chains. Coinbase has 10+ year record securely custodying billions in Bitcoin. When users send BTC from Coinbase to Base/Ethereum address, it automatically converts 1:1 to cbBTC. Day one DeFi integrations: DEXs (Aerodrome, Curve, Matcha, Uniswap), Lending (Aave, Compound, Morpho, Moonwell, Spark), Yield Vaults (Mellow, Veda), Cross-chain swaps (DeBridge, DeFinitive), Oracles (Chronicle Labs), RWA (Maple). Available in US (excl NY), UK, EEA, Australia, Brazil. cbBTC now also on Solana and Arbitrum. Contract address same across Base/Ethereum/Arbitrum: 0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf. Coinbase: "cbBTC is moving money forward. We\'re one step closer to bringing 1 billion people onchain."',
+      significance: 'Major exchange bringing deep off-chain Bitcoin liquidity to Ethereum ecosystem. Coinbase custody backing provides institutional-grade trust vs decentralized alternatives. Day one integrations across major DeFi protocols demonstrate immediate utility. Links $1T+ BTC market cap to Ethereum DeFi rails.',
+      bmnrImplication: 'cbBTC brings Bitcoin liquidity to Ethereum ecosystem, expanding DeFi TVL and utility. More assets on Ethereum L1/L2 = more network activity = ETH ecosystem value. Coinbase institutional backing could attract conservative capital that avoided decentralized wrapped BTC.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
       date: '2024-09-04', 
       category: 'Enterprise', 
       company: 'Siemens',
@@ -6846,9 +8026,20 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       impact: 'Bullish', 
       source: 'Societe Generale-FORGE' 
     },
-    { 
-      date: '2024-07-25', 
-      category: 'Enterprise', 
+    {
+      date: '2024-07-25',
+      category: 'Enterprise',
+      company: 'Toyota',
+      title: 'Toyota Blockchain Lab Deploys Mobility-Oriented Account (MOA) on Ethereum Mainnet',
+      summary: 'Toyota Blockchain Lab publishes technical paper and deploys Mobility-Oriented Account (MOA) smart contracts on Ethereum mainnet using ERC-4337 Account Abstraction standard. MOA creates vehicle-centric digital wallets enabling: KeyToken Contracts (ERC-721) for usage rights management, flexible payment delegation, and seamless mobility service integration. The system allows vehicles to have their own blockchain accounts, enabling autonomous payments for charging, tolls, parking, and maintenance. Toyota Motor Corporation partnered with other consortium members including Toyota Financial Services. Technical implementation includes modular account architecture supporting multiple signers, session keys, and programmable spending rules. Paul Brody, EY Global Blockchain Leader who has collaborated with Toyota: "This represents one of the most sophisticated enterprise ERC-4337 deployments we\'ve seen."',
+      significance: 'World\'s largest automotive manufacturer ($300B+ market cap) deploying production smart contracts on Ethereum public mainnet. First major automaker to implement ERC-4337 Account Abstraction for vehicle accounts. Toyota Blockchain Lab\'s choice of public Ethereum over private/consortium chains signals confidence in network security and decentralization.',
+      bmnrImplication: 'Toyota\'s MOA deployment validates Ethereum for automotive industry ($3T+ global market). ERC-4337 adoption by major enterprise demonstrates Account Abstraction standard maturity. More enterprise deployment = more Ethereum ecosystem value and network utility.',
+      impact: 'Bullish',
+      source: 'Toyota Blockchain Lab Technical Paper'
+    },
+    {
+      date: '2024-07-25',
+      category: 'Enterprise',
       company: 'Paysafe',
       title: 'Paysafe Partners with Alchemy Pay for Crypto On-Ramp Across 130 Countries', 
       summary: 'Paysafe (NYSE: PSFE), global payments platform with $140B annualized transaction volume, partners with Alchemy Pay to expand fiat-crypto on-ramp capabilities. Integration adds Paysafe\'s Skrill and NETELLER digital wallets (millions of users globally) plus multiple local payment methods (LPMs) across 130 countries and 40+ fiat currencies for BTC and ETH purchases. Includes open banking in UK and 15 European countries for direct bank account purchases. Phase 2 expansion planned for Latin America. SVP of Crypto & Digital Assets Micah Kershner: "The Skrill and NETELLER wallets\' large user-base and popularity among crypto holders along with integration of local payment methods will power Alchemy Pay\'s Fiat On-ramp with more payment options."',
@@ -6876,10 +8067,21 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'BlackRock launches the BlackRock USD Institutional Digital Liquidity Fund (BUIDL), the first tokenized money market fund from the world\'s largest asset manager on a public blockchain. BUIDL tokens are issued on Ethereum mainnet, representing shares in a fund holding U.S. Treasury bills, repurchase agreements, and cash. Built with Securitize (tokenization), BNY Mellon (custody), and Coinbase Prime (infrastructure). Settlement in USDC enables 24/7/365 transfers between whitelisted addresses. Initial partners include Anchorage Digital, BitGo, Coinbase, and Fireblocks for distribution. Minimum investment: $5M for qualified purchasers. Target yield: Fed Funds rate minus 50bps.',
       significance: 'WATERSHED MOMENT for institutional tokenization. BlackRock ($10T+ AUM) choosing Ethereum over private blockchains or competitors sends unmistakable signal: Ethereum is the institutional settlement layer. Securitize CEO: "This is the starting gun for tokenized securities." Opens door for subsequent launches (Franklin, WisdomTree, etc.).',
       bmnrImplication: 'BlackRock\'s BUIDL launch is arguably the most important single event validating ETH for institutional use. Legitimizes holding ETH as exposure to institutional-grade infrastructure. Sets precedent that BMNR\'s ETH treasury strategy builds upon - "if BlackRock is building on Ethereum, why wouldn\'t we hold ETH?"',
-      impact: 'Bullish', 
-      source: 'BlackRock Press Release' 
+      impact: 'Bullish',
+      source: 'BlackRock Press Release'
     },
-    { 
+    {
+      date: '2024-04-17',
+      category: 'Enterprise',
+      company: 'EY',
+      title: 'EY Launches OpsChain Contract Manager - Smart Contracts for Enterprise on Public Ethereum',
+      summary: 'EY (Big Four accounting firm) launches EY OpsChain Contract Manager (OCM), blockchain-enabled solution for enterprise contract management running on public Ethereum. Addresses enterprise challenge of managing multi-party business agreements across internal/external siloed systems. Features: synchronizes data across business partners, uniformly enforces key terms (pricing, volume discounts, rebates, strike prices), uses Zero Knowledge Circuits for privacy. Supports complex contract types: volume purchase agreements, standardized rate cards, volume discounts, rebates, market data-dependent price models. First users implementing Power Purchasing Agreements (PPAs) with market prices, strike prices, min/max criteria. Benefits: decentralized operation in trustworthy environment, no strategic advantage to buyer/seller, eliminates private network costs, avoids centralized industry portal risks. Zion Market Research projects global smart contracts market reaching $1B by 2030 (24% CAGR 2023-2030). Paul Brody, EY Global Blockchain Leader: "Contract automation can improve accuracy while cutting cycle times by more than 90%, and overall contract administration costs by nearly 40%. With our zero-knowledge privacy technology, we have industrialized this capability."',
+      significance: 'Big Four professional services firm deploying production enterprise solution on public Ethereum. Smart contract automation addresses real enterprise pain points (contract leakage, fragmented spend). Zero-knowledge privacy enables confidential business terms on public blockchain.',
+      bmnrImplication: 'EY building enterprise contract infrastructure on public Ethereum validates network for core business operations. Big Four firm commitment signals enterprise readiness. More enterprise use cases = more Ethereum ecosystem value.',
+      impact: 'Bullish',
+      source: 'EY Press Release'
+    },
+    {
       date: '2024-02-07', 
       category: 'Enterprise', 
       company: 'UBS',
@@ -7097,10 +8299,21 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Bank of China International (BOCI) successfully issues CNH 200 million fully digital structured notes, becoming the first Chinese financial institution to issue a tokenized security in Hong Kong. Product originated by UBS and placed to Asia Pacific clients via UBS Tokenize platform. First product under Hong Kong and Swiss law tokenized on Ethereum mainnet — successfully introducing regulated securities onto a public blockchain. Builds on UBS\'s December 2022 issuance of USD 50M tokenized fixed rate note. BOCI Deputy CEO Ying Wang: "Working together with UBS, we are driving the simplification of digital asset markets and products, for customers in Asia Pacific through the development of blockchain-based digital structured products." UBS Global Head of MTN Trading Aurelian Troendle: "High-frequency issuance activity can benefit from vast efficiency gains through the use of blockchain technology."',
       significance: 'FIRST Chinese financial institution issuing tokenized security in Hong Kong. First product under Hong Kong AND Swiss law on Ethereum mainnet. Demonstrates cross-border legal framework compatibility for tokenized securities. Bank of China subsidiary validates Chinese institutional interest in Ethereum tokenization.',
       bmnrImplication: 'Chinese institutional adoption of Ethereum for tokenized securities expands global institutional footprint. Hong Kong + Swiss law compatibility proves multi-jurisdictional regulatory framework viability. More APAC institutional activity = more Ethereum network validation.',
-      impact: 'Bullish', 
-      source: 'UBS / BOCI Press Release' 
+      impact: 'Bullish',
+      source: 'UBS / BOCI Press Release'
     },
-    { 
+    {
+      date: '2023-06-15',
+      category: 'Enterprise',
+      company: 'SAP',
+      title: 'SAP Launches Digital Currency Hub - USDC/EUROC Cross-Border Payments for SMEs',
+      summary: 'SAP launches preview of SAP Digital Currency Hub, enabling cross-border payments using USDC and EUROC stablecoins (issued by Circle) on blockchain. Solution addresses major SME pain points: traditional cross-border payments cost up to $50 per transaction, take up to 7 days, and lack transparency. With Digital Currency Hub, business partners settle transactions via self-custody wallets without intermediaries. Technical flow: buyer opens wallet, creates transaction with seller\'s wallet address, signs with private key, sends to blockchain for validation. Settlement occurs in minutes. Solution links payments to business objects (business partners, invoice numbers) and will integrate with SAP ERP systems (SAP Business One, Business ByDesign, S/4HANA Cloud) for autonomous reconciliation. Test drive available using test USDC on test network for experimental purposes.',
+      significance: 'Enterprise software giant ($200B+ market cap) building stablecoin payment infrastructure for its massive SME customer base. SAP serves 440,000+ customers in 180+ countries. Integration with ERP systems could bring blockchain payments to mainstream business operations.',
+      bmnrImplication: 'SAP bringing stablecoin payments to SME customers validates Ethereum ecosystem for enterprise finance. USDC/EUROC settlement expands network utility beyond crypto-native users. More enterprise stablecoin adoption = more on-chain activity = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'SAP Community Blog'
+    },
+    {
       date: '2023-05-15', 
       category: 'Institutional', 
       company: 'Visa',
@@ -7168,7 +8381,18 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'EIB Press Release' 
     },
     // === 2022 HISTORICAL PROTOCOL EVENTS ===
-    { 
+    {
+      date: '2022-09-29',
+      category: 'Enterprise',
+      company: 'Deutsche Telekom',
+      title: 'Deutsche Telekom Deploys Ethereum Validator Infrastructure via T-Systems MMS',
+      summary: 'Deutsche Telekom expands blockchain activities by including Ethereum, the second largest blockchain in the world. T-Systems MMS (Deutsche Telekom subsidiary) provides Ethereum Network with infrastructure in the form of validation nodes. Additionally, Deutsche Telekom subsidiary cooperates with StakeWise for liquid staking pools, allowing users to stake ETH tokens without operating validator nodes themselves. T-Systems MMS participates in StakeWise governance through the DAO, contributing to transparency and security. Dirk Röder, Head of Blockchain Solutions Center at T-Systems MMS: "Our cooperation partner StakeWise collects individual Ether tokens from many different owners and merges them into validator nodes. These validator nodes are provided and operated as infrastructure by T-Systems MMS." Kirill Kutakov, co-founder of StakeWise: "With the move to Proof-of-Stake, we expect strong demand and significantly increasing capital flows in the Ethereum network. We are therefore pleased that T-Systems MMS, as an infrastructure provider, is giving our protocol more reliability and making the Ethereum ecosystem safer overall."',
+      significance: 'Major European telecom ($90B+ market cap, €110B+ revenue) operating Ethereum validator infrastructure. T-Systems MMS already supported Flow, Celo, and Polkadot — now adding Ethereum. First DAO governance participation for Deutsche Telekom. Corporate validator operation validates Ethereum PoS security model for enterprise.',
+      bmnrImplication: 'Deutsche Telekom operating Ethereum validators legitimizes staking infrastructure as enterprise-grade service. Major telecom infrastructure provider validates Ethereum PoS security model. Corporate validator participation = more decentralized, secure network = supports BMNR staking thesis.',
+      impact: 'Bullish',
+      source: 'Deutsche Telekom Media'
+    },
+    {
       date: '2022-09-15', 
       category: 'Protocol', 
       company: 'Other',
@@ -7176,10 +8400,21 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Ethereum successfully completes "The Merge," the most significant technological upgrade in its history, transitioning the network\'s consensus mechanism from Proof of Work (PoW) to Proof of Stake (PoS). The upgrade merged the original Ethereum mainnet (execution layer) with the Beacon Chain (consensus layer), ending energy-intensive mining operations. The Merge reduced Ethereum\'s energy consumption by approximately 99.95%. At the time, 15.9 million ETH had been staked on the Beacon Chain, representing roughly 13.2% of total supply. Validators who stake 32 ETH can now earn rewards for securing the network, with staking yields of approximately 3-5% APY from block rewards and transaction fees.',
       significance: 'Watershed moment for blockchain technology. The Merge addressed Ethereum\'s largest criticism (energy consumption) while enabling native yield generation through staking. This transformed ETH from a pure commodity to a yield-bearing asset, fundamentally changing institutional valuation frameworks. The successful execution of such a complex upgrade demonstrated Ethereum\'s technical maturity and developer ecosystem strength.',
       bmnrImplication: 'THE foundational event enabling BMNR\'s entire business model. Without The Merge, there would be no staking yields, no MAVAN validator network, and no dividend strategy. BMNR\'s thesis — that ETH treasuries can generate sustainable yield while appreciating — is only possible because of PoS. The Merge transformed ETH from "digital commodity" to "productive asset."',
-      impact: 'Bullish', 
-      source: 'Visa Crypto Research' 
+      impact: 'Bullish',
+      source: 'Visa Crypto Research'
     },
-    { 
+    {
+      date: '2022-07-21',
+      category: 'Enterprise',
+      company: 'Aura Blockchain Consortium',
+      title: 'Aura Blockchain Consortium Partners with Temera for Luxury Supply Chain Traceability',
+      summary: 'Aura Blockchain Consortium (founded by LVMH, Prada Group, Cartier/Richemont, OTB Group, Mercedes-Benz) announces strategic collaboration with Temera for luxury product traceability. Temera brings expertise via proprietary Stylewhere platform and RFID/NFC technology. Aura enables brands to tag products with secure, unique blockchain-based identities tracking manufacture and supply from raw materials through end consumers. Aura SaaS offering allows brands to quickly onboard, maximizing value for customer journey and digital innovation. Partnership provides both upstream (raw material sourcing) and downstream (direct-to-consumer) traceability. Temera CMO Guido Mengoni: "The expertise of Aura Blockchain Consortium Founding Members combined with our desire to innovate... will become fundamental for consumers in the coming years: full transparency of the product life cycle."',
+      significance: 'Major luxury conglomerates (LVMH, Prada, Cartier, Mercedes-Benz) deepening blockchain infrastructure for supply chain transparency. Aura built on ConsenSys/Ethereum technology. Partnership demonstrates enterprise blockchain use case beyond finance — product authentication and sustainability.',
+      bmnrImplication: 'Luxury brands building on Ethereum infrastructure validates network for enterprise non-financial use cases. Supply chain traceability expands Ethereum utility beyond DeFi/payments. More enterprise adoption = more ecosystem value.',
+      impact: 'Bullish',
+      source: 'Aura Blockchain Consortium Press Release'
+    },
+    {
       date: '2022-06-13', 
       category: 'Institutional', 
       company: 'Goldman Sachs',
@@ -7198,10 +8433,32 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'State Street Corporation ($42.6T AUC, $3.9T AUM), one of the world\'s largest custodians, announces State Street Digital has entered licensing agreement with Copper.co to develop institutional-grade digital custody. The collaboration leverages Copper.co\'s technology (450+ crypto assets, 40+ exchanges) to build secure storage and settlement infrastructure for digital assets. Head of State Street Digital Nadine Chakar: "As institutional investors\' interest in digital assets continues to grow, we are building the financial infrastructure needed to support our clients\' allocations to this new asset class." Subject to regulatory approvals for launch.',
       significance: 'World\'s largest custodian building crypto infrastructure signals institutional adoption has reached critical mass. State Street custody network serves the largest institutional investors globally. Their entry validates digital assets as a permanent institutional asset class requiring proper custody infrastructure.',
       bmnrImplication: 'State Street building digital custody infrastructure removes a key barrier to institutional ETH allocation. As the custodian for massive pension funds, endowments, and asset managers, their infrastructure buildout enables the institutional capital flows that support BMNR\'s thesis. Custody infrastructure is foundational to corporate treasury strategies.',
-      impact: 'Bullish', 
-      source: 'State Street Press Release' 
+      impact: 'Bullish',
+      source: 'State Street Press Release'
     },
-    { 
+    {
+      date: '2022-01-20',
+      category: 'Enterprise',
+      company: 'Aura Blockchain Consortium',
+      title: 'Hennessy Joins Aura Blockchain Consortium - First Spirits Brand on Luxury Blockchain',
+      summary: 'Hennessy, the world\'s best-selling cognac (founded 1765, LVMH brand), becomes first luxury spirits brand to join Aura Blockchain Consortium. Partnership provides full traceability across supply chain from distillery to consumer. First consumer use case launched for Chinese New Year 2022: collector\'s edition Hennessy Paradis sold in China with unique blockchain-authenticated certificate via WeChat. Limited edition inspired by artist Zhang Enli\'s "Poetry and Wine Welcome the Tiger" artwork, produced by French porcelain maker Bernardaud. Each buyer receives authenticated certificate through WeChat experience. Hennessy CEO Laurent Boillot: "The Aura Blockchain Consortium\'s vision to push the boundaries of technology to publish a blockchain platform that will ensure the full traceability of products... aligns with our goal to establish Hennessy as not only a market-leading product but a securely and equitably produced product."',
+      significance: 'First spirits industry brand on Aura blockchain expands use case beyond fashion/jewelry. LVMH deploying blockchain across its brand portfolio (Louis Vuitton, Bulgari, Hublot, now Hennessy). WeChat integration demonstrates blockchain utility for Chinese luxury market authentication.',
+      bmnrImplication: 'Luxury brands expanding blockchain use cases validates Ethereum infrastructure for diverse enterprise applications. LVMH portfolio-wide deployment demonstrates serious institutional commitment. More brand adoption = more blockchain ecosystem value.',
+      impact: 'Bullish',
+      source: 'Aura Blockchain Consortium Press Release'
+    },
+    {
+      date: '2022-01-13',
+      category: 'Enterprise',
+      company: 'Aura Blockchain Consortium',
+      title: 'Aura Blockchain Consortium Launches Aura SaaS - Cloud-Based Blockchain for Luxury Brands',
+      summary: 'Aura Blockchain Consortium (LVMH, Prada Group, Cartier/Richemont, OTB Group) launches Aura SaaS, first blockchain-based cloud platform designed for luxury brands. Platform has 15+ million digital tokens on private permissioned blockchain with upstream and downstream supply chain traceability. Aura SaaS is no-code solution with lower upfront costs and quick onboarding. Features: smart contract generator (no coding needed), product registration on blockchain, product events/rich content management, product history, ownership acquisition/transfer. Brands access Aura Blockchain via APIs connecting to their IT systems. White-label front-end interfaces customizable to each brand\'s UX. Addresses: authenticity, ownership, warranty, transparency, traceability. Secretary General Daniela Ott: "Aura SaaS provides a game-changing toolbox for the luxury industry... suitable for luxury brands of any size."',
+      significance: 'Major luxury houses democratizing blockchain access for smaller brands via SaaS model. 15M+ digital tokens demonstrates production scale. No-code approach lowers barrier to enterprise blockchain adoption. Consortium model (LVMH + Prada + Cartier + OTB) creates industry standard.',
+      bmnrImplication: 'Enterprise SaaS blockchain platform built on ConsenSys/Ethereum technology validates network for institutional use. 15M+ tokens in production proves enterprise blockchain viability. More enterprise adoption = more Ethereum ecosystem value.',
+      impact: 'Bullish',
+      source: 'Aura Blockchain Consortium Press Release'
+    },
+    {
       date: '2022-03-24', 
       category: 'Enterprise', 
       company: 'ANZ',
@@ -7243,8 +8500,19 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Goldman Sachs ($150B+ market cap) formally announces formation of its cryptocurrency trading desk, marking the official start of the crypto trading era on Wall Street. Internal memo from partner Rajesh Venkataramani confirms the team successfully traded Bitcoin NDFs and CME BTC futures (cash-settled). The crypto team operates within Global Currencies and Emerging Markets division, part of the broader Digital Assets effort led by Mathew McDermott. Goldman also launched Digital Assets dashboard providing daily/intraday crypto market data to clients. CEO David Solomon: firm is "selectively onboarding crypto trading institutions" to expand offerings. The bank had mulled a Bitcoin trading desk since 2017, tabled plans initially, then restarted in March 2021. Note: "The firm is not in a position to trade bitcoin, or any cryptocurrency (including Ethereum) on a physical basis" — only derivatives initially.',
       significance: 'WATERSHED MOMENT for institutional crypto adoption. Goldman Sachs — Wall Street\'s dominant investment bank for fixed income and equities trading — formally acknowledging crypto trading operations. First major Wall Street bank to do so publicly. Signals crypto has achieved "tradeable asset class" status for institutional capital. Opens door for rival banks (Morgan Stanley, JPMorgan) to follow.',
       bmnrImplication: 'Goldman\'s 2021 trading desk launch was the first domino in Wall Street\'s crypto adoption. The progression: trading desk (2021) → ETH derivatives (2022) → $2B+ ETF holdings (2025) → tokenization infrastructure (2025). This institutional infrastructure buildout is what enables corporate treasury strategies like BMNR\'s. Goldman\'s early entry validated crypto for traditional finance.',
-      impact: 'Bullish', 
-      source: 'CNBC / Goldman Internal Memo' 
+      impact: 'Bullish',
+      source: 'CNBC / Goldman Internal Memo'
+    },
+    {
+      date: '2021-04-20',
+      category: 'Enterprise',
+      company: 'Aura Blockchain Consortium',
+      title: 'LVMH, Prada, and Cartier Form Aura Blockchain Consortium on ConsenSys/Ethereum',
+      summary: 'LVMH, Prada Group, and Cartier (Richemont) announce creation of Aura Blockchain Consortium — first global blockchain dedicated to luxury industry. Single solution addresses shared challenges of authenticity, responsible sourcing, and sustainability. Technology: multi-nodal private blockchain secured by ConsenSys technology and Microsoft. Records information in secure, non-reproducible manner generating unique certificates. Brands already active: Bulgari, Cartier, Hublot, Louis Vuitton, Prada. Enables direct-to-consumer access to product history and proof of authenticity. LVMH Managing Director Toni Belloni: "The Aura Blockchain Consortium is a great opportunity for our sector to strengthen our connection with customers by offering them simple solutions to get to know our products better." Cartier CEO Cyrille Vigneron: "The Aura Consortium represents an unprecedented cooperation in the luxury industry. Blockchain is a key technology to enhance customer service, relationship with partners and traceability."',
+      significance: 'THREE of the world\'s largest luxury conglomerates (LVMH, Prada, Richemont/Cartier) forming joint blockchain consortium represents unprecedented industry collaboration. ConsenSys (Ethereum infrastructure leader) providing technology validates Ethereum ecosystem for enterprise. Open to all luxury brands globally.',
+      bmnrImplication: 'Major luxury houses building on ConsenSys/Ethereum infrastructure validates network for enterprise supply chain applications. Industry consortium approach creates network effects — more brands joining = more ecosystem value. Non-financial use case (authentication, traceability) expands Ethereum utility beyond DeFi.',
+      impact: 'Bullish',
+      source: 'Aura Blockchain Consortium Press Release'
     },
     // === 2020 HISTORICAL PROTOCOL EVENTS ===
     { 
@@ -7718,10 +8986,11 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         <span>Ethereum Adoption Timeline</span>
         <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredNews.length} events)</span>
       </h3>
-
       {/* Company Filter (like Topic filter in Timeline tab) */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-filter</div>
       <div className="highlight" style={{ padding: 16 }}>
+        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track news about the <strong>ETH ecosystem</strong> — institutional adoption, stablecoin launches, L2 growth, protocol upgrades, and enterprise partnerships building on Ethereum</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginBottom: 16 }}>Asset-level news affecting ETH value and BMNR's NAV</p>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Company</span>
           {companyFilter !== 'All' && (
