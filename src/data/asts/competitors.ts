@@ -7,9 +7,12 @@
  * KEY COMPETITORS:
  * - Amazon Leo (fka Project Kuiper): LEO broadband (terminal-based, not D2D)
  * - SpaceX Starlink: LEO broadband + D2D partnership with T-Mobile
- * - Lynk Global: D2D texting/messaging focused
+ * - Lynk Global / Omnispace: D2D messaging/voice, merged with 60 MHz S-band, SES-backed
  * - Apple/Globalstar: Emergency SOS (iPhone only)
+ * - Equatys (Space42/Viasat): D2D venture with 100+ MHz MSS spectrum across 160+ markets
+ * - Viasat: Multi-orbit satellite platform (GEO+MEO+LEO), aviation/maritime/government
  * - Orange/Skylo: D2D satellite SMS in Europe (narrowband NTN)
+ * - SES: Multi-orbit operator, strategic D2D investor (Lynk/Omnispace backer)
  * - OQ Technology: 5G NTN NB-IoT LEO operator (IoT-focused)
  * - Terrestar Solutions: Hybrid satellite-cellular IoT in Canada (S-band)
  *
@@ -102,8 +105,28 @@ export const COMPETITOR_NEWS: CompetitorNewsEntry[] = [
     source: 'OQ Technology / Monogoto',
     url: 'https://www.oqtec.com'
   },
+  {
+    date: '2026-01-06',
+    competitor: 'Viasat / Inmarsat',
+    category: 'Partnership',
+    headline: 'Evergreen Marine Confirms Fleetwide Rollout of Inmarsat NexusWave Bonded Connectivity',
+    summary: 'Evergreen Marine, one of the world\'s leading container shipping companies, becomes first Taiwanese operator to upgrade entire fleet to NexusWave bonded connectivity from Inmarsat Maritime (Viasat company). NexusWave introduces bonded, multi-network connectivity with unlimited data and always-on performance. Platform enables predictive analytics, real-time reefer monitoring, and fully integrated IoT across fleet. Solution is secure-by-design, leveraging ViaSat-3 ultra-high-capacity network. Gert-Jan Panken, VP Maritime Viasat: "Evergreen is setting a clear standard for modern, data-driven shipping." Follows Viasat\'s May 2023 acquisition of Inmarsat, combining both companies\' satellite capabilities.',
+    astsImplication: 'Viasat/Inmarsat\'s growing maritime dominance shows their comprehensive multi-orbit satellite platform expanding across verticals. While maritime connectivity is not D2D to smartphones, Viasat\'s infrastructure scale (GEO + MEO + planned LEO) and growing revenue base could fund their Equatys D2D venture with Space42. Viasat\'s broadening satellite ecosystem makes them a more formidable potential competitor if they aggressively pursue D2D. However, maritime fleet connectivity is a fundamentally different business than ASTS\'s consumer smartphone D2D.',
+    impact: 'Neutral',
+    source: 'Viasat / Inmarsat Maritime',
+  },
 
   // === DECEMBER 2025 ===
+  {
+    date: '2025-12-24',
+    competitor: 'Industry - D2D Regulatory',
+    category: 'Regulatory',
+    headline: 'Bahrain Becomes First GCC Country to Authorize Satellite Direct-to-Device Services',
+    summary: 'Bahrain\'s Telecommunications Regulatory Authority (TRA) announced the launch of Satellite Direct-to-Device (D2D) services, making Bahrain the first GCC country to authorize this technology. Under the new framework, licensed MNOs in Bahrain can partner with global satellite firms — specifically mentioning Starlink and AST SpaceMobile — to provide seamless coverage. TRA General Director Philip Marnick: "This technology ensures that people remain connected even beyond the reach of terrestrial networks, supporting safety, economic activity and national resilience." The technology allows standard smartphones to communicate directly with LEO satellites without specialized equipment. Bahrain was also ranked #1 in MENA/GCC in the Global Network Excellence Index for 4G/5G availability and download speeds.',
+    astsImplication: 'Directly bullish for ASTS — Bahrain\'s regulatory framework explicitly names AST SpaceMobile alongside Starlink as potential D2D partners for local MNOs. This is a concrete regulatory pathway for ASTS to serve the Gulf market. GCC countries represent high-ARPU markets with significant maritime/desert coverage gaps ideal for satellite D2D. As the first GCC D2D authorization, this could catalyze similar frameworks across Saudi Arabia, UAE, Qatar, and other Gulf states where ASTS has MNO partnership potential.',
+    impact: 'Bullish',
+    source: 'Gulf Daily News / Bahrain TRA',
+  },
   {
     date: '2025-12-03',
     competitor: 'Industry - D2D Market',
@@ -116,16 +139,6 @@ export const COMPETITOR_NEWS: CompetitorNewsEntry[] = [
   },
 
   // === NOVEMBER 2025 ===
-  {
-    date: '2025-11-18',
-    competitor: 'Orange / Skylo',
-    category: 'Product',
-    headline: 'Orange Becomes First European Operator to Offer Satellite SMS via Direct-to-Device with Skylo',
-    summary: 'Orange France launched "Message Satellite" — D2D satellite SMS and geolocation service — becoming first European operator to offer satellite SMS using Direct-to-Device technology. Partnership with Skylo (NTN operator). Available from Dec 11, 2025 for consumers, 2026 for business. Initially exclusive to Orange 5G/5G+ customers with Google Pixel 9 or 10 smartphones. Service available in France and 36 countries (Skylo coverage area). Pricing: free for first 6 months, then €5/month. Uses smartphone\'s direct satellite connection for SMS and geolocation when mobile/Wi-Fi coverage unavailable. Targets outdoor adventurers, remote areas, emergency services, logistics, and tourism. Jérôme Hénique, CEO Orange France: "Being the first operator in France to launch this option demonstrates our leadership." Michaël Trabbia, CEO Orange Wholesale: "The Direct to Device technology is part of this approach, providing readily available and targeted connectivity on your smartphone."',
-    astsImplication: 'Orange/Skylo D2D launch validates the D2D satellite market in Europe and shows MNO demand for satellite connectivity. However, this is SMS-only on limited devices (Pixel 9/10 only), priced at €5/month — a narrow service compared to ASTS\'s broadband voice/data ambition. Skylo is an NTN-focused company using existing GEO satellite infrastructure for narrowband NTN services. ASTS\'s broadband capability (voice, video, data) on any smartphone represents a fundamentally different value proposition. Orange\'s move does validate pricing: €5/month aligns with GSMA survey willingness-to-pay. Risk: if SMS-only satisfies most consumer demand, it could reduce urgency for ASTS broadband D2D.',
-    impact: 'Neutral',
-    source: 'Orange',
-  },
   {
     date: '2025-11-24',
     competitor: 'Amazon Leo',
@@ -149,6 +162,36 @@ export const COMPETITOR_NEWS: CompetitorNewsEntry[] = [
     url: 'https://www.aboutamazon.com/news/amazon-leo'
   },
   {
+    date: '2025-11-18',
+    competitor: 'Orange / Skylo',
+    category: 'Product',
+    headline: 'Orange Becomes First European Operator to Offer Satellite SMS via Direct-to-Device with Skylo',
+    summary: 'Orange France launched "Message Satellite" — D2D satellite SMS and geolocation service — becoming first European operator to offer satellite SMS using Direct-to-Device technology. Partnership with Skylo (NTN operator). Available from Dec 11, 2025 for consumers, 2026 for business. Initially exclusive to Orange 5G/5G+ customers with Google Pixel 9 or 10 smartphones. Service available in France and 36 countries (Skylo coverage area). Pricing: free for first 6 months, then €5/month. Uses smartphone\'s direct satellite connection for SMS and geolocation when mobile/Wi-Fi coverage unavailable. Targets outdoor adventurers, remote areas, emergency services, logistics, and tourism. Jérôme Hénique, CEO Orange France: "Being the first operator in France to launch this option demonstrates our leadership." Michaël Trabbia, CEO Orange Wholesale: "The Direct to Device technology is part of this approach, providing readily available and targeted connectivity on your smartphone."',
+    astsImplication: 'Orange/Skylo D2D launch validates the D2D satellite market in Europe and shows MNO demand for satellite connectivity. However, this is SMS-only on limited devices (Pixel 9/10 only), priced at €5/month — a narrow service compared to ASTS\'s broadband voice/data ambition. Skylo is an NTN-focused company using existing GEO satellite infrastructure for narrowband NTN services. ASTS\'s broadband capability (voice, video, data) on any smartphone represents a fundamentally different value proposition. Orange\'s move does validate pricing: €5/month aligns with GSMA survey willingness-to-pay. Risk: if SMS-only satisfies most consumer demand, it could reduce urgency for ASTS broadband D2D.',
+    impact: 'Neutral',
+    source: 'Orange',
+  },
+  {
+    date: '2025-11-18',
+    competitor: 'Viasat',
+    category: 'Partnership',
+    headline: 'Etihad Airways Deploys Viasat Amara Connectivity Across Entire Fleet Including LEO Partner Satellites',
+    summary: 'Etihad Airways will deploy Viasat\'s next-generation Viasat Amara connectivity solution across its entire fleet of widebody and narrowbody aircraft, including A321LR, A350, and Boeing 787 Dreamliner. Enables streaming, Live TV on seatback screens, social media, browsing via Viasat\'s global Ka-band satellites plus upcoming LEO partner satellites. Factory-installed on new Airbus fleet from April 2025 and Boeing 787s since 2023. Meherwan Polad, CCO Viasat Aviation: "Airlines today have a choice: they can opt for a simple connection, or they can invest in a platform that allows for scalability and brand ownership." Viasat Amara integrates multi-network, multi-orbit systems with guaranteed quality of service.',
+    astsImplication: 'Viasat\'s aviation expansion with Etihad (following Evergreen Marine and JetXP business aviation) demonstrates their growing multi-vertical satellite platform. The mention of "upcoming LEO partner satellites" signals Viasat building multi-orbit (GEO+LEO) capability. While in-flight connectivity is different from D2D, Viasat\'s infrastructure scale and airline relationships create a platform that could be extended to D2D through their Equatys venture with Space42. Not a direct competitive threat to ASTS\'s smartphone D2D market.',
+    impact: 'Neutral',
+    source: 'Viasat',
+  },
+  {
+    date: '2025-11-17',
+    competitor: 'Viasat',
+    category: 'Technology',
+    headline: 'Viasat to Integrate Telesat Lightspeed LEO into JetXP Business Aviation Broadband Service',
+    summary: 'Viasat announced plans to integrate Telesat Lightspeed LEO satellite capacity into its JetXP in-flight broadband service for business aviation. Combines Viasat\'s GEO capabilities (including ViaSat-3) with LEO capacity for enhanced performance. JetXP intelligently routes data between GEO and LEO in real-time, optimizing for applications sensitive to latency and jitter (gaming, HD video conferencing, real-time cloud collaboration). Multi-orbit capabilities available as single offering, eliminating multiple subscriptions. Additional flat-panel ESA antenna required. Commercial service for LEO integration scheduled late 2027. Also includes Highly Elliptical Orbit (HEO) payloads for Arctic coverage from 2026. Don Buchman, Aviation President: "GEO remains our highly-efficient, scalable and cost-effective backbone." Currently deployed on 5,000+ business jets worldwide.',
+    astsImplication: 'Viasat\'s multi-orbit (GEO+LEO+HEO) strategy for business aviation demonstrates their evolving network architecture. The Telesat Lightspeed LEO integration shows Viasat can orchestrate traffic across orbits — a capability potentially transferable to D2D services via Equatys. However, business aviation (5,000 jets) is a niche market. ASTS targets billions of smartphone users, a fundamentally larger addressable market. Viasat\'s multi-orbit expertise is noteworthy but not yet applied to D2D.',
+    impact: 'Neutral',
+    source: 'Viasat',
+  },
+  {
     date: '2025-11-13',
     competitor: 'Amazon Leo',
     category: 'Corporate',
@@ -159,8 +202,41 @@ export const COMPETITOR_NEWS: CompetitorNewsEntry[] = [
     source: 'Amazon',
     url: 'https://www.aboutamazon.com/news/amazon-leo'
   },
+  {
+    date: '2025-11-13',
+    competitor: 'Viasat',
+    category: 'Technology',
+    headline: 'Viasat Successfully Tests HaloNet Launch Telemetry Solution for NASA on Blue Origin New Glenn',
+    summary: 'Viasat successfully executed first flight test of its launch telemetry data relay service on Blue Origin\'s New Glenn rocket (NG-2 mission) as part of NASA\'s Communications Services Project (CSP). HaloNet portfolio provides near-Earth communication solutions using Viasat\'s global L-band satellite network with GEO satellites. System maintained persistent connection during launch, transmitting real-time flight data to operations center. Part of NASA\'s effort to establish commercial service offerings before retiring Tracking and Data Relay Satellite fleet by 2031. John Reeves, VP Space & Mission Systems: "We\'re proud to be partnering with NASA on these near-Earth communications capabilities." Second demonstration with Blue Origin planned for early 2026, additional HaloNet missions with other partners planned later in 2026.',
+    astsImplication: 'Viasat\'s NASA partnership for launch telemetry shows their expanding government/space capabilities beyond consumer services. While launch data relay has no direct relevance to D2D smartphones, it demonstrates Viasat\'s L-band satellite infrastructure and government relationships. These capabilities and partnerships strengthen Viasat\'s overall satellite platform, which could support their Equatys D2D venture. Indirect competitive signal: Viasat is investing across multiple satellite verticals to build comprehensive infrastructure.',
+    impact: 'Neutral',
+    source: 'Viasat',
+  },
+
+  // === OCTOBER 2025 ===
+  {
+    date: '2025-10-22',
+    competitor: 'Lynk Global / Omnispace',
+    category: 'Corporate',
+    headline: 'Lynk Global and Omnispace Announce Plans to Merge for Next-Generation Global D2D Connectivity',
+    summary: 'Lynk Global and Omnispace announced plans to merge to deliver comprehensive D2D connectivity, with SES becoming a major strategic shareholder. Combined entity leverages Omnispace\'s 60 MHz of globally coordinated S-band spectrum with high-priority ITU filings, compliant with 3GPP NTN standards, and the largest S-band market access footprint reaching over 1 billion people across Americas, Europe, Africa and Asia. Lynk contributes patented, proven, low-cost multi-spectrum satellite technology enabling mobile voice and messaging to 7 billion+ smartphones without modification. Lynk has 50+ MNO customers across 50+ countries. SES will provide multi-orbit network and ground infrastructure access. Ramu Potarazu (Lynk CEO) to lead combined entity, Ram Viswanathan (Omnispace CEO) as Chief Strategy Officer. Adel Al-Saleh, SES CEO: "The planned combination will offer SES access to new LEO capabilities that align with our strategy to diversify into this high-growth segment." Transaction expected to close late 2025 or early 2026.',
+    astsImplication: 'Significant competitive development. Lynk-Omnispace merger creates a well-resourced D2D competitor backed by SES (major satellite operator). The 60 MHz S-band spectrum from Omnispace and Lynk\'s existing 50+ MNO relationships directly compete with ASTS\'s MNO partnership strategy. However, key differentiation: Lynk is primarily messaging/voice-focused with small LEO satellites, while ASTS targets broadband data including video/streaming via larger satellite arrays. SES backing provides financial/infrastructure muscle but also signals D2D market validation. The merger consolidation reduces the number of independent D2D players but creates a stronger competitor. ASTS\'s broadband capability and existing MNO partnerships (Vodafone, AT&T, etc.) remain differentiators.',
+    impact: 'Bearish',
+    source: 'Lynk Global / Omnispace / SES',
+    url: 'https://www.lynk.world'
+  },
 
   // === SEPTEMBER 2025 ===
+  {
+    date: '2025-09-15',
+    competitor: 'Space42 / Viasat',
+    category: 'Corporate',
+    headline: 'Space42 and Viasat to Launch Equatys D2D Venture with World\'s Largest Coordinated Spectrum Block',
+    summary: 'Space42 (UAE-based AI-powered SpaceTech, ADX: SPACE42) and Viasat (NASDAQ: VSAT) announced intent to form Equatys, a jointly held entity for global D2D services and evolving MSS to 5G NTN environment. Equatys will support 100+ MHz of harmonized MSS spectrum already allocated across 160+ markets. Operates as "space tower" company — shared multi-tenant infrastructure model reducing redundant investments. 3GPP NTN Release compliant platform for standard smartphones and IoT devices. Commercial rollout targeted within 3 years. Mark Dankberg, Viasat CEO: "Equatys will uniquely make possible a shared multi-orbit network of scale with standards-based open architecture." Platform enables operators to grow profitably, governments to maintain data sovereignty, and local space industries to participate. Follows MOU signed March 2025. Phased equity offerings planned for additional strategic/financial partners.',
+    astsImplication: 'Potentially the most significant competitive threat to emerge. Equatys combines Viasat\'s massive satellite infrastructure (GEO+MEO networks, Inmarsat acquisition) with Space42/Yahsat\'s spectrum and regional presence. The 100+ MHz coordinated spectrum across 160+ markets is a formidable asset — potentially the largest D2D spectrum position globally. The "space tower" model (shared infrastructure for multiple operators) directly competes with ASTS\'s MNO partnership approach. However, Equatys is a future venture (3-year commercial target) while ASTS has operational satellites. Key risks for ASTS: Equatys\' spectrum scale, Viasat\'s satellite infrastructure, and multi-tenant model could attract MNOs seeking alternatives. Key ASTS advantages: technology lead, existing MNO partnerships, operational BlueBird satellites demonstrating broadband D2D today.',
+    impact: 'Bearish',
+    source: 'Space42 / Viasat',
+  },
   {
     date: '2025-09-04',
     competitor: 'Amazon Leo',
@@ -196,6 +272,19 @@ export const COMPETITOR_NEWS: CompetitorNewsEntry[] = [
     impact: 'Neutral',
     source: 'Amazon',
     url: 'https://www.aboutamazon.com/news/amazon-leo'
+  },
+
+  // === MARCH 2025 ===
+  {
+    date: '2025-03-10',
+    competitor: 'SES / Lynk Global',
+    category: 'Partnership',
+    headline: 'SES and Lynk Global Announce Strategic Partnership with Series B Funding and MEO-Relay for D2D',
+    summary: 'SES and Lynk Global announced strategic partnership for D2D services. SES provides Series B funding for Lynk\'s D2D constellation and suite of integrated services including: MEO-Relay (routing D2D traffic between LEO and SES\'s MEO network to reduce ground infrastructure investment), Network-as-a-Service (global ground network gateway access and GEO-based TTC&M services), and strategic channel partnership for government, MNO, and automotive customers. SES and Lynk will collaborate on network architecture development and satellite manufacturing in US and Europe. Ramu Potarazu, Lynk CEO: "This long-term strategic collaboration with SES will deeply integrate our networks and validates our LEO D2D network." Adel Al-Saleh, SES CEO: "We recognise D2D as an exciting growth opportunity that complements our multi-orbit network... Lynk will be the first D2D provider to benefit from our MEO-Relay service."',
+    astsImplication: 'SES\'s strategic investment in Lynk validates the D2D market opportunity but strengthens a direct competitor. Lynk gains access to SES\'s MEO satellite relay (reducing need for ground stations), global ground infrastructure, and channel partnerships for government/automotive customers. This is the precursor to the October 2025 Lynk-Omnispace merger with SES as major shareholder. For ASTS, the concern is Lynk gaining institutional backing and infrastructure that reduces their deployment costs. However, Lynk remains focused on messaging/voice with smaller satellites while ASTS targets broadband D2D. SES\'s "multi-orbit" approach (MEO relay for LEO D2D) is innovative but unproven at scale.',
+    impact: 'Bearish',
+    source: 'SES / Lynk Global',
+    url: 'https://www.ses.com'
   },
 
   // === NOVEMBER 2021 ===
