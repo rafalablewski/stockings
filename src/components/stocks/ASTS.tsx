@@ -1657,7 +1657,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
     { partner: 'Vodafone Idea', region: 'India', subs: 250, status: 'Definitive', spectrum: 'TBD', notes: 'June 2025 agreement' },
     { partner: 'Rakuten', region: 'Japan', subs: 5, status: 'Definitive', spectrum: 'LTE', notes: 'Investor. Video calls completed.' },
     { partner: 'Bell Canada', region: 'Canada', subs: 23, status: 'Definitive', spectrum: 'TBD', notes: 'First Canadian VoLTE call 2025' },
-    { partner: 'Orange', region: 'Europe/Africa', subs: 250, status: 'MOU', spectrum: 'TBD', notes: 'Part of SatCo discussions' },
+    { partner: 'Orange', region: 'Europe/Africa', subs: 220, status: 'MOU', spectrum: 'TBD', notes: 'MoU Mar 2022. Testing in Africa post-BW3. 220M+ mobile customers. Note: Orange launched competing SMS D2D with Skylo (Dec 2025)' },
     { partner: 'Telefonica', region: 'Europe/LatAm', subs: 380, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
     { partner: 'TIM', region: 'Italy/Brazil', subs: 100, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
     { partner: 'MTN', region: 'Africa', subs: 280, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
