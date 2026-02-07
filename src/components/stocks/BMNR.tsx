@@ -7354,6 +7354,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     },
     {
       date: '2026-02-05',
+      category: 'Enterprise',
+      company: 'ETHZilla',
+      title: 'ETHZilla Purchases $4.7M Manufactured Home Loan Portfolio, Plans Tokenization on Ethereum L2',
+      summary: 'ETHZilla Corporation (Nasdaq: ETHZ) acquires portfolio of 95 manufactured and modular home loans from Zippy for ~$4.7M through wholly owned subsidiary ETHZilla Modular Mortgage LLC. First-lien mortgages securing loans included. Portfolio expected to generate annualized yield of ~10.36% from seasoned residential credit assets with recurring cash flows. Plans to tokenize into cash-flow-generating manufactured home loan token on Ethereum L2 via Liquidity.io ecosystem in late Feb/early Mar. Follows prior purchase of two CFM56-7B24 aircraft engines on lease with major air carrier, also planned for tokenization. CEO McAndrew Rudisill: "Manufactured housing loans offer predictable cash flows and strong underlying collateral, which we believe makes them well suited for tokenization within a regulated, transparent structure." Builds on ETHZilla\'s Dec 2025 acquisition of 15% stake in Zippy, Inc. — demonstrating repeatable framework across multiple RWA classes.',
+      significance: 'ETHZilla moving from strategic investment to actual asset acquisition and tokenization. 95 loans with 10.36% yield = first concrete tokenized residential credit product on Ethereum L2. Multiple asset classes now in pipeline (manufactured homes + aircraft engines) validates repeatable tokenization framework. Nasdaq-listed company building real revenue-generating RWA infrastructure on Ethereum.',
+      bmnrImplication: 'Concrete RWA tokenization on Ethereum L2 moving from announcement to execution. Real cash-flow-generating assets (10.36% yield) being tokenized on Ethereum validates network for institutional-grade financial products. More asset classes on Ethereum = more network utility = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'ETHZilla Press Release'
+    },
+    {
+      date: '2026-02-05',
       category: 'Protocol',
       company: 'Ethereum Foundation',
       title: 'Vitalik Proposes New Forms of State for 1000x Ethereum Scaling',
@@ -7660,11 +7671,22 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       significance: 'Housing finance = new RWA category on Ethereum. $14B market opportunity demonstrates tokenization expanding beyond treasuries/securities to consumer lending. FINRA-regulated ATS provides compliant infrastructure. AI-enabled underwriting + blockchain distribution represents next-gen lending model.',
       bmnrImplication: 'Manufactured home loans on Ethereum expands RWA categories on network. Consumer lending tokenization validates blockchain for broader financial infrastructure. More asset classes on Ethereum = more network utility = ETH ecosystem value.',
       impact: 'Bullish', 
-      source: 'ETHZilla Press Release' 
+      source: 'ETHZilla Press Release'
     },
-    { 
-      date: '2025-12-22', 
-      category: 'Enterprise', 
+    {
+      date: '2025-12-03',
+      category: 'Enterprise',
+      company: 'ETHZilla',
+      title: 'ETHZilla Acquires 20% of Karus to Power AI-Modeled Auto Loan Tokenization on Ethereum',
+      summary: 'ETHZilla Corporation (Nasdaq: ETHZ) acquires 20% fully diluted interest in Karus, Inc., an AI platform for auto finance decisioning and portfolio analytics, for $10M ($3M cash + $7M stock). Karus AI trained on 20M+ historical auto loan outcomes, analyzes 1,000+ variables across credit, vehicle, collateral, and macroeconomic data in real time. $5B+ in auto loan volume already processed through decisioning engine. ETHZilla gains access to Karus network of 20,000+ car dealerships, credit unions, and banks. First tokenized portfolios expected early 2026 via Liquidity.io. Entry point into ~$1.6T US asset-backed securities market. CEO McAndrew Rudisill: "This transaction provides ETHZilla an entry point into the approximately $1.6 trillion US asset-backed securities market." Backed by Tacora Capital CEO Keri Findley (Peter Thiel-funded). Company estimates every $100M deployed generates $9-12M adjusted EBITDA for ETHZilla.',
+      significance: 'AI-powered credit analytics + blockchain tokenization = next-gen structured finance infrastructure on Ethereum. $1.6T US ABS market is massive addressable opportunity. 20M+ loan training dataset and 20,000+ dealership network provide real origination pipeline. First tokenized auto loan portfolios targeting early 2026 launch.',
+      bmnrImplication: 'Auto loan ABS tokenization on Ethereum via Liquidity.io (FINRA-regulated ATS) brings another massive TradFi market on-chain. AI underwriting + blockchain distribution represents institutional-grade infrastructure. More RWA categories on Ethereum = more network utility = ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'ETHZilla Press Release'
+    },
+    {
+      date: '2025-12-22',
+      category: 'Enterprise',
       company: 'Shift4',
       title: 'Shift4 Launches Global Stablecoin Settlement Platform', 
       summary: 'Shift4 (NYSE: FOUR), global leader in integrated payments processing billions of transactions annually, launches stablecoin settlement platform for hundreds of thousands of merchants globally. Merchants can now receive settlement in USDC, USDT, EURC, or DAI on networks including Ethereum, Solana, Polygon, Base, Stellar, TON, and Plasma. Platform enables 24/7 money movement without banking hour constraints. Director of Crypto Pietro Moran: "As Shift4 becomes an increasingly global company, this offering will support businesses around the world as stablecoins continue to play a growing role in the modern payments ecosystem."',
