@@ -3714,8 +3714,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Coinbase expanding staking services increases competition but validates ETH staking as institutional strategy. BMNR\'s scale advantage remains.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog',
-      storyId: 'coin-staking-expansion',
-      storyTitle: 'Coinbase Staking Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-12-11',
@@ -3735,8 +3735,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Staking ETFs arriving via Coinbase infrastructure validates ETH staking as mainstream institutional strategy. Coinbase\'s dominance (8/9 ETH ETF custodian) makes it both competitor and ecosystem enabler. BMNR benefits from growing institutional staking demand — staking ETFs bring more capital into ETH staking, supporting network security and yield sustainability.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/staking-etfs-have-arrived',
-      storyId: 'coin-staking-expansion',
-      storyTitle: 'Coinbase Staking Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-12-09',
@@ -3755,8 +3755,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Coinbase CaaS bringing bitcoin to major US banks validates crypto-TradFi integration. PNC integration is BTC-only — no ETH staking. However, infrastructure pathway exists for future ETH/staking products in banks. Coinbase building distribution moat via CaaS partnerships.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-pnc-partner',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-11-21',
@@ -3775,8 +3775,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Coinbase acquiring Solana infrastructure reflects multi-chain strategy. Solana is alternative L1 to Ethereum — Coinbase betting on both ecosystems. However, Coinbase also heavily invested in Ethereum via Base L2. Multi-chain Coinbase growth ultimately brings more users to crypto overall, some of which flow to ETH staking.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/coinbase-to-acquire-vector',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-08-14',
@@ -3797,8 +3797,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Deribit acquisition makes Coinbase the most comprehensive crypto derivatives platform globally. Derivatives volume drives more hedging/speculation activity which benefits overall crypto market liquidity. Not directly competitive with BMNR\'s ETH staking thesis but strengthens Coinbase as dominant crypto infrastructure company.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/deribit-joins-coinbase',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-10-27',
@@ -3817,8 +3817,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Citi ($94B+ revenue) collaborating with Coinbase on stablecoin payments validates crypto infrastructure for institutional use. Stablecoin demand drives on-chain activity on Ethereum. Not directly competitive with BMNR but Coinbase building institutional distribution moat.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-citi-collaborate',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-10-27',
@@ -3837,8 +3837,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Coinbase + Apollo building institutional DeFi credit products around stablecoins. $300B stablecoin market growing to $3T creates massive on-chain activity on Ethereum. Apollo\'s $840B AUM entering crypto credit validates institutional demand. BMNR benefits from stablecoin ecosystem growth driving ETH utility.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/cbam-apollo-stablecoin-credit',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-10-15',
@@ -3857,8 +3857,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Coinbase expanding distribution into India (100M+ crypto owners) and Middle East. Geographic expansion grows total addressable market for crypto ecosystem. CoinDCX\'s $165B volume demonstrates massive emerging market activity. More global crypto adoption = more ETH ecosystem participants.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/coinbase-makes-investment-in-coindcx',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-10-15',
@@ -3878,8 +3878,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Coinbase BTC Yield Fund is a direct competitive concept to BMNR\'s ETH yield thesis — institutional crypto yield product from major exchange. However: BTC yield via lending/basis trading is fundamentally different from ETH staking (native protocol yield). BTC yield involves counterparty/credit risk; ETH staking yield is protocol-native and trustless. BMNR should emphasize this distinction: ETH staking = yield from securing the network, not from lending.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/coinbase-us-bitcoin-yield-fund',
-      storyId: 'coin-yield-products',
-      storyTitle: 'Coinbase Yield Products'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-10-08',
@@ -3898,8 +3898,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'NY staking approval significantly expands Coinbase\'s retail ETH staking TAM — NY is one of the largest financial markets. More retail ETH staking via Coinbase increases competition for BMNR\'s institutional staking value proposition. However, growing retail staking also validates ETH staking as mainstream and supports network security. SEC consensus that staking is not a security reduces regulatory risk for all staking players including BMNR.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/staking-is-now-available-in-new-york',
-      storyId: 'coin-staking-expansion',
-      storyTitle: 'Coinbase Staking Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-10-03',
@@ -3918,8 +3918,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Samsung distribution deal gives Coinbase massive consumer reach (75M+ Galaxy users). Boosted staking rewards in Coinbase One could drive more retail ETH staking. Coinbase building retail distribution moat through device-level partnerships. More retail crypto users = larger ecosystem, though also more Coinbase staking competition.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/samsung-taps-coinbase',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-07-30',
@@ -3938,8 +3938,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'JPMorgan Chase (largest US bank) partnering with Coinbase is a landmark crypto-TradFi integration. 80M+ customers with frictionless crypto access dramatically expands retail on-ramp. Ultimate Rewards → USDC creates novel stablecoin demand channel. More retail participants flowing through Coinbase strengthens their position as primary crypto gateway but also grows overall ecosystem benefiting all crypto assets including ETH.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-jpmorgan-chase',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-07-21',
@@ -3960,8 +3960,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'CFTC-regulated perpetual futures are a landmark US derivatives milestone. ETH-PERP creates regulated US perpetuals market for Ethereum — more hedging and speculative tools for ETH. 90% of global crypto derivatives volume is perps, so US access could dramatically increase ETH trading activity. More liquid ETH derivatives market supports BMNR thesis through improved price discovery.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/perpetual-futures-have-arrived-in-the-us',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-07-02',
@@ -3980,8 +3980,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'LiquiFi acquisition adds pre-listing token infrastructure to Coinbase platform. Customer base (Uniswap, Optimism, Ethena, Zora, 0x) is heavily Ethereum-ecosystem native. Coinbase capturing project relationships before listing strengthens their position as primary exchange for ETH ecosystem tokens. More comprehensive institutional tooling benefits crypto market overall.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/coinbase-acquires-liquifi',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-06-20',
@@ -4001,8 +4001,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Single MiCA licence covering 450M EU population is massive regulatory moat for Coinbase. Unified EU access under one framework dramatically simplifies European expansion. More regulated exchange access globally = more liquidity = benefits ETH market overall. Coinbase EU strength as primary fiat-to-crypto gateway grows overall ecosystem.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/coinbase-secures-mica-licence',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
     {
       date: '2025-05-16',
@@ -4021,8 +4021,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Webull Pay CaaS partnership validates Coinbase as white-label crypto infrastructure provider. CaaS B2B model expands Coinbase reach without direct user acquisition costs. More platforms offering crypto trading/staking through Coinbase rails = more exchange volume = benefits overall crypto market liquidity.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog/coinbase-partners-with-webull-pay',
-      storyId: 'coin-institutional-expansion',
-      storyTitle: 'Coinbase Institutional Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
