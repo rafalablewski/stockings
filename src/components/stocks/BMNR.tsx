@@ -3717,6 +3717,89 @@ const CompsTab = ({ comparables, ethPrice }) => {
       storyId: 'coin-staking-expansion',
       storyTitle: 'Coinbase Staking Expansion'
     },
+    {
+      date: '2025-12-11',
+      competitor: 'coin',
+      category: 'Strategy',
+      headline: 'Coinbase positions as primary staking provider as staking ETFs launch in US — custodian for 8 of 9 spot ETH ETFs',
+      details: [
+        'Grayscale becomes first US issuer to stake ETH and SOL underlying its spot crypto ETFs (Oct 2025)',
+        'Coinbase Institutional is the largest institutional ETH staking provider',
+        'Primary custodian for 8 of 9 approved spot ETH ETFs',
+        'Staking operator for international ETPs: Virtune, WisdomTree, 21Shares',
+        'Before staking, ETH ETFs missed ~$61M in staking benefits (launch through Feb 2025 per Grayscale)',
+        'Staking ETFs expected to strengthen economic security of proof-of-stake networks',
+        'Coinbase Prime provides integrated custody + staking with detailed rewards reporting'
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Staking ETFs arriving via Coinbase infrastructure validates ETH staking as mainstream institutional strategy. Coinbase\'s dominance (8/9 ETH ETF custodian) makes it both competitor and ecosystem enabler. BMNR benefits from growing institutional staking demand — staking ETFs bring more capital into ETH staking, supporting network security and yield sustainability.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/staking-etfs-have-arrived',
+      storyId: 'coin-staking-expansion',
+      storyTitle: 'Coinbase Staking Expansion'
+    },
+    {
+      date: '2025-12-09',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Coinbase and PNC Bank launch direct bitcoin trading for Private Bank clients — first major US bank with CaaS integration',
+      details: [
+        'PNC Private Bank clients can buy, sell, and hold bitcoin directly on PNC\'s digital banking platform',
+        'First major US bank to support direct spot bitcoin trading via Coinbase Crypto-as-a-Service (CaaS)',
+        'Builds on strategic partnership announced July 2025',
+        'Eliminates need for separate exchange accounts — seamless within PNC banking app',
+        'PNC is a top-10 US financial institution',
+        'Powered by Coinbase\'s CaaS infrastructure for institutional clients'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Coinbase CaaS bringing bitcoin to major US banks validates crypto-TradFi integration. PNC integration is BTC-only — no ETH staking. However, infrastructure pathway exists for future ETH/staking products in banks. Coinbase building distribution moat via CaaS partnerships.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-pnc-partner',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
+    {
+      date: '2025-11-21',
+      competitor: 'coin',
+      category: 'Acquisition',
+      headline: 'Coinbase to acquire Vector — Solana onchain trading platform for "everything exchange" vision',
+      details: [
+        'Acquiring Vector, Solana-native onchain trading platform',
+        'Solana DEX volume for 2025 already exceeded $1 trillion (Messari)',
+        'Vector tech to plug into Coinbase DEX trading integration',
+        'Vision: "everything exchange" — one-stop-shop for trading everything onchain, 24/7',
+        'Vector apps to be sunsetted; Tensor Foundation remains independent',
+        'Part of broader push: DEX trading launched in Brazil same week (Nov 19)'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Coinbase acquiring Solana infrastructure reflects multi-chain strategy. Solana is alternative L1 to Ethereum — Coinbase betting on both ecosystems. However, Coinbase also heavily invested in Ethereum via Base L2. Multi-chain Coinbase growth ultimately brings more users to crypto overall, some of which flow to ETH staking.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-to-acquire-vector',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
+    {
+      date: '2025-08-14',
+      competitor: 'coin',
+      category: 'Acquisition',
+      headline: 'Coinbase closes Deribit acquisition — world\'s #1 crypto options exchange ($185B July volume, $60B open interest)',
+      details: [
+        'Deribit officially joins Coinbase — #1 crypto options exchange by volume and open interest',
+        'July 2025 record: $185B+ volume, ~$60B platform open interest',
+        'Over $1 trillion traded in 2024 on Deribit',
+        'Deribit generated $30M+ in July transaction revenue alone',
+        'Expected Adjusted EBITDA accretive immediately after close',
+        '~$10M additional Q3 expense (tech & G&A, excl deal-related amortization)',
+        'Coinbase now offers spot, futures, perpetuals, and options on one platform',
+        'Institutional and advanced trader base with loyal following'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Deribit acquisition makes Coinbase the most comprehensive crypto derivatives platform globally. Derivatives volume drives more hedging/speculation activity which benefits overall crypto market liquidity. Not directly competitive with BMNR\'s ETH staking thesis but strengthens Coinbase as dominant crypto infrastructure company.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/deribit-joins-coinbase',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // CLEANSPARK - BTC MINING
@@ -7384,9 +7467,31 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       impact: 'Bullish', 
       source: 'CoinShares' 
     },
-    { 
-      date: '2025-11-20', 
-      category: 'Protocol', 
+    {
+      date: '2025-11-20',
+      category: 'Regulatory',
+      company: 'Coinbase',
+      title: 'Canada Proposes Stablecoin Framework — Bank of Canada as Regulator, Coinbase Calls It Global Leadership',
+      summary: 'Canada\'s 2025 federal budget formally recognized stablecoins as key to future of money. Government proposed comprehensive stablecoin framework: stablecoin issuers must apply to Bank of Canada for public registry, Bank of Canada as primary regulator, protections allowing stablecoins as payment instruments, reserve/custody requirements (cash + HQLA), and foreign regime equivalence. Nearly 5 million Canadians now hold crypto. Coinbase Country Director Lucas Matheson called it one of the strongest frameworks globally, taking best components from GENIUS Act and international standards. Coinbase recommends: allowing yield on stablecoin deposits, level playing field across bank/non-bank tokenized products, and CSA interim guidance for Canadian-denominated stablecoins. Matheson: "This is our moment to build a financial system that is faster, fairer, and more affordable for everyone."',
+      significance: 'One of the largest economies to move forward with comprehensive stablecoin regulation. Bank of Canada as regulator signals sovereign seriousness. Framework draws from US GENIUS Act best practices. Creates regulatory clarity for stablecoin issuers and exchanges operating in Canada.',
+      bmnrImplication: 'Canada joining US (GENIUS Act) in stablecoin regulatory clarity accelerates global institutional adoption. More regulatory frameworks = more stablecoin activity on Ethereum (USDC, USDT). Stablecoin infrastructure built on Ethereum benefits from each new jurisdiction providing clarity.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-11-19',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Launches DEX Trading in Brazil — "DeFi Mullet" Bridges Millions of Users to Onchain Markets',
+      summary: 'Coinbase launches DEX trading integration for Brazilian users, giving access to Base-native tokens within moments of creation onchain. Built on "DeFi Mullet" concept: Coinbase interface in front, powered by DeFi protocols in back. Users trade on Aerodrome, Uniswap via DEX aggregators without leaving Coinbase app. Expands tradeable assets from 300 to tens of thousands (potentially millions). Features: integrated self-custody wallet, sponsored network fees, seamless funding, and portfolio tracking. Assets identified as malicious by third-party vendor blocked. Planned expansion to more networks including Solana. Part of Coinbase\'s vision to build "app to exchange everything" with 24/7 global access.',
+      significance: 'Major exchange bridging CeFi and DeFi at scale in one of crypto\'s largest markets (Brazil). "DeFi Mullet" model could become template for how exchanges onboard users to onchain trading. Sponsored gas fees and integrated self-custody wallet lower barriers dramatically.',
+      bmnrImplication: 'Coinbase DEX integration on Base (Ethereum L2) brings millions of Brazilian users directly to Ethereum ecosystem. Sponsored gas fees reduce friction for DeFi adoption. More users on Base = more L2 activity = more settlement fees to Ethereum L1. Validates Ethereum L2 as consumer-facing infrastructure.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-11-20',
+      category: 'Protocol',
       company: 'Ethereum Foundation',
       title: 'Pectra Mainnet Upgrade Successfully Activated', 
       summary: 'Pectra (Prague-Electra) upgrade successfully activates on Ethereum mainnet. Pectra combines execution layer (Prague) and consensus layer (Electra) improvements. Key features: EIP-7702 (account abstraction for EOAs) enabling smart contract functionality for regular accounts, EIP-2935 (historical block hashes in state) supporting stateless clients, and validator operational improvements including increased MAX_EFFECTIVE_BALANCE from 32 ETH to 2048 ETH for consolidation. Pectra is the first major upgrade since Dencun (March 2024). Ethereum Foundation confirms Fusaka upgrade to follow in December 2025 with PeerDAS for blob scaling.',
@@ -7406,9 +7511,20 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       impact: 'Bullish', 
       source: 'Visa Blog' 
     },
-    { 
-      date: '2025-11-13', 
-      category: 'Enterprise', 
+    {
+      date: '2025-11-13',
+      category: 'Institutional',
+      company: 'Coinbase',
+      title: 'Kalshi Selects Coinbase Custody for USDC — Largest US Prediction Market Runs on Stablecoin Rails',
+      summary: 'Kalshi, the largest prediction market in the US, has chosen Coinbase Custody to safeguard USDC for event-based contracts. Participants deposit and receive payouts in USDC, with Coinbase Custody providing institutional-grade security. Prediction markets let users trade on real-world event outcomes — inflation trends, elections, sports, government policy. Coinbase describes the partnership as combining Kalshi\'s regulated exchange with Coinbase\'s custody standard and USDC\'s stability to prove "financial innovation can be both trusted and transformative." Availability expanding as regulatory approvals obtained.',
+      significance: 'USDC adoption expanding beyond payments and DeFi into prediction markets. Kalshi is CFTC-regulated — institutional-grade venue choosing stablecoin settlement over traditional rails. Validates USDC (Ethereum-native stablecoin) as settlement layer for new financial primitives.',
+      bmnrImplication: 'Prediction markets on USDC expand stablecoin utility into entirely new asset class. USDC originally issued on Ethereum — more USDC demand = more Ethereum ecosystem value. Novel financial products choosing stablecoin rails over traditional finance validates crypto infrastructure.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-11-13',
+      category: 'Enterprise',
       company: 'A+ Protocol',
       title: 'A+ Protocol Launches Multi-Party Stablecoin Network for Banks', 
       summary: 'A+ Protocol launches $USDA+, a multi-party issued stablecoin designed for banks and regulated financial institutions. GENIUS Act-compliant framework allows banks to join unified network and issue stablecoins while keeping 100% of yield. Unlike whitelabel solutions with limited liquidity, A+ offers interoperable network with core functionality similar to Circle/Coinbase. Includes whitelisting and compliance layer mirroring Bank Secrecy Act KYC/AML requirements. Freezing, burning, and law enforcement cooperation under consensus control of all bank issuers. Project catalyzed by Ethereum Foundation grant. SEC Chair has announced initiative to modernize US securities rules to enable "America\'s financial markets to move on-chain."',
@@ -7660,6 +7776,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Swift partnering with Consensys (Ethereum infrastructure leader) positions Ethereum technology at core of global payment messaging upgrade. Coalition includes virtually every major global bank. Swift\'s blockchain ledger built on Ethereum technology = massive validation for ETH ecosystem. Global correspondent banking infrastructure ($150T+ annually) moving toward blockchain rails.',
       impact: 'Bullish',
       source: 'Swift Press Release / Sibos 2025'
+    },
+    {
+      date: '2025-09-24',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Lists First AUD and SGD Stablecoins (AUDD, XSGD) — Local Currency Stablecoins Go Global',
+      summary: 'Coinbase lists AUDD (Australian Digital Dollar, by AUDC Pty Ltd) and XSGD (by StraitsX, MAS-compliant) — first AUD and SGD denominated stablecoins on the platform. Available globally from Oct 1. Users in Australia and Singapore can convert from fiat to stablecoin for free. Stablecoin market cap surpassed $250B as of June 2025 (50% YoY), settled $30T+ in 2024. 70%+ of crypto owners in Singapore and Australia interested in local currency stablecoins (Ipsos survey). Currently 99% of onchain digital money is USD-denominated vs 60% of global currency reserves — local currency stablecoins represent massive growth opportunity. XSGD compliant with Singapore MAS Single Currency Stablecoin (SCS) framework. Use cases include AI agentic commerce with stablecoins for autonomous payments.',
+      significance: 'Stablecoin ecosystem expanding beyond USD dominance into local currencies. $250B market cap with analyst forecasts of $2T. Local currency stablecoins critical for global adoption — enabling users to transact in native currencies on-chain. 99% USD concentration in onchain money signals massive non-USD opportunity ahead.',
+      bmnrImplication: 'Local currency stablecoin expansion drives more global on-chain activity. Stablecoins are primarily Ethereum-native (USDC, USDT, now AUDD/XSGD). Market growing from $250B toward $2T = massive increase in Ethereum network utility. More stablecoin diversity = more DeFi composability = more ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
     },
     {
       date: '2025-09-25',
