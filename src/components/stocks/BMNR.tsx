@@ -3941,6 +3941,89 @@ const CompsTab = ({ comparables, ethPrice }) => {
       storyId: 'coin-institutional-expansion',
       storyTitle: 'Coinbase Institutional Expansion'
     },
+    {
+      date: '2025-07-21',
+      competitor: 'coin',
+      category: 'Strategy',
+      headline: 'Coinbase launches first CFTC-regulated perpetual futures in the US — BTC-PERP and ETH-PERP with up to 10x leverage',
+      details: [
+        'First time US traders can access perpetual-style futures via Coinbase Financial Markets (CFM)',
+        'CFTC-regulated contracts — previously unavailable to US traders due to regulatory landscape',
+        'Two contracts at launch: nano Bitcoin Perpetual Futures (BTC-PERP) and nano Ether Perpetual Futures (ETH-PERP)',
+        'Up to 10x leverage for crypto perpetual futures; up to 20x intraday for metals (silver, gold)',
+        'Long-dated with 5-year expirations — no monthly expirations',
+        'Fees as low as 0.02% per contract (minimum $0.15 per contract)',
+        'Perpetual futures dominate 90% of global crypto derivatives trading volumes',
+        'Exchange closes every Friday 5:00-6:00 PM ET with quarterly 3-hour maintenance windows'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'CFTC-regulated perpetual futures are a landmark US derivatives milestone. ETH-PERP creates regulated US perpetuals market for Ethereum — more hedging and speculative tools for ETH. 90% of global crypto derivatives volume is perps, so US access could dramatically increase ETH trading activity. More liquid ETH derivatives market supports BMNR thesis through improved price discovery.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/perpetual-futures-have-arrived-in-the-us',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
+    {
+      date: '2025-07-02',
+      competitor: 'coin',
+      category: 'Acquisition',
+      headline: 'Coinbase acquires LiquiFi — leading token management platform for onchain builders',
+      details: [
+        'LiquiFi provides token cap table management, vesting schedules, and compliance workflows',
+        'Customers include Uniswap Foundation, OP Labs (Optimism), Ethena, Zora, and 0x',
+        'Enables Coinbase to support builders earlier in lifecycle — before tokens are launched or listed',
+        'Plan to integrate LiquiFi capabilities with Coinbase Prime over time',
+        'Tightens integration across custody, trading, financing for institutional clients',
+        'Vision: make launching a token easier, faster, and more global than issuing traditional startup equity'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'LiquiFi acquisition adds pre-listing token infrastructure to Coinbase platform. Customer base (Uniswap, Optimism, Ethena, Zora, 0x) is heavily Ethereum-ecosystem native. Coinbase capturing project relationships before listing strengthens their position as primary exchange for ETH ecosystem tokens. More comprehensive institutional tooling benefits crypto market overall.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-acquires-liquifi',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
+    {
+      date: '2025-06-20',
+      competitor: 'coin',
+      category: 'Regulatory',
+      headline: 'Coinbase secures MiCA licence from Luxembourg CSSF — full EU access across all 27 member states (450M people)',
+      details: [
+        'MiCA (Markets in Crypto Assets) licence from Luxembourg CSSF (Commission de Surveillance du Secteur Financier)',
+        'Enables offering full suite of crypto products to all 27 EU member states',
+        'Access to 450 million people across the EU under single regulatory passport',
+        'Establishing European crypto hub in Luxembourg',
+        'Previously held individual licences in Germany, France, Ireland, Italy, Netherlands, and Spain',
+        'MiCA unites individual country licences under single framework',
+        'Luxembourg has passed four blockchain-related policies through national legislature'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Single MiCA licence covering 450M EU population is massive regulatory moat for Coinbase. Unified EU access under one framework dramatically simplifies European expansion. More regulated exchange access globally = more liquidity = benefits ETH market overall. Coinbase EU strength as primary fiat-to-crypto gateway grows overall ecosystem.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-secures-mica-licence',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
+    {
+      date: '2025-05-16',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Webull Pay partners with Coinbase CaaS platform for custody, trading, staking, and USDC',
+      details: [
+        'Webull Pay chose Coinbase as crypto partner via Crypto-as-a-Service (CaaS) platform',
+        'Webull Pay gets institutional-grade custody, advanced trading, USDC, and staking access',
+        'Launching June 2025',
+        'Same technology trusted by world\'s largest financial institutions and asset managers',
+        'Coinbase and Webull Pay exploring additional opportunities to expand globally',
+        'Stephen Yip (Webull Pay CEO): "This collaboration unlocks powerful capabilities that will accelerate innovation on our platform"'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Webull Pay CaaS partnership validates Coinbase as white-label crypto infrastructure provider. CaaS B2B model expands Coinbase reach without direct user acquisition costs. More platforms offering crypto trading/staking through Coinbase rails = more exchange volume = benefits overall crypto market liquidity.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-partners-with-webull-pay',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // CLEANSPARK - BTC MINING
@@ -8151,6 +8234,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'HSBC Press Release / Ledger Insights'
     },
     {
+      date: '2025-06-30',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Integrates PayPal as Payment Method in Australia — 9.5M PayPal Accounts, 5M+ Crypto Owners',
+      summary: 'Australian users can now select PayPal as a payment option to buy and sell crypto on Coinbase. PayPal has 9.5 million active accounts in Australia. More than 5 million Australians now own crypto. Previously Coinbase Australia customers could fund via PayID, bank account, debit card payments, and crypto deposits. PayPal integration allows using cards and bank account already linked to PayPal. Enables access to simple and advanced trading, stablecoin rewards, and staking. Simon Banks (MD, PayPal Australia): "Our partnership with Coinbase — a leader in driving crypto adoption in Australia — reflects our shared commitment to innovation and empowering financial choices."',
+      significance: 'PayPal (400M+ global users) deepening crypto exchange integration in APAC. Reduces friction for 9.5M Australian PayPal users to enter crypto via familiar payment method. 5M+ Australians already own crypto, demonstrating mature market. Second PayPal-Coinbase integration after Canada (Aug 2025).',
+      bmnrImplication: 'More APAC payment on-ramps = more users entering crypto = more potential ETH demand. PayPal integration makes crypto buying as simple as online shopping. Growing Australian crypto market benefits entire ecosystem including ETH staking products.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
       date: '2025-06-25',
       category: 'L2',
       company: 'Base',
@@ -8173,15 +8267,37 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'Coinbase Blog'
     },
     {
+      date: '2025-06-18',
+      category: 'Institutional',
+      company: 'Coinbase',
+      title: 'Coinbase Derivatives and Nodal Clear Partner in USDC Collateral Integration for US Futures',
+      summary: 'Coinbase Derivatives and Nodal Clear partnering to integrate USDC as eligible collateral for US futures trading as part of multi-year renewal agreement. Expected to be the first regulated use case of USDC as collateral, targeting launch in 2026. Coinbase Custody Trust (Qualified Custodian regulated by NYDFS) serves as custodian. Coinbase Derivatives is a CFTC-regulated designated contract market; Nodal Clear is a CFTC-regulated derivatives clearing organization, part of EEX Group (Deutsche Borse). Boris Ilyevsky (CEO, Coinbase Derivatives): "Our commitment to integrate USDC as collateral reflects our dedication to enhance trading capabilities for US market participants." Paul Cusenza (Chairman & CEO, Nodal Clear): "The plans to integrate USDC as collateral represent our continued commitment to seek to be responsive to market needs and innovate."',
+      significance: 'First regulated USDC-as-collateral use case in US futures markets. CFTC-regulated exchanges treating USDC as cash-equivalent collateral is a watershed moment for stablecoin institutional acceptance. Deutsche Borse subsidiary involvement signals European institutional bridge.',
+      bmnrImplication: 'USDC as futures collateral validates stablecoins in traditional derivatives infrastructure. USDC is primarily Ethereum-native — more institutional stablecoin utility = more on-chain settlement = ETH ecosystem value. CFTC-regulated collateral use case could open door for broader DeFi collateral recognition.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
       date: '2025-06-17',
       category: 'Enterprise',
       company: 'Deutsche Bank',
-      title: 'Deutsche Bank DAMA 2 - Institutional Tokenization Blueprint on Ethereum L2', 
+      title: 'Deutsche Bank DAMA 2 - Institutional Tokenization Blueprint on Ethereum L2',
       summary: 'Deutsche Bank, Axelar Network (Interop Labs), and Memento Blockchain publish litepaper for Digital Asset Management Access (DAMA) 2 platform — a next-generation tokenization platform built on public blockchains with regulatory alignment and privacy as core design principles. Key features: Blockchain-as-a-Service model minimizing upfront investment, privacy-enabled Layer 2 using zkSync ZK Chain technology, managed token issuance across multiple blockchains via Axelar, and app store for fund smart contract designs. Platform targets tokenized funds, stablecoins, and RWAs for asset managers, wealth managers, and investment advisors. Innovation Lead Boon-Hiong Chan: "DAMA 2 represents how public chains have evolved for institutional finance\'s use." MVP launch targeted H2 2025. Context: $84T in global wealth shifting to digital-native generations by 2045 (Cerulli Associates).',
       significance: 'Major European bank ($1.4T assets) publishing blueprint for institutional tokenization on Ethereum L2. Privacy-preserving ZK technology addresses compliance concerns. Blockchain-as-a-Service model lowers barrier for traditional asset managers. Project won Global Custodian 2025 Innovation in Smart Contract Technology award.',
       bmnrImplication: 'Deutsche Bank building tokenization infrastructure on Ethereum ecosystem validates network for European institutional finance. Privacy-enabled L2 addresses regulatory requirements that blocked enterprise adoption. More institutional activity on Ethereum L2s = more settlement to Ethereum L1.',
       impact: 'Bullish',
       source: 'Deutsche Bank / Axelar / Memento Press Release'
+    },
+    {
+      date: '2025-06-12',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase and Shopify Bring USDC Payments on Base to Millions of Merchants Worldwide',
+      summary: 'Coinbase partners with Shopify to enable USDC payments on Base through Shopify Payments. Rolling out with early access merchants immediately, expanding to all Shopify Payments stores globally later in 2025. Shopify powers millions of merchants globally including BarkBox, SKIMS, and Vuori. In the US, Shopify plans to provide 1% cash back to customers paying with USDC at no cost to the merchant. No foreign exchange fees on cross-border transactions. Merchants get cashed out in local currency with zero fees by default, or can choose to receive USDC on Base. Powered by a new smart contract and commerce payments protocol developed jointly — deployed onchain, permissionless, and open source. No additional merchant setup required — automatically available. Protocol supports delayed capture, tax finalization, and refunds.',
+      significance: 'Massive merchant adoption milestone — Shopify powers millions of merchants globally, all getting automatic USDC payment support on Base. Open source commerce protocol creates permissionless payment infrastructure. 1% customer cash back incentivizes USDC usage. Zero cross-border FX fees is compelling for international commerce.',
+      bmnrImplication: 'Shopify USDC payments on Base directly drive Ethereum L2 transaction volume. Millions of merchants with automatic crypto payment support = massive on-chain commerce potential. Open source protocol enables broader adoption beyond Shopify. More USDC commerce on Base = more Ethereum ecosystem value.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
     },
     {
       date: '2025-04-03',
