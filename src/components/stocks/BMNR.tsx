@@ -3800,6 +3800,87 @@ const CompsTab = ({ comparables, ethPrice }) => {
       storyId: 'coin-institutional-expansion',
       storyTitle: 'Coinbase Institutional Expansion'
     },
+    {
+      date: '2025-10-27',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Coinbase and Citi collaborate on stablecoin payments infrastructure across 94 markets',
+      details: [
+        'Collaboration with Citi focused on leveraging digital assets and stablecoins for institutional payments',
+        'Citi\'s global network spans 94 markets and over 300 payment clearing systems',
+        'Focus: improving fiat-to-crypto on-ramps/off-ramps for institutional clients',
+        'Building stablecoin payment solutions and digital asset infrastructure',
+        'Targeting 24/7 availability for institutional payment conversion',
+        'Part of Coinbase\'s broader mission to integrate digital assets into global economy'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Citi ($94B+ revenue) collaborating with Coinbase on stablecoin payments validates crypto infrastructure for institutional use. Stablecoin demand drives on-chain activity on Ethereum. Not directly competitive with BMNR but Coinbase building institutional distribution moat.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-citi-collaborate',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
+    {
+      date: '2025-10-27',
+      competitor: 'coin',
+      category: 'Strategy',
+      headline: 'Coinbase Asset Management and Apollo partner on stablecoin credit strategies — $300B market targeting $3T by 2030',
+      details: [
+        'CBAM and Apollo ($840B AUM) establish partnership for stablecoin credit strategies',
+        'Stablecoin market cap reached $300B as of Oct 2025, projections of $3T by 2030 (GENIUS Act tailwinds)',
+        'Strategies: over-collateralized BTC lending, corporate direct lending to stablecoin issuers/fintechs, tokenized credit holdings',
+        'Apollo\'s Christine Moy: "accelerates our vision of tokenizing credit markets"',
+        'Innovative products targeting market launch in 2026',
+        'GENIUS-compliant opportunities with monthly audits and 1:1 reserves'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Coinbase + Apollo building institutional DeFi credit products around stablecoins. $300B stablecoin market growing to $3T creates massive on-chain activity on Ethereum. Apollo\'s $840B AUM entering crypto credit validates institutional demand. BMNR benefits from stablecoin ecosystem growth driving ETH utility.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/cbam-apollo-stablecoin-credit',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
+    {
+      date: '2025-10-15',
+      competitor: 'coin',
+      category: 'Strategy',
+      headline: 'Coinbase invests in CoinDCX — India/Middle East expansion targeting 100M+ crypto owners',
+      details: [
+        'Coinbase Ventures invests in CoinDCX, leading crypto exchange in India and Middle East',
+        'India has 1.4B+ people, 100M+ crypto owners, growing tech adoption',
+        'CoinDCX annualized revenue ~$141M USD, transaction volumes ~$165B USD, $1.2B AUC',
+        'User base exceeds 20.4 million across India and Middle East',
+        'Subject to regulatory approvals and customary closing conditions',
+        'Builds on Coinbase\'s growing presence with local operations in the region'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Coinbase expanding distribution into India (100M+ crypto owners) and Middle East. Geographic expansion grows total addressable market for crypto ecosystem. CoinDCX\'s $165B volume demonstrates massive emerging market activity. More global crypto adoption = more ETH ecosystem participants.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-makes-investment-in-coindcx',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
+    {
+      date: '2025-10-15',
+      competitor: 'coin',
+      category: 'Yield',
+      headline: 'Coinbase Asset Management launches US Bitcoin Yield Fund — BTC yield via lending and basis trading',
+      details: [
+        'Coinbase US Bitcoin Yield Fund (USCBYF) for US accredited investors',
+        'Delivers bitcoin performance + additional BTC yield',
+        'Yield generated from BTC private credit lending and basis trading',
+        'Subscribe with in-kind bitcoin, USD, or USDC',
+        'Partnership with iTrustCapital for tax-deferred IRA access (2026)',
+        'Follows offshore Coinbase Bitcoin Yield Fund launched May 2025 for non-US investors',
+        'SEC-registered RIA, CFTC-registered CPO/CTA, NFA member'
+      ],
+      implication: 'negative',
+      bmnrComparison: 'Coinbase BTC Yield Fund is a direct competitive concept to BMNR\'s ETH yield thesis — institutional crypto yield product from major exchange. However: BTC yield via lending/basis trading is fundamentally different from ETH staking (native protocol yield). BTC yield involves counterparty/credit risk; ETH staking yield is protocol-native and trustless. BMNR should emphasize this distinction: ETH staking = yield from securing the network, not from lending.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-us-bitcoin-yield-fund',
+      storyId: 'coin-yield-products',
+      storyTitle: 'Coinbase Yield Products'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // CLEANSPARK - BTC MINING
@@ -7554,6 +7635,28 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'JPMorgan on Ethereum L2 is massive validation for the network. Bank deposit tokens create new use case for institutional on-chain activity. Mastercard integration expands potential network effects. More institutional activity on Base = more settlement fees to Ethereum L1.',
       impact: 'Bullish', 
       source: 'JPMorgan Kinexys Press Release'
+    },
+    {
+      date: '2025-11-12',
+      category: 'Enterprise',
+      company: 'Coinbase',
+      title: 'Coinbase Business Launches in Singapore — First International Market, Powered by Standard Chartered and USDC',
+      summary: 'Coinbase Business launches in Singapore as first international market outside US. All-in-one crypto operating platform for startups and SMBs offers: integrated trading and treasury management, global USDC payouts with near-instant settlement and minimal fees, payment links with 1% transaction fee (vs credit card rates), USDC balance rewards, and accounting reconciliation (QuickBooks, Xero). Powered by Standard Chartered banking partnership for real-time SGD fiat transfers. Builds on Coinbase participation in MAS BLOOM Initiative (Borderless, Liquid, Open, Online, Multi-currency) contributing to "Agentic Payments" workstream. Singapore chosen as gateway to Asia due to digital innovation leadership and regulatory clarity.',
+      significance: 'Major crypto exchange launching B2B payments infrastructure in key Asian financial hub. Standard Chartered banking integration bridges TradFi-crypto for business use. MAS BLOOM participation demonstrates regulatory collaboration. USDC-native B2B payments could become template for international expansion.',
+      bmnrImplication: 'Coinbase Business on USDC rails drives more stablecoin utility on Ethereum ecosystem. Standard Chartered partnership brings institutional credibility. MAS BLOOM "Agentic Payments" workstream aligns with emerging AI-blockchain narrative. More USDC commercial activity = more Ethereum network value.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-11-11',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Launches UK Savings Account — First Crypto-Native Exchange with Regulated Savings (3.75% AER, FSCS Protected)',
+      summary: 'Coinbase launches savings account for eligible UK users — 3.75% AER variable interest paid daily, instant deposits/withdrawals, no minimum balance or lockup. FSCS protection up to £85,000 (via ClearBank). First crypto-native exchange to offer regulated savings account in UK. Part of Coinbase\'s vision as "exchange for everything" — full financial suite combining crypto trading (260+ assets) with traditional savings. UK is Coinbase\'s largest international market. Follows FCA VASP registration in Feb 2025, making Coinbase largest UK registered crypto exchange. Aiming to become UK\'s #1 financial app by bridging fiat and crypto economies.',
+      significance: 'First crypto exchange offering FSCS-protected savings account — significant crypto-TradFi convergence milestone. Coinbase evolving from pure exchange to comprehensive financial platform. UK as largest international market signals strategic importance. Bridges gap between traditional savings and crypto investment for mainstream users.',
+      bmnrImplication: 'Coinbase evolving into full financial platform increases crypto on-ramp surface area. UK users can hold savings + trade crypto in one app — reduces friction to enter crypto economy. More mainstream crypto access = more potential ETH demand. FSCS-protected savings alongside crypto normalizes digital assets for conservative users.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
     },
     {
       date: '2025-11-11',
