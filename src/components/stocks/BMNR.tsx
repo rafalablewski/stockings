@@ -3881,6 +3881,66 @@ const CompsTab = ({ comparables, ethPrice }) => {
       storyId: 'coin-yield-products',
       storyTitle: 'Coinbase Yield Products'
     },
+    {
+      date: '2025-10-08',
+      competitor: 'coin',
+      category: 'Regulatory',
+      headline: 'Coinbase staking now available in New York — $130M+ missed rewards across states with bans',
+      details: [
+        'New Yorkers can now stake ETH, SOL, and other assets on Coinbase',
+        'Governor Hochul\'s leadership in providing regulatory clarity credited for milestone',
+        'Coinbase estimates CA, NJ, MD, WI residents have collectively missed $130M+ in staking rewards',
+        'Recent SEC staff guidance confirms staking-as-a-service is not a security',
+        'Staking cases against Coinbase dismissed by VT, IL, KY, AL, SC — "national consensus has emerged"',
+        'CLO Paul Grewal: "In the city that never sleeps, your money shouldn\'t either"'
+      ],
+      implication: 'negative',
+      bmnrComparison: 'NY staking approval significantly expands Coinbase\'s retail ETH staking TAM — NY is one of the largest financial markets. More retail ETH staking via Coinbase increases competition for BMNR\'s institutional staking value proposition. However, growing retail staking also validates ETH staking as mainstream and supports network security. SEC consensus that staking is not a security reduces regulatory risk for all staking players including BMNR.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/staking-is-now-available-in-new-york',
+      storyId: 'coin-staking-expansion',
+      storyTitle: 'Coinbase Staking Expansion'
+    },
+    {
+      date: '2025-10-03',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Samsung taps Coinbase for 75M+ Galaxy users — Coinbase One exclusive access via Samsung Wallet',
+      details: [
+        'Partnership with Samsung, world\'s most popular smartphone brand',
+        'Exclusive Coinbase One access within Samsung Wallet app for US Galaxy users (75M+)',
+        'Coinbase One: zero trading fees, boosted staking rewards, priority support, account protection',
+        'Samsung Pay integration now live for crypto purchases in US',
+        'Plans to expand globally and explore new partnership opportunities',
+        'Samsung Pay already rolled out as payment option in Coinbase app (Jul 29) for US and Canada'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Samsung distribution deal gives Coinbase massive consumer reach (75M+ Galaxy users). Boosted staking rewards in Coinbase One could drive more retail ETH staking. Coinbase building retail distribution moat through device-level partnerships. More retail crypto users = larger ecosystem, though also more Coinbase staking competition.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/samsung-taps-coinbase',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
+    {
+      date: '2025-07-30',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Coinbase and JPMorgan Chase partner — 80M+ customers get credit card crypto funding and Ultimate Rewards → USDC',
+      details: [
+        'Partnership with JPMorgan Chase, largest US bank (80M+ customers)',
+        'Fall 2025: Chase credit cards can fund Coinbase accounts',
+        '2026: Chase Ultimate Rewards Points redeemable for crypto — first major credit card program to offer this',
+        '2026: Direct Chase bank account linking to Coinbase',
+        'Coinbase as "most trusted bridge from traditional finance to crypto"',
+        'Ultimate Rewards → USDC conversion creates novel stablecoin on-ramp'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'JPMorgan Chase (largest US bank) partnering with Coinbase is a landmark crypto-TradFi integration. 80M+ customers with frictionless crypto access dramatically expands retail on-ramp. Ultimate Rewards → USDC creates novel stablecoin demand channel. More retail participants flowing through Coinbase strengthens their position as primary crypto gateway but also grows overall ecosystem benefiting all crypto assets including ETH.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-jpmorgan-chase',
+      storyId: 'coin-institutional-expansion',
+      storyTitle: 'Coinbase Institutional Expansion'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // CLEANSPARK - BTC MINING
@@ -7843,10 +7903,21 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Fidelity Investments ($4.5T+ AUM) rolls out tokenized money market fund on Ethereum blockchain. $202M in Fidelity Digital Interest Tokens (FDIT) minted — representing Fidelity Treasury Digital Fund (FYOXX/FYHXX) holding US Treasury bills. Main investor: Ondo Finance, using FDIT as reserve asset for OUSG yield-generating token. OUSG also uses BlackRock BUIDL, Franklin Templeton BENJI, WisdomTree WTGXX as backing. First unveiled March 2025 in SEC regulatory filing. Context: Tokenized US Treasuries market has tripled in one year to $7.5B. BlackRock/Securitize BUIDL leads at $2.4B, followed by Franklin Templeton and WisdomTree. These tokens increasingly used as infrastructure for yield-earning strategies and collateral in crypto economy.',
       significance: 'Another major asset manager ($4.5T+ AUM) launching tokenized fund on Ethereum. Ondo as anchor investor demonstrates crypto-native demand for institutional products. Part of $7.5B tokenized Treasuries market that tripled in one year. Fidelity joins BlackRock, Franklin Templeton, WisdomTree in Ethereum tokenization.',
       bmnrImplication: 'Fidelity tokenized fund on Ethereum adds to institutional validation. More tokenized Treasuries = more on-chain collateral = more DeFi composability. Ondo integration bridges TradFi products to crypto-native yield strategies. Growing tokenized Treasury market validates BMNR\'s Ethereum infrastructure thesis.',
-      impact: 'Bullish', 
-      source: 'CoinDesk / Etherscan' 
+      impact: 'Bullish',
+      source: 'CoinDesk / Etherscan'
     },
-    { 
+    {
+      date: '2025-09-09',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Acquires Sensible Team to Accelerate DeFi-Powered Consumer Onchain Roadmap',
+      summary: 'Coinbase acquires founders of Sensible to lead key teams shaping onchain consumer strategy. Team brings expertise in building DeFi-powered consumer applications. Part of Coinbase\'s vision to make itself an "everything exchange" — gateway to onchain economy. Current DeFi features: crypto-backed loans via non-custodial smart wallets, staking for network security + rewards, USDC holdings rewards, Coinbase One Card with bitcoin back. Goal: simplify DeFi access so anyone can borrow, stake, and earn without being an expert. Coinbase evolving from exchange to "full-fledged financial platform" on crypto rails.',
+      significance: 'Coinbase actively acquiring DeFi talent to bridge CeFi-DeFi gap. Strategy to embed DeFi functionality (lending, staking, yield) directly into consumer app signals mainstream DeFi adoption is approaching. "Everything exchange" vision moves Coinbase from trading venue to comprehensive financial platform.',
+      bmnrImplication: 'Coinbase embedding DeFi into consumer app makes staking and yield accessible to 110M+ verified users. Simplifying DeFi access accelerates mainstream Ethereum adoption. More users staking, lending, earning on Ethereum = more network activity = ETH value accrual. Coinbase as DeFi gateway could be double-edged: more competition for BMNR but also larger ecosystem.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
       date: '2025-09-15', 
       category: 'Enterprise', 
       company: 'American Express',
@@ -7879,6 +7950,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Swift partnering with Consensys (Ethereum infrastructure leader) positions Ethereum technology at core of global payment messaging upgrade. Coalition includes virtually every major global bank. Swift\'s blockchain ledger built on Ethereum technology = massive validation for ETH ecosystem. Global correspondent banking infrastructure ($150T+ annually) moving toward blockchain rails.',
       impact: 'Bullish',
       source: 'Swift Press Release / Sibos 2025'
+    },
+    {
+      date: '2025-09-23',
+      category: 'Enterprise',
+      company: 'Coinbase',
+      title: 'Coinbase and Cloudflare Launch x402 Foundation — Universal Standard for AI-Driven Stablecoin Payments',
+      summary: 'Coinbase and Cloudflare announce intent to launch x402 Foundation to establish x402 as the universal standard for AI-driven payments. x402 leverages HTTP "402 Payment Required" status code to embed stablecoin payments directly into web interactions, enabling AI agents, APIs, and apps to transact value seamlessly. Use cases: pay-per-use AI/research, on-demand data/signals, creator micropayments, storage/media, agent-to-agent payments compatible with MCP-style workflows. Foundation focuses on governance (neutral open standard), ecosystem growth (developer grants/tools), and interoperability across platforms/geographies. Cloudflare adding deferred payments to their pay-per-crawl beta. Plans to add members from AI companies (LLMs), e-commerce platforms, consumer/enterprise companies.',
+      significance: 'MAJOR: Coinbase + Cloudflare (internet infrastructure giant) creating open standard for machine-to-machine payments via stablecoins. x402 could become backbone of agentic commerce — AI agents autonomously paying for services, data, compute. Replaces subscription/intermediary models with real-time stablecoin micropayments. Opens entirely new category of on-chain economic activity.',
+      bmnrImplication: 'x402 standard positions stablecoins (primarily Ethereum-native USDC) as settlement layer for AI agent economy. Machine-to-machine micropayments could generate massive on-chain transaction volume. Cloudflare backing ensures internet-scale infrastructure. More stablecoin transactions = more Ethereum ecosystem value. Agentic commerce is potentially the largest new use case for crypto.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
     },
     {
       date: '2025-09-24',
@@ -7969,6 +8051,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'Kraken Blog'
     },
     // === AUGUST 2025 ===
+    {
+      date: '2025-08-05',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Integrates PayPal as Payment Option in Canada — 10M PayPal Accounts, 5M+ Crypto Owners',
+      summary: 'Canadian Coinbase users can now use PayPal to buy and sell crypto. Canada has nearly 10M active PayPal accounts and 5M+ crypto owners. PayPal joins existing payment options: Interac e-Transfer, EFT, direct bank deposits, debit cards. Integration supports Coinbase\'s full suite including trading and staking. Coinbase is the first and largest international exchange registered as Restricted Dealer in Canada (since 2023). Part of global goal to onboard one billion people to crypto economy. PayPal SVP John Froese: "combining trusted money management with cutting-edge commerce tools."',
+      significance: 'PayPal (400M+ global users) deepening crypto exchange integration in another market. Reduces friction for Canadians to enter crypto via familiar payment method. Coinbase expanding payment on-ramps demonstrates commitment to reducing barriers to crypto adoption globally.',
+      bmnrImplication: 'More payment on-ramps = more users entering crypto = more potential ETH demand. PayPal integration makes crypto buying as simple as online shopping. 5M+ Canadian crypto owners is growing market. More frictionless fiat-to-crypto rails benefits entire ecosystem.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
     {
       date: '2025-08-24',
       category: 'L2',
