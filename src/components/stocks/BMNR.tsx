@@ -4024,6 +4024,110 @@ const CompsTab = ({ comparables, ethPrice }) => {
       storyId: 'coin',
       storyTitle: 'Coinbase'
     },
+    {
+      date: '2025-05-08',
+      competitor: 'coin',
+      category: 'Acquisition',
+      headline: 'Coinbase announces agreement to acquire Deribit for $2.9B — $700M cash + 11M shares of Class A common stock',
+      details: [
+        'Deribit is world\'s leading crypto options exchange with ~$30B current open interest',
+        'Purchase price: ~$2.9B ($700M cash + 11M shares Coinbase Class A common stock)',
+        'Deribit facilitated over $1 trillion in trading volume in 2024',
+        'Consistent track record of generating positive Adjusted EBITDA',
+        'Creates most comprehensive institutional derivatives platform: spot, futures, perpetuals, and options',
+        'Follows strategic M&A track record: Xapo → Custody, Tagomi → Prime, FairX → Derivatives Exchange, One River → Asset Management',
+        'Subject to regulatory approvals, expected to close by year-end',
+        'Deribit CEO Luuk Strijers: "Together with Coinbase, we\'re set to shape the future of the global crypto derivatives market"'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Largest crypto M&A deal ever announced. Coinbase building full-stack derivatives platform (spot + futures + perps + options) makes it dominant crypto infrastructure company. Crypto options expansion similar to equity options boom of 1990s — more sophisticated trading tools benefit overall market development including ETH derivatives liquidity.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-to-acquire-deribit',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-05-06',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Coinbase partners with Riot Games as exclusive crypto exchange partner across League of Legends and VALORANT esports',
+      details: [
+        'Exclusive cryptocurrency exchange and official blockchain technology partner for LoL and VALORANT Esports global events',
+        'Debut at Masters (M2) in Toronto — spans Masters, Champions (VCT), First Stand, MSI, and Worlds (LoL)',
+        'New in-game segments: "Econ Report" (VALORANT) and "Gold Grind" (LoL) — live analysis of in-match currency',
+        'Viewer "drops" during events: emotes, icons, and promotions with all-expenses-paid trips to Champions/Worlds',
+        'Exploring future Web3 technology integrations for fan experience',
+        'Adds to portfolio: Team Liquid, WNBA, NBA (Warriors, Clippers), Aston Martin F1, Borussia Dortmund'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Riot Games partnership extends Coinbase brand reach into massive esports audience (LoL and VALORANT have 100M+ combined players). Web3 technology exploration signals potential onchain integration for gaming. Brand awareness drives crypto adoption broadly, benefiting overall ecosystem.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-partners-with-riot-games',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-04-28',
+      competitor: 'coin',
+      category: 'Yield',
+      headline: 'Coinbase Asset Management launches offshore Bitcoin Yield Fund (CBYF) — 4-8% net BTC returns for non-US investors',
+      details: [
+        'Coinbase Bitcoin Yield Fund (CBYF) — long-bitcoin fund seeking 4-8% net return in BTC per year over market cycle',
+        'Investors subscribe and redeem in bitcoin; all performance denominated in BTC',
+        'Conservative strategy: avoids riskier high-interest BTC loans and systematic call selling',
+        'Uses third-party custody integrations to trade — significantly reduces counterparty risk',
+        '$1B AUM estimated strategy capacity',
+        'Monthly open for subscriptions/redemptions with 5 business days notice',
+        'Seeded by Aspen Digital (FSRA-regulated, Abu Dhabi) — exclusive wealth-distribution partner for UAE and Asia',
+        'Currently for international (non-US) investors; launches May 1, 2025'
+      ],
+      implication: 'negative',
+      bmnrComparison: 'Offshore BTC Yield Fund is Coinbase\'s first institutional crypto yield product — directly competitive concept to BMNR\'s ETH yield thesis. 4-8% target BTC yield via lending/basis trading competes for same "crypto yield" allocator capital. Key distinction: BTC yield involves counterparty/credit risk from lending; BMNR\'s ETH staking yield is protocol-native and trustless.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-bitcoin-yield-fund',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-04-24',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Coinbase expands PayPal partnership to advance PYUSD stablecoin — zero fee USD-PYUSD conversions for all customers',
+      details: [
+        'Expanding partnership with PayPal to accelerate adoption of PayPal USD (PYUSD) stablecoin',
+        'Zero fee USD-PYUSD conversions for retail and institutional customers',
+        'Coinbase infrastructure to expand PYUSD support to PayPal\'s largest merchant partners',
+        'Collaborating to explore new onchain use cases for PYUSD',
+        'Stablecoin transaction volumes surged 250% from $6.2T to $22T between 2023 and 2024',
+        'Making it easier for millions of PayPal customers to bring finances onchain'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'PayPal PYUSD partnership strengthens Coinbase as multi-stablecoin infrastructure platform. Zero-fee conversions could drive significant PYUSD adoption alongside USDC. Stablecoin volume growth ($6.2T → $22T, 250%) validates on-chain payment thesis. More stablecoin activity broadly benefits Ethereum ecosystem where most stablecoins settle.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-paypal-to-advance-stablecoin-payments',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-01-31',
+      competitor: 'coin',
+      category: 'Acquisition',
+      headline: 'Coinbase acquires Spindl — onchain ads and attribution platform to accelerate Base builder distribution',
+      details: [
+        'Spindl is onchain ads and attribution platform rebuilding ad tech stack onchain',
+        'Founded by Antonio Garcia-Martinez (AGM) — early Facebook ads team member who shipped keyword targeting, audience targeting, and FBX exchange',
+        'Spindl will operate under Base, continues supporting current customers without interruption',
+        'Goal: help builders go viral onchain and find distribution on Coinbase and across onchain economy',
+        'Committed to maintaining open standards for publishers and advertisers',
+        'Part of flywheel: developers build onchain apps → apps attract users → more users incentivize more developers'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Spindl acquisition strengthens Base (Ethereum L2) ecosystem by solving builder distribution problem. More builders finding users on Base = more on-chain activity on Ethereum L2. Facebook ads veteran leading onchain ad tech could dramatically accelerate user acquisition for Base ecosystem.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-acquires-spindl',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // CLEANSPARK - BTC MINING
@@ -8300,6 +8404,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'Coinbase Blog'
     },
     {
+      date: '2025-04-28',
+      category: 'Ecosystem',
+      company: 'Coinbase',
+      title: 'Coinbase, Fabric Ventures, Animoca Brands, and Founders Factory Launch UK Web3 Accelerator',
+      summary: 'Coinbase, Fabric Ventures, Animoca Brands, and Founders Factory launch multi-million pound accelerator in the UK to transform the UK\'s blockchain and AI ecosystem. Founders Factory delivers world-class business and growth training with hands-on support across strategy, go-to-market, product development, and fundraising. Coinbase, Fabric Ventures, and Animoca Brands provide support on tokenomics, community go-to-market strategies, and best practices for scaling blockchain and AI businesses. Each founder in first cohort receives up to £250k in funding. City Minister Emma Reynolds: "This will ensure that the UK remains a global leading hub for blockchain technology." Business Secretary Jonathan Reynolds: "This announcement is a strong vote of confidence in the UK\'s tech sector." Robby Yung (CEO of Investments, Animoca Brands): "It is critical that the UK takes advantage of the opportunity of the fast-growing Web3 industry."',
+      significance: 'UK government-endorsed accelerator combining major crypto companies (Coinbase, Animoca) with VC (Fabric) and startup infrastructure (Founders Factory). Government ministers publicly endorsing blockchain as growth engine signals strong regulatory support. £250k per founder + specialized Web3 support creates pipeline of UK blockchain startups.',
+      bmnrImplication: 'UK accelerator focused on blockchain/AI creates pipeline of Ethereum ecosystem builders. Government endorsement signals regulatory tailwinds for crypto in UK. More startups building on blockchain = more on-chain activity = ETH ecosystem growth.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
       date: '2025-04-03',
       category: 'Institutional',
       company: 'WisdomTree',
@@ -8330,11 +8445,44 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       significance: 'Major institutional broker expanding crypto offerings on unified multi-asset platform. Positions crypto as standard asset class alongside traditional securities. Financial advisers can now allocate client assets across full crypto spectrum. Low-cost structure ($1.75 minimum) enables retail participation.',
       bmnrImplication: 'Interactive Brokers expanding crypto access for institutional clients and advisers broadens the investor base. ETH included alongside major tokens validates its position as core digital asset. More accessible crypto = more potential ETH investors.',
       impact: 'Bullish', 
-      source: 'Interactive Brokers Press Release' 
+      source: 'Interactive Brokers Press Release'
     },
-    { 
-      date: '2025-01-01', 
-      category: 'Enterprise', 
+    {
+      date: '2025-03-11',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Secures FIU Registration in India — Retail Services Launching Later in 2025',
+      summary: 'Coinbase registers with India\'s Financial Intelligence Unit (FIU), enabling crypto trading services in the country. Plans to launch initial retail services later in 2025, followed by additional investment and products. India\'s share of global onchain developers increased from 3% in 2018 to 12% in 2023 — highest concentration of onchain talent among emerging markets. John O\'Loghlen (Regional MD APAC): "India represents one of the most exciting market opportunities in the world today." Paul Grewal (CLO) appointed to Board of U.S.-India Business Council (USIBC). Coinbase believes crypto can create incentives for India\'s brightest to build world-leading products from India, for the world.',
+      significance: 'Coinbase entering India — world\'s largest population and fastest-growing tech ecosystem. India\'s onchain developer community (12% global share) creates massive potential for Ethereum ecosystem building. FIU registration signals regulatory compliance pathway in historically cautious market.',
+      bmnrImplication: 'India\'s developer talent pipeline (3% → 12% global onchain devs) directly benefits Ethereum ecosystem through more builders. Coinbase India launch = more on-ramps for world\'s most populous country. Developer ecosystem growth in India strengthens overall blockchain infrastructure.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-02-03',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Obtains VASP Registration in the United Kingdom — Largest Registered Digital Assets Player in UK',
+      summary: 'Coinbase obtains VASP registration in the UK issued by the Financial Conduct Authority (FCA). Makes Coinbase the largest registered digital assets player in the UK, its largest international market. Allows Coinbase to offer both crypto and fiat services in the UK. UK Government and FCA developing regulation for crypto sector. Daniel Seifert (VP & Regional MD EMEA) and Keith Grose lead UK operations. Coinbase committed to onboarding next 1 billion people into crypto while prioritising security and compliance. Registration enables expanded retail, institutional, and ecosystem products.',
+      significance: 'FCA VASP registration makes Coinbase largest registered crypto player in UK — major fintech market. Regulatory milestone in Coinbase\'s largest international market enables full product expansion. UK government actively developing crypto regulation signals pro-innovation stance.',
+      bmnrImplication: 'Coinbase as largest UK VASP expands regulated crypto access in major financial center. UK crypto regulation development creates clearer framework for institutional adoption. More regulated on-ramps in London financial hub = more institutional crypto flows including ETH.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-01-28',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Gains VASP Approval to Launch in Argentina — 5 Million Daily Crypto Users',
+      summary: 'Coinbase secures Virtual Asset Service Provider (VASP) registration from Argentina\'s National Securities Commission (CNV). 5 million Argentinians currently use crypto daily. 87% believe crypto and blockchain can help achieve greater financial independence. 76% see crypto as solution to financial frustrations (inflation, high transaction costs). 79% open to receiving salaries in cryptocurrency. Matías Alberti (ex-Buenbit, Clara) leads Argentina operations. Coinbase rolling out localized services in Spanish with local payment methods and customer support. Fabio Plein (Director for the Americas): "For many Argentinians, crypto isn\'t just an investment, it\'s a necessity for regaining control over their financial futures."',
+      significance: 'Argentina is one of world\'s most dynamic crypto markets — 5M daily users, 87% see crypto as path to financial independence. Inflation-driven adoption creates strong product-market fit for crypto. Localized operations signal serious market commitment, not just licensing.',
+      bmnrImplication: 'Argentina\'s inflation-driven crypto adoption (5M daily users) demonstrates real-world cryptocurrency utility. More regulated exchanges in Latin America = more fiat-to-crypto on-ramps = broader crypto ecosystem growth.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-01-01',
+      category: 'Enterprise',
       company: 'JPMorgan',
       title: 'JPMorgan & MIT DCI Publish Payment Token Design Standards for EVM Blockchains', 
       summary: 'MIT Digital Currency Initiative and Kinexys by J.P. Morgan publish comprehensive research on payment token design for EVM-based blockchains. Focus: additional capabilities required for regulatory compliance. Design guidelines (8 principles): (1) Minimize on-chain data storage, (2) Avoid storing PII on-chain (harvest-now-decrypt-later risk), (3) Complete payment transfers within single blockchain transaction, (4) Segregate roles for privileged admin functions, (5) Ensure observability of privileged functions, (6) Initiate transactions from system where funds held, (7) Fail safely and obviously, (8) Make participation easy for users. Key functionalities mapped to ERC standards: ERC-20 (ledger/transfers), ERC-4337 (account abstraction/key recovery), ERC-1400/ERC-3643 (permissioned transfers), ERC-2535 (Diamond upgrades), OpenZeppelin Pausable (admin controls). Two new standards proposed: (1) Payment authorization following payment controls, (2) Administrative controls for remediation/recovery (suspension, seizure, global pause). Kinexys update: daily transaction values now exceeding $2 billion (up from $1B). Stablecoin market context: $235B market cap vs ~$18T US bank deposits. Key insight: "composable standards" approach — narrow, modular standards vs broad all-encompassing standards. Source code to be published under open-source license.',
