@@ -3742,7 +3742,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       date: '2025-12-09',
       competitor: 'coin',
       category: 'Partnership',
-      headline: 'Coinbase and PNC Bank launch direct bitcoin trading for Private Bank clients — first major US bank with CaaS integration',
+      headline: 'Coinbase powers PNC Bank bitcoin trading via CaaS — first major US bank crypto integration for Private Bank clients',
       details: [
         'PNC Private Bank clients can buy, sell, and hold bitcoin directly on PNC\'s digital banking platform',
         'First major US bank to support direct spot bitcoin trading via Coinbase Crypto-as-a-Service (CaaS)',
@@ -3804,7 +3804,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       date: '2025-10-27',
       competitor: 'coin',
       category: 'Partnership',
-      headline: 'Coinbase and Citi collaborate on stablecoin payments infrastructure across 94 markets',
+      headline: 'Coinbase expands stablecoin payments infrastructure through Citi collaboration — 94 markets, 300+ clearing systems',
       details: [
         'Collaboration with Citi focused on leveraging digital assets and stablecoins for institutional payments',
         'Citi\'s global network spans 94 markets and over 300 payment clearing systems',
@@ -3824,7 +3824,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       date: '2025-10-27',
       competitor: 'coin',
       category: 'Strategy',
-      headline: 'Coinbase Asset Management and Apollo partner on stablecoin credit strategies — $300B market targeting $3T by 2030',
+      headline: 'Coinbase Asset Management launches stablecoin credit strategies with Apollo — $300B market targeting $3T by 2030',
       details: [
         'CBAM and Apollo ($840B AUM) establish partnership for stablecoin credit strategies',
         'Stablecoin market cap reached $300B as of Oct 2025, projections of $3T by 2030 (GENIUS Act tailwinds)',
@@ -3905,7 +3905,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       date: '2025-10-03',
       competitor: 'coin',
       category: 'Partnership',
-      headline: 'Samsung taps Coinbase for 75M+ Galaxy users — Coinbase One exclusive access via Samsung Wallet',
+      headline: 'Coinbase secures Samsung distribution — Coinbase One exclusive access for 75M+ Galaxy users via Samsung Wallet',
       details: [
         'Partnership with Samsung, world\'s most popular smartphone brand',
         'Exclusive Coinbase One access within Samsung Wallet app for US Galaxy users (75M+)',
@@ -3925,7 +3925,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       date: '2025-07-30',
       competitor: 'coin',
       category: 'Partnership',
-      headline: 'Coinbase and JPMorgan Chase partner — 80M+ customers get credit card crypto funding and Ultimate Rewards → USDC',
+      headline: 'Coinbase partners with JPMorgan Chase — 80M+ customers get credit card crypto funding and Ultimate Rewards → USDC',
       details: [
         'Partnership with JPMorgan Chase, largest US bank (80M+ customers)',
         'Fall 2025: Chase credit cards can fund Coinbase accounts',
@@ -4008,7 +4008,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       date: '2025-05-16',
       competitor: 'coin',
       category: 'Partnership',
-      headline: 'Webull Pay partners with Coinbase CaaS platform for custody, trading, staking, and USDC',
+      headline: 'Coinbase CaaS platform powers Webull Pay — institutional-grade custody, trading, staking, and USDC',
       details: [
         'Webull Pay chose Coinbase as crypto partner via Crypto-as-a-Service (CaaS) platform',
         'Webull Pay gets institutional-grade custody, advanced trading, USDC, and staking access',
