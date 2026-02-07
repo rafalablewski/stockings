@@ -7342,6 +7342,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   const adoptionTimeline = [
     // === FEBRUARY 2026 ===
     {
+      date: '2026-02-06',
+      category: 'Protocol',
+      company: 'ENS (Ethereum Name Service)',
+      title: 'ENSv2 Staying on Ethereum L1 — Namechain L2 Cancelled as Ethereum Scaling Makes It Unnecessary',
+      summary: 'ENS lead developer nick.eth announces ENSv2 will deploy exclusively on Ethereum L1, ceasing development of Namechain (their planned custom L2). Key driver: Ethereum L1 scaling faster than anyone predicted — 99% reduction in ENS registration gas costs over past year. Gas limit increased from 30M to 60M in 2025 (Fusaka upgrade), with core devs targeting 200M in 2026. ENS registration now costs <5 cents in gas (down from ~$5). At current gas prices, subsidizing every ENS transaction in 2025 would cost ~$10,000 — far less than running an L2. ENSv2 features still shipping: single-step registration, stablecoin purchases from any chain, new registry design, ENS App and ENS Explorer now in public alpha. Nick.eth: "If we were starting today, knowing what we know about Ethereum\'s scaling progress and trajectory, would we build our own L2 for ENSv2? The answer is clearly no." Staying on L1 provides strongest security, decentralization, and liveness guarantees — no additional trust assumptions from L2 rollup contracts or centralized preconfers.',
+      significance: 'LANDMARK DECISION: Major Ethereum protocol (ENS, millions of names) choosing to STAY on L1 rather than migrate to L2 because L1 is now cheap enough. Validates Ethereum\'s scaling roadmap in the most concrete way possible — a major project that planned an L2 for 2 years cancelled it because L1 scaling exceeded expectations. 99% gas cost reduction + 200M gas limit target = Ethereum L1 becoming viable for mass consumer applications. ENS comparing Namechain to Concorde — knowing when to change course is leadership.',
+      bmnrImplication: 'ENS staying on L1 is one of the strongest validation signals for Ethereum\'s scaling trajectory. Gas limit 30M → 60M → 200M target makes L1 viable for consumer apps. More activity staying on L1 = more direct ETH demand for gas = more value accrual to ETH. 99% cost reduction demolishes the "Ethereum is too expensive" narrative. BMNR thesis strengthened: Ethereum scaling is working, and the network is becoming institutional-grade infrastructure.',
+      impact: 'Bullish',
+      source: 'ENS Blog'
+    },
+    {
       date: '2026-02-05',
       category: 'Protocol',
       company: 'Ethereum Foundation',
