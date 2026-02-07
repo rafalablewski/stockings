@@ -753,6 +753,7 @@ const ASTSAnalysis = () => {
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
+    { id: 'sources', label: 'Sources', type: 'tracking' },
   ];
 
   return (
@@ -953,6 +954,74 @@ const ASTSAnalysis = () => {
           {activeTab === 'financials' && <FinancialsTab />}
           {activeTab === 'investment' && <InvestmentTab />}
           {activeTab === 'wall-street' && <WallStreetTab />}
+          {activeTab === 'sources' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Research Sources</h3>
+              <p style={{ fontSize: 13, color: 'var(--text3)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p>
+              {[
+                { category: 'Company / IR', sources: [
+                  { name: 'AST SpaceMobile Investor Relations', url: 'https://investors.ast-science.com' },
+                  { name: 'SEC EDGAR (ASTS Filings)', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=ast+spacemobile&CIK=&type=&dateb=&owner=include&count=40&search_text=&action=getcompany' },
+                ]},
+                { category: 'Competitors / D2D Players', sources: [
+                  { name: 'OQ Technology', url: 'https://www.oqtec.space' },
+                  { name: 'Iridium Communications', url: 'https://www.iridium.com' },
+                  { name: 'Skylo Technologies', url: 'https://www.skylo.tech' },
+                  { name: 'Lynk Global', url: 'https://lynk.world' },
+                  { name: 'SpaceX / Starlink Direct to Cell', url: 'https://direct.starlink.com' },
+                  { name: 'Viasat', url: 'https://www.viasat.com' },
+                  { name: 'Amazon / Project Kuiper', url: 'https://www.aboutamazon.com/news/amazon-leo' },
+                  { name: 'EchoStar / Hughes', url: 'https://www.echostar.com' },
+                  { name: 'SES', url: 'https://www.ses.com' },
+                  { name: 'Terrestar Solutions', url: 'https://terrestarsolutions.ca' },
+                  { name: 'Space42 / Bayanat', url: 'https://space42.ai' },
+                ]},
+                { category: 'Satellite / Telecom Industry', sources: [
+                  { name: 'SpaceNews', url: 'https://spacenews.com' },
+                  { name: 'Via Satellite', url: 'https://www.viasatellite.com' },
+                  { name: 'SatellitePro ME', url: 'https://www.satelliteprome.com' },
+                  { name: 'SatNews', url: 'https://www.satnews.com' },
+                  { name: 'Advanced Television', url: 'https://advanced-television.com' },
+                  { name: 'New Electronics', url: 'https://www.newelectronics.co.uk' },
+                  { name: 'Light Reading', url: 'https://www.lightreading.com' },
+                ]},
+                { category: 'Research / Market Data', sources: [
+                  { name: 'GSMA Intelligence', url: 'https://www.gsmaintelligence.com' },
+                  { name: 'Kaleido Intelligence', url: 'https://www.kaleidointelligence.com' },
+                  { name: 'MEF (Mobile Ecosystem Forum)', url: 'https://mobileecosystemforum.com' },
+                ]},
+                { category: 'Regulatory', sources: [
+                  { name: 'FCC (Federal Communications Commission)', url: 'https://www.fcc.gov' },
+                ]},
+                { category: 'Financial / Analyst', sources: [
+                  { name: 'TipRanks', url: 'https://www.tipranks.com' },
+                  { name: 'Seeking Alpha', url: 'https://seekingalpha.com' },
+                  { name: 'GuruFocus', url: 'https://www.gurufocus.com' },
+                  { name: 'Yahoo Finance', url: 'https://finance.yahoo.com' },
+                  { name: 'MarketBeat', url: 'https://www.marketbeat.com' },
+                  { name: 'Investing.com', url: 'https://www.investing.com' },
+                  { name: 'Benzinga', url: 'https://www.benzinga.com' },
+                  { name: 'Quiver Quant', url: 'https://www.quiverquant.com' },
+                ]},
+                { category: 'Press / News Wires', sources: [
+                  { name: 'PR Newswire', url: 'https://www.prnewswire.com' },
+                  { name: 'Business Wire', url: 'https://www.businesswire.com' },
+                  { name: 'GlobeNewswire', url: 'https://www.globenewswire.com' },
+                ]},
+              ].map(group => (
+                <div key={group.category} style={{ background: 'var(--surface2)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>{group.category}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {group.sources.map(s => (
+                      <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
+                        {s.name} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </main>
       </div>
     </UpdateIndicatorContext.Provider>
