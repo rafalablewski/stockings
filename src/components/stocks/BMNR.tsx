@@ -7454,6 +7454,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     },
     {
       date: '2026-01-13',
+      category: 'Regulatory',
+      company: 'US Senate Banking Committee',
+      title: 'Digital Asset Market CLARITY Act — US Market Structure Bill Defines SEC/CFTC Jurisdiction for Crypto',
+      summary: 'Senate Banking Committee advances the Digital Asset Market CLARITY Act, establishing a comprehensive US regulatory framework for digital assets. Key provisions: (1) INVESTOR PROTECTION — strengthens disclosure requirements, preserves anti-fraud authorities, limits insider abuse, promotes coordinated oversight and financial literacy. (2) REGULATORY CLARITY — draws bright line between SEC and CFTC jurisdiction, replaces SEC regulation-by-enforcement with workable statutory framework, creates tailored disclosure regime for digital asset projects to raise capital. (3) DeFi INNOVATION — protects software developers and peer-to-peer activity, ensures centralized intermediaries interacting with DeFi are subject to tailored risk-management, cybersecurity, and compliance standards, focuses regulatory efforts on control rather than code. (4) ILLICIT FINANCE — ensures centralized intermediaries subject to appropriate sanctions framework, gives law enforcement new targeted tools to combat money laundering, terrorist financing, and sanctions evasion, closes national security gaps while keeping legitimate crypto activity onshore. Committee chairman: Tim Scott (R-SC). Described as establishing US as "crypto capital of the world."',
+      significance: 'LANDMARK US LEGISLATION: First comprehensive market structure bill for digital assets advancing through Senate Banking Committee. Replaces SEC\'s regulation-by-enforcement model with clear statutory framework. Bright-line SEC/CFTC jurisdiction eliminates years of regulatory ambiguity. DeFi developer protections (regulate control, not code) preserve open-source innovation. Combined with GENIUS Act (stablecoins), creates complete US regulatory framework for crypto.',
+      bmnrImplication: 'CLARITY Act is the most significant US crypto regulatory development for BMNR. Clear SEC/CFTC jurisdiction removes legal uncertainty that has suppressed institutional adoption. ETH classification clarity (commodity vs security) directly impacts BMNR\'s treasury strategy. DeFi protections preserve Ethereum\'s open-source ecosystem. Combined with GENIUS Act, creates regulatory environment where institutional capital can flow into ETH with confidence.',
+      impact: 'Bullish',
+      source: 'US Senate Banking Committee'
+    },
+    {
+      date: '2026-01-13',
       category: 'Institutional',
       company: 'Franklin Templeton',
       title: 'Franklin Templeton Prepares Institutional Money Market Funds for Tokenized Finance',
