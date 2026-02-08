@@ -956,8 +956,10 @@ const ASTSAnalysis = () => {
           {activeTab === 'wall-street' && <WallStreetTab />}
           {activeTab === 'sources' && (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-header</div>
+              <h2 className="section-head">Research Sources</h2>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
-              <div className="highlight"><h3>Research Sources</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
+              <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
               {[
                 { category: 'Company / IR', sources: [
