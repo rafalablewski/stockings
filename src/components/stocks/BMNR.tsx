@@ -307,7 +307,7 @@ interface ErrorBoundaryState {
 // ============================================================================
 
 /** Competitor identifiers for crypto treasury space */
-type BMNRCompetitorId = 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'ethz' | 'other';
+type BMNRCompetitorId = 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'ethz' | 'kraken' | 'other';
 
 /** News category types for crypto treasury competitors */
 type BMNRCompetitorNewsCategory = 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy';
@@ -3435,6 +3435,16 @@ const CompsTab = ({ comparables, ethPrice }) => {
       currentStatus: 'ETH accumulation + DeFi restaking + RWA tokenization platform',
       capabilities: { stakingYield: true, treasuryFocus: true, miningOperations: false, publicCompany: true, institutionalAccess: true },
       keyMetrics: { holdings: '~102K ETH', marketCap: '~$500M', navPremium: '-13% (mNAV 0.87x)', yieldRate: '3-5%' }
+    },
+    {
+      id: 'kraken',
+      name: 'Kraken',
+      ticker: 'Private',
+      description: 'Major crypto exchange, BMNR institutional investor, expanding into DeFi yield, institutional custody, and tokenized equities',
+      cryptoType: 'Mixed',
+      currentStatus: 'Exchange + institutional custody + DeFi Earn (ETH/USDC yield) + xStocks tokenized equities',
+      capabilities: { stakingYield: true, treasuryFocus: false, miningOperations: false, publicCompany: false, institutionalAccess: true },
+      keyMetrics: { holdings: 'Exchange reserves', marketCap: 'Private', navPremium: 'N/A', yieldRate: 'DeFi Earn ~8%' }
     }
   ];
 
@@ -3448,7 +3458,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
     // Format:
     // {
     //   date: 'YYYY-MM-DD',
-    //   competitor: 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'ethz' | 'other',
+    //   competitor: 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'ethz' | 'kraken' | 'other',
     //   category: 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy',
     //   headline: 'Brief headline',
     //   details: ['Bullet point 1', 'Bullet point 2'],
@@ -3458,6 +3468,267 @@ const CompsTab = ({ comparables, ethPrice }) => {
     //   sourceUrl: 'https://...'
     // },
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - INSTITUTIONAL BESPOKE INVESTMENT SOLUTION (Feb 5, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'kraken',
+      category: 'Strategy',
+      headline: 'Kraken Institutional announces first bespoke investment solution with Bitwise Asset Management',
+      details: [
+        'Bitwise Custom Yield Strategy available to eligible institutional clients',
+        'Delivered by Bitwise as external strategy manager within Kraken\'s qualified custody, execution and risk framework',
+        'First of multiple managed strategies planned — building infrastructure for diverse crypto opportunities',
+        'All strategies undergo structured internal review and remain subject to ongoing oversight',
+        'Minimal lock-up periods to support flexible liquidity management',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Kraken expanding institutional crypto investment products validates demand for managed crypto yield strategies. BMNR\'s ETH staking yield (3-5%) could appeal to the same institutional audience seeking crypto-native returns. Kraken is also a BMNR institutional investor.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - PROOF OF RESERVES DEC 2025 (Feb 5, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken releases December 2025 Proof of Reserves confirming 1:1+ client asset backing',
+      details: [
+        'Covers major cryptoassets including BTC, ETH, SOL, USDC, USDT, XRP and ADA',
+        'Uses Merkle tree for cryptographic verification with user-level proof',
+        'Independent third-party accountancy firm attestation — publishes quarterly',
+        'Accounts for total client liabilities including margin, futures, and staked positions',
+        'Pioneered PoR in 2014 — longest-running transparency program among major exchanges',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s PoR covering ETH validates institutional-grade custody for ETH holdings. As BMNR grows its ETH treasury, exchange PoR transparency reinforces trust in the broader ETH custody ecosystem that BMNR depends on.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - WILLIAMS F1 PARTNERSHIP RENEWAL (Jan 27, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-27',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken renews long-term partnership with Atlassian Williams F1 Team with front wing branding for 2026',
+      details: [
+        'Partnership since 2023 as Official Crypto and Web3 Partner, now renewed long-term',
+        'Kraken moves to front wing branding on FW48 for 2026 Formula 1 season',
+        'Grid Pass digital collectible program and Presenting Partner of global Fan Zones',
+        'Part of Williams\' portfolio of major brand renewals (Duracell, Gulf Oil, VAST Data)',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s mainstream marketing increases crypto adoption broadly. As a BMNR institutional investor, Kraken\'s growing brand and user base could translate to increased awareness and demand for ETH treasury investment vehicles like BMNR.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - DEFI EARN WITH USDC/ETH YIELD (Jan 26, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-26',
+      competitor: 'kraken',
+      category: 'Yield',
+      headline: 'Kraken launches DeFi Earn with up to 8% APY via audited Veda vaults on Ethereum',
+      details: [
+        'Earn up to 8% APY on cash and stablecoins via audited Veda vaults supplying liquidity to Ethereum-based onchain lending',
+        'Three risk-managed vault options: Balanced Yield (Chaos Labs), Boosted Yield (Chaos Labs), Advanced Strategies (Sentora)',
+        'Available in 48 US states (excl. NY, ME), Canada, and European Economic Area',
+        'Withdrawals typically instant with minimal lock-up periods',
+        'Converts user deposits to USDC, then deploys to DeFi lending protocols — increases Ethereum DeFi TVL',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Kraken\'s DeFi Earn validates institutional demand for Ethereum-based yield. Deploys capital to Ethereum lending protocols, growing DeFi TVL and demand for ETH. BMNR\'s 3-5% ETH staking yield is a complementary but different yield strategy — staking secures the network vs lending generates borrower interest.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-defi',
+      storyTitle: 'Kraken DeFi & Yield Products',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - ATLETICO MADRID MEMECOIN SHOWDOWN (Jan 21, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-21',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken announces memecoin showdown with Atletico Madrid jersey sleeve placement as prize',
+      details: [
+        'Memecoins compete by trading volume on Kraken (Jan 22 – Feb 15, 2026)',
+        'Winner replaces Kraken logo on Atletico de Madrid shirt sleeve for Barcelona match (Apr 4-5)',
+        'Participating tokens: BERT, GIGA, PONKE, UFD, USDUC, USELESS',
+        'Follows successful 2025 memecoin showdown with Williams F1 (Pengu in Singapore)',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s sports marketing drives retail crypto engagement and platform growth. While memecoin activity doesn\'t directly impact BMNR, growing Kraken\'s user base as a BMNR institutional investor increases potential distribution channel for ETH treasury products.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - CRYPTO 2026 OUTLOOK (Jan 15, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-15',
+      competitor: 'kraken',
+      category: 'Strategy',
+      headline: 'Kraken economist outlines 2026 outlook: compressed BTC volatility, stablecoins at ATH, RWA tokenization 3x growth',
+      details: [
+        'Bitcoin ETFs and Strategy (MSTR) collectively represented ~$44B net spot demand in 2025, yet price disappointed — supply from long-term holders offsetting',
+        'Bitcoin Coin Days Destroyed reached highest level on record in Q4 2025 — meaningful turnover from legacy HODLers',
+        'BTC dominance averaged above 60% in 2025, no sustained breakdown toward sub-50% — typical late-cycle excess not yet seen',
+        'Stablecoin liquidity at all-time highs, systemic risk indicators contained',
+        'Tokenization of RWAs grew from ~$5.6B to ~$19B in single year — expanding beyond Treasuries into commodities, private credit, equities',
+        'DeFi tokenomics evolving: Uniswap-style fee sharing could reprice governance tokens toward durable valuation frameworks',
+        'CLARITY Act could provide framework for digital commodities, accelerating US as crypto capital of the world',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Kraken\'s research directly relevant to BMNR thesis: (1) BTC dominance >60% without alt rotation suggests ETH catch-up potential, (2) DeFi tokenomics maturation (fee sharing) validates ETH staking yield thesis, (3) RWA tokenization 3x growth benefits Ethereum as primary settlement layer, (4) stablecoin ATH supports Ethereum DeFi ecosystem where BMNR\'s staked ETH operates.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-research',
+      storyTitle: 'Kraken Market Research',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - ETHENA USDE CUSTODY (Jan 6, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-06',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken selected as custody partner for Ethena\'s USDe synthetic dollar stablecoin',
+      details: [
+        'Approved by Ethena Risk Committee for custody of USDe backing assets',
+        'Assets in fully segregated, bankruptcy-remote, cold-storage vaults operated by US state-chartered bank',
+        'Monthly custodian attestations and weekly Proof of Reserves for USDe',
+        'USDe uses delta-neutral derivatives strategy — shorts ETH perpetuals against ETH collateral to create synthetic dollar',
+        'Kraken Custody uses HSM + MPC security architecture with in-house security teams',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'USDe\'s model shorts ETH perpetuals, creating selling pressure that could suppress ETH prices — net negative for BMNR\'s ETH treasury value. However, Ethena also holds significant ETH collateral, and the growing USDe ecosystem increases demand for ETH derivatives liquidity. Kraken as custody partner signals institutional-grade ETH infrastructure maturation.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-defi',
+      storyTitle: 'Kraken DeFi & Yield Products',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - EUROPE 2025 EXPANSION (Dec 31, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-31',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken completes pivotal 2025 European expansion with MiCA and MiFID compliance',
+      details: [
+        'Regulatory clarity achieved via MiCA and MiFID frameworks across EU',
+        'Expanded across France, Ireland, Germany, Netherlands, Poland, Spain',
+        'Built local teams and launched new products for European markets',
+        'Positions Kraken as regulated crypto partner across the EU',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Kraken\'s EU regulatory compliance expands the pool of regulated investors who can access crypto treasury products. As MiCA provides clarity for digital asset investment, European institutional capital could flow into ETH treasury vehicles like BMNR. Kraken\'s EU presence as a BMNR investor creates distribution optionality.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - XSTOCKS ON TON BLOCKCHAIN (Dec 18, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-18',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken\'s xStocks tokenized equities launch on TON blockchain — $180M+ onchain, multichain expansion',
+      details: [
+        'Fully collateralized tokenized stocks and ETFs on TON blockchain via Telegram\'s ~100M wallet users',
+        'Over $180M in tokenized assets onchain with ~50K unique wallet addresses',
+        'Multichain: available on Solana, Ethereum, and now TON (Mantle and TRON underway)',
+        'Kraken announced acquisition of Backed Finance to unify xStocks issuance, trading, and settlement',
+        'Co-CEO Arjun Sethi: "financial assets as neutral, composable building blocks on open networks"',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Tokenized equities represent an alternative onchain investment vehicle competing for the same institutional capital as crypto treasury companies. However, xStocks on Ethereum increases Ethereum ecosystem utility and transaction demand. If tokenized assets settle in ETH or require ETH gas, this is net positive for ETH value.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - ALPACA XSTOCKS PARTNERSHIP (Dec 17, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-17',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken deepens Alpaca partnership as preferred venue for xStocks — surpasses $10B combined volume',
+      details: [
+        'Alpaca becomes preferred venue for sourcing and custodying underlying equities backing xStocks 1:1',
+        'xStocks surpassed $10B in combined transaction volume since June 2025 launch',
+        'Real-time mint and redeem via Alpaca\'s Instant Tokenization Network (ITN)',
+        'Plans to expand beyond equities to broader suite of tokenized securities and real-world assets',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'xStocks\' $10B+ volume shows growing demand for tokenized financial assets. As RWA tokenization scales on Ethereum, it increases the blockchain\'s utility as settlement infrastructure — supportive of ETH value and the ETH treasury thesis underlying BMNR.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - MAKER FEE PROGRAM UPDATE (Dec 17, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-17',
+      competitor: 'kraken',
+      category: 'Financial',
+      headline: 'Kraken optimizes maker fee incentives, graduates 6 high-volume trading pairs with $50M+ monthly volume',
+      details: [
+        '6 trading pairs moved to regular maker fee schedule after achieving self-sustaining liquidity',
+        'Graduated pairs demonstrated $50M+ 30-day volume with $100K+ market depth',
+        'Maker rebates continue on 425+ other trading pairs for liquidity support',
+        'Indicates growing platform maturity and organic trading activity across crypto markets',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Deep exchange liquidity across 425+ pairs supports healthy ETH price discovery and trading. As a BMNR investor, Kraken\'s growing liquidity infrastructure creates a more efficient market for ETH, reducing slippage and improving execution for large ETH treasury transactions.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - MOBILE PERFORMANCE ENGINEERING (Dec 17, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-17',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken engineering details Maestro-based mobile performance regression prevention system',
+      details: [
+        'App Render Complete and Navigation Total Blocking Time as primary mobile performance metrics',
+        'Automated benchmarks for every merge using Maestro end-to-end testing framework',
+        'Network traffic recording and replay to isolate mobile code changes from backend variability',
+        'Moving average alerting: fires when metric regresses >10% for 2+ consecutive runs',
+        'React Native New Architecture adoption for baseline performance improvement',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken investing in mobile performance engineering signals platform maturation and focus on user experience. Improved app reliability and speed lowers barriers for retail and institutional users to trade crypto, supporting broader ETH market liquidity.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // ETHZILLA - $4.7M MANUFACTURED HOME LOAN PORTFOLIO PURCHASE (Feb 5, 2026)
