@@ -215,6 +215,18 @@ export const PARTNER_NEWS: PartnerNewsEntry[] = [
     url: 'https://www.vodafone.com/news/newsroom/technology/vodafone-ast-space-mobile-and-the-university-of-malaga-open-the-doors-to-europe-s-first-space-and-land-based-network-lab'
   },
 
+  // === NOVEMBER 2025 ===
+  {
+    date: '2025-11-18',
+    partner: 'Orange',
+    category: 'Partnership',
+    headline: 'Orange Becomes First European Operator to Offer Satellite SMS via D2D with Skylo',
+    summary: 'Orange France launched "Message Satellite" — D2D satellite SMS and geolocation service — becoming first European operator to offer satellite SMS using Direct-to-Device technology. Partnership with Skylo (NTN operator). Available from Dec 11, 2025 for consumers, 2026 for business. Initially exclusive to Orange 5G/5G+ customers with Google Pixel 9 or 10 smartphones. Available in France and 36 countries (Skylo coverage area). Pricing: free for first 6 months, then €5/month. Uses smartphone\'s direct satellite connection for SMS and geolocation when mobile/Wi-Fi coverage unavailable.',
+    astsRelevance: 'ASTS partner Orange launched D2D SMS service with Skylo instead of waiting for ASTS broadband D2D. However, this is SMS-only on limited devices (Pixel 9/10 only) at €5/month — narrow compared to ASTS broadband voice/data capability. Skylo uses GEO satellites for narrowband NTN. ASTS offers fundamentally different value: broadband voice, video, data on any smartphone. Orange MoU with ASTS (Mar 2022) focused on Africa testing — Skylo launch is France/Europe. Validates €5/month pricing and European MNO demand for satellite connectivity.',
+    impact: 'Neutral',
+    source: 'Orange'
+  },
+
   // === SEPTEMBER 2025 ===
   {
     date: '2025-09-05',

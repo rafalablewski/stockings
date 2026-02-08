@@ -307,7 +307,7 @@ interface ErrorBoundaryState {
 // ============================================================================
 
 /** Competitor identifiers for crypto treasury space */
-type BMNRCompetitorId = 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'other';
+type BMNRCompetitorId = 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'ethz' | 'kraken' | 'other';
 
 /** News category types for crypto treasury competitors */
 type BMNRCompetitorNewsCategory = 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy';
@@ -837,6 +837,7 @@ const BMNRDilutionAnalysis = () => {
     { id: 'debt', label: 'Debt', type: 'projection', group: 'BMNR Analysis' },
     { id: 'sensitivity', label: 'Sensitivity', type: 'projection', group: 'BMNR Analysis' },
     { id: 'backtest', label: 'Backtest', type: 'projection', group: 'BMNR Analysis' },
+    { id: 'sources', label: 'Sources', type: 'tracking', group: 'BMNR Analysis' },
     // Unified valuation model (combines Scenarios + DCF)
     { id: 'model', label: 'Model', type: 'projection' },
     // Other projections
@@ -1030,6 +1031,91 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'financials' && <FinancialsTab />}
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
+        {activeTab === 'sources' && (
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-header</div>
+            <h2 className="section-head">Research Sources</h2>
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
+            <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for BMNR analysis, competitor tracking, and Ethereum ecosystem research.</p></div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
+            {[
+              { category: 'Company / IR', sources: [
+                { name: 'BMNR Investor Relations (PRNewswire)', url: 'https://www.prnewswire.com' },
+                { name: 'SEC EDGAR (BMNR Filings)', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=vinanz&CIK=&type=&dateb=&owner=include&count=40&search_text=&action=getcompany' },
+              ]},
+              { category: 'Crypto Treasury Competitors', sources: [
+                { name: 'Strategy (MSTR) Investor Relations', url: 'https://www.strategy.com/investor-relations' },
+                { name: 'Coinbase Blog', url: 'https://www.coinbase.com/blog' },
+                { name: 'Coinbase Investor Relations', url: 'https://investor.coinbase.com' },
+                { name: 'Marathon Digital (MARA)', url: 'https://ir.mara.com' },
+                { name: 'Riot Platforms (RIOT)', url: 'https://www.riotplatforms.com' },
+                { name: 'CleanSpark (CLSK)', url: 'https://www.cleanspark.com' },
+                { name: 'ETHZilla (ETHZ) IR', url: 'https://ir.ethzilla.com' },
+              ]},
+              { category: 'Ethereum Protocol / Foundation', sources: [
+                { name: 'Ethereum Foundation Blog', url: 'https://blog.ethereum.org' },
+                { name: 'Vitalik Buterin Blog', url: 'https://vitalik.eth.limo' },
+                { name: 'ENS Domains Blog', url: 'https://ens.domains/blog' },
+                { name: 'Base Blog', url: 'https://base.org/blog' },
+                { name: 'Etherscan', url: 'https://etherscan.io' },
+                { name: 'Dune Analytics', url: 'https://dune.com' },
+                { name: 'L2Beat', url: 'https://l2beat.com' },
+              ]},
+              { category: 'Institutional / TradFi', sources: [
+                { name: 'BlackRock', url: 'https://www.blackrock.com' },
+                { name: 'Fidelity Digital Assets', url: 'https://www.fidelitydigitalassets.com' },
+                { name: 'Franklin Templeton', url: 'https://www.franklintempleton.com' },
+                { name: 'State Street', url: 'https://www.statestreet.com' },
+                { name: 'WisdomTree', url: 'https://www.wisdomtree.com' },
+                { name: 'JPMorgan / Kinexys', url: 'https://www.jpmorgan.com' },
+                { name: 'Goldman Sachs', url: 'https://www.goldmansachs.com' },
+                { name: 'Standard Chartered', url: 'https://www.sc.com' },
+                { name: 'Deutsche Bank', url: 'https://www.db.com' },
+                { name: 'HSBC', url: 'https://www.hsbc.com' },
+                { name: 'Citi', url: 'https://www.citigroup.com' },
+              ]},
+              { category: 'Regulatory', sources: [
+                { name: 'SEC (Securities & Exchange Commission)', url: 'https://www.sec.gov' },
+                { name: 'CFTC', url: 'https://www.cftc.gov' },
+                { name: 'US Senate Banking Committee', url: 'https://www.banking.senate.gov' },
+                { name: 'ESMA (EU Securities & Markets)', url: 'https://www.esma.europa.eu' },
+                { name: 'UK FCA', url: 'https://www.fca.org.uk' },
+              ]},
+              { category: 'Crypto News / Data', sources: [
+                { name: 'CoinDesk', url: 'https://www.coindesk.com' },
+                { name: 'The Block', url: 'https://www.theblock.co' },
+                { name: 'CryptoSlate', url: 'https://cryptoslate.com' },
+                { name: 'Decrypt', url: 'https://decrypt.co' },
+                { name: 'Bitcoin.com', url: 'https://news.bitcoin.com' },
+                { name: 'CoinGecko', url: 'https://www.coingecko.com' },
+                { name: 'CoinShares', url: 'https://coinshares.com' },
+                { name: 'Ledger Insights', url: 'https://www.ledgerinsights.com' },
+              ]},
+              { category: 'Financial / Analyst', sources: [
+                { name: 'Cantor Fitzgerald', url: 'https://www.cantor.com' },
+                { name: 'Bloomberg', url: 'https://www.bloomberg.com' },
+                { name: 'CNBC', url: 'https://www.cnbc.com' },
+              ]},
+              { category: 'Press / News Wires', sources: [
+                { name: 'PR Newswire', url: 'https://www.prnewswire.com' },
+                { name: 'Business Wire', url: 'https://www.businesswire.com' },
+                { name: 'ACCESS Newswire', url: 'https://www.accessnewswire.com' },
+                { name: 'GlobeNewswire', url: 'https://www.globenewswire.com' },
+              ]},
+            ].map(group => (
+              <div key={group.category} className="card">
+                <div className="card-title">{group.category}</div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {group.sources.map(s => (
+                    <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
+                      {s.name} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         </main>
       </div>
     </UpdateIndicatorContext.Provider>
@@ -3339,6 +3425,26 @@ const CompsTab = ({ comparables, ethPrice }) => {
       currentStatus: 'Mining + HODL strategy',
       capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: true, publicCompany: true, institutionalAccess: true },
       keyMetrics: { holdings: '~10K BTC', marketCap: '~$2B', navPremium: '+40%', yieldRate: '0%' }
+    },
+    {
+      id: 'ethz',
+      name: 'ETHZilla',
+      ticker: 'ETHZ',
+      description: 'Ethereum treasury company with DeFi yield and RWA tokenization strategy',
+      cryptoType: 'ETH',
+      currentStatus: 'ETH accumulation + DeFi restaking + RWA tokenization platform',
+      capabilities: { stakingYield: true, treasuryFocus: true, miningOperations: false, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '~102K ETH', marketCap: '~$500M', navPremium: '-13% (mNAV 0.87x)', yieldRate: '3-5%' }
+    },
+    {
+      id: 'kraken',
+      name: 'Kraken',
+      ticker: 'Private',
+      description: 'Major crypto exchange, BMNR institutional investor, expanding into DeFi yield, institutional custody, and tokenized equities',
+      cryptoType: 'Mixed',
+      currentStatus: 'Exchange + institutional custody + DeFi Earn (ETH/USDC yield) + xStocks tokenized equities',
+      capabilities: { stakingYield: true, treasuryFocus: false, miningOperations: false, publicCompany: false, institutionalAccess: true },
+      keyMetrics: { holdings: 'Exchange reserves', marketCap: 'Private', navPremium: 'N/A', yieldRate: 'DeFi Earn ~8%' }
     }
   ];
 
@@ -3352,7 +3458,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
     // Format:
     // {
     //   date: 'YYYY-MM-DD',
-    //   competitor: 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'other',
+    //   competitor: 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'ethz' | 'kraken' | 'other',
     //   category: 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy',
     //   headline: 'Brief headline',
     //   details: ['Bullet point 1', 'Bullet point 2'],
@@ -3362,6 +3468,886 @@ const CompsTab = ({ comparables, ethPrice }) => {
     //   sourceUrl: 'https://...'
     // },
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - INSTITUTIONAL BESPOKE INVESTMENT SOLUTION (Feb 5, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'kraken',
+      category: 'Strategy',
+      headline: 'Kraken Institutional announces first bespoke investment solution with Bitwise Asset Management',
+      details: [
+        'Bitwise Custom Yield Strategy available to eligible institutional clients',
+        'Delivered by Bitwise as external strategy manager within Kraken\'s qualified custody, execution and risk framework',
+        'First of multiple managed strategies planned — building infrastructure for diverse crypto opportunities',
+        'All strategies undergo structured internal review and remain subject to ongoing oversight',
+        'Minimal lock-up periods to support flexible liquidity management',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Kraken expanding institutional crypto investment products validates demand for managed crypto yield strategies. BMNR\'s ETH staking yield (3-5%) could appeal to the same institutional audience seeking crypto-native returns. Kraken is also a BMNR institutional investor.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - PROOF OF RESERVES DEC 2025 (Feb 5, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken releases December 2025 Proof of Reserves confirming 1:1+ client asset backing',
+      details: [
+        'Covers major cryptoassets including BTC, ETH, SOL, USDC, USDT, XRP and ADA',
+        'Uses Merkle tree for cryptographic verification with user-level proof',
+        'Independent third-party accountancy firm attestation — publishes quarterly',
+        'Accounts for total client liabilities including margin, futures, and staked positions',
+        'Pioneered PoR in 2014 — longest-running transparency program among major exchanges',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s PoR covering ETH validates institutional-grade custody for ETH holdings. As BMNR grows its ETH treasury, exchange PoR transparency reinforces trust in the broader ETH custody ecosystem that BMNR depends on.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - WILLIAMS F1 PARTNERSHIP RENEWAL (Jan 27, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-27',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken renews long-term partnership with Atlassian Williams F1 Team with front wing branding for 2026',
+      details: [
+        'Partnership since 2023 as Official Crypto and Web3 Partner, now renewed long-term',
+        'Kraken moves to front wing branding on FW48 for 2026 Formula 1 season',
+        'Grid Pass digital collectible program and Presenting Partner of global Fan Zones',
+        'Part of Williams\' portfolio of major brand renewals (Duracell, Gulf Oil, VAST Data)',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s mainstream marketing increases crypto adoption broadly. As a BMNR institutional investor, Kraken\'s growing brand and user base could translate to increased awareness and demand for ETH treasury investment vehicles like BMNR.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - DEFI EARN WITH USDC/ETH YIELD (Jan 26, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-26',
+      competitor: 'kraken',
+      category: 'Yield',
+      headline: 'Kraken launches DeFi Earn with up to 8% APY via audited Veda vaults on Ethereum',
+      details: [
+        'Earn up to 8% APY on cash and stablecoins via audited Veda vaults supplying liquidity to Ethereum-based onchain lending',
+        'Three risk-managed vault options: Balanced Yield (Chaos Labs), Boosted Yield (Chaos Labs), Advanced Strategies (Sentora)',
+        'Available in 48 US states (excl. NY, ME), Canada, and European Economic Area',
+        'Withdrawals typically instant with minimal lock-up periods',
+        'Converts user deposits to USDC, then deploys to DeFi lending protocols — increases Ethereum DeFi TVL',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Kraken\'s DeFi Earn validates institutional demand for Ethereum-based yield. Deploys capital to Ethereum lending protocols, growing DeFi TVL and demand for ETH. BMNR\'s 3-5% ETH staking yield is a complementary but different yield strategy — staking secures the network vs lending generates borrower interest.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-defi',
+      storyTitle: 'Kraken DeFi & Yield Products',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - ATLETICO MADRID MEMECOIN SHOWDOWN (Jan 21, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-21',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken announces memecoin showdown with Atletico Madrid jersey sleeve placement as prize',
+      details: [
+        'Memecoins compete by trading volume on Kraken (Jan 22 – Feb 15, 2026)',
+        'Winner replaces Kraken logo on Atletico de Madrid shirt sleeve for Barcelona match (Apr 4-5)',
+        'Participating tokens: BERT, GIGA, PONKE, UFD, USDUC, USELESS',
+        'Follows successful 2025 memecoin showdown with Williams F1 (Pengu in Singapore)',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s sports marketing drives retail crypto engagement and platform growth. While memecoin activity doesn\'t directly impact BMNR, growing Kraken\'s user base as a BMNR institutional investor increases potential distribution channel for ETH treasury products.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - CRYPTO 2026 OUTLOOK (Jan 15, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-15',
+      competitor: 'kraken',
+      category: 'Strategy',
+      headline: 'Kraken economist outlines 2026 outlook: compressed BTC volatility, stablecoins at ATH, RWA tokenization 3x growth',
+      details: [
+        'Bitcoin ETFs and Strategy (MSTR) collectively represented ~$44B net spot demand in 2025, yet price disappointed — supply from long-term holders offsetting',
+        'Bitcoin Coin Days Destroyed reached highest level on record in Q4 2025 — meaningful turnover from legacy HODLers',
+        'BTC dominance averaged above 60% in 2025, no sustained breakdown toward sub-50% — typical late-cycle excess not yet seen',
+        'Stablecoin liquidity at all-time highs, systemic risk indicators contained',
+        'Tokenization of RWAs grew from ~$5.6B to ~$19B in single year — expanding beyond Treasuries into commodities, private credit, equities',
+        'DeFi tokenomics evolving: Uniswap-style fee sharing could reprice governance tokens toward durable valuation frameworks',
+        'CLARITY Act could provide framework for digital commodities, accelerating US as crypto capital of the world',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Kraken\'s research directly relevant to BMNR thesis: (1) BTC dominance >60% without alt rotation suggests ETH catch-up potential, (2) DeFi tokenomics maturation (fee sharing) validates ETH staking yield thesis, (3) RWA tokenization 3x growth benefits Ethereum as primary settlement layer, (4) stablecoin ATH supports Ethereum DeFi ecosystem where BMNR\'s staked ETH operates.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-research',
+      storyTitle: 'Kraken Market Research',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - ETHENA USDE CUSTODY (Jan 6, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-06',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken selected as custody partner for Ethena\'s USDe synthetic dollar stablecoin',
+      details: [
+        'Approved by Ethena Risk Committee for custody of USDe backing assets',
+        'Assets in fully segregated, bankruptcy-remote, cold-storage vaults operated by US state-chartered bank',
+        'Monthly custodian attestations and weekly Proof of Reserves for USDe',
+        'USDe uses delta-neutral derivatives strategy — shorts ETH perpetuals against ETH collateral to create synthetic dollar',
+        'Kraken Custody uses HSM + MPC security architecture with in-house security teams',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'USDe\'s model shorts ETH perpetuals, creating selling pressure that could suppress ETH prices — net negative for BMNR\'s ETH treasury value. However, Ethena also holds significant ETH collateral, and the growing USDe ecosystem increases demand for ETH derivatives liquidity. Kraken as custody partner signals institutional-grade ETH infrastructure maturation.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-defi',
+      storyTitle: 'Kraken DeFi & Yield Products',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - EUROPE 2025 EXPANSION (Dec 31, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-31',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken completes pivotal 2025 European expansion with MiCA and MiFID compliance',
+      details: [
+        'Regulatory clarity achieved via MiCA and MiFID frameworks across EU',
+        'Expanded across France, Ireland, Germany, Netherlands, Poland, Spain',
+        'Built local teams and launched new products for European markets',
+        'Positions Kraken as regulated crypto partner across the EU',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Kraken\'s EU regulatory compliance expands the pool of regulated investors who can access crypto treasury products. As MiCA provides clarity for digital asset investment, European institutional capital could flow into ETH treasury vehicles like BMNR. Kraken\'s EU presence as a BMNR investor creates distribution optionality.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - XSTOCKS ON TON BLOCKCHAIN (Dec 18, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-18',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken\'s xStocks tokenized equities launch on TON blockchain — $180M+ onchain, multichain expansion',
+      details: [
+        'Fully collateralized tokenized stocks and ETFs on TON blockchain via Telegram\'s ~100M wallet users',
+        'Over $180M in tokenized assets onchain with ~50K unique wallet addresses',
+        'Multichain: available on Solana, Ethereum, and now TON (Mantle and TRON underway)',
+        'Kraken announced acquisition of Backed Finance to unify xStocks issuance, trading, and settlement',
+        'Co-CEO Arjun Sethi: "financial assets as neutral, composable building blocks on open networks"',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Tokenized equities represent an alternative onchain investment vehicle competing for the same institutional capital as crypto treasury companies. However, xStocks on Ethereum increases Ethereum ecosystem utility and transaction demand. If tokenized assets settle in ETH or require ETH gas, this is net positive for ETH value.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - ALPACA XSTOCKS PARTNERSHIP (Dec 17, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-17',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken deepens Alpaca partnership as preferred venue for xStocks — surpasses $10B combined volume',
+      details: [
+        'Alpaca becomes preferred venue for sourcing and custodying underlying equities backing xStocks 1:1',
+        'xStocks surpassed $10B in combined transaction volume since June 2025 launch',
+        'Real-time mint and redeem via Alpaca\'s Instant Tokenization Network (ITN)',
+        'Plans to expand beyond equities to broader suite of tokenized securities and real-world assets',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'xStocks\' $10B+ volume shows growing demand for tokenized financial assets. As RWA tokenization scales on Ethereum, it increases the blockchain\'s utility as settlement infrastructure — supportive of ETH value and the ETH treasury thesis underlying BMNR.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - MAKER FEE PROGRAM UPDATE (Dec 17, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-17',
+      competitor: 'kraken',
+      category: 'Financial',
+      headline: 'Kraken optimizes maker fee incentives, graduates 6 high-volume trading pairs with $50M+ monthly volume',
+      details: [
+        '6 trading pairs moved to regular maker fee schedule after achieving self-sustaining liquidity',
+        'Graduated pairs demonstrated $50M+ 30-day volume with $100K+ market depth',
+        'Maker rebates continue on 425+ other trading pairs for liquidity support',
+        'Indicates growing platform maturity and organic trading activity across crypto markets',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Deep exchange liquidity across 425+ pairs supports healthy ETH price discovery and trading. As a BMNR investor, Kraken\'s growing liquidity infrastructure creates a more efficient market for ETH, reducing slippage and improving execution for large ETH treasury transactions.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - MOBILE PERFORMANCE ENGINEERING (Dec 17, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-17',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken engineering details Maestro-based mobile performance regression prevention system',
+      details: [
+        'App Render Complete and Navigation Total Blocking Time as primary mobile performance metrics',
+        'Automated benchmarks for every merge using Maestro end-to-end testing framework',
+        'Network traffic recording and replay to isolate mobile code changes from backend variability',
+        'Moving average alerting: fires when metric regresses >10% for 2+ consecutive runs',
+        'React Native New Architecture adoption for baseline performance improvement',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken investing in mobile performance engineering signals platform maturation and focus on user experience. Improved app reliability and speed lowers barriers for retail and institutional users to trade crypto, supporting broader ETH market liquidity.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - USDG MARGIN COLLATERAL (Dec 10, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-10',
+      competitor: 'kraken',
+      category: 'Financial',
+      headline: 'Kraken adds Global Dollar (USDG) as margin and futures collateral currency with 1% haircut',
+      details: [
+        'USDG (Global Dollar) added to margin and futures collateral lineup — now 50+ options',
+        '1% haircut — same tier as other major stablecoins',
+        'Collateral currencies allow margin trading without selling underlying assets',
+        'Both unstaked and Kraken Rewards assets eligible as margin collateral',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'More stablecoin collateral options on Kraken deepens margin trading liquidity. Improved margin infrastructure supports ETH derivatives trading and hedging — beneficial for BMNR as deeper ETH markets improve price discovery.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - USDT0 ON PLASMA (Dec 10, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-10',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken supports USDT0 deposits and withdrawals on Plasma stablecoin-optimized blockchain',
+      details: [
+        'USDT0 funding via Plasma network now live on Kraken',
+        'USDT0 is unified liquidity network for USDT — simplifies cross-chain movement',
+        'Plasma is blockchain purpose-built for high-volume, low-cost stablecoin activity',
+        'Serves as core settlement layer for instant digital dollar payments',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Stablecoin infrastructure expansion (USDT0 on Plasma) grows the broader crypto ecosystem. More efficient stablecoin rails support trading and DeFi activity that ultimately drives ETH demand for gas and settlement.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - AVELACOM ULTRA-LOW-LATENCY (Dec 8, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-08',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken partners with Avelacom for ultra-low-latency institutional trading connectivity',
+      details: [
+        'Avelacom provides high-performance connectivity to Kraken\'s matching engine',
+        'London-Tokyo route achieves sub-138ms round-trip latency over fiber',
+        'Hybrid fiber/wireless routes reduce latency further for Tokyo-based exchanges',
+        'Supports cross-venue arbitrage, hedging, and multi-venue liquidity aggregation',
+        '99.9% uptime with dedicated 24/7 support',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Ultra-low-latency connectivity attracts institutional and HFT traders to Kraken, deepening ETH market liquidity. As a BMNR institutional investor, Kraken\'s growing institutional infrastructure strengthens the ETH trading ecosystem that supports BMNR\'s treasury valuation.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - COLOMBIA EXPANSION (Dec 4, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-04',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken expands in Colombia with local COP payment rails and auto-conversion to USD',
+      details: [
+        'Colombian clients can deposit COP directly through domestic payment methods',
+        'Deposits automatically converted to USD at competitive exchange rates',
+        'Access to 500+ digital assets and global liquidity',
+        'Part of broader Latin America strategy including Argentina, Mexico, and Colombia',
+        'Colombia described as one of most dynamic crypto markets in Latin America',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s geographic expansion into Colombia adds new users to the crypto ecosystem. Growing Kraken\'s user base as a BMNR institutional investor increases platform scale and potential demand for ETH-based products.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - DEUTSCHE BÖRSE PARTNERSHIP (Dec 4, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-04',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken and Deutsche Börse announce strategic partnership bridging traditional and digital markets',
+      details: [
+        'Integration with 360T — one of world\'s largest FX trading venues — for bank-grade FX liquidity',
+        'Kraken Embed white-label solutions for banks and fintechs to offer crypto trading',
+        'Plans for Eurex-listed derivatives on Kraken (subject to regulatory approval)',
+        'Integration of xStocks within 360X tokenized asset ecosystem',
+        'Clearstream and Crypto Finance for institutional custody',
+        'Two-way U.S./European institutional market gateway',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Deutsche Börse partnership is a landmark TradFi-crypto bridge. Eurex derivatives on Kraken could eventually include ETH products, improving institutional ETH access. Clearstream custody integration validates institutional-grade ETH custody demand. Major positive for ETH ecosystem institutional adoption.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - XSTOCKS 24/7 TRADING (Dec 3, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-03',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken Pro enables 24/7 trading for top 10 xStocks tokenized equities including MSTRx',
+      details: [
+        'Full 24/7 coverage for TSLAx, QQQx, SPYx, NVDAx, CRCLx, AAPLx, HOODx, MSTRx, GLDx, GOOGLx',
+        'Previously 24/5 — now includes weekends and public holidays',
+        'On-chain 24/7 settlement combined with Kraken Pro institutional-grade execution',
+        'Phase one of broader rollout to additional tokenized stocks and ETFs',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'MSTRx (tokenized MicroStrategy) being among top 10 xStocks shows demand for crypto treasury exposure via tokenized equities. If/when BMNR gets tokenized as an xStock, it would provide 24/7 global access to ETH treasury exposure. xStocks on Ethereum drives chain utility.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - BACKED ACQUISITION (Dec 2, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-02',
+      competitor: 'kraken',
+      category: 'Strategy',
+      headline: 'Kraken to acquire Backed Finance, unifying xStocks issuance, trading and settlement',
+      details: [
+        'xStocks surpassed $10B combined exchange and onchain volume within 6 months',
+        'Acquisition unifies issuance, trading, and settlement under Kraken',
+        'xStocks live on Solana and Ethereum — TON, Tron, Mantle, BNB Chain integrations coming',
+        'Plans to integrate xStocks into Krak money app for hold-and-spend',
+        'Over 60 tokenized equities and ETFs backed 1:1 by underlying asset',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken vertically integrating tokenized equities strengthens their position as crypto infrastructure provider. xStocks on Ethereum increases Ethereum settlement demand and chain utility. Potential future tokenization of BMNR shares as an xStock could unlock 24/7 global access.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - MARKET PARTICIPATION PROGRAM (Dec 1, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-01',
+      competitor: 'kraken',
+      category: 'Financial',
+      headline: 'Kraken launches Market Participation Program with equity-linked warrant incentives for top traders',
+      details: [
+        'Largest clients by trading volume can qualify for Kraken-equity-linked warrants',
+        'First-of-its-kind equity incentive approach among global Tier 1 crypto exchanges',
+        'Transparent, time-bound, rule-based structure',
+        'Designed to attract and retain most active trading participants and improve market liquidity',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken incentivizing high-volume market makers deepens ETH trading liquidity on the platform. Better market-making reduces spreads and improves price discovery for ETH, supporting the efficiency of BMNR\'s ETH treasury valuation.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - EURC MARGIN COLLATERAL (Nov 24, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-24',
+      competitor: 'kraken',
+      category: 'Financial',
+      headline: 'Kraken adds EURC (Circle\'s Euro stablecoin) as margin and futures collateral with 1% haircut',
+      details: [
+        'EURC added to margin collateral lineup — now 54 options total',
+        '1% haircut — same tier as USDC, USDT, and other major stablecoins',
+        'Enables Euro-denominated margin trading without selling EURC holdings',
+        'Supports hedging, short selling, and leveraged strategies using EURC collateral',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'More stablecoin collateral options on Kraken broadens the margin trading ecosystem. Additional collateral currencies support more complex ETH derivatives strategies, contributing to overall ETH market depth and efficiency.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - RAMP API LAUNCH (Nov 20, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-20',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken launches Ramp: developer-friendly API for fiat-to-crypto on/off-ramps across 400+ assets',
+      details: [
+        'Single API + SDK for any platform to integrate buy/sell crypto flows',
+        '24+ payment methods: cards, ACH, PIX, SEPA, Apple Pay, Google Pay and more',
+        '400+ assets across 100+ blockchains supported',
+        'Targets fintechs, banks, wallets, protocols, exchanges, GameFi, and developers',
+        'Kraken manages compliance, licensing, fraud prevention, and payment operations',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Kraken Ramp as B2B infrastructure lowers barriers for new platforms to offer crypto. More fiat on-ramps across 400+ assets expands the addressable market for ETH purchases. Every new Ramp integration is a potential new distribution channel for ETH exposure, supporting BMNR\'s ETH treasury value.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - CUSTODY EUROPE MICA (Nov 19, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-19',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken expands custody to Europe under MiCA via Payward Europe Solutions Limited (Ireland)',
+      details: [
+        'PESL authorized and regulated by Central Bank of Ireland under MiCA',
+        'Client assets fully segregated from PESL\'s and Kraken exchange\'s assets',
+        'Independent audits and transparent reserves with MiCA-compliant governance',
+        'Unified architecture with Kraken Financial in the U.S.',
+        'Serves institutional clients: fiduciaries, funds, and corporate treasuries across EEA',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'MiCA-regulated custody in the EEA creates institutional-grade infrastructure for European institutions to hold ETH. Regulated custody is a prerequisite for institutional ETH allocation — directly supports the thesis that institutional capital will flow into ETH treasury vehicles like BMNR.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - XSTOCKS $10B VOLUME (Nov 12, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-12',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'xStocks surpasses $10B total volume with nearly $2B onchain — 45K+ unique holders in 135 days',
+      details: [
+        '$10B combined centralized and decentralized exchange volume in 135 days since launch',
+        'Nearly $2B in onchain activity across Solana and Ethereum',
+        '45,000+ unique onchain holders with $135M+ aggregated AUM',
+        'Partners include Alchemy Pay, Bybit, Gate.io, Phantom Wallet, Trust Wallet',
+        'Each xStock fully backed 1:1 by underlying equity in bankruptcy-remote structure',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'xStocks\' $2B onchain volume demonstrates growing demand for Ethereum-based tokenized assets. Ethereum as the settlement layer for tokenized equities increases chain utility and transaction demand — supportive of ETH value and the BMNR treasury thesis.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - BSO TOKYO/LONDON CONNECTIVITY (Nov 4, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-04',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken partners with BSO for ultra-low-latency Tokyo/London connectivity under 140ms round-trip',
+      details: [
+        'Purpose-built ultra-low-latency route between Tokyo and London — sub-140ms round-trip',
+        '60-80ms faster than previously available standard routes',
+        'Physical data center access at AT TOKYO CC1/CC2, Equinix TY2/TY3 plus cloud on-ramp',
+        '99.99% uptime with automatic rerouting and SLA-backed performance',
+        'Targets market makers, quant funds, and HFT firms for cross-venue strategies',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s second ultra-low-latency partnership (BSO for Tokyo/London, alongside Avelacom) signals aggressive push for institutional trading infrastructure. Deeper institutional engagement with Kraken strengthens the ETH market ecosystem and validates crypto as institutional asset class.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - SEPTEMBER 2025 PROOF OF RESERVES (Oct 22, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-22',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken releases September 2025 Proof of Reserves covering BTC, ETH, SOL, USDC, USDT, XRP, ADA',
+      details: [
+        'Attested as of September 30, 2025 — client assets backed 1:1 and beyond',
+        'Covers spot, margin, futures, and staked asset balances',
+        'Merkle tree cryptographic verification with user-level proof tool',
+        'Independent third-party accountancy firm attestation — published quarterly',
+        'Pioneered PoR in 2014 — longest-running transparency program among major exchanges',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s quarterly PoR covering ETH validates institutional-grade custody transparency. As BMNR grows its ETH treasury, exchange PoR transparency reinforces trust in the broader ETH custody ecosystem that BMNR depends on.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $4.7M MANUFACTURED HOME LOAN PORTFOLIO PURCHASE (Feb 5, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'ethz',
+      category: 'Acquisition',
+      headline: 'ETHZilla purchases $4.7M manufactured home loan portfolio, plans tokenization on Ethereum L2',
+      details: [
+        'Acquires portfolio of 95 manufactured/modular home loans from Zippy for ~$4.7M via ETHZilla Modular Mortgage LLC',
+        'First-lien mortgages with annualized yield of ~10.36% from seasoned residential credit assets',
+        'Plans to tokenize into cash-flow-generating token on Ethereum L2 via Liquidity.io ecosystem in late Feb/early Mar',
+        'Follows prior purchase of two CFM56-7B24 aircraft engines on lease, also planned for tokenization',
+        'Builds on Dec 2025 acquisition of 15% stake in Zippy — demonstrates repeatable RWA framework'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla moving from strategic investment to actual asset acquisition and tokenization. Multiple asset classes (manufactured homes + aircraft engines) in pipeline. BMNR focuses on pure ETH staking yield vs ETHZilla\'s RWA tokenization revenue model.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $21M ZIPPY INVESTMENT (Dec 10, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-10',
+      competitor: 'ethz',
+      category: 'Partnership',
+      headline: 'ETHZilla invests $21M in Zippy to tokenize manufactured home loans on Ethereum',
+      details: [
+        'Acquires 15% fully diluted stake in Zippy for $21.1M ($5M cash + $16.1M stock)',
+        'Target: $14B manufactured home financial services market',
+        'Zippy: first to introduce modern digital infrastructure and AI-enabled systems to manufactured housing lending',
+        '36-month exclusive tokenization agreement via Liquidity.io (FINRA-regulated ATS on Ethereum L2)',
+        'ETHZilla ecosystem: Liquidity.io (tokenized private credit), Karus (AI risk forecasting for structured auto credit)'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla expanding into housing finance RWA tokenization with exclusive distribution via FINRA-regulated ATS. BMNR\'s pure ETH staking model is simpler but ETHZilla\'s diversified revenue streams could attract different investor base.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - 20% KARUS ACQUISITION (Dec 3, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-03',
+      competitor: 'ethz',
+      category: 'Partnership',
+      headline: 'ETHZilla acquires 20% of Karus to power AI-modeled auto loan tokenization on Ethereum',
+      details: [
+        'Acquires 20% fully diluted interest in Karus for $10M ($3M cash + $7M stock)',
+        'Karus AI trained on 20M+ historical auto loan outcomes, analyzes 1,000+ variables in real time',
+        '$5B+ in auto loan volume already processed through decisioning engine',
+        'Access to network of 20,000+ car dealerships, credit unions, and banks',
+        'First tokenized portfolios expected early 2026 via Liquidity.io',
+        'Entry point into ~$1.6T US asset-backed securities market'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla entering $1.6T ABS market with AI-powered credit analytics. Diversifying beyond pure ETH treasury into RWA revenue generation. BMNR\'s pure staking model has lower execution risk vs ETHZilla\'s complex multi-subsidiary approach.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - SELLS ~$40M ETH FOR BUYBACKS (Oct 27, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-27',
+      competitor: 'ethz',
+      category: 'Strategy',
+      headline: 'ETHZilla sells ~$40M ETH to fund share repurchases below NAV',
+      details: [
+        'Sells approximately $40M of ETH treasury holdings to fund share repurchases',
+        'Repurchased ~600K shares for ~$12M since Oct 24 under $250M buyback program',
+        'Plans to continue selling ETH until discount to NAV normalizes',
+        'Still holds ~$400M ETH',
+        'CEO Rudisill: "repurchases to be immediately accretive"'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla selling ETH = net seller pressure on ETH market. However, demonstrates capital allocation discipline. If NAV discount persists for ETH treasury companies, raises questions about the model — relevant for BMNR\'s own ETH treasury thesis.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - LIQUIDITY.IO PARTNERSHIP + 15% SATSCHEL STAKE (Oct 23, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-23',
+      competitor: 'ethz',
+      category: 'Partnership',
+      headline: 'ETHZilla partners with Liquidity.io for RWA tokenization, takes 15% stake in Satschel',
+      details: [
+        'Invests $15M ($5M cash + $10M equity) for 15% stake in Satschel with right of first refusal',
+        'Liquidity.io is a regulated broker-dealer operating a Digital ATS (FINRA-regulated)',
+        'Partnership to accelerate institutional-grade tokenization of RWAs on Ethereum L2',
+        'Secures exclusive right to list Ethereum L2 tokens on the exchange',
+        'Evolution from pure ETH treasury to active RWA tokenization platform with regulated distribution'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla building regulated RWA distribution channel via FINRA-regulated ATS — competitive moat in tokenization space. BMNR focuses on pure ETH staking; ETHZilla pivoting to "next-generation asset manager" model.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - 1-FOR-10 REVERSE STOCK SPLIT (Oct 15, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-15',
+      competitor: 'ethz',
+      category: 'Strategy',
+      headline: 'ETHZilla announces 1-for-10 reverse stock split',
+      details: [
+        'Effective Oct 20, 2025 — reduces outstanding shares from ~160M to ~16M',
+        'Intended to provide institutional investors access to collateral and margin availability at prices >$10',
+        'Not related to exchange listing requirements',
+        'Many large mutual funds have minimum stock price thresholds',
+        'Signals targeting broader institutional investor base beyond crypto-native capital'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla optimizing share structure for institutional access. Capital structure maturation could increase institutional investor pool for ETH treasury equities broadly, including BMNR.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - BOARD APPOINTMENT: LAZARD VICE CHAIRMAN (Oct 8, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-08',
+      competitor: 'ethz',
+      category: 'Strategy',
+      headline: 'ETHZilla appoints Jason New (Lazard Vice Chairman) to board',
+      details: [
+        'Jason New, Vice Chairman of Investment Banking at Lazard, joins board',
+        '20+ years experience in global credit, PE, and alternative investments',
+        'Previously co-founded NovaWulf Management (digital-asset platform)',
+        'Was CEO of Onex Credit Partners ($25B alt credit manager)',
+        '15 years at Blackstone as Senior MD and Global Co-Head of Distressed/Special Situations at GSO Capital Partners'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Traditional finance heavyweights joining ETH treasury company boards validates institutional interest in the model. Increasing board-level credibility for ETH treasury companies could improve investor appetite for sector including BMNR.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $47M ETH TO PUFFER RESTAKING (Sep 25, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-25',
+      competitor: 'ethz',
+      category: 'Yield',
+      headline: 'ETHZilla plans ~$47M ETH deployment to Puffer restaking protocol',
+      details: [
+        'Plans to deploy ~$47M (~10,600 ETH) to Puffer liquid restaking protocol',
+        'Puffer has 2 ETH validator bond framework providing insurance against validator failures',
+        'Puffer building vertical crypto infrastructure: LRT, Unifi based rollup, Preconf AVS',
+        'Third DeFi protocol deployment by ETHZilla (after EtherFi and unnamed protocol)',
+        'Multi-protocol diversification across staking and restaking'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla diversifying DeFi yield across multiple restaking protocols (EtherFi, Puffer, others). Validates institutional restaking thesis. BMNR can learn from ETHZilla\'s multi-protocol approach for its own staking strategy.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $350M CONVERTIBLE DEBENTURE + mNAV METRIC (Sep 22, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-22',
+      competitor: 'ethz',
+      category: 'Funding',
+      headline: 'ETHZilla raises $350M add-on convertible debenture, introduces mNAV metric',
+      details: [
+        'Raises $350M through new convertible debentures at $3.05/share (1.05x mNAV)',
+        'Existing $156.5M convertible amended: 0% interest until Feb 2026, then 2% (down from 4%)',
+        'New debentures bear 2% interest',
+        'Introduces mNAV metric: EV/ETH NAV = 0.87x',
+        'Total position: 102,264 ETH (~$462M), $559M cash',
+        'Clear Street as exclusive financial advisor'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla raising $350M+ validates institutional appetite for ETH-backed securities. mNAV metric creates industry standard for evaluating crypto treasury companies — direct comparison framework for BMNR valuation.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - ETH DEPLOYED TO L2 PROTOCOLS (Sep 15, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-15',
+      competitor: 'ethz',
+      category: 'Yield',
+      headline: 'ETHZilla deploys ETH to L2 protocols, earns 1.5M protocol tokens',
+      details: [
+        'Portfolio: 44,437 ETH unstaked, 12,818 ETH in Protocol 1 staking/restaking, 45,000 ETH in Protocol 2',
+        'Earned 1.5M protocol tokens (~$2.2M) — new revenue stream',
+        'Minted first EtherFi ETH',
+        '102,255 total ETH (~$460M), $228M cash',
+        'Repurchased ~6.0M shares in September at avg $2.50',
+        'Drew $50M from Cumberland DRW facility',
+        'Pivoting toward "DeFi technology company" narrative'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'First concrete evidence of ETH yield generation by Nasdaq-listed ETH treasury company. Protocol token earnings represent new revenue stream beyond base staking. Validates BMNR\'s thesis that staked ETH generates superior returns vs unstaked BTC holdings.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - CEO CHANGE + CUMBERLAND DRW OTC (Sep 8, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-08',
+      competitor: 'ethz',
+      category: 'Strategy',
+      headline: 'ETHZilla CEO change: Rudisill appointed CEO, Cumberland DRW OTC facility',
+      details: [
+        'McAndrew Rudisill (Chairman) appointed CEO, succeeding Blair Jordan who resigned',
+        'Enters OTC transaction with Cumberland DRW for up to $80M collateralized by ETH holdings',
+        'Proceeds for share repurchases under $250M program',
+        'Repurchased ~2.2M shares at avg $2.50 (1.3% reduction)',
+        'Total: 102,246 ETH (~$443M), $213M cash'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETH-collateralized borrowing from Cumberland DRW demonstrates financial engineering sophistication. DRW willing to lend against ETH validates its collateral quality. Model applicable to BMNR for leveraging ETH holdings without selling.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $100M ETH TO ETHERFI RESTAKING (Sep 2, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-02',
+      competitor: 'ethz',
+      category: 'Yield',
+      headline: 'ETHZilla plans $100M ETH deployment to EtherFi for restaking',
+      details: [
+        'Plans to deploy ~$100M ETH to EtherFi liquid restaking protocol',
+        'First DeFi protocol engagement by ETHZilla',
+        'EtherFi selected for incremental yield beyond standard staking + reinforcing Ethereum security',
+        'Electric Capital managing strategy',
+        '102,246 ETH (~$456M), $221M cash',
+        'EtherFi CEO: "highlights growing institutional confidence in decentralized protocols"'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'First Nasdaq-listed ETH treasury company deploying $100M into DeFi restaking. Institutional capital flowing into liquid restaking validates protocol category. Directly validates BMNR\'s own ETH staking thesis.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $250M STOCK REPURCHASE PROGRAM (Aug 25, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-08-25',
+      competitor: 'ethz',
+      category: 'Financial',
+      headline: 'ETHZilla authorizes $250M stock repurchase program',
+      details: [
+        'Board authorizes $250M buyback effective immediately, expiring June 30, 2026',
+        'Total holdings: 102,237 ETH at avg $3,948.72 (~$489M), $215M cash',
+        'Announces Electric Asset Protocol for higher yields',
+        'Accumulated from 82.2K to 102.2K ETH over 3 weeks',
+        'ATM issued 5.0M shares for $33.7M net proceeds',
+        'Dual strategy: accumulate ETH + repurchase shares when trading below NAV'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Largest buyback authorization by an ETH treasury company. Dual strategy of ETH accumulation + buybacks signals maturing capital allocation. Proprietary yield protocol could widen gap between passive and active ETH treasury management.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - LAUNCH: REBRAND + NASDAQ TRADING (Aug 18, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-08-18',
+      competitor: 'ethz',
+      category: 'Strategy',
+      headline: 'ETHZilla launches: rebrand from 180 Life Sciences, begins trading as ETHZ on Nasdaq',
+      details: [
+        'Rebrands from 180 Life Sciences Corp. (ATNF), begins trading under ETHZ on Nasdaq',
+        'Raised ~$565M gross ($425M PIPE + $156.25M convertible notes)',
+        'Accumulated 94,675 ETH at avg $3,902.20 (~$419M), $187M cash',
+        '60+ institutional and crypto-native investors: Electric Capital, Polychain Capital, GSR, Borderless Capital',
+        'Ethereum ecosystem founders: Sreeram Kannan (EigenLayer), Mike Silagadze (Ether.fi), Danny Ryan (Etherealize), Sam Kazemanian (Frax), Robert Leshner (Compound/Superstate), Tarun Chitra (Gauntlet)',
+        'Electric Capital as external asset manager for on-chain yield generation'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Major ETH-only treasury competitor launches with $565M capital and ~95K ETH — dwarfs BMNR\'s holdings. Top-tier Ethereum ecosystem backing. Shared strategy increases market awareness of ETH treasury model. Rising tide: institutional interest in ETH treasury equities benefits all players.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // STRATEGY - Q4 2025 EARNINGS RELEASE (Feb 5, 2026)
@@ -3714,8 +4700,419 @@ const CompsTab = ({ comparables, ethPrice }) => {
       bmnrComparison: 'Coinbase expanding staking services increases competition but validates ETH staking as institutional strategy. BMNR\'s scale advantage remains.',
       source: 'Coinbase Blog',
       sourceUrl: 'https://www.coinbase.com/blog',
-      storyId: 'coin-staking-expansion',
-      storyTitle: 'Coinbase Staking Expansion'
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-12-11',
+      competitor: 'coin',
+      category: 'Strategy',
+      headline: 'Coinbase positions as primary staking provider as staking ETFs launch in US — custodian for 8 of 9 spot ETH ETFs',
+      details: [
+        'Grayscale becomes first US issuer to stake ETH and SOL underlying its spot crypto ETFs (Oct 2025)',
+        'Coinbase Institutional is the largest institutional ETH staking provider',
+        'Primary custodian for 8 of 9 approved spot ETH ETFs',
+        'Staking operator for international ETPs: Virtune, WisdomTree, 21Shares',
+        'Before staking, ETH ETFs missed ~$61M in staking benefits (launch through Feb 2025 per Grayscale)',
+        'Staking ETFs expected to strengthen economic security of proof-of-stake networks',
+        'Coinbase Prime provides integrated custody + staking with detailed rewards reporting'
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Staking ETFs arriving via Coinbase infrastructure validates ETH staking as mainstream institutional strategy. Coinbase\'s dominance (8/9 ETH ETF custodian) makes it both competitor and ecosystem enabler. BMNR benefits from growing institutional staking demand — staking ETFs bring more capital into ETH staking, supporting network security and yield sustainability.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/staking-etfs-have-arrived',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-12-09',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Coinbase and PNC Bank launch direct bitcoin trading for Private Bank clients — first major US bank with CaaS integration',
+      details: [
+        'PNC Private Bank clients can buy, sell, and hold bitcoin directly on PNC\'s digital banking platform',
+        'First major US bank to support direct spot bitcoin trading via Coinbase Crypto-as-a-Service (CaaS)',
+        'Builds on strategic partnership announced July 2025',
+        'Eliminates need for separate exchange accounts — seamless within PNC banking app',
+        'PNC is a top-10 US financial institution',
+        'Powered by Coinbase\'s CaaS infrastructure for institutional clients'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Coinbase CaaS bringing bitcoin to major US banks validates crypto-TradFi integration. PNC integration is BTC-only — no ETH staking. However, infrastructure pathway exists for future ETH/staking products in banks. Coinbase building distribution moat via CaaS partnerships.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-pnc-partner',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-11-21',
+      competitor: 'coin',
+      category: 'Acquisition',
+      headline: 'Coinbase to acquire Vector — Solana onchain trading platform for "everything exchange" vision',
+      details: [
+        'Acquiring Vector, Solana-native onchain trading platform',
+        'Solana DEX volume for 2025 already exceeded $1 trillion (Messari)',
+        'Vector tech to plug into Coinbase DEX trading integration',
+        'Vision: "everything exchange" — one-stop-shop for trading everything onchain, 24/7',
+        'Vector apps to be sunsetted; Tensor Foundation remains independent',
+        'Part of broader push: DEX trading launched in Brazil same week (Nov 19)'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Coinbase acquiring Solana infrastructure reflects multi-chain strategy. Solana is alternative L1 to Ethereum — Coinbase betting on both ecosystems. However, Coinbase also heavily invested in Ethereum via Base L2. Multi-chain Coinbase growth ultimately brings more users to crypto overall, some of which flow to ETH staking.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-to-acquire-vector',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-08-14',
+      competitor: 'coin',
+      category: 'Acquisition',
+      headline: 'Coinbase closes Deribit acquisition — world\'s #1 crypto options exchange ($185B July volume, $60B open interest)',
+      details: [
+        'Deribit officially joins Coinbase — #1 crypto options exchange by volume and open interest',
+        'July 2025 record: $185B+ volume, ~$60B platform open interest',
+        'Over $1 trillion traded in 2024 on Deribit',
+        'Deribit generated $30M+ in July transaction revenue alone',
+        'Expected Adjusted EBITDA accretive immediately after close',
+        '~$10M additional Q3 expense (tech & G&A, excl deal-related amortization)',
+        'Coinbase now offers spot, futures, perpetuals, and options on one platform',
+        'Institutional and advanced trader base with loyal following'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Deribit acquisition makes Coinbase the most comprehensive crypto derivatives platform globally. Derivatives volume drives more hedging/speculation activity which benefits overall crypto market liquidity. Not directly competitive with BMNR\'s ETH staking thesis but strengthens Coinbase as dominant crypto infrastructure company.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/deribit-joins-coinbase',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-10-27',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Coinbase and Citi collaborate on stablecoin payments infrastructure across 94 markets',
+      details: [
+        'Collaboration with Citi focused on leveraging digital assets and stablecoins for institutional payments',
+        'Citi\'s global network spans 94 markets and over 300 payment clearing systems',
+        'Focus: improving fiat-to-crypto on-ramps/off-ramps for institutional clients',
+        'Building stablecoin payment solutions and digital asset infrastructure',
+        'Targeting 24/7 availability for institutional payment conversion',
+        'Part of Coinbase\'s broader mission to integrate digital assets into global economy'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Citi ($94B+ revenue) collaborating with Coinbase on stablecoin payments validates crypto infrastructure for institutional use. Stablecoin demand drives on-chain activity on Ethereum. Not directly competitive with BMNR but Coinbase building institutional distribution moat.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-citi-collaborate',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-10-27',
+      competitor: 'coin',
+      category: 'Strategy',
+      headline: 'Coinbase Asset Management and Apollo partner on stablecoin credit strategies — $300B market targeting $3T by 2030',
+      details: [
+        'CBAM and Apollo ($840B AUM) establish partnership for stablecoin credit strategies',
+        'Stablecoin market cap reached $300B as of Oct 2025, projections of $3T by 2030 (GENIUS Act tailwinds)',
+        'Strategies: over-collateralized BTC lending, corporate direct lending to stablecoin issuers/fintechs, tokenized credit holdings',
+        'Apollo\'s Christine Moy: "accelerates our vision of tokenizing credit markets"',
+        'Innovative products targeting market launch in 2026',
+        'GENIUS-compliant opportunities with monthly audits and 1:1 reserves'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Coinbase + Apollo building institutional DeFi credit products around stablecoins. $300B stablecoin market growing to $3T creates massive on-chain activity on Ethereum. Apollo\'s $840B AUM entering crypto credit validates institutional demand. BMNR benefits from stablecoin ecosystem growth driving ETH utility.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/cbam-apollo-stablecoin-credit',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-10-15',
+      competitor: 'coin',
+      category: 'Strategy',
+      headline: 'Coinbase invests in CoinDCX — India/Middle East expansion targeting 100M+ crypto owners',
+      details: [
+        'Coinbase Ventures invests in CoinDCX, leading crypto exchange in India and Middle East',
+        'India has 1.4B+ people, 100M+ crypto owners, growing tech adoption',
+        'CoinDCX annualized revenue ~$141M USD, transaction volumes ~$165B USD, $1.2B AUC',
+        'User base exceeds 20.4 million across India and Middle East',
+        'Subject to regulatory approvals and customary closing conditions',
+        'Builds on Coinbase\'s growing presence with local operations in the region'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Coinbase expanding distribution into India (100M+ crypto owners) and Middle East. Geographic expansion grows total addressable market for crypto ecosystem. CoinDCX\'s $165B volume demonstrates massive emerging market activity. More global crypto adoption = more ETH ecosystem participants.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-makes-investment-in-coindcx',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-10-15',
+      competitor: 'coin',
+      category: 'Yield',
+      headline: 'Coinbase Asset Management launches US Bitcoin Yield Fund — BTC yield via lending and basis trading',
+      details: [
+        'Coinbase US Bitcoin Yield Fund (USCBYF) for US accredited investors',
+        'Delivers bitcoin performance + additional BTC yield',
+        'Yield generated from BTC private credit lending and basis trading',
+        'Subscribe with in-kind bitcoin, USD, or USDC',
+        'Partnership with iTrustCapital for tax-deferred IRA access (2026)',
+        'Follows offshore Coinbase Bitcoin Yield Fund launched May 2025 for non-US investors',
+        'SEC-registered RIA, CFTC-registered CPO/CTA, NFA member'
+      ],
+      implication: 'negative',
+      bmnrComparison: 'Coinbase BTC Yield Fund is a direct competitive concept to BMNR\'s ETH yield thesis — institutional crypto yield product from major exchange. However: BTC yield via lending/basis trading is fundamentally different from ETH staking (native protocol yield). BTC yield involves counterparty/credit risk; ETH staking yield is protocol-native and trustless. BMNR should emphasize this distinction: ETH staking = yield from securing the network, not from lending.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-us-bitcoin-yield-fund',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-10-08',
+      competitor: 'coin',
+      category: 'Regulatory',
+      headline: 'Coinbase staking now available in New York — $130M+ missed rewards across states with bans',
+      details: [
+        'New Yorkers can now stake ETH, SOL, and other assets on Coinbase',
+        'Governor Hochul\'s leadership in providing regulatory clarity credited for milestone',
+        'Coinbase estimates CA, NJ, MD, WI residents have collectively missed $130M+ in staking rewards',
+        'Recent SEC staff guidance confirms staking-as-a-service is not a security',
+        'Staking cases against Coinbase dismissed by VT, IL, KY, AL, SC — "national consensus has emerged"',
+        'CLO Paul Grewal: "In the city that never sleeps, your money shouldn\'t either"'
+      ],
+      implication: 'negative',
+      bmnrComparison: 'NY staking approval significantly expands Coinbase\'s retail ETH staking TAM — NY is one of the largest financial markets. More retail ETH staking via Coinbase increases competition for BMNR\'s institutional staking value proposition. However, growing retail staking also validates ETH staking as mainstream and supports network security. SEC consensus that staking is not a security reduces regulatory risk for all staking players including BMNR.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/staking-is-now-available-in-new-york',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-10-03',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Samsung taps Coinbase for 75M+ Galaxy users — Coinbase One exclusive access via Samsung Wallet',
+      details: [
+        'Partnership with Samsung, world\'s most popular smartphone brand',
+        'Exclusive Coinbase One access within Samsung Wallet app for US Galaxy users (75M+)',
+        'Coinbase One: zero trading fees, boosted staking rewards, priority support, account protection',
+        'Samsung Pay integration now live for crypto purchases in US',
+        'Plans to expand globally and explore new partnership opportunities',
+        'Samsung Pay already rolled out as payment option in Coinbase app (Jul 29) for US and Canada'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Samsung distribution deal gives Coinbase massive consumer reach (75M+ Galaxy users). Boosted staking rewards in Coinbase One could drive more retail ETH staking. Coinbase building retail distribution moat through device-level partnerships. More retail crypto users = larger ecosystem, though also more Coinbase staking competition.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/samsung-taps-coinbase',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-07-30',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Coinbase and JPMorgan Chase partner — 80M+ customers get credit card crypto funding and Ultimate Rewards → USDC',
+      details: [
+        'Partnership with JPMorgan Chase, largest US bank (80M+ customers)',
+        'Fall 2025: Chase credit cards can fund Coinbase accounts',
+        '2026: Chase Ultimate Rewards Points redeemable for crypto — first major credit card program to offer this',
+        '2026: Direct Chase bank account linking to Coinbase',
+        'Coinbase as "most trusted bridge from traditional finance to crypto"',
+        'Ultimate Rewards → USDC conversion creates novel stablecoin on-ramp'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'JPMorgan Chase (largest US bank) partnering with Coinbase is a landmark crypto-TradFi integration. 80M+ customers with frictionless crypto access dramatically expands retail on-ramp. Ultimate Rewards → USDC creates novel stablecoin demand channel. More retail participants flowing through Coinbase strengthens their position as primary crypto gateway but also grows overall ecosystem benefiting all crypto assets including ETH.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-jpmorgan-chase',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-07-21',
+      competitor: 'coin',
+      category: 'Strategy',
+      headline: 'Coinbase launches first CFTC-regulated perpetual futures in the US — BTC-PERP and ETH-PERP with up to 10x leverage',
+      details: [
+        'First time US traders can access perpetual-style futures via Coinbase Financial Markets (CFM)',
+        'CFTC-regulated contracts — previously unavailable to US traders due to regulatory landscape',
+        'Two contracts at launch: nano Bitcoin Perpetual Futures (BTC-PERP) and nano Ether Perpetual Futures (ETH-PERP)',
+        'Up to 10x leverage for crypto perpetual futures; up to 20x intraday for metals (silver, gold)',
+        'Long-dated with 5-year expirations — no monthly expirations',
+        'Fees as low as 0.02% per contract (minimum $0.15 per contract)',
+        'Perpetual futures dominate 90% of global crypto derivatives trading volumes',
+        'Exchange closes every Friday 5:00-6:00 PM ET with quarterly 3-hour maintenance windows'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'CFTC-regulated perpetual futures are a landmark US derivatives milestone. ETH-PERP creates regulated US perpetuals market for Ethereum — more hedging and speculative tools for ETH. 90% of global crypto derivatives volume is perps, so US access could dramatically increase ETH trading activity. More liquid ETH derivatives market supports BMNR thesis through improved price discovery.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/perpetual-futures-have-arrived-in-the-us',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-07-02',
+      competitor: 'coin',
+      category: 'Acquisition',
+      headline: 'Coinbase acquires LiquiFi — leading token management platform for onchain builders',
+      details: [
+        'LiquiFi provides token cap table management, vesting schedules, and compliance workflows',
+        'Customers include Uniswap Foundation, OP Labs (Optimism), Ethena, Zora, and 0x',
+        'Enables Coinbase to support builders earlier in lifecycle — before tokens are launched or listed',
+        'Plan to integrate LiquiFi capabilities with Coinbase Prime over time',
+        'Tightens integration across custody, trading, financing for institutional clients',
+        'Vision: make launching a token easier, faster, and more global than issuing traditional startup equity'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'LiquiFi acquisition adds pre-listing token infrastructure to Coinbase platform. Customer base (Uniswap, Optimism, Ethena, Zora, 0x) is heavily Ethereum-ecosystem native. Coinbase capturing project relationships before listing strengthens their position as primary exchange for ETH ecosystem tokens. More comprehensive institutional tooling benefits crypto market overall.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-acquires-liquifi',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-06-20',
+      competitor: 'coin',
+      category: 'Regulatory',
+      headline: 'Coinbase secures MiCA licence from Luxembourg CSSF — full EU access across all 27 member states (450M people)',
+      details: [
+        'MiCA (Markets in Crypto Assets) licence from Luxembourg CSSF (Commission de Surveillance du Secteur Financier)',
+        'Enables offering full suite of crypto products to all 27 EU member states',
+        'Access to 450 million people across the EU under single regulatory passport',
+        'Establishing European crypto hub in Luxembourg',
+        'Previously held individual licences in Germany, France, Ireland, Italy, Netherlands, and Spain',
+        'MiCA unites individual country licences under single framework',
+        'Luxembourg has passed four blockchain-related policies through national legislature'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Single MiCA licence covering 450M EU population is massive regulatory moat for Coinbase. Unified EU access under one framework dramatically simplifies European expansion. More regulated exchange access globally = more liquidity = benefits ETH market overall. Coinbase EU strength as primary fiat-to-crypto gateway grows overall ecosystem.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-secures-mica-licence',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-05-16',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Webull Pay partners with Coinbase CaaS platform for custody, trading, staking, and USDC',
+      details: [
+        'Webull Pay chose Coinbase as crypto partner via Crypto-as-a-Service (CaaS) platform',
+        'Webull Pay gets institutional-grade custody, advanced trading, USDC, and staking access',
+        'Launching June 2025',
+        'Same technology trusted by world\'s largest financial institutions and asset managers',
+        'Coinbase and Webull Pay exploring additional opportunities to expand globally',
+        'Stephen Yip (Webull Pay CEO): "This collaboration unlocks powerful capabilities that will accelerate innovation on our platform"'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Webull Pay CaaS partnership validates Coinbase as white-label crypto infrastructure provider. CaaS B2B model expands Coinbase reach without direct user acquisition costs. More platforms offering crypto trading/staking through Coinbase rails = more exchange volume = benefits overall crypto market liquidity.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-partners-with-webull-pay',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-05-08',
+      competitor: 'coin',
+      category: 'Acquisition',
+      headline: 'Coinbase announces agreement to acquire Deribit for $2.9B — $700M cash + 11M shares of Class A common stock',
+      details: [
+        'Deribit is world\'s leading crypto options exchange with ~$30B current open interest',
+        'Purchase price: ~$2.9B ($700M cash + 11M shares Coinbase Class A common stock)',
+        'Deribit facilitated over $1 trillion in trading volume in 2024',
+        'Consistent track record of generating positive Adjusted EBITDA',
+        'Creates most comprehensive institutional derivatives platform: spot, futures, perpetuals, and options',
+        'Follows strategic M&A track record: Xapo → Custody, Tagomi → Prime, FairX → Derivatives Exchange, One River → Asset Management',
+        'Subject to regulatory approvals, expected to close by year-end',
+        'Deribit CEO Luuk Strijers: "Together with Coinbase, we\'re set to shape the future of the global crypto derivatives market"'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Largest crypto M&A deal ever announced. Coinbase building full-stack derivatives platform (spot + futures + perps + options) makes it dominant crypto infrastructure company. Crypto options expansion similar to equity options boom of 1990s — more sophisticated trading tools benefit overall market development including ETH derivatives liquidity.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-to-acquire-deribit',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-05-06',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Coinbase partners with Riot Games as exclusive crypto exchange partner across League of Legends and VALORANT esports',
+      details: [
+        'Exclusive cryptocurrency exchange and official blockchain technology partner for LoL and VALORANT Esports global events',
+        'Debut at Masters (M2) in Toronto — spans Masters, Champions (VCT), First Stand, MSI, and Worlds (LoL)',
+        'New in-game segments: "Econ Report" (VALORANT) and "Gold Grind" (LoL) — live analysis of in-match currency',
+        'Viewer "drops" during events: emotes, icons, and promotions with all-expenses-paid trips to Champions/Worlds',
+        'Exploring future Web3 technology integrations for fan experience',
+        'Adds to portfolio: Team Liquid, WNBA, NBA (Warriors, Clippers), Aston Martin F1, Borussia Dortmund'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Riot Games partnership extends Coinbase brand reach into massive esports audience (LoL and VALORANT have 100M+ combined players). Web3 technology exploration signals potential onchain integration for gaming. Brand awareness drives crypto adoption broadly, benefiting overall ecosystem.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-partners-with-riot-games',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-04-28',
+      competitor: 'coin',
+      category: 'Yield',
+      headline: 'Coinbase Asset Management launches offshore Bitcoin Yield Fund (CBYF) — 4-8% net BTC returns for non-US investors',
+      details: [
+        'Coinbase Bitcoin Yield Fund (CBYF) — long-bitcoin fund seeking 4-8% net return in BTC per year over market cycle',
+        'Investors subscribe and redeem in bitcoin; all performance denominated in BTC',
+        'Conservative strategy: avoids riskier high-interest BTC loans and systematic call selling',
+        'Uses third-party custody integrations to trade — significantly reduces counterparty risk',
+        '$1B AUM estimated strategy capacity',
+        'Monthly open for subscriptions/redemptions with 5 business days notice',
+        'Seeded by Aspen Digital (FSRA-regulated, Abu Dhabi) — exclusive wealth-distribution partner for UAE and Asia',
+        'Currently for international (non-US) investors; launches May 1, 2025'
+      ],
+      implication: 'negative',
+      bmnrComparison: 'Offshore BTC Yield Fund is Coinbase\'s first institutional crypto yield product — directly competitive concept to BMNR\'s ETH yield thesis. 4-8% target BTC yield via lending/basis trading competes for same "crypto yield" allocator capital. Key distinction: BTC yield involves counterparty/credit risk from lending; BMNR\'s ETH staking yield is protocol-native and trustless.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-bitcoin-yield-fund',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-04-24',
+      competitor: 'coin',
+      category: 'Partnership',
+      headline: 'Coinbase expands PayPal partnership to advance PYUSD stablecoin — zero fee USD-PYUSD conversions for all customers',
+      details: [
+        'Expanding partnership with PayPal to accelerate adoption of PayPal USD (PYUSD) stablecoin',
+        'Zero fee USD-PYUSD conversions for retail and institutional customers',
+        'Coinbase infrastructure to expand PYUSD support to PayPal\'s largest merchant partners',
+        'Collaborating to explore new onchain use cases for PYUSD',
+        'Stablecoin transaction volumes surged 250% from $6.2T to $22T between 2023 and 2024',
+        'Making it easier for millions of PayPal customers to bring finances onchain'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'PayPal PYUSD partnership strengthens Coinbase as multi-stablecoin infrastructure platform. Zero-fee conversions could drive significant PYUSD adoption alongside USDC. Stablecoin volume growth ($6.2T → $22T, 250%) validates on-chain payment thesis. More stablecoin activity broadly benefits Ethereum ecosystem where most stablecoins settle.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-paypal-to-advance-stablecoin-payments',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
+    },
+    {
+      date: '2025-01-31',
+      competitor: 'coin',
+      category: 'Acquisition',
+      headline: 'Coinbase acquires Spindl — onchain ads and attribution platform to accelerate Base builder distribution',
+      details: [
+        'Spindl is onchain ads and attribution platform rebuilding ad tech stack onchain',
+        'Founded by Antonio Garcia-Martinez (AGM) — early Facebook ads team member who shipped keyword targeting, audience targeting, and FBX exchange',
+        'Spindl will operate under Base, continues supporting current customers without interruption',
+        'Goal: help builders go viral onchain and find distribution on Coinbase and across onchain economy',
+        'Committed to maintaining open standards for publishers and advertisers',
+        'Part of flywheel: developers build onchain apps → apps attract users → more users incentivize more developers'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Spindl acquisition strengthens Base (Ethereum L2) ecosystem by solving builder distribution problem. More builders finding users on Base = more on-chain activity on Ethereum L2. Facebook ads veteran leading onchain ad tech could dramatically accelerate user acquisition for Base ecosystem.',
+      source: 'Coinbase Blog',
+      sourceUrl: 'https://www.coinbase.com/blog/coinbase-acquires-spindl',
+      storyId: 'coin',
+      storyTitle: 'Coinbase'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -3890,6 +5287,14 @@ const CompsTab = ({ comparables, ethPrice }) => {
       threat: 'Low',
       notes: 'Smaller BTC miner. Mining costs vs BMNR\'s staking yield creates structural disadvantage.'
     },
+    {
+      name: 'ETHZilla (ETHZ)',
+      type: 'ETH Treasury + RWA',
+      status: '~102K ETH + RWA tokenization',
+      focus: 'ETH accumulation, DeFi restaking (EtherFi/Puffer), RWA tokenization via Liquidity.io (FINRA ATS)',
+      threat: 'High',
+      notes: 'Most direct competitor — also ETH treasury company. Differentiates via RWA tokenization (manufactured homes, auto loans, aircraft engines) and diversified DeFi yield. Trading at -13% NAV discount (mNAV 0.87x).'
+    },
   ];
 
   return (
@@ -3939,7 +5344,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       {/* Key Competitors Overview - Colored Border Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-competitors</div>
       <div className="highlight"><h3>🏦 Key Competitors<UpdateIndicators sources="PR" /></h3><p>Crypto treasury peers - threat level indicates competitive overlap with BMNR's ETH staking model</p></div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
         {keyCompetitors.map((comp, i) => (
           <div key={i} className={`comp-competitor-card comp-threat-${comp.threat.toLowerCase()}`}>
             <div className="comp-competitor-header">
@@ -6931,6 +8336,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   const adoptionTimeline = [
     // === FEBRUARY 2026 ===
     {
+      date: '2026-02-06',
+      category: 'Protocol',
+      company: 'ENS (Ethereum Name Service)',
+      title: 'ENSv2 Staying on Ethereum L1 — Namechain L2 Cancelled as Ethereum Scaling Makes It Unnecessary',
+      summary: 'ENS lead developer nick.eth announces ENSv2 will deploy exclusively on Ethereum L1, ceasing development of Namechain (their planned custom L2). Key driver: Ethereum L1 scaling faster than anyone predicted — 99% reduction in ENS registration gas costs over past year. Gas limit increased from 30M to 60M in 2025 (Fusaka upgrade), with core devs targeting 200M in 2026. ENS registration now costs <5 cents in gas (down from ~$5). At current gas prices, subsidizing every ENS transaction in 2025 would cost ~$10,000 — far less than running an L2. ENSv2 features still shipping: single-step registration, stablecoin purchases from any chain, new registry design, ENS App and ENS Explorer now in public alpha. Nick.eth: "If we were starting today, knowing what we know about Ethereum\'s scaling progress and trajectory, would we build our own L2 for ENSv2? The answer is clearly no." Staying on L1 provides strongest security, decentralization, and liveness guarantees — no additional trust assumptions from L2 rollup contracts or centralized preconfers.',
+      significance: 'LANDMARK DECISION: Major Ethereum protocol (ENS, millions of names) choosing to STAY on L1 rather than migrate to L2 because L1 is now cheap enough. Validates Ethereum\'s scaling roadmap in the most concrete way possible — a major project that planned an L2 for 2 years cancelled it because L1 scaling exceeded expectations. 99% gas cost reduction + 200M gas limit target = Ethereum L1 becoming viable for mass consumer applications. ENS comparing Namechain to Concorde — knowing when to change course is leadership.',
+      bmnrImplication: 'ENS staying on L1 is one of the strongest validation signals for Ethereum\'s scaling trajectory. Gas limit 30M → 60M → 200M target makes L1 viable for consumer apps. More activity staying on L1 = more direct ETH demand for gas = more value accrual to ETH. 99% cost reduction demolishes the "Ethereum is too expensive" narrative. BMNR thesis strengthened: Ethereum scaling is working, and the network is becoming institutional-grade infrastructure.',
+      impact: 'Bullish',
+      source: 'ENS Blog'
+    },
+    {
       date: '2026-02-05',
       category: 'Protocol',
       company: 'Ethereum Foundation',
@@ -7018,6 +8434,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'State Street building tokenization infrastructure validates institutional demand for blockchain-based asset management. Major custodian supporting public blockchain networks reinforces Ethereum ecosystem positioning. More institutional infrastructure = more tokenized assets = Ethereum network effect strengthening.',
       impact: 'Bullish',
       source: 'State Street Press Release'
+    },
+    {
+      date: '2026-01-13',
+      category: 'Regulatory',
+      company: 'US Senate Banking Committee',
+      title: 'Digital Asset Market CLARITY Act — US Market Structure Bill Defines SEC/CFTC Jurisdiction for Crypto',
+      summary: 'Senate Banking Committee advances the Digital Asset Market CLARITY Act, establishing a comprehensive US regulatory framework for digital assets. Key provisions: (1) INVESTOR PROTECTION — strengthens disclosure requirements, preserves anti-fraud authorities, limits insider abuse, promotes coordinated oversight and financial literacy. (2) REGULATORY CLARITY — draws bright line between SEC and CFTC jurisdiction, replaces SEC regulation-by-enforcement with workable statutory framework, creates tailored disclosure regime for digital asset projects to raise capital. (3) DeFi INNOVATION — protects software developers and peer-to-peer activity, ensures centralized intermediaries interacting with DeFi are subject to tailored risk-management, cybersecurity, and compliance standards, focuses regulatory efforts on control rather than code. (4) ILLICIT FINANCE — ensures centralized intermediaries subject to appropriate sanctions framework, gives law enforcement new targeted tools to combat money laundering, terrorist financing, and sanctions evasion, closes national security gaps while keeping legitimate crypto activity onshore. Committee chairman: Tim Scott (R-SC). Described as establishing US as "crypto capital of the world."',
+      significance: 'LANDMARK US LEGISLATION: First comprehensive market structure bill for digital assets advancing through Senate Banking Committee. Replaces SEC\'s regulation-by-enforcement model with clear statutory framework. Bright-line SEC/CFTC jurisdiction eliminates years of regulatory ambiguity. DeFi developer protections (regulate control, not code) preserve open-source innovation. Combined with GENIUS Act (stablecoins), creates complete US regulatory framework for crypto.',
+      bmnrImplication: 'CLARITY Act is the most significant US crypto regulatory development for BMNR. Clear SEC/CFTC jurisdiction removes legal uncertainty that has suppressed institutional adoption. ETH classification clarity (commodity vs security) directly impacts BMNR\'s treasury strategy. DeFi protections preserve Ethereum\'s open-source ecosystem. Combined with GENIUS Act, creates regulatory environment where institutional capital can flow into ETH with confidence.',
+      impact: 'Bullish',
+      source: 'US Senate Banking Committee'
     },
     {
       date: '2026-01-13',
@@ -7229,20 +8656,9 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       impact: 'Bullish', 
       source: 'HSBC / Ant International / Swift Press Release' 
     },
-    { 
-      date: '2025-12-10', 
-      category: 'Enterprise', 
-      company: 'ETHZilla',
-      title: 'ETHZilla Invests $21M in Zippy to Tokenize Manufactured Home Loans on Ethereum', 
-      summary: 'ETHZilla Corporation (ETHZ) enters definitive agreements with Zippy Inc. to tokenize manufactured home loans on Ethereum blockchain. ETHZilla acquires 15% fully diluted stake for $21.1M ($5M cash + $16.1M stock). Target: $14B manufactured home financial services market — one of America\'s most underserved credit markets. Zippy: first to introduce modern digital infrastructure and AI-enabled systems to manufactured housing lending. 36-month exclusive tokenization agreement via Liquidity.io (FINRA-regulated ATS on Ethereum L2) and Satschel platforms. ETHZilla ecosystem includes: Liquidity.io (tokenized private credit), Karus (AI risk forecasting for structured auto credit). CEO McAndrew Rudisill: "This relationship will position ETHZilla as a leading player in US on-chain home finance." Zippy CEO Ben Halliday: "ETHZilla\'s blockchain infrastructure gives Zippy the ability to turn its chattel assets into an accessible, technology-driven investment vehicle."',
-      significance: 'Housing finance = new RWA category on Ethereum. $14B market opportunity demonstrates tokenization expanding beyond treasuries/securities to consumer lending. FINRA-regulated ATS provides compliant infrastructure. AI-enabled underwriting + blockchain distribution represents next-gen lending model.',
-      bmnrImplication: 'Manufactured home loans on Ethereum expands RWA categories on network. Consumer lending tokenization validates blockchain for broader financial infrastructure. More asset classes on Ethereum = more network utility = ETH ecosystem value.',
-      impact: 'Bullish', 
-      source: 'ETHZilla Press Release' 
-    },
-    { 
-      date: '2025-12-22', 
-      category: 'Enterprise', 
+    {
+      date: '2025-12-22',
+      category: 'Enterprise',
       company: 'Shift4',
       title: 'Shift4 Launches Global Stablecoin Settlement Platform', 
       summary: 'Shift4 (NYSE: FOUR), global leader in integrated payments processing billions of transactions annually, launches stablecoin settlement platform for hundreds of thousands of merchants globally. Merchants can now receive settlement in USDC, USDT, EURC, or DAI on networks including Ethereum, Solana, Polygon, Base, Stellar, TON, and Plasma. Platform enables 24/7 money movement without banking hour constraints. Director of Crypto Pietro Moran: "As Shift4 becomes an increasingly global company, this offering will support businesses around the world as stablecoins continue to play a growing role in the modern payments ecosystem."',
@@ -7384,9 +8800,31 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       impact: 'Bullish', 
       source: 'CoinShares' 
     },
-    { 
-      date: '2025-11-20', 
-      category: 'Protocol', 
+    {
+      date: '2025-11-20',
+      category: 'Regulatory',
+      company: 'Coinbase',
+      title: 'Canada Proposes Stablecoin Framework — Bank of Canada as Regulator, Coinbase Calls It Global Leadership',
+      summary: 'Canada\'s 2025 federal budget formally recognized stablecoins as key to future of money. Government proposed comprehensive stablecoin framework: stablecoin issuers must apply to Bank of Canada for public registry, Bank of Canada as primary regulator, protections allowing stablecoins as payment instruments, reserve/custody requirements (cash + HQLA), and foreign regime equivalence. Nearly 5 million Canadians now hold crypto. Coinbase Country Director Lucas Matheson called it one of the strongest frameworks globally, taking best components from GENIUS Act and international standards. Coinbase recommends: allowing yield on stablecoin deposits, level playing field across bank/non-bank tokenized products, and CSA interim guidance for Canadian-denominated stablecoins. Matheson: "This is our moment to build a financial system that is faster, fairer, and more affordable for everyone."',
+      significance: 'One of the largest economies to move forward with comprehensive stablecoin regulation. Bank of Canada as regulator signals sovereign seriousness. Framework draws from US GENIUS Act best practices. Creates regulatory clarity for stablecoin issuers and exchanges operating in Canada.',
+      bmnrImplication: 'Canada joining US (GENIUS Act) in stablecoin regulatory clarity accelerates global institutional adoption. More regulatory frameworks = more stablecoin activity on Ethereum (USDC, USDT). Stablecoin infrastructure built on Ethereum benefits from each new jurisdiction providing clarity.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-11-19',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Launches DEX Trading in Brazil — "DeFi Mullet" Bridges Millions of Users to Onchain Markets',
+      summary: 'Coinbase launches DEX trading integration for Brazilian users, giving access to Base-native tokens within moments of creation onchain. Built on "DeFi Mullet" concept: Coinbase interface in front, powered by DeFi protocols in back. Users trade on Aerodrome, Uniswap via DEX aggregators without leaving Coinbase app. Expands tradeable assets from 300 to tens of thousands (potentially millions). Features: integrated self-custody wallet, sponsored network fees, seamless funding, and portfolio tracking. Assets identified as malicious by third-party vendor blocked. Planned expansion to more networks including Solana. Part of Coinbase\'s vision to build "app to exchange everything" with 24/7 global access.',
+      significance: 'Major exchange bridging CeFi and DeFi at scale in one of crypto\'s largest markets (Brazil). "DeFi Mullet" model could become template for how exchanges onboard users to onchain trading. Sponsored gas fees and integrated self-custody wallet lower barriers dramatically.',
+      bmnrImplication: 'Coinbase DEX integration on Base (Ethereum L2) brings millions of Brazilian users directly to Ethereum ecosystem. Sponsored gas fees reduce friction for DeFi adoption. More users on Base = more L2 activity = more settlement fees to Ethereum L1. Validates Ethereum L2 as consumer-facing infrastructure.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-11-20',
+      category: 'Protocol',
       company: 'Ethereum Foundation',
       title: 'Pectra Mainnet Upgrade Successfully Activated', 
       summary: 'Pectra (Prague-Electra) upgrade successfully activates on Ethereum mainnet. Pectra combines execution layer (Prague) and consensus layer (Electra) improvements. Key features: EIP-7702 (account abstraction for EOAs) enabling smart contract functionality for regular accounts, EIP-2935 (historical block hashes in state) supporting stateless clients, and validator operational improvements including increased MAX_EFFECTIVE_BALANCE from 32 ETH to 2048 ETH for consolidation. Pectra is the first major upgrade since Dencun (March 2024). Ethereum Foundation confirms Fusaka upgrade to follow in December 2025 with PeerDAS for blob scaling.',
@@ -7406,9 +8844,20 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       impact: 'Bullish', 
       source: 'Visa Blog' 
     },
-    { 
-      date: '2025-11-13', 
-      category: 'Enterprise', 
+    {
+      date: '2025-11-13',
+      category: 'Institutional',
+      company: 'Coinbase',
+      title: 'Kalshi Selects Coinbase Custody for USDC — Largest US Prediction Market Runs on Stablecoin Rails',
+      summary: 'Kalshi, the largest prediction market in the US, has chosen Coinbase Custody to safeguard USDC for event-based contracts. Participants deposit and receive payouts in USDC, with Coinbase Custody providing institutional-grade security. Prediction markets let users trade on real-world event outcomes — inflation trends, elections, sports, government policy. Coinbase describes the partnership as combining Kalshi\'s regulated exchange with Coinbase\'s custody standard and USDC\'s stability to prove "financial innovation can be both trusted and transformative." Availability expanding as regulatory approvals obtained.',
+      significance: 'USDC adoption expanding beyond payments and DeFi into prediction markets. Kalshi is CFTC-regulated — institutional-grade venue choosing stablecoin settlement over traditional rails. Validates USDC (Ethereum-native stablecoin) as settlement layer for new financial primitives.',
+      bmnrImplication: 'Prediction markets on USDC expand stablecoin utility into entirely new asset class. USDC originally issued on Ethereum — more USDC demand = more Ethereum ecosystem value. Novel financial products choosing stablecoin rails over traditional finance validates crypto infrastructure.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-11-13',
+      category: 'Enterprise',
       company: 'A+ Protocol',
       title: 'A+ Protocol Launches Multi-Party Stablecoin Network for Banks', 
       summary: 'A+ Protocol launches $USDA+, a multi-party issued stablecoin designed for banks and regulated financial institutions. GENIUS Act-compliant framework allows banks to join unified network and issue stablecoins while keeping 100% of yield. Unlike whitelabel solutions with limited liquidity, A+ offers interoperable network with core functionality similar to Circle/Coinbase. Includes whitelisting and compliance layer mirroring Bank Secrecy Act KYC/AML requirements. Freezing, burning, and law enforcement cooperation under consensus control of all bank issuers. Project catalyzed by Ethereum Foundation grant. SEC Chair has announced initiative to modernize US securities rules to enable "America\'s financial markets to move on-chain."',
@@ -7438,6 +8887,28 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'JPMorgan on Ethereum L2 is massive validation for the network. Bank deposit tokens create new use case for institutional on-chain activity. Mastercard integration expands potential network effects. More institutional activity on Base = more settlement fees to Ethereum L1.',
       impact: 'Bullish', 
       source: 'JPMorgan Kinexys Press Release'
+    },
+    {
+      date: '2025-11-12',
+      category: 'Enterprise',
+      company: 'Coinbase',
+      title: 'Coinbase Business Launches in Singapore — First International Market, Powered by Standard Chartered and USDC',
+      summary: 'Coinbase Business launches in Singapore as first international market outside US. All-in-one crypto operating platform for startups and SMBs offers: integrated trading and treasury management, global USDC payouts with near-instant settlement and minimal fees, payment links with 1% transaction fee (vs credit card rates), USDC balance rewards, and accounting reconciliation (QuickBooks, Xero). Powered by Standard Chartered banking partnership for real-time SGD fiat transfers. Builds on Coinbase participation in MAS BLOOM Initiative (Borderless, Liquid, Open, Online, Multi-currency) contributing to "Agentic Payments" workstream. Singapore chosen as gateway to Asia due to digital innovation leadership and regulatory clarity.',
+      significance: 'Major crypto exchange launching B2B payments infrastructure in key Asian financial hub. Standard Chartered banking integration bridges TradFi-crypto for business use. MAS BLOOM participation demonstrates regulatory collaboration. USDC-native B2B payments could become template for international expansion.',
+      bmnrImplication: 'Coinbase Business on USDC rails drives more stablecoin utility on Ethereum ecosystem. Standard Chartered partnership brings institutional credibility. MAS BLOOM "Agentic Payments" workstream aligns with emerging AI-blockchain narrative. More USDC commercial activity = more Ethereum network value.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-11-11',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Launches UK Savings Account — First Crypto-Native Exchange with Regulated Savings (3.75% AER, FSCS Protected)',
+      summary: 'Coinbase launches savings account for eligible UK users — 3.75% AER variable interest paid daily, instant deposits/withdrawals, no minimum balance or lockup. FSCS protection up to £85,000 (via ClearBank). First crypto-native exchange to offer regulated savings account in UK. Part of Coinbase\'s vision as "exchange for everything" — full financial suite combining crypto trading (260+ assets) with traditional savings. UK is Coinbase\'s largest international market. Follows FCA VASP registration in Feb 2025, making Coinbase largest UK registered crypto exchange. Aiming to become UK\'s #1 financial app by bridging fiat and crypto economies.',
+      significance: 'First crypto exchange offering FSCS-protected savings account — significant crypto-TradFi convergence milestone. Coinbase evolving from pure exchange to comprehensive financial platform. UK as largest international market signals strategic importance. Bridges gap between traditional savings and crypto investment for mainstream users.',
+      bmnrImplication: 'Coinbase evolving into full financial platform increases crypto on-ramp surface area. UK users can hold savings + trade crypto in one app — reduces friction to enter crypto economy. More mainstream crypto access = more potential ETH demand. FSCS-protected savings alongside crypto normalizes digital assets for conservative users.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
     },
     {
       date: '2025-11-11',
@@ -7624,10 +9095,21 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'Fidelity Investments ($4.5T+ AUM) rolls out tokenized money market fund on Ethereum blockchain. $202M in Fidelity Digital Interest Tokens (FDIT) minted — representing Fidelity Treasury Digital Fund (FYOXX/FYHXX) holding US Treasury bills. Main investor: Ondo Finance, using FDIT as reserve asset for OUSG yield-generating token. OUSG also uses BlackRock BUIDL, Franklin Templeton BENJI, WisdomTree WTGXX as backing. First unveiled March 2025 in SEC regulatory filing. Context: Tokenized US Treasuries market has tripled in one year to $7.5B. BlackRock/Securitize BUIDL leads at $2.4B, followed by Franklin Templeton and WisdomTree. These tokens increasingly used as infrastructure for yield-earning strategies and collateral in crypto economy.',
       significance: 'Another major asset manager ($4.5T+ AUM) launching tokenized fund on Ethereum. Ondo as anchor investor demonstrates crypto-native demand for institutional products. Part of $7.5B tokenized Treasuries market that tripled in one year. Fidelity joins BlackRock, Franklin Templeton, WisdomTree in Ethereum tokenization.',
       bmnrImplication: 'Fidelity tokenized fund on Ethereum adds to institutional validation. More tokenized Treasuries = more on-chain collateral = more DeFi composability. Ondo integration bridges TradFi products to crypto-native yield strategies. Growing tokenized Treasury market validates BMNR\'s Ethereum infrastructure thesis.',
-      impact: 'Bullish', 
-      source: 'CoinDesk / Etherscan' 
+      impact: 'Bullish',
+      source: 'CoinDesk / Etherscan'
     },
-    { 
+    {
+      date: '2025-09-09',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Acquires Sensible Team to Accelerate DeFi-Powered Consumer Onchain Roadmap',
+      summary: 'Coinbase acquires founders of Sensible to lead key teams shaping onchain consumer strategy. Team brings expertise in building DeFi-powered consumer applications. Part of Coinbase\'s vision to make itself an "everything exchange" — gateway to onchain economy. Current DeFi features: crypto-backed loans via non-custodial smart wallets, staking for network security + rewards, USDC holdings rewards, Coinbase One Card with bitcoin back. Goal: simplify DeFi access so anyone can borrow, stake, and earn without being an expert. Coinbase evolving from exchange to "full-fledged financial platform" on crypto rails.',
+      significance: 'Coinbase actively acquiring DeFi talent to bridge CeFi-DeFi gap. Strategy to embed DeFi functionality (lending, staking, yield) directly into consumer app signals mainstream DeFi adoption is approaching. "Everything exchange" vision moves Coinbase from trading venue to comprehensive financial platform.',
+      bmnrImplication: 'Coinbase embedding DeFi into consumer app makes staking and yield accessible to 110M+ verified users. Simplifying DeFi access accelerates mainstream Ethereum adoption. More users staking, lending, earning on Ethereum = more network activity = ETH value accrual. Coinbase as DeFi gateway could be double-edged: more competition for BMNR but also larger ecosystem.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
       date: '2025-09-15', 
       category: 'Enterprise', 
       company: 'American Express',
@@ -7660,6 +9142,28 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Swift partnering with Consensys (Ethereum infrastructure leader) positions Ethereum technology at core of global payment messaging upgrade. Coalition includes virtually every major global bank. Swift\'s blockchain ledger built on Ethereum technology = massive validation for ETH ecosystem. Global correspondent banking infrastructure ($150T+ annually) moving toward blockchain rails.',
       impact: 'Bullish',
       source: 'Swift Press Release / Sibos 2025'
+    },
+    {
+      date: '2025-09-23',
+      category: 'Enterprise',
+      company: 'Coinbase',
+      title: 'Coinbase and Cloudflare Launch x402 Foundation — Universal Standard for AI-Driven Stablecoin Payments',
+      summary: 'Coinbase and Cloudflare announce intent to launch x402 Foundation to establish x402 as the universal standard for AI-driven payments. x402 leverages HTTP "402 Payment Required" status code to embed stablecoin payments directly into web interactions, enabling AI agents, APIs, and apps to transact value seamlessly. Use cases: pay-per-use AI/research, on-demand data/signals, creator micropayments, storage/media, agent-to-agent payments compatible with MCP-style workflows. Foundation focuses on governance (neutral open standard), ecosystem growth (developer grants/tools), and interoperability across platforms/geographies. Cloudflare adding deferred payments to their pay-per-crawl beta. Plans to add members from AI companies (LLMs), e-commerce platforms, consumer/enterprise companies.',
+      significance: 'MAJOR: Coinbase + Cloudflare (internet infrastructure giant) creating open standard for machine-to-machine payments via stablecoins. x402 could become backbone of agentic commerce — AI agents autonomously paying for services, data, compute. Replaces subscription/intermediary models with real-time stablecoin micropayments. Opens entirely new category of on-chain economic activity.',
+      bmnrImplication: 'x402 standard positions stablecoins (primarily Ethereum-native USDC) as settlement layer for AI agent economy. Machine-to-machine micropayments could generate massive on-chain transaction volume. Cloudflare backing ensures internet-scale infrastructure. More stablecoin transactions = more Ethereum ecosystem value. Agentic commerce is potentially the largest new use case for crypto.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-09-24',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Lists First AUD and SGD Stablecoins (AUDD, XSGD) — Local Currency Stablecoins Go Global',
+      summary: 'Coinbase lists AUDD (Australian Digital Dollar, by AUDC Pty Ltd) and XSGD (by StraitsX, MAS-compliant) — first AUD and SGD denominated stablecoins on the platform. Available globally from Oct 1. Users in Australia and Singapore can convert from fiat to stablecoin for free. Stablecoin market cap surpassed $250B as of June 2025 (50% YoY), settled $30T+ in 2024. 70%+ of crypto owners in Singapore and Australia interested in local currency stablecoins (Ipsos survey). Currently 99% of onchain digital money is USD-denominated vs 60% of global currency reserves — local currency stablecoins represent massive growth opportunity. XSGD compliant with Singapore MAS Single Currency Stablecoin (SCS) framework. Use cases include AI agentic commerce with stablecoins for autonomous payments.',
+      significance: 'Stablecoin ecosystem expanding beyond USD dominance into local currencies. $250B market cap with analyst forecasts of $2T. Local currency stablecoins critical for global adoption — enabling users to transact in native currencies on-chain. 99% USD concentration in onchain money signals massive non-USD opportunity ahead.',
+      bmnrImplication: 'Local currency stablecoin expansion drives more global on-chain activity. Stablecoins are primarily Ethereum-native (USDC, USDT, now AUDD/XSGD). Market growing from $250B toward $2T = massive increase in Ethereum network utility. More stablecoin diversity = more DeFi composability = more ETH ecosystem value.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
     },
     {
       date: '2025-09-25',
@@ -7739,6 +9243,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'Kraken Blog'
     },
     // === AUGUST 2025 ===
+    {
+      date: '2025-08-05',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Integrates PayPal as Payment Option in Canada — 10M PayPal Accounts, 5M+ Crypto Owners',
+      summary: 'Canadian Coinbase users can now use PayPal to buy and sell crypto. Canada has nearly 10M active PayPal accounts and 5M+ crypto owners. PayPal joins existing payment options: Interac e-Transfer, EFT, direct bank deposits, debit cards. Integration supports Coinbase\'s full suite including trading and staking. Coinbase is the first and largest international exchange registered as Restricted Dealer in Canada (since 2023). Part of global goal to onboard one billion people to crypto economy. PayPal SVP John Froese: "combining trusted money management with cutting-edge commerce tools."',
+      significance: 'PayPal (400M+ global users) deepening crypto exchange integration in another market. Reduces friction for Canadians to enter crypto via familiar payment method. Coinbase expanding payment on-ramps demonstrates commitment to reducing barriers to crypto adoption globally.',
+      bmnrImplication: 'More payment on-ramps = more users entering crypto = more potential ETH demand. PayPal integration makes crypto buying as simple as online shopping. 5M+ Canadian crypto owners is growing market. More frictionless fiat-to-crypto rails benefits entire ecosystem.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
     {
       date: '2025-08-24',
       category: 'L2',
@@ -7828,6 +9343,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'HSBC Press Release / Ledger Insights'
     },
     {
+      date: '2025-06-30',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Integrates PayPal as Payment Method in Australia — 9.5M PayPal Accounts, 5M+ Crypto Owners',
+      summary: 'Australian users can now select PayPal as a payment option to buy and sell crypto on Coinbase. PayPal has 9.5 million active accounts in Australia. More than 5 million Australians now own crypto. Previously Coinbase Australia customers could fund via PayID, bank account, debit card payments, and crypto deposits. PayPal integration allows using cards and bank account already linked to PayPal. Enables access to simple and advanced trading, stablecoin rewards, and staking. Simon Banks (MD, PayPal Australia): "Our partnership with Coinbase — a leader in driving crypto adoption in Australia — reflects our shared commitment to innovation and empowering financial choices."',
+      significance: 'PayPal (400M+ global users) deepening crypto exchange integration in APAC. Reduces friction for 9.5M Australian PayPal users to enter crypto via familiar payment method. 5M+ Australians already own crypto, demonstrating mature market. Second PayPal-Coinbase integration after Canada (Aug 2025).',
+      bmnrImplication: 'More APAC payment on-ramps = more users entering crypto = more potential ETH demand. PayPal integration makes crypto buying as simple as online shopping. Growing Australian crypto market benefits entire ecosystem including ETH staking products.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
       date: '2025-06-25',
       category: 'L2',
       company: 'Base',
@@ -7850,15 +9376,48 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'Coinbase Blog'
     },
     {
+      date: '2025-06-18',
+      category: 'Institutional',
+      company: 'Coinbase',
+      title: 'Coinbase Derivatives and Nodal Clear Partner in USDC Collateral Integration for US Futures',
+      summary: 'Coinbase Derivatives and Nodal Clear partnering to integrate USDC as eligible collateral for US futures trading as part of multi-year renewal agreement. Expected to be the first regulated use case of USDC as collateral, targeting launch in 2026. Coinbase Custody Trust (Qualified Custodian regulated by NYDFS) serves as custodian. Coinbase Derivatives is a CFTC-regulated designated contract market; Nodal Clear is a CFTC-regulated derivatives clearing organization, part of EEX Group (Deutsche Borse). Boris Ilyevsky (CEO, Coinbase Derivatives): "Our commitment to integrate USDC as collateral reflects our dedication to enhance trading capabilities for US market participants." Paul Cusenza (Chairman & CEO, Nodal Clear): "The plans to integrate USDC as collateral represent our continued commitment to seek to be responsive to market needs and innovate."',
+      significance: 'First regulated USDC-as-collateral use case in US futures markets. CFTC-regulated exchanges treating USDC as cash-equivalent collateral is a watershed moment for stablecoin institutional acceptance. Deutsche Borse subsidiary involvement signals European institutional bridge.',
+      bmnrImplication: 'USDC as futures collateral validates stablecoins in traditional derivatives infrastructure. USDC is primarily Ethereum-native — more institutional stablecoin utility = more on-chain settlement = ETH ecosystem value. CFTC-regulated collateral use case could open door for broader DeFi collateral recognition.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
       date: '2025-06-17',
       category: 'Enterprise',
       company: 'Deutsche Bank',
-      title: 'Deutsche Bank DAMA 2 - Institutional Tokenization Blueprint on Ethereum L2', 
+      title: 'Deutsche Bank DAMA 2 - Institutional Tokenization Blueprint on Ethereum L2',
       summary: 'Deutsche Bank, Axelar Network (Interop Labs), and Memento Blockchain publish litepaper for Digital Asset Management Access (DAMA) 2 platform — a next-generation tokenization platform built on public blockchains with regulatory alignment and privacy as core design principles. Key features: Blockchain-as-a-Service model minimizing upfront investment, privacy-enabled Layer 2 using zkSync ZK Chain technology, managed token issuance across multiple blockchains via Axelar, and app store for fund smart contract designs. Platform targets tokenized funds, stablecoins, and RWAs for asset managers, wealth managers, and investment advisors. Innovation Lead Boon-Hiong Chan: "DAMA 2 represents how public chains have evolved for institutional finance\'s use." MVP launch targeted H2 2025. Context: $84T in global wealth shifting to digital-native generations by 2045 (Cerulli Associates).',
       significance: 'Major European bank ($1.4T assets) publishing blueprint for institutional tokenization on Ethereum L2. Privacy-preserving ZK technology addresses compliance concerns. Blockchain-as-a-Service model lowers barrier for traditional asset managers. Project won Global Custodian 2025 Innovation in Smart Contract Technology award.',
       bmnrImplication: 'Deutsche Bank building tokenization infrastructure on Ethereum ecosystem validates network for European institutional finance. Privacy-enabled L2 addresses regulatory requirements that blocked enterprise adoption. More institutional activity on Ethereum L2s = more settlement to Ethereum L1.',
       impact: 'Bullish',
       source: 'Deutsche Bank / Axelar / Memento Press Release'
+    },
+    {
+      date: '2025-06-12',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase and Shopify Bring USDC Payments on Base to Millions of Merchants Worldwide',
+      summary: 'Coinbase partners with Shopify to enable USDC payments on Base through Shopify Payments. Rolling out with early access merchants immediately, expanding to all Shopify Payments stores globally later in 2025. Shopify powers millions of merchants globally including BarkBox, SKIMS, and Vuori. In the US, Shopify plans to provide 1% cash back to customers paying with USDC at no cost to the merchant. No foreign exchange fees on cross-border transactions. Merchants get cashed out in local currency with zero fees by default, or can choose to receive USDC on Base. Powered by a new smart contract and commerce payments protocol developed jointly — deployed onchain, permissionless, and open source. No additional merchant setup required — automatically available. Protocol supports delayed capture, tax finalization, and refunds.',
+      significance: 'Massive merchant adoption milestone — Shopify powers millions of merchants globally, all getting automatic USDC payment support on Base. Open source commerce protocol creates permissionless payment infrastructure. 1% customer cash back incentivizes USDC usage. Zero cross-border FX fees is compelling for international commerce.',
+      bmnrImplication: 'Shopify USDC payments on Base directly drive Ethereum L2 transaction volume. Millions of merchants with automatic crypto payment support = massive on-chain commerce potential. Open source protocol enables broader adoption beyond Shopify. More USDC commerce on Base = more Ethereum ecosystem value.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-04-28',
+      category: 'Ecosystem',
+      company: 'Coinbase',
+      title: 'Coinbase, Fabric Ventures, Animoca Brands, and Founders Factory Launch UK Web3 Accelerator',
+      summary: 'Coinbase, Fabric Ventures, Animoca Brands, and Founders Factory launch multi-million pound accelerator in the UK to transform the UK\'s blockchain and AI ecosystem. Founders Factory delivers world-class business and growth training with hands-on support across strategy, go-to-market, product development, and fundraising. Coinbase, Fabric Ventures, and Animoca Brands provide support on tokenomics, community go-to-market strategies, and best practices for scaling blockchain and AI businesses. Each founder in first cohort receives up to £250k in funding. City Minister Emma Reynolds: "This will ensure that the UK remains a global leading hub for blockchain technology." Business Secretary Jonathan Reynolds: "This announcement is a strong vote of confidence in the UK\'s tech sector." Robby Yung (CEO of Investments, Animoca Brands): "It is critical that the UK takes advantage of the opportunity of the fast-growing Web3 industry."',
+      significance: 'UK government-endorsed accelerator combining major crypto companies (Coinbase, Animoca) with VC (Fabric) and startup infrastructure (Founders Factory). Government ministers publicly endorsing blockchain as growth engine signals strong regulatory support. £250k per founder + specialized Web3 support creates pipeline of UK blockchain startups.',
+      bmnrImplication: 'UK accelerator focused on blockchain/AI creates pipeline of Ethereum ecosystem builders. Government endorsement signals regulatory tailwinds for crypto in UK. More startups building on blockchain = more on-chain activity = ETH ecosystem growth.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
     },
     {
       date: '2025-04-03',
@@ -7891,11 +9450,44 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       significance: 'Major institutional broker expanding crypto offerings on unified multi-asset platform. Positions crypto as standard asset class alongside traditional securities. Financial advisers can now allocate client assets across full crypto spectrum. Low-cost structure ($1.75 minimum) enables retail participation.',
       bmnrImplication: 'Interactive Brokers expanding crypto access for institutional clients and advisers broadens the investor base. ETH included alongside major tokens validates its position as core digital asset. More accessible crypto = more potential ETH investors.',
       impact: 'Bullish', 
-      source: 'Interactive Brokers Press Release' 
+      source: 'Interactive Brokers Press Release'
     },
-    { 
-      date: '2025-01-01', 
-      category: 'Enterprise', 
+    {
+      date: '2025-03-11',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Secures FIU Registration in India — Retail Services Launching Later in 2025',
+      summary: 'Coinbase registers with India\'s Financial Intelligence Unit (FIU), enabling crypto trading services in the country. Plans to launch initial retail services later in 2025, followed by additional investment and products. India\'s share of global onchain developers increased from 3% in 2018 to 12% in 2023 — highest concentration of onchain talent among emerging markets. John O\'Loghlen (Regional MD APAC): "India represents one of the most exciting market opportunities in the world today." Paul Grewal (CLO) appointed to Board of U.S.-India Business Council (USIBC). Coinbase believes crypto can create incentives for India\'s brightest to build world-leading products from India, for the world.',
+      significance: 'Coinbase entering India — world\'s largest population and fastest-growing tech ecosystem. India\'s onchain developer community (12% global share) creates massive potential for Ethereum ecosystem building. FIU registration signals regulatory compliance pathway in historically cautious market.',
+      bmnrImplication: 'India\'s developer talent pipeline (3% → 12% global onchain devs) directly benefits Ethereum ecosystem through more builders. Coinbase India launch = more on-ramps for world\'s most populous country. Developer ecosystem growth in India strengthens overall blockchain infrastructure.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-02-03',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Obtains VASP Registration in the United Kingdom — Largest Registered Digital Assets Player in UK',
+      summary: 'Coinbase obtains VASP registration in the UK issued by the Financial Conduct Authority (FCA). Makes Coinbase the largest registered digital assets player in the UK, its largest international market. Allows Coinbase to offer both crypto and fiat services in the UK. UK Government and FCA developing regulation for crypto sector. Daniel Seifert (VP & Regional MD EMEA) and Keith Grose lead UK operations. Coinbase committed to onboarding next 1 billion people into crypto while prioritising security and compliance. Registration enables expanded retail, institutional, and ecosystem products.',
+      significance: 'FCA VASP registration makes Coinbase largest registered crypto player in UK — major fintech market. Regulatory milestone in Coinbase\'s largest international market enables full product expansion. UK government actively developing crypto regulation signals pro-innovation stance.',
+      bmnrImplication: 'Coinbase as largest UK VASP expands regulated crypto access in major financial center. UK crypto regulation development creates clearer framework for institutional adoption. More regulated on-ramps in London financial hub = more institutional crypto flows including ETH.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-01-28',
+      category: 'Product',
+      company: 'Coinbase',
+      title: 'Coinbase Gains VASP Approval to Launch in Argentina — 5 Million Daily Crypto Users',
+      summary: 'Coinbase secures Virtual Asset Service Provider (VASP) registration from Argentina\'s National Securities Commission (CNV). 5 million Argentinians currently use crypto daily. 87% believe crypto and blockchain can help achieve greater financial independence. 76% see crypto as solution to financial frustrations (inflation, high transaction costs). 79% open to receiving salaries in cryptocurrency. Matías Alberti (ex-Buenbit, Clara) leads Argentina operations. Coinbase rolling out localized services in Spanish with local payment methods and customer support. Fabio Plein (Director for the Americas): "For many Argentinians, crypto isn\'t just an investment, it\'s a necessity for regaining control over their financial futures."',
+      significance: 'Argentina is one of world\'s most dynamic crypto markets — 5M daily users, 87% see crypto as path to financial independence. Inflation-driven adoption creates strong product-market fit for crypto. Localized operations signal serious market commitment, not just licensing.',
+      bmnrImplication: 'Argentina\'s inflation-driven crypto adoption (5M daily users) demonstrates real-world cryptocurrency utility. More regulated exchanges in Latin America = more fiat-to-crypto on-ramps = broader crypto ecosystem growth.',
+      impact: 'Bullish',
+      source: 'Coinbase Blog'
+    },
+    {
+      date: '2025-01-01',
+      category: 'Enterprise',
       company: 'JPMorgan',
       title: 'JPMorgan & MIT DCI Publish Payment Token Design Standards for EVM Blockchains', 
       summary: 'MIT Digital Currency Initiative and Kinexys by J.P. Morgan publish comprehensive research on payment token design for EVM-based blockchains. Focus: additional capabilities required for regulatory compliance. Design guidelines (8 principles): (1) Minimize on-chain data storage, (2) Avoid storing PII on-chain (harvest-now-decrypt-later risk), (3) Complete payment transfers within single blockchain transaction, (4) Segregate roles for privileged admin functions, (5) Ensure observability of privileged functions, (6) Initiate transactions from system where funds held, (7) Fail safely and obviously, (8) Make participation easy for users. Key functionalities mapped to ERC standards: ERC-20 (ledger/transfers), ERC-4337 (account abstraction/key recovery), ERC-1400/ERC-3643 (permissioned transfers), ERC-2535 (Diamond upgrades), OpenZeppelin Pausable (admin controls). Two new standards proposed: (1) Payment authorization following payment controls, (2) Administrative controls for remediation/recovery (suspension, seizure, global pause). Kinexys update: daily transaction values now exceeding $2 billion (up from $1B). Stablecoin market context: $235B market cap vs ~$18T US bank deposits. Key insight: "composable standards" approach — narrow, modular standards vs broad all-encompassing standards. Source code to be published under open-source license.',
@@ -8589,7 +10181,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   ];
   
   const categories = ['All', 'Enterprise', 'DeFi', 'L2', 'Institutional', 'Protocol', 'Regulatory'];
-  const companies = ['All', 'BlackRock', 'JPMorgan', 'Visa', 'Franklin Templeton', 'Fidelity', 'Coinbase', 'Sony', 'Goldman Sachs', 'State Street', 'Interactive Brokers', 'Societe Generale', 'Deutsche Bank', 'Bit Digital', 'Siemens', 'Telcoin', 'Shift4', 'Sentient Jet', 'GoTyme Bank', 'A+ Protocol', 'Ostium', 'Tetra Digital', 'DAMAC Properties', 'WisdomTree', 'Securitize', 'Paysafe', 'Guggenheim', 'UBS', 'Mastercard', 'DBS', 'HSBC', 'Citi', 'ETHZilla', 'Standard Chartered', 'Santander', 'EIB', 'ANZ', 'ABN AMRO', 'HKMA', 'Other'];
+  const companies = ['All', 'BlackRock', 'JPMorgan', 'Visa', 'Franklin Templeton', 'Fidelity', 'Coinbase', 'Sony', 'Goldman Sachs', 'State Street', 'Interactive Brokers', 'Societe Generale', 'Deutsche Bank', 'Bit Digital', 'Siemens', 'Telcoin', 'Shift4', 'Sentient Jet', 'GoTyme Bank', 'A+ Protocol', 'Ostium', 'Tetra Digital', 'DAMAC Properties', 'WisdomTree', 'Securitize', 'Paysafe', 'Guggenheim', 'UBS', 'Mastercard', 'DBS', 'HSBC', 'Citi', 'Standard Chartered', 'Santander', 'EIB', 'ANZ', 'ABN AMRO', 'HKMA', 'Other'];
   
   // Filter by both category and company
   const filteredNews = adoptionTimeline.filter(n => {
