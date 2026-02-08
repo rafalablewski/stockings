@@ -6684,6 +6684,333 @@ const CompsTab = () => {
       crclComparison: 'Kraken\'s liquidity maturation across 425+ trading pairs creates deep markets that benefit USDC-denominated trading. Healthy exchange liquidity supports USDC\'s role as a primary trading settlement and funding currency.',
       source: 'Kraken Blog',
     },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - MOBILE PERFORMANCE ENGINEERING (Dec 17, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-17',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken engineering details Maestro-based mobile performance regression prevention system',
+      details: [
+        'App Render Complete and Navigation Total Blocking Time as primary mobile performance vitals',
+        'Automated Maestro benchmarks for every merge with statistical significance testing',
+        'Network traffic recording and replay to isolate mobile code changes from backend variability',
+        'Moving average alerting: fires when metric regresses >10% for 2+ consecutive runs',
+        'React Native New Architecture adoption for baseline performance improvement',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken investing in mobile app performance engineering improves the user experience for USDC trading and transactions. Better app reliability lowers friction for retail users to on/off-ramp into USDC.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional Services',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - USDG MARGIN COLLATERAL (Dec 10, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-10',
+      competitor: 'kraken',
+      category: 'Product',
+      headline: 'Kraken adds Global Dollar (USDG) as margin and futures collateral currency with 1% haircut',
+      details: [
+        'USDG (Global Dollar) added to margin and futures collateral lineup — now 50+ options',
+        '1% haircut — same as other stablecoins like USDC and USDT',
+        'Collateral currencies allow margin trading without selling underlying assets',
+        'Both unstaked and Kraken Rewards assets eligible as margin collateral',
+      ],
+      implication: 'negative',
+      crclComparison: 'Kraken adding USDG as collateral alongside USDC increases stablecoin competition for exchange use cases. Each new stablecoin collateral option dilutes USDC\'s share of margin funding. However, USDC\'s regulatory moat and Circle partnership likely maintain preferential positioning.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-usdc',
+      storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - USDT0 ON PLASMA (Dec 10, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-10',
+      competitor: 'kraken',
+      category: 'Distribution',
+      headline: 'Kraken supports USDT0 deposits and withdrawals on Plasma blockchain',
+      details: [
+        'USDT0 funding via Plasma network now live on Kraken',
+        'USDT0 is unified liquidity network for USDT — simplifies cross-chain movement without fragmented pools',
+        'Plasma is purpose-built blockchain for high-volume, low-cost stablecoin activity',
+        'Serves as core settlement layer for instant digital dollar payments',
+      ],
+      implication: 'negative',
+      crclComparison: 'Kraken supporting USDT0 on a stablecoin-optimized chain strengthens Tether\'s cross-chain distribution advantage. USDT0\'s unified liquidity model competes with Circle\'s CCTP for cross-chain USDC interoperability. Plasma as a stablecoin-first chain could favor USDT settlement.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-usdc',
+      storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - AVELACOM ULTRA-LOW-LATENCY (Dec 8, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-08',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken partners with Avelacom for ultra-low-latency institutional trading connectivity',
+      details: [
+        'Avelacom provides high-performance connectivity to Kraken\'s matching engine',
+        'London-Tokyo route achieves sub-138ms round-trip latency over fiber',
+        'Hybrid fiber/wireless routes reduce latency even further for Tokyo-based exchanges',
+        'Supports cross-venue arbitrage, hedging, and multi-venue liquidity aggregation strategies',
+        '99.9% uptime with dedicated 24/7 support',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken\'s institutional-grade connectivity infrastructure attracts high-frequency and institutional traders who require stablecoin settlement rails. Faster execution and deeper liquidity on Kraken supports USDC trading pair volume.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional Services',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - COLOMBIA EXPANSION (Dec 4, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-04',
+      competitor: 'kraken',
+      category: 'Distribution',
+      headline: 'Kraken expands in Colombia with local COP payment rails and auto-conversion to USD',
+      details: [
+        'Colombian clients can deposit COP directly through trusted domestic payment methods',
+        'Deposits automatically converted to USD at competitive, transparent exchange rates',
+        'Eliminates need for international wire transfers',
+        'Access to 500+ digital assets and global liquidity',
+        'Part of broader Latin America strategy including Argentina, Mexico, and Colombia',
+      ],
+      implication: 'positive',
+      crclComparison: 'Kraken\'s Latin America expansion brings new users who need USD-denominated stablecoins for cross-border transactions and savings. Colombia\'s growing remittance and stablecoin demand is a natural fit for USDC adoption through Kraken\'s platform.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion & Marketing',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - DEUTSCHE BÖRSE PARTNERSHIP (Dec 4, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-04',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken and Deutsche Börse announce strategic partnership bridging traditional and digital markets',
+      details: [
+        'Integration with 360T — one of world\'s largest FX trading venues — for bank-grade FX liquidity',
+        'Kraken Embed to expand institutional crypto access across Deutsche Börse Group network',
+        'Plans for Eurex-listed derivatives on Kraken (subject to regulatory approval)',
+        'Integration of xStocks within 360X tokenized asset ecosystem',
+        'Clearstream and Crypto Finance for institutional custody',
+        'Two-way gateway connecting U.S. and European institutional markets',
+      ],
+      implication: 'positive',
+      crclComparison: 'Deutsche Börse partnership massively expands Kraken\'s institutional reach across European TradFi. 360T FX integration improves fiat on-ramp efficiency — potential to streamline USDC minting/redemption for institutions. Eurex derivatives and Clearstream custody create new institutional demand for stablecoin settlement.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional Services',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - XSTOCKS 24/7 TRADING (Dec 3, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-03',
+      competitor: 'kraken',
+      category: 'Product',
+      headline: 'Kraken Pro enables 24/7 trading for top 10 xStocks tokenized equities',
+      details: [
+        'Full 24/7 trading coverage for TSLAx, QQQx, SPYx, NVDAx, CRCLx, AAPLx, HOODx, MSTRx, GLDx, GOOGLx',
+        'Previously available 24/5 — now includes weekends and public holidays',
+        'On-chain 24/7 settlement combined with Kraken Pro\'s institutional-grade execution',
+        'Phase one of broader rollout to additional tokenized stocks and ETFs',
+      ],
+      implication: 'neutral',
+      crclComparison: 'CRCLx is among the top 10 xStocks with 24/7 trading — directly increases liquidity and accessibility for tokenized Circle equity exposure. 24/7 tokenized equity markets likely require stablecoin settlement rails, benefiting USDC infrastructure.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - BACKED ACQUISITION (Dec 2, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-02',
+      competitor: 'kraken',
+      category: 'Strategy',
+      headline: 'Kraken to acquire Backed Finance, unifying xStocks issuance, trading and settlement',
+      details: [
+        'xStocks surpassed $10B combined exchange and onchain volume within 6 months of launch',
+        'Acquisition unifies issuance, trading, and settlement under Kraken',
+        'xStocks live on Solana and Ethereum — TON, Tron, Mantle, BNB Chain integrations coming',
+        'xStocks Alliance ecosystem spans blockchain foundations, trading venues, and consumer apps',
+        'Plans to integrate xStocks into Krak money app for hold-and-spend functionality',
+        'Over 60 tokenized equities and ETFs backed 1:1 by underlying asset',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken vertically integrating tokenized equity infrastructure accelerates RWA tokenization. xStocks on Ethereum and multichain expansion could drive demand for USDC as the primary settlement currency for tokenized asset markets. Circle\'s CCTP could be the cross-chain USDC bridge for xStocks liquidity.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - MARKET PARTICIPATION PROGRAM (Dec 1, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-01',
+      competitor: 'kraken',
+      category: 'Financial',
+      headline: 'Kraken launches Market Participation Program with equity-linked warrant incentives for top traders',
+      details: [
+        'Largest clients by trading volume can qualify for Kraken-equity-linked warrants',
+        'First-of-its-kind equity incentive approach among global Tier 1 crypto exchanges',
+        'Transparent, time-bound, rule-based structure open to qualified participants',
+        'Designed to attract and retain most active trading participants and improve market liquidity',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken incentivizing high-volume market makers with equity warrants should deepen liquidity across trading pairs including USDC pairs. Better market-making improves USDC price stability and reduces spreads for users, supporting USDC\'s utility as a trading settlement currency.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional Services',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - EURC MARGIN COLLATERAL (Nov 24, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-24',
+      competitor: 'kraken',
+      category: 'Product',
+      headline: 'Kraken adds Circle\'s EURC as margin and futures collateral currency with 1% haircut',
+      details: [
+        'EURC (Euro Finance by Circle) added to margin collateral lineup — now 54 options',
+        '1% haircut — same tier as USDC, USDT, and other major stablecoins',
+        'Enables Euro-denominated margin trading without selling EURC holdings',
+        'Supports hedging, short selling, and leveraged strategies using EURC collateral',
+      ],
+      implication: 'positive',
+      crclComparison: 'Directly bullish for Circle. Kraken adding EURC as margin collateral validates Circle\'s euro stablecoin as institutional-grade collateral alongside USDC. Expands EURC utility beyond simple payments into derivatives and leveraged trading — a significant use case expansion for Circle\'s euro product.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-usdc',
+      storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - RAMP API LAUNCH (Nov 20, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-20',
+      competitor: 'kraken',
+      category: 'Distribution',
+      headline: 'Kraken launches Ramp: developer-friendly API for fiat-to-crypto on/off-ramps across 400+ assets',
+      details: [
+        'Single API + SDK for any platform to integrate buy/sell crypto flows',
+        '24+ payment methods: cards, ACH, PIX, SEPA, Apple Pay, Google Pay and more',
+        '400+ assets across 100+ blockchains supported',
+        'Targets fintechs, banks, wallets, protocols, exchanges, GameFi, and developers',
+        'Kraken manages compliance, licensing, fraud prevention, and payment operations',
+      ],
+      implication: 'positive',
+      crclComparison: 'Kraken Ramp as B2B infrastructure for fiat-to-crypto creates a massive new distribution channel for USDC. Every fintech, wallet, or protocol integrating Ramp could offer USDC on/off-ramp to their users. Complementary to Circle Mint — Ramp handles consumer fiat while Circle Mint handles institutional minting.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion & Marketing',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - CUSTODY EUROPE MICA (Nov 19, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-19',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken expands custody to Europe under MiCA via Payward Europe Solutions Limited (Ireland)',
+      details: [
+        'PESL authorized and regulated by Central Bank of Ireland under MiCA',
+        'Client assets fully segregated from PESL\'s and Kraken exchange\'s assets',
+        'Independent audits and transparent reserves with MiCA-compliant governance',
+        'Unified technical architecture with Kraken Financial in the U.S.',
+        'Serves institutional clients: fiduciaries, funds, and corporate treasuries across EEA',
+      ],
+      implication: 'positive',
+      crclComparison: 'MiCA-regulated custody in the EEA creates institutional-grade infrastructure for holding USDC and EURC. As European institutions gain regulated custody access, demand for Circle\'s MiCA-compliant stablecoins (USDC and EURC issued under French EMI license) should grow.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional Services',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - XSTOCKS $10B VOLUME (Nov 12, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-12',
+      competitor: 'kraken',
+      category: 'Product',
+      headline: 'xStocks surpasses $10B total volume with nearly $2B onchain — 45K+ unique holders in 135 days',
+      details: [
+        '$10B combined centralized and decentralized exchange volume in 135 days since launch',
+        'Nearly $2B in onchain activity across Solana and Ethereum',
+        '45,000+ unique onchain holders with $135M+ aggregated AUM',
+        'Partners include Alchemy Pay, Bybit, Gate.io, Phantom Wallet, Trust Wallet, Wallet in Telegram',
+        'Each xStock fully backed 1:1 by underlying equity in bankruptcy-remote structure',
+      ],
+      implication: 'neutral',
+      crclComparison: 'xStocks\' rapid adoption ($10B in 135 days) validates demand for tokenized real-world assets. As the RWA tokenization ecosystem scales, USDC is positioned to be the primary settlement currency. Circle\'s own RWA partnerships (BlackRock BUIDL, Hashnote USYC) are complementary infrastructure.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - BSO TOKYO/LONDON CONNECTIVITY (Nov 4, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-04',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken partners with BSO for ultra-low-latency Tokyo/London connectivity under 140ms round-trip',
+      details: [
+        'Purpose-built ultra-low-latency route between Tokyo and London — sub-140ms round-trip',
+        '60-80ms faster than previously available standard routes',
+        'Physical data center access at AT TOKYO CC1/CC2, Equinix TY2/TY3 plus cloud on-ramp via AWS Tokyo',
+        '99.99% uptime with automatic rerouting and SLA-backed performance',
+        'Targets market makers, quant funds, and HFT firms for cross-venue strategies',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken attracting HFT and institutional traders with sub-140ms connectivity improves exchange liquidity. High-frequency trading strategies often use stablecoins for rapid settlement — USDC\'s deep liquidity on Kraken benefits from faster connectivity infrastructure.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional Services',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - SEPTEMBER 2025 PROOF OF RESERVES (Oct 22, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-22',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken releases September 2025 Proof of Reserves covering BTC, ETH, SOL, USDC, USDT, XRP, ADA',
+      details: [
+        'Attested as of September 30, 2025 — client assets backed 1:1 and beyond',
+        'Covers spot, margin, futures, and staked asset balances',
+        'Merkle tree cryptographic verification with user-level proof tool',
+        'Independent third-party accountancy firm attestation — published quarterly',
+        'Pioneered PoR in 2014 — longest-running transparency program among major exchanges',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken\'s quarterly PoR covering USDC demonstrates exchange commitment to stablecoin reserve transparency. Complements Circle\'s own monthly attestation standard. Exchange-level transparency for USDC holdings reinforces institutional confidence in USDC as a trustworthy reserve asset.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional Services',
+    },
   ];
 
   // ═══════════════════════════════════════════════════════════════════════════

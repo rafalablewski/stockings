@@ -3731,6 +3731,310 @@ const CompsTab = ({ comparables, ethPrice }) => {
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - USDG MARGIN COLLATERAL (Dec 10, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-10',
+      competitor: 'kraken',
+      category: 'Financial',
+      headline: 'Kraken adds Global Dollar (USDG) as margin and futures collateral currency with 1% haircut',
+      details: [
+        'USDG (Global Dollar) added to margin and futures collateral lineup — now 50+ options',
+        '1% haircut — same tier as other major stablecoins',
+        'Collateral currencies allow margin trading without selling underlying assets',
+        'Both unstaked and Kraken Rewards assets eligible as margin collateral',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'More stablecoin collateral options on Kraken deepens margin trading liquidity. Improved margin infrastructure supports ETH derivatives trading and hedging — beneficial for BMNR as deeper ETH markets improve price discovery.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - USDT0 ON PLASMA (Dec 10, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-10',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken supports USDT0 deposits and withdrawals on Plasma stablecoin-optimized blockchain',
+      details: [
+        'USDT0 funding via Plasma network now live on Kraken',
+        'USDT0 is unified liquidity network for USDT — simplifies cross-chain movement',
+        'Plasma is blockchain purpose-built for high-volume, low-cost stablecoin activity',
+        'Serves as core settlement layer for instant digital dollar payments',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Stablecoin infrastructure expansion (USDT0 on Plasma) grows the broader crypto ecosystem. More efficient stablecoin rails support trading and DeFi activity that ultimately drives ETH demand for gas and settlement.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - AVELACOM ULTRA-LOW-LATENCY (Dec 8, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-08',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken partners with Avelacom for ultra-low-latency institutional trading connectivity',
+      details: [
+        'Avelacom provides high-performance connectivity to Kraken\'s matching engine',
+        'London-Tokyo route achieves sub-138ms round-trip latency over fiber',
+        'Hybrid fiber/wireless routes reduce latency further for Tokyo-based exchanges',
+        'Supports cross-venue arbitrage, hedging, and multi-venue liquidity aggregation',
+        '99.9% uptime with dedicated 24/7 support',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Ultra-low-latency connectivity attracts institutional and HFT traders to Kraken, deepening ETH market liquidity. As a BMNR institutional investor, Kraken\'s growing institutional infrastructure strengthens the ETH trading ecosystem that supports BMNR\'s treasury valuation.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - COLOMBIA EXPANSION (Dec 4, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-04',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken expands in Colombia with local COP payment rails and auto-conversion to USD',
+      details: [
+        'Colombian clients can deposit COP directly through domestic payment methods',
+        'Deposits automatically converted to USD at competitive exchange rates',
+        'Access to 500+ digital assets and global liquidity',
+        'Part of broader Latin America strategy including Argentina, Mexico, and Colombia',
+        'Colombia described as one of most dynamic crypto markets in Latin America',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s geographic expansion into Colombia adds new users to the crypto ecosystem. Growing Kraken\'s user base as a BMNR institutional investor increases platform scale and potential demand for ETH-based products.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - DEUTSCHE BÖRSE PARTNERSHIP (Dec 4, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-04',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken and Deutsche Börse announce strategic partnership bridging traditional and digital markets',
+      details: [
+        'Integration with 360T — one of world\'s largest FX trading venues — for bank-grade FX liquidity',
+        'Kraken Embed white-label solutions for banks and fintechs to offer crypto trading',
+        'Plans for Eurex-listed derivatives on Kraken (subject to regulatory approval)',
+        'Integration of xStocks within 360X tokenized asset ecosystem',
+        'Clearstream and Crypto Finance for institutional custody',
+        'Two-way U.S./European institutional market gateway',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Deutsche Börse partnership is a landmark TradFi-crypto bridge. Eurex derivatives on Kraken could eventually include ETH products, improving institutional ETH access. Clearstream custody integration validates institutional-grade ETH custody demand. Major positive for ETH ecosystem institutional adoption.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - XSTOCKS 24/7 TRADING (Dec 3, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-03',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken Pro enables 24/7 trading for top 10 xStocks tokenized equities including MSTRx',
+      details: [
+        'Full 24/7 coverage for TSLAx, QQQx, SPYx, NVDAx, CRCLx, AAPLx, HOODx, MSTRx, GLDx, GOOGLx',
+        'Previously 24/5 — now includes weekends and public holidays',
+        'On-chain 24/7 settlement combined with Kraken Pro institutional-grade execution',
+        'Phase one of broader rollout to additional tokenized stocks and ETFs',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'MSTRx (tokenized MicroStrategy) being among top 10 xStocks shows demand for crypto treasury exposure via tokenized equities. If/when BMNR gets tokenized as an xStock, it would provide 24/7 global access to ETH treasury exposure. xStocks on Ethereum drives chain utility.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - BACKED ACQUISITION (Dec 2, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-02',
+      competitor: 'kraken',
+      category: 'Strategy',
+      headline: 'Kraken to acquire Backed Finance, unifying xStocks issuance, trading and settlement',
+      details: [
+        'xStocks surpassed $10B combined exchange and onchain volume within 6 months',
+        'Acquisition unifies issuance, trading, and settlement under Kraken',
+        'xStocks live on Solana and Ethereum — TON, Tron, Mantle, BNB Chain integrations coming',
+        'Plans to integrate xStocks into Krak money app for hold-and-spend',
+        'Over 60 tokenized equities and ETFs backed 1:1 by underlying asset',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken vertically integrating tokenized equities strengthens their position as crypto infrastructure provider. xStocks on Ethereum increases Ethereum settlement demand and chain utility. Potential future tokenization of BMNR shares as an xStock could unlock 24/7 global access.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - MARKET PARTICIPATION PROGRAM (Dec 1, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-01',
+      competitor: 'kraken',
+      category: 'Financial',
+      headline: 'Kraken launches Market Participation Program with equity-linked warrant incentives for top traders',
+      details: [
+        'Largest clients by trading volume can qualify for Kraken-equity-linked warrants',
+        'First-of-its-kind equity incentive approach among global Tier 1 crypto exchanges',
+        'Transparent, time-bound, rule-based structure',
+        'Designed to attract and retain most active trading participants and improve market liquidity',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken incentivizing high-volume market makers deepens ETH trading liquidity on the platform. Better market-making reduces spreads and improves price discovery for ETH, supporting the efficiency of BMNR\'s ETH treasury valuation.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - EURC MARGIN COLLATERAL (Nov 24, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-24',
+      competitor: 'kraken',
+      category: 'Financial',
+      headline: 'Kraken adds EURC (Circle\'s Euro stablecoin) as margin and futures collateral with 1% haircut',
+      details: [
+        'EURC added to margin collateral lineup — now 54 options total',
+        '1% haircut — same tier as USDC, USDT, and other major stablecoins',
+        'Enables Euro-denominated margin trading without selling EURC holdings',
+        'Supports hedging, short selling, and leveraged strategies using EURC collateral',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'More stablecoin collateral options on Kraken broadens the margin trading ecosystem. Additional collateral currencies support more complex ETH derivatives strategies, contributing to overall ETH market depth and efficiency.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - RAMP API LAUNCH (Nov 20, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-20',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken launches Ramp: developer-friendly API for fiat-to-crypto on/off-ramps across 400+ assets',
+      details: [
+        'Single API + SDK for any platform to integrate buy/sell crypto flows',
+        '24+ payment methods: cards, ACH, PIX, SEPA, Apple Pay, Google Pay and more',
+        '400+ assets across 100+ blockchains supported',
+        'Targets fintechs, banks, wallets, protocols, exchanges, GameFi, and developers',
+        'Kraken manages compliance, licensing, fraud prevention, and payment operations',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Kraken Ramp as B2B infrastructure lowers barriers for new platforms to offer crypto. More fiat on-ramps across 400+ assets expands the addressable market for ETH purchases. Every new Ramp integration is a potential new distribution channel for ETH exposure, supporting BMNR\'s ETH treasury value.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - CUSTODY EUROPE MICA (Nov 19, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-19',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken expands custody to Europe under MiCA via Payward Europe Solutions Limited (Ireland)',
+      details: [
+        'PESL authorized and regulated by Central Bank of Ireland under MiCA',
+        'Client assets fully segregated from PESL\'s and Kraken exchange\'s assets',
+        'Independent audits and transparent reserves with MiCA-compliant governance',
+        'Unified architecture with Kraken Financial in the U.S.',
+        'Serves institutional clients: fiduciaries, funds, and corporate treasuries across EEA',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'MiCA-regulated custody in the EEA creates institutional-grade infrastructure for European institutions to hold ETH. Regulated custody is a prerequisite for institutional ETH allocation — directly supports the thesis that institutional capital will flow into ETH treasury vehicles like BMNR.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - XSTOCKS $10B VOLUME (Nov 12, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-12',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'xStocks surpasses $10B total volume with nearly $2B onchain — 45K+ unique holders in 135 days',
+      details: [
+        '$10B combined centralized and decentralized exchange volume in 135 days since launch',
+        'Nearly $2B in onchain activity across Solana and Ethereum',
+        '45,000+ unique onchain holders with $135M+ aggregated AUM',
+        'Partners include Alchemy Pay, Bybit, Gate.io, Phantom Wallet, Trust Wallet',
+        'Each xStock fully backed 1:1 by underlying equity in bankruptcy-remote structure',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'xStocks\' $2B onchain volume demonstrates growing demand for Ethereum-based tokenized assets. Ethereum as the settlement layer for tokenized equities increases chain utility and transaction demand — supportive of ETH value and the BMNR treasury thesis.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - BSO TOKYO/LONDON CONNECTIVITY (Nov 4, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-04',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken partners with BSO for ultra-low-latency Tokyo/London connectivity under 140ms round-trip',
+      details: [
+        'Purpose-built ultra-low-latency route between Tokyo and London — sub-140ms round-trip',
+        '60-80ms faster than previously available standard routes',
+        'Physical data center access at AT TOKYO CC1/CC2, Equinix TY2/TY3 plus cloud on-ramp',
+        '99.99% uptime with automatic rerouting and SLA-backed performance',
+        'Targets market makers, quant funds, and HFT firms for cross-venue strategies',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s second ultra-low-latency partnership (BSO for Tokyo/London, alongside Avelacom) signals aggressive push for institutional trading infrastructure. Deeper institutional engagement with Kraken strengthens the ETH market ecosystem and validates crypto as institutional asset class.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - SEPTEMBER 2025 PROOF OF RESERVES (Oct 22, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-22',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken releases September 2025 Proof of Reserves covering BTC, ETH, SOL, USDC, USDT, XRP, ADA',
+      details: [
+        'Attested as of September 30, 2025 — client assets backed 1:1 and beyond',
+        'Covers spot, margin, futures, and staked asset balances',
+        'Merkle tree cryptographic verification with user-level proof tool',
+        'Independent third-party accountancy firm attestation — published quarterly',
+        'Pioneered PoR in 2014 — longest-running transparency program among major exchanges',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Kraken\'s quarterly PoR covering ETH validates institutional-grade custody transparency. As BMNR grows its ETH treasury, exchange PoR transparency reinforces trust in the broader ETH custody ecosystem that BMNR depends on.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // ETHZILLA - $4.7M MANUFACTURED HOME LOAN PORTFOLIO PURCHASE (Feb 5, 2026)
     // ═══════════════════════════════════════════════════════════════════════════
     {
