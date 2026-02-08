@@ -307,7 +307,7 @@ interface ErrorBoundaryState {
 // ============================================================================
 
 /** Competitor identifiers for crypto treasury space */
-type BMNRCompetitorId = 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'other';
+type BMNRCompetitorId = 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'ethz' | 'other';
 
 /** News category types for crypto treasury competitors */
 type BMNRCompetitorNewsCategory = 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy';
@@ -3425,6 +3425,16 @@ const CompsTab = ({ comparables, ethPrice }) => {
       currentStatus: 'Mining + HODL strategy',
       capabilities: { stakingYield: false, treasuryFocus: true, miningOperations: true, publicCompany: true, institutionalAccess: true },
       keyMetrics: { holdings: '~10K BTC', marketCap: '~$2B', navPremium: '+40%', yieldRate: '0%' }
+    },
+    {
+      id: 'ethz',
+      name: 'ETHZilla',
+      ticker: 'ETHZ',
+      description: 'Ethereum treasury company with DeFi yield and RWA tokenization strategy',
+      cryptoType: 'ETH',
+      currentStatus: 'ETH accumulation + DeFi restaking + RWA tokenization platform',
+      capabilities: { stakingYield: true, treasuryFocus: true, miningOperations: false, publicCompany: true, institutionalAccess: true },
+      keyMetrics: { holdings: '~102K ETH', marketCap: '~$500M', navPremium: '-13% (mNAV 0.87x)', yieldRate: '3-5%' }
     }
   ];
 
@@ -3438,7 +3448,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
     // Format:
     // {
     //   date: 'YYYY-MM-DD',
-    //   competitor: 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'other',
+    //   competitor: 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'ethz' | 'other',
     //   category: 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy',
     //   headline: 'Brief headline',
     //   details: ['Bullet point 1', 'Bullet point 2'],
@@ -3448,6 +3458,321 @@ const CompsTab = ({ comparables, ethPrice }) => {
     //   sourceUrl: 'https://...'
     // },
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $4.7M MANUFACTURED HOME LOAN PORTFOLIO PURCHASE (Feb 5, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'ethz',
+      category: 'Acquisition',
+      headline: 'ETHZilla purchases $4.7M manufactured home loan portfolio, plans tokenization on Ethereum L2',
+      details: [
+        'Acquires portfolio of 95 manufactured/modular home loans from Zippy for ~$4.7M via ETHZilla Modular Mortgage LLC',
+        'First-lien mortgages with annualized yield of ~10.36% from seasoned residential credit assets',
+        'Plans to tokenize into cash-flow-generating token on Ethereum L2 via Liquidity.io ecosystem in late Feb/early Mar',
+        'Follows prior purchase of two CFM56-7B24 aircraft engines on lease, also planned for tokenization',
+        'Builds on Dec 2025 acquisition of 15% stake in Zippy — demonstrates repeatable RWA framework'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla moving from strategic investment to actual asset acquisition and tokenization. Multiple asset classes (manufactured homes + aircraft engines) in pipeline. BMNR focuses on pure ETH staking yield vs ETHZilla\'s RWA tokenization revenue model.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $21M ZIPPY INVESTMENT (Dec 10, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-10',
+      competitor: 'ethz',
+      category: 'Partnership',
+      headline: 'ETHZilla invests $21M in Zippy to tokenize manufactured home loans on Ethereum',
+      details: [
+        'Acquires 15% fully diluted stake in Zippy for $21.1M ($5M cash + $16.1M stock)',
+        'Target: $14B manufactured home financial services market',
+        'Zippy: first to introduce modern digital infrastructure and AI-enabled systems to manufactured housing lending',
+        '36-month exclusive tokenization agreement via Liquidity.io (FINRA-regulated ATS on Ethereum L2)',
+        'ETHZilla ecosystem: Liquidity.io (tokenized private credit), Karus (AI risk forecasting for structured auto credit)'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla expanding into housing finance RWA tokenization with exclusive distribution via FINRA-regulated ATS. BMNR\'s pure ETH staking model is simpler but ETHZilla\'s diversified revenue streams could attract different investor base.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - 20% KARUS ACQUISITION (Dec 3, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-03',
+      competitor: 'ethz',
+      category: 'Partnership',
+      headline: 'ETHZilla acquires 20% of Karus to power AI-modeled auto loan tokenization on Ethereum',
+      details: [
+        'Acquires 20% fully diluted interest in Karus for $10M ($3M cash + $7M stock)',
+        'Karus AI trained on 20M+ historical auto loan outcomes, analyzes 1,000+ variables in real time',
+        '$5B+ in auto loan volume already processed through decisioning engine',
+        'Access to network of 20,000+ car dealerships, credit unions, and banks',
+        'First tokenized portfolios expected early 2026 via Liquidity.io',
+        'Entry point into ~$1.6T US asset-backed securities market'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla entering $1.6T ABS market with AI-powered credit analytics. Diversifying beyond pure ETH treasury into RWA revenue generation. BMNR\'s pure staking model has lower execution risk vs ETHZilla\'s complex multi-subsidiary approach.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - SELLS ~$40M ETH FOR BUYBACKS (Oct 27, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-27',
+      competitor: 'ethz',
+      category: 'Strategy',
+      headline: 'ETHZilla sells ~$40M ETH to fund share repurchases below NAV',
+      details: [
+        'Sells approximately $40M of ETH treasury holdings to fund share repurchases',
+        'Repurchased ~600K shares for ~$12M since Oct 24 under $250M buyback program',
+        'Plans to continue selling ETH until discount to NAV normalizes',
+        'Still holds ~$400M ETH',
+        'CEO Rudisill: "repurchases to be immediately accretive"'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla selling ETH = net seller pressure on ETH market. However, demonstrates capital allocation discipline. If NAV discount persists for ETH treasury companies, raises questions about the model — relevant for BMNR\'s own ETH treasury thesis.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - LIQUIDITY.IO PARTNERSHIP + 15% SATSCHEL STAKE (Oct 23, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-23',
+      competitor: 'ethz',
+      category: 'Partnership',
+      headline: 'ETHZilla partners with Liquidity.io for RWA tokenization, takes 15% stake in Satschel',
+      details: [
+        'Invests $15M ($5M cash + $10M equity) for 15% stake in Satschel with right of first refusal',
+        'Liquidity.io is a regulated broker-dealer operating a Digital ATS (FINRA-regulated)',
+        'Partnership to accelerate institutional-grade tokenization of RWAs on Ethereum L2',
+        'Secures exclusive right to list Ethereum L2 tokens on the exchange',
+        'Evolution from pure ETH treasury to active RWA tokenization platform with regulated distribution'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla building regulated RWA distribution channel via FINRA-regulated ATS — competitive moat in tokenization space. BMNR focuses on pure ETH staking; ETHZilla pivoting to "next-generation asset manager" model.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - 1-FOR-10 REVERSE STOCK SPLIT (Oct 15, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-15',
+      competitor: 'ethz',
+      category: 'Strategy',
+      headline: 'ETHZilla announces 1-for-10 reverse stock split',
+      details: [
+        'Effective Oct 20, 2025 — reduces outstanding shares from ~160M to ~16M',
+        'Intended to provide institutional investors access to collateral and margin availability at prices >$10',
+        'Not related to exchange listing requirements',
+        'Many large mutual funds have minimum stock price thresholds',
+        'Signals targeting broader institutional investor base beyond crypto-native capital'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla optimizing share structure for institutional access. Capital structure maturation could increase institutional investor pool for ETH treasury equities broadly, including BMNR.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - BOARD APPOINTMENT: LAZARD VICE CHAIRMAN (Oct 8, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-10-08',
+      competitor: 'ethz',
+      category: 'Strategy',
+      headline: 'ETHZilla appoints Jason New (Lazard Vice Chairman) to board',
+      details: [
+        'Jason New, Vice Chairman of Investment Banking at Lazard, joins board',
+        '20+ years experience in global credit, PE, and alternative investments',
+        'Previously co-founded NovaWulf Management (digital-asset platform)',
+        'Was CEO of Onex Credit Partners ($25B alt credit manager)',
+        '15 years at Blackstone as Senior MD and Global Co-Head of Distressed/Special Situations at GSO Capital Partners'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Traditional finance heavyweights joining ETH treasury company boards validates institutional interest in the model. Increasing board-level credibility for ETH treasury companies could improve investor appetite for sector including BMNR.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $47M ETH TO PUFFER RESTAKING (Sep 25, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-25',
+      competitor: 'ethz',
+      category: 'Yield',
+      headline: 'ETHZilla plans ~$47M ETH deployment to Puffer restaking protocol',
+      details: [
+        'Plans to deploy ~$47M (~10,600 ETH) to Puffer liquid restaking protocol',
+        'Puffer has 2 ETH validator bond framework providing insurance against validator failures',
+        'Puffer building vertical crypto infrastructure: LRT, Unifi based rollup, Preconf AVS',
+        'Third DeFi protocol deployment by ETHZilla (after EtherFi and unnamed protocol)',
+        'Multi-protocol diversification across staking and restaking'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla diversifying DeFi yield across multiple restaking protocols (EtherFi, Puffer, others). Validates institutional restaking thesis. BMNR can learn from ETHZilla\'s multi-protocol approach for its own staking strategy.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $350M CONVERTIBLE DEBENTURE + mNAV METRIC (Sep 22, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-22',
+      competitor: 'ethz',
+      category: 'Funding',
+      headline: 'ETHZilla raises $350M add-on convertible debenture, introduces mNAV metric',
+      details: [
+        'Raises $350M through new convertible debentures at $3.05/share (1.05x mNAV)',
+        'Existing $156.5M convertible amended: 0% interest until Feb 2026, then 2% (down from 4%)',
+        'New debentures bear 2% interest',
+        'Introduces mNAV metric: EV/ETH NAV = 0.87x',
+        'Total position: 102,264 ETH (~$462M), $559M cash',
+        'Clear Street as exclusive financial advisor'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla raising $350M+ validates institutional appetite for ETH-backed securities. mNAV metric creates industry standard for evaluating crypto treasury companies — direct comparison framework for BMNR valuation.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - ETH DEPLOYED TO L2 PROTOCOLS (Sep 15, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-15',
+      competitor: 'ethz',
+      category: 'Yield',
+      headline: 'ETHZilla deploys ETH to L2 protocols, earns 1.5M protocol tokens',
+      details: [
+        'Portfolio: 44,437 ETH unstaked, 12,818 ETH in Protocol 1 staking/restaking, 45,000 ETH in Protocol 2',
+        'Earned 1.5M protocol tokens (~$2.2M) — new revenue stream',
+        'Minted first EtherFi ETH',
+        '102,255 total ETH (~$460M), $228M cash',
+        'Repurchased ~6.0M shares in September at avg $2.50',
+        'Drew $50M from Cumberland DRW facility',
+        'Pivoting toward "DeFi technology company" narrative'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'First concrete evidence of ETH yield generation by Nasdaq-listed ETH treasury company. Protocol token earnings represent new revenue stream beyond base staking. Validates BMNR\'s thesis that staked ETH generates superior returns vs unstaked BTC holdings.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - CEO CHANGE + CUMBERLAND DRW OTC (Sep 8, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-08',
+      competitor: 'ethz',
+      category: 'Strategy',
+      headline: 'ETHZilla CEO change: Rudisill appointed CEO, Cumberland DRW OTC facility',
+      details: [
+        'McAndrew Rudisill (Chairman) appointed CEO, succeeding Blair Jordan who resigned',
+        'Enters OTC transaction with Cumberland DRW for up to $80M collateralized by ETH holdings',
+        'Proceeds for share repurchases under $250M program',
+        'Repurchased ~2.2M shares at avg $2.50 (1.3% reduction)',
+        'Total: 102,246 ETH (~$443M), $213M cash'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETH-collateralized borrowing from Cumberland DRW demonstrates financial engineering sophistication. DRW willing to lend against ETH validates its collateral quality. Model applicable to BMNR for leveraging ETH holdings without selling.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $100M ETH TO ETHERFI RESTAKING (Sep 2, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-02',
+      competitor: 'ethz',
+      category: 'Yield',
+      headline: 'ETHZilla plans $100M ETH deployment to EtherFi for restaking',
+      details: [
+        'Plans to deploy ~$100M ETH to EtherFi liquid restaking protocol',
+        'First DeFi protocol engagement by ETHZilla',
+        'EtherFi selected for incremental yield beyond standard staking + reinforcing Ethereum security',
+        'Electric Capital managing strategy',
+        '102,246 ETH (~$456M), $221M cash',
+        'EtherFi CEO: "highlights growing institutional confidence in decentralized protocols"'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'First Nasdaq-listed ETH treasury company deploying $100M into DeFi restaking. Institutional capital flowing into liquid restaking validates protocol category. Directly validates BMNR\'s own ETH staking thesis.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - $250M STOCK REPURCHASE PROGRAM (Aug 25, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-08-25',
+      competitor: 'ethz',
+      category: 'Financial',
+      headline: 'ETHZilla authorizes $250M stock repurchase program',
+      details: [
+        'Board authorizes $250M buyback effective immediately, expiring June 30, 2026',
+        'Total holdings: 102,237 ETH at avg $3,948.72 (~$489M), $215M cash',
+        'Announces Electric Asset Protocol for higher yields',
+        'Accumulated from 82.2K to 102.2K ETH over 3 weeks',
+        'ATM issued 5.0M shares for $33.7M net proceeds',
+        'Dual strategy: accumulate ETH + repurchase shares when trading below NAV'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Largest buyback authorization by an ETH treasury company. Dual strategy of ETH accumulation + buybacks signals maturing capital allocation. Proprietary yield protocol could widen gap between passive and active ETH treasury management.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - LAUNCH: REBRAND + NASDAQ TRADING (Aug 18, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-08-18',
+      competitor: 'ethz',
+      category: 'Strategy',
+      headline: 'ETHZilla launches: rebrand from 180 Life Sciences, begins trading as ETHZ on Nasdaq',
+      details: [
+        'Rebrands from 180 Life Sciences Corp. (ATNF), begins trading under ETHZ on Nasdaq',
+        'Raised ~$565M gross ($425M PIPE + $156.25M convertible notes)',
+        'Accumulated 94,675 ETH at avg $3,902.20 (~$419M), $187M cash',
+        '60+ institutional and crypto-native investors: Electric Capital, Polychain Capital, GSR, Borderless Capital',
+        'Ethereum ecosystem founders: Sreeram Kannan (EigenLayer), Mike Silagadze (Ether.fi), Danny Ryan (Etherealize), Sam Kazemanian (Frax), Robert Leshner (Compound/Superstate), Tarun Chitra (Gauntlet)',
+        'Electric Capital as external asset manager for on-chain yield generation'
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Major ETH-only treasury competitor launches with $565M capital and ~95K ETH — dwarfs BMNR\'s holdings. Top-tier Ethereum ecosystem backing. Shared strategy increases market awareness of ETH treasury model. Rising tide: institutional interest in ETH treasury equities benefits all players.',
+      source: 'ETHZilla Press Release',
+      storyId: 'ethzilla-treasury',
+      storyTitle: 'ETHZilla (ETHZ)'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // STRATEGY - Q4 2025 EARNINGS RELEASE (Feb 5, 2026)
@@ -7440,17 +7765,6 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     },
     {
       date: '2026-02-05',
-      category: 'Enterprise',
-      company: 'ETHZilla',
-      title: 'ETHZilla Purchases $4.7M Manufactured Home Loan Portfolio, Plans Tokenization on Ethereum L2',
-      summary: 'ETHZilla Corporation (Nasdaq: ETHZ) acquires portfolio of 95 manufactured and modular home loans from Zippy for ~$4.7M through wholly owned subsidiary ETHZilla Modular Mortgage LLC. First-lien mortgages securing loans included. Portfolio expected to generate annualized yield of ~10.36% from seasoned residential credit assets with recurring cash flows. Plans to tokenize into cash-flow-generating manufactured home loan token on Ethereum L2 via Liquidity.io ecosystem in late Feb/early Mar. Follows prior purchase of two CFM56-7B24 aircraft engines on lease with major air carrier, also planned for tokenization. CEO McAndrew Rudisill: "Manufactured housing loans offer predictable cash flows and strong underlying collateral, which we believe makes them well suited for tokenization within a regulated, transparent structure." Builds on ETHZilla\'s Dec 2025 acquisition of 15% stake in Zippy, Inc. — demonstrating repeatable framework across multiple RWA classes.',
-      significance: 'ETHZilla moving from strategic investment to actual asset acquisition and tokenization. 95 loans with 10.36% yield = first concrete tokenized residential credit product on Ethereum L2. Multiple asset classes now in pipeline (manufactured homes + aircraft engines) validates repeatable tokenization framework. Nasdaq-listed company building real revenue-generating RWA infrastructure on Ethereum.',
-      bmnrImplication: 'Concrete RWA tokenization on Ethereum L2 moving from announcement to execution. Real cash-flow-generating assets (10.36% yield) being tokenized on Ethereum validates network for institutional-grade financial products. More asset classes on Ethereum = more network utility = ETH ecosystem value.',
-      impact: 'Bullish',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2026-02-05',
       category: 'Protocol',
       company: 'Ethereum Foundation',
       title: 'Vitalik Proposes New Forms of State for 1000x Ethereum Scaling',
@@ -7758,149 +8072,6 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Swift integrating blockchain tokenization into global payments infrastructure validates network for institutional money movement. HSBC\'s EVM/ERC-20 compatible private chain enables future public Ethereum interoperability. More tokenized deposit activity = more blockchain settlement = ETH ecosystem value.',
       impact: 'Bullish', 
       source: 'HSBC / Ant International / Swift Press Release' 
-    },
-    { 
-      date: '2025-12-10', 
-      category: 'Enterprise', 
-      company: 'ETHZilla',
-      title: 'ETHZilla Invests $21M in Zippy to Tokenize Manufactured Home Loans on Ethereum', 
-      summary: 'ETHZilla Corporation (ETHZ) enters definitive agreements with Zippy Inc. to tokenize manufactured home loans on Ethereum blockchain. ETHZilla acquires 15% fully diluted stake for $21.1M ($5M cash + $16.1M stock). Target: $14B manufactured home financial services market — one of America\'s most underserved credit markets. Zippy: first to introduce modern digital infrastructure and AI-enabled systems to manufactured housing lending. 36-month exclusive tokenization agreement via Liquidity.io (FINRA-regulated ATS on Ethereum L2) and Satschel platforms. ETHZilla ecosystem includes: Liquidity.io (tokenized private credit), Karus (AI risk forecasting for structured auto credit). CEO McAndrew Rudisill: "This relationship will position ETHZilla as a leading player in US on-chain home finance." Zippy CEO Ben Halliday: "ETHZilla\'s blockchain infrastructure gives Zippy the ability to turn its chattel assets into an accessible, technology-driven investment vehicle."',
-      significance: 'Housing finance = new RWA category on Ethereum. $14B market opportunity demonstrates tokenization expanding beyond treasuries/securities to consumer lending. FINRA-regulated ATS provides compliant infrastructure. AI-enabled underwriting + blockchain distribution represents next-gen lending model.',
-      bmnrImplication: 'Manufactured home loans on Ethereum expands RWA categories on network. Consumer lending tokenization validates blockchain for broader financial infrastructure. More asset classes on Ethereum = more network utility = ETH ecosystem value.',
-      impact: 'Bullish', 
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-12-03',
-      category: 'Enterprise',
-      company: 'ETHZilla',
-      title: 'ETHZilla Acquires 20% of Karus to Power AI-Modeled Auto Loan Tokenization on Ethereum',
-      summary: 'ETHZilla Corporation (Nasdaq: ETHZ) acquires 20% fully diluted interest in Karus, Inc., an AI platform for auto finance decisioning and portfolio analytics, for $10M ($3M cash + $7M stock). Karus AI trained on 20M+ historical auto loan outcomes, analyzes 1,000+ variables across credit, vehicle, collateral, and macroeconomic data in real time. $5B+ in auto loan volume already processed through decisioning engine. ETHZilla gains access to Karus network of 20,000+ car dealerships, credit unions, and banks. First tokenized portfolios expected early 2026 via Liquidity.io. Entry point into ~$1.6T US asset-backed securities market. CEO McAndrew Rudisill: "This transaction provides ETHZilla an entry point into the approximately $1.6 trillion US asset-backed securities market." Backed by Tacora Capital CEO Keri Findley (Peter Thiel-funded). Company estimates every $100M deployed generates $9-12M adjusted EBITDA for ETHZilla.',
-      significance: 'AI-powered credit analytics + blockchain tokenization = next-gen structured finance infrastructure on Ethereum. $1.6T US ABS market is massive addressable opportunity. 20M+ loan training dataset and 20,000+ dealership network provide real origination pipeline. First tokenized auto loan portfolios targeting early 2026 launch.',
-      bmnrImplication: 'Auto loan ABS tokenization on Ethereum via Liquidity.io (FINRA-regulated ATS) brings another massive TradFi market on-chain. AI underwriting + blockchain distribution represents institutional-grade infrastructure. More RWA categories on Ethereum = more network utility = ETH ecosystem value.',
-      impact: 'Bullish',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-10-27',
-      category: 'Enterprise',
-      company: 'ETHZilla',
-      title: 'ETHZilla Sells ~$40M ETH to Fund Share Repurchases Below NAV',
-      summary: 'ETHZilla Corporation (Nasdaq: ETHZ) sells approximately $40M of ETH treasury holdings to fund share repurchases under its $250M buyback program. Since Oct 24, repurchased ~600K shares for ~$12M. Plans to continue selling ETH to repurchase shares until discount to NAV normalizes. Still holds ~$400M ETH. CEO McAndrew Rudisill: "We expect these repurchases to be immediately accretive, using cash raised through the sale of our ETH, while our common shares trade at a significant discount to NAV."',
-      significance: 'Notable shift: ETH treasury company actively selling ETH to buy back stock. Signals prioritization of NAV discount closure over ETH accumulation. Tests whether market values the shares or the underlying ETH more.',
-      bmnrImplication: 'ETHZilla selling ETH = net seller pressure on ETH market. However, demonstrates discipline in capital allocation that could improve crypto treasury company credibility. If NAV discount persists for ETH treasury companies, raises questions about the model — relevant for BMNR\'s own ETH treasury thesis.',
-      impact: 'Neutral',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-10-23',
-      category: 'Enterprise',
-      company: 'ETHZilla',
-      title: 'ETHZilla Partners with Liquidity.io for RWA Tokenization, Takes 15% Stake in Satschel',
-      summary: 'ETHZilla announces strategic partnership with Liquidity.io, a regulated broker-dealer operating a Digital ATS, and wholly owned subsidiary of Satschel, Inc. ETHZilla invests $15M ($5M cash + $10M equity) for 15% stake in Satschel with right of first refusal on future rounds. Partnership to accelerate institutional-grade tokenization of real-world assets (RWAs) on Ethereum L2 networks. ETHZilla secures exclusive right to list Ethereum L2 tokens on the exchange. CEO McAndrew Rudisill: "We are in the process of combining Liquidity.io\'s regulated securitization platform and token marketplace with ETHZilla\'s blockchain-native asset management platform to build a next-generation asset manager."',
-      significance: 'SEC-regulated ATS infrastructure for tokenized RWAs on Ethereum L2. Exclusive Ethereum L2 listing rights create competitive moat. Evolution from pure ETH treasury to active RWA tokenization platform with regulated distribution channel.',
-      bmnrImplication: 'Regulated RWA marketplace on Ethereum L2 brings institutional-grade infrastructure to ETH ecosystem. ETHZilla\'s evolution from treasury-only to tokenization platform shows expanding use cases for Ethereum. More real assets tokenized on Ethereum = more network utility.',
-      impact: 'Bullish',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-10-15',
-      category: 'Enterprise',
-      company: 'ETHZilla',
-      title: 'ETHZilla Announces 1-for-10 Reverse Stock Split',
-      summary: 'ETHZilla announces 1-for-10 reverse stock split effective Oct 20, 2025. Reduces outstanding shares from ~160M to ~16M. Intended to provide institutional investors and large financial institutions with access to collateral and margin availability at prices >$10. Not related to exchange listing requirements. Management believes it supports long-term capital markets strategy. Many large mutual funds have minimum stock price thresholds.',
-      significance: 'Capital structure adjustment to attract institutional investors with minimum price thresholds. Signals ETHZilla targeting broader institutional investor base beyond crypto-native capital.',
-      bmnrImplication: 'ETHZilla optimizing share structure for institutional access demonstrates crypto treasury companies maturing their capital markets approach. Could increase institutional investor pool for ETH treasury equities broadly, including BMNR.',
-      impact: 'Neutral',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-10-08',
-      category: 'Enterprise',
-      company: 'ETHZilla',
-      title: 'ETHZilla Appoints Jason New (Lazard Vice Chairman) to Board',
-      summary: 'Jason New, Vice Chairman of Investment Banking at Lazard, appointed to ETHZilla board. 20+ years experience in global credit, PE, and alternative investments. Previously co-founded NovaWulf Management (digital-asset platform), was CEO of Onex Credit Partners ($25B alt credit manager), and spent 15 years at Blackstone as Senior MD and Global Co-Head of Distressed/Special Situations at GSO Capital Partners (now Blackstone Credit). Holds J.D. from Duke University.',
-      significance: 'Senior Lazard/Blackstone/Onex executive joining board signals institutional finance credibility. His background bridging traditional credit markets and digital assets aligns with ETHZilla\'s RWA tokenization strategy.',
-      bmnrImplication: 'Traditional finance heavyweights joining Ethereum treasury company boards validates institutional interest in the model. Increasing board-level credibility for ETH treasury companies could improve investor appetite for sector including BMNR.',
-      impact: 'Bullish',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-09-25',
-      category: 'DeFi',
-      company: 'ETHZilla',
-      title: 'ETHZilla Plans ~$47M ETH Deployment to Puffer Restaking Protocol',
-      summary: 'ETHZilla plans to deploy ~$47M (~10,600 ETH) to Puffer, a liquid restaking protocol with innovative 2 ETH validator bond framework providing insurance against validator failures. Puffer building vertical crypto infrastructure: LRT for capital efficiency, Unifi based rollup for composability, and Preconf AVS for throughput. Puffer CEO Amir Forouzani: "We are setting a new standard for institutional participation in Ethereum restaking — one that prioritizes both safety and performance."',
-      significance: 'Third DeFi protocol deployment by a Nasdaq-listed company. Puffer\'s validator bond model = institutional-grade safety net. Multi-protocol diversification strategy across EtherFi + unnamed protocols + Puffer.',
-      bmnrImplication: 'More institutional capital deployed into Ethereum restaking protocols. Corporate treasury diversifying across multiple DeFi protocols demonstrates growing confidence in protocol-level risk management. Validates BMNR\'s own staking thesis.',
-      impact: 'Bullish',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-09-22',
-      category: 'Enterprise',
-      company: 'ETHZilla',
-      title: 'ETHZilla Raises $350M Add-On Convertible Debenture, Introduces mNAV Metric',
-      summary: 'ETHZilla raises $350M through new convertible debentures at $3.05/share (1.05x mNAV). Existing $156.5M convertible amended: 0% interest until Feb 2026, then 2% (down from 4%). New debentures bear 2%. ETHZilla receives excess interest income on total ~$500M portfolio. Introduces mNAV metric: EV/ETH NAV = 0.87x. Total position: 102,264 ETH (~$462M), $559M cash. CEO Rudisill: "We are a DeFi technology company focused on building our capital reserves to deploy ETH into cash flowing assets." Clear Street as exclusive financial advisor.',
-      significance: 'Significant additional capital raise at favorable terms. mNAV trading below 1.0x shows market discount to underlying ETH value. Evolution of narrative from "ETH accumulation" to "DeFi technology company" with focus on cash-flow generation.',
-      bmnrImplication: 'ETHZilla\'s ability to raise $350M+ in additional capital for Ethereum treasury strategy validates institutional appetite for ETH-backed securities. mNAV metric creates industry standard for evaluating crypto treasury companies. Direct comparison framework for BMNR valuation.',
-      impact: 'Bullish',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-09-15',
-      category: 'DeFi',
-      company: 'ETHZilla',
-      title: 'ETHZilla Deploys ETH to L2 Protocols, Earns 1.5M Protocol Tokens',
-      summary: 'ETHZilla begins deploying ETH across L2 protocols for yield. Portfolio: 44,437 ETH unstaked, 12,818 ETH in Protocol 1 staking/restaking, 45,000 ETH in Protocol 2. Earned 1.5M protocol tokens (~$2.2M). Minted first EtherFi ETH. 102,255 total ETH (~$460M), $228M cash. Repurchased ~6.0M shares in September at avg $2.50. Drew $50M from Cumberland DRW facility. Company pivoting toward "DeFi technology company" narrative: tokenization solutions, protocol integration, RWA on-chain.',
-      significance: 'First concrete evidence of ETH yield generation by a Nasdaq-listed ETH treasury company. Protocol token earnings represent new revenue stream. Multi-protocol deployment across staking and restaking demonstrates active treasury management.',
-      bmnrImplication: 'Public company earning DeFi protocol tokens on staked ETH = new model for corporate treasury yield. Validates BMNR\'s thesis that staked ETH generates superior returns vs. unstaked BTC holdings. Protocol incentive tokens add revenue stream beyond base staking yield.',
-      impact: 'Bullish',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-09-08',
-      category: 'Enterprise',
-      company: 'ETHZilla',
-      title: 'ETHZilla CEO Change: Rudisill Appointed CEO, Cumberland DRW OTC Facility',
-      summary: 'McAndrew Rudisill, Chairman, appointed CEO effective Sept 4. Succeeds Blair Jordan who resigned. Company enters OTC transaction with Cumberland DRW for up to $80M collateralized by ETH holdings, proceeds for share repurchases under $250M program. Repurchased ~2.2M shares at avg $2.50 (1.3% reduction). Total: 102,246 ETH (~$443M), $213M cash. Rudisill: "With our shares currently trading at a significant discount to NAV, we believe repurchasing shares is opportunistic."',
-      significance: 'Leadership consolidation with Chairman taking CEO role. Cumberland DRW OTC = using ETH as collateral for capital without selling, preserving treasury. Share buybacks at NAV discount signals management conviction.',
-      bmnrImplication: 'ETH-collateralized borrowing by crypto treasury company demonstrates financial engineering sophistication. Cumberland DRW (major institutional player) willing to lend against ETH validates its collateral quality. Model applicable to BMNR for leveraging ETH holdings.',
-      impact: 'Neutral',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-09-02',
-      category: 'DeFi',
-      company: 'ETHZilla',
-      title: 'ETHZilla Plans $100M ETH Deployment to EtherFi for Restaking',
-      summary: 'ETHZilla plans to deploy ~$100M ETH to EtherFi, a liquid restaking protocol, marking its first DeFi protocol engagement. EtherFi selected for incremental yield beyond standard staking through restaking while reinforcing Ethereum security. Electric Capital managing strategy. 102,246 ETH (~$456M), $221M cash. EtherFi CEO Mike Silagadze: "Their commitment highlights the growing institutional confidence in decentralized protocols." Also cancelled 1.318M Elray shares for $1M.',
-      significance: 'First Nasdaq-listed ETH treasury company to deploy into DeFi restaking at $100M scale. Institutional capital flowing into liquid restaking validates the protocol category. Electric Capital as external manager brings institutional-grade risk management.',
-      bmnrImplication: 'Corporate treasury deploying $100M into EtherFi restaking = massive institutional validation of Ethereum DeFi. Restaking enhances Ethereum security while generating yield — directly validates BMNR\'s ETH staking thesis. More institutional restaking = higher security = more valuable ETH network.',
-      impact: 'Bullish',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-08-25',
-      category: 'Enterprise',
-      company: 'ETHZilla',
-      title: 'ETHZilla Authorizes $250M Stock Repurchase Program',
-      summary: 'ETHZilla board authorizes $250M stock repurchase program effective immediately, expiring June 30, 2026. Total holdings: 102,237 ETH at avg $3,948.72 (~$489M), $215M cash. Announces Electric Asset Protocol for higher yields. Weekly summary: accumulated from 82.2K to 102.2K ETH over 3 weeks. ATM issued 5.0M shares for $33.7M net proceeds. CEO Rudisill: "We believe an aggressive stock repurchase program at the current stock price underscores our commitment to maximizing value for shareholders."',
-      significance: 'Largest buyback authorization by an ETH treasury company. Dual strategy: accumulate ETH + repurchase shares when trading below NAV. Proprietary Electric Asset Protocol for yield generation introduces differentiated treasury management.',
-      bmnrImplication: 'Major buyback program signals ETH treasury companies maturing capital allocation. If ETHZilla can sustain ETH accumulation while buying back shares, validates the model. Proprietary yield protocol could widen gap between passive and active ETH treasury management strategies.',
-      impact: 'Neutral',
-      source: 'ETHZilla Press Release'
-    },
-    {
-      date: '2025-08-18',
-      category: 'Enterprise',
-      company: 'ETHZilla',
-      title: 'ETHZilla Launches: Rebrand from 180 Life Sciences, Begins Trading as ETHZ on Nasdaq',
-      summary: 'ETHZilla Corporation officially launches, rebranding from 180 Life Sciences Corp. (ATNF). Common stock begins trading under ETHZ on Nasdaq Aug 18. Raised ~$565M gross ($425M PIPE + $156.25M convertible notes). Accumulated 94,675 ETH at avg $3,902.20 (~$419M), $187M cash. 60+ institutional and crypto-native investors including: Electric Capital, Polychain Capital, GSR, Borderless Capital, plus Ethereum ecosystem founders — Sreeram Kannan (EigenLayer), Mike Silagadze (Ether.fi), Danny Ryan (Etherealize), Sam Kazemanian (Frax), Robert Leshner (Compound/Superstate), Tarun Chitra (Gauntlet). Electric Capital as external asset manager for on-chain yield generation via staking, lending, liquidity provisioning.',
-      significance: 'First major Ethereum-only treasury company launches on Nasdaq with $565M in capital and nearly 95K ETH. Investor roster reads like Ethereum ecosystem who\'s-who. Directly challenges BTC treasury model (Strategy/MSTR) with ETH yield advantage thesis. Electric Capital as institutional-grade DeFi asset manager represents new corporate treasury model.',
-      bmnrImplication: 'Major ETH-only treasury competitor launches with massive capital base and top-tier Ethereum ecosystem backing. Validates the ETH treasury thesis BMNR is pursuing. ETHZilla\'s ~95K ETH dwarfs BMNR\'s holdings but shared strategy increases market awareness of ETH treasury model. Rising tide: institutional interest in ETH treasury equities benefits all players.',
-      impact: 'Bullish',
-      source: 'ETHZilla Press Release'
     },
     {
       date: '2025-12-22',
@@ -9427,7 +9598,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   ];
   
   const categories = ['All', 'Enterprise', 'DeFi', 'L2', 'Institutional', 'Protocol', 'Regulatory'];
-  const companies = ['All', 'BlackRock', 'JPMorgan', 'Visa', 'Franklin Templeton', 'Fidelity', 'Coinbase', 'Sony', 'Goldman Sachs', 'State Street', 'Interactive Brokers', 'Societe Generale', 'Deutsche Bank', 'Bit Digital', 'Siemens', 'Telcoin', 'Shift4', 'Sentient Jet', 'GoTyme Bank', 'A+ Protocol', 'Ostium', 'Tetra Digital', 'DAMAC Properties', 'WisdomTree', 'Securitize', 'Paysafe', 'Guggenheim', 'UBS', 'Mastercard', 'DBS', 'HSBC', 'Citi', 'ETHZilla', 'Standard Chartered', 'Santander', 'EIB', 'ANZ', 'ABN AMRO', 'HKMA', 'Other'];
+  const companies = ['All', 'BlackRock', 'JPMorgan', 'Visa', 'Franklin Templeton', 'Fidelity', 'Coinbase', 'Sony', 'Goldman Sachs', 'State Street', 'Interactive Brokers', 'Societe Generale', 'Deutsche Bank', 'Bit Digital', 'Siemens', 'Telcoin', 'Shift4', 'Sentient Jet', 'GoTyme Bank', 'A+ Protocol', 'Ostium', 'Tetra Digital', 'DAMAC Properties', 'WisdomTree', 'Securitize', 'Paysafe', 'Guggenheim', 'UBS', 'Mastercard', 'DBS', 'HSBC', 'Citi', 'Standard Chartered', 'Santander', 'EIB', 'ANZ', 'ABN AMRO', 'HKMA', 'Other'];
   
   // Filter by both category and company
   const filteredNews = adoptionTimeline.filter(n => {
