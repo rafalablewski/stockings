@@ -6060,8 +6060,9 @@ function CRCLModel() {
 
           {activeTab === 'sources' && (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
               <div className="highlight"><h3>Research Sources</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for CRCL analysis and tracking.</p></div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
               {[
                 { category: 'Company / IR', sources: [
                   { name: 'Circle — Official Website', url: 'https://circle.com' },
