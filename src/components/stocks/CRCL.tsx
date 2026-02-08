@@ -6059,9 +6059,9 @@ function CRCLModel() {
           )}
 
           {activeTab === 'sources' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text1)' }}>Research Sources</h3>
-              <p style={{ color: 'var(--text2)', fontSize: 14 }}>Sites and sources used for CRCL analysis and tracking.</p>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
+              <div className="highlight"><h3>Research Sources</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for CRCL analysis and tracking.</p></div>
               {[
                 { category: 'Company / IR', sources: [
                   { name: 'Circle — Official Website', url: 'https://circle.com' },
@@ -6128,12 +6128,12 @@ function CRCLModel() {
                   { name: 'Bloomberg', url: 'https://www.bloomberg.com' },
                 ]},
               ].map(group => (
-                <div key={group.category} style={{ background: 'var(--surface2)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
-                  <div style={{ fontWeight: 600, color: 'var(--text1)', marginBottom: 8, fontSize: 15 }}>{group.category}</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                <div key={group.category} className="card">
+                  <div className="card-title">{group.category}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
                     {group.sources.map(s => (
-                      <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 8, background: 'var(--surface3)', color: 'var(--sky)', fontSize: 13, textDecoration: 'none', border: '1px solid var(--border)', whiteSpace: 'nowrap' }}>
-                        {s.name} <span style={{ opacity: 0.5 }}>↗</span>
+                      <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
+                        {s.name} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
                       </a>
                     ))}
                   </div>
@@ -6371,7 +6371,7 @@ const CompsTab = () => {
       {/* Key Competitors Overview - Colored Border Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-competitors</div>
       <div className="highlight"><h3>💵 Key Competitors<UpdateIndicators sources="PR" /></h3><p>Stablecoin and payments competitors - threat level indicates competitive overlap with CRCL's USDC model</p></div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
         {keyCompetitors.map((comp, i) => (
           <div key={i} className={`comp-competitor-card comp-threat-${comp.threat.toLowerCase()}`}>
             <div className="comp-competitor-header">

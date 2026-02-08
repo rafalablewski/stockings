@@ -1032,9 +1032,9 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
         {activeTab === 'sources' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Research Sources</h3>
-            <p style={{ fontSize: 13, color: 'var(--text3)' }}>Sites and sources used for BMNR analysis, competitor tracking, and Ethereum ecosystem research.</p>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
+            <div className="highlight"><h3>Research Sources</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for BMNR analysis, competitor tracking, and Ethereum ecosystem research.</p></div>
             {[
               { category: 'Company / IR', sources: [
                 { name: 'BMNR Investor Relations (PRNewswire)', url: 'https://www.prnewswire.com' },
@@ -1100,9 +1100,9 @@ const BMNRDilutionAnalysis = () => {
                 { name: 'GlobeNewswire', url: 'https://www.globenewswire.com' },
               ]},
             ].map(group => (
-              <div key={group.category} style={{ background: 'var(--surface2)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>{group.category}</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div key={group.category} className="card">
+                <div className="card-title">{group.category}</div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
                   {group.sources.map(s => (
                     <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
                       {s.name} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
@@ -4433,7 +4433,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       {/* Key Competitors Overview - Colored Border Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-competitors</div>
       <div className="highlight"><h3>🏦 Key Competitors<UpdateIndicators sources="PR" /></h3><p>Crypto treasury peers - threat level indicates competitive overlap with BMNR's ETH staking model</p></div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
         {keyCompetitors.map((comp, i) => (
           <div key={i} className={`comp-competitor-card comp-threat-${comp.threat.toLowerCase()}`}>
             <div className="comp-competitor-header">
