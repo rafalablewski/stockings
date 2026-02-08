@@ -197,6 +197,42 @@ interface PanelProps {
   children: ReactNode;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPETITOR INTELLIGENCE TYPES (CRCL-specific)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/** Competitor identifiers for CRCL competitive landscape */
+type CRCLCompetitorId = 'kraken' | 'tether' | 'coinbase' | 'paypal' | 'fdusd' | 'other';
+
+/** News category types for stablecoin/payments competitors */
+type CRCLCompetitorNewsCategory = 'Partnership' | 'Product' | 'Regulatory' | 'Technology' | 'Financial' | 'Strategy' | 'Distribution';
+
+/** Implication for CRCL competitive position */
+type CRCLImplication = 'positive' | 'neutral' | 'negative';
+
+/** Individual competitor news entry */
+interface CRCLCompetitorNewsEntry {
+  date: string;
+  competitor: CRCLCompetitorId;
+  category: CRCLCompetitorNewsCategory;
+  headline: string;
+  details: string[];
+  implication: CRCLImplication;
+  crclComparison?: string;
+  source?: string;
+  sourceUrl?: string;
+  storyId?: string;
+  storyTitle?: string;
+}
+
+/** Competitor profile */
+interface CRCLCompetitorProfile {
+  id: CRCLCompetitorId;
+  name: string;
+  description: string;
+  currentStatus: string;
+}
+
 interface GuideProps {
   title: string;
   children: ReactNode;
@@ -6291,6 +6327,10 @@ const CompsTab = () => {
   const [selectedPeerGroup, setSelectedPeerGroup] = useState<string>('crypto');
   const currentPeers = PEER_GROUPS[selectedPeerGroup as keyof typeof PEER_GROUPS];
 
+  // Competitor intelligence state
+  const [competitorFilter, setCompetitorFilter] = useState<CRCLCompetitorId | 'all'>('all');
+  const [expandedNews, setExpandedNews] = useState<string | null>(null);
+
   // Key competitors with threat levels for colored borders
   const keyCompetitors = [
     {
@@ -6325,7 +6365,396 @@ const CompsTab = () => {
       threat: 'Low',
       notes: 'Binance partnership but geographically limited. CRCL has broader US + global institutional access.'
     },
+    {
+      name: 'Kraken',
+      type: 'Exchange + USDC Partner',
+      status: '13M+ users globally',
+      focus: 'Major USDC/EURC distribution partner, DeFi yield products (USDC-based), institutional custody, tokenized equities (xStocks)',
+      threat: 'Medium',
+      notes: 'Key USDC/EURC distribution partner but also supports rival stablecoins (Ethena USDe custody). Expanding into DeFi yield and tokenized equities could grow or divert USDC demand.'
+    },
   ];
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPETITOR PROFILES
+  // ═══════════════════════════════════════════════════════════════════════════
+  const COMPETITOR_PROFILES: CRCLCompetitorProfile[] = [
+    {
+      id: 'kraken',
+      name: 'Kraken',
+      description: 'Major crypto exchange and USDC/EURC distribution partner with institutional custody, DeFi yield, and tokenized equities products',
+      currentStatus: 'Active USDC/EURC distribution, DeFi Earn (USDC-based yield), xStocks tokenized equities, Ethena USDe custody partner',
+    },
+    {
+      id: 'tether',
+      name: 'Tether',
+      description: 'Largest stablecoin by AUM ($140B+), offshore operations with no US bank relationships',
+      currentStatus: 'Dominant market share but increasing regulatory scrutiny',
+    },
+    {
+      id: 'coinbase',
+      name: 'Coinbase',
+      description: 'Leading US crypto exchange and USDC distribution partner (50% revenue share)',
+      currentStatus: 'Key USDC distribution partner via Coinbase One, expanding institutional services',
+    },
+    {
+      id: 'paypal',
+      name: 'PayPal',
+      description: 'Global payments giant with PYUSD stablecoin (~$1B AUM)',
+      currentStatus: 'Distribution advantage via PayPal ecosystem but limited adoption',
+    },
+  ];
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPETITOR NEWS - Add new entries at TOP (newest first)
+  // NEVER delete old entries - this is an audit trail
+  // ═══════════════════════════════════════════════════════════════════════════
+  const COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ADD NEW COMPETITOR NEWS ENTRIES HERE (newest first)
+    // Format:
+    // {
+    //   date: 'YYYY-MM-DD',
+    //   competitor: 'kraken' | 'tether' | 'coinbase' | 'paypal' | 'fdusd' | 'other',
+    //   category: 'Partnership' | 'Product' | 'Regulatory' | 'Technology' | 'Financial' | 'Strategy' | 'Distribution',
+    //   headline: 'Brief headline',
+    //   details: ['Bullet point 1', 'Bullet point 2'],
+    //   implication: 'positive' | 'neutral' | 'negative',  // for CRCL
+    //   crclComparison: 'How this compares to CRCL position',
+    //   source: 'Source name',
+    //   storyId: 'groups related entries',
+    //   storyTitle: 'Display title for story group'
+    // },
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - INSTITUTIONAL BESPOKE INVESTMENT SOLUTION (Feb 5, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'kraken',
+      category: 'Product',
+      headline: 'Kraken Institutional announces first bespoke investment solution with Bitwise Asset Management',
+      details: [
+        'Bitwise Custom Yield Strategy available to eligible institutional clients',
+        'Delivered by Bitwise as external strategy manager within Kraken\'s qualified custody, execution and risk framework',
+        'First of multiple managed strategies planned under Kraken Institutional\'s new offering framework',
+        'Head of Kraken Institutional Gurpreet Oberoi: "expanding beyond custody and execution to professionally managed opportunities"',
+        'All strategies undergo structured internal review and remain subject to ongoing oversight',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken building institutional investment products could eventually incorporate USDC-denominated strategies, expanding institutional demand for Circle\'s stablecoin infrastructure. Institutional yield strategies require stablecoin settlement rails.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional Services',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - PROOF OF RESERVES DEC 2025 (Feb 5, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken releases December 2025 Proof of Reserves confirming 1:1+ client asset backing',
+      details: [
+        'Covers major cryptoassets including BTC, ETH, SOL, USDC, USDT, XRP and ADA',
+        'Uses Merkle tree for cryptographic verification with user-level proof',
+        'Independent third-party accountancy firm attestation',
+        'Pioneered PoR in 2014, publishes quarterly alongside financial disclosures',
+        'Accounts for total client liabilities, not just assets — includes margin, futures, and staked positions',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken\'s PoR covering both USDC and USDT demonstrates both stablecoins have significant exchange custody demand. Circle\'s own reserve transparency (monthly attestations, BlackRock-managed reserves) sets the industry standard that exchanges complement.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional Services',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - WILLIAMS F1 PARTNERSHIP RENEWAL (Jan 27, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-27',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken renews long-term partnership with Atlassian Williams F1 Team with front wing branding for 2026',
+      details: [
+        'Partnership since 2023 as Official Crypto and Web3 Partner, now renewed long-term',
+        'Kraken moves to front wing branding on FW48 for 2026 Formula 1 season',
+        'Grid Pass digital collectible program and Presenting Partner of Williams Fan Zones globally',
+        'Annual Rear Wing Takeover fan engagement campaigns',
+        'Part of Williams\' portfolio of major brand renewals (Duracell, Gulf Oil, VAST Data, Keeper Security)',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken\'s F1 sponsorship increases crypto brand awareness and mainstream adoption broadly, which benefits USDC as the leading regulated stablecoin. Larger Kraken user base = larger addressable market for USDC distribution.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion & Marketing',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - DEFI EARN WITH USDC (Jan 26, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-26',
+      competitor: 'kraken',
+      category: 'Product',
+      headline: 'Kraken launches DeFi Earn with up to 8% APY on USDC through audited Veda vaults',
+      details: [
+        'Earn up to 8% APY on cash and stablecoins via audited Veda vaults supplying liquidity to onchain lending protocols',
+        'Converts user deposits to USDC, then deploys to Ethereum-based DeFi lending — directly expands USDC circulation',
+        'Three risk-managed vault options: Balanced Yield (Chaos Labs), Boosted Yield (Chaos Labs), Advanced Strategies (Sentora)',
+        'Available in 48 US states (excl. NY, ME), Canada, and European Economic Area',
+        'Withdrawals typically instant with minimal lock-up periods',
+      ],
+      implication: 'positive',
+      crclComparison: 'Directly expands USDC demand and circulation. Kraken converts user cash deposits into USDC for DeFi deployment, creating net new USDC minting pressure. Validates Circle\'s ecosystem and USDC\'s role as DeFi settlement currency.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-usdc',
+      storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - USDC ON ALGORAND (Jan 22, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-22',
+      competitor: 'kraken',
+      category: 'Distribution',
+      headline: 'Kraken adds USDC deposits and withdrawals on Algorand network',
+      details: [
+        'USDC funding via Algorand now live on Kraken platform',
+        'Expands multi-chain USDC accessibility for Kraken users',
+        'Algorand: Layer-1 with pure proof-of-stake, instant finality, and minimal fees',
+        'Adds another low-cost, fast settlement option for USDC transfers',
+      ],
+      implication: 'positive',
+      crclComparison: 'Every new chain support on major exchanges expands USDC multi-chain reach. Kraken adding Algorand USDC support increases Circle\'s distribution footprint and makes USDC accessible via an additional low-fee, high-speed network.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-usdc',
+      storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - ATLETICO MADRID MEMECOIN SHOWDOWN (Jan 21, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-21',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken announces memecoin showdown with Atletico Madrid jersey sleeve placement as prize',
+      details: [
+        'Memecoins compete by trading volume on Kraken (Jan 22 – Feb 15, 2026)',
+        'Winner replaces Kraken logo on Atletico de Madrid shirt sleeve for Barcelona match (Apr 4-5)',
+        'Participating tokens: BERT, GIGA, PONKE, UFD, USDUC, USELESS',
+        'Kraken is existing Atletico de Madrid partner — extends sports marketing reach',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken\'s sports marketing partnerships drive platform trading activity and user acquisition. Growing exchange volume supports USDC\'s role as a primary funding and trading pair settlement currency.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion & Marketing',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - CRYPTO 2026 OUTLOOK (Jan 15, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-15',
+      competitor: 'kraken',
+      category: 'Strategy',
+      headline: 'Kraken economist outlines 2026 outlook: stablecoin liquidity at all-time highs, tokenization growing 3x',
+      details: [
+        'Stablecoin liquidity at all-time highs heading into 2026 — systemic risk indicators contained',
+        'Stablecoin legislation (GENIUS Act) already reshaping onchain dollar liquidity',
+        'Tokenization of real-world assets grew from ~$5.6B to ~$19B in a single year',
+        'CLARITY Act could provide framework for digital commodities and exchanges, accelerating capital formation',
+        'Regulatory clarity shifting from "theoretical tailwind" to "tangible" in 2026',
+        'DeFi tokenomics evolving: Uniswap-style fee sharing could reprice governance tokens toward durable valuation frameworks',
+      ],
+      implication: 'positive',
+      crclComparison: 'Kraken\'s research highlighting stablecoin liquidity at ATH and regulatory clarity as key 2026 themes directly validates Circle\'s growth thesis. GENIUS Act stablecoin legislation benefits USDC as the compliance-first market leader. RWA tokenization growth ($5.6B→$19B) expands use cases for USDC settlement.',
+      source: 'Kraken Blog',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - ETHENA USDE CUSTODY (Jan 6, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-06',
+      competitor: 'kraken',
+      category: 'Product',
+      headline: 'Kraken selected as custody partner for Ethena\'s USDe synthetic dollar stablecoin',
+      details: [
+        'Approved by Ethena Risk Committee (ERC) for custody of USDe backing assets',
+        'Assets held in fully segregated, bankruptcy-remote, cold-storage vaults',
+        'Kraken Custody operated by US state-chartered bank with HSM + MPC security',
+        'Monthly custodian attestations and weekly Proof of Reserves for USDe transparency',
+        'USDe is a synthetic dollar using delta-neutral derivatives strategy — different model than USDC\'s reserve-backed approach',
+      ],
+      implication: 'negative',
+      crclComparison: 'Kraken providing institutional custody for USDe (Ethena) signals exchange willingness to support stablecoin alternatives to USDC. USDe\'s synthetic dollar model competes for the same dollar-denominated DeFi demand that drives USDC circulation growth.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional Services',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - EUROPE 2025 EXPANSION (Dec 31, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-31',
+      competitor: 'kraken',
+      category: 'Regulatory',
+      headline: 'Kraken completes pivotal 2025 European expansion with MiCA and MiFID compliance',
+      details: [
+        'Regulatory clarity achieved via MiCA and MiFID frameworks across EU',
+        'Expanded presence across France, Ireland, Germany, Netherlands, Poland, Spain and beyond',
+        'Built local teams and launched new products for European markets',
+        '2025 Celebration Tour connecting with communities in Riga, Lisbon, Dublin, Warsaw, Frankfurt',
+        'Positions Kraken as regulated local crypto partner across the EU',
+      ],
+      implication: 'positive',
+      crclComparison: 'Kraken\'s EU expansion under MiCA directly supports EURC distribution. As Kraken grows its European user base with full regulatory compliance, it creates a larger addressable market for Circle\'s EURC stablecoin and supports the euro-denominated stablecoin ecosystem.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-expansion',
+      storyTitle: 'Kraken Global Expansion & Marketing',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - XSTOCKS ON TON BLOCKCHAIN (Dec 18, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-18',
+      competitor: 'kraken',
+      category: 'Technology',
+      headline: 'Kraken\'s xStocks tokenized equities launch on TON blockchain reaching Telegram\'s 1B users',
+      details: [
+        'Fully collateralized tokenized stocks and ETFs deployed on TON blockchain',
+        'Accessible via non-custodial TON Wallet embedded in Telegram — nearly 100M existing users',
+        'Over $180M in tokenized assets onchain with ~50K unique wallet addresses',
+        'Multichain: now on Solana, Ethereum, and TON (with Mantle and TRON underway)',
+        'Kraken Co-CEO Arjun Sethi: "financial assets move onto open networks as neutral, composable building blocks"',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken\'s xStocks tokenized equities compete in the broader RWA tokenization space alongside Circle\'s vision. However, equity tokenization and stablecoin infrastructure serve different functions — USDC could benefit as the settlement currency of choice for tokenized asset markets.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - ALPACA XSTOCKS PARTNERSHIP (Dec 17, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-17',
+      competitor: 'kraken',
+      category: 'Partnership',
+      headline: 'Kraken deepens Alpaca partnership as preferred venue for xStocks tokenized equities',
+      details: [
+        'Alpaca becomes preferred venue for sourcing and custodying underlying equities backing xStocks 1:1',
+        'xStocks surpassed $10B in combined transaction volume since June 2025 launch',
+        'Real-time mint and redeem capabilities via Alpaca\'s Instant Tokenization Network (ITN)',
+        'Plans to expand beyond equities to broader suite of tokenized securities and real-world assets',
+        'Kraken recently announced acquisition of Backed Finance to unify xStocks issuance, trading, and settlement',
+      ],
+      implication: 'neutral',
+      crclComparison: 'xStocks\' $10B+ volume demonstrates growing demand for tokenized financial assets onchain. As RWA tokenization scales, USDC could benefit as the primary settlement and liquidity currency for tokenized asset markets. Circle and Kraken could be complementary infrastructure providers.',
+      source: 'Kraken Blog',
+      storyId: 'kraken-xstocks',
+      storyTitle: 'Kraken Tokenized Equities (xStocks)',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KRAKEN - MAKER FEE PROGRAM UPDATE (Dec 17, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-17',
+      competitor: 'kraken',
+      category: 'Financial',
+      headline: 'Kraken optimizes maker fee incentives, graduates 6 high-volume trading pairs',
+      details: [
+        '6 trading pairs moved to regular maker fee schedule after achieving self-sustaining liquidity',
+        'Graduated pairs demonstrated $50M+ 30-day volume with $100K+ market depth',
+        'Maker rebates continue on 425+ other trading pairs to support liquidity development',
+        'Indicates growing platform maturity and organic trading activity',
+      ],
+      implication: 'neutral',
+      crclComparison: 'Kraken\'s liquidity maturation across 425+ trading pairs creates deep markets that benefit USDC-denominated trading. Healthy exchange liquidity supports USDC\'s role as a primary trading settlement and funding currency.',
+      source: 'Kraken Blog',
+    },
+  ];
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPETITOR NEWS HELPERS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Filter news by competitor, sort by date (newest first)
+  const filteredNews = (competitorFilter === 'all'
+    ? COMPETITOR_NEWS
+    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter)
+  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  // Group news by storyId, with ungrouped items in their own "group"
+  const groupedNews = React.useMemo(() => {
+    const groups: Record<string, { title: string; entries: (CRCLCompetitorNewsEntry & { originalIdx: number })[] }> = {};
+
+    filteredNews.forEach((news, idx) => {
+      const storyKey = news.storyId || `ungrouped-${idx}`;
+      if (!groups[storyKey]) {
+        groups[storyKey] = {
+          title: news.storyTitle || news.headline,
+          entries: []
+        };
+      }
+      groups[storyKey].entries.push({ ...news, originalIdx: idx });
+    });
+
+    // Sort entries within each group by date (newest first)
+    Object.values(groups).forEach(group => {
+      group.entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    });
+
+    // Convert to array and sort groups by most recent entry (newest story first)
+    return Object.entries(groups)
+      .map(([storyId, group]) => ({
+        storyId,
+        title: group.title,
+        entries: group.entries,
+        latestDate: group.entries[0]?.date || ''
+      }))
+      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
+  }, [filteredNews]);
+
+  // Get competitor display name
+  const getCompetitorName = (id: CRCLCompetitorId): string => {
+    const profile = COMPETITOR_PROFILES.find(p => p.id === id);
+    return profile?.name || id;
+  };
+
+  // Implication styling - using design tokens
+  const getImplicationStyle = (impl: CRCLImplication) => {
+    switch (impl) {
+      case 'positive': return { bg: 'var(--mint-dim)', color: 'var(--mint)', label: '✓ Good for CRCL' };
+      case 'negative': return { bg: 'var(--coral-dim)', color: 'var(--coral)', label: '⚠ Threat to CRCL' };
+      default: return { bg: 'var(--surface3)', color: 'var(--text3)', label: '○ Neutral' };
+    }
+  };
+
+  // Category styling - using design tokens
+  const getCategoryStyle = (cat: CRCLCompetitorNewsCategory) => {
+    const styles: Record<CRCLCompetitorNewsCategory, { bg: string; color: string }> = {
+      'Partnership': { bg: 'var(--sky-dim)', color: 'var(--sky)' },
+      'Product': { bg: 'var(--violet-dim)', color: 'var(--violet)' },
+      'Regulatory': { bg: 'var(--gold-dim)', color: 'var(--gold)' },
+      'Technology': { bg: 'var(--cyan-dim)', color: 'var(--cyan)' },
+      'Financial': { bg: 'var(--emerald-dim)', color: 'var(--emerald)' },
+      'Strategy': { bg: 'var(--accent-dim)', color: 'var(--accent)' },
+      'Distribution': { bg: 'var(--mint-dim)', color: 'var(--mint)' },
+    };
+    return styles[cat] || { bg: 'var(--surface3)', color: 'var(--text3)' };
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -6764,24 +7193,232 @@ const CompsTab = () => {
         </div>
       </div>
 
-      {/* Competitor Intelligence Placeholder */}
+      {/* Competitor News Intelligence Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
       <div className="highlight">
-        <h3>📰 Competitor Intelligence</h3>
-        <p>Track competitor developments to assess Circle's competitive position in stablecoins and digital payments.</p>
+        <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
+        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track what <strong>competitors and distribution partners</strong> are doing — stablecoin developments, exchange partnerships, regulatory moves, yield products, and tokenization initiatives</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>Company-level news affecting CRCL's relative positioning in stablecoins and digital payments</p>
       </div>
 
+      {/* Filter Bar */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
-      <div className="card" style={{ padding: 32, textAlign: 'center' }}>
-        <div style={{ fontSize: 48, opacity: 0.3 }}>🔜</div>
-        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text2)' }}>Competitor Intelligence Coming Soon</div>
-        <p style={{ color: 'var(--text3)', fontSize: 13, maxWidth: 500, margin: '0 auto' }}>
-          This section will track news and developments from stablecoin and payments competitors including Tether (USDT),
-          PayPal (PYUSD), Coinbase, and traditional payment networks (Visa, Mastercard).
-          <br /><br />
-          Key tracking areas: stablecoin market share, regulatory developments, partnership announcements,
-          yield product launches, and cross-border payment initiatives.
-        </p>
+      <div className="card" style={{ padding: '12px 16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
+          <button
+            onClick={() => setCompetitorFilter('all')}
+            className={`filter-btn ${competitorFilter === 'all' ? 'active' : ''}`}
+          >
+            All ({COMPETITOR_NEWS.length})
+          </button>
+          {COMPETITOR_PROFILES.map(comp => {
+            const count = COMPETITOR_NEWS.filter(n => n.competitor === comp.id).length;
+            if (count === 0) return null;
+            return (
+              <button
+                key={comp.id}
+                onClick={() => setCompetitorFilter(comp.id)}
+                className={`filter-btn ${competitorFilter === comp.id ? 'active' : ''}`}
+              >
+                {comp.name} ({count})
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* News Timeline - Grouped by Story */}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {groupedNews.length === 0 ? (
+          <div className="card" style={{ textAlign: 'center', padding: 40 }}>
+            <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
+          </div>
+        ) : (
+          groupedNews.map((story) => (
+            <div key={story.storyId} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+              {/* Story Header */}
+              <div style={{
+                padding: '16px 20px',
+                background: 'var(--surface2)',
+                borderBottom: '1px solid var(--border)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{story.title}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text3)' }}>
+                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[0]?.date} → {story.entries[story.entries.length - 1]?.date}
+                  </div>
+                </div>
+                <span style={{
+                  fontSize: '10px',
+                  padding: '4px 10px',
+                  borderRadius: '4px',
+                  background: 'var(--surface3)',
+                  color: 'var(--text2)',
+                  fontWeight: 600
+                }}>
+                  {getCompetitorName(story.entries[0]?.competitor)}
+                </span>
+              </div>
+
+              {/* Story Entries - Chronological */}
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {story.entries.map((news, entryIdx) => {
+                  const implStyle = getImplicationStyle(news.implication);
+                  const catStyle = getCategoryStyle(news.category);
+                  const expandKey = `${story.storyId}-${entryIdx}`;
+                  const isExpanded = expandedNews === expandKey;
+
+                  return (
+                    <div
+                      key={entryIdx}
+                      style={{
+                        borderBottom: entryIdx < story.entries.length - 1 ? '1px solid var(--border)' : 'none',
+                        background: isExpanded ? 'var(--surface2)' : 'transparent',
+                        transition: 'background 0.2s'
+                      }}
+                    >
+                      <div
+                        onClick={() => setExpandedNews(isExpanded ? null : expandKey)}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '90px 100px 1fr auto auto',
+                          gap: 12,
+                          padding: '14px 20px',
+                          cursor: 'pointer',
+                          alignItems: 'center'
+                        }}
+                      >
+                        {/* Date */}
+                        <span className="t-date" style={{ fontSize: 12 }}>{news.date}</span>
+
+                        {/* Category */}
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            background: catStyle.bg,
+                            color: catStyle.color,
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}
+                        >
+                          {news.category}
+                        </span>
+
+                        {/* Headline */}
+                        <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{news.headline}</span>
+
+                        {/* Implication Badge */}
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            background: implStyle.bg,
+                            color: implStyle.color,
+                            fontWeight: 600
+                          }}
+                        >
+                          {news.implication === 'positive' ? '✓' : news.implication === 'negative' ? '⚠' : '○'}
+                        </span>
+
+                        {/* Toggle */}
+                        <span style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: 6,
+                          background: isExpanded ? 'var(--accent)' : 'var(--surface3)',
+                          color: isExpanded ? 'var(--bg)' : 'var(--text3)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 14,
+                          transition: 'all 0.2s'
+                        }}>
+                          {isExpanded ? '−' : '+'}
+                        </span>
+                      </div>
+
+                      {/* Expanded Details */}
+                      {isExpanded && (
+                        <div style={{ padding: '0 20px 16px 20px' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 20 }}>
+                            <div>
+                              <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
+                                {news.details.map((d, i) => (
+                                  <li key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: 'var(--text2)' }}>
+                                    <span style={{ color: 'var(--accent)' }}>•</span>
+                                    {d}
+                                  </li>
+                                ))}
+                              </ul>
+                              {news.crclComparison && (
+                                <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--accent-dim)', borderRadius: 6, borderLeft: '3px solid var(--accent)' }}>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent)' }}>
+                                    CRCL Comparison
+                                  </div>
+                                  <div style={{ fontSize: 13, color: 'var(--text)' }}>{news.crclComparison}</div>
+                                </div>
+                              )}
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 140 }}>
+                              <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
+                                <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Impact</div>
+                                <div style={{ fontSize: 12, fontWeight: 600, color: implStyle.color }}>
+                                  {news.implication === 'positive' ? 'Favorable' : news.implication === 'negative' ? 'Threat' : 'Neutral'}
+                                </div>
+                              </div>
+                              {news.source && (
+                                <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
+                                  <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Source</div>
+                                  <div style={{ fontSize: 11 }}>
+                                    {news.sourceUrl ? (
+                                      <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
+                                        {news.source} ↗
+                                      </a>
+                                    ) : news.source}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Competitor Profiles (Reference) */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-profiles</div>
+      <div className="card">
+        <div className="card-title">Competitor Profiles</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {COMPETITOR_PROFILES.map(comp => (
+            <div key={comp.id} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--text)' }}>{comp.name}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text2)' }}>{comp.description}</div>
+                </div>
+              </div>
+              <div style={{ marginTop: 8 }}>
+                <div style={{ fontSize: 10, textTransform: 'uppercase', color: 'var(--text3)' }}>Status</div>
+                <div style={{ fontSize: 12, color: 'var(--text2)' }}>{comp.currentStatus}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
