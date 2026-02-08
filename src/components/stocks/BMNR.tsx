@@ -4983,6 +4983,14 @@ const CompsTab = ({ comparables, ethPrice }) => {
       threat: 'Low',
       notes: 'Smaller BTC miner. Mining costs vs BMNR\'s staking yield creates structural disadvantage.'
     },
+    {
+      name: 'ETHZilla (ETHZ)',
+      type: 'ETH Treasury + RWA',
+      status: '~102K ETH + RWA tokenization',
+      focus: 'ETH accumulation, DeFi restaking (EtherFi/Puffer), RWA tokenization via Liquidity.io (FINRA ATS)',
+      threat: 'High',
+      notes: 'Most direct competitor — also ETH treasury company. Differentiates via RWA tokenization (manufactured homes, auto loans, aircraft engines) and diversified DeFi yield. Trading at -13% NAV discount (mNAV 0.87x).'
+    },
   ];
 
   return (
