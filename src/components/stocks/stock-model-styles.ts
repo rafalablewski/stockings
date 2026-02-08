@@ -1408,4 +1408,179 @@ input[type="range"]::-webkit-slider-thumb {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* ═══ UNIFIED COMP CARDS - One card per company ═══ */
+.comp-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.comp-unified-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  transition: border-color 0.2s;
+  border-left: 4px solid var(--surface3);
+}
+.comp-unified-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.comp-unified-card.threat-high { border-left-color: var(--coral); }
+.comp-unified-card.threat-medium { border-left-color: var(--gold); }
+.comp-unified-card.threat-low { border-left-color: var(--mint); }
+.comp-unified-card.comp-self {
+  border-left-color: var(--accent);
+  background: linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%);
+}
+
+.comp-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+.comp-card-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.comp-card-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.comp-card-ticker {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+}
+.comp-card-badges {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.comp-card-badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.comp-card-badge.type-badge {
+  background: var(--surface3);
+  color: var(--text3);
+}
+.comp-card-badge.threat-high {
+  background: rgba(255,123,114,0.15);
+  color: var(--coral);
+}
+.comp-card-badge.threat-medium {
+  background: rgba(210,153,34,0.15);
+  color: var(--gold);
+}
+.comp-card-badge.threat-low {
+  background: rgba(126,231,135,0.15);
+  color: var(--mint);
+}
+
+.comp-card-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 6px;
+  padding: 10px;
+  background: var(--surface2);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.comp-card-metric {
+  text-align: center;
+  padding: 4px 0;
+}
+.comp-card-metric .val {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.comp-card-metric .val.mint { color: var(--mint); }
+.comp-card-metric .val.coral { color: var(--coral); }
+.comp-card-metric .val.accent { color: var(--accent); }
+.comp-card-metric .val.sky { color: var(--sky); }
+.comp-card-metric .lbl {
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.comp-card-detail {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+.comp-card-detail strong {
+  color: var(--text);
+}
+.comp-card-notes {
+  font-size: 11px;
+  color: var(--text3);
+  font-style: italic;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  line-height: 1.5;
+}
+
+.comp-card-capabilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.comp-cap {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.comp-cap.yes {
+  background: rgba(126,231,135,0.15);
+  color: var(--mint);
+}
+.comp-cap.no {
+  background: var(--surface3);
+  color: var(--text3);
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .comp-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .comp-unified-card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+  .comp-card-name { font-size: 14px; }
+  .comp-card-metrics { gap: 4px; padding: 8px; }
+  .comp-card-metric .val { font-size: 12px; }
+}
+@media (max-width: 480px) {
+  .comp-unified-card { padding: 14px; border-radius: 12px; }
+  .comp-card-name { font-size: 13px; }
+  .comp-card-badge { font-size: 9px; padding: 2px 6px; }
+}
 `;

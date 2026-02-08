@@ -6375,6 +6375,14 @@ const CompsTab = () => {
     },
   ];
 
+  // Build name-keyed lookup for merging qualitative data into peer cards
+  const keyCompLookup: Record<string, typeof keyCompetitors[0]> = {};
+  keyCompetitors.forEach(k => {
+    // Extract the base company name for matching
+    const baseName = k.name.split(' (')[0];
+    keyCompLookup[baseName] = k;
+  });
+
   // ═══════════════════════════════════════════════════════════════════════════
   // COMPETITOR PROFILES
   // ═══════════════════════════════════════════════════════════════════════════
@@ -7085,74 +7093,18 @@ const CompsTab = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <style>{`
-        .comp-competitor-card {
-          background: var(--bg2);
-          border: 1px solid var(--stroke);
-          border-radius: 12px;
-          padding: 16px;
-        }
-        .comp-threat-high { border-left: 3px solid var(--red); }
-        .comp-threat-medium { border-left: 3px solid var(--gold); }
-        .comp-threat-low { border-left: 3px solid var(--mint); }
-        .comp-competitor-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 8px;
-        }
-        .comp-competitor-name {
-          font-weight: 600;
-          font-size: 14px;
-          color: var(--text1);
-        }
-        .comp-competitor-type {
-          font-size: 11px;
-          color: var(--text3);
-          padding: 2px 8px;
-          background: var(--bg3);
-          border-radius: 4px;
-        }
-        .comp-competitor-detail {
-          font-size: 12px;
-          color: var(--text2);
-          margin-bottom: 4px;
-        }
-        .comp-competitor-notes {
-          font-size: 11px;
-          color: var(--text3);
-          font-style: italic;
-        }
-      `}</style>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['WS']} /></h2>
 
-      {/* Key Competitors Overview - Colored Border Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-competitors</div>
-      <div className="highlight"><h3>💵 Key Competitors<UpdateIndicators sources="PR" /></h3><p>Stablecoin and payments competitors - threat level indicates competitive overlap with CRCL's USDC model</p></div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
-        {keyCompetitors.map((comp, i) => (
-          <div key={i} className={`comp-competitor-card comp-threat-${comp.threat.toLowerCase()}`}>
-            <div className="comp-competitor-header">
-              <span className="comp-competitor-name">{comp.name}</span>
-              <span className="comp-competitor-type">{comp.type}</span>
-            </div>
-            <div className="comp-competitor-detail"><strong>Status:</strong> {comp.status}</div>
-            <div className="comp-competitor-detail"><strong>Focus:</strong> {comp.focus}</div>
-            <div className="comp-competitor-detail"><strong>Threat Level:</strong> <span style={{ color: comp.threat === 'High' ? 'var(--red)' : comp.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{comp.threat}</span></div>
-            <div className="comp-competitor-notes">{comp.notes}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Highlight Box */}
+      {/* Unified Peer Analysis Highlight */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#peer-analysis</div>
       <div className="highlight">
-        <h3>Peer Analysis Framework</h3>
+        <h3>Peer Analysis Framework<UpdateIndicators sources="PR" /></h3>
         <p>
           Circle sits at the intersection of multiple peer groups: crypto infrastructure (Coinbase),
           payments networks (Visa, PayPal), and high-growth fintech. Each lens provides different valuation
-          context. Crypto peers trade at premium P/S; payments peers show margin potential.
+          context. Crypto peers trade at premium P/S; payments peers show margin potential. Threat levels
+          indicate competitive overlap with CRCL's USDC model.
         </p>
       </div>
 
@@ -7169,46 +7121,62 @@ const CompsTab = () => {
         ))}
       </div>
 
-      {/* Selected Peer Group Table */}
+      {/* Unified Peer Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#peer-group</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{currentPeers.name}<UpdateIndicators sources={['WS']} /></div>
-        <p style={{ color: 'var(--text3)', fontSize: 13 }}>{currentPeers.description}</p>
-        <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th className="r">Mkt Cap</th>
-                <th className="r">Revenue</th>
-                <th className="r">EBITDA</th>
-                <th className="r">P/E</th>
-                <th className="r">Margin</th>
-                <th className="r">Growth</th>
-                <th className="r">P/S</th>
-                <th className="r">EV/EBITDA</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentPeers.peers.map((p, i) => (
-                <tr key={i} style={p.highlight ? { background: 'var(--accent-dim)' } : undefined}>
-                  <td>
-                    <div style={{ fontWeight: p.highlight ? 700 : 500 }}>{p.name}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{p.ticker}</div>
-                  </td>
-                  <td className="r">{p.cap ? `$${p.cap}B` : 'Private'}</td>
-                  <td className="r">${p.rev}B</td>
-                  <td className="r">{p.ebitda > 0 ? `$${p.ebitda}B` : p.ebitda < 0 ? `($${Math.abs(p.ebitda)}B)` : '—'}</td>
-                  <td className="r">{p.pe ? `${p.pe}x` : '—'}</td>
-                  <td className="r" style={{ color: p.margin >= 30 ? 'var(--mint)' : p.margin < 0 ? 'var(--coral)' : 'inherit' }}>{p.margin}%</td>
-                  <td className="r" style={{ color: p.growth >= 30 ? 'var(--mint)' : 'inherit' }}>{p.growth}%</td>
-                  <td className="r mint">{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</td>
-                  <td className="r sky">{p.cap && p.ebitda > 0 ? `${(p.cap / p.ebitda).toFixed(1)}x` : '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="comp-cards-grid">
+        {currentPeers.peers.map((p, i) => {
+          const qual = keyCompLookup[p.name.split(' (')[0]] || keyCompLookup[p.name];
+          const isSelf = p.highlight;
+          return (
+            <div key={i} className={`comp-unified-card ${isSelf ? 'comp-self' : qual ? `threat-${qual.threat.toLowerCase()}` : ''}`}>
+              <div className="comp-card-header">
+                <div className="comp-card-identity">
+                  <div className="comp-card-name">{p.name}</div>
+                  <div className="comp-card-ticker">{p.ticker}</div>
+                </div>
+                <div className="comp-card-badges">
+                  {qual && <span className={`comp-card-badge threat-${qual.threat.toLowerCase()}`}>{qual.threat}</span>}
+                  <span className="comp-card-badge type-badge">{currentPeers.name}</span>
+                </div>
+              </div>
+              <div className="comp-card-metrics">
+                <div className="comp-card-metric"><div className="val">{p.cap ? `$${p.cap}B` : 'Private'}</div><div className="lbl">Mkt Cap</div></div>
+                <div className="comp-card-metric"><div className="val">${p.rev}B</div><div className="lbl">Revenue</div></div>
+                <div className="comp-card-metric"><div className="val">{p.ebitda > 0 ? `$${p.ebitda}B` : p.ebitda < 0 ? `($${Math.abs(p.ebitda)}B)` : '—'}</div><div className="lbl">EBITDA</div></div>
+                <div className="comp-card-metric"><div className={`val ${p.margin >= 30 ? 'mint' : p.margin < 0 ? 'coral' : ''}`}>{p.margin}%</div><div className="lbl">Margin</div></div>
+                <div className="comp-card-metric"><div className={`val ${p.growth >= 30 ? 'mint' : ''}`}>{p.growth}%</div><div className="lbl">Growth</div></div>
+                <div className="comp-card-metric"><div className="val accent">{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</div><div className="lbl">P/S</div></div>
+              </div>
+              {qual && (
+                <>
+                  <div className="comp-card-detail"><strong>Focus:</strong> {qual.focus}</div>
+                  <div className="comp-card-notes">{qual.notes}</div>
+                </>
+              )}
+            </div>
+          );
+        })}
+        {/* Show keyCompetitors not in current peer group when viewing crypto */}
+        {selectedPeerGroup === 'crypto' && keyCompetitors
+          .filter(k => !currentPeers.peers.find(p => p.name.includes(k.name.split(' (')[0])))
+          .map((k, i) => (
+            <div key={`extra-${i}`} className={`comp-unified-card threat-${k.threat.toLowerCase()}`}>
+              <div className="comp-card-header">
+                <div className="comp-card-identity">
+                  <div className="comp-card-name">{k.name}</div>
+                  <div className="comp-card-ticker">{k.type}</div>
+                </div>
+                <div className="comp-card-badges">
+                  <span className={`comp-card-badge threat-${k.threat.toLowerCase()}`}>{k.threat}</span>
+                  <span className="comp-card-badge type-badge">{k.type}</span>
+                </div>
+              </div>
+              <div className="comp-card-detail"><strong>Status:</strong> {k.status}</div>
+              <div className="comp-card-detail"><strong>Focus:</strong> {k.focus}</div>
+              <div className="comp-card-notes">{k.notes}</div>
+            </div>
+          ))
+        }
       </div>
 
       {/* Circle-Specific Business Model Metrics */}

@@ -11549,71 +11549,43 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     },
   ];
 
+  // Map keyCompetitors to comps entries by partial name match
+  const keyCompMap: Record<string, typeof keyCompetitors[0]> = {
+    'Starlink': keyCompetitors[0],     // SpaceX Starlink
+    'Globalstar': keyCompetitors[3],   // Apple/Globalstar
+  };
+
+  // Map COMPETITOR_PROFILES to comps entries
+  const profileMap: Record<string, typeof COMPETITOR_PROFILES[0]> = {};
+  COMPETITOR_PROFILES.forEach(p => {
+    if (p.id === 'starlink-tmobile') profileMap['Starlink'] = p;
+    else if (p.id === 'apple-globalstar') profileMap['Globalstar'] = p;
+    else if (p.id === 'iridium') profileMap['Iridium'] = p;
+  });
+
+  const getCategoryLabel = (cat: string) => {
+    const labels: Record<string, string> = { d2d: 'D2D Satellite', d2c: 'D2C Satellite', satcom: 'SatCom', telco: 'Telco' };
+    return labels[cat] || cat;
+  };
+
+  // keyCompetitors entries not in comps (Amazon Leo, Lynk Global)
+  const extraCompetitors = keyCompetitors.filter(kc => {
+    const nameMap: Record<string, boolean> = { 'SpaceX Starlink': true, 'Apple/Globalstar': true };
+    return !nameMap[kc.name];
+  });
+
+  const extraProfileMap: Record<string, typeof COMPETITOR_PROFILES[0]> = {};
+  COMPETITOR_PROFILES.forEach(p => {
+    if (p.id === 'amazon-leo') extraProfileMap['Amazon Leo'] = p;
+    else if (p.id === 'lynk') extraProfileMap['Lynk Global'] = p;
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <style>{`
-        .comp-competitor-card {
-          background: var(--bg2);
-          border: 1px solid var(--stroke);
-          border-radius: 12px;
-          padding: 16px;
-        }
-        .comp-threat-high { border-left: 3px solid var(--red); }
-        .comp-threat-medium { border-left: 3px solid var(--gold); }
-        .comp-threat-low { border-left: 3px solid var(--mint); }
-        .comp-competitor-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 8px;
-        }
-        .comp-competitor-name {
-          font-weight: 600;
-          font-size: 14px;
-          color: var(--text1);
-        }
-        .comp-competitor-type {
-          font-size: 11px;
-          color: var(--text3);
-          padding: 2px 8px;
-          background: var(--bg3);
-          border-radius: 4px;
-        }
-        .comp-competitor-detail {
-          font-size: 12px;
-          color: var(--text2);
-          margin-bottom: 4px;
-        }
-        .comp-competitor-notes {
-          font-size: 11px;
-          color: var(--text3);
-          font-style: italic;
-        }
-      `}</style>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
 
-      {/* Key Competitors Overview - Colored Border Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-competitors</div>
-      <div className="highlight"><h3>🛰️ Key Competitors<UpdateIndicators sources="PR" /></h3><p>Major players in satellite connectivity - threat level indicates competitive overlap with ASTS D2D</p></div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
-        {keyCompetitors.map((comp, i) => (
-          <div key={i} className={`comp-competitor-card comp-threat-${comp.threat.toLowerCase()}`}>
-            <div className="comp-competitor-header">
-              <span className="comp-competitor-name">{comp.name}</span>
-              <span className="comp-competitor-type">{comp.type}</span>
-            </div>
-            <div className="comp-competitor-detail"><strong>Status:</strong> {comp.status}</div>
-            <div className="comp-competitor-detail"><strong>Focus:</strong> {comp.focus}</div>
-            <div className="comp-competitor-detail"><strong>Threat Level:</strong> <span style={{ color: comp.threat === 'High' ? 'var(--red)' : comp.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{comp.threat}</span></div>
-            <div className="comp-competitor-notes">{comp.notes}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Valuation Comparables Section */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-comparables</div>
-      <div className="highlight"><h3>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
+      <div className="highlight"><h3>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h3><p>Unified view: valuation metrics, qualitative assessment, and D2D capabilities per company. No direct comps — Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
 
       {/* Peer Group Selector */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -11628,35 +11600,86 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         ))}
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#market-comparison</div>
-      <div className="card">
-        <div className="card-title">Market Comparison<UpdateIndicators sources="WS" /></div>
-        <p style={{ color: 'var(--text3)', fontSize: 13 }}>ASTS vs satellite and telco peers — unique D2D positioning between Starlink premium and telco value</p>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Company</th>
-              <th className="r">Mkt Cap</th>
-              <th className="r">EV/Rev</th>
-              <th className="r">$/Sub</th>
-              <th className="r">Subs</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredComps.map(c => (
-              <tr key={c.ticker} style={c.highlight ? { background: 'var(--accent-dim)' } : undefined}>
-                <td>
-                  <div style={{ fontWeight: c.highlight ? 700 : 500 }}>{c.name}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.ticker}</div>
-                </td>
-                <td className="r">${(c.mc / 1000).toFixed(0)}B</td>
-                <td className="r">{c.evRev.toFixed(1)}x</td>
-                <td className="r">${c.pSub.toLocaleString()}</td>
-                <td className="r">{c.subs.toFixed(0)}M</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="comp-cards-grid">
+        {filteredComps.map((c) => {
+          const qual = keyCompMap[c.name];
+          const profile = profileMap[c.name];
+          return (
+            <div key={c.ticker} className={`comp-unified-card ${c.highlight ? 'comp-self' : qual ? `threat-${qual.threat.toLowerCase()}` : ''}`}>
+              <div className="comp-card-header">
+                <div className="comp-card-identity">
+                  <div className="comp-card-name">{c.name}</div>
+                  <div className="comp-card-ticker">{c.ticker} · {getCategoryLabel(c.category)}</div>
+                </div>
+                <div className="comp-card-badges">
+                  {qual && <span className={`comp-card-badge threat-${qual.threat.toLowerCase()}`}>{qual.threat}</span>}
+                  <span className="comp-card-badge type-badge">{getCategoryLabel(c.category)}</span>
+                </div>
+              </div>
+              <div className="comp-card-metrics">
+                <div className="comp-card-metric"><div className="val">${(c.mc / 1000).toFixed(0)}B</div><div className="lbl">Mkt Cap</div></div>
+                <div className="comp-card-metric"><div className="val">{c.evRev.toFixed(1)}x</div><div className="lbl">EV/Rev</div></div>
+                <div className="comp-card-metric"><div className="val">${c.pSub.toLocaleString()}</div><div className="lbl">$/Sub</div></div>
+                <div className="comp-card-metric"><div className="val">{c.subs.toFixed(0)}M</div><div className="lbl">Subs</div></div>
+              </div>
+              {c.highlight && (
+                <div className="comp-card-capabilities">
+                  <span className="comp-cap yes">✓ Voice</span>
+                  <span className="comp-cap yes">✓ Text</span>
+                  <span className="comp-cap yes">✓ Data</span>
+                  <span className="comp-cap yes">✓ Video</span>
+                  <span className="comp-cap yes">✓ Unmod.</span>
+                  <span className="comp-cap no">Building Global</span>
+                </div>
+              )}
+              {!c.highlight && profile && (
+                <div className="comp-card-capabilities">
+                  <span className={`comp-cap ${profile.capabilities.voice ? 'yes' : 'no'}`}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span className={`comp-cap ${profile.capabilities.text ? 'yes' : 'no'}`}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span className={`comp-cap ${profile.capabilities.data ? 'yes' : 'no'}`}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span className={`comp-cap ${profile.capabilities.video ? 'yes' : 'no'}`}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span className={`comp-cap ${profile.capabilities.unmodifiedPhones ? 'yes' : 'no'}`}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span className={`comp-cap ${profile.capabilities.globalCoverage ? 'yes' : 'no'}`}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                </div>
+              )}
+              {qual && (
+                <>
+                  <div className="comp-card-detail"><strong>Focus:</strong> {qual.focus}</div>
+                  <div className="comp-card-notes">{qual.notes}</div>
+                </>
+              )}
+            </div>
+          );
+        })}
+        {/* Extra competitors not in comps (Amazon Leo, Lynk Global) - show when 'all' selected */}
+        {selectedCompCategory === 'all' && extraCompetitors.map((kc, i) => {
+          const profile = extraProfileMap[kc.name];
+          return (
+            <div key={`extra-${i}`} className={`comp-unified-card threat-${kc.threat.toLowerCase()}`}>
+              <div className="comp-card-header">
+                <div className="comp-card-identity">
+                  <div className="comp-card-name">{kc.name}</div>
+                  <div className="comp-card-ticker">{kc.type}</div>
+                </div>
+                <div className="comp-card-badges">
+                  <span className={`comp-card-badge threat-${kc.threat.toLowerCase()}`}>{kc.threat}</span>
+                </div>
+              </div>
+              {profile && (
+                <div className="comp-card-capabilities">
+                  <span className={`comp-cap ${profile.capabilities.voice ? 'yes' : 'no'}`}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span className={`comp-cap ${profile.capabilities.text ? 'yes' : 'no'}`}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span className={`comp-cap ${profile.capabilities.data ? 'yes' : 'no'}`}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span className={`comp-cap ${profile.capabilities.video ? 'yes' : 'no'}`}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span className={`comp-cap ${profile.capabilities.unmodifiedPhones ? 'yes' : 'no'}`}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span className={`comp-cap ${profile.capabilities.globalCoverage ? 'yes' : 'no'}`}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                </div>
+              )}
+              <div className="comp-card-detail"><strong>Focus:</strong> {kc.focus}</div>
+              <div className="comp-card-notes">{kc.notes}</div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="g2">
@@ -11821,55 +11844,6 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           </table>
           </div>
         </div>
-      </div>
-
-      {/* D2D Competitor Capability Matrix */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-capabilities</div>
-      <div className="highlight"><h3>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
-
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capability-comparison</div>
-      <div className="card">
-        <div className="card-title">Capability Comparison<UpdateIndicators sources="PR" /></div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Competitor</th>
-              <th className="c">Voice</th>
-              <th className="c">Text</th>
-              <th className="c">Data</th>
-              <th className="c">Video</th>
-              <th className="c">Unmod. Phones</th>
-              <th className="c">Global</th>
-              <th className="r">Satellites</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* ASTS Row - highlighted */}
-            <tr style={{ background: 'var(--accent-dim)' }}>
-              <td style={{ fontWeight: 600 }}>ASTS SpaceMobile</td>
-              <td className="c">✓</td>
-              <td className="c">✓</td>
-              <td className="c">✓</td>
-              <td className="c">✓</td>
-              <td className="c">✓</td>
-              <td className="c">Building</td>
-              <td className="r">6+</td>
-            </tr>
-            {/* Competitor Rows */}
-            {COMPETITOR_PROFILES.map(comp => (
-              <tr key={comp.id}>
-                <td>{comp.name}</td>
-                <td className="c">{comp.capabilities.voice ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="c">{comp.capabilities.text ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="c">{comp.capabilities.data ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="c">{comp.capabilities.video ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="c">{comp.capabilities.unmodifiedPhones ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="c">{comp.capabilities.globalCoverage ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="r" style={{ color: 'var(--text3)' }}>{comp.keyMetrics?.satellites || 'N/A'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
 
       {/* Competitor News Intelligence Section */}

@@ -5297,72 +5297,21 @@ const CompsTab = ({ comparables, ethPrice }) => {
     },
   ];
 
+  // Build ticker-keyed lookup for merging qualitative data into quantitative comparables
+  const keyCompLookup: Record<string, typeof keyCompetitors[0]> = {};
+  keyCompetitors.forEach(k => {
+    const match = k.name.match(/\(([A-Z]+)\)/);
+    if (match) keyCompLookup[match[1]] = k;
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <style>{`
-        .comp-competitor-card {
-          background: var(--bg2);
-          border: 1px solid var(--stroke);
-          border-radius: 12px;
-          padding: 16px;
-        }
-        .comp-threat-high { border-left: 3px solid var(--red); }
-        .comp-threat-medium { border-left: 3px solid var(--gold); }
-        .comp-threat-low { border-left: 3px solid var(--mint); }
-        .comp-competitor-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 8px;
-        }
-        .comp-competitor-name {
-          font-weight: 600;
-          font-size: 14px;
-          color: var(--text1);
-        }
-        .comp-competitor-type {
-          font-size: 11px;
-          color: var(--text3);
-          padding: 2px 8px;
-          background: var(--bg3);
-          border-radius: 4px;
-        }
-        .comp-competitor-detail {
-          font-size: 12px;
-          color: var(--text2);
-          margin-bottom: 4px;
-        }
-        .comp-competitor-notes {
-          font-size: 11px;
-          color: var(--text3);
-          font-style: italic;
-        }
-      `}</style>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
 
-      {/* Key Competitors Overview - Colored Border Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-competitors</div>
-      <div className="highlight"><h3>🏦 Key Competitors<UpdateIndicators sources="PR" /></h3><p>Crypto treasury peers - threat level indicates competitive overlap with BMNR's ETH staking model</p></div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
-        {keyCompetitors.map((comp, i) => (
-          <div key={i} className={`comp-competitor-card comp-threat-${comp.threat.toLowerCase()}`}>
-            <div className="comp-competitor-header">
-              <span className="comp-competitor-name">{comp.name}</span>
-              <span className="comp-competitor-type">{comp.type}</span>
-            </div>
-            <div className="comp-competitor-detail"><strong>Status:</strong> {comp.status}</div>
-            <div className="comp-competitor-detail"><strong>Focus:</strong> {comp.focus}</div>
-            <div className="comp-competitor-detail"><strong>Threat Level:</strong> <span style={{ color: comp.threat === 'High' ? 'var(--red)' : comp.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{comp.threat}</span></div>
-            <div className="comp-competitor-notes">{comp.notes}</div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#peer-comparison</div>
       <div className="highlight">
-        <h3>Peer Comparison</h3>
-        <p>Compare BMNR to other crypto treasury companies. Key differentiator: ETH staking yield vs BTC's 0%.</p>
+        <h3>Unified Peer Analysis<UpdateIndicators sources={['PR', 'WS']} /></h3>
+        <p>Each card combines quantitative metrics (holdings, NAV, premium) with qualitative intelligence (threat level, competitive focus). BMNR's ETH staking yield vs BTC treasuries' 0% is the key structural differentiator.</p>
       </div>
 
       {/* Peer Group Selector */}
@@ -5378,41 +5327,59 @@ const CompsTab = ({ comparables, ethPrice }) => {
         ))}
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#crypto-treasury-comparison</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Crypto Treasury Comparison<UpdateIndicators sources={['WS']} /></div>
-        <p style={{ color: 'var(--text3)', fontSize: 13 }}>NAV premium/discount analysis — BMNR's ETH staking yield vs BTC treasuries' 0%</p>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Company</th>
-              <th className="c">Crypto</th>
-              <th className="r">Holdings</th>
-              <th className="r">NAV/Share</th>
-              <th className="r">Price</th>
-              <th className="r">Premium</th>
-              <th className="r">Yield</th>
-              <th className="r">Mkt Cap</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredComps.map(c => (
-              <tr key={c.name} style={c.name === 'BMNR' ? { background: 'var(--accent-dim)' } : undefined}>
-                <td>
-                  <div style={{ fontWeight: c.name === 'BMNR' ? 700 : 500 }}>{c.fullName || c.name}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.name}</div>
-                </td>
-                <td className="c">{c.crypto}</td>
-                <td className="r">{typeof c.holdings === 'number' ? c.holdings.toLocaleString() : c.holdings}</td>
-                <td className="r">{c.navPerShare > 0 ? `$${c.navPerShare.toFixed(2)}` : '—'}</td>
-                <td className="r">${c.price}</td>
-                <td className="r" style={{ fontWeight: 500, color: c.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{c.navPerShare > 0 ? `${c.premium >= 0 ? '+' : ''}${c.premium.toFixed(0)}%` : '—'}</td>
-                <td className="r">{c.yield > 0 ? <span className="mint">{c.yield}%</span> : '—'}</td>
-                <td className="r">${(c.marketCap / 1e9).toFixed(1)}B</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="comp-cards-grid">
+        {filteredComps.map(c => {
+          const qual = keyCompLookup[c.name];
+          return (
+            <div key={c.name} className={`comp-unified-card ${c.name === 'BMNR' ? 'comp-self' : qual ? `threat-${qual.threat.toLowerCase()}` : ''}`}>
+              <div className="comp-card-header">
+                <div className="comp-card-identity">
+                  <div className="comp-card-name">{c.fullName || c.name}</div>
+                  <div className="comp-card-ticker">{c.name} · {c.crypto}</div>
+                </div>
+                <div className="comp-card-badges">
+                  {qual && <span className={`comp-card-badge threat-${qual.threat.toLowerCase()}`}>{qual.threat}</span>}
+                  <span className="comp-card-badge type-badge">{qual?.type || c.category}</span>
+                </div>
+              </div>
+              <div className="comp-card-metrics">
+                <div className="comp-card-metric"><div className="val">{typeof c.holdings === 'number' ? c.holdings.toLocaleString() : c.holdings}</div><div className="lbl">Holdings</div></div>
+                <div className="comp-card-metric"><div className="val">{c.navPerShare > 0 ? `$${c.navPerShare.toFixed(2)}` : '—'}</div><div className="lbl">NAV/Share</div></div>
+                <div className="comp-card-metric"><div className="val">${c.price}</div><div className="lbl">Price</div></div>
+                <div className="comp-card-metric"><div className={`val ${c.premium >= 0 ? 'mint' : 'coral'}`}>{c.navPerShare > 0 ? `${c.premium >= 0 ? '+' : ''}${c.premium.toFixed(0)}%` : '—'}</div><div className="lbl">Premium</div></div>
+                <div className="comp-card-metric"><div className={`val ${c.yield > 0 ? 'mint' : ''}`}>{c.yield > 0 ? `${c.yield}%` : '—'}</div><div className="lbl">Yield</div></div>
+                <div className="comp-card-metric"><div className="val">${(c.marketCap / 1e9).toFixed(1)}B</div><div className="lbl">Mkt Cap</div></div>
+              </div>
+              {qual && (
+                <>
+                  <div className="comp-card-detail"><strong>Status:</strong> {qual.status}</div>
+                  <div className="comp-card-detail"><strong>Focus:</strong> {qual.focus}</div>
+                  <div className="comp-card-notes">{qual.notes}</div>
+                </>
+              )}
+            </div>
+          );
+        })}
+        {keyCompetitors.filter(k => {
+          const ticker = k.name.match(/\(([A-Z]+)\)/)?.[1];
+          return ticker && !compsData.find(c => c.name === ticker);
+        }).filter(() => selectedCategory === 'all').map((k, i) => (
+          <div key={`qual-${i}`} className={`comp-unified-card threat-${k.threat.toLowerCase()}`}>
+            <div className="comp-card-header">
+              <div className="comp-card-identity">
+                <div className="comp-card-name">{k.name}</div>
+                <div className="comp-card-ticker">{k.name.match(/\(([A-Z]+)\)/)?.[1] || ''}</div>
+              </div>
+              <div className="comp-card-badges">
+                <span className={`comp-card-badge threat-${k.threat.toLowerCase()}`}>{k.threat}</span>
+                <span className="comp-card-badge type-badge">{k.type}</span>
+              </div>
+            </div>
+            <div className="comp-card-detail"><strong>Status:</strong> {k.status}</div>
+            <div className="comp-card-detail"><strong>Focus:</strong> {k.focus}</div>
+            <div className="comp-card-notes">{k.notes}</div>
+          </div>
+        ))}
       </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#yield-advantage</div>
       <div className="card">
