@@ -127,6 +127,16 @@ export const COMPARABLES = [
     yield: 0,                 // No yield (BTC)
   },
   {
+    name: 'ETHZ',
+    fullName: 'ETHZilla',
+    crypto: 'ETH',
+    category: 'ETH',
+    holdings: 102000,          // ~102K ETH
+    shares: 16e6,              // Shares outstanding (post 1:10 reverse split Oct 2025)
+    price: 31,                 // Stock price
+    yield: 4,                  // DeFi restaking yield (3-5%)
+  },
+  {
     name: 'COIN',
     fullName: 'Coinbase',
     crypto: 'BTC+ETH',

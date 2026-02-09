@@ -4052,8 +4052,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'ETHZilla moving from strategic investment to actual asset acquisition and tokenization. Multiple asset classes (manufactured homes + aircraft engines) in pipeline. BMNR focuses on pure ETH staking yield vs ETHZilla\'s RWA tokenization revenue model.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-rwa',
+      storyTitle: 'ETHZilla RWA Tokenization'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4074,8 +4074,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'ETHZilla expanding into housing finance RWA tokenization with exclusive distribution via FINRA-regulated ATS. BMNR\'s pure ETH staking model is simpler but ETHZilla\'s diversified revenue streams could attract different investor base.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-rwa',
+      storyTitle: 'ETHZilla RWA Tokenization'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4097,8 +4097,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'ETHZilla entering $1.6T ABS market with AI-powered credit analytics. Diversifying beyond pure ETH treasury into RWA revenue generation. BMNR\'s pure staking model has lower execution risk vs ETHZilla\'s complex multi-subsidiary approach.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-rwa',
+      storyTitle: 'ETHZilla RWA Tokenization'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4119,8 +4119,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'ETHZilla selling ETH = net seller pressure on ETH market. However, demonstrates capital allocation discipline. If NAV discount persists for ETH treasury companies, raises questions about the model — relevant for BMNR\'s own ETH treasury thesis.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-capital',
+      storyTitle: 'ETHZilla Treasury & Capital'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4141,8 +4141,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'ETHZilla building regulated RWA distribution channel via FINRA-regulated ATS — competitive moat in tokenization space. BMNR focuses on pure ETH staking; ETHZilla pivoting to "next-generation asset manager" model.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-rwa',
+      storyTitle: 'ETHZilla RWA Tokenization'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4163,8 +4163,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'ETHZilla optimizing share structure for institutional access. Capital structure maturation could increase institutional investor pool for ETH treasury equities broadly, including BMNR.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-corporate',
+      storyTitle: 'ETHZilla Corporate'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4185,8 +4185,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'Traditional finance heavyweights joining ETH treasury company boards validates institutional interest in the model. Increasing board-level credibility for ETH treasury companies could improve investor appetite for sector including BMNR.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-corporate',
+      storyTitle: 'ETHZilla Corporate'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4207,8 +4207,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'ETHZilla diversifying DeFi yield across multiple restaking protocols (EtherFi, Puffer, others). Validates institutional restaking thesis. BMNR can learn from ETHZilla\'s multi-protocol approach for its own staking strategy.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-defi',
+      storyTitle: 'ETHZilla DeFi & Yield'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4230,8 +4230,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'ETHZilla raising $350M+ validates institutional appetite for ETH-backed securities. mNAV metric creates industry standard for evaluating crypto treasury companies — direct comparison framework for BMNR valuation.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-capital',
+      storyTitle: 'ETHZilla Treasury & Capital'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4254,8 +4254,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'First concrete evidence of ETH yield generation by Nasdaq-listed ETH treasury company. Protocol token earnings represent new revenue stream beyond base staking. Validates BMNR\'s thesis that staked ETH generates superior returns vs unstaked BTC holdings.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-defi',
+      storyTitle: 'ETHZilla DeFi & Yield'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4276,8 +4276,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'ETH-collateralized borrowing from Cumberland DRW demonstrates financial engineering sophistication. DRW willing to lend against ETH validates its collateral quality. Model applicable to BMNR for leveraging ETH holdings without selling.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-corporate',
+      storyTitle: 'ETHZilla Corporate'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4299,8 +4299,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'First Nasdaq-listed ETH treasury company deploying $100M into DeFi restaking. Institutional capital flowing into liquid restaking validates protocol category. Directly validates BMNR\'s own ETH staking thesis.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-defi',
+      storyTitle: 'ETHZilla DeFi & Yield'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4322,8 +4322,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'Largest buyback authorization by an ETH treasury company. Dual strategy of ETH accumulation + buybacks signals maturing capital allocation. Proprietary yield protocol could widen gap between passive and active ETH treasury management.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-capital',
+      storyTitle: 'ETHZilla Treasury & Capital'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4345,8 +4345,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       implication: 'neutral',
       bmnrComparison: 'Major ETH-only treasury competitor launches with $565M capital and ~95K ETH — dwarfs BMNR\'s holdings. Top-tier Ethereum ecosystem backing. Shared strategy increases market awareness of ETH treasury model. Rising tide: institutional interest in ETH treasury equities benefits all players.',
       source: 'ETHZilla Press Release',
-      storyId: 'ethzilla-treasury',
-      storyTitle: 'ETHZilla (ETHZ)'
+      storyId: 'ethzilla-corporate',
+      storyTitle: 'ETHZilla Corporate'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
