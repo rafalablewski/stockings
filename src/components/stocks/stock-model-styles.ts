@@ -1583,4 +1583,56 @@ input[type="range"]::-webkit-slider-thumb {
   .comp-card-name { font-size: 13px; }
   .comp-card-badge { font-size: 9px; padding: 2px 6px; }
 }
+
+/* ═══ COMPANY SECTION HEADERS - Group stories by competitor ═══ */
+.comp-section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0 8px;
+}
+.comp-section-header::before,
+.comp-section-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.comp-section-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+.comp-section-count {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-left: 8px;
+}
+
+@media (max-width: 768px) {
+  .comp-section-header {
+    padding: 20px 0 6px;
+    gap: 12px;
+  }
+  .comp-section-name {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+}
+@media (max-width: 480px) {
+  .comp-section-header {
+    padding: 16px 0 4px;
+    gap: 8px;
+  }
+  .comp-section-name {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+}
 `;

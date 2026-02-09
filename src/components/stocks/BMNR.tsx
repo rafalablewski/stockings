@@ -5205,6 +5205,29 @@ const CompsTab = ({ comparables, ethPrice }) => {
     return profile?.name || id;
   };
 
+  // Group stories by competitor company for section headers
+  const companySections = React.useMemo(() => {
+    const sections: Record<string, { name: string; stories: typeof groupedNews }> = {};
+
+    groupedNews.forEach(story => {
+      const competitorId = story.entries[0]?.competitor || 'other';
+      const competitorName = getCompetitorName(competitorId);
+      if (!sections[competitorId]) {
+        sections[competitorId] = { name: competitorName, stories: [] };
+      }
+      sections[competitorId].stories.push(story);
+    });
+
+    return Object.entries(sections)
+      .map(([id, section]) => ({
+        competitorId: id,
+        name: section.name,
+        stories: section.stories,
+        latestDate: section.stories[0]?.latestDate || ''
+      }))
+      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
+  }, [groupedNews]);
+
   // Implication styling - using design tokens
   const getImplicationStyle = (impl: BMNRImplication) => {
     switch (impl) {
@@ -5581,14 +5604,24 @@ const CompsTab = ({ comparables, ethPrice }) => {
         </div>
       </div>
 
-      {/* News Timeline - Grouped by Story */}
+      {/* News Timeline - Grouped by Company, then by Story */}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {groupedNews.length === 0 ? (
+        {companySections.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: 40 }}>
             <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
           </div>
         ) : (
-          groupedNews.map((story) => (
+          companySections.map((section) => (
+            <React.Fragment key={section.competitorId}>
+              <div className="comp-section-header">
+                <span className="comp-section-name">
+                  {section.name}
+                  <span className="comp-section-count">
+                    {section.stories.reduce((sum, s) => sum + s.entries.length, 0)} entries
+                  </span>
+                </span>
+              </div>
+              {section.stories.map((story) => (
             <div key={story.storyId} className="card" style={{ padding: 0, overflow: 'hidden' }}>
               {/* Story Header */}
               <div style={{
@@ -5605,16 +5638,6 @@ const CompsTab = ({ comparables, ethPrice }) => {
                     {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[0]?.date} → {story.entries[story.entries.length - 1]?.date}
                   </div>
                 </div>
-                <span style={{
-                  fontSize: '10px',
-                  padding: '4px 10px',
-                  borderRadius: '4px',
-                  background: 'var(--surface3)',
-                  color: 'var(--text2)',
-                  fontWeight: 600
-                }}>
-                  {getCompetitorName(story.entries[0]?.competitor).split(' ')[0]}
-                </span>
               </div>
 
               {/* Story Entries - Chronological */}
@@ -5748,6 +5771,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 })}
               </div>
             </div>
+              ))}
+            </React.Fragment>
           ))
         )}
       </div>
