@@ -5204,6 +5204,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
   // Get competitor display name
   const getCompetitorName = (id: BMNRCompetitorId): string => {
+    if (id === 'other') return 'Miscellaneous';
     const profile = COMPETITOR_PROFILES.find(p => p.id === id);
     return profile?.name || id;
   };
@@ -5601,7 +5602,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
               onClick={() => setCompetitorFilter('other')}
               className={`filter-btn ${competitorFilter === 'other' ? 'active' : ''}`}
             >
-              Other ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
+              Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
             </button>
           )}
         </div>
@@ -9019,7 +9020,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     { 
       date: '2025-10-30', 
       category: 'Regulatory', 
-      company: 'Other',
+      company: 'Miscellaneous',
       title: 'EU MiCA Staking Clarity', 
       summary: 'European Securities and Markets Authority (ESMA) publishes guidance clarifying that ETH staking services can operate under Markets in Crypto-Assets (MiCA) framework. Staking providers classified as "crypto-asset service providers" (CASPs), requiring authorization but not securities registration. Guidance addresses custody, disclosure, and capital requirements. Provides legal certainty for European institutions to offer staking services.',
       significance: 'Regulatory clarity in world\'s largest single market ($18T GDP) removes major barrier to institutional staking adoption. Clear rules attract compliant capital that was previously sidelined.',
@@ -9052,7 +9053,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     { 
       date: '2025-10-15', 
       category: 'L2', 
-      company: 'Other',
+      company: 'Miscellaneous',
       title: 'Arbitrum Stylus Goes Live', 
       summary: 'Arbitrum enables Rust, C, and C++ smart contracts via Stylus, expanding developer ecosystem beyond Solidity/Vyper. Stylus contracts run on WASM (WebAssembly), offering 10-100x gas efficiency for compute-heavy applications. Opens Ethereum to millions of Rust/C++ developers. Initial use cases: on-chain gaming, complex DeFi math, cryptographic operations. Maintains full EVM compatibility - Stylus and Solidity contracts interoperate seamlessly.',
       significance: 'Dramatically expands Ethereum developer TAM. Rust community (2M+ developers) can now build on Ethereum without learning Solidity. Gas efficiency enables new application categories previously cost-prohibitive.',
@@ -9129,7 +9130,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     { 
       date: '2025-08-01', 
       category: 'Regulatory', 
-      company: 'Other',
+      company: 'Miscellaneous',
       title: 'GENIUS Act Signed Into Law - US Stablecoin Regulatory Framework Established', 
       summary: 'The GENIUS Act (Guiding and Establishing National Innovation for U.S. Stablecoins) is signed into law, creating the first comprehensive US regulatory framework for stablecoins. The legislation establishes clear compliance pathways for stablecoin issuers, enables banks and financial institutions to issue regulated stablecoins, and provides consumer protections while preserving innovation. Per Visa research, the law has triggered financial institutions "both domestically and globally" to deepen exploration of stablecoin products and technologies. Supporting this regulatory clarity: onchain stablecoin lending has reached $670B cumulative volume over 5 years, with $51.7B monthly volume (Aug 2025), $14.8B in active loans, 81K unique monthly borrowers, and 6.7% average borrow APR. Ethereum + Polygon comprise 85% of onchain lending volume; USDC + USDT represent 98%+ of stablecoin supply.',
       significance: 'Watershed regulatory moment that legitimizes stablecoins as financial infrastructure. Removes legal uncertainty that prevented traditional institutions from fully engaging with blockchain-based payment rails. Creates framework for bank-issued stablecoins to compete with/complement existing offerings (USDC, USDT). McKinsey projects tokenized assets could reach $1-4T by 2030; regulatory clarity accelerates this trajectory.',
@@ -9948,7 +9949,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     { 
       date: '2023-04-12', 
       category: 'Protocol', 
-      company: 'Other',
+      company: 'Miscellaneous',
       title: 'Shanghai/Shapella Upgrade - Staking Withdrawals Enabled', 
       summary: 'Ethereum completes the Shanghai/Shapella upgrade (named "Shapella" combining Shanghai execution layer + Capella consensus layer), enabling withdrawals of staked ETH for the first time since the Beacon Chain launch in December 2020. Validators can now exit and withdraw their 32 ETH stake plus accumulated rewards. The upgrade supports two withdrawal types: partial withdrawals (automatic sweep of rewards above 32 ETH) and full withdrawals (complete validator exit). At the time of the upgrade, 18.1 million ETH was staked on the Beacon Chain, representing 15.6% of total ETH supply. The successful upgrade completed Ethereum\'s multi-year transition to Proof of Stake: Beacon Chain (Dec 2020) → The Merge (Sept 2022) → Withdrawals (Apr 2023).',
       significance: 'Removed the final uncertainty around Ethereum staking. Before Shanghai, stakers faced indefinite lock-up with no guaranteed withdrawal timeline — a significant risk that deterred institutional participation. Enabling withdrawals transformed staking from a one-way commitment to a liquid, reversible decision. This unlocked massive growth in liquid staking derivatives (Lido, Rocket Pool, Coinbase cbETH) and institutional staking services.',
@@ -9993,7 +9994,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     {
       date: '2022-09-15', 
       category: 'Protocol', 
-      company: 'Other',
+      company: 'Miscellaneous',
       title: 'The Merge - Ethereum Transitions from Proof of Work to Proof of Stake', 
       summary: 'Ethereum successfully completes "The Merge," the most significant technological upgrade in its history, transitioning the network\'s consensus mechanism from Proof of Work (PoW) to Proof of Stake (PoS). The upgrade merged the original Ethereum mainnet (execution layer) with the Beacon Chain (consensus layer), ending energy-intensive mining operations. The Merge reduced Ethereum\'s energy consumption by approximately 99.95%. At the time, 15.9 million ETH had been staked on the Beacon Chain, representing roughly 13.2% of total supply. Validators who stake 32 ETH can now earn rewards for securing the network, with staking yields of approximately 3-5% APY from block rewards and transaction fees.',
       significance: 'Watershed moment for blockchain technology. The Merge addressed Ethereum\'s largest criticism (energy consumption) while enabling native yield generation through staking. This transformed ETH from a pure commodity to a yield-bearing asset, fundamentally changing institutional valuation frameworks. The successful execution of such a complex upgrade demonstrated Ethereum\'s technical maturity and developer ecosystem strength.',
@@ -10082,7 +10083,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     { 
       date: '2021-08-05', 
       category: 'Protocol', 
-      company: 'Other',
+      company: 'Miscellaneous',
       title: 'EIP-1559 London Hard Fork - Fee Burning Mechanism Introduced', 
       summary: 'Ethereum implements EIP-1559 via the London Hard Fork, fundamentally restructuring the network\'s fee model and introducing a deflationary mechanism. The upgrade replaced the first-price auction fee system with a new model consisting of two components: a dynamically calculated base fee (burned/destroyed) and an optional priority fee/tip (paid to validators). The base fee adjusts automatically based on network congestion — increasing when blocks exceed 50% capacity, decreasing when below. The formula: Gas Fee = Gas Units × (Base Fee + Priority Fee). The burn mechanism removes ETH from circulation permanently, creating deflationary pressure during periods of high network activity. When base fees exceed approximately 16-18 gwei, the burn rate surpasses new ETH issuance, making the network net deflationary.',
       significance: 'Transformed Ethereum\'s monetary policy from purely inflationary to conditionally deflationary. Before EIP-1559, all transaction fees went to miners, continuously diluting ETH holders. After EIP-1559, a portion of every transaction permanently reduces supply. Combined with The Merge\'s ~87% issuance reduction, Ethereum achieved "ultrasound money" status — a productive asset with deflationary characteristics. The upgrade also improved fee predictability for users.',
@@ -10116,7 +10117,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     { 
       date: '2020-12-01', 
       category: 'Protocol', 
-      company: 'Other',
+      company: 'Miscellaneous',
       title: 'Beacon Chain Launch - Ethereum\'s Proof of Stake Testnet Goes Live', 
       summary: 'The Beacon Chain, Ethereum\'s Proof of Stake consensus layer, launches as the first major step in the Ethereum 2.0 roadmap. The Beacon Chain introduced a new PoS consensus protocol running parallel to the existing PoW mainnet. Early adopters could stake 32 ETH to become validators, earning rewards for proposing and attesting to blocks. Initially, staked ETH could not be withdrawn — validators committed to an indefinite lock-up period until The Merge and subsequent Shanghai upgrade. The Beacon Chain served as a proving ground for PoS mechanics, validator economics, and consensus security before full mainnet integration.',
       significance: 'Critical infrastructure milestone that de-risked Ethereum\'s transition to PoS. The Beacon Chain operated successfully for nearly two years before The Merge, demonstrating PoS viability at scale. Early stakers who committed ETH during this period accepted significant risk (no withdrawals, uncertain timeline) in exchange for founding validator status and accumulated rewards.',
@@ -10176,7 +10177,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
     { 
       date: '2015-07-30', 
       category: 'Protocol', 
-      company: 'Other',
+      company: 'Miscellaneous',
       title: 'Ethereum Mainnet Launch - Genesis Block Created', 
       summary: 'Ethereum mainnet launches with the creation of the genesis block, introducing the world\'s first blockchain capable of general-purpose computing via smart contracts. Unlike Bitcoin\'s single-purpose ledger, Ethereum\'s open-source code enabled decentralized applications (DApps) to interact with one another, creating programmable features for blockchain technology. The network launched with Proof of Work consensus, requiring miners to solve cryptographic puzzles to validate transactions. Key use cases from inception: peer-to-peer transactions, global transfers, cross-border payments, and programmable money — all while maintaining trustless, permissionless access for anyone to participate.',
       significance: 'The birth of programmable blockchain technology. Ethereum\'s launch created the foundation for everything that followed: DeFi ($60B+ TVL), stablecoins ($150B+ market cap), NFTs, tokenized real-world assets, Layer 2 scaling solutions, and institutional adoption. Without Ethereum, there would be no USDC, no BlackRock BUIDL, no on-chain treasury management — and no BMNR thesis.',
