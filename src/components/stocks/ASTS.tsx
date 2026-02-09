@@ -11904,6 +11904,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               </button>
             );
           })}
+          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (
+            <button
+              onClick={() => setCompetitorFilter('other')}
+              className={`filter-btn ${competitorFilter === 'other' ? 'active' : ''}`}
+            >
+              Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
+            </button>
+          )}
         </div>
       </div>
 
