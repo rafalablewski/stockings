@@ -11910,16 +11910,27 @@ const CompsTab = ({ calc, currentStockPrice }) => {
             <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
           </div>
         ) : (
-          companySections.map((section) => (
-            <React.Fragment key={section.competitorId}>
-              <div className="comp-section-header">
-                <span className="comp-section-name">
-                  {section.name}
-                  <span className="comp-section-count">
-                    {section.stories.reduce((sum, s) => sum + s.entries.length, 0)} entries
-                  </span>
-                </span>
-              </div>
+          companySections.map((section) => {
+            const totalEntries = section.stories.reduce((sum, s) => sum + s.entries.length, 0);
+            const oldestDate = section.stories[section.stories.length - 1]?.entries[section.stories[section.stories.length - 1]?.entries.length - 1]?.date || '';
+            const newestDate = section.stories[0]?.entries[0]?.date || '';
+            const initials = section.name.split(/[\s/]+/).map(w => w[0]).join('').slice(0, 3).toUpperCase();
+            return (
+            <details key={section.competitorId} className="comp-panel" open>
+              <summary>
+                <div className="comp-panel-bar">
+                  <div className="comp-panel-avatar" aria-hidden="true">{initials}</div>
+                  <div className="comp-panel-info">
+                    <div className="comp-panel-name">{section.name}</div>
+                    <div className="comp-panel-meta">
+                      <span className="comp-panel-count">{totalEntries} {totalEntries === 1 ? 'entry' : 'entries'}</span>
+                      {oldestDate && newestDate && <span className="comp-panel-dates">{newestDate} — {oldestDate}</span>}
+                    </div>
+                  </div>
+                  <div className="comp-panel-chevron" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" /></svg></div>
+                </div>
+              </summary>
+              <div className="comp-panel-body">
               {section.stories.map((story) => (
             <div key={story.storyId} className="card" style={{ padding: 0, overflow: 'hidden' }}>
               {/* Story Header */}
@@ -12071,8 +12082,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               </div>
             </div>
               ))}
-            </React.Fragment>
-          ))
+              </div>
+            </details>
+            );
+          })
         )}
       </div>
 
