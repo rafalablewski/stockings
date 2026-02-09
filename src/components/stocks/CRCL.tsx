@@ -7067,6 +7067,7 @@ const CompsTab = () => {
 
   // Get competitor display name
   const getCompetitorName = (id: CRCLCompetitorId): string => {
+    if (id === 'other') return 'Miscellaneous';
     const profile = COMPETITOR_PROFILES.find(p => p.id === id);
     return profile?.name || id;
   };

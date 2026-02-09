@@ -11489,6 +11489,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
   // Get competitor display name
   const getCompetitorName = (id: CompetitorId): string => {
+    if (id === 'other') return 'Miscellaneous';
     const profile = COMPETITOR_PROFILES.find(p => p.id === id);
     return profile?.name || id;
   };
