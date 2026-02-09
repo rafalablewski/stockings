@@ -7026,17 +7026,20 @@ const CompsTab = () => {
   // ═══════════════════════════════════════════════════════════════════════════
 
   // Filter news by competitor, sort by date (newest first)
-  const filteredNews = (competitorFilter === 'all'
-    ? COMPETITOR_NEWS
-    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter)
-  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const filteredNews = React.useMemo(() =>
+    (competitorFilter === 'all'
+      ? [...COMPETITOR_NEWS]
+      : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter)
+    ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+    [competitorFilter]
+  );
 
   // Group news by storyId, with ungrouped items in their own "group"
   const groupedNews = React.useMemo(() => {
     const groups: Record<string, { title: string; entries: (CRCLCompetitorNewsEntry & { originalIdx: number })[] }> = {};
 
     filteredNews.forEach((news, idx) => {
-      const storyKey = news.storyId || `ungrouped-${idx}`;
+      const storyKey = news.storyId || `ungrouped-${news.date}-${news.competitor}-${news.headline.slice(0, 40)}`;
       if (!groups[storyKey]) {
         groups[storyKey] = {
           title: news.storyTitle || news.headline,
@@ -7586,7 +7589,7 @@ const CompsTab = () => {
                 <div>
                   <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{story.title}</div>
                   <div style={{ fontSize: 12, color: 'var(--text3)' }}>
-                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[0]?.date} → {story.entries[story.entries.length - 1]?.date}
+                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[story.entries.length - 1]?.date} → {story.entries[0]?.date}
                   </div>
                 </div>
               </div>

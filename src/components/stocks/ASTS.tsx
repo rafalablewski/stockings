@@ -9456,8 +9456,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'OQ continuing to build IoT partnership ecosystem. Eseye integration is similar to Monogoto partnership (announced same month) — extending OQ reach through connectivity platforms. Still NB-IoT focused, not broadband D2D. Growing IoT footprint could support OQ\'s transition to D2D services.',
       source: 'New Electronics / Via Satellite',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
     },
     {
       date: '2026-01-08',
@@ -9475,8 +9475,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'OQ expanding IoT connectivity ecosystem via partnerships. Still NB-IoT focused but growing D2D ambitions following Nov 2025 emergency broadcast demo. Not direct competition to ASTS broadband smartphone D2D yet.',
       source: 'OQ Technology / Monogoto',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
     },
 
     // --- 2025 ---
@@ -9497,8 +9497,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'OQ validating NB-IoT standards-based connectivity from mass-market modules to LEO satellites. Nordic is also Iridium\'s NTN Direct chipset partner — OQ and Iridium competing for same NB-IoT ecosystem. OQ\'s vertical integration (own RAN + core) gives more control vs ASTS which works with MNO infrastructure. Different markets: OQ IoT sensors, ASTS smartphones.',
       source: 'Nordic Semiconductor / Via Satellite',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-technology-rd',
+      storyTitle: 'OQ Technology R&D & Certification'
     },
     {
       date: '2025-11-19',
@@ -9520,8 +9520,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'OQ Technology is evolving from IoT-only to a serious European D2D contender. 30 new sats by 2026 + D2D messaging/voice plans increase competitive overlap with ASTS. Key differences: OQ targets narrowband D2D (messaging/voice) while ASTS targets broadband (video/data). OQ\'s 20+ MNO partners and EU sovereign positioning compete with ASTS/Vodafone SatCo JV for European market. OQ eyeing EU 2GHz MSS spectrum renewal creates potential spectrum conflict. Scale mismatch: OQ targeting 100 sats vs ASTS constellation of much larger, higher-throughput BlueBirds.',
       source: 'GlobeNewswire / Light Reading / Via Satellite',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-technology-rd',
+      storyTitle: 'OQ Technology R&D & Certification'
     },
     {
       date: '2025-11-04',
@@ -9540,8 +9540,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'Luxembourg concession gives OQ official regulatory authority for European D2D — a competitive advantage in European market vs ASTS/SatCo which operates through MNO spectrum partnerships. OQ building sovereign EU regulatory position while ASTS relies on MNO agreements. Different regulatory paths to same market.',
       source: 'Advanced Television / SpaceWatch Global',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-funding',
+      storyTitle: 'OQ Technology Funding & Regulation'
     },
     {
       date: '2025-10-17',
@@ -9597,8 +9597,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'OQ building MNO roaming partnerships similar to ASTS MNO partnership model. KPN is not an ASTS partner. OQ focused on IoT connectivity extension while ASTS targets smartphone broadband. OQ\'s LEO advantage in polar regions is relevant for maritime/logistics verticals.',
       source: 'Via Satellite / SpaceNews',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
     },
     {
       date: '2025-09-25',
@@ -9616,8 +9616,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'OQ expanding into defense sector — a vertical ASTS has also targeted (US government contracts). Defense D2D requires secure, resilient comms in contested environments. Different scale: OQ small LEO sats for drone command/data, ASTS large arrays for broadband. Both pursuing government revenue diversification.',
       source: 'OQ Technology / UDS',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
     },
     {
       date: '2025-08-13',
@@ -9635,8 +9635,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'OQ achieving key EU milestones — 5NETSAT is Europe\'s first 5G NTN LEO service demo. EU institutional backing (EIC) positions OQ as Europe\'s preferred sovereign D2D operator. ASTS competing for European market through Vodafone SatCo JV and MNO partnerships; OQ building direct EU institutional support. Scale remains very different: OQ 6U cubesats vs ASTS 64m² BlueBird arrays.',
       source: 'SatNews / telecoms.com',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-constellation',
+      storyTitle: 'OQ Technology Constellation & Launches'
     },
     {
       date: '2025-03-04',
@@ -9671,8 +9671,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'OQ deepening Saudi enterprise foothold via Aramco relationship. Aramco is one of world\'s largest companies — distribution agreement validates OQ\'s IoT service for energy sector. ASTS pursuing Middle East through MNO partnerships; OQ has direct enterprise channel via Aramco. Different markets: OQ for industrial IoT, ASTS for consumer broadband.',
       source: 'OQ Technology / SatellitePro ME',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
     },
     {
       date: '2025-02-19',
@@ -9712,8 +9712,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'SES investment in OQ is notable — world\'s largest GEO operator backing OQ\'s LEO NTN IoT. OQ funding scale (€13M Series A + convertible) remains modest compared to ASTS which has raised hundreds of millions. However, institutional backing (SES, Aramco, Luxembourg Gov\'t) gives OQ significant credibility in European market.',
       source: 'SpaceNews / SatNews',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-funding',
+      storyTitle: 'OQ Technology Funding & Regulation'
     },
     {
       date: '2024-05-06',
@@ -9730,8 +9730,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'OQ continuing to build MNO/MVNO roaming partnerships. Transatel is a global IoT MVNO — different from ASTS\'s MNO partnerships with AT&T, Vodafone. OQ consistently adding connectivity platform integrations for IoT. Still IoT-only at this stage, not smartphone D2D.',
       source: 'SatNews / Transatel',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
     },
     {
       date: '2024-03-10',
@@ -9767,8 +9767,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'Deutsche Telekom is a Tier-1 European MNO — MoU with OQ validates satellite-IoT roaming model. ASTS also pursues large MNO partnerships but for smartphone broadband. OQ steadily building MNO ecosystem for narrowband IoT. Different value propositions: OQ extends IoT to remote areas, ASTS delivers broadband where there are coverage gaps.',
       source: 'GSMA / IoT Insider',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
     },
     {
       date: '2024-02-08',
@@ -9822,8 +9822,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'Telefónica/O2 is a major European MNO. OQ winning Telefónica for IoT roaming shows OQ building competitive European MNO footprint. OQ provides narrowband IoT while ASTS pursues broadband smartphone D2D via its own MNO partnerships (AT&T, Vodafone). Both competing for MNO attention in overlapping markets.',
       source: 'Telefónica Germany',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
     },
     {
       date: '2023-07-19',
@@ -9859,8 +9859,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'Notable: iot squared is a stc Group / PIF joint venture. stc is one of the largest telcos in the Middle East and a potential ASTS partner market. OQ targeting IoT sensors/smart city in Saudi Arabia while ASTS targets smartphone broadband D2D. Aramco Wa\'ed Ventures backing gives OQ Saudi enterprise foothold. Different service tiers: OQ for machine connectivity (narrowband IoT), ASTS for human connectivity (broadband).',
       source: 'OQ Technology / iot squared',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
     },
     {
       date: '2023-03-13',
@@ -10311,8 +10311,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Iridium NTN Direct progressing toward commercial launch. Key differentiator: Iridium = NB-IoT narrowband (low-power IoT sensors, messaging), ASTS = broadband cellular (voice/video/data). Iridium has truly global coverage advantage but narrowband only. ASTS regional but broadband. Different use cases, minimal direct overlap.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/press-release/iridium-ntn-direct-on-air-trials/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-testing',
+      storyTitle: 'Iridium NTN Direct Testing & Technology'
     },
     {
       date: '2025-11-04',
@@ -10333,8 +10333,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Notable: Vodafone IoT choosing Iridium for IoT while Vodafone Group partners with ASTS for D2D smartphone service. Different divisions, different use cases. IoT = narrowband sensors/tracking (Iridium strength). Smartphones = broadband voice/data (ASTS strength). Validates segmented market approach.',
       source: 'Iridium/Vodafone IoT',
       sourceUrl: 'https://www.iridium.com/blog/vodafone-iot-partnership/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-partnerships',
+      storyTitle: 'Iridium NTN Direct Partnerships'
     },
     {
       date: '2025-09-16',
@@ -10355,8 +10355,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Deutsche Telekom choosing Iridium for IoT coverage extension. ASTS has Deutsche Telekom as a shareholder but different focus: ASTS = smartphone broadband, Iridium = narrowband IoT. Both can coexist - different service tiers for different use cases.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/blog/deutsche-telekom-partnership/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-partnerships',
+      storyTitle: 'Iridium NTN Direct Partnerships'
     },
     {
       date: '2025-05-29',
@@ -10376,8 +10376,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Iridium pursuing NB-IoT/messaging niche vs ASTS broadband. Iridium has truly global coverage (66 sats) but narrowband only. ASTS offers broadband throughput but regional coverage initially. Different markets: Iridium for SOS/messaging, ASTS for full cellular experience.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/blog/iridium-and-syniverse-partner/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-partnerships',
+      storyTitle: 'Iridium NTN Direct Partnerships'
     },
     {
       date: '2025-03-03',
@@ -10397,8 +10397,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       implication: 'neutral',
       astsComparison: 'Iridium NTN Direct advancing toward deployment by building out RAN infrastructure. Software upgrade to existing 66-sat constellation is capital-efficient approach. However, NB-IoT only — narrowband messaging/SOS/IoT, not broadband voice/video/data. ASTS and Iridium target fundamentally different service tiers. Iridium global coverage advantage for IoT; ASTS broadband advantage for smartphones.',
       source: 'Gatehouse Satcom / Iridium',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-testing',
+      storyTitle: 'Iridium NTN Direct Testing & Technology'
     },
     {
       date: '2024-10-09',
@@ -10418,8 +10418,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Iridium building ecosystem for NB-IoT standards devices. ASTS works with existing LTE/5G phones - no special chipset needed. Iridium targeting IoT mass market; ASTS targeting smartphone users.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/blog/iridium-nordic-semiconductor-collaboration/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-partnerships',
+      storyTitle: 'Iridium NTN Direct Partnerships'
     },
     {
       date: '2024-01-10',
@@ -10440,8 +10440,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Iridium leveraging existing constellation for NB-IoT - capital efficient but narrowband. ASTS requires new satellite builds but offers broadband. Iridium\'s L-band spectrum vs ASTS using MNO spectrum. Iridium = global messaging/SOS, ASTS = regional broadband cellular.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/project-stardust/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-testing',
+      storyTitle: 'Iridium NTN Direct Testing & Technology'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -11448,17 +11448,20 @@ const CompsTab = ({ calc, currentStockPrice }) => {
   ];
 
   // Filter news by competitor, sort by date (newest first)
-  const filteredNews = (competitorFilter === 'all'
-    ? COMPETITOR_NEWS
-    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter)
-  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const filteredNews = React.useMemo(() =>
+    (competitorFilter === 'all'
+      ? [...COMPETITOR_NEWS]
+      : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter)
+    ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+    [competitorFilter]
+  );
 
   // Group news by storyId, with ungrouped items in their own "group"
   const groupedNews = React.useMemo(() => {
     const groups: Record<string, { title: string; entries: (CompetitorNewsEntry & { originalIdx: number })[] }> = {};
 
     filteredNews.forEach((news, idx) => {
-      const storyKey = news.storyId || `ungrouped-${idx}`;
+      const storyKey = news.storyId || `ungrouped-${news.date}-${news.competitor}-${news.headline.slice(0, 40)}`;
       if (!groups[storyKey]) {
         groups[storyKey] = {
           title: news.storyTitle || news.headline,
@@ -11943,7 +11946,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 <div>
                   <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{story.title}</div>
                   <div style={{ fontSize: 12, color: 'var(--text3)' }}>
-                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[0]?.date} → {story.entries[story.entries.length - 1]?.date}
+                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[story.entries.length - 1]?.date} → {story.entries[0]?.date}
                   </div>
                 </div>
               </div>
