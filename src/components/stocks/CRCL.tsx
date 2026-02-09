@@ -7557,12 +7557,10 @@ const CompsTab = () => {
             const totalEntries = section.stories.reduce((sum, s) => sum + s.entries.length, 0);
             const oldestDate = section.stories[section.stories.length - 1]?.entries[section.stories[section.stories.length - 1]?.entries.length - 1]?.date || '';
             const newestDate = section.stories[0]?.entries[0]?.date || '';
-            const initials = section.name.split(/[\s/]+/).map(w => w[0]).join('').slice(0, 3).toUpperCase();
             return (
             <details key={section.competitorId} className="comp-panel" open>
               <summary>
                 <div className="comp-panel-bar">
-                  <div className="comp-panel-avatar" aria-hidden="true">{initials}</div>
                   <div className="comp-panel-info">
                     <div className="comp-panel-name">{section.name}</div>
                     <div className="comp-panel-meta">

@@ -1584,22 +1584,13 @@ input[type="range"]::-webkit-slider-thumb {
   .comp-card-badge { font-size: 9px; padding: 2px 6px; }
 }
 
-/* ═══ COMPANY DISCLOSURE PANELS - Collapsible company sections ═══ */
+/* ═══ COMPANY DISCLOSURE PANELS ═══ */
 .comp-panel {
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
-  margin-top: 12px;
+  margin-top: 16px;
   background: var(--surface);
-  transition: box-shadow 0.3s, border-color 0.3s;
-}
-.comp-panel:hover {
-  border-color: color-mix(in srgb, var(--accent) 25%, transparent);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
-}
-.comp-panel[open] {
-  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
 }
 .comp-panel summary {
   list-style: none;
@@ -1612,129 +1603,64 @@ input[type="range"]::-webkit-slider-thumb {
 .comp-panel summary:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
-  border-radius: 16px;
+  border-radius: 12px;
 }
 
 .comp-panel-bar {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 20px;
-  position: relative;
-  overflow: hidden;
-}
-.comp-panel-bar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--comp-accent, var(--accent)), transparent 80%);
-  opacity: 0.7;
-  transition: opacity 0.3s;
-}
-.comp-panel[open] .comp-panel-bar::before {
-  opacity: 1;
+  gap: 12px;
+  padding: 14px 20px;
 }
 
-.comp-panel-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 15px;
-  letter-spacing: -0.5px;
-  color: #fff;
-  flex-shrink: 0;
-  background: linear-gradient(135deg, var(--comp-accent, var(--accent)), color-mix(in srgb, var(--comp-accent, var(--accent)) 60%, #000));
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--comp-accent, var(--accent)) 30%, transparent);
-}
-
-.comp-panel-info {
-  flex: 1;
-  min-width: 0;
-}
+.comp-panel-info { flex: 1; min-width: 0; }
 .comp-panel-name {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text);
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1;
 }
 .comp-panel-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 3px;
-  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
 }
 .comp-panel-count {
   font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: var(--accent-dim);
-  color: var(--accent);
+  color: var(--text3);
 }
 .comp-panel-dates {
   font-size: 11px;
   color: var(--text3);
-  font-family: 'Space Mono', monospace;
+  opacity: 0.6;
 }
 
 .comp-panel-chevron {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  background: var(--surface2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s;
+  transition: transform 0.25s ease;
 }
 .comp-panel-chevron svg {
   width: 16px;
   height: 16px;
   stroke: var(--text3);
-  stroke-width: 2.5;
+  stroke-width: 2;
   fill: none;
-  transition: stroke 0.2s;
 }
 .comp-panel[open] .comp-panel-chevron {
   transform: rotate(180deg);
-  background: var(--accent-dim);
-}
-.comp-panel[open] .comp-panel-chevron svg {
-  stroke: var(--accent);
 }
 
 .comp-panel-body {
   border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
 }
 
 @media (max-width: 768px) {
-  .comp-panel { border-radius: 14px; margin-top: 10px; }
-  .comp-panel-bar { padding: 14px 16px; gap: 12px; }
-  .comp-panel-avatar { width: 38px; height: 38px; font-size: 13px; border-radius: 10px; }
-  .comp-panel-name { font-size: 15px; }
-  .comp-panel-chevron { width: 28px; height: 28px; border-radius: 8px; }
-  .comp-panel-chevron svg { width: 14px; height: 14px; }
+  .comp-panel-bar { padding: 12px 16px; }
+  .comp-panel-name { font-size: 13px; }
 }
 @media (max-width: 480px) {
-  .comp-panel { border-radius: 12px; margin-top: 8px; }
-  .comp-panel-bar { padding: 12px 14px; gap: 10px; }
-  .comp-panel-avatar { width: 34px; height: 34px; font-size: 12px; border-radius: 8px; }
-  .comp-panel-name { font-size: 14px; }
+  .comp-panel-bar { padding: 10px 14px; }
   .comp-panel-dates { display: none; }
-  .comp-panel-chevron { width: 26px; height: 26px; border-radius: 7px; }
 }
 `;
