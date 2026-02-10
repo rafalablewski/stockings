@@ -39,6 +39,12 @@ export {
   COMPETITOR_NEWS,
 } from './competitors';
 
+// Press Releases
+export {
+  PRESS_RELEASES_METADATA,
+  PRESS_RELEASES,
+} from './press-releases';
+
 // Catalysts & Milestones
 export {
   CATALYSTS_METADATA,
@@ -78,6 +84,7 @@ export type {
   Partner,
   PartnerNewsEntry,
   CompetitorNewsEntry,
+  PressRelease,
   ShareClass,
   MajorShareholder,
   EquityOffering,
