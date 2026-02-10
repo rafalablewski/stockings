@@ -46,6 +46,16 @@ export {
   getAvailableYears,
 } from './historical';
 
+// Catalysts & Milestones
+export {
+  CATALYSTS_METADATA,
+  UPCOMING_CATALYSTS,
+  COMPLETED_MILESTONES,
+  getCatalystsByImpact,
+  getCatalystsByCategory,
+  getCatalystCategories,
+} from './catalysts';
+
 // Re-export types for convenience
 export type {
   DataMetadata,
@@ -53,4 +63,6 @@ export type {
   HistoricalPrices,
   Comparable,
   DilutionTranche,
+  Catalyst,
+  CompletedMilestone,
 } from '../shared/types';

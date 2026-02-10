@@ -45,9 +45,21 @@ export {
   getPositiveEvents,
 } from './timeline';
 
+// Catalysts & Milestones
+export {
+  CATALYSTS_METADATA,
+  UPCOMING_CATALYSTS,
+  COMPLETED_MILESTONES,
+  getCatalystsByImpact,
+  getCatalystsByCategory,
+  getCatalystCategories,
+} from './catalysts';
+
 // Re-export types for convenience
 export type {
   DataMetadata,
   TimelineEntry,
   SECFiling,
+  Catalyst,
+  CompletedMilestone,
 } from '../shared/types';

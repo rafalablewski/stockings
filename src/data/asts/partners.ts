@@ -27,7 +27,7 @@ import type { Partner, RevenueSource, DataMetadata, PartnerNewsEntry } from '../
 // ============================================================================
 
 export const PARTNERS_METADATA: DataMetadata = {
-  lastUpdated: '2025-12-30',
+  lastUpdated: '2026-02-10',
   source: 'Q3 2025 10-Q and press releases',
   nextExpectedUpdate: 'After new partnership announcements',
   notes: 'Verizon definitive Oct 2025, stc $1.8B agreement Q3 2025',
@@ -178,6 +178,16 @@ export const REVENUE_SOURCES: RevenueSource[] = [
  */
 export const PARTNER_NEWS: PartnerNewsEntry[] = [
   // === FEBRUARY 2026 ===
+  {
+    date: '2026-02-09',
+    partner: 'Vodafone',
+    category: 'Spectrum',
+    headline: 'Vodafone Egypt Acquires Additional 1,800MHz Spectrum in Multi-Year MCIT/NTRA Programme',
+    summary: 'Vodacom Group announced Vodafone Egypt\'s participation in multi-year investment programme of Egypt\'s Ministry of Communications and Information Technology (MCIT) and National Telecommunications Regulatory Authority (NTRA). Programme encompasses spectrum in the 1,800MHz and 3,500MHz bands and the renewal of the 2,600MHz band. Initial phase: Vodafone Egypt secured 2 x 10MHz of 1,800MHz spectrum, doubling its 1,800MHz holdings from 2 x 10MHz to 2 x 20MHz. Payment: four annual instalments starting with US$100M in FY26. Vodafone Group expects to recognise ~US$350M additional intangible spectrum asset. Next phase (FY28-FY32): MCIT and NTRA will release 3,500MHz spectrum allocation and renew existing 2,600MHz spectrum. Post-purchase Vodafone Egypt spectrum: 900MHz (2x12.5MHz, exp 2039), 1,800MHz (2x20MHz, exp 2039), 2,100MHz (2x20MHz, exp 2039), 2,600MHz (1x40MHz, exp 2032). Vodafone Group serves 360M+ mobile and broadband customers across 15 countries.',
+    astsRelevance: 'Vodafone is ASTS\'s largest partner (500M subs, definitive agreement through 2034, SatCo JV). Vodafone Egypt spectrum investment shows continued network investment in Africa. Vodafone\'s company boilerplate now explicitly states they are "developing a new direct-to-mobile satellite communications service to connect areas without coverage" — a direct reference to ASTS partnership. 3,500MHz (5G) spectrum coming in FY28-32 aligns with ASTS commercial timeline. Stronger terrestrial coverage in Egypt creates complementary dynamic with ASTS D2D for areas beyond tower reach.',
+    impact: 'Bullish',
+    source: 'Vodafone Group'
+  },
   {
     date: '2026-02-04',
     partner: 'Vodafone',
