@@ -1000,12 +1000,22 @@ const ASTSAnalysis = () => {
                 const live = sym ? livePR[sym] : null;
                 const activeSubTab = (sym ? prTab[sym] : undefined) || 'prWire';
 
+                // Strip " - Business Wire", " - PR Newswire", etc. from Google News headlines
+                const stripSource = (h: string) => h.replace(/\s*-\s*(Business Wire|PR Newswire|GlobeNewsWire|AccessWire|Globe Newswire)$/i, '');
+
                 // Build lists for each sub-tab
                 const buildList = (items: LivePRItem[]) =>
-                  items.slice(0, 5).map(pr => ({
-                    ...pr,
-                    tracked: section.data.some(s => s.tracked && (s.date === pr.date || s.headline.toLowerCase().includes(pr.headline.toLowerCase().slice(0, 30)))),
-                  }));
+                  items.slice(0, 5).map(pr => {
+                    const cleanHeadline = stripSource(pr.headline).toLowerCase();
+                    return {
+                      ...pr,
+                      tracked: section.data.some(s => s.tracked && (
+                        s.date === pr.date
+                        || s.headline.toLowerCase().includes(cleanHeadline.slice(0, 40))
+                        || cleanHeadline.includes(s.headline.toLowerCase().slice(0, 40))
+                      )),
+                    };
+                  });
 
                 // Before refresh: show static data
                 const staticList = section.data.slice(0, 5);

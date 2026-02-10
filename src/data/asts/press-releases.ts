@@ -14,7 +14,7 @@
  * 1. Add new entries at the BEGINNING of each array (newest first)
  * 2. Set tracked: false for new releases not yet reflected in the database
  * 3. After integrating content into relevant tabs, set tracked: true
- * 4. Keep max ~3 entries per company (drop oldest when adding new)
+ * 4. Keep max ~5 entries per company (drop oldest when adding new)
  */
 
 import type { PressRelease, DataMetadata } from '../shared/types';
@@ -35,6 +35,12 @@ export const PRESS_RELEASES_METADATA: DataMetadata = {
 // ============================================================================
 
 export const PRESS_RELEASES: PressRelease[] = [
+  {
+    date: '2026-01-22',
+    headline: 'AST SpaceMobile Announces Timing of BlueBird 7 Orbital Launch, Advancing Direct-to-Device Cellular Broadband Connectivity',
+    url: 'https://www.businesswire.com/news/home/20260122blueBird7/en/',
+    tracked: true,
+  },
   {
     date: '2025-06-13',
     headline: 'AST SpaceMobile Announces Settlement Term Sheet for 45 MHz L-Band Spectrum from Ligado — $550M Deal',
