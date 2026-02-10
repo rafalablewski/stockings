@@ -765,6 +765,21 @@ const BMNRDilutionAnalysis = () => {
   // Update indicator visibility toggle
   const [showIndicators, setShowIndicators] = useState(true);
 
+  // Press release tracking state for sources tab
+  const [pressReleases, setPressReleases] = useState<Record<string, { loading: boolean; error?: string; releases: { date: string; title: string }[] }>>({});
+
+  const fetchPressReleases = useCallback(async (url: string, competitorId: string) => {
+    setPressReleases(prev => ({ ...prev, [competitorId]: { loading: true, releases: [] } }));
+    try {
+      const res = await fetch(`/api/press-releases?url=${encodeURIComponent(url)}&count=3`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setPressReleases(prev => ({ ...prev, [competitorId]: { loading: false, releases: data.pressReleases || [] } }));
+    } catch (e) {
+      setPressReleases(prev => ({ ...prev, [competitorId]: { loading: false, error: (e as Error).message, releases: [] } }));
+    }
+  }, []);
+
   // Chart refresh key - increment to trigger chart data refresh
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
 
@@ -1044,13 +1059,13 @@ const BMNRDilutionAnalysis = () => {
                 { name: 'SEC EDGAR (BMNR Filings)', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=vinanz&CIK=&type=&dateb=&owner=include&count=40&search_text=&action=getcompany' },
               ]},
               { category: 'Crypto Treasury Competitors', sources: [
-                { name: 'Strategy (MSTR) Investor Relations', url: 'https://www.strategy.com/investor-relations' },
+                { name: 'Strategy (MSTR) Investor Relations', url: 'https://www.strategy.com/investor-relations', competitorId: 'mstr' as BMNRCompetitorId },
                 { name: 'Coinbase Blog', url: 'https://www.coinbase.com/blog' },
                 { name: 'Coinbase Investor Relations', url: 'https://investor.coinbase.com' },
                 { name: 'Marathon Digital (MARA)', url: 'https://ir.mara.com' },
                 { name: 'Riot Platforms (RIOT)', url: 'https://www.riotplatforms.com' },
                 { name: 'CleanSpark (CLSK)', url: 'https://www.cleanspark.com' },
-                { name: 'ETHZilla (ETHZ) IR', url: 'https://ir.ethzilla.com' },
+                { name: 'ETHZilla (ETHZ) IR', url: 'https://ir.ethzilla.com', competitorId: 'ethz' as BMNRCompetitorId },
               ]},
               { category: 'Ethereum Protocol / Foundation', sources: [
                 { name: 'Ethereum Foundation Blog', url: 'https://blog.ethereum.org' },
@@ -1106,11 +1121,55 @@ const BMNRDilutionAnalysis = () => {
               <div key={group.category} className="card">
                 <div className="card-title">{group.category}</div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {group.sources.map(s => (
-                    <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                      {s.name} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
-                    </a>
-                  ))}
+                  {group.sources.map(s => {
+                    const cid = (s as { competitorId?: BMNRCompetitorId }).competitorId;
+                    const prState = cid ? pressReleases[cid] : undefined;
+                    return (
+                      <div key={s.url} style={{ marginBottom: cid ? 4 : 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <a href={s.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
+                            {s.name} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
+                          </a>
+                          {cid && (
+                            <button
+                              onClick={() => fetchPressReleases(s.url, cid)}
+                              disabled={prState?.loading}
+                              title="Check latest press releases"
+                              style={{
+                                background: 'none', border: '1px solid var(--border)', borderRadius: 4,
+                                padding: '1px 6px', fontSize: 11, color: 'var(--text3)', cursor: 'pointer',
+                                opacity: prState?.loading ? 0.5 : 0.8, display: 'inline-flex', alignItems: 'center', gap: 3,
+                              }}
+                            >
+                              {prState?.loading ? '...' : '↻'} PR
+                            </button>
+                          )}
+                        </div>
+                        {prState && !prState.loading && prState.releases.length > 0 && (
+                          <div style={{ marginLeft: 16, marginTop: 3, marginBottom: 4 }}>
+                            {prState.releases.map((pr, i) => {
+                              const isInDb = COMPETITOR_NEWS.some(n => n.competitor === cid && n.date === pr.date);
+                              return (
+                                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: 11, lineHeight: '16px', marginBottom: 2 }}>
+                                  <span style={{ color: isInDb ? '#22c55e' : '#ef4444', flexShrink: 0, fontSize: 13 }}>{isInDb ? '✓' : '✗'}</span>
+                                  <span style={{ color: 'var(--text2)' }}>
+                                    <span style={{ color: 'var(--text3)', marginRight: 4 }}>{pr.date}</span>
+                                    {pr.title}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        {prState && !prState.loading && prState.error && (
+                          <div style={{ marginLeft: 16, fontSize: 11, color: '#ef4444', marginTop: 2 }}>Failed to fetch: {prState.error}</div>
+                        )}
+                        {prState && !prState.loading && !prState.error && prState.releases.length === 0 && (
+                          <div style={{ marginLeft: 16, fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>No press releases found</div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}
