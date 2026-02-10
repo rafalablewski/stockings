@@ -151,8 +151,13 @@ export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   // === 2026 ===
   { event: 'HTX launched USDe minting and redemption service; USDe is backed by BTC and ETH via delta-neutral hedging strategy by Ethena Labs', date: 'Feb 9, 2026', category: 'Ecosystem' },
   { event: 'Arowana gold tokenization platform launching on Arbitrum (Ethereum L2) in March 2026; backed by Hancom Group ($600M gold trading volume)', date: 'Feb 9, 2026', category: 'Ecosystem' },
+  { event: 'Sushi DEX launches on Solana with Jupiter Ultra API integration; extends multi-chain trading to 4M+ users', date: 'Feb 9, 2026', category: 'Ecosystem' },
+  { event: 'GlobalStake launches Bitcoin Yield Gateway for institutional clients; aggregates multiple BTC yield strategies (4-14% net APY) with enterprise-grade API for custodians and exchanges', date: 'Feb 9, 2026', category: 'Ecosystem' },
+  { event: 'Metalpha (Nasdaq: MATH) adopts BTC allocation plan up to 20% of annual net profit (~$3.2M); initial $1M purchase at ~$54,000/BTC via proprietary Accumulator structure', date: 'Feb 9, 2026', category: 'Ecosystem' },
+  { event: 'ADI Foundation partners with H2O Hospitality to embed ADI Chain blockchain payments in UAE travel sector; Dirham-backed stablecoin for hospitality. Partners include Franklin Templeton, BlackRock, Mastercard', date: 'Feb 5, 2026', category: 'Ecosystem' },
   { event: 'Bitpanda joins Global Dollar Network (USDG); Kraken is a GDN partner. USDG available on Ethereum, Solana, Ink, X Layer. MiCA-compliant via Finland FIN-FSA', date: 'Feb 5, 2026', category: 'Ecosystem' },
-  { event: 'Bitwise launches model portfolio solutions for digital assets ($15B+ client AUM); Bitwise is Kraken Institutional strategy partner', date: 'Feb 3, 2026', category: 'Ecosystem' },
+  { event: 'Bitwise launches model portfolio solutions for digital assets ($15B+ client AUM); Bitwise is Kraken Institutional strategy partner. Seven models across core and thematic strategies', date: 'Feb 3, 2026', category: 'Ecosystem' },
+  { event: 'Wirex powers Chimera Card launch: Bitcoin-funded non-custodial debit card accepted at 80M+ merchants globally via BaaS infrastructure', date: 'Feb 3, 2026', category: 'Ecosystem' },
 
   // === 2025 ===
   { event: 'Kraken Proof of Reserves: ETH verified 1:1 with Merkle proofs (covers BTC, ETH, SOL, USDC, USDT, XRP, ADA)', date: 'Oct 22, 2025', category: 'Ecosystem' },
