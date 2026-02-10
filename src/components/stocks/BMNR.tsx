@@ -220,8 +220,6 @@ import {
   HISTORICAL_ETH,
   COMPARABLES,
   DEFAULT_TRANCHES,
-  UPCOMING_CATALYSTS,
-  COMPLETED_MILESTONES,
 } from '@/data/bmnr';
 
 // ============================================================================
@@ -848,7 +846,6 @@ const BMNRDilutionAnalysis = () => {
     // Tracking
     { id: 'capital', label: 'Capital', type: 'tracking' },
     { id: 'financials', label: 'Financials', type: 'tracking' },
-    { id: 'catalysts', label: 'Catalysts', type: 'tracking' },
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
@@ -1032,7 +1029,6 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'monte-carlo' && <MonteCarloTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} stakingYield={calc.effectiveAPY} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} operatingCosts={operatingCosts} regulatoryRisk={regulatoryRisk} />}
         {activeTab === 'investment' && <InvestmentTab />}
         {activeTab === 'financials' && <FinancialsTab />}
-        {activeTab === 'catalysts' && <CatalystsTab upcomingCatalysts={UPCOMING_CATALYSTS} completedMilestones={COMPLETED_MILESTONES} />}
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
         {activeTab === 'sources' && (
@@ -3472,6 +3468,104 @@ const CompsTab = ({ comparables, ethPrice }) => {
     //   sourceUrl: 'https://...'
     // },
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SUSHI - SOLANA EXPANSION (Feb 9, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-09',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Sushi DEX launches on Solana with Jupiter Ultra API integration; extends multi-chain trading to 4M+ users',
+      details: [
+        'Sushi DEX launches on Solana with Jupiter Ultra API integration',
+        'Extends multi-chain trading to 4M+ users',
+        'Sushi originated on Ethereum and maintains Ethereum deployment alongside Solana expansion',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Sushi\'s Solana expansion shows continued multi-chain DEX competition. Sushi originated on Ethereum and maintains Ethereum deployment alongside Solana expansion.',
+      source: 'PR Newswire',
+      storyId: 'crypto-ecosystem',
+      storyTitle: 'Crypto Ecosystem',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // GLOBALSTAKE - BTC YIELD GATEWAY (Feb 9, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-09',
+      competitor: 'other',
+      category: 'Yield',
+      headline: 'GlobalStake launches Bitcoin Yield Gateway for institutional clients with 4-14% net APY',
+      details: [
+        'Aggregates multiple BTC yield strategies (4-14% net APY)',
+        'Enterprise-grade API for custodians and exchanges',
+        'Targets institutional BTC yield market',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'BTC yield infrastructure expanding alongside ETH staking yield. BMNR\'s ETH staking yield (3-5%) targets same institutional demand for crypto-native returns.',
+      source: 'PR Newswire',
+      storyId: 'btc-treasury-ecosystem',
+      storyTitle: 'BTC Treasury & Yield Ecosystem',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // METALPHA - BTC TREASURY ALLOCATION (Feb 9, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-09',
+      competitor: 'other',
+      category: 'Strategy',
+      headline: 'Metalpha (Nasdaq: MATH) adopts BTC allocation plan up to 20% of annual net profit (~$3.2M)',
+      details: [
+        'Adopts BTC allocation plan up to 20% of annual net profit (~$3.2M)',
+        'Initial $1M purchase at ~$54,000/BTC via proprietary Accumulator structure',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Another Nasdaq-listed company establishing BTC treasury. Growing trend of corporate crypto treasuries validates BMNR\'s ETH treasury model.',
+      source: 'PR Newswire',
+      storyId: 'btc-treasury-ecosystem',
+      storyTitle: 'BTC Treasury & Yield Ecosystem',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // BITWISE - MODEL PORTFOLIO SOLUTIONS (Feb 3, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-03',
+      competitor: 'kraken',
+      category: 'Strategy',
+      headline: 'Bitwise launches model portfolio solutions for digital assets with $15B+ client AUM',
+      details: [
+        'Seven models across core and thematic strategies',
+        'Bitwise is Kraken Institutional strategy partner',
+        '$15B+ client AUM',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Bitwise model portfolios through Kraken Institutional expand institutional access to digital asset strategies. Growing institutional crypto allocation infrastructure supports BMNR investor base.',
+      source: 'PR Newswire',
+      storyId: 'kraken-institutional',
+      storyTitle: 'Kraken Institutional & Exchange',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // WIREX - CHIMERA CARD BTC PAYMENTS (Feb 3, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-03',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Wirex powers Chimera Card launch: Bitcoin-funded non-custodial debit card at 80M+ merchants',
+      details: [
+        'Bitcoin-funded non-custodial debit card accepted at 80M+ merchants globally',
+        'Powered by Wirex BaaS infrastructure',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'BTC-funded payment cards expand crypto spending utility. Growing real-world crypto payment infrastructure benefits broader ecosystem adoption.',
+      source: 'PR Newswire',
+      storyId: 'crypto-ecosystem',
+      storyTitle: 'Crypto Ecosystem',
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // KRAKEN - INSTITUTIONAL BESPOKE INVESTMENT SOLUTION (Feb 5, 2026)
@@ -8377,6 +8471,28 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   const adoptionTimeline = [
     // === FEBRUARY 2026 ===
     {
+      date: '2026-02-09',
+      category: 'Enterprise',
+      company: 'HTX / Ethena Labs',
+      title: 'HTX Launches USDe Minting and Redemption Service — ETH-Backed Synthetic Dollar',
+      summary: 'HTX launched USDe minting and redemption service. USDe is backed by BTC and ETH via delta-neutral hedging strategy by Ethena Labs.',
+      significance: 'Growing USDe adoption increases demand for ETH as collateral in delta-neutral synthetic dollar strategies.',
+      bmnrImplication: 'USDe requires ETH collateral in its delta-neutral hedging strategy. Growing synthetic dollar ecosystem on Ethereum reinforces network utility.',
+      impact: 'Bullish',
+      source: 'PR Newswire'
+    },
+    {
+      date: '2026-02-09',
+      category: 'Enterprise',
+      company: 'Arowana / Hancom Group',
+      title: 'Arowana Gold Tokenization Platform Launching on Arbitrum (Ethereum L2)',
+      summary: 'Arowana gold tokenization platform launching on Arbitrum (Ethereum L2) in March 2026, backed by Hancom Group with $600M annual gold trading volume.',
+      significance: 'Real-world asset tokenization (gold) choosing Arbitrum (Ethereum L2) validates Ethereum ecosystem for commodity tokenization.',
+      bmnrImplication: 'Gold tokenization on Arbitrum increases Ethereum L2 ecosystem utility and settles value on Ethereum.',
+      impact: 'Bullish',
+      source: 'PR Newswire'
+    },
+    {
       date: '2026-02-06',
       category: 'Protocol',
       company: 'ENS (Ethereum Name Service)',
@@ -8408,6 +8524,28 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Fidelity FIDD going live validates Ethereum as THE institutional stablecoin platform. $12T asset manager now has operational skin in the game on Ethereum. Tokenized funds and RWA settlement use cases get a new stable asset option. More institutional liquidity on Ethereum = stronger network effects = ETH ecosystem value.',
       impact: 'Bullish',
       source: 'Bitcoin.com / CoinGecko'
+    },
+    {
+      date: '2026-02-05',
+      category: 'Enterprise',
+      company: 'ADI Foundation / H2O Hospitality',
+      title: 'ADI Foundation Partners with H2O Hospitality for Blockchain Payments in UAE Travel Sector',
+      summary: 'ADI Foundation partners with H2O Hospitality to embed ADI Chain blockchain payments in UAE travel sector with Dirham-backed stablecoin for hospitality. Partners include Franklin Templeton, BlackRock, Mastercard.',
+      significance: 'ADI Chain (Ethereum L2) expanding into real-world payment use cases in UAE hospitality sector with major institutional partners.',
+      bmnrImplication: 'ADI Chain (Ethereum L2) real-world payments expand Ethereum ecosystem utility in MENA region.',
+      impact: 'Bullish',
+      source: 'PR Newswire'
+    },
+    {
+      date: '2026-02-05',
+      category: 'Enterprise',
+      company: 'Bitpanda / Global Dollar Network',
+      title: 'Bitpanda Joins Global Dollar Network (USDG) — Available on Ethereum',
+      summary: 'Bitpanda joins Global Dollar Network (USDG); Kraken is a GDN partner. USDG available on Ethereum, Solana, Ink, X Layer. MiCA-compliant via Finland FIN-FSA.',
+      significance: 'Major European exchange joining MiCA-compliant stablecoin network available on Ethereum expands regulated stablecoin infrastructure.',
+      bmnrImplication: 'USDG on Ethereum with Kraken (BMNR institutional investor) as partner strengthens Ethereum stablecoin ecosystem.',
+      impact: 'Bullish',
+      source: 'PR Newswire'
     },
     {
       date: '2026-02-04',
@@ -10758,42 +10896,6 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ethereum-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Ethereum Ecosystem<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <V1 />
-    </div>
-  );
-};
-
-// CATALYSTS TAB - Upcoming catalysts and completed milestones
-const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
-  // Group milestones by year
-  const milestonesByYear = completedMilestones.reduce((acc, m) => {
-    const year = m.date.match(/20\d{2}/)?.[0] || 'Other';
-    if (!acc[year]) acc[year] = [];
-    acc[year].push(m);
-    return acc;
-  }, {});
-  const years = Object.keys(milestonesByYear).sort((a, b) => Number(b) - Number(a));
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Catalyst Tracker<UpdateIndicators sources={['PR', 'SEC']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Key upcoming events and ecosystem milestones for BMNR and the broader ETH/crypto ecosystem.</p></div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
-        <div>{upcomingCatalysts.map((c, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 8, border: '1px solid', background: c.impact === 'Critical' ? 'rgba(34,211,238,0.15)' : 'var(--surface2)', borderColor: c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)', marginBottom: i < upcomingCatalysts.length - 1 ? 4 : 0 }}>
-            <div><div style={{ fontWeight: 500, color: 'var(--text1)' }}>{c.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.timeline}{c.category ? ` · ${c.category}` : ''}</div></div>
-            <span className="pill" style={{ background: c.impact === 'Critical' ? 'var(--cyan)' : 'rgba(234,179,8,0.3)', color: c.impact === 'Critical' ? 'var(--bg1)' : 'var(--gold)', fontSize: 11, flexShrink: 0, marginLeft: 8 }}>{c.impact}</span>
-          </div>
-        ))}</div>
-      </div>
-      {years.map(year => (
-        <div key={year} className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{year} Completed<UpdateIndicators sources="PR" /></div>
-          <div className="g2">{milestonesByYear[year].map((m, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 8, borderRadius: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}>
-              <span style={{ color: 'var(--mint)', flexShrink: 0 }}>✓</span><div><div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}{m.category ? ` · ${m.category}` : ''}</div></div>
-            </div>
-          ))}</div>
-        </div>
-      ))}
     </div>
   );
 };
