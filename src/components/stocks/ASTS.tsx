@@ -985,7 +985,39 @@ const ASTSAnalysis = () => {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
               <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#press-releases</div>
-              {[
+              {/* Build a flat index of all tracked analysis content for cross-referencing */}
+              {(() => {
+                // Collect all text snippets from every analysis tab into one searchable pool
+                const trackedTexts: string[] = [];
+                const trackedDates = new Set<string>();
+                // Partner news
+                PARTNER_NEWS.forEach(n => { trackedTexts.push(n.headline.toLowerCase()); trackedDates.add(n.date); });
+                // Competitor news
+                COMPETITOR_NEWS.forEach(n => { trackedTexts.push(n.headline.toLowerCase()); trackedDates.add(n.date); });
+                // Completed milestones
+                COMPLETED_MILESTONES.forEach(m => { trackedTexts.push(m.event.toLowerCase()); if (m.date) trackedDates.add(m.date); });
+                // Upcoming catalysts
+                UPCOMING_CATALYSTS.forEach(c => { trackedTexts.push(c.event.toLowerCase()); });
+
+                // Strip " - Business Wire" etc. from Google News headlines
+                const stripSource = (h: string) => h.replace(/\s*-\s*(Business Wire|PR Newswire|GlobeNewsWire|AccessWire|Globe Newswire)$/i, '');
+
+                // Check if a PR headline+date is reflected anywhere in the analysis
+                const isTracked = (headline: string, date: string): boolean => {
+                  const clean = stripSource(headline).toLowerCase();
+                  // Extract key terms (3+ char words) from the headline
+                  const terms = clean.split(/\W+/).filter(w => w.length >= 4);
+                  // A match requires: date exists in tracked data, OR 3+ key terms appear in any tracked text
+                  if (trackedDates.has(date)) {
+                    // Date matches — check if any tracked text shares key terms
+                    const dateTermMatch = trackedTexts.some(t => terms.filter(w => t.includes(w)).length >= 2);
+                    if (dateTermMatch) return true;
+                  }
+                  // Broad match: 3+ key terms found in any single tracked text
+                  return trackedTexts.some(t => terms.filter(w => t.includes(w)).length >= 3);
+                };
+
+                return [
                 { title: 'AST SpaceMobile — Press Releases', data: PRESS_RELEASES, irUrl: 'https://investors.ast-science.com/press-releases', symbol: 'ASTS' as string | null },
                 ...Object.values(COMPETITOR_PRESS_RELEASES).map(c => ({
                   title: `${c.label} — Press Releases`,
@@ -1000,24 +1032,14 @@ const ASTSAnalysis = () => {
                 const live = sym ? livePR[sym] : null;
                 const activeSubTab = (sym ? prTab[sym] : undefined) || 'prWire';
 
-                // Strip " - Business Wire", " - PR Newswire", etc. from Google News headlines
-                const stripSource = (h: string) => h.replace(/\s*-\s*(Business Wire|PR Newswire|GlobeNewsWire|AccessWire|Globe Newswire)$/i, '');
-
-                // Build lists for each sub-tab
+                // Build lists for each sub-tab — cross-reference against ALL analysis data
                 const buildList = (items: LivePRItem[]) =>
-                  items.slice(0, 5).map(pr => {
-                    const cleanHeadline = stripSource(pr.headline).toLowerCase();
-                    return {
-                      ...pr,
-                      tracked: section.data.some(s => s.tracked && (
-                        s.date === pr.date
-                        || s.headline.toLowerCase().includes(cleanHeadline.slice(0, 40))
-                        || cleanHeadline.includes(s.headline.toLowerCase().slice(0, 40))
-                      )),
-                    };
-                  });
+                  items.slice(0, 5).map(pr => ({
+                    ...pr,
+                    tracked: isTracked(pr.headline, pr.date),
+                  }));
 
-                // Before refresh: show static data
+                // Before refresh: show static data (static entries keep their own tracked flag)
                 const staticList = section.data.slice(0, 5);
                 const prWireList = live ? buildList(live.prWire) : null;
                 const allNewsList = live ? buildList(live.allNews) : null;
@@ -1099,7 +1121,8 @@ const ASTSAnalysis = () => {
                     </ul>
                   </div>
                 );
-              })}
+              });
+              })()}
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
               {[
