@@ -1,11 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { PARTNER_NEWS } from '@/data/asts/partners';
 import { COMPETITOR_NEWS } from '@/data/asts/competitors';
 import { COMPLETED_MILESTONES, UPCOMING_CATALYSTS } from '@/data/asts/catalysts';
 import { EQUITY_OFFERINGS } from '@/data/asts/capital';
 
 export const runtime = 'nodejs';
+
+function getApiKey(): string | undefined {
+  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
+  // Turbopack may not inject .env.local into API routes — read directly as fallback
+  try {
+    const envFile = readFileSync(join(process.cwd(), '.env.local'), 'utf-8');
+    const match = envFile.match(/^ANTHROPIC_API_KEY=(.+)$/m);
+    return match?.[1]?.trim();
+  } catch { return undefined; }
+}
 
 interface CheckRequest {
   headlines: Array<{ headline: string; date: string }>;
@@ -49,10 +61,10 @@ function buildAnalysisContext(company: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = getApiKey();
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'ANTHROPIC_API_KEY not configured', envKeys: Object.keys(process.env).filter(k => k.includes('ANTHROPIC')).join(',') },
+      { error: 'ANTHROPIC_API_KEY not configured' },
       { status: 500 }
     );
   }
