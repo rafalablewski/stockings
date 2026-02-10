@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 type RouteParams = Promise<{ symbol: string }>;
 
-// CIK mapping for supported stocks
+// CIK mapping for SEC-registered companies
 const COMPANY_CIK: Record<string, string> = {
   ASTS: '0001780312',
+  IRDM: '0001418819',
 };
 
 // Human-readable descriptions for 8-K item codes

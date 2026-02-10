@@ -252,6 +252,8 @@ export interface PressRelease {
   url: string;
   /** Whether this PR's content has been added to the database (partner news, competitor news, timeline, etc.) */
   tracked: boolean;
+  /** Company identifier — omit for the main stock, set for competitors (e.g., 'oq-technology', 'iridium') */
+  company?: string;
 }
 
 // ============================================================================

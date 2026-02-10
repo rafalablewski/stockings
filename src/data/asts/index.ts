@@ -43,6 +43,8 @@ export {
 export {
   PRESS_RELEASES_METADATA,
   PRESS_RELEASES,
+  OQ_PRESS_RELEASES,
+  IRIDIUM_PRESS_RELEASES,
 } from './press-releases';
 
 // Catalysts & Milestones
