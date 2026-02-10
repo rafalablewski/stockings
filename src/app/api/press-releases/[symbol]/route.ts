@@ -2,44 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 
 type RouteParams = Promise<{ symbol: string }>;
 
-// Company feed configurations
-const FEEDS: Record<string, { name: string; urls: string[]; type: 'rss' | 'html' }> = {
-  ASTS: {
-    name: 'AST SpaceMobile',
-    urls: [
-      'https://investors.ast-science.com/rss/news-releases.xml',
-      'https://investors.ast-science.com/rss/press-releases.xml',
-      'https://investors.ast-science.com/press-releases',
-    ],
-    type: 'rss',
-  },
-  IRDM: {
-    name: 'Iridium Communications',
-    urls: [
-      'https://investor.iridium.com/index.php?s=95&rsspage=43',
-      'https://investor.iridium.com/rss/news-releases.xml',
-      'https://investor.iridium.com/press-releases',
-    ],
-    type: 'rss',
-  },
-  VSAT: {
-    name: 'Viasat',
-    urls: [
-      'https://investors.viasat.com/rss/news-releases.xml',
-      'https://investors.viasat.com/rss/press-releases.xml',
-      'https://investors.viasat.com/press-releases',
-    ],
-    type: 'rss',
-  },
-  SATS: {
-    name: 'EchoStar / Hughes',
-    urls: [
-      'https://ir.echostar.com/rss/news-releases.xml',
-      'https://ir.echostar.com/rss/press-releases.xml',
-      'https://ir.echostar.com/press-releases',
-    ],
-    type: 'rss',
-  },
+// Google News search queries keyed by company identifier
+// These are passed as the [symbol] URL parameter
+const SEARCH_QUERIES: Record<string, string> = {
+  'ASTS':           '"AST SpaceMobile"',
+  'oq-technology':  '"OQ Technology" satellite',
+  'iridium':        '"Iridium Communications"',
+  'skylo':          '"Skylo" satellite NTN',
+  'lynk':           '"Lynk Global" satellite',
+  'starlink':       '"Starlink" "direct to cell"',
+  'viasat':         '"Viasat" satellite',
+  'amazon-kuiper':  '"Project Kuiper" Amazon satellite',
+  'echostar':       '"EchoStar" satellite OR Hughes',
+  'ses':            '"SES" satellite D2D',
+  'terrestar':      '"Terrestar Solutions"',
+  'space42':        '"Space42" satellite OR "Bayanat" satellite',
 };
 
 interface PressReleaseResult {
@@ -51,7 +28,6 @@ interface PressReleaseResult {
 /** Parse RSS/XML feed for press release items */
 function parseRSS(xml: string): PressReleaseResult[] {
   const items: PressReleaseResult[] = [];
-  // Match <item>...</item> blocks
   const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
   let match;
   while ((match = itemRegex.exec(xml)) !== null && items.length < 5) {
@@ -87,37 +63,6 @@ function parseRSS(xml: string): PressReleaseResult[] {
   return items;
 }
 
-/** Parse HTML page for press release items (generic heuristic) */
-function parseHTML(html: string, baseUrl: string): PressReleaseResult[] {
-  const items: PressReleaseResult[] = [];
-  // Look for common IR page patterns: links with dates nearby
-  // Pattern 1: <a> tags containing press release titles with dates in nearby text
-  const linkRegex = /<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
-  const dateRegex = /(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2},?\s+\d{4}|\d{4}-\d{2}-\d{2}/i;
-  let match;
-  const seen = new Set<string>();
-  while ((match = linkRegex.exec(html)) !== null && items.length < 10) {
-    const href = match[1];
-    const text = match[2].replace(/<[^>]+>/g, '').trim();
-    // Filter: likely press releases have substantial text and a recognizable URL pattern
-    if (text.length > 20 && text.length < 300 && !seen.has(text) &&
-        (href.includes('press-release') || href.includes('news') || href.includes('businesswire') || href.includes('prnewswire'))) {
-      seen.add(text);
-      // Try to find a date near this link in the surrounding HTML context
-      const linkPos = match.index;
-      const context = html.substring(Math.max(0, linkPos - 200), linkPos + match[0].length + 200);
-      const dateMatch = context.match(dateRegex);
-      const url = href.startsWith('http') ? href : new URL(href, baseUrl).href;
-      items.push({
-        date: dateMatch ? formatDate(dateMatch[0]) : '',
-        headline: decodeHTML(text),
-        url,
-      });
-    }
-  }
-  return items.slice(0, 5);
-}
-
 /** Normalize date string to YYYY-MM-DD */
 function formatDate(dateStr: string): string {
   try {
@@ -145,51 +90,55 @@ export async function GET(
   { params }: { params: RouteParams }
 ) {
   const { symbol: rawSymbol } = await params;
-  const symbol = decodeURIComponent(rawSymbol).toUpperCase();
+  const symbol = decodeURIComponent(rawSymbol);
 
-  const feed = FEEDS[symbol];
-  if (!feed) {
+  const query = SEARCH_QUERIES[symbol] || SEARCH_QUERIES[symbol.toUpperCase()];
+  if (!query) {
     return NextResponse.json(
-      { error: `No feed configured for: ${symbol}` },
+      { error: `No search configured for: ${symbol}` },
       { status: 400 }
     );
   }
 
-  // Try each URL in order until one works
-  for (const url of feed.urls) {
-    try {
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; stockings-research/1.0)',
-          'Accept': 'application/rss+xml, application/xml, application/atom+xml, text/xml, text/html, */*',
-        },
-        next: { revalidate: 600 }, // Cache 10 minutes
-      });
+  try {
+    // Google News RSS — works for all companies, public or private
+    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; stockings-research/1.0)',
+        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+      },
+      next: { revalidate: 600 }, // Cache 10 minutes
+    });
 
-      if (!response.ok) continue;
-
-      const text = await response.text();
-      const isXML = text.trimStart().startsWith('<?xml') || text.includes('<rss') || text.includes('<feed');
-
-      const releases = isXML ? parseRSS(text) : parseHTML(text, url);
-
-      if (releases.length > 0) {
-        return NextResponse.json({
-          symbol,
-          companyName: feed.name,
-          releases: releases.slice(0, 5),
-          source: url,
-          fetchedAt: new Date().toISOString(),
-        });
-      }
-    } catch {
-      // Try next URL
-      continue;
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: `Google News returned ${response.status}` },
+        { status: response.status }
+      );
     }
-  }
 
-  return NextResponse.json(
-    { error: 'Could not fetch press releases from any source', symbol },
-    { status: 502 }
-  );
+    const text = await response.text();
+    const releases = parseRSS(text);
+
+    if (releases.length > 0) {
+      return NextResponse.json({
+        symbol,
+        releases: releases.slice(0, 5),
+        source: 'Google News',
+        fetchedAt: new Date().toISOString(),
+      });
+    }
+
+    return NextResponse.json(
+      { error: 'No results found', symbol },
+      { status: 404 }
+    );
+  } catch (err) {
+    console.error('Press releases fetch error:', err);
+    return NextResponse.json(
+      { error: 'Failed to fetch press releases' },
+      { status: 500 }
+    );
+  }
 }
