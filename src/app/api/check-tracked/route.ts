@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
+import { ANTHROPIC_API_KEY } from '@/config/api-keys';
 import { PARTNER_NEWS } from '@/data/asts/partners';
 import { COMPETITOR_NEWS } from '@/data/asts/competitors';
 import { COMPLETED_MILESTONES, UPCOMING_CATALYSTS } from '@/data/asts/catalysts';
@@ -20,17 +20,14 @@ function buildAnalysisContext(company: string): string {
     PARTNER_NEWS.slice(0, 30).forEach(n =>
       lines.push(`[${n.date}] ${n.headline}`)
     );
-
     lines.push('\n=== COMPLETED MILESTONES ===');
     COMPLETED_MILESTONES.slice(0, 20).forEach(m =>
       lines.push(`[${m.date}] ${m.event}`)
     );
-
     lines.push('\n=== UPCOMING CATALYSTS ===');
     UPCOMING_CATALYSTS.slice(0, 15).forEach(c =>
       lines.push(`[${c.timeline}] ${c.event}`)
     );
-
     lines.push('\n=== EQUITY OFFERINGS / FINANCIALS ===');
     EQUITY_OFFERINGS.slice(0, 15).forEach(e =>
       lines.push(`[${e.date}] ${e.event}${e.notes ? ' — ' + e.notes : ''}`)
@@ -49,8 +46,7 @@ function buildAnalysisContext(company: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  if (!ANTHROPIC_API_KEY) {
     return NextResponse.json(
       { error: 'ANTHROPIC_API_KEY not configured' },
       { status: 500 }
@@ -64,20 +60,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ results: [] });
   }
 
-  const anthropic = new Anthropic({ apiKey });
   const context = buildAnalysisContext(company);
-
   const numberedHeadlines = headlines
     .map((h, i) => `${i + 1}. [${h.date}] ${h.headline}`)
     .join('\n');
 
-  try {
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 256,
-      messages: [{
-        role: 'user',
-        content: `You are checking whether press releases have already been covered/tracked in a stock analysis database.
+  const prompt = `You are checking whether press releases have already been covered/tracked in a stock analysis database.
 
 Below is the analysis database content (headlines of news, milestones, catalysts, and financial events that have been added):
 
@@ -88,12 +76,36 @@ ${context}
 Now check each of these press releases. For each one, respond with ONLY "Y" if the press release topic/event is already covered in the analysis above, or "N" if it is NOT yet tracked. One letter per line, in order.
 
 Press releases to check:
-${numberedHeadlines}`,
-      }],
+${numberedHeadlines}`;
+
+  try {
+    // Direct fetch to Anthropic API — no SDK needed, avoids Turbopack bundling issues
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 256,
+        messages: [{ role: 'user', content: prompt }],
+      }),
     });
 
-    const text = message.content[0].type === 'text' ? message.content[0].text : '';
-    const results = text.trim().split('\n').map(line => line.trim().toUpperCase().startsWith('Y'));
+    if (!res.ok) {
+      const errBody = await res.text();
+      console.error('Anthropic API error:', res.status, errBody);
+      return NextResponse.json(
+        { error: 'AI classification failed', detail: errBody },
+        { status: 500 }
+      );
+    }
+
+    const data = await res.json();
+    const text = data.content?.[0]?.type === 'text' ? data.content[0].text : '';
+    const results = text.trim().split('\n').map((line: string) => line.trim().toUpperCase().startsWith('Y'));
 
     while (results.length < headlines.length) results.push(false);
 
@@ -102,7 +114,7 @@ ${numberedHeadlines}`,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error('Claude classification error:', msg);
+    console.error('Classification error:', msg);
     return NextResponse.json(
       { error: 'AI classification failed', detail: msg },
       { status: 500 }
