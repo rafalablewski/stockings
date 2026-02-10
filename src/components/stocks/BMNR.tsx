@@ -220,6 +220,8 @@ import {
   HISTORICAL_ETH,
   COMPARABLES,
   DEFAULT_TRANCHES,
+  UPCOMING_CATALYSTS,
+  COMPLETED_MILESTONES,
 } from '@/data/bmnr';
 
 // ============================================================================
@@ -846,6 +848,7 @@ const BMNRDilutionAnalysis = () => {
     // Tracking
     { id: 'capital', label: 'Capital', type: 'tracking' },
     { id: 'financials', label: 'Financials', type: 'tracking' },
+    { id: 'catalysts', label: 'Catalysts', type: 'tracking' },
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
@@ -1029,6 +1032,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'monte-carlo' && <MonteCarloTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} stakingYield={calc.effectiveAPY} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} operatingCosts={operatingCosts} regulatoryRisk={regulatoryRisk} />}
         {activeTab === 'investment' && <InvestmentTab />}
         {activeTab === 'financials' && <FinancialsTab />}
+        {activeTab === 'catalysts' && <CatalystsTab upcomingCatalysts={UPCOMING_CATALYSTS} completedMilestones={COMPLETED_MILESTONES} />}
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
         {activeTab === 'sources' && (
@@ -10754,6 +10758,42 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ethereum-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Ethereum Ecosystem<UpdateIndicators sources={['PR', 'SEC']} /></h2>
       <V1 />
+    </div>
+  );
+};
+
+// CATALYSTS TAB - Upcoming catalysts and completed milestones
+const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
+  // Group milestones by year
+  const milestonesByYear = completedMilestones.reduce((acc, m) => {
+    const year = m.date.match(/20\d{2}/)?.[0] || 'Other';
+    if (!acc[year]) acc[year] = [];
+    acc[year].push(m);
+    return acc;
+  }, {});
+  const years = Object.keys(milestonesByYear).sort((a, b) => Number(b) - Number(a));
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Catalyst Tracker<UpdateIndicators sources={['PR', 'SEC']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Key upcoming events and ecosystem milestones for BMNR and the broader ETH/crypto ecosystem.</p></div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
+        <div>{upcomingCatalysts.map((c, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 8, border: '1px solid', background: c.impact === 'Critical' ? 'rgba(34,211,238,0.15)' : 'var(--surface2)', borderColor: c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)', marginBottom: i < upcomingCatalysts.length - 1 ? 4 : 0 }}>
+            <div><div style={{ fontWeight: 500, color: 'var(--text1)' }}>{c.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.timeline}{c.category ? ` · ${c.category}` : ''}</div></div>
+            <span className="pill" style={{ background: c.impact === 'Critical' ? 'var(--cyan)' : 'rgba(234,179,8,0.3)', color: c.impact === 'Critical' ? 'var(--bg1)' : 'var(--gold)', fontSize: 11, flexShrink: 0, marginLeft: 8 }}>{c.impact}</span>
+          </div>
+        ))}</div>
+      </div>
+      {years.map(year => (
+        <div key={year} className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{year} Completed<UpdateIndicators sources="PR" /></div>
+          <div className="g2">{milestonesByYear[year].map((m, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 8, borderRadius: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}>
+              <span style={{ color: 'var(--mint)', flexShrink: 0 }}>✓</span><div><div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}{m.category ? ` · ${m.category}` : ''}</div></div>
+            </div>
+          ))}</div>
+        </div>
+      ))}
     </div>
   );
 };
