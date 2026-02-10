@@ -98,24 +98,24 @@ export const OQ_PRESS_RELEASES: PressRelease[] = [
 
 export const IRIDIUM_PRESS_RELEASES: PressRelease[] = [
   {
+    date: '2026-01-22',
+    headline: 'Iridium Announces Release Date for Fourth-Quarter and Full Year 2025 Financial Results',
+    url: 'https://investor.iridium.com/press-releases',
+    tracked: false,
+    company: 'iridium',
+  },
+  {
     date: '2026-01-21',
-    headline: 'Iridium NTN Direct Begins On-Air Testing — First Two-Way Message Transmission',
+    headline: 'On-Air Trials Underway: Iridium NTN Direct Prepares to Enter Beta as Testing Continues',
     url: 'https://www.iridium.com/press-release/iridium-ntn-direct-on-air-trials/',
     tracked: true,
     company: 'iridium',
   },
   {
-    date: '2025-11-04',
-    headline: 'Vodafone IoT Partners with Iridium for NTN NB-IoT Global Connectivity',
-    url: 'https://www.iridium.com/blog/vodafone-iot-partnership/',
-    tracked: true,
-    company: 'iridium',
-  },
-  {
-    date: '2025-09-16',
-    headline: 'Iridium Begins NTN Direct Integration with Deutsche Telekom',
-    url: 'https://www.iridium.com',
-    tracked: true,
+    date: '2025-12-09',
+    headline: 'HD Hyundai Construction Equipment Chooses Reliable, Global Connectivity with Iridium',
+    url: 'https://investor.iridium.com/press-releases',
+    tracked: false,
     company: 'iridium',
   },
 ];

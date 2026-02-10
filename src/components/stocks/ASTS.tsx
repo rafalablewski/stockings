@@ -692,43 +692,6 @@ const ASTSAnalysis = () => {
   // Chart refresh key - increment to trigger chart data refresh
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
 
-  // Press releases refresh state — ASTS
-  const [livePressReleases, setLivePressReleases] = useState<Array<{ date: string; headline: string; url: string; items: string }> | null>(null);
-  const [prLoading, setPrLoading] = useState(false);
-  const [prError, setPrError] = useState<string | null>(null);
-  const refreshPressReleases = useCallback(async () => {
-    setPrLoading(true);
-    setPrError(null);
-    try {
-      const res = await fetch('/api/press-releases/ASTS');
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setLivePressReleases(data.releases || []);
-    } catch {
-      setPrError('Could not fetch from SEC EDGAR');
-    } finally {
-      setPrLoading(false);
-    }
-  }, []);
-
-  // Press releases refresh state — Iridium (IRDM, SEC-registered)
-  const [liveIridiumPR, setLiveIridiumPR] = useState<Array<{ date: string; headline: string; url: string; items: string }> | null>(null);
-  const [irdmLoading, setIrdmLoading] = useState(false);
-  const [irdmError, setIrdmError] = useState<string | null>(null);
-  const refreshIridiumPR = useCallback(async () => {
-    setIrdmLoading(true);
-    setIrdmError(null);
-    try {
-      const res = await fetch('/api/press-releases/IRDM');
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setLiveIridiumPR(data.releases || []);
-    } catch {
-      setIrdmError('Could not fetch from SEC EDGAR');
-    } finally {
-      setIrdmLoading(false);
-    }
-  }, []);
 
   // Live price refresh hook - gets price from chart's API response
   const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
@@ -1002,146 +965,43 @@ const ASTSAnalysis = () => {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
               <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#press-releases</div>
-              <div className="card">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <div className="card-title" style={{ marginBottom: 0 }}>Latest Press Releases</div>
-                  <button
-                    onClick={refreshPressReleases}
-                    disabled={prLoading}
-                    style={{
-                      background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 6,
-                      color: 'var(--text2)', fontSize: 11, padding: '4px 10px', cursor: prLoading ? 'wait' : 'pointer',
-                      display: 'flex', alignItems: 'center', gap: 4, opacity: prLoading ? 0.6 : 1,
-                    }}
-                  >
-                    <span style={{ display: 'inline-block', animation: prLoading ? 'spin 1s linear infinite' : 'none' }}>↻</span>
-                    {prLoading ? 'Fetching...' : 'Refresh from SEC'}
-                  </button>
+              {/* AST SpaceMobile Press Releases */}
+              {[
+                { title: 'AST SpaceMobile — Press Releases', data: PRESS_RELEASES, irUrl: 'https://investors.ast-science.com/news-events/press-releases' },
+                { title: 'OQ Technology — Press Releases', data: OQ_PRESS_RELEASES, irUrl: 'https://www.oqtec.space' },
+                { title: 'Iridium Communications — Press Releases', data: IRIDIUM_PRESS_RELEASES, irUrl: 'https://investor.iridium.com/press-releases' },
+              ].map(section => (
+                <div className="card" key={section.title}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <div className="card-title" style={{ marginBottom: 0 }}>{section.title}</div>
+                    <a
+                      href={section.irUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 6,
+                        color: 'var(--text2)', fontSize: 11, padding: '4px 10px', textDecoration: 'none',
+                        display: 'flex', alignItems: 'center', gap: 4,
+                      }}
+                    >
+                      Check IR Page <span style={{ fontSize: 9 }}>↗</span>
+                    </a>
+                  </div>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {section.data.slice(0, 3).map((pr, i) => (
+                      <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                        <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1, color: pr.tracked ? '#22c55e' : '#ef4444' }}>{pr.tracked ? '✓' : '✗'}</span>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <a href={pr.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
+                            {pr.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
+                          </a>
+                          <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date} · {pr.tracked ? 'Added to analysis' : 'Not yet in analysis'}</span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                {prError && <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 8 }}>{prError}</div>}
-                {(() => {
-                  // If we have live data from SEC EDGAR, show it with cross-reference against tracked PRESS_RELEASES
-                  if (livePressReleases) {
-                    const displayReleases = livePressReleases.slice(0, 3);
-                    if (displayReleases.length === 0) return <div style={{ fontSize: 12, color: 'var(--text3)' }}>No 8-K filings found.</div>;
-                    return (
-                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {displayReleases.map((pr, i) => {
-                          // Cross-reference: check if this filing date matches a tracked press release
-                          const tracked = PRESS_RELEASES.some(s => s.date === pr.date && s.tracked);
-                          return (
-                            <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                              <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1, color: tracked ? '#22c55e' : '#ef4444' }}>{tracked ? '✓' : '✗'}</span>
-                              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <a href={pr.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                                  {pr.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
-                                </a>
-                                <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date} · {tracked ? 'Added to analysis' : 'Not yet in analysis'}</span>
-                              </div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    );
-                  }
-                  // Default: show static PRESS_RELEASES data
-                  return (
-                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {PRESS_RELEASES.slice(0, 3).map((pr, i) => (
-                        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                          <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1, color: pr.tracked ? '#22c55e' : '#ef4444' }}>{pr.tracked ? '✓' : '✗'}</span>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <a href={pr.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                              {pr.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
-                            </a>
-                            <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date} · {pr.tracked ? 'Added to analysis' : 'Not yet in analysis'}</span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  );
-                })()}
-              </div>
-
-              {/* OQ Technology Press Releases */}
-              <div className="card">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <div className="card-title" style={{ marginBottom: 0 }}>OQ Technology — Press Releases</div>
-                  <span style={{ fontSize: 10, color: 'var(--text3)', background: 'var(--bg2)', padding: '2px 8px', borderRadius: 4 }}>Non-SEC (Luxembourg)</span>
-                </div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {OQ_PRESS_RELEASES.slice(0, 3).map((pr, i) => (
-                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                      <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1, color: pr.tracked ? '#22c55e' : '#ef4444' }}>{pr.tracked ? '✓' : '✗'}</span>
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <a href={pr.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                          {pr.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
-                        </a>
-                        <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date} · {pr.tracked ? 'Added to analysis' : 'Not yet in analysis'}</span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Iridium Communications Press Releases */}
-              <div className="card">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <div className="card-title" style={{ marginBottom: 0 }}>Iridium Communications — Press Releases</div>
-                  <button
-                    onClick={refreshIridiumPR}
-                    disabled={irdmLoading}
-                    style={{
-                      background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 6,
-                      color: 'var(--text2)', fontSize: 11, padding: '4px 10px', cursor: irdmLoading ? 'wait' : 'pointer',
-                      display: 'flex', alignItems: 'center', gap: 4, opacity: irdmLoading ? 0.6 : 1,
-                    }}
-                  >
-                    <span style={{ display: 'inline-block', animation: irdmLoading ? 'spin 1s linear infinite' : 'none' }}>↻</span>
-                    {irdmLoading ? 'Fetching...' : 'Refresh from SEC'}
-                  </button>
-                </div>
-                {irdmError && <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 8 }}>{irdmError}</div>}
-                {(() => {
-                  if (liveIridiumPR) {
-                    const displayReleases = liveIridiumPR.slice(0, 3);
-                    if (displayReleases.length === 0) return <div style={{ fontSize: 12, color: 'var(--text3)' }}>No 8-K filings found.</div>;
-                    return (
-                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {displayReleases.map((pr, i) => {
-                          const tracked = IRIDIUM_PRESS_RELEASES.some(s => s.date === pr.date && s.tracked);
-                          return (
-                            <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                              <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1, color: tracked ? '#22c55e' : '#ef4444' }}>{tracked ? '✓' : '✗'}</span>
-                              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <a href={pr.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                                  {pr.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
-                                </a>
-                                <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date} · {tracked ? 'Added to analysis' : 'Not yet in analysis'}</span>
-                              </div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    );
-                  }
-                  return (
-                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {IRIDIUM_PRESS_RELEASES.slice(0, 3).map((pr, i) => (
-                        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                          <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1, color: pr.tracked ? '#22c55e' : '#ef4444' }}>{pr.tracked ? '✓' : '✗'}</span>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <a href={pr.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                              {pr.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
-                            </a>
-                            <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date} · {pr.tracked ? 'Added to analysis' : 'Not yet in analysis'}</span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  );
-                })()}
-              </div>
+              ))}
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
               {[
