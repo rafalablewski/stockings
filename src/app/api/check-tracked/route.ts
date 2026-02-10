@@ -5,46 +5,37 @@ import { COMPETITOR_NEWS } from '@/data/asts/competitors';
 import { COMPLETED_MILESTONES, UPCOMING_CATALYSTS } from '@/data/asts/catalysts';
 import { EQUITY_OFFERINGS } from '@/data/asts/capital';
 
-const anthropic = new Anthropic();
+export const runtime = 'nodejs';
 
 interface CheckRequest {
   headlines: Array<{ headline: string; date: string }>;
-  company: string; // 'ASTS' or competitor key like 'iridium'
+  company: string;
 }
 
-/**
- * Build a concise summary of all analysis data for a given company.
- * This is what Claude checks the PR headlines against.
- */
 function buildAnalysisContext(company: string): string {
   const lines: string[] = [];
 
   if (company === 'ASTS') {
-    // Partner news headlines
     lines.push('=== PARTNER NEWS (tracked) ===');
     PARTNER_NEWS.slice(0, 30).forEach(n =>
       lines.push(`[${n.date}] ${n.headline}`)
     );
 
-    // Milestones
     lines.push('\n=== COMPLETED MILESTONES ===');
     COMPLETED_MILESTONES.slice(0, 20).forEach(m =>
       lines.push(`[${m.date}] ${m.event}`)
     );
 
-    // Catalysts
     lines.push('\n=== UPCOMING CATALYSTS ===');
     UPCOMING_CATALYSTS.slice(0, 15).forEach(c =>
       lines.push(`[${c.timeline}] ${c.event}`)
     );
 
-    // Equity offerings
     lines.push('\n=== EQUITY OFFERINGS / FINANCIALS ===');
     EQUITY_OFFERINGS.slice(0, 15).forEach(e =>
       lines.push(`[${e.date}] ${e.event}${e.notes ? ' — ' + e.notes : ''}`)
     );
   } else {
-    // For competitors, use competitor news filtered to this company
     lines.push(`=== COMPETITOR NEWS for "${company}" ===`);
     const companyLower = company.toLowerCase();
     COMPETITOR_NEWS
@@ -58,9 +49,10 @@ function buildAnalysisContext(company: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
     return NextResponse.json(
-      { error: 'ANTHROPIC_API_KEY not configured' },
+      { error: 'ANTHROPIC_API_KEY not configured', envKeys: Object.keys(process.env).filter(k => k.includes('ANTHROPIC')).join(',') },
       { status: 500 }
     );
   }
@@ -72,6 +64,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ results: [] });
   }
 
+  const anthropic = new Anthropic({ apiKey });
   const context = buildAnalysisContext(company);
 
   const numberedHeadlines = headlines
@@ -102,7 +95,6 @@ ${numberedHeadlines}`,
     const text = message.content[0].type === 'text' ? message.content[0].text : '';
     const results = text.trim().split('\n').map(line => line.trim().toUpperCase().startsWith('Y'));
 
-    // Pad or trim to match input length
     while (results.length < headlines.length) results.push(false);
 
     return NextResponse.json({
