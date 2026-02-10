@@ -257,7 +257,7 @@ interface ErrorBoundaryState {
 // ============================================================================
 
 /** Competitor identifiers for D2D/satellite space */
-type CompetitorId = 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-kuiper' | 'other';
+type CompetitorId = 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-leo' | 'echostar' | 'oq-technology' | 'other';
 
 /** News category types */
 type CompetitorNewsCategory = 'Launch' | 'Partnership' | 'Technology' | 'Regulatory' | 'Financial' | 'Coverage' | 'Product';
@@ -742,6 +742,7 @@ const ASTSAnalysis = () => {
     { id: 'subscribers', label: 'Subscribers', type: 'projection', group: 'ASTS Analysis' },
     { id: 'revenue', label: 'Revenue', type: 'projection', group: 'ASTS Analysis' },
     { id: 'runway', label: 'Cash Runway', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'sources', label: 'Sources', type: 'tracking', group: 'ASTS Analysis' },
     // Unified valuation model (combines Scenarios + DCF)
     { id: 'model', label: 'Model', type: 'projection' },
     // Other projections
@@ -953,6 +954,77 @@ const ASTSAnalysis = () => {
           {activeTab === 'financials' && <FinancialsTab />}
           {activeTab === 'investment' && <InvestmentTab />}
           {activeTab === 'wall-street' && <WallStreetTab />}
+          {activeTab === 'sources' && (
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-header</div>
+              <h2 className="section-head">Research Sources</h2>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
+              <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
+              {[
+                { category: 'Company / IR', sources: [
+                  { name: 'AST SpaceMobile Investor Relations', url: 'https://investors.ast-science.com' },
+                  { name: 'SEC EDGAR (ASTS Filings)', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=ast+spacemobile&CIK=&type=&dateb=&owner=include&count=40&search_text=&action=getcompany' },
+                ]},
+                { category: 'Competitors / D2D Players', sources: [
+                  { name: 'OQ Technology', url: 'https://www.oqtec.space' },
+                  { name: 'Iridium Communications', url: 'https://www.iridium.com' },
+                  { name: 'Skylo Technologies', url: 'https://www.skylo.tech' },
+                  { name: 'Lynk Global', url: 'https://lynk.world' },
+                  { name: 'SpaceX / Starlink Direct to Cell', url: 'https://direct.starlink.com' },
+                  { name: 'Viasat', url: 'https://www.viasat.com' },
+                  { name: 'Amazon / Project Kuiper', url: 'https://www.aboutamazon.com/news/amazon-leo' },
+                  { name: 'EchoStar / Hughes', url: 'https://www.echostar.com' },
+                  { name: 'SES', url: 'https://www.ses.com' },
+                  { name: 'Terrestar Solutions', url: 'https://terrestarsolutions.ca' },
+                  { name: 'Space42 / Bayanat', url: 'https://space42.ai' },
+                ]},
+                { category: 'Satellite / Telecom Industry', sources: [
+                  { name: 'SpaceNews', url: 'https://spacenews.com' },
+                  { name: 'Via Satellite', url: 'https://www.viasatellite.com' },
+                  { name: 'SatellitePro ME', url: 'https://www.satelliteprome.com' },
+                  { name: 'SatNews', url: 'https://www.satnews.com' },
+                  { name: 'Advanced Television', url: 'https://advanced-television.com' },
+                  { name: 'New Electronics', url: 'https://www.newelectronics.co.uk' },
+                  { name: 'Light Reading', url: 'https://www.lightreading.com' },
+                ]},
+                { category: 'Research / Market Data', sources: [
+                  { name: 'GSMA Intelligence', url: 'https://www.gsmaintelligence.com' },
+                  { name: 'Kaleido Intelligence', url: 'https://www.kaleidointelligence.com' },
+                  { name: 'MEF (Mobile Ecosystem Forum)', url: 'https://mobileecosystemforum.com' },
+                ]},
+                { category: 'Regulatory', sources: [
+                  { name: 'FCC (Federal Communications Commission)', url: 'https://www.fcc.gov' },
+                ]},
+                { category: 'Financial / Analyst', sources: [
+                  { name: 'TipRanks', url: 'https://www.tipranks.com' },
+                  { name: 'Seeking Alpha', url: 'https://seekingalpha.com' },
+                  { name: 'GuruFocus', url: 'https://www.gurufocus.com' },
+                  { name: 'Yahoo Finance', url: 'https://finance.yahoo.com' },
+                  { name: 'MarketBeat', url: 'https://www.marketbeat.com' },
+                  { name: 'Investing.com', url: 'https://www.investing.com' },
+                  { name: 'Benzinga', url: 'https://www.benzinga.com' },
+                  { name: 'Quiver Quant', url: 'https://www.quiverquant.com' },
+                ]},
+                { category: 'Press / News Wires', sources: [
+                  { name: 'PR Newswire', url: 'https://www.prnewswire.com' },
+                  { name: 'Business Wire', url: 'https://www.businesswire.com' },
+                  { name: 'GlobeNewswire', url: 'https://www.globenewswire.com' },
+                ]},
+              ].map(group => (
+                <div key={group.category} className="card">
+                  <div className="card-title">{group.category}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {group.sources.map(s => (
+                      <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
+                        {s.name} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </main>
       </div>
     </UpdateIndicatorContext.Provider>
@@ -1657,7 +1729,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
     { partner: 'Vodafone Idea', region: 'India', subs: 250, status: 'Definitive', spectrum: 'TBD', notes: 'June 2025 agreement' },
     { partner: 'Rakuten', region: 'Japan', subs: 5, status: 'Definitive', spectrum: 'LTE', notes: 'Investor. Video calls completed.' },
     { partner: 'Bell Canada', region: 'Canada', subs: 23, status: 'Definitive', spectrum: 'TBD', notes: 'First Canadian VoLTE call 2025' },
-    { partner: 'Orange', region: 'Europe/Africa', subs: 250, status: 'MOU', spectrum: 'TBD', notes: 'Part of SatCo discussions' },
+    { partner: 'Orange', region: 'Europe/Africa', subs: 220, status: 'MOU', spectrum: 'TBD', notes: 'MoU Mar 2022. Testing in Africa post-BW3. 220M+ mobile customers. Note: Orange launched competing SMS D2D with Skylo (Dec 2025)' },
     { partner: 'Telefonica', region: 'Europe/LatAm', subs: 380, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
     { partner: 'TIM', region: 'Italy/Brazil', subs: 100, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
     { partner: 'MTN', region: 'Africa', subs: 280, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
@@ -9237,6 +9309,15 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       currentStatus: 'Contract signed Aug 2025, satellites 2028, commercial service 2029',
       capabilities: { voice: true, text: true, data: true, video: true, unmodifiedPhones: true, globalCoverage: true },
       keyMetrics: { satellites: '200 initial (scalable to 1000s)', coverage: 'US + global (2GHz spectrum)', subscribers: 'Pre-launch', funding: '$5B LEO project, $18B total NTN since 2012' }
+    },
+    {
+      id: 'oq-technology',
+      name: 'OQ Technology',
+      description: 'European LEO 5G NTN operator for NB-IoT and D2D — Luxembourg-based (founded 2016 by Omar Qaise, ex-SES), sovereign EU positioning',
+      technology: '10 LEO 6U cubesats, 60 MHz MSS S-band + upper C-band + IMT band, 3GPP NTN NB-IoT/D2D, in-house RAN stack + 5G core',
+      currentStatus: '10 sats in orbit, IoT commercial (20+ MNO roaming), D2D emergency broadcast Nov 2025, 5NETSAT mission Aug 2025, D2D messaging targeting 2026, 30 new sats planned by end 2026',
+      capabilities: { voice: false, text: true, data: true, video: false, unmodifiedPhones: true, globalCoverage: false },
+      keyMetrics: { satellites: '10 (30 more by end 2026, 100 target in 2-3 yrs)', coverage: 'Global IoT + expanding D2D, licensed in AU/LU/DE/SA/NG/RW', subscribers: '20+ MNO roaming (DT, KPN, Telefónica, Transatel, Emnify)', funding: '€13M Series A (Aramco) + LSSD convertible (SES) + €17.5M EIC; Series B targeting €35-40M' }
     }
   ];
 
@@ -9260,6 +9341,709 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     //   sourceUrl: 'https://...'
     // },
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TERRESTAR - HYBRID SATELLITE-CELLULAR IoT (CANADA)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-05',
+      competitor: 'other',
+      category: 'Product',
+      headline: 'Terrestar launches hybrid IoT service on standards-based open network platform in Canada',
+      details: [
+        'Terrestar Solutions launches Hybrid IoT connectivity service in Canada',
+        'First Canadian-controlled hybrid satellite-cellular IoT platform on open 3GPP NTN standards',
+        'Seamless switching between cellular and satellite networks across urban, rural, remote regions',
+        'LUBEX validated service over 32 weeks in Abitibi-Témiscamingue for equipment monitoring',
+        'Delivered over Canadian-licenced S-band spectrum via Echostar T1 satellite',
+        'Practical first step toward D2D satellite connectivity in Canada'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Terrestar focused on narrowband IoT (asset tracking, equipment monitoring) using single GEO satellite — not broadband D2D to smartphones. ASTS targets broadband voice/data to unmodified smartphones via LEO constellation. Validates 3GPP NTN standards approach but fundamentally different scale and capability.',
+      source: 'Terrestar Solutions',
+      sourceUrl: 'https://terrestarsolutions.ca',
+      storyId: 'terrestar-hybrid-iot',
+      storyTitle: 'Terrestar Hybrid IoT'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INDUSTRY D2D MARKET ANALYSIS
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-12',
+      competitor: 'other',
+      category: 'Coverage',
+      headline: 'MEF: Satellite D2D promises 100% geographic coverage, wholesale market evolution ahead',
+      details: [
+        'Orange France launched "Message Satellite" D2D SMS service with Skylo (€5/month after 6-month free trial)',
+        'GSMA survey: 32% of consumers would pay up to 5% extra for satellite connectivity',
+        '61% willing to pay more, 47% would switch operators for D2D coverage',
+        'Starlink has ~7,600 LEOs with D2D partnerships across 9+ operators (Verizon, T-Mobile, Rogers, etc.)',
+        'Amazon Leo targeting 3,000+ satellites',
+        'D2D described as "early signal of a wholesale market evolution"',
+        'New wholesale frameworks needed for satellite-enabled roaming and hybrid settlement'
+      ],
+      implication: 'positive',
+      astsComparison: 'Strongly validates ASTS thesis: massive consumer demand for D2D with willingness to pay and even switch operators. The 47% switching intent is a powerful negotiating lever for ASTS in MNO partnership discussions. Most Starlink D2D services are SMS-only; ASTS targets broadband voice/data.',
+      source: 'MEF',
+      storyId: 'mef-d2d-market-analysis',
+      storyTitle: 'D2D Market Analysis'
+    },
+    {
+      date: '2025-12-03',
+      competitor: 'other',
+      category: 'Coverage',
+      headline: 'Viasat/GSMA report: 60% of consumers would pay more for D2D satellite, 47% would switch providers',
+      details: [
+        'Survey of 12,390 mobile phone users across 12 markets (US, UK, France, India, Japan, etc.)',
+        'More than a third lose basic mobile service at least twice monthly',
+        '60%+ globally willing to pay extra for satellite-enabled smartphone services',
+        'Willingness varies: India 89%, Indonesia 82%, US 56%, France 48%',
+        'Consumers willing to pay 5-7% more on monthly bill',
+        'Nearly half (47%) would switch operators if D2D coverage included',
+        'India compelling: $2.35 ARPU but larger population and higher willingness-to-pay',
+        'MNOs face "marketing gap" — balancing excitement without over-promising'
+      ],
+      implication: 'positive',
+      astsComparison: 'Highly bullish for ASTS. The 47% switching intent and 60%+ willingness-to-pay validate that D2D is must-have for MNOs. Directly supports ASTS MNO partnership value proposition. High enthusiasm in emerging markets aligns with ASTS global strategy. "Marketing gap" concern about data-rich services favors ASTS over SMS-only competitors.',
+      source: 'Viasat / GSMA Intelligence',
+      storyId: 'mef-d2d-market-analysis',
+      storyTitle: 'D2D Market Analysis'
+    },
+    {
+      date: '2025-07-17',
+      competitor: 'other',
+      category: 'Coverage',
+      headline: 'Kaleido Intelligence: D2D IoT connections to reach 30M by 2030, smartphone ARPU capped at $6/mo',
+      details: [
+        'Satellite D2D IoT connections will reach 30 million by 2030 (up from under 500K end of 2025)',
+        'Key IoT use cases: asset tracking, energy/utilities, agriculture (60% of connections)',
+        '51% of IoT enterprises view D2D as viable WAN connectivity solution',
+        'Since 2015, satellite payloads launched into orbit increased 1,105%',
+        'At least 60,000 satellites expected in LEO orbit',
+        'Monthly smartphone D2D ARPU unlikely to exceed $6 globally by 2030',
+        '6 million smartphone D2D users expected by end of 2025',
+        'OEM subsidies for satellite connectivity could drive smartphone traction'
+      ],
+      implication: 'neutral',
+      astsComparison: '$6/month global ARPU ceiling for smartphone D2D is concerning for ASTS revenue model. However, 30M IoT connections by 2030 validates growing demand. ASTS differentiates with large satellite arrays (BlueBird) that compensate for smartphone antenna limitations. LEO congestion warnings (60K+ sats) could favor ASTS approach of fewer, larger satellites.',
+      source: 'Kaleido Intelligence',
+      storyId: 'mef-d2d-market-analysis',
+      storyTitle: 'D2D Market Analysis'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // OQ TECHNOLOGY - EUROPEAN 5G NTN LEO OPERATOR (IoT + D2D)
+    // Founded 2016 Luxembourg by Omar Qaise (ex-SES). 10 LEO 6U cubesats,
+    // 60 MHz MSS S-band. Backed by Aramco Wa'ed, SES/LSSD, EIC. 20+ MNO roaming.
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // --- 2026 ---
+    {
+      date: '2026-01-20',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology and Eseye partner for global 5G IoT via seamless satellite-terrestrial integration',
+      details: [
+        'Strategic partnership with UK-based Eseye for ubiquitous IoT connectivity',
+        'OQ LEO constellation integrated with Eseye AnyNet Connectivity Hub',
+        'Single SIM solution bridging terrestrial and satellite networks',
+        '3GPP Release 17 multi-RAT connectivity — automatic roam between cellular and satellite',
+        'Global uninterrupted 5G IoT for maritime, logistics, energy, mining, agriculture',
+        'OQ LEO satellites in S-band deliver low-latency connectivity for M2M applications',
+        'Targets maritime, logistics, energy, mining, agriculture, environmental monitoring'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ continuing to build IoT partnership ecosystem. Eseye integration is similar to Monogoto partnership (announced same month) — extending OQ reach through connectivity platforms. Still NB-IoT focused, not broadband D2D. Growing IoT footprint could support OQ\'s transition to D2D services.',
+      source: 'New Electronics / Via Satellite',
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
+    },
+    {
+      date: '2026-01-08',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'Monogoto adds OQ Technology LEO constellation to hybrid connectivity platform at CES 2026',
+      details: [
+        'OQ Technology and Monogoto announce strategic partnership at CES 2026',
+        'Adds OQ LEO constellation to Monogoto hybrid ecosystem (cellular + Wi-Fi + GEO + LEO)',
+        'Single SIM, unified IP addressing, consistent APIs across all networks',
+        'OQ operates 3GPP-compliant 5G NTN NB-IoT service using 60 MHz MSS S-band',
+        'Monogoto: "For the first time, LEO is joining the hybrid connectivity landscape"',
+        'Targets energy, logistics, maritime, agriculture, utilities'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ expanding IoT connectivity ecosystem via partnerships. Still NB-IoT focused but growing D2D ambitions following Nov 2025 emergency broadcast demo. Not direct competition to ASTS broadband smartphone D2D yet.',
+      source: 'OQ Technology / Monogoto',
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
+    },
+
+    // --- 2025 ---
+    {
+      date: '2025-12-17',
+      competitor: 'oq-technology',
+      category: 'Technology',
+      headline: 'OQ Technology certifies Nordic Semiconductor nRF9151 for NTN NB-IoT — first standard module-to-LEO connection',
+      details: [
+        'Successful end-to-end NB-IoT connection from Nordic nRF9151 module to OQ LEO constellation',
+        'Powered entirely by OQ\'s own 3GPP NTN NB-IoT RAN stack and 5G core — full vertical integration',
+        'Nordic module connects directly to OQ satellites without hardware modifications',
+        'Validates readiness of mass-market NTN IoT for broad commercial deployment',
+        'OQ claims "unparalleled control over performance, reliability" via vertical integration',
+        'Enables industries in remote sectors (energy, mining, logistics, agriculture)',
+        '75%+ of world landmass and maritime waters lack cellular coverage — OQ addresses this gap'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ validating NB-IoT standards-based connectivity from mass-market modules to LEO satellites. Nordic is also Iridium\'s NTN Direct chipset partner — OQ and Iridium competing for same NB-IoT ecosystem. OQ\'s vertical integration (own RAN + core) gives more control vs ASTS which works with MNO infrastructure. Different markets: OQ IoT sensors, ASTS smartphones.',
+      source: 'Nordic Semiconductor / Via Satellite',
+      storyId: 'oq-technology-rd',
+      storyTitle: 'OQ Technology R&D & Certification'
+    },
+    {
+      date: '2025-11-19',
+      competitor: 'oq-technology',
+      category: 'Technology',
+      headline: 'OQ Technology achieves Europe\'s first D2D emergency broadcast from space — plans 30 sats and D2D messaging by end 2026',
+      details: [
+        'First European satellite operator to deliver D2D emergency broadcast from LEO to unmodified iPhones and Androids',
+        'Live demo in Luxembourg at Space Tech Europe (Bremen) — transmitted without hardware/software modifications',
+        '10 LEO satellites currently in orbit, 30 more planned by end 2026 (5 launches)',
+        'D2D text messaging service expected by end 2026, voice services to follow',
+        '60 MHz MSS S-band spectrum + upper C-band + IMT band partnerships',
+        'Targeting 100 satellites in constellation within 2-3 years',
+        'Positioning as "clear European sovereign operator for D2D connectivity"',
+        'Interested in EU 2GHz MSS spectrum renewal in 2027 (currently held by Inmarsat/Solaris Mobile)',
+        'Backed by Luxembourg Space Agency, ESA, European Innovation Council, EU Cassini Accelerator',
+        'Has contributed to multiple 3GPP working groups shaping NTN standards'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ Technology is evolving from IoT-only to a serious European D2D contender. 30 new sats by 2026 + D2D messaging/voice plans increase competitive overlap with ASTS. Key differences: OQ targets narrowband D2D (messaging/voice) while ASTS targets broadband (video/data). OQ\'s 20+ MNO partners and EU sovereign positioning compete with ASTS/Vodafone SatCo JV for European market. OQ eyeing EU 2GHz MSS spectrum renewal creates potential spectrum conflict. Scale mismatch: OQ targeting 100 sats vs ASTS constellation of much larger, higher-throughput BlueBirds.',
+      source: 'GlobeNewswire / Light Reading / Via Satellite',
+      storyId: 'oq-technology-rd',
+      storyTitle: 'OQ Technology R&D & Certification'
+    },
+    {
+      date: '2025-11-04',
+      competitor: 'oq-technology',
+      category: 'Regulatory',
+      headline: 'OQ Technology granted official Luxembourg government concession for satellite 5G NTN and D2D services',
+      details: [
+        'Official government concession from Luxembourg for satellite-based 5G D2D and IoT',
+        'Issued by Minister Elisabeth Margue (Media and Connectivity)',
+        'Authorized to deploy and operate satellite networks for D2D and IoT connectivity',
+        'Standard 5G smartphones and NB-IoT devices connect via satellite without custom hardware',
+        'Luxembourg among first European countries to authorize 5G NTN and D2D operations',
+        'Grants regulatory rights under internationally coordinated ITU frequency/orbit filings',
+        'Linked to 5NETSAT mission backed by €2.5M EIC grant'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Luxembourg concession gives OQ official regulatory authority for European D2D — a competitive advantage in European market vs ASTS/SatCo which operates through MNO spectrum partnerships. OQ building sovereign EU regulatory position while ASTS relies on MNO agreements. Different regulatory paths to same market.',
+      source: 'Advanced Television / SpaceWatch Global',
+      storyId: 'oq-funding',
+      storyTitle: 'OQ Technology Funding & Regulation'
+    },
+    {
+      date: '2025-10-17',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology joins Mobile Satellite Services Association (MSSA) for D2D and NTN spectrum advocacy',
+      details: [
+        'OQ Technology joins MSSA — industry body progressing D2D IoT and NTN connectivity',
+        'MSSA launched Feb 2024 to develop global ecosystem using L- and S-band spectrum',
+        'Focus on spectrum already allocated and licensed for mobile satellite services',
+        'MSSA Board Chairman Mark Dankberg (Viasat): "very pleased to welcome OQ Technology"',
+        'OQ described as "industry leader and provider in 5G non-terrestrial network connectivity"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ joining MSSA alongside other satellite players strengthens industry coalition for D2D spectrum. MSSA focuses on L- and S-band, different from ASTS which uses MNO spectrum via partnerships. OQ accumulating industry group memberships and regulatory positions in European D2D market.',
+      source: 'SatellitePro ME',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2025-10-02',
+      competitor: 'oq-technology',
+      category: 'Coverage',
+      headline: 'OQ Technology expands satellite IoT services to Australia — S-band spectrum license secured from ACMA',
+      details: [
+        'Official launch into Australian market with new office',
+        'Secured S-band spectrum license from Australian Communications and Media Authority (ACMA)',
+        'Australia joins Luxembourg, Germany, Saudi Arabia, Rwanda, Nigeria in OQ\'s licensed countries',
+        'Services delivered through own spectrum + 20+ MNO roaming agreements worldwide',
+        'Enterprise customers include Aramco',
+        'Targeting agriculture, mining, oil & gas, logistics, utilities, emergency response',
+        'Claims 80% cost reduction vs providers requiring proprietary hardware'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ expanding geographically — Australia is a key market for satellite connectivity due to vast rural areas. ASTS also targets Australia via MNO partnerships (Telstra MOU). OQ focused on NB-IoT enterprise market while ASTS targets consumer smartphone broadband. Different use cases but competing for "satellite connectivity" narrative in same geography.',
+      source: 'SpaceNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2025-09-30',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology and KPN sign roaming agreement for global 5G IoT coverage',
+      details: [
+        'Strategic roaming agreement with Dutch telecom KPN',
+        'KPN customers seamlessly roam onto OQ satellite network when terrestrial unavailable',
+        'KPN\'s second satellite-IoT partnership in 2025 (after Skylo in April)',
+        'LEO satellites provide global coverage including polar regions above 70° and remote ocean routes',
+        'Advantage over GEO systems in high-latitude and obstructed environments',
+        'Targets maritime, logistics, energy, agriculture customers'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ building MNO roaming partnerships similar to ASTS MNO partnership model. KPN is not an ASTS partner. OQ focused on IoT connectivity extension while ASTS targets smartphone broadband. OQ\'s LEO advantage in polar regions is relevant for maritime/logistics verticals.',
+      source: 'Via Satellite / SpaceNews',
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
+    },
+    {
+      date: '2025-09-25',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology and UDS sign MoU for 5G NTN satellite connectivity for defense drones',
+      details: [
+        'MoU with Lithuanian Unmanned Defense Systems (UDS) for satellite-connected drones',
+        'Integrating 5G NTN D2D and IoT connectivity via LEO satellites into defense drone systems',
+        'Use cases: beyond-line-of-sight comms, real-time data in contested environments',
+        'Defense applications: surveillance, reconnaissance, logistics, tactical operations',
+        'Uses MSS S-band and upper C-band spectrum for secure communications',
+        'OQ expanding from commercial IoT into defense vertical'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ expanding into defense sector — a vertical ASTS has also targeted (US government contracts). Defense D2D requires secure, resilient comms in contested environments. Different scale: OQ small LEO sats for drone command/data, ASTS large arrays for broadband. Both pursuing government revenue diversification.',
+      source: 'OQ Technology / UDS',
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
+    },
+    {
+      date: '2025-08-13',
+      competitor: 'oq-technology',
+      category: 'Launch',
+      headline: 'OQ Technology launches 5NETSAT mission — Europe\'s first 5G NTN LEO service demo, backed by €2.5M EIC grant',
+      details: [
+        'Official launch of flagship 5NETSAT mission supported by €2.5M EIC Accelerator grant',
+        'Also selected for equity investment by EIC Fund',
+        'Demonstrates D2D capabilities: emergency SMS and broadcast alerts to standard 5G devices using IMT spectrum',
+        'Europe\'s first service demonstration of a 5G NTN in LEO',
+        'OQ is first Luxembourg space company to receive EIC Accelerator funding',
+        'Only 4 out of 71 EIC-selected companies this year were space-related'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ achieving key EU milestones — 5NETSAT is Europe\'s first 5G NTN LEO service demo. EU institutional backing (EIC) positions OQ as Europe\'s preferred sovereign D2D operator. ASTS competing for European market through Vodafone SatCo JV and MNO partnerships; OQ building direct EU institutional support. Scale remains very different: OQ 6U cubesats vs ASTS 64m² BlueBird arrays.',
+      source: 'SatNews / telecoms.com',
+      storyId: 'oq-constellation',
+      storyTitle: 'OQ Technology Constellation & Launches'
+    },
+    {
+      date: '2025-03-04',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology becomes commercial roaming partner of Deutsche Telekom at MWC 2025',
+      details: [
+        'Commercial roaming agreement signed with Deutsche Telekom at MWC 2025',
+        'DT users can roam into OQ\'s NTN globally for enterprise IoT',
+        'Builds on MoU announced at MWC 2024',
+        'Targets utilities, logistics, maritime, and energy sectors',
+        'OQ integrated into Deutsche Telekom\'s network infrastructure'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Deutsche Telekom is a Tier-1 European MNO — OQ securing DT as commercial roaming partner strengthens European IoT position. Different service tiers: OQ provides NB-IoT for enterprise sensors, ASTS targets smartphone broadband via large-array satellites. Both competing for MNO mindshare in the NTN space.',
+      source: 'OQ Technology',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2025-02-26',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology signs distributor agreement with Aramco Digital for NTN IoT in Saudi Arabia',
+      details: [
+        'Aramco Digital to act as official distributor of OQ NTN IoT solutions in Saudi Arabia',
+        'Deepens existing Aramco-OQ relationship (Wa\'ed Ventures led Series A in 2022)',
+        'Enables satellite-powered IoT connectivity for Saudi industries',
+        'Aramco Digital is the digital innovation arm of Saudi Aramco',
+        'OQ already has local Saudi presence in Al Khobar'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ deepening Saudi enterprise foothold via Aramco relationship. Aramco is one of world\'s largest companies — distribution agreement validates OQ\'s IoT service for energy sector. ASTS pursuing Middle East through MNO partnerships; OQ has direct enterprise channel via Aramco. Different markets: OQ for industrial IoT, ASTS for consumer broadband.',
+      source: 'OQ Technology / SatellitePro ME',
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
+    },
+    {
+      date: '2025-02-19',
+      competitor: 'oq-technology',
+      category: 'Financial',
+      headline: 'OQ Technology secures up to €17.5M from EU EIC Accelerator for direct-to-smartphone satellite efforts',
+      details: [
+        'Package includes secured €2.5M grant and up to €15M in equity financing for Series B',
+        'Supports OQ\'s efforts to connect unmodified smartphones via small satellite constellation',
+        'Series B aims to raise €35-40M total, backed by Luxembourg government (LSSD)',
+        'Existing 10 cubesats need significant payload and software upgrades for smartphone connectivity',
+        'Successfully tested upgraded payload in representative environment',
+        'First enhanced satellite targeting 2026 launch',
+        'First Luxembourg space company to receive EIC Accelerator funding'
+      ],
+      implication: 'neutral',
+      astsComparison: 'EU funding validates OQ\'s D2D smartphone ambitions but €17.5M is modest compared to ASTS\'s capital raises (hundreds of millions raised publicly). OQ needs significant payload upgrades to go from IoT cubesats to smartphone connectivity — ASTS designed BlueBird arrays specifically for smartphone broadband from the start. OQ\'s EU institutional backing is a competitive advantage in European market.',
+      source: 'SpaceNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+
+    // --- 2024 ---
+    {
+      date: '2024-10-21',
+      competitor: 'oq-technology',
+      category: 'Financial',
+      headline: 'OQ Technology secures convertible investment from LSSD fund (SES + Luxembourg Gov\'t) in Series B',
+      details: [
+        'Convertible loan investment from Luxembourg Space Sector Development fund (LSSD)',
+        'LSSD co-led by SES S.A. and Luxembourg government',
+        'Existing shareholders Wa\'ed Ventures (Aramco VC) and Phaistos (Greece) also participated',
+        'Previous Series A raised €13M in 2022',
+        'SES backing notable: world\'s largest GEO satellite operator investing in LEO NTN startup',
+        'CEO: "backed by both the world\'s largest satellite operator and the VC arm of the oil and gas giant"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'SES investment in OQ is notable — world\'s largest GEO operator backing OQ\'s LEO NTN IoT. OQ funding scale (€13M Series A + convertible) remains modest compared to ASTS which has raised hundreds of millions. However, institutional backing (SES, Aramco, Luxembourg Gov\'t) gives OQ significant credibility in European market.',
+      source: 'SpaceNews / SatNews',
+      storyId: 'oq-funding',
+      storyTitle: 'OQ Technology Funding & Regulation'
+    },
+    {
+      date: '2024-05-06',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology and Transatel collaborate for global converged satellite 5G IoT connectivity',
+      details: [
+        'Collaboration for converged mobile satellite connectivity service',
+        'Transatel offers global 5G roaming, enabling NB-IoT solutions worldwide',
+        'Hybrid terrestrial + NTN combined solution on compatible devices',
+        'OQ has 10 satellites in orbit with more planned',
+        'Targets low-latency, large capacity IoT communication'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ continuing to build MNO/MVNO roaming partnerships. Transatel is a global IoT MVNO — different from ASTS\'s MNO partnerships with AT&T, Vodafone. OQ consistently adding connectivity platform integrations for IoT. Still IoT-only at this stage, not smartphone D2D.',
+      source: 'SatNews / Transatel',
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
+    },
+    {
+      date: '2024-03-10',
+      competitor: 'oq-technology',
+      category: 'Launch',
+      headline: 'OQ Technology launches Tiger-7 and Tiger-8 — constellation reaches 10 LEO satellites',
+      details: [
+        'Tiger-7 and Tiger-8 launched on SpaceX Falcon 9 Transporter-10 rideshare',
+        'Both 6U nanosatellites carry NB-IoT payloads, facilitated by Nanoavionics',
+        'Only 3 months after Tiger-5 & Tiger-6 on Transporter-9',
+        'OQ constellation reaches 10 satellites total — Series A milestone achieved',
+        'CEO: "leading the pack as fastest-growing LEO NTN NB-IoT 3GPP standard constellation"',
+        'Now preparing for batch-2 satellites with enhanced capabilities'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ reaching 10-satellite milestone with 6U cubesats. Very different scale: ASTS building large phased-array satellites (planned BlueBird production sats) for broadband D2D. OQ cubesats designed for narrowband IoT; ASTS arrays designed for broadband voice/data. OQ rapid launch cadence (4 sats in ~4 months) enabled by small form factor and rideshare missions.',
+      source: 'SatellitePro ME',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2024-03-06',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology signs MoU with Deutsche Telekom IoT for converged satellite-cellular service at MWC 2024',
+      details: [
+        'MoU with Deutsche Telekom IoT (DT IoT) announced at MWC 2024',
+        'DT IoT to offer converged mobile satellite connectivity service',
+        'OQ satellite network integrates with DT T IoT Hub and Core Network',
+        'Provides global IoT network coverage for DT enterprise customers',
+        'Significant milestone: DT is one of Europe\'s largest telcos'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Deutsche Telekom is a Tier-1 European MNO — MoU with OQ validates satellite-IoT roaming model. ASTS also pursues large MNO partnerships but for smartphone broadband. OQ steadily building MNO ecosystem for narrowband IoT. Different value propositions: OQ extends IoT to remote areas, ASTS delivers broadband where there are coverage gaps.',
+      source: 'GSMA / IoT Insider',
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
+    },
+    {
+      date: '2024-02-08',
+      competitor: 'oq-technology',
+      category: 'Technology',
+      headline: 'OQ Technology receives ESA/Luxembourg contract to study direct-to-smartphone capability from LEO',
+      details: [
+        'Six-month feasibility contract funded by Luxembourg via LuxImpulse innovation program',
+        'Study ways to connect unmodified smartphones from OQ\'s LEO constellation',
+        'Current 8 cubesats can connect IoT devices but smartphones need more satellite power + Doppler management',
+        'CEO anticipates D2D satellite or hosted payload within two years, pending funding',
+        'Marks OQ\'s formal pivot from IoT-only to smartphone D2D ambitions'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ beginning to study D2D smartphone capability — still at feasibility stage. ASTS has been designing specifically for smartphone D2D from inception, with BW3 test satellite already in orbit (since Sep 2023). OQ would need significantly more powerful satellites to reach smartphones from its 6U cubesat platform. Years behind ASTS in D2D smartphone development.',
+      source: 'SpaceNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+
+    // --- 2023 ---
+    {
+      date: '2023-11-14',
+      competitor: 'oq-technology',
+      category: 'Launch',
+      headline: 'OQ Technology launches Tiger-5 and Tiger-6 on SpaceX Transporter-9 — constellation grows to 8 satellites',
+      details: [
+        'Tiger-5 and Tiger-6 launched on SpaceX Falcon 9 Transporter-9 rideshare',
+        'Both 6U nanosatellites carry NB-IoT payloads',
+        'Constellation grows to 8 satellites total',
+        'CEO: "on track completing batch 1 of 10 satellites to serve critical clients globally"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ adding IoT satellites steadily via rideshare missions. ASTS BW3 test satellite launched same period (Sep 2023) with fundamentally different approach — single large 64m² array vs many small cubesats. OQ for narrowband IoT sensors, ASTS for broadband smartphone D2D.',
+      source: 'SatNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2023-11-19',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'O2 Telefónica partners with OQ Technology for worldwide satellite IoT coverage',
+      details: [
+        'O2 Telefónica expands IoT network coverage for business customers via OQ partnership',
+        'Worldwide 5G roaming for NB-IoT solutions from Q2 2024',
+        'OQ satellite network integrated via Telefónica IPX cloud and Kite IoT platform',
+        'Enables IoT connectivity across all continents and oceans',
+        'Telefónica is one of Europe\'s largest telcos with global IoT reach'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Telefónica/O2 is a major European MNO. OQ winning Telefónica for IoT roaming shows OQ building competitive European MNO footprint. OQ provides narrowband IoT while ASTS pursues broadband smartphone D2D via its own MNO partnerships (AT&T, Vodafone). Both competing for MNO attention in overlapping markets.',
+      source: 'Telefónica Germany',
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
+    },
+    {
+      date: '2023-07-19',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology signs new MoU with Aramco for automation and satellite IoT at remote sites',
+      details: [
+        'New MoU strengthening existing Aramco-OQ collaboration',
+        'Focus on automation and satellite IoT connectivity for Aramco remote site infrastructure',
+        'Builds on Wa\'ed Ventures (Aramco VC) leading OQ\'s Series A in 2022',
+        'Aramco is world\'s largest oil company — validates satellite IoT for energy sector'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ deepening relationship with world\'s largest oil company for industrial IoT. ASTS focused on consumer/MNO broadband, not industrial IoT. OQ carving out niche in energy/enterprise satellite IoT that doesn\'t directly compete with ASTS consumer D2D plans.',
+      source: 'SatNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2023-05-15',
+      competitor: 'oq-technology',
+      category: 'Partnership',
+      headline: 'OQ Technology partners with iot squared (stc Group/PIF JV) for satellite IoT services in Saudi Arabia',
+      details: [
+        'MoU with iot squared — 50:50 JV between stc Group and Saudi PIF (SR492M funded)',
+        'OQ to provide satellite IoT connectivity services and products in Saudi Arabia',
+        'Target sectors: traffic management, energy, safety, waste management, smart cities',
+        'OQ supported by Aramco Wa\'ed Ventures, established local presence in Al Khobar',
+        'OQ CEO: "Only 25% of Earth\'s land mass covered by cell towers — OQ addressing this via LEO nanosatellites"',
+        'Aligns with Saudi Arabia\'s national digital transformation objectives',
+        'iot squared positioned as regional IoT hub for MENA'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Notable: iot squared is a stc Group / PIF joint venture. stc is one of the largest telcos in the Middle East and a potential ASTS partner market. OQ targeting IoT sensors/smart city in Saudi Arabia while ASTS targets smartphone broadband D2D. Aramco Wa\'ed Ventures backing gives OQ Saudi enterprise foothold. Different service tiers: OQ for machine connectivity (narrowband IoT), ASTS for human connectivity (broadband).',
+      source: 'OQ Technology / iot squared',
+      storyId: 'oq-partnerships',
+      storyTitle: 'OQ Technology MNO & Distribution'
+    },
+    {
+      date: '2023-03-13',
+      competitor: 'oq-technology',
+      category: 'Launch',
+      headline: 'OQ Technology orders five 6U nanosatellites (Tiger-4 through Tiger-8) for constellation expansion',
+      details: [
+        'Five additional 6U nanosatellites ordered: Tiger-4 to Tiger-8',
+        'Tiger-4, Tiger-7, Tiger-8 built by Kongsberg NanoAvionics',
+        'Tiger-5, Tiger-6 built by Space Inventor (Denmark)',
+        'All launches planned through 2023-2024',
+        'CEO: "well ahead in the 5G IoT NTN market, continuing expansion of global coverage"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ expanding with small 6U cubesats for IoT — very different constellation strategy from ASTS which is building large phased-array satellites for broadband D2D. OQ cubesat approach is faster/cheaper to deploy but fundamentally limited in capability. Different target markets: OQ for IoT sensors, ASTS for smartphones.',
+      source: 'SatellitePro ME',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+
+    // --- 2022 ---
+    {
+      date: '2022-09-01',
+      competitor: 'oq-technology',
+      category: 'Financial',
+      headline: 'OQ Technology closes ~€13M Series A led by Aramco\'s Wa\'ed Ventures',
+      details: [
+        '~€13 million Series A funding round closed',
+        'Led by Wa\'ed Ventures, venture capital arm of Saudi Aramco',
+        'Participation from Phaistos Investment Fund (Greece)',
+        'Funds constellation expansion to 10 satellites and commercial IoT deployment',
+        'Establishes OQ\'s strategic link to Saudi energy ecosystem'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ\'s €13M Series A is modest — ASTS is publicly traded with much larger fundraising capabilities. Aramco VC backing gives OQ strategic access to energy sector IoT market. Different scale of ambition: OQ building narrowband IoT service, ASTS building broadband D2D infrastructure.',
+      source: 'SpaceNews',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+    {
+      date: '2022-03-03',
+      competitor: 'oq-technology',
+      category: 'Technology',
+      headline: 'Alif Semiconductor and OQ Technology collaborate on AI-enabled NB-IoT connectivity for hybrid networks',
+      details: [
+        'Collaboration to deploy NB-IoT connectivity for hybrid terrestrial-satellite networks',
+        'AI-enabled, standardized solution for significant cost reduction vs existing satellite connectivity',
+        'Uses 3GPP NTN standards for interoperability',
+        'Targets cost-effective IoT in remote areas without cellular coverage'
+      ],
+      implication: 'neutral',
+      astsComparison: 'OQ building chipset partnerships for IoT ecosystem. ASTS focused on smartphone broadband via existing phone chipsets. Different technology strategies: OQ needs IoT-specific chipset partners for NB-IoT modules, ASTS leverages existing smartphone chipset ecosystem (Qualcomm, MediaTek).',
+      source: 'OQ Technology',
+      storyId: 'oq-technology-d2d',
+      storyTitle: 'OQ Technology D2D & IoT'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VIASAT / INMARSAT - MULTI-ORBIT SATELLITE PLATFORM
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-01-06',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Evergreen Marine confirms fleetwide rollout of Inmarsat NexusWave bonded connectivity',
+      details: [
+        'Evergreen Marine upgrades entire fleet to NexusWave bonded connectivity from Inmarsat Maritime (Viasat)',
+        'First Taiwanese operator to adopt NexusWave across full fleet',
+        'Unlimited data, always-on performance with bonded multi-network connectivity',
+        'Enables predictive analytics, real-time reefer monitoring, integrated IoT',
+        'Leverages ViaSat-3 ultra-high-capacity network',
+        'Follows Viasat\'s May 2023 acquisition of Inmarsat'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Maritime connectivity is not D2D to smartphones. Viasat\'s scale could fund their Equatys D2D venture with Space42. Maritime fleet connectivity is fundamentally different from ASTS consumer smartphone D2D.',
+      source: 'Viasat / Inmarsat Maritime',
+      storyId: 'viasat-multi-orbit',
+      storyTitle: 'Viasat Multi-Orbit Platform'
+    },
+    {
+      date: '2025-11-18',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Etihad Airways deploys Viasat Amara connectivity across entire fleet including LEO partner satellites',
+      details: [
+        'Etihad deploying Viasat Amara connectivity across A321LR, A350, and Boeing 787 Dreamliner fleet',
+        'Enables streaming, Live TV, social media, browsing via Viasat Ka-band satellites + upcoming LEO partners',
+        'Factory-installed on new Airbus fleet from April 2025',
+        'Multi-network, multi-orbit systems with guaranteed quality of service',
+        'Mention of "upcoming LEO partner satellites" signals Viasat building multi-orbit capability'
+      ],
+      implication: 'neutral',
+      astsComparison: 'In-flight connectivity is different from D2D. Viasat\'s multi-orbit infrastructure could extend to D2D through Equatys venture. Not a direct threat to ASTS smartphone D2D market.',
+      source: 'Viasat',
+      storyId: 'viasat-multi-orbit',
+      storyTitle: 'Viasat Multi-Orbit Platform'
+    },
+    {
+      date: '2025-11-17',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Viasat to integrate Telesat Lightspeed LEO into JetXP business aviation broadband',
+      details: [
+        'Viasat integrating Telesat Lightspeed LEO capacity into JetXP in-flight broadband',
+        'Combines Viasat GEO (ViaSat-3) with LEO capacity for enhanced performance',
+        'Intelligent routing between GEO and LEO optimizing for latency-sensitive applications',
+        'Multi-orbit capabilities (GEO+LEO+HEO) as single offering',
+        'HEO payloads for Arctic coverage from 2026',
+        'Commercial LEO integration service scheduled late 2027',
+        'Currently deployed on 5,000+ business jets worldwide'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Multi-orbit orchestration (GEO+LEO+HEO) could be transferable to D2D services via Equatys. Business aviation is niche market (5K jets). ASTS targets billions of smartphone users — fundamentally larger addressable market.',
+      source: 'Viasat',
+      storyId: 'viasat-multi-orbit',
+      storyTitle: 'Viasat Multi-Orbit Platform'
+    },
+    {
+      date: '2025-11-13',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Viasat successfully tests HaloNet launch telemetry solution for NASA on Blue Origin New Glenn',
+      details: [
+        'First flight test of launch telemetry data relay service on Blue Origin NG-2 mission',
+        'Part of NASA Communications Services Project (CSP)',
+        'HaloNet uses Viasat global L-band satellite network with GEO satellites',
+        'Maintained persistent connection during launch for real-time flight data',
+        'Part of NASA effort to replace Tracking and Data Relay Satellite fleet by 2031',
+        'Second Blue Origin demo planned early 2026, additional HaloNet missions planned'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Launch telemetry has no direct relevance to D2D smartphones. Demonstrates Viasat L-band infrastructure and government relationships that could support Equatys D2D venture. Indirect competitive signal: Viasat investing across multiple satellite verticals.',
+      source: 'Viasat',
+      storyId: 'viasat-multi-orbit',
+      storyTitle: 'Viasat Multi-Orbit Platform'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // BAHRAIN - D2D REGULATORY MILESTONE
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-24',
+      competitor: 'other',
+      category: 'Regulatory',
+      headline: 'Bahrain becomes first GCC country to authorize satellite direct-to-device services',
+      details: [
+        'Bahrain TRA authorizes Satellite D2D services — first GCC country to do so',
+        'Licensed MNOs can partner with Starlink and AST SpaceMobile specifically mentioned',
+        'TRA: "ensures people remain connected even beyond reach of terrestrial networks"',
+        'Standard smartphones communicate directly with LEO satellites, no specialized equipment',
+        'Bahrain ranked #1 in MENA/GCC in Global Network Excellence Index for 4G/5G',
+        'Could catalyze similar frameworks across Saudi Arabia, UAE, Qatar, other Gulf states'
+      ],
+      implication: 'positive',
+      astsComparison: 'Directly bullish — Bahrain regulatory framework explicitly names AST SpaceMobile as potential D2D partner. Concrete regulatory pathway for ASTS in Gulf market. GCC countries = high-ARPU markets with maritime/desert coverage gaps ideal for satellite D2D. First GCC D2D authorization could catalyze region-wide adoption.',
+      source: 'Gulf Daily News / Bahrain TRA',
+      storyId: 'bahrain-d2d-regulatory',
+      storyTitle: 'Bahrain D2D Authorization'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SES / LYNK GLOBAL - D2D PARTNERSHIP
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-03-10',
+      competitor: 'lynk',
+      category: 'Financial',
+      headline: 'SES and Lynk Global announce strategic partnership with Series B funding and MEO-relay for D2D',
+      details: [
+        'SES provides Series B funding for Lynk D2D constellation',
+        'MEO-Relay: routes D2D traffic between LEO and SES MEO network, reducing ground infrastructure',
+        'Network-as-a-Service: global ground network gateway access and GEO-based TTC&M',
+        'Strategic channel partnership for government, MNO, and automotive customers',
+        'SES and Lynk to collaborate on satellite manufacturing in US and Europe',
+        'Could signal deeper SES involvement in D2D market long-term'
+      ],
+      implication: 'negative',
+      astsComparison: 'SES investment in Lynk validates D2D market but strengthens a direct competitor. Lynk gains SES MEO relay (reducing ground station needs) and channel partnerships. Lynk remains focused on messaging/voice with smaller satellites; ASTS targets broadband D2D. SES "multi-orbit" approach is innovative but unproven at scale.',
+      source: 'SES / Lynk Global',
+      sourceUrl: 'https://www.ses.com',
+      storyId: 'lynk-omnispace-merger',
+      storyTitle: 'Lynk-Omnispace Merger'
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // ECHOSTAR - MDA AURORA D2D LEO CONSTELLATION ($5B PROJECT)
@@ -9314,6 +10098,29 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://www.businesswire.com/news/home/20260204att-aws-amazon-leo',
       storyId: 'amazon-leo-att',
       storyTitle: 'Amazon Leo AT&T Partnership'
+    },
+    {
+      date: '2026-02-03',
+      competitor: 'amazon-leo',
+      category: 'Regulatory',
+      headline: 'Amazon Leo seeks 24-month FCC extension due to launch shortages — only 180 of 1,618 sats deployed',
+      details: [
+        'Amazon requests deadline extension from July 2026 to July 2028 for half-constellation (1,618 sats)',
+        'Cites "near-term shortage of available rockets" despite $10B+ investment',
+        'Only 180 satellites in orbit; projects ~700 by original July 2026 deadline — less than half required',
+        'Original strategy bet on unproven rockets (Vulcan, Ariane 6, New Glenn) — all faced delays',
+        'SpaceX initially excluded from bidding; 2023 shareholder lawsuit alleged Bezos rivalry caused "bad faith"',
+        'Late pivot: booked 3 Falcon 9 launches (Dec 2023), added 10 more + 12 New Glenn (Jan 2026)',
+        'Only 7 of 20+ planned 2025 launches completed due to manufacturing disruptions and rocket delays',
+        'Manufacturing at 30 sats/week capacity — producing faster than rockets can carry them',
+        'Starlink comparison: 9,000+ satellites, ~9M customers vs Amazon Leo 180 satellites',
+        'Industry rumors of potential spinoff of Amazon Leo to Blue Origin'
+      ],
+      implication: 'positive',
+      astsComparison: 'Amazon Leo\'s execution struggles highlight how difficult constellation deployment is at scale. ASTS faces similar launch dependency risks but has fundamentally different approach: fewer, larger satellites (each BlueBird covers more area). Amazon still terminal-based broadband, not D2D — but their regulatory struggles and delayed timeline reduce competitive pressure on the broader satellite connectivity market. FCC extension request shows even $10B cannot overcome launch bottleneck.',
+      source: 'FCC Filing / Industry Analysis',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
     },
     {
       date: '2026-01-30',
@@ -9452,7 +10259,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         'SpaceX claims unique position with vertical integration (launch + satellite production)'
       ],
       implication: 'negative',
-      astsComparison: 'Direct competitor milestone. Starlink\'s 6.2m² antenna vs ASTS 64m² BlueBird arrays. Starlink starting with text-only, limited bandwidth. ASTS demonstrated 5G broadband voice/video with BW3. Different approach: Starlink betting on massive constellation (hundreds of D2C sats), ASTS betting on fewer large high-throughput satellites.',
+      astsComparison: 'Direct competitor milestone. Starlink\'s 6.2m² antenna vs ASTS planned 64m² arrays. Starlink starting with text-only, limited bandwidth. ASTS demonstrated 5G broadband voice/video with BW3 in 2023. Different approach: Starlink betting on massive constellation (hundreds of D2C sats), ASTS betting on fewer large high-throughput satellites.',
       source: 'SpaceX',
       sourceUrl: 'https://direct.starlink.com/',
       storyId: 'starlink-d2c-launch',
@@ -9504,8 +10311,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Iridium NTN Direct progressing toward commercial launch. Key differentiator: Iridium = NB-IoT narrowband (low-power IoT sensors, messaging), ASTS = broadband cellular (voice/video/data). Iridium has truly global coverage advantage but narrowband only. ASTS regional but broadband. Different use cases, minimal direct overlap.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/press-release/iridium-ntn-direct-on-air-trials/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-testing',
+      storyTitle: 'Iridium NTN Direct Testing & Technology'
     },
     {
       date: '2025-11-04',
@@ -9526,8 +10333,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Notable: Vodafone IoT choosing Iridium for IoT while Vodafone Group partners with ASTS for D2D smartphone service. Different divisions, different use cases. IoT = narrowband sensors/tracking (Iridium strength). Smartphones = broadband voice/data (ASTS strength). Validates segmented market approach.',
       source: 'Iridium/Vodafone IoT',
       sourceUrl: 'https://www.iridium.com/blog/vodafone-iot-partnership/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-partnerships',
+      storyTitle: 'Iridium NTN Direct Partnerships'
     },
     {
       date: '2025-09-16',
@@ -9548,8 +10355,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Deutsche Telekom choosing Iridium for IoT coverage extension. ASTS has Deutsche Telekom as a shareholder but different focus: ASTS = smartphone broadband, Iridium = narrowband IoT. Both can coexist - different service tiers for different use cases.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/blog/deutsche-telekom-partnership/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-partnerships',
+      storyTitle: 'Iridium NTN Direct Partnerships'
     },
     {
       date: '2025-05-29',
@@ -9569,8 +10376,29 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Iridium pursuing NB-IoT/messaging niche vs ASTS broadband. Iridium has truly global coverage (66 sats) but narrowband only. ASTS offers broadband throughput but regional coverage initially. Different markets: Iridium for SOS/messaging, ASTS for full cellular experience.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/blog/iridium-and-syniverse-partner/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-partnerships',
+      storyTitle: 'Iridium NTN Direct Partnerships'
+    },
+    {
+      date: '2025-03-03',
+      competitor: 'iridium',
+      category: 'Technology',
+      headline: 'Iridium and Gatehouse Satcom advance NTN Direct RAN infrastructure for global NB-IoT',
+      details: [
+        'Gatehouse Satcom chosen to deliver NodeB for Iridium NTN Direct Radio Access Network',
+        'NodeB handles uplink/downlink transmissions, modulation, encoding, scheduling',
+        'First 3GPP standards-based satellite D2D and NB-IoT service with truly global coverage',
+        'Gatehouse also conducted feasibility study validating the technical concept',
+        'Iridium constellation (66 LEO sats) will receive software upgrade for NB-IoT capability',
+        'Runs both traditional Iridium services and NB-IoT NTN Direct on same network',
+        'On-air testing planned around mid-2025, commercial service 2026',
+        'Gatehouse CEO: "Growth of satellite industry will be driven by 3GPP standards"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium NTN Direct advancing toward deployment by building out RAN infrastructure. Software upgrade to existing 66-sat constellation is capital-efficient approach. However, NB-IoT only — narrowband messaging/SOS/IoT, not broadband voice/video/data. ASTS and Iridium target fundamentally different service tiers. Iridium global coverage advantage for IoT; ASTS broadband advantage for smartphones.',
+      source: 'Gatehouse Satcom / Iridium',
+      storyId: 'iridium-ntn-testing',
+      storyTitle: 'Iridium NTN Direct Testing & Technology'
     },
     {
       date: '2024-10-09',
@@ -9590,8 +10418,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Iridium building ecosystem for NB-IoT standards devices. ASTS works with existing LTE/5G phones - no special chipset needed. Iridium targeting IoT mass market; ASTS targeting smartphone users.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/blog/iridium-nordic-semiconductor-collaboration/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-partnerships',
+      storyTitle: 'Iridium NTN Direct Partnerships'
     },
     {
       date: '2024-01-10',
@@ -9612,8 +10440,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       astsComparison: 'Iridium leveraging existing constellation for NB-IoT - capital efficient but narrowband. ASTS requires new satellite builds but offers broadband. Iridium\'s L-band spectrum vs ASTS using MNO spectrum. Iridium = global messaging/SOS, ASTS = regional broadband cellular.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/project-stardust/',
-      storyId: 'iridium-ntn-direct',
-      storyTitle: 'Iridium NTN Direct Development'
+      storyId: 'iridium-ntn-testing',
+      storyTitle: 'Iridium NTN Direct Testing & Technology'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -9706,6 +10534,49 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       storyTitle: 'Skylo Verizon Partnership'
     },
     {
+      date: '2025-02-27',
+      competitor: 'skylo',
+      category: 'Financial',
+      headline: 'Skylo raises $30M oversubscribed round led by NGP Capital — expands to Brazil, Australia, NZ',
+      details: [
+        '$30M oversubscribed funding round led by NGP Capital',
+        'Westly Group joined; Intel Capital, BMW i Ventures, Samsung Catalyst Fund, Next47 participated',
+        'Expanded coverage: Brazil, Australia, New Zealand + full US (Alaska, Hawaii, territories)',
+        'Geographic expansion in partnership with Viasat satellite infrastructure',
+        'World\'s largest standards-based D2D network — millions of messages sent globally',
+        'Played pivotal role during US hurricanes and wildfires for emergency messaging',
+        'NGP Capital: "Skylo stands apart as the category leader in D2D satellite connectivity"',
+        'Demonstrating SOS, SMS, and AI chat over satellite at MWC Barcelona 2025'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Skylo raising $30M is modest compared to ASTS ($1B+ raised). Shows Skylo operating lean but also capital-constrained vs ASTS. Skylo expanding geographic coverage via Viasat partnership — uses existing GEO sats, not own constellation. ASTS building proprietary LEO constellation for broadband. Skylo\'s emergency use case validation during natural disasters supports overall D2D market thesis that benefits ASTS too.',
+      source: 'BusinessWire / Skylo',
+      storyId: 'skylo-growth-ecosystem',
+      storyTitle: 'Skylo Growth & Ecosystem'
+    },
+    {
+      date: '2025-01-08',
+      competitor: 'skylo',
+      category: 'Product',
+      headline: 'Skylo declares itself world\'s largest commercial standards-based D2D network at CES 2025',
+      details: [
+        'Skylo claims "world\'s largest commercial standards-based direct-to-device network"',
+        'Unlocked satellite connectivity potential for 1B+ devices across multiple categories',
+        'Survey: 76% of Americans frustrated/anxious/unsafe due to cellular coverage gaps',
+        '59% consistently face poor signals, 20% experience it daily',
+        '70% said most critical use case is emergency services or navigation',
+        '46% face coverage gaps in neighborhoods, commuting, or visiting friends/family',
+        'Skylo connects to multiple satellite constellations — provides overlay without urban coverage gaps',
+        'Ecosystem built from ground up: chipsets, modules, device manufacturers, SIM providers, carriers',
+        'Uses MSS spectrum — existing worldwide regulatory framework, no carrier spectrum needed'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Skylo\'s consumer survey validates massive demand for satellite connectivity — 76% frustrated by coverage gaps. This is the exact problem ASTS solves, but at broadband level vs Skylo narrowband SMS. Skylo\'s "1B+ devices" potential is aspirational — still NB-NTN only. Key Skylo advantage: MSS spectrum with global regulatory framework already in place. ASTS using MNO terrestrial spectrum requires per-market regulatory coordination.',
+      source: 'Skylo',
+      storyId: 'skylo-growth-ecosystem',
+      storyTitle: 'Skylo Growth & Ecosystem'
+    },
+    {
       date: '2024-08-28',
       competitor: 'skylo',
       category: 'Partnership',
@@ -9725,6 +10596,45 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://www.verizon.com/about/news/verizon-skylo-direct-to-device',
       storyId: 'skylo-verizon-partnership',
       storyTitle: 'Skylo Verizon Partnership'
+    },
+    {
+      date: '2024-11-26',
+      competitor: 'skylo',
+      category: 'Technology',
+      headline: 'Deutsche Telekom, Skylo and Qualcomm complete first operator-native NB-NTN SMS over satellite in Europe',
+      details: [
+        'First time in Europe an operator terrestrial mobile network integrated into satellite for D2H texting',
+        'End-to-end trial of SMS send/receipt over GEO satellite based on 3GPP Release 17 specs',
+        'Proof-of-concept conducted at Deutsche Telekom\'s Cosmote network in Greece',
+        'Device powered by Snapdragon X80 5G Modem-RF System with integrated NB-NTN',
+        'Skylo NTN commercially available network integrated into Cosmote production network',
+        'Uses dedicated licensed MSS spectrum — pan-European, no cross-border spectrum coordination needed',
+        'DT SVP Antje Williams: "Direct-to-handset will be an add-on to our mobile networks"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Deutsche Telekom is an ASTS shareholder but testing Skylo for narrowband SMS. Different tier: Skylo = NB-NTN text-only via GEO, ASTS = broadband voice/video/data via LEO. DT hedging bets across multiple D2D solutions. Pan-European MSS spectrum advantage for Skylo avoids regulatory hurdles ASTS faces with MNO terrestrial spectrum. Validates European MNO demand for satellite connectivity.',
+      source: 'Deutsche Telekom / Skylo / Qualcomm',
+      storyId: 'skylo-qualcomm-ntn',
+      storyTitle: 'Skylo Qualcomm NB-NTN Ecosystem'
+    },
+    {
+      date: '2024-09-12',
+      competitor: 'skylo',
+      category: 'Technology',
+      headline: 'Skylo introduces satellite connectivity for smartphones with Qualcomm Snapdragon X80',
+      details: [
+        'Snapdragon X80 5G Modem-RF System completed all testing and is Skylo certified',
+        'Enables two-way peer-to-peer text messaging, location sharing, and SOS via satellite',
+        'Skylo global NTN: dedicated MSS spectrum, 9 earth stations, 6+ partner constellations',
+        '50M+ sq km of satellite coverage for seamless cellular-to-satellite switching',
+        'MSS spectrum avoids carriers allocating terrestrial spectrum or regulatory hurdles',
+        'Qualcomm VP Francesco Grilli: "First we brought seamless NTN to IoT and together, we\'re making significant strides in smartphone connectivity"'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Skylo + Qualcomm chipset integration is significant ecosystem milestone for NB-NTN. However, still narrowband (SMS/SOS only) — not broadband voice/video/data like ASTS. Snapdragon X80 NB-NTN support means more devices can connect to Skylo, but the service tier is fundamentally limited vs ASTS broadband capability.',
+      source: 'Skylo / Qualcomm',
+      storyId: 'skylo-qualcomm-ntn',
+      storyTitle: 'Skylo Qualcomm NB-NTN Ecosystem'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -9795,6 +10705,47 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       sourceUrl: 'https://space42.ai/space42-and-viasat-announce-partnership/',
       storyId: 'ntn-industry-partnerships',
       storyTitle: 'NTN Industry Partnerships'
+    },
+    {
+      date: '2025-08-20',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Qualcomm Snapdragon W5+ Gen 2 becomes first wearable platform with NB-NTN satellite support',
+      details: [
+        'Snapdragon W5+ Gen 2 and W5 Gen 2: first wearable platforms with NB-NTN emergency satellite comms',
+        'Smartwatches can transmit/receive emergency messages via satellite without phone',
+        'Cutting-edge RFFE solution for NB-NTN connectivity on wrist-sized devices',
+        'Optimized power efficiency critical for limited wearable batteries',
+        'Supports Wi-Fi 6, Bluetooth 5.3, and NB-NTN satellite',
+        'Use cases: hiker distress signals, disaster area comms, remote location tracking',
+        'Builds on Snapdragon X80 NB-NTN foundation, extending to new device categories'
+      ],
+      implication: 'neutral',
+      astsComparison: 'NB-NTN expanding from smartphones to wearables validates growing satellite connectivity ecosystem. However, wearable NB-NTN is emergency SOS/messaging only — extreme narrowband. ASTS broadband D2D targets smartphones with full voice/video/data capability. Wearable NB-NTN and ASTS broadband address completely different use cases.',
+      source: 'Qualcomm',
+      storyId: 'qualcomm-ntn-chipsets',
+      storyTitle: 'Qualcomm NTN Chipset Ecosystem'
+    },
+    {
+      date: '2024-02-26',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Qualcomm unveils Snapdragon X80 — first 5G modem with fully integrated NB-NTN satellite support',
+      details: [
+        'Snapdragon X80 5G Modem-RF System: 7th gen modem-to-antenna solution',
+        'World\'s first 5G modem with fully integrated NB-NTN satellite communications support',
+        'Dedicated 5G AI Processor and 5G-Advanced-ready architecture',
+        'Also first: 6-antenna architecture for smartphones, 6X carrier aggregation',
+        'AI-based mmWave range extension for fixed wireless access CPE',
+        'Dedicated tensor accelerator for AI optimization of throughput, QoS, coverage, latency',
+        '5G Advanced capabilities across smartphones, PCs, XR, automotive, industrial IoT',
+        'Commercial devices launched second half of 2024'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Qualcomm integrating NB-NTN into flagship modem is a major ecosystem enabler — means every premium smartphone chipset will support satellite connectivity natively. This benefits Skylo (NB-NTN) but also validates the broader satellite D2D market ASTS operates in. Key distinction: X80 supports NB-NTN (narrowband SMS/SOS), while ASTS requires standard LTE/5G NR capability already in phones — no special NTN modem needed for ASTS broadband service.',
+      source: 'Qualcomm',
+      storyId: 'qualcomm-ntn-chipsets',
+      storyTitle: 'Qualcomm NTN Chipset Ecosystem'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -10497,17 +11448,20 @@ const CompsTab = ({ calc, currentStockPrice }) => {
   ];
 
   // Filter news by competitor, sort by date (newest first)
-  const filteredNews = (competitorFilter === 'all'
-    ? COMPETITOR_NEWS
-    : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter)
-  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const filteredNews = React.useMemo(() =>
+    (competitorFilter === 'all'
+      ? [...COMPETITOR_NEWS]
+      : COMPETITOR_NEWS.filter(n => n.competitor === competitorFilter)
+    ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+    [competitorFilter]
+  );
 
   // Group news by storyId, with ungrouped items in their own "group"
   const groupedNews = React.useMemo(() => {
     const groups: Record<string, { title: string; entries: (CompetitorNewsEntry & { originalIdx: number })[] }> = {};
 
     filteredNews.forEach((news, idx) => {
-      const storyKey = news.storyId || `ungrouped-${idx}`;
+      const storyKey = news.storyId || `ungrouped-${news.date}-${news.competitor}-${news.headline.slice(0, 40)}`;
       if (!groups[storyKey]) {
         groups[storyKey] = {
           title: news.storyTitle || news.headline,
@@ -10535,9 +11489,33 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
   // Get competitor display name
   const getCompetitorName = (id: CompetitorId): string => {
+    if (id === 'other') return 'Miscellaneous';
     const profile = COMPETITOR_PROFILES.find(p => p.id === id);
     return profile?.name || id;
   };
+
+  // Group stories by competitor company for section headers
+  const companySections = React.useMemo(() => {
+    const sections: Record<string, { name: string; stories: typeof groupedNews }> = {};
+
+    groupedNews.forEach(story => {
+      const competitorId = story.entries[0]?.competitor || 'other';
+      const competitorName = getCompetitorName(competitorId);
+      if (!sections[competitorId]) {
+        sections[competitorId] = { name: competitorName, stories: [] };
+      }
+      sections[competitorId].stories.push(story);
+    });
+
+    return Object.entries(sections)
+      .map(([id, section]) => ({
+        competitorId: id,
+        name: section.name,
+        stories: section.stories,
+        latestDate: section.stories[0]?.latestDate || ''
+      }))
+      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
+  }, [groupedNews]);
 
   // Implication styling - using design tokens
   const getImplicationStyle = (impl: ASTSImplication) => {
@@ -10598,71 +11576,43 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     },
   ];
 
+  // Map keyCompetitors to comps entries by partial name match
+  const keyCompMap: Record<string, typeof keyCompetitors[0]> = {
+    'Starlink': keyCompetitors[0],     // SpaceX Starlink
+    'Globalstar': keyCompetitors[3],   // Apple/Globalstar
+  };
+
+  // Map COMPETITOR_PROFILES to comps entries
+  const profileMap: Record<string, typeof COMPETITOR_PROFILES[0]> = {};
+  COMPETITOR_PROFILES.forEach(p => {
+    if (p.id === 'starlink-tmobile') profileMap['Starlink'] = p;
+    else if (p.id === 'apple-globalstar') profileMap['Globalstar'] = p;
+    else if (p.id === 'iridium') profileMap['Iridium'] = p;
+  });
+
+  const getCategoryLabel = (cat: string) => {
+    const labels: Record<string, string> = { d2d: 'D2D Satellite', d2c: 'D2C Satellite', satcom: 'SatCom', telco: 'Telco' };
+    return labels[cat] || cat;
+  };
+
+  // keyCompetitors entries not in comps (Amazon Leo, Lynk Global)
+  const extraCompetitors = keyCompetitors.filter(kc => {
+    const nameMap: Record<string, boolean> = { 'SpaceX Starlink': true, 'Apple/Globalstar': true };
+    return !nameMap[kc.name];
+  });
+
+  const extraProfileMap: Record<string, typeof COMPETITOR_PROFILES[0]> = {};
+  COMPETITOR_PROFILES.forEach(p => {
+    if (p.id === 'amazon-leo') extraProfileMap['Amazon Leo'] = p;
+    else if (p.id === 'lynk') extraProfileMap['Lynk Global'] = p;
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <style>{`
-        .comp-competitor-card {
-          background: var(--bg2);
-          border: 1px solid var(--stroke);
-          border-radius: 12px;
-          padding: 16px;
-        }
-        .comp-threat-high { border-left: 3px solid var(--red); }
-        .comp-threat-medium { border-left: 3px solid var(--gold); }
-        .comp-threat-low { border-left: 3px solid var(--mint); }
-        .comp-competitor-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 8px;
-        }
-        .comp-competitor-name {
-          font-weight: 600;
-          font-size: 14px;
-          color: var(--text1);
-        }
-        .comp-competitor-type {
-          font-size: 11px;
-          color: var(--text3);
-          padding: 2px 8px;
-          background: var(--bg3);
-          border-radius: 4px;
-        }
-        .comp-competitor-detail {
-          font-size: 12px;
-          color: var(--text2);
-          margin-bottom: 4px;
-        }
-        .comp-competitor-notes {
-          font-size: 11px;
-          color: var(--text3);
-          font-style: italic;
-        }
-      `}</style>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
       <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
 
-      {/* Key Competitors Overview - Colored Border Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-competitors</div>
-      <div className="highlight"><h3>🛰️ Key Competitors<UpdateIndicators sources="PR" /></h3><p>Major players in satellite connectivity - threat level indicates competitive overlap with ASTS D2D</p></div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
-        {keyCompetitors.map((comp, i) => (
-          <div key={i} className={`comp-competitor-card comp-threat-${comp.threat.toLowerCase()}`}>
-            <div className="comp-competitor-header">
-              <span className="comp-competitor-name">{comp.name}</span>
-              <span className="comp-competitor-type">{comp.type}</span>
-            </div>
-            <div className="comp-competitor-detail"><strong>Status:</strong> {comp.status}</div>
-            <div className="comp-competitor-detail"><strong>Focus:</strong> {comp.focus}</div>
-            <div className="comp-competitor-detail"><strong>Threat Level:</strong> <span style={{ color: comp.threat === 'High' ? 'var(--red)' : comp.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{comp.threat}</span></div>
-            <div className="comp-competitor-notes">{comp.notes}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Valuation Comparables Section */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-comparables</div>
-      <div className="highlight"><h3>📊 Valuation Comparables<UpdateIndicators sources="WS" /></h3><p>No direct comps. Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
+      <div className="highlight"><h3>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h3><p>Unified view: valuation metrics, qualitative assessment, and D2D capabilities per company. No direct comps — Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
 
       {/* Peer Group Selector */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -10677,35 +11627,86 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         ))}
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#market-comparison</div>
-      <div className="card">
-        <div className="card-title">Market Comparison<UpdateIndicators sources="WS" /></div>
-        <p style={{ color: 'var(--text3)', fontSize: 13 }}>ASTS vs satellite and telco peers — unique D2D positioning between Starlink premium and telco value</p>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Company</th>
-              <th className="r">Mkt Cap</th>
-              <th className="r">EV/Rev</th>
-              <th className="r">$/Sub</th>
-              <th className="r">Subs</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredComps.map(c => (
-              <tr key={c.ticker} style={c.highlight ? { background: 'var(--accent-dim)' } : undefined}>
-                <td>
-                  <div style={{ fontWeight: c.highlight ? 700 : 500 }}>{c.name}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.ticker}</div>
-                </td>
-                <td className="r">${(c.mc / 1000).toFixed(0)}B</td>
-                <td className="r">{c.evRev.toFixed(1)}x</td>
-                <td className="r">${c.pSub.toLocaleString()}</td>
-                <td className="r">{c.subs.toFixed(0)}M</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="comp-cards-grid">
+        {filteredComps.map((c) => {
+          const qual = keyCompMap[c.name];
+          const profile = profileMap[c.name];
+          return (
+            <div key={c.ticker} className={`comp-unified-card ${c.highlight ? 'comp-self' : qual ? `threat-${qual.threat.toLowerCase()}` : ''}`}>
+              <div className="comp-card-header">
+                <div className="comp-card-identity">
+                  <div className="comp-card-name">{c.name}</div>
+                  <div className="comp-card-ticker">{c.ticker} · {getCategoryLabel(c.category)}</div>
+                </div>
+                <div className="comp-card-badges">
+                  {qual && <span className={`comp-card-badge threat-${qual.threat.toLowerCase()}`}>{qual.threat}</span>}
+                  <span className="comp-card-badge type-badge">{getCategoryLabel(c.category)}</span>
+                </div>
+              </div>
+              <div className="comp-card-metrics">
+                <div className="comp-card-metric"><div className="val">${(c.mc / 1000).toFixed(0)}B</div><div className="lbl">Mkt Cap</div></div>
+                <div className="comp-card-metric"><div className="val">{c.evRev.toFixed(1)}x</div><div className="lbl">EV/Rev</div></div>
+                <div className="comp-card-metric"><div className="val">${c.pSub.toLocaleString()}</div><div className="lbl">$/Sub</div></div>
+                <div className="comp-card-metric"><div className="val">{c.subs.toFixed(0)}M</div><div className="lbl">Subs</div></div>
+              </div>
+              {c.highlight && (
+                <div className="comp-card-capabilities">
+                  <span className="comp-cap yes">✓ Voice</span>
+                  <span className="comp-cap yes">✓ Text</span>
+                  <span className="comp-cap yes">✓ Data</span>
+                  <span className="comp-cap yes">✓ Video</span>
+                  <span className="comp-cap yes">✓ Unmod.</span>
+                  <span className="comp-cap no">Building Global</span>
+                </div>
+              )}
+              {!c.highlight && profile && (
+                <div className="comp-card-capabilities">
+                  <span className={`comp-cap ${profile.capabilities.voice ? 'yes' : 'no'}`}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span className={`comp-cap ${profile.capabilities.text ? 'yes' : 'no'}`}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span className={`comp-cap ${profile.capabilities.data ? 'yes' : 'no'}`}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span className={`comp-cap ${profile.capabilities.video ? 'yes' : 'no'}`}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span className={`comp-cap ${profile.capabilities.unmodifiedPhones ? 'yes' : 'no'}`}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span className={`comp-cap ${profile.capabilities.globalCoverage ? 'yes' : 'no'}`}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                </div>
+              )}
+              {qual && (
+                <>
+                  <div className="comp-card-detail"><strong>Focus:</strong> {qual.focus}</div>
+                  <div className="comp-card-notes">{qual.notes}</div>
+                </>
+              )}
+            </div>
+          );
+        })}
+        {/* Extra competitors not in comps (Amazon Leo, Lynk Global) - show when 'all' selected */}
+        {selectedCompCategory === 'all' && extraCompetitors.map((kc, i) => {
+          const profile = extraProfileMap[kc.name];
+          return (
+            <div key={`extra-${i}`} className={`comp-unified-card threat-${kc.threat.toLowerCase()}`}>
+              <div className="comp-card-header">
+                <div className="comp-card-identity">
+                  <div className="comp-card-name">{kc.name}</div>
+                  <div className="comp-card-ticker">{kc.type}</div>
+                </div>
+                <div className="comp-card-badges">
+                  <span className={`comp-card-badge threat-${kc.threat.toLowerCase()}`}>{kc.threat}</span>
+                </div>
+              </div>
+              {profile && (
+                <div className="comp-card-capabilities">
+                  <span className={`comp-cap ${profile.capabilities.voice ? 'yes' : 'no'}`}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span className={`comp-cap ${profile.capabilities.text ? 'yes' : 'no'}`}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span className={`comp-cap ${profile.capabilities.data ? 'yes' : 'no'}`}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span className={`comp-cap ${profile.capabilities.video ? 'yes' : 'no'}`}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span className={`comp-cap ${profile.capabilities.unmodifiedPhones ? 'yes' : 'no'}`}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span className={`comp-cap ${profile.capabilities.globalCoverage ? 'yes' : 'no'}`}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                </div>
+              )}
+              <div className="comp-card-detail"><strong>Focus:</strong> {kc.focus}</div>
+              <div className="comp-card-notes">{kc.notes}</div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="g2">
@@ -10872,55 +11873,6 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
       </div>
 
-      {/* D2D Competitor Capability Matrix */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-capabilities</div>
-      <div className="highlight"><h3>🛰️ D2D Competitor Capabilities<UpdateIndicators sources="PR" /></h3><p>Direct-to-device competitors and their current capabilities vs ASTS</p></div>
-
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capability-comparison</div>
-      <div className="card">
-        <div className="card-title">Capability Comparison<UpdateIndicators sources="PR" /></div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Competitor</th>
-              <th className="c">Voice</th>
-              <th className="c">Text</th>
-              <th className="c">Data</th>
-              <th className="c">Video</th>
-              <th className="c">Unmod. Phones</th>
-              <th className="c">Global</th>
-              <th className="r">Satellites</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* ASTS Row - highlighted */}
-            <tr style={{ background: 'var(--accent-dim)' }}>
-              <td style={{ fontWeight: 600 }}>ASTS SpaceMobile</td>
-              <td className="c">✓</td>
-              <td className="c">✓</td>
-              <td className="c">✓</td>
-              <td className="c">✓</td>
-              <td className="c">✓</td>
-              <td className="c">Building</td>
-              <td className="r">6+</td>
-            </tr>
-            {/* Competitor Rows */}
-            {COMPETITOR_PROFILES.map(comp => (
-              <tr key={comp.id}>
-                <td>{comp.name}</td>
-                <td className="c">{comp.capabilities.voice ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="c">{comp.capabilities.text ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="c">{comp.capabilities.data ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="c">{comp.capabilities.video ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="c">{comp.capabilities.unmodifiedPhones ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="c">{comp.capabilities.globalCoverage ? <span className="mint">✓</span> : <span style={{ color: 'var(--text3)' }}>✗</span>}</td>
-                <td className="r" style={{ color: 'var(--text3)' }}>{comp.keyMetrics?.satellites || 'N/A'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
       {/* Competitor News Intelligence Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
       <div className="highlight">
@@ -10952,17 +11904,44 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               </button>
             );
           })}
+          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (
+            <button
+              onClick={() => setCompetitorFilter('other')}
+              className={`filter-btn ${competitorFilter === 'other' ? 'active' : ''}`}
+            >
+              Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
+            </button>
+          )}
         </div>
       </div>
 
-      {/* News Timeline - Grouped by Story */}
+      {/* News Timeline - Grouped by Company, then by Story */}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {groupedNews.length === 0 ? (
+        {companySections.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: 40 }}>
             <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
           </div>
         ) : (
-          groupedNews.map((story) => (
+          companySections.map((section) => {
+            const totalEntries = section.stories.reduce((sum, s) => sum + s.entries.length, 0);
+            const oldestDate = section.stories[section.stories.length - 1]?.entries[section.stories[section.stories.length - 1]?.entries.length - 1]?.date || '';
+            const newestDate = section.stories[0]?.entries[0]?.date || '';
+            return (
+            <details key={section.competitorId} className="comp-panel" open>
+              <summary>
+                <div className="comp-panel-bar">
+                  <div className="comp-panel-info">
+                    <div className="comp-panel-name">{section.name}</div>
+                    <div className="comp-panel-meta">
+                      <span className="comp-panel-count">{totalEntries} {totalEntries === 1 ? 'entry' : 'entries'}</span>
+                      {oldestDate && newestDate && <span className="comp-panel-dates">{newestDate} — {oldestDate}</span>}
+                    </div>
+                  </div>
+                  <div className="comp-panel-chevron" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" /></svg></div>
+                </div>
+              </summary>
+              <div className="comp-panel-body">
+              {section.stories.map((story) => (
             <div key={story.storyId} className="card" style={{ padding: 0, overflow: 'hidden' }}>
               {/* Story Header */}
               <div style={{
@@ -10976,19 +11955,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 <div>
                   <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{story.title}</div>
                   <div style={{ fontSize: 12, color: 'var(--text3)' }}>
-                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[0]?.date} → {story.entries[story.entries.length - 1]?.date}
+                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[story.entries.length - 1]?.date} → {story.entries[0]?.date}
                   </div>
                 </div>
-                <span style={{
-                  fontSize: '10px',
-                  padding: '4px 10px',
-                  borderRadius: '4px',
-                  background: 'var(--surface3)',
-                  color: 'var(--text2)',
-                  fontWeight: 600
-                }}>
-                  {getCompetitorName(story.entries[0]?.competitor).split('/')[0].trim()}
-                </span>
               </div>
 
               {/* Story Entries - Chronological */}
@@ -11122,7 +12091,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 })}
               </div>
             </div>
-          ))
+              ))}
+              </div>
+            </details>
+            );
+          })
         )}
       </div>
 

@@ -10,7 +10,7 @@
  * - ETH holdings: Weekly 8-K filings, press releases
  * - Share count: 10-Q quarterly reports
  *
- * LAST UPDATED: 2026-02-02
+ * LAST UPDATED: 2026-02-09
  * NEXT UPDATE: After next 8-K or earnings release
  *
  * AI AGENT INSTRUCTIONS:
@@ -28,8 +28,8 @@ import type { DataMetadata, StockDefaults } from '../shared/types';
 // ============================================================================
 
 export const BMNR_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-02',
-  source: 'Feb 2, 2026 Holdings PR + 8-K',
+  lastUpdated: '2026-02-09',
+  source: 'Feb 9, 2026 Holdings PR + 8-K',
   nextExpectedUpdate: 'Next weekly holdings update (8-K)',
   notes: 'ETH holdings updated weekly via 8-K filings',
 };
@@ -71,20 +71,20 @@ export const DEFAULTS: StockDefaults & {
   ethPrice: number;
   ethPriceAsOf: string;
 } = {
-  // === ETH HOLDINGS (Feb 2, 2026 PR) ===
-  currentETH: 4285125,        // 4.285M ETH (3.55% of supply)
-  ethPrice: 2317,             // UPDATE REGULARLY - Last: Feb 1, 2026 (Coinbase)
-  ethPriceAsOf: '2026-02-01', // Date of ETH price above
+  // === ETH HOLDINGS (Feb 9, 2026 PR) ===
+  currentETH: 4325738,        // 4.326M ETH (3.58% of supply)
+  ethPrice: 2125,             // UPDATE REGULARLY - Last: Feb 8, 2026 (Coinbase)
+  ethPriceAsOf: '2026-02-08', // Date of ETH price above
 
   // === MARKET DATA ===
-  currentStockPrice: 27.15,   // UPDATE REGULARLY - Last: Feb 2, 2026
-  priceAsOf: '2026-02-02',    // Date of stock price above
+  currentStockPrice: 27.15,   // UPDATE REGULARLY - Last: Feb 9, 2026
+  priceAsOf: '2026-02-09',    // Date of stock price above
 
   // === SHARE COUNT ===
   currentShares: 434,         // Shares outstanding (M)
 
   // === BALANCE SHEET ===
-  cashOnHand: 586,            // $586M cash (Feb 2, 2026 PR)
+  cashOnHand: 595,            // $595M cash (Feb 9, 2026 PR)
   totalDebt: 0,               // No debt
 
   // Not used for BMNR but required by interface
@@ -105,12 +105,12 @@ export const DEFAULTS: StockDefaults & {
  * - Update ethSupplyPercent from PR (or calculate from 120.7M supply)
  */
 export const ETH_HOLDINGS = {
-  totalETH: 4285125,          // Total ETH holdings (4.285M Feb 2)
+  totalETH: 4325738,          // Total ETH holdings (4.326M Feb 9)
   stakedETH: 2897459,         // ETH staked with validators
-  stakingRatio: 67.6,         // % of holdings staked (2,897,459 / 4,285,125)
-  ethSupplyPercent: 3.55,     // % of total ETH supply (~120.7M)
+  stakingRatio: 67.0,         // % of holdings staked (2,897,459 / 4,325,738)
+  ethSupplyPercent: 3.58,     // % of total ETH supply (~120.7M)
   targetSupplyPercent: 5.0,   // "Alchemy of 5%" target = 6,035K ETH
-  progressToTarget: 71,       // % progress to 5% (71% ETH only)
+  progressToTarget: 72,       // % progress to 5% (72% — "over 72% of the way")
 };
 
 // ============================================================================
@@ -125,7 +125,7 @@ export const ETH_HOLDINGS = {
  * - Update restakingBonus if company announces EigenLayer use
  */
 export const STAKING_PARAMS = {
-  baseStakingAPY: 2.81,       // CESR rate (Quatrefoil)
+  baseStakingAPY: 3.11,       // CESR rate (Quatrefoil) - updated Feb 9, 2026 PR
   restakingBonus: 2.0,        // Additional yield from restaking (EigenLayer)
   slashingRisk: 0.5,          // Annual slashing risk %
   liquidityDiscount: 2,       // Discount for LST liquidity
@@ -160,8 +160,8 @@ export const DIVIDEND_DATA = {
  * For display in the UI data freshness badge
  */
 export const DATA_FRESHNESS = {
-  dataAsOf: 'Feb 2, 2026',
-  lastFiling: '8-K (Feb 2, 2026) Holdings Update',
+  dataAsOf: 'Feb 9, 2026',
+  lastFiling: '8-K (Feb 9, 2026) Holdings Update',
   nextFiling: 'Weekly 8-K',
   priceNote: 'Update prices regularly',
 };
