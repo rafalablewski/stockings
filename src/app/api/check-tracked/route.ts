@@ -46,15 +46,20 @@ function buildAnalysisContext(company: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  const body: CheckRequest = await request.json();
+  const { headlines, company } = body;
+
+  // DEBUG: return all-true to verify the route is being reached
+  if (company === '__test__') {
+    return NextResponse.json({ results: headlines.map(() => true), debug: 'v2-direct-import' });
+  }
+
   if (!ANTHROPIC_API_KEY) {
     return NextResponse.json(
-      { error: 'ANTHROPIC_API_KEY not configured' },
+      { error: 'ANTHROPIC_API_KEY not configured', debug: 'v2-direct-import', keyLength: ANTHROPIC_API_KEY?.length ?? 0 },
       { status: 500 }
     );
   }
-
-  const body: CheckRequest = await request.json();
-  const { headlines, company } = body;
 
   if (!headlines?.length) {
     return NextResponse.json({ results: [] });
