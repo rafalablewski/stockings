@@ -695,17 +695,39 @@ const ASTSAnalysis = () => {
   type LivePRItem = { date: string; headline: string; url: string };
   type LivePRData = { prWire: LivePRItem[]; allNews: LivePRItem[] };
   const [livePR, setLivePR] = useState<Record<string, LivePRData>>({});
+  const [prTracked, setPrTracked] = useState<Record<string, Record<string, boolean>>>({});
   const [prLoading, setPrLoading] = useState<Record<string, boolean>>({});
   const [prError, setPrError] = useState<Record<string, string | null>>({});
   const [prTab, setPrTab] = useState<Record<string, 'prWire' | 'allNews'>>({});
-  const refreshPR = useCallback(async (symbol: string) => {
+  const refreshPR = useCallback(async (symbol: string, companyKey: string) => {
     setPrLoading(prev => ({ ...prev, [symbol]: true }));
     setPrError(prev => ({ ...prev, [symbol]: null }));
     try {
       const res = await fetch(`/api/press-releases/${symbol}`);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      setLivePR(prev => ({ ...prev, [symbol]: { prWire: data.prWire || [], allNews: data.allNews || [] } }));
+      const prWire: LivePRItem[] = data.prWire || [];
+      const allNews: LivePRItem[] = data.allNews || [];
+      setLivePR(prev => ({ ...prev, [symbol]: { prWire, allNews } }));
+
+      // Classify all unique headlines via AI
+      const allItems = [...prWire, ...allNews];
+      const unique = allItems.filter((h, i, arr) => arr.findIndex(x => x.headline === h.headline) === i);
+      if (unique.length > 0) {
+        try {
+          const classifyRes = await fetch('/api/check-tracked', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ headlines: unique.map(h => ({ headline: h.headline, date: h.date })), company: companyKey }),
+          });
+          if (classifyRes.ok) {
+            const { results } = await classifyRes.json();
+            const tracked: Record<string, boolean> = {};
+            unique.forEach((h, i) => { tracked[h.headline] = results[i] ?? false; });
+            setPrTracked(prev => ({ ...prev, [symbol]: tracked }));
+          }
+        } catch { /* AI classification failed silently — all show as ✗ */ }
+      }
     } catch {
       setPrError(prev => ({ ...prev, [symbol]: 'Could not fetch — check IR page manually' }));
     } finally {
@@ -985,51 +1007,7 @@ const ASTSAnalysis = () => {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
               <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#press-releases</div>
-              {/* Cross-reference: check fetched PRs against static tracking + analysis data */}
-              {(() => {
-                // Strip " - Business Wire" etc. from Google News headlines
-                const stripSource = (h: string) => h.replace(/\s*-\s*(Business Wire|PR Newswire|GlobeNewsWire|AccessWire|Globe Newswire)$/i, '');
-
-                // Check if a live PR matches a tracked static PR (by headline prefix or date)
-                const matchesStaticPR = (staticData: Array<{ tracked: boolean; headline: string; date: string }>, headline: string, date: string): boolean => {
-                  const clean = stripSource(headline).toLowerCase().slice(0, 50);
-                  return staticData.some(s => s.tracked && (
-                    s.headline.toLowerCase().slice(0, 50) === clean
-                    || (s.date === date && s.headline.toLowerCase().includes(clean.slice(0, 30)))
-                  ));
-                };
-
-                // Build keyword pools from analysis tabs for supplementary matching
-                type PoolEntry = { date?: string; text: string };
-                const astsAnalysis: PoolEntry[] = [
-                  ...PARTNER_NEWS.map(n => ({ date: n.date, text: (n.headline + ' ' + n.summary).toLowerCase() })),
-                  ...COMPLETED_MILESTONES.map(m => ({ date: m.date, text: m.event.toLowerCase() })),
-                  ...UPCOMING_CATALYSTS.map(c => ({ text: c.event.toLowerCase() })),
-                  ...EQUITY_OFFERINGS.map(e => ({ date: e.date, text: (e.event + ' ' + (e.notes || '')).toLowerCase() })),
-                ];
-                const competitorAnalysis: Record<string, PoolEntry[]> = {};
-                for (const [key, cfg] of Object.entries(COMPETITOR_PRESS_RELEASES)) {
-                  const labelWords = cfg.label.toLowerCase().split(/[\s/]+/).filter(w => w.length >= 3);
-                  competitorAnalysis[key] = COMPETITOR_NEWS
-                    .filter(n => labelWords.some(w => n.competitor.toLowerCase().includes(w)))
-                    .map(n => ({ date: n.date, text: (n.headline + ' ' + n.summary).toLowerCase() }));
-                }
-
-                // Supplementary keyword check against analysis pool
-                // Uses exact word matching (not substring) to prevent "asts" matching "broadcasts" etc.
-                const matchesAnalysis = (pool: PoolEntry[], headline: string, date: string): boolean => {
-                  const clean = stripSource(headline).toLowerCase();
-                  const terms = clean.split(/\W+/).filter(w => w.length >= 5);
-                  for (const entry of pool) {
-                    const entryWords = new Set(entry.text.split(/\W+/));
-                    const matches = terms.filter(w => entryWords.has(w)).length;
-                    if (entry.date === date && matches >= 2) return true;
-                    if (matches >= 4) return true;
-                  }
-                  return false;
-                };
-
-                return [
+              {[
                 { title: 'AST SpaceMobile — Press Releases', companyKey: 'ASTS', data: PRESS_RELEASES, irUrl: 'https://investors.ast-science.com/press-releases', symbol: 'ASTS' as string | null },
                 ...Object.entries(COMPETITOR_PRESS_RELEASES).map(([key, c]) => ({
                   title: `${c.label} — Press Releases`,
@@ -1043,15 +1021,14 @@ const ASTSAnalysis = () => {
                 const loading = sym ? prLoading[sym] : false;
                 const error = sym ? prError[sym] : null;
                 const live = sym ? livePR[sym] : null;
+                const tracked = sym ? prTracked[sym] : null;
                 const activeSubTab = (sym ? prTab[sym] : undefined) || 'prWire';
-                const analysisPool = section.companyKey === 'ASTS' ? astsAnalysis : (competitorAnalysis[section.companyKey] || []);
 
-                // Build lists: ✓ if matched in static data OR analysis data
+                // Build lists: tracked status comes from AI classification
                 const buildList = (items: LivePRItem[]) =>
                   items.slice(0, 5).map(pr => ({
                     ...pr,
-                    tracked: matchesStaticPR(section.data, pr.headline, pr.date)
-                      || matchesAnalysis(analysisPool, pr.headline, pr.date),
+                    tracked: tracked ? (tracked[pr.headline] ?? false) : false,
                   }));
 
                 const staticList = section.data.slice(0, 5);
@@ -1071,7 +1048,7 @@ const ASTSAnalysis = () => {
                       <div style={{ display: 'flex', gap: 6 }}>
                         {sym && (
                           <button
-                            onClick={() => refreshPR(sym)}
+                            onClick={() => refreshPR(sym, section.companyKey)}
                             disabled={loading}
                             style={{
                               background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 6,
@@ -1135,8 +1112,7 @@ const ASTSAnalysis = () => {
                     </ul>
                   </div>
                 );
-              });
-              })()}
+              })}
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
               {[
