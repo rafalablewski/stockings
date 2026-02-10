@@ -715,7 +715,7 @@ const ASTSAnalysis = () => {
       const unique = allItems.filter((h, i, arr) => arr.findIndex(x => x.headline === h.headline) === i);
       if (unique.length > 0) {
         try {
-          const classifyRes = await fetch('/api/check-tracked', {
+          const classifyRes = await fetch('/api/classify-pr', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ headlines: unique.map(h => ({ headline: h.headline, date: h.date })), company: companyKey }),
