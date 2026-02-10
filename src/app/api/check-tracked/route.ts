@@ -109,9 +109,10 @@ ${numberedHeadlines}`,
       results: results.slice(0, headlines.length),
     });
   } catch (err) {
-    console.error('Claude classification error:', err);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('Claude classification error:', msg);
     return NextResponse.json(
-      { error: 'AI classification failed' },
+      { error: 'AI classification failed', detail: msg },
       { status: 500 }
     );
   }
