@@ -93,9 +93,17 @@ function decodeHTML(str: string): string {
     .replace(/&apos;/g, "'");
 }
 
-/** Build a Google News RSS URL for a given query string */
+/** Date cutoff: 6 months ago in YYYY-MM-DD for Google's after: operator */
+function sixMonthsAgo(): string {
+  const d = new Date();
+  d.setMonth(d.getMonth() - 6);
+  return d.toISOString().split('T')[0];
+}
+
+/** Build a Google News RSS URL for a given query string, restricted to recent results */
 function googleNewsRSS(query: string): string {
-  return `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
+  const dated = `${query} after:${sixMonthsAgo()}`;
+  return `https://news.google.com/rss/search?q=${encodeURIComponent(dated)}&hl=en-US&gl=US&ceid=US:en`;
 }
 
 export async function GET(
@@ -145,6 +153,10 @@ export async function GET(
         releases = parseRSS(text);
       }
     }
+
+    // Drop anything older than 6 months (safety net if Google ignores after:)
+    const cutoff = sixMonthsAgo();
+    releases = releases.filter(r => !r.date || r.date >= cutoff);
 
     if (releases.length > 0) {
       return NextResponse.json({
