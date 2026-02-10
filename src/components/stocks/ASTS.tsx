@@ -125,6 +125,7 @@ import {
   PARTNERS,
   PARTNER_NEWS,
   COMPETITOR_NEWS,
+  PRESS_RELEASES,
   REVENUE_SOURCES,
   UPCOMING_CATALYSTS,
   COMPLETED_MILESTONES,
@@ -960,6 +961,23 @@ const ASTSAnalysis = () => {
               <h2 className="section-head">Research Sources</h2>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
               <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#press-releases</div>
+              <div className="card">
+                <div className="card-title">Latest Press Releases</div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {PRESS_RELEASES.slice(0, 3).map((pr, i) => (
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                      <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1, color: pr.tracked ? '#22c55e' : '#ef4444' }}>{pr.tracked ? '✓' : '✗'}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <a href={pr.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
+                          {pr.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
+                        </a>
+                        <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date} · {pr.tracked ? 'Added to database' : 'Not yet tracked'}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
               {[
                 { category: 'Company / IR', sources: [

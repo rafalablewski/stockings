@@ -233,6 +233,28 @@ export interface Comparable {
 }
 
 // ============================================================================
+// PRESS RELEASE TYPES
+// ============================================================================
+
+/**
+ * Company press release entry for tracking in Sources tab
+ * AI AGENT: Add from company IR page / PR Newswire / Business Wire
+ * - Set tracked: true when the content has been integrated into relevant tabs
+ *   (partner news, competitor news, timeline, catalysts, financials, etc.)
+ * - Set tracked: false for new releases not yet reflected in the database
+ */
+export interface PressRelease {
+  /** ISO date string (YYYY-MM-DD) */
+  date: string;
+  /** Press release headline */
+  headline: string;
+  /** URL to the original press release */
+  url: string;
+  /** Whether this PR's content has been added to the database (partner news, competitor news, timeline, etc.) */
+  tracked: boolean;
+}
+
+// ============================================================================
 // CATALYST & TIMELINE TYPES
 // ============================================================================
 
