@@ -148,7 +148,13 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
  * - Move from UPCOMING_CATALYSTS when completed
  */
 export const COMPLETED_MILESTONES: CompletedMilestone[] = [
-  // === 2025-2026 ===
+  // === 2026 ===
+  { event: 'HTX launched USDe minting and redemption service; USDe is backed by BTC and ETH via delta-neutral hedging strategy by Ethena Labs', date: 'Feb 9, 2026', category: 'Ecosystem' },
+  { event: 'Arowana gold tokenization platform launching on Arbitrum (Ethereum L2) in March 2026; backed by Hancom Group ($600M gold trading volume)', date: 'Feb 9, 2026', category: 'Ecosystem' },
+  { event: 'Bitpanda joins Global Dollar Network (USDG); Kraken is a GDN partner. USDG available on Ethereum, Solana, Ink, X Layer. MiCA-compliant via Finland FIN-FSA', date: 'Feb 5, 2026', category: 'Ecosystem' },
+  { event: 'Bitwise launches model portfolio solutions for digital assets ($15B+ client AUM); Bitwise is Kraken Institutional strategy partner', date: 'Feb 3, 2026', category: 'Ecosystem' },
+
+  // === 2025 ===
   { event: 'Kraken Proof of Reserves: ETH verified 1:1 with Merkle proofs (covers BTC, ETH, SOL, USDC, USDT, XRP, ADA)', date: 'Oct 22, 2025', category: 'Ecosystem' },
   { event: 'Kraken launched CME ETH futures contracts alongside BTC and SOL', date: 'Oct 9, 2025', category: 'Ecosystem' },
   { event: 'Kraken acquired CFTC-regulated Designated Contract Market (Small Exchange) for $100M', date: 'Oct 16, 2025', category: 'Ecosystem' },
