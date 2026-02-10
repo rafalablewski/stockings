@@ -692,6 +692,25 @@ const ASTSAnalysis = () => {
   // Chart refresh key - increment to trigger chart data refresh
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
 
+  // Press releases live fetch state (per company)
+  type LivePR = Array<{ date: string; headline: string; url: string }>;
+  const [livePR, setLivePR] = useState<Record<string, LivePR>>({});
+  const [prLoading, setPrLoading] = useState<Record<string, boolean>>({});
+  const [prError, setPrError] = useState<Record<string, string | null>>({});
+  const refreshPR = useCallback(async (symbol: string) => {
+    setPrLoading(prev => ({ ...prev, [symbol]: true }));
+    setPrError(prev => ({ ...prev, [symbol]: null }));
+    try {
+      const res = await fetch(`/api/press-releases/${symbol}`);
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
+      setLivePR(prev => ({ ...prev, [symbol]: data.releases || [] }));
+    } catch {
+      setPrError(prev => ({ ...prev, [symbol]: 'Could not fetch — check IR page manually' }));
+    } finally {
+      setPrLoading(prev => ({ ...prev, [symbol]: false }));
+    }
+  }, []);
 
   // Live price refresh hook - gets price from chart's API response
   const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
@@ -965,43 +984,73 @@ const ASTSAnalysis = () => {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
               <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#press-releases</div>
-              {/* AST SpaceMobile Press Releases */}
               {[
-                { title: 'AST SpaceMobile — Press Releases', data: PRESS_RELEASES, irUrl: 'https://investors.ast-science.com/news-events/press-releases' },
-                { title: 'OQ Technology — Press Releases', data: OQ_PRESS_RELEASES, irUrl: 'https://www.oqtec.space' },
-                { title: 'Iridium Communications — Press Releases', data: IRIDIUM_PRESS_RELEASES, irUrl: 'https://investor.iridium.com/press-releases' },
-              ].map(section => (
-                <div className="card" key={section.title}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <div className="card-title" style={{ marginBottom: 0 }}>{section.title}</div>
-                    <a
-                      href={section.irUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 6,
-                        color: 'var(--text2)', fontSize: 11, padding: '4px 10px', textDecoration: 'none',
-                        display: 'flex', alignItems: 'center', gap: 4,
-                      }}
-                    >
-                      Check IR Page <span style={{ fontSize: 9 }}>↗</span>
-                    </a>
+                { title: 'AST SpaceMobile — Press Releases', data: PRESS_RELEASES, irUrl: 'https://investors.ast-science.com/press-releases', symbol: 'ASTS' },
+                { title: 'OQ Technology — Press Releases', data: OQ_PRESS_RELEASES, irUrl: 'https://www.oqtec.space', symbol: null },
+                { title: 'Iridium Communications — Press Releases', data: IRIDIUM_PRESS_RELEASES, irUrl: 'https://investor.iridium.com/press-releases', symbol: 'IRDM' },
+              ].map(section => {
+                const loading = section.symbol ? prLoading[section.symbol] : false;
+                const error = section.symbol ? prError[section.symbol] : null;
+                const live = section.symbol ? livePR[section.symbol] : null;
+                // Display: live data if fetched, otherwise static
+                const displayData = live
+                  ? live.slice(0, 3).map(pr => ({
+                      ...pr,
+                      // Cross-reference: check if this headline/date exists in the tracked static data
+                      tracked: section.data.some(s => s.tracked && (s.date === pr.date || s.headline.toLowerCase().includes(pr.headline.toLowerCase().slice(0, 30)))),
+                    }))
+                  : section.data.slice(0, 3);
+                return (
+                  <div className="card" key={section.title}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <div className="card-title" style={{ marginBottom: 0 }}>{section.title}</div>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {section.symbol && (
+                          <button
+                            onClick={() => refreshPR(section.symbol!)}
+                            disabled={loading}
+                            style={{
+                              background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 6,
+                              color: 'var(--text2)', fontSize: 11, padding: '4px 10px', cursor: loading ? 'wait' : 'pointer',
+                              display: 'flex', alignItems: 'center', gap: 4, opacity: loading ? 0.6 : 1,
+                            }}
+                          >
+                            <span style={{ display: 'inline-block', animation: loading ? 'spin 1s linear infinite' : 'none' }}>↻</span>
+                            {loading ? 'Fetching...' : 'Refresh'}
+                          </button>
+                        )}
+                        <a
+                          href={section.irUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 6,
+                            color: 'var(--text2)', fontSize: 11, padding: '4px 10px', textDecoration: 'none',
+                            display: 'flex', alignItems: 'center', gap: 4,
+                          }}
+                        >
+                          IR Page <span style={{ fontSize: 9 }}>↗</span>
+                        </a>
+                      </div>
+                    </div>
+                    {error && <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 8 }}>{error}</div>}
+                    {live && <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 6 }}>Live from IR feed · {new Date().toLocaleDateString()}</div>}
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {displayData.map((pr, i) => (
+                        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                          <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1, color: pr.tracked ? '#22c55e' : '#ef4444' }}>{pr.tracked ? '✓' : '✗'}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <a href={pr.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
+                              {pr.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
+                            </a>
+                            <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date} · {pr.tracked ? 'Added to analysis' : 'Not yet in analysis'}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {section.data.slice(0, 3).map((pr, i) => (
-                      <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                        <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1, color: pr.tracked ? '#22c55e' : '#ef4444' }}>{pr.tracked ? '✓' : '✗'}</span>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <a href={pr.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                            {pr.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
-                          </a>
-                          <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date} · {pr.tracked ? 'Added to analysis' : 'Not yet in analysis'}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                );
+              })}
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
               {[
