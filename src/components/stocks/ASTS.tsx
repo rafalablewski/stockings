@@ -985,45 +985,43 @@ const ASTSAnalysis = () => {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
               <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#press-releases</div>
-              {/* Dynamic cross-reference: check fetched PRs against analysis data */}
+              {/* Cross-reference: check fetched PRs against static tracking + analysis data */}
               {(() => {
                 // Strip " - Business Wire" etc. from Google News headlines
                 const stripSource = (h: string) => h.replace(/\s*-\s*(Business Wire|PR Newswire|GlobeNewsWire|AccessWire|Globe Newswire)$/i, '');
 
-                // Build per-company pools of tracked analysis content
-                // ASTS pool: partner news + milestones + catalysts
-                type TrackedEntry = { date?: string; text: string };
-                const astsPool: TrackedEntry[] = [
+                // Check if a live PR matches a tracked static PR (by headline prefix or date)
+                const matchesStaticPR = (staticData: Array<{ tracked: boolean; headline: string; date: string }>, headline: string, date: string): boolean => {
+                  const clean = stripSource(headline).toLowerCase().slice(0, 50);
+                  return staticData.some(s => s.tracked && (
+                    s.headline.toLowerCase().slice(0, 50) === clean
+                    || (s.date === date && s.headline.toLowerCase().includes(clean.slice(0, 30)))
+                  ));
+                };
+
+                // Build keyword pools from analysis tabs for supplementary matching
+                type PoolEntry = { date?: string; text: string };
+                const astsAnalysis: PoolEntry[] = [
                   ...PARTNER_NEWS.map(n => ({ date: n.date, text: (n.headline + ' ' + n.summary).toLowerCase() })),
                   ...COMPLETED_MILESTONES.map(m => ({ date: m.date, text: m.event.toLowerCase() })),
                   ...UPCOMING_CATALYSTS.map(c => ({ text: c.event.toLowerCase() })),
+                  ...EQUITY_OFFERINGS.map(e => ({ date: e.date, text: (e.event + ' ' + (e.notes || '')).toLowerCase() })),
                 ];
-
-                // Competitor pools: competitor news entries grouped by matching company label
-                const competitorPools: Record<string, TrackedEntry[]> = {};
+                const competitorAnalysis: Record<string, PoolEntry[]> = {};
                 for (const [key, cfg] of Object.entries(COMPETITOR_PRESS_RELEASES)) {
                   const labelWords = cfg.label.toLowerCase().split(/[\s/]+/).filter(w => w.length >= 3);
-                  const entries = COMPETITOR_NEWS
-                    .filter(n => {
-                      const compLower = n.competitor.toLowerCase();
-                      return labelWords.some(w => compLower.includes(w));
-                    })
+                  competitorAnalysis[key] = COMPETITOR_NEWS
+                    .filter(n => labelWords.some(w => n.competitor.toLowerCase().includes(w)))
                     .map(n => ({ date: n.date, text: (n.headline + ' ' + n.summary).toLowerCase() }));
-                  competitorPools[key] = entries;
                 }
 
-                // Check if a PR is tracked within a specific pool
-                const isTrackedIn = (pool: TrackedEntry[], headline: string, date: string): boolean => {
-                  if (pool.length === 0) return false;
+                // Supplementary keyword check against analysis pool
+                const matchesAnalysis = (pool: PoolEntry[], headline: string, date: string): boolean => {
                   const clean = stripSource(headline).toLowerCase();
-                  // Extract all words 3+ chars
-                  const terms = clean.split(/\W+/).filter(w => w.length >= 3);
-
+                  const terms = clean.split(/\W+/).filter(w => w.length >= 4);
                   for (const entry of pool) {
-                    // Exact date match with any keyword overlap
-                    if (entry.date === date && terms.some(w => entry.text.includes(w))) return true;
-                    // Strong text match: 3+ terms found in the entry text
-                    if (terms.filter(w => entry.text.includes(w)).length >= 3) return true;
+                    if (entry.date === date && terms.filter(w => entry.text.includes(w)).length >= 2) return true;
+                    if (terms.filter(w => entry.text.includes(w)).length >= 4) return true;
                   }
                   return false;
                 };
@@ -1043,18 +1041,16 @@ const ASTSAnalysis = () => {
                 const error = sym ? prError[sym] : null;
                 const live = sym ? livePR[sym] : null;
                 const activeSubTab = (sym ? prTab[sym] : undefined) || 'prWire';
+                const analysisPool = section.companyKey === 'ASTS' ? astsAnalysis : (competitorAnalysis[section.companyKey] || []);
 
-                // Pick the right pool for this company
-                const pool = section.companyKey === 'ASTS' ? astsPool : (competitorPools[section.companyKey] || []);
-
-                // Build lists for each sub-tab — cross-reference against company-specific analysis data
+                // Build lists: ✓ if matched in static data OR analysis data
                 const buildList = (items: LivePRItem[]) =>
                   items.slice(0, 5).map(pr => ({
                     ...pr,
-                    tracked: isTrackedIn(pool, pr.headline, pr.date),
+                    tracked: matchesStaticPR(section.data, pr.headline, pr.date)
+                      || matchesAnalysis(analysisPool, pr.headline, pr.date),
                   }));
 
-                // Before refresh: show static data (static entries keep their own tracked flag)
                 const staticList = section.data.slice(0, 5);
                 const prWireList = live ? buildList(live.prWire) : null;
                 const allNewsList = live ? buildList(live.allNews) : null;
