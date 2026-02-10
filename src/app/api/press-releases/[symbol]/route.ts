@@ -2,22 +2,30 @@ import { NextRequest, NextResponse } from 'next/server';
 
 type RouteParams = Promise<{ symbol: string }>;
 
-// Google News search queries keyed by company identifier
+// Company name terms used to build search queries
 // These are passed as the [symbol] URL parameter
-const SEARCH_QUERIES: Record<string, string> = {
+const COMPANY_TERMS: Record<string, string> = {
   'ASTS':           '"AST SpaceMobile"',
-  'oq-technology':  '"OQ Technology" satellite',
+  'oq-technology':  '"OQ Technology"',
   'iridium':        '"Iridium Communications"',
-  'skylo':          '"Skylo" satellite NTN',
-  'lynk':           '"Lynk Global" satellite',
+  'skylo':          '"Skylo Technologies"',
+  'lynk':           '"Lynk Global"',
   'starlink':       '"Starlink" "direct to cell"',
-  'viasat':         '"Viasat" satellite',
-  'amazon-kuiper':  '"Project Kuiper" Amazon satellite',
-  'echostar':       '"EchoStar" satellite OR Hughes',
-  'ses':            '"SES" satellite D2D',
+  'viasat':         '"Viasat"',
+  'amazon-kuiper':  '"Project Kuiper"',
+  'echostar':       '"EchoStar" OR "Hughes Network"',
+  'ses':            '"SES S.A." satellite',
   'terrestar':      '"Terrestar Solutions"',
-  'space42':        '"Space42" satellite OR "Bayanat" satellite',
+  'space42':        '"Space42" OR "Bayanat"',
 };
+
+// PR wire sites where companies publish official press releases
+const PR_WIRE_SITES = [
+  'businesswire.com',
+  'prnewswire.com',
+  'globenewswire.com',
+  'accesswire.com',
+];
 
 interface PressReleaseResult {
   date: string;
@@ -30,7 +38,7 @@ function parseRSS(xml: string): PressReleaseResult[] {
   const items: PressReleaseResult[] = [];
   const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
   let match;
-  while ((match = itemRegex.exec(xml)) !== null && items.length < 5) {
+  while ((match = itemRegex.exec(xml)) !== null && items.length < 10) {
     const block = match[1];
     const title = block.match(/<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/)?.[1]?.trim() || '';
     const link = block.match(/<link>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/)?.[1]?.trim() || '';
@@ -46,7 +54,7 @@ function parseRSS(xml: string): PressReleaseResult[] {
   // Also try Atom <entry> format
   if (items.length === 0) {
     const entryRegex = /<entry>([\s\S]*?)<\/entry>/gi;
-    while ((match = entryRegex.exec(xml)) !== null && items.length < 5) {
+    while ((match = entryRegex.exec(xml)) !== null && items.length < 10) {
       const block = match[1];
       const title = block.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/)?.[1]?.trim() || '';
       const link = block.match(/<link[^>]*href="([^"]*)"[^>]*\/?>/)?.[1]?.trim() || '';
@@ -85,6 +93,11 @@ function decodeHTML(str: string): string {
     .replace(/&apos;/g, "'");
 }
 
+/** Build a Google News RSS URL for a given query string */
+function googleNewsRSS(query: string): string {
+  return `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: RouteParams }
@@ -92,46 +105,58 @@ export async function GET(
   const { symbol: rawSymbol } = await params;
   const symbol = decodeURIComponent(rawSymbol);
 
-  const query = SEARCH_QUERIES[symbol] || SEARCH_QUERIES[symbol.toUpperCase()];
-  if (!query) {
+  const companyTerm = COMPANY_TERMS[symbol] || COMPANY_TERMS[symbol.toUpperCase()];
+  if (!companyTerm) {
     return NextResponse.json(
       { error: `No search configured for: ${symbol}` },
       { status: 400 }
     );
   }
 
-  try {
-    // Google News RSS — works for all companies, public or private
-    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; stockings-research/1.0)',
-        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
-      },
-      next: { revalidate: 600 }, // Cache 10 minutes
-    });
+  const fetchOpts = {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; stockings-research/1.0)',
+      'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+    },
+    next: { revalidate: 600 } as { revalidate: number }, // Cache 10 minutes
+  };
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: `Google News returned ${response.status}` },
-        { status: response.status }
-      );
+  try {
+    // Strategy 1: Search PR wire sites for official press releases
+    const siteFilter = PR_WIRE_SITES.map(s => `site:${s}`).join(' OR ');
+    const prQuery = `${companyTerm} (${siteFilter})`;
+    const prUrl = googleNewsRSS(prQuery);
+
+    const prResponse = await fetch(prUrl, fetchOpts);
+    let releases: PressReleaseResult[] = [];
+
+    if (prResponse.ok) {
+      const text = await prResponse.text();
+      releases = parseRSS(text);
     }
 
-    const text = await response.text();
-    const releases = parseRSS(text);
+    // Strategy 2: If PR wires returned nothing, try "press release" keyword
+    if (releases.length === 0) {
+      const fallbackQuery = `${companyTerm} "press release"`;
+      const fallbackUrl = googleNewsRSS(fallbackQuery);
+      const fallbackResponse = await fetch(fallbackUrl, fetchOpts);
+      if (fallbackResponse.ok) {
+        const text = await fallbackResponse.text();
+        releases = parseRSS(text);
+      }
+    }
 
     if (releases.length > 0) {
       return NextResponse.json({
         symbol,
         releases: releases.slice(0, 5),
-        source: 'Google News',
+        source: 'PR Wire (Google News)',
         fetchedAt: new Date().toISOString(),
       });
     }
 
     return NextResponse.json(
-      { error: 'No results found', symbol },
+      { error: 'No press releases found', symbol },
       { status: 404 }
     );
   } catch (err) {
