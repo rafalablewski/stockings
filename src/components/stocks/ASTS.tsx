@@ -985,42 +985,54 @@ const ASTSAnalysis = () => {
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
               <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#press-releases</div>
-              {/* Build a flat index of all tracked analysis content for cross-referencing */}
+              {/* Dynamic cross-reference: check fetched PRs against analysis data */}
               {(() => {
-                // Collect all text snippets from every analysis tab into one searchable pool
-                const trackedTexts: string[] = [];
-                const trackedDates = new Set<string>();
-                // Partner news
-                PARTNER_NEWS.forEach(n => { trackedTexts.push(n.headline.toLowerCase()); trackedDates.add(n.date); });
-                // Competitor news
-                COMPETITOR_NEWS.forEach(n => { trackedTexts.push(n.headline.toLowerCase()); trackedDates.add(n.date); });
-                // Completed milestones
-                COMPLETED_MILESTONES.forEach(m => { trackedTexts.push(m.event.toLowerCase()); if (m.date) trackedDates.add(m.date); });
-                // Upcoming catalysts
-                UPCOMING_CATALYSTS.forEach(c => { trackedTexts.push(c.event.toLowerCase()); });
-
                 // Strip " - Business Wire" etc. from Google News headlines
                 const stripSource = (h: string) => h.replace(/\s*-\s*(Business Wire|PR Newswire|GlobeNewsWire|AccessWire|Globe Newswire)$/i, '');
 
-                // Check if a PR headline+date is reflected anywhere in the analysis
-                const isTracked = (headline: string, date: string): boolean => {
+                // Build per-company pools of tracked analysis content
+                // ASTS pool: partner news + milestones + catalysts
+                type TrackedEntry = { date?: string; text: string };
+                const astsPool: TrackedEntry[] = [
+                  ...PARTNER_NEWS.map(n => ({ date: n.date, text: (n.headline + ' ' + n.summary).toLowerCase() })),
+                  ...COMPLETED_MILESTONES.map(m => ({ date: m.date, text: m.event.toLowerCase() })),
+                  ...UPCOMING_CATALYSTS.map(c => ({ text: c.event.toLowerCase() })),
+                ];
+
+                // Competitor pools: competitor news entries grouped by matching company label
+                const competitorPools: Record<string, TrackedEntry[]> = {};
+                for (const [key, cfg] of Object.entries(COMPETITOR_PRESS_RELEASES)) {
+                  const labelWords = cfg.label.toLowerCase().split(/[\s/]+/).filter(w => w.length >= 3);
+                  const entries = COMPETITOR_NEWS
+                    .filter(n => {
+                      const compLower = n.competitor.toLowerCase();
+                      return labelWords.some(w => compLower.includes(w));
+                    })
+                    .map(n => ({ date: n.date, text: (n.headline + ' ' + n.summary).toLowerCase() }));
+                  competitorPools[key] = entries;
+                }
+
+                // Check if a PR is tracked within a specific pool
+                const isTrackedIn = (pool: TrackedEntry[], headline: string, date: string): boolean => {
+                  if (pool.length === 0) return false;
                   const clean = stripSource(headline).toLowerCase();
-                  // Extract key terms (3+ char words) from the headline
-                  const terms = clean.split(/\W+/).filter(w => w.length >= 4);
-                  // A match requires: date exists in tracked data, OR 3+ key terms appear in any tracked text
-                  if (trackedDates.has(date)) {
-                    // Date matches — check if any tracked text shares key terms
-                    const dateTermMatch = trackedTexts.some(t => terms.filter(w => t.includes(w)).length >= 2);
-                    if (dateTermMatch) return true;
+                  // Extract all words 3+ chars
+                  const terms = clean.split(/\W+/).filter(w => w.length >= 3);
+
+                  for (const entry of pool) {
+                    // Exact date match with any keyword overlap
+                    if (entry.date === date && terms.some(w => entry.text.includes(w))) return true;
+                    // Strong text match: 3+ terms found in the entry text
+                    if (terms.filter(w => entry.text.includes(w)).length >= 3) return true;
                   }
-                  // Broad match: 3+ key terms found in any single tracked text
-                  return trackedTexts.some(t => terms.filter(w => t.includes(w)).length >= 3);
+                  return false;
                 };
 
                 return [
-                { title: 'AST SpaceMobile — Press Releases', data: PRESS_RELEASES, irUrl: 'https://investors.ast-science.com/press-releases', symbol: 'ASTS' as string | null },
-                ...Object.values(COMPETITOR_PRESS_RELEASES).map(c => ({
+                { title: 'AST SpaceMobile — Press Releases', companyKey: 'ASTS', data: PRESS_RELEASES, irUrl: 'https://investors.ast-science.com/press-releases', symbol: 'ASTS' as string | null },
+                ...Object.entries(COMPETITOR_PRESS_RELEASES).map(([key, c]) => ({
                   title: `${c.label} — Press Releases`,
+                  companyKey: key,
                   data: c.data,
                   irUrl: c.irUrl,
                   symbol: c.apiSymbol,
@@ -1032,11 +1044,14 @@ const ASTSAnalysis = () => {
                 const live = sym ? livePR[sym] : null;
                 const activeSubTab = (sym ? prTab[sym] : undefined) || 'prWire';
 
-                // Build lists for each sub-tab — cross-reference against ALL analysis data
+                // Pick the right pool for this company
+                const pool = section.companyKey === 'ASTS' ? astsPool : (competitorPools[section.companyKey] || []);
+
+                // Build lists for each sub-tab — cross-reference against company-specific analysis data
                 const buildList = (items: LivePRItem[]) =>
                   items.slice(0, 5).map(pr => ({
                     ...pr,
-                    tracked: isTracked(pr.headline, pr.date),
+                    tracked: isTrackedIn(pool, pr.headline, pr.date),
                   }));
 
                 // Before refresh: show static data (static entries keep their own tracked flag)
