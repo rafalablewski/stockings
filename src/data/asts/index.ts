@@ -45,7 +45,9 @@ export {
   PRESS_RELEASES,
   OQ_PRESS_RELEASES,
   IRIDIUM_PRESS_RELEASES,
+  COMPETITOR_PRESS_RELEASES,
 } from './press-releases';
+export type { CompetitorPRConfig } from './press-releases';
 
 // Catalysts & Milestones
 export {

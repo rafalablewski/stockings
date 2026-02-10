@@ -126,8 +126,7 @@ import {
   PARTNER_NEWS,
   COMPETITOR_NEWS,
   PRESS_RELEASES,
-  OQ_PRESS_RELEASES,
-  IRIDIUM_PRESS_RELEASES,
+  COMPETITOR_PRESS_RELEASES,
   REVENUE_SOURCES,
   UPCOMING_CATALYSTS,
   COMPLETED_MILESTONES,
@@ -985,9 +984,13 @@ const ASTSAnalysis = () => {
               <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#press-releases</div>
               {[
-                { title: 'AST SpaceMobile — Press Releases', data: PRESS_RELEASES, irUrl: 'https://investors.ast-science.com/press-releases', symbol: 'ASTS' },
-                { title: 'OQ Technology — Press Releases', data: OQ_PRESS_RELEASES, irUrl: 'https://www.oqtec.space', symbol: null },
-                { title: 'Iridium Communications — Press Releases', data: IRIDIUM_PRESS_RELEASES, irUrl: 'https://investor.iridium.com/press-releases', symbol: 'IRDM' },
+                { title: 'AST SpaceMobile — Press Releases', data: PRESS_RELEASES, irUrl: 'https://investors.ast-science.com/press-releases', symbol: 'ASTS' as string | null },
+                ...Object.values(COMPETITOR_PRESS_RELEASES).map(c => ({
+                  title: `${c.label} — Press Releases`,
+                  data: c.data,
+                  irUrl: c.irUrl,
+                  symbol: c.apiSymbol,
+                })),
               ].map(section => {
                 const loading = section.symbol ? prLoading[section.symbol] : false;
                 const error = section.symbol ? prError[section.symbol] : null;

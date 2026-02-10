@@ -11,7 +11,7 @@ const FEEDS: Record<string, { name: string; urls: string[]; type: 'rss' | 'html'
       'https://investors.ast-science.com/rss/press-releases.xml',
       'https://investors.ast-science.com/press-releases',
     ],
-    type: 'rss', // try RSS first, HTML fallback handled automatically
+    type: 'rss',
   },
   IRDM: {
     name: 'Iridium Communications',
@@ -19,6 +19,24 @@ const FEEDS: Record<string, { name: string; urls: string[]; type: 'rss' | 'html'
       'https://investor.iridium.com/index.php?s=95&rsspage=43',
       'https://investor.iridium.com/rss/news-releases.xml',
       'https://investor.iridium.com/press-releases',
+    ],
+    type: 'rss',
+  },
+  VSAT: {
+    name: 'Viasat',
+    urls: [
+      'https://investors.viasat.com/rss/news-releases.xml',
+      'https://investors.viasat.com/rss/press-releases.xml',
+      'https://investors.viasat.com/press-releases',
+    ],
+    type: 'rss',
+  },
+  SATS: {
+    name: 'EchoStar / Hughes',
+    urls: [
+      'https://ir.echostar.com/rss/news-releases.xml',
+      'https://ir.echostar.com/rss/press-releases.xml',
+      'https://ir.echostar.com/press-releases',
     ],
     type: 'rss',
   },
