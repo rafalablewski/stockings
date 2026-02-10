@@ -130,39 +130,37 @@ export async function GET(
   };
 
   try {
-    // Strategy 1: Search PR wire sites for official press releases
-    const siteFilter = PR_WIRE_SITES.map(s => `site:${s}`).join(' OR ');
-    const prQuery = `${companyTerm} (${siteFilter})`;
-    const prUrl = googleNewsRSS(prQuery);
-
-    const prResponse = await fetch(prUrl, fetchOpts);
-    let releases: PressReleaseResult[] = [];
-
-    if (prResponse.ok) {
-      const text = await prResponse.text();
-      releases = parseRSS(text);
-    }
-
-    // Strategy 2: If PR wires returned nothing, try "press release" keyword
-    if (releases.length === 0) {
-      const fallbackQuery = `${companyTerm} "press release"`;
-      const fallbackUrl = googleNewsRSS(fallbackQuery);
-      const fallbackResponse = await fetch(fallbackUrl, fetchOpts);
-      if (fallbackResponse.ok) {
-        const text = await fallbackResponse.text();
-        releases = parseRSS(text);
-      }
-    }
-
-    // Drop anything older than 6 months (safety net if Google ignores after:)
     const cutoff = sixMonthsAgo();
-    releases = releases.filter(r => !r.date || r.date >= cutoff);
 
-    if (releases.length > 0) {
+    // Fetch both feeds in parallel
+    const siteFilter = PR_WIRE_SITES.map(s => `site:${s}`).join(' OR ');
+    const prWireUrl = googleNewsRSS(`${companyTerm} (${siteFilter})`);
+    const allNewsUrl = googleNewsRSS(companyTerm);
+
+    const [prWireRes, allNewsRes] = await Promise.all([
+      fetch(prWireUrl, fetchOpts),
+      fetch(allNewsUrl, fetchOpts),
+    ]);
+
+    let prWire: PressReleaseResult[] = [];
+    let allNews: PressReleaseResult[] = [];
+
+    if (prWireRes.ok) {
+      prWire = parseRSS(await prWireRes.text())
+        .filter(r => !r.date || r.date >= cutoff)
+        .slice(0, 5);
+    }
+    if (allNewsRes.ok) {
+      allNews = parseRSS(await allNewsRes.text())
+        .filter(r => !r.date || r.date >= cutoff)
+        .slice(0, 5);
+    }
+
+    if (prWire.length > 0 || allNews.length > 0) {
       return NextResponse.json({
         symbol,
-        releases: releases.slice(0, 5),
-        source: 'PR Wire (Google News)',
+        prWire,
+        allNews,
         fetchedAt: new Date().toISOString(),
       });
     }

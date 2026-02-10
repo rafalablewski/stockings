@@ -692,10 +692,12 @@ const ASTSAnalysis = () => {
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
 
   // Press releases live fetch state (per company)
-  type LivePR = Array<{ date: string; headline: string; url: string }>;
-  const [livePR, setLivePR] = useState<Record<string, LivePR>>({});
+  type LivePRItem = { date: string; headline: string; url: string };
+  type LivePRData = { prWire: LivePRItem[]; allNews: LivePRItem[] };
+  const [livePR, setLivePR] = useState<Record<string, LivePRData>>({});
   const [prLoading, setPrLoading] = useState<Record<string, boolean>>({});
   const [prError, setPrError] = useState<Record<string, string | null>>({});
+  const [prTab, setPrTab] = useState<Record<string, 'prWire' | 'allNews'>>({});
   const refreshPR = useCallback(async (symbol: string) => {
     setPrLoading(prev => ({ ...prev, [symbol]: true }));
     setPrError(prev => ({ ...prev, [symbol]: null }));
@@ -703,7 +705,7 @@ const ASTSAnalysis = () => {
       const res = await fetch(`/api/press-releases/${symbol}`);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      setLivePR(prev => ({ ...prev, [symbol]: data.releases || [] }));
+      setLivePR(prev => ({ ...prev, [symbol]: { prWire: data.prWire || [], allNews: data.allNews || [] } }));
     } catch {
       setPrError(prev => ({ ...prev, [symbol]: 'Could not fetch — check IR page manually' }));
     } finally {
@@ -992,25 +994,38 @@ const ASTSAnalysis = () => {
                   symbol: c.apiSymbol,
                 })),
               ].map(section => {
-                const loading = section.symbol ? prLoading[section.symbol] : false;
-                const error = section.symbol ? prError[section.symbol] : null;
-                const live = section.symbol ? livePR[section.symbol] : null;
-                // Display: live data if fetched, otherwise static
-                const displayData = live
-                  ? live.slice(0, 3).map(pr => ({
-                      ...pr,
-                      // Cross-reference: check if this headline/date exists in the tracked static data
-                      tracked: section.data.some(s => s.tracked && (s.date === pr.date || s.headline.toLowerCase().includes(pr.headline.toLowerCase().slice(0, 30)))),
-                    }))
-                  : section.data.slice(0, 3);
+                const sym = section.symbol;
+                const loading = sym ? prLoading[sym] : false;
+                const error = sym ? prError[sym] : null;
+                const live = sym ? livePR[sym] : null;
+                const activeSubTab = (sym ? prTab[sym] : undefined) || 'prWire';
+
+                // Build lists for each sub-tab
+                const buildList = (items: LivePRItem[]) =>
+                  items.slice(0, 5).map(pr => ({
+                    ...pr,
+                    tracked: section.data.some(s => s.tracked && (s.date === pr.date || s.headline.toLowerCase().includes(pr.headline.toLowerCase().slice(0, 30)))),
+                  }));
+
+                // Before refresh: show static data
+                const staticList = section.data.slice(0, 5);
+                const prWireList = live ? buildList(live.prWire) : null;
+                const allNewsList = live ? buildList(live.allNews) : null;
+
+                const displayData = !live
+                  ? staticList
+                  : activeSubTab === 'prWire'
+                    ? (prWireList && prWireList.length > 0 ? prWireList : staticList)
+                    : (allNewsList && allNewsList.length > 0 ? allNewsList : staticList);
+
                 return (
                   <div className="card" key={section.title}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                       <div className="card-title" style={{ marginBottom: 0 }}>{section.title}</div>
                       <div style={{ display: 'flex', gap: 6 }}>
-                        {section.symbol && (
+                        {sym && (
                           <button
-                            onClick={() => refreshPR(section.symbol!)}
+                            onClick={() => refreshPR(sym)}
                             disabled={loading}
                             style={{
                               background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 6,
@@ -1037,7 +1052,28 @@ const ASTSAnalysis = () => {
                       </div>
                     </div>
                     {error && <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 8 }}>{error}</div>}
-                    {live && <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 6 }}>Live from IR feed · {new Date().toLocaleDateString()}</div>}
+                    {/* Sub-tabs: only shown after refresh */}
+                    {live && sym && (
+                      <div style={{ display: 'flex', gap: 0, marginBottom: 8, borderBottom: '1px solid var(--border)' }}>
+                        {(['prWire', 'allNews'] as const).map(tab => (
+                          <button
+                            key={tab}
+                            onClick={() => setPrTab(prev => ({ ...prev, [sym]: tab }))}
+                            style={{
+                              background: 'none', border: 'none', borderBottom: activeSubTab === tab ? '2px solid var(--accent)' : '2px solid transparent',
+                              color: activeSubTab === tab ? 'var(--accent)' : 'var(--text3)', fontSize: 11, padding: '4px 12px',
+                              cursor: 'pointer', fontWeight: activeSubTab === tab ? 600 : 400,
+                            }}
+                          >
+                            {tab === 'prWire' ? 'PR Wire' : 'All News'}{' '}
+                            <span style={{ fontSize: 10, opacity: 0.7 }}>
+                              ({tab === 'prWire' ? (live.prWire.length) : (live.allNews.length)})
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {!live && <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 6 }}>Static data · Hit Refresh to fetch latest</div>}
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {displayData.map((pr, i) => (
                         <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
