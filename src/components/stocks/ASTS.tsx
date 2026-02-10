@@ -725,8 +725,10 @@ const ASTSAnalysis = () => {
             const tracked: Record<string, boolean> = {};
             unique.forEach((h, i) => { tracked[h.headline] = results[i] ?? false; });
             setPrTracked(prev => ({ ...prev, [symbol]: tracked }));
+          } else {
+            console.error('Classification API returned', classifyRes.status, await classifyRes.text());
           }
-        } catch { /* AI classification failed silently — all show as ✗ */ }
+        } catch (err) { console.error('Classification fetch error:', err); }
       }
     } catch {
       setPrError(prev => ({ ...prev, [symbol]: 'Could not fetch — check IR page manually' }));
