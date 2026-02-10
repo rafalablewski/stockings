@@ -1016,12 +1016,15 @@ const ASTSAnalysis = () => {
                 }
 
                 // Supplementary keyword check against analysis pool
+                // Uses exact word matching (not substring) to prevent "asts" matching "broadcasts" etc.
                 const matchesAnalysis = (pool: PoolEntry[], headline: string, date: string): boolean => {
                   const clean = stripSource(headline).toLowerCase();
-                  const terms = clean.split(/\W+/).filter(w => w.length >= 4);
+                  const terms = clean.split(/\W+/).filter(w => w.length >= 5);
                   for (const entry of pool) {
-                    if (entry.date === date && terms.filter(w => entry.text.includes(w)).length >= 2) return true;
-                    if (terms.filter(w => entry.text.includes(w)).length >= 4) return true;
+                    const entryWords = new Set(entry.text.split(/\W+/));
+                    const matches = terms.filter(w => entryWords.has(w)).length;
+                    if (entry.date === date && matches >= 2) return true;
+                    if (matches >= 4) return true;
                   }
                   return false;
                 };
