@@ -4850,9 +4850,10 @@ function CRCLModel() {
 
           {activeTab === 'usdc' && (
             <>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#usdc-header</div>
               <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>USDC Dynamics<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-              
-              {/* Highlight Box */}
+
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#usdc-intro</div>
               <div className="highlight">
                 <h3>Stablecoin Economics</h3>
                 <p className="text-sm">
@@ -4862,6 +4863,7 @@ function CRCLModel() {
                 </p>
               </div>
               
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#usdc-metrics</div>
               <div className="g4">
                 <Card label="Circulation" value={`$${latest.usdcCirculation.toFixed(1)}B`} sub="Total USDC supply" color="mint" />
                 <Card label="YoY Growth" value={`+${usdcGrowth.toFixed(0)}%`} sub="Year over year" color="green" />
@@ -4869,6 +4871,7 @@ function CRCLModel() {
                 <Card label="On Platform" value={`${latest.platformPct.toFixed(1)}%`} sub="Higher margin" color="purple" />
               </div>
 
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#usdc-circulation</div>
               <div className="card" style={{ }}>
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Circulation Growth<UpdateIndicators sources="SEC" /></div>
                 <div className="bars">
@@ -4882,6 +4885,7 @@ function CRCLModel() {
                 </div>
               </div>
 
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#usdc-activity</div>
               <div className="g2" style={{ }}>
                 <div className="card">
                   <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Mint / Redeem Activity ($B)<UpdateIndicators sources="SEC" /></div>
