@@ -2003,40 +2003,52 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
   return (
   <div style={{ display: 'flex', flexDirection: 'column' }}>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-thesis</div>
-    <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#opportunity</div>
-    <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
-      <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>BMNR:</strong> ETH treasury company accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share (intrinsic value), NAV premium/discount (market sentiment), and dividend yield (income generation).</p>
+    {/* Hero — Ive×Tesla */}
+    <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Overview<span style={{ color: 'var(--accent)' }}>.</span></h2>
+      <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}><strong style={{ color: 'var(--text2)', fontWeight: 500 }}>BMNR:</strong> ETH treasury company accumulating ETH through strategic capital raises and generating yield via staking. Key metrics: NAV per share, NAV premium/discount, and dividend yield.</p>
     </div>
 
-    <div className="g2">
-      <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
-        <div className="thesis bull">
-          <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
-          <ul>
-            <li>ETH price appreciation — Cycle targets $10K-$15K+</li>
-            <li>NAV premium expansion — MSTR trades 2-3x; BMNR could follow</li>
-            <li>ETF/index inclusion — Forces passive buying, liquidity premium</li>
-            <li>Dividend growth — Staking scales → higher payouts</li>
-            <li>MAVAN launch — Proprietary staking = higher yields</li>
-            <li>Regulatory clarity — ETH not a security, staking approved</li>
-          </ul>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#opportunity</div>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginBottom: 8 }}>#thesis-bull</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--mint)' }}>Bull Case</span>
+          <UpdateIndicators sources="PR" />
         </div>
+        {[
+          'ETH price appreciation — Cycle targets $10K-$15K+',
+          'NAV premium expansion — MSTR trades 2-3x; BMNR could follow',
+          'ETF/index inclusion — Forces passive buying, liquidity premium',
+          'Dividend growth — Staking scales → higher payouts',
+          'MAVAN launch — Proprietary staking = higher yields',
+          'Regulatory clarity — ETH not a security, staking approved',
+        ].map(item => (
+          <div key={item} style={{ display: 'flex', gap: 8, padding: '5px 0', fontSize: 13, color: 'var(--text2)', lineHeight: 1.5 }}>
+            <span style={{ color: 'var(--mint)', flexShrink: 0 }}>+</span>{item}
+          </div>
+        ))}
       </div>
-      <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
-        <div className="thesis bear">
-          <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
-          <ul>
-            <li>ETH price crash — Crypto winter, -70% drawdowns possible</li>
-            <li>NAV discount — Premium compresses or inverts</li>
-            <li>Dilution risk — Aggressive ATM erodes ETH/share</li>
-            <li>Slashing events — Validator penalties reduce holdings</li>
-            <li>Regulatory action — SEC deems ETH a security</li>
-            <li>Execution risk — MAVAN delays, competition</li>
-          </ul>
+      <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginBottom: 8 }}>#thesis-bear</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--coral)' }}>Bear Case</span>
+          <UpdateIndicators sources="PR" />
         </div>
+        {[
+          'ETH price crash — Crypto winter, -70% drawdowns possible',
+          'NAV discount — Premium compresses or inverts',
+          'Dilution risk — Aggressive ATM erodes ETH/share',
+          'Slashing events — Validator penalties reduce holdings',
+          'Regulatory action — SEC deems ETH a security',
+          'Execution risk — MAVAN delays, competition',
+        ].map(item => (
+          <div key={item} style={{ display: 'flex', gap: 8, padding: '5px 0', fontSize: 13, color: 'var(--text2)', lineHeight: 1.5 }}>
+            <span style={{ color: 'var(--coral)', flexShrink: 0 }}>-</span>{item}
+          </div>
+        ))}
       </div>
     </div>
 
@@ -2058,54 +2070,47 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-metrics</div>
-    <table className="tbl" style={{ width: '100%' }}>
-      <thead>
-        <tr>
-          <th style={{ textAlign: 'left' }}>Metric</th>
-          <th className="r">Value</th>
-          <th style={{ textAlign: 'left' }}>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>NAV/Share</td>
-          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${calc.currentNAV.toFixed(2)}</td>
-          <td style={{ color: 'var(--text3)' }}>Book value per share</td>
-        </tr>
-        <tr>
-          <td>Stock Price</td>
-          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${currentStockPrice.toFixed(2)}</td>
-          <td style={{ color: 'var(--text3)' }}>Market price</td>
-        </tr>
-        <tr>
-          <td>Premium/Discount</td>
-          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: calc.navPremium >= 0 ? 'var(--mint)' : 'var(--red)' }}>{calc.navPremium >= 0 ? '+' : ''}{calc.navPremium.toFixed(1)}%</td>
-          <td style={{ color: 'var(--text3)' }}>{calc.navPremium >= 0 ? 'Trading above NAV' : 'Trading below NAV'}</td>
-        </tr>
-        <tr>
-          <td>Dividend Yield</td>
-          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--mint)' }}>{calc.dividendYield.toFixed(2)}%</td>
-          <td style={{ color: 'var(--text3)' }}>${calc.annualDividend.toFixed(2)}/share annually</td>
-        </tr>
-      </tbody>
-    </table>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+        {['Metric', 'Value', 'Description'].map(h => (
+          <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Value' ? 'right' : 'left' }}>{h}</span>
+        ))}
+      </div>
+      {[
+        { metric: 'NAV/Share', value: `$${calc.currentNAV.toFixed(2)}`, desc: 'Book value per share', color: 'var(--text)' },
+        { metric: 'Stock Price', value: `$${currentStockPrice.toFixed(2)}`, desc: 'Market price', color: 'var(--text)' },
+        { metric: 'Premium/Discount', value: `${calc.navPremium >= 0 ? '+' : ''}${calc.navPremium.toFixed(1)}%`, desc: calc.navPremium >= 0 ? 'Trading above NAV' : 'Trading below NAV', color: calc.navPremium >= 0 ? 'var(--mint)' : 'var(--coral)' },
+        { metric: 'Dividend Yield', value: `${calc.dividendYield.toFixed(2)}%`, desc: `$${calc.annualDividend.toFixed(2)}/share annually`, color: 'var(--mint)' },
+      ].map((row, i, arr) => (
+        <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+          <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.metric}</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: row.color, textAlign: 'right' }}>{row.value}</span>
+          <span style={{ fontSize: 12, color: 'var(--text3)', paddingLeft: 16 }}>{row.desc}</span>
+        </div>
+      ))}
+    </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-snapshot</div>
-    <div className="card">
-      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
-      <div className="g3">
-        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>ETH Holdings</div>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Company Snapshot</span>
+        <UpdateIndicators sources={['PR', 'SEC']} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)' }}>
+        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>ETH Holdings</div>
           <Row label="Total ETH" value={currentETH.toLocaleString()} />
           <Row label="ETH Price" value={`$${ethPrice.toLocaleString()}`} />
           <Row label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`} highlight />
           <Row label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} />
         </div>
-        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Share Structure</div>
+        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Share Structure</div>
           <Row label="Shares Outstanding" value={`${currentShares}M`} />
           <Row label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(2)}B`} />
           <Row label="NAV Multiple" value={`${(currentStockPrice / calc.currentNAV).toFixed(2)}x`} highlight />
           <Row label="ETH/Share" value={calc.ethPerShare.toFixed(6)} />
         </div>
-        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Dividend</div>
+        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Dividend</div>
           <Row label="Quarterly Dividend" value={`$${quarterlyDividend.toFixed(2)}`} />
           <Row label="Annual Dividend" value={`$${calc.annualDividend.toFixed(2)}`} />
           <Row label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} highlight />
@@ -2116,9 +2121,12 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters-header</div>
-    <h3 className="section-head">Parameters</h3>
+    <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+      <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+    </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#treasury-assets</div>
-    <div className="g2">
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
       <OverviewParameterCard
         title="ETH Holdings"
         explanation="Total ETH in treasury. Primary driver of NAV. Higher holdings = more intrinsic value per share assuming no dilution."
@@ -2139,7 +2147,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       />
     </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-structure</div>
-    <div className="g2">
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
       <OverviewParameterCard
         title="Shares (M)"
         explanation="Total diluted shares. Higher count dilutes ETH/share and NAV/share."
@@ -2160,7 +2168,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       />
     </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dividend-income</div>
-    <div className="g2">
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
       <OverviewParameterCard
         title="Qtr Dividend ($)"
         explanation="Per-share quarterly dividend. Higher dividend = better yield for income investors."
@@ -2173,7 +2181,10 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
-    <h3 className="section-head">Stock Chart</h3>
+    <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Stock Chart</span>
+      <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+    </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
     <StockChart symbol="BMNR" externalRefreshKey={chartRefreshKey} onPriceUpdate={(price) => setCurrentStockPrice(price)} />
 

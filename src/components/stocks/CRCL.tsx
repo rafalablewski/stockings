@@ -3533,44 +3533,54 @@ function CRCLModel() {
           {activeTab === 'overview' && (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-thesis</div>
-              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#opportunity</div>
-              <div className="highlight">
-                <h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
-                <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>Circle:</strong> Building financial infrastructure for the internet economy. USDC enables 24/7 global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share and +{usdcGrowth.toFixed(0)}% YoY growth, Circle is positioned at the intersection of traditional finance and blockchain technology.</p>
+              {/* Hero — Ive×Tesla */}
+              <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></div>
+                <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Overview<span style={{ color: 'var(--accent)' }}>.</span></h2>
+                <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}><strong style={{ color: 'var(--text2)', fontWeight: 500 }}>Circle:</strong> Building financial infrastructure for the internet economy. USDC enables 24/7 global value transfer at near-zero cost. With {latest.marketShare}% stablecoin market share and +{usdcGrowth.toFixed(0)}% YoY growth.</p>
               </div>
 
-              <div className="g2">
-                <div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
-                  <div className="thesis bull">
-                    <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
-                    <ul>
-                      <li>USDC +{usdcGrowth.toFixed(0)}% YoY, mgmt guides 40% CAGR</li>
-                      <li>Market share: 23% → 29% in 12 months</li>
-                      <li>Platform % at 13.5% (was 2%) improves unit economics</li>
-                      <li>Intuit partnership brings ~100M user distribution</li>
-                      <li>OCC National Trust Charter approval</li>
-                      <li>GENIUS Act provides regulatory clarity</li>
-                      <li>Arc + CPN creating new revenue verticals</li>
-                    </ul>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#opportunity</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+                <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginBottom: 8 }}>#thesis-bull</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--mint)' }}>Bull Case</span>
+                    <UpdateIndicators sources="PR" />
                   </div>
+                  {[
+                    `USDC +${usdcGrowth.toFixed(0)}% YoY, mgmt guides 40% CAGR`,
+                    'Market share: 23% → 29% in 12 months',
+                    'Platform % at 13.5% (was 2%) improves unit economics',
+                    'Intuit partnership brings ~100M user distribution',
+                    'OCC National Trust Charter approval',
+                    'GENIUS Act provides regulatory clarity',
+                    'Arc + CPN creating new revenue verticals',
+                  ].map(item => (
+                    <div key={item} style={{ display: 'flex', gap: 8, padding: '5px 0', fontSize: 13, color: 'var(--text2)', lineHeight: 1.5 }}>
+                      <span style={{ color: 'var(--mint)', flexShrink: 0 }}>+</span>{item}
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
-                  <div className="thesis bear">
-                    <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
-                    <ul>
-                      <li>96% revenue from reserve income (rate sensitive)</li>
-                      <li>~60% of income shared with Coinbase</li>
-                      <li>Tether dominant: 65% share, 85% margins</li>
-                      <li>P/E of {MARKET.pe}x prices in substantial growth</li>
-                      <li>Stock -73% from $299 peak</li>
-                      <li>Bank stablecoins, PayPal competition</li>
-                      <li>Fed rate cuts compress revenue</li>
-                    </ul>
+                <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginBottom: 8 }}>#thesis-bear</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--coral)' }}>Bear Case</span>
+                    <UpdateIndicators sources="PR" />
                   </div>
+                  {[
+                    '96% revenue from reserve income (rate sensitive)',
+                    '~60% of income shared with Coinbase',
+                    'Tether dominant: 65% share, 85% margins',
+                    `P/E of ${MARKET.pe}x prices in substantial growth`,
+                    'Stock -73% from $299 peak',
+                    'Bank stablecoins, PayPal competition',
+                    'Fed rate cuts compress revenue',
+                  ].map(item => (
+                    <div key={item} style={{ display: 'flex', gap: 8, padding: '5px 0', fontSize: 13, color: 'var(--text2)', lineHeight: 1.5 }}>
+                      <span style={{ color: 'var(--coral)', flexShrink: 0 }}>-</span>{item}
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -3595,56 +3605,49 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-metrics</div>
-              <table className="tbl" style={{ width: '100%' }}>
-                <thead>
-                  <tr>
-                    <th style={{ textAlign: 'left' }}>Metric</th>
-                    <th className="r">Value</th>
-                    <th style={{ textAlign: 'left' }}>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>USDC Circulation Growth</td>
-                    <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--mint)' }}>+{usdcGrowth.toFixed(0)}%</td>
-                    <td style={{ color: 'var(--text3)' }}>Year over year</td>
-                  </tr>
-                  <tr>
-                    <td>Revenue Growth</td>
-                    <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--mint)' }}>+{revGrowth.toFixed(0)}%</td>
-                    <td style={{ color: 'var(--text3)' }}>Year over year</td>
-                  </tr>
-                  <tr>
-                    <td>Active Wallets</td>
-                    <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>{latest.meaningfulWallets}M</td>
-                    <td style={{ color: 'var(--text3)' }}>Meaningful wallets</td>
-                  </tr>
-                  <tr>
-                    <td>Arc Partners</td>
-                    <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>100+</td>
-                    <td style={{ color: 'var(--text3)' }}>Platform integrations</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+                  {['Metric', 'Value', 'Description'].map(h => (
+                    <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Value' ? 'right' : 'left' }}>{h}</span>
+                  ))}
+                </div>
+                {[
+                  { metric: 'USDC Circulation Growth', value: `+${usdcGrowth.toFixed(0)}%`, desc: 'Year over year', color: 'var(--mint)' },
+                  { metric: 'Revenue Growth', value: `+${revGrowth.toFixed(0)}%`, desc: 'Year over year', color: 'var(--mint)' },
+                  { metric: 'Active Wallets', value: `${latest.meaningfulWallets}M`, desc: 'Meaningful wallets', color: 'var(--text)' },
+                  { metric: 'Arc Partners', value: '100+', desc: 'Platform integrations', color: 'var(--text)' },
+                ].map((row, i, arr) => (
+                  <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                    <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.metric}</span>
+                    <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: row.color, textAlign: 'right' }}>{row.value}</span>
+                    <span style={{ fontSize: 12, color: 'var(--text3)', paddingLeft: 16 }}>{row.desc}</span>
+                  </div>
+                ))}
+              </div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-snapshot</div>
-              <div className="card">
-                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
-                <div className="g3">
-                  <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Equity (Q3 2025)</div>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Company Snapshot</span>
+                  <UpdateIndicators sources={['PR', 'SEC']} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)' }}>
+                  <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Equity (Q3 2025)</div>
                     <Row label="Shares Outstanding" value={`${currentShares.toFixed(1)}M`} />
                     <Row label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} />
                     <Row label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} highlight />
                     <Row label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} />
                     <Row label="Since IPO" value={`+${ipoReturn.toFixed(0)}%`} />
                   </div>
-                  <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>USDC Metrics</div>
+                  <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>USDC Metrics</div>
                     <Row label="USDC Circulation" value={`$${currentUSDC.toFixed(1)}B`} />
                     <Row label="Market Share" value={`${currentMarketShare}%`} highlight />
                     <Row label="Total Stablecoin Mkt" value={`$${calc.totalStablecoins.toFixed(0)}B`} />
                     <Row label="YoY Growth" value={`+${usdcGrowth.toFixed(0)}%`} />
                     <Row label="Active Wallets" value={`${latest.meaningfulWallets}M`} />
                   </div>
-                  <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Revenue</div>
+                  <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Revenue</div>
                     <Row label="Q3 Revenue" value={`$${latest.totalRevenue}M`} />
                     <Row label="RLDC" value={`$${latest.rldc}M`} highlight />
                     <Row label="RLDC Margin" value={`${latest.rldcMargin}%`} />
@@ -3655,8 +3658,11 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-              <h3 className="section-head">Parameters</h3>
-              <div className="g2">
+              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+                <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <OverviewParameterCard
                   title="Shares Outstanding (M)"
                   explanation="Total diluted shares. Higher share count = lower per-share metrics. Increases with equity raises and stock comp."
@@ -3676,7 +3682,7 @@ function CRCLModel() {
                   currentValue={MARKET.price}
                 />
               </div>
-              <div className="g2">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
                 <OverviewParameterCard
                   title="USDC Circulation ($B)"
                   explanation="Total USDC in circulation. Primary revenue driver. More USDC = more reserves = more interest income."
@@ -3698,7 +3704,10 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
-              <h3 className="section-head">Stock Chart</h3>
+              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Stock Chart</span>
+                <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+              </div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
               <StockChart symbol="CRCL" externalRefreshKey={chartRefreshKey} onPriceUpdate={(price) => setCurrentStockPrice(price)} />
 
