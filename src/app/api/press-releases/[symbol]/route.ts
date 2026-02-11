@@ -25,6 +25,13 @@ function describeItems(items: string): string {
   return ITEM_DESCRIPTIONS[code] || `8-K (Item ${code})`;
 }
 
+// Fallback CIK map for known tickers (used when SEC lookup fails)
+const KNOWN_CIK: Record<string, string> = {
+  ASTS: '0001780312',
+  BMNR: '0001843588',
+  CRCL: '0001876042',
+};
+
 // Cache for CIK lookups (ticker -> CIK)
 let cikCache: Record<string, string> = {};
 let cikCacheTime = 0;
@@ -36,6 +43,7 @@ async function lookupCIK(ticker: string): Promise<string | null> {
     return cikCache[ticker];
   }
 
+  // Try dynamic lookup from SEC
   try {
     const res = await fetch('https://www.sec.gov/files/company_tickers.json', {
       headers: {
@@ -43,24 +51,25 @@ async function lookupCIK(ticker: string): Promise<string | null> {
         'Accept': 'application/json',
       },
     });
-    if (!res.ok) return null;
-
-    const data = await res.json();
-    // Build cache: data is { "0": { cik_str, ticker, title }, "1": ... }
-    const newCache: Record<string, string> = {};
-    for (const key of Object.keys(data)) {
-      const entry = data[key];
-      if (entry.ticker) {
-        newCache[entry.ticker.toUpperCase()] = String(entry.cik_str).padStart(10, '0');
+    if (res.ok) {
+      const data = await res.json();
+      const newCache: Record<string, string> = {};
+      for (const key of Object.keys(data)) {
+        const entry = data[key];
+        if (entry.ticker) {
+          newCache[entry.ticker.toUpperCase()] = String(entry.cik_str).padStart(10, '0');
+        }
       }
+      cikCache = newCache;
+      cikCacheTime = Date.now();
+      if (cikCache[ticker]) return cikCache[ticker];
     }
-    cikCache = newCache;
-    cikCacheTime = Date.now();
-
-    return cikCache[ticker] || null;
   } catch {
-    return null;
+    // Dynamic lookup failed — fall through to known CIKs
   }
+
+  // Fallback to known CIKs
+  return KNOWN_CIK[ticker] || null;
 }
 
 export async function GET(

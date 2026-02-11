@@ -149,8 +149,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     const statusIcon = article.analyzed === null
       ? <span style={{ fontSize: 13, color: 'var(--text3)', flexShrink: 0, marginTop: 2 }}>?</span>
       : article.analyzed
-        ? <span style={{ fontSize: 15, color: '#22c55e', flexShrink: 0, marginTop: 1 }}>&#10003;</span>
-        : <span style={{ fontSize: 15, color: '#ef4444', flexShrink: 0, marginTop: 1 }}>&#10007;</span>;
+        ? <span style={{ fontSize: 15, color: '#22c55e', flexShrink: 0, marginTop: 1 }}>✓</span>
+        : <span style={{ fontSize: 15, color: '#ef4444', flexShrink: 0, marginTop: 1 }}>✗</span>;
 
     const statusText = article.analyzed === null
       ? 'Not checked'
@@ -168,7 +168,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             rel="noopener noreferrer"
             style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}
           >
-            {article.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>&nearr;</span>
+            {article.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
           </a>
           <span style={{ fontSize: 11, color: 'var(--text3)' }}>
             {article.date}
@@ -200,7 +200,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Sources</h2>
       <div className="highlight">
-        <h3>Live Sources &amp; Research</h3>
+        <h3>Live Sources & Research</h3>
         <p style={{ fontSize: 13, color: 'var(--text2)' }}>
           Live article feeds for {companyName} ({ticker}). Refresh to pull latest press releases and news, with AI-powered analysis status check.
         </p>
@@ -241,7 +241,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               }}
             >
               <span style={{ display: 'inline-block', animation: isLoading ? 'spin 1s linear infinite' : 'none' }}>
-                &orarr;
+                ↻
               </span>
               {prLoading || newsLoading ? 'Fetching...' : aiChecking ? 'AI Checking...' : 'Refresh'}
             </button>
@@ -290,7 +290,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {group.sources.map(s => (
               <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                {s.name} <span style={{ color: 'var(--text3)', fontSize: 11 }}>&nearr;</span>
+                {s.name} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
               </a>
             ))}
           </div>
