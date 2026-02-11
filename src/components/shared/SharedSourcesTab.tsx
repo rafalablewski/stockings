@@ -133,10 +133,13 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       try {
         console.log('[handleRefresh] Calling checkAnalyzed...');
         const checked = await checkAnalyzed(allArticles);
-        console.log('[handleRefresh] checkAnalyzed returned:', checked.map(c => ({ h: c.headline.slice(0, 30), analyzed: c.analyzed })));
+        console.log('[handleRefresh] RESULTS:', JSON.stringify(checked.map(c => ({ h: c.headline.slice(0, 30), a: c.analyzed }))));
         // Split results back and set final state
-        setPressReleases(checked.slice(0, prArticles.length));
-        setNewsArticles(checked.slice(prArticles.length));
+        const checkedPr = checked.slice(0, prArticles.length);
+        const checkedNews = checked.slice(prArticles.length);
+        console.log('[handleRefresh] Setting PR:', checkedPr.length, 'News:', checkedNews.length);
+        setPressReleases(checkedPr);
+        setNewsArticles(checkedNews);
       } catch (err) {
         console.error('[handleRefresh] checkAnalyzed error:', err);
       } finally {
