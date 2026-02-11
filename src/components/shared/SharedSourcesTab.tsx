@@ -70,78 +70,76 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker]);
 
-  // Fetch press releases from SEC
-  const refreshPressReleases = useCallback(async () => {
-    setPrLoading(true);
-    setPrError(null);
-    try {
-      const res = await fetch(`/api/press-releases/${ticker}`);
-      if (!res.ok) throw new Error('Failed to fetch from SEC');
-      const data = await res.json();
-      const articles: ArticleItem[] = (data.releases || []).slice(0, 5).map((r: { date: string; headline: string; url: string; items?: string }) => ({
-        headline: r.headline,
-        date: r.date,
-        url: r.url,
-        items: r.items,
-        analyzed: null,
-      }));
-      setPressReleases(articles);
-      return articles;
-    } catch {
-      setPrError('Could not fetch from SEC EDGAR');
-      return [];
-    } finally {
-      setPrLoading(false);
-    }
-  }, [ticker]);
-
-  // Fetch news from Google News RSS
-  const refreshNews = useCallback(async () => {
-    setNewsLoading(true);
-    setNewsError(null);
-    try {
-      const res = await fetch(`/api/news/${ticker}`);
-      if (!res.ok) throw new Error('Failed to fetch news');
-      const data = await res.json();
-      const articles: ArticleItem[] = (data.articles || []).slice(0, 5).map((a: { title: string; date: string; url: string; source: string }) => ({
-        headline: a.title,
-        date: a.date,
-        url: a.url,
-        source: a.source,
-        analyzed: null,
-      }));
-      setNewsArticles(articles);
-      return articles;
-    } catch {
-      setNewsError('Could not fetch from Google News');
-      return [];
-    } finally {
-      setNewsLoading(false);
-    }
-  }, [ticker]);
-
-  // Combined refresh: fetch both, then run AI check
+  // Combined refresh: fetch both sources, then run AI check, then set state once
   const handleRefresh = useCallback(async () => {
-    const [prArticles, newsItems] = await Promise.all([
-      refreshPressReleases(),
-      refreshNews(),
+    setPrLoading(true);
+    setNewsLoading(true);
+    setPrError(null);
+    setNewsError(null);
+
+    // Fetch both in parallel
+    let prArticles: ArticleItem[] = [];
+    let newsItems: ArticleItem[] = [];
+
+    const [prResult, newsResult] = await Promise.allSettled([
+      fetch(`/api/press-releases/${ticker}`).then(async (res) => {
+        if (!res.ok) throw new Error('Failed to fetch from SEC');
+        const data = await res.json();
+        return (data.releases || []).slice(0, 5).map((r: { date: string; headline: string; url: string; items?: string }) => ({
+          headline: r.headline,
+          date: r.date,
+          url: r.url,
+          items: r.items,
+          analyzed: null as boolean | null,
+        }));
+      }),
+      fetch(`/api/news/${ticker}`).then(async (res) => {
+        if (!res.ok) throw new Error('Failed to fetch news');
+        const data = await res.json();
+        return (data.articles || []).slice(0, 5).map((a: { title: string; date: string; url: string; source: string }) => ({
+          headline: a.title,
+          date: a.date,
+          url: a.url,
+          source: a.source,
+          analyzed: null as boolean | null,
+        }));
+      }),
     ]);
 
+    if (prResult.status === 'fulfilled') {
+      prArticles = prResult.value;
+    } else {
+      setPrError('Could not fetch from SEC EDGAR');
+    }
+    if (newsResult.status === 'fulfilled') {
+      newsItems = newsResult.value;
+    } else {
+      setNewsError('Could not fetch from Google News');
+    }
+
+    setPrLoading(false);
+    setNewsLoading(false);
+
+    // Show articles immediately while AI checks
+    setPressReleases(prArticles);
+    setNewsArticles(newsItems);
+
     // Run AI analysis check on all fetched articles
-    setAiChecking(true);
-    try {
-      const allArticles = [...prArticles, ...newsItems];
-      if (allArticles.length > 0) {
+    const allArticles = [...prArticles, ...newsItems];
+    if (allArticles.length > 0) {
+      setAiChecking(true);
+      try {
         const checked = await checkAnalyzed(allArticles);
-        // Split results back into PR and news
+        // Split results back and set final state
         setPressReleases(checked.slice(0, prArticles.length));
         setNewsArticles(checked.slice(prArticles.length));
+      } finally {
+        setAiChecking(false);
       }
-    } finally {
-      setAiChecking(false);
-      setLastFetched(new Date().toLocaleTimeString());
     }
-  }, [refreshPressReleases, refreshNews, checkAnalyzed]);
+
+    setLastFetched(new Date().toLocaleTimeString());
+  }, [ticker, checkAnalyzed]);
 
   const isLoading = prLoading || newsLoading || aiChecking;
 
