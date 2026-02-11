@@ -89,8 +89,8 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
 }
 
 export async function POST(request: NextRequest) {
-  // Read API key at runtime (not module level) to avoid Turbopack inlining
-  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || '';
+  // Use bracket notation to prevent Next.js bundler from inlining at build time
+  const ANTHROPIC_API_KEY = (process.env as Record<string, string | undefined>)['ANTHROPIC_API_KEY'] || '';
 
   try {
     const body = await request.json();
