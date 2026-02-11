@@ -2882,7 +2882,7 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
         ].map(s => (
           <div key={s.key} role="button" tabIndex={0} aria-label={`Select ${s.label} strategy`}
             onClick={() => setStakingType(s.key)} onKeyDown={(e) => e.key === 'Enter' && setStakingType(s.key)}
-            style={{ background: stakingType === s.key ? 'color-mix(in srgb, var(--violet) 8%, var(--surface))' : 'var(--surface)', padding: '24px 20px', cursor: 'pointer', transition: 'all 0.2s', borderBottom: stakingType === s.key ? '3px solid var(--violet)' : '3px solid transparent' }}>
+            style={{ background: stakingType === s.key ? 'color-mix(in srgb, var(--violet) 8%, var(--surface))' : 'var(--surface)', padding: '24px 16px', cursor: 'pointer', transition: 'all 0.2s', borderBottom: stakingType === s.key ? '3px solid var(--violet)' : '3px solid transparent' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: stakingType === s.key ? 'var(--text)' : 'var(--text2)' }}>{s.label}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: 'var(--mint)' }}>{s.apy.toFixed(1)}%</span>
@@ -2893,11 +2893,19 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
         ))}
       </div>
 
-      {/* Parameters — Clean section */}
+      {/* Parameters — Preset card layout */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#staking-params</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Parameters</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}><Input label="Base APY (%)" value={baseStakingAPY} onChange={setBaseStakingAPY} step={0.1} /><Input label="Restaking Bonus (%)" value={restakingBonus} onChange={setRestakingBonus} step={0.1} /><Input label="% ETH Staked" value={stakingRatio} onChange={setStakingRatio} max={100} /><Input label="Slashing Risk (%/yr)" value={slashingRisk} onChange={setSlashingRisk} step={0.1} /></div>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <OverviewParameterCard title="Base APY (%)" explanation="Annual staking yield from Ethereum proof-of-stake. Higher APY = more ETH income for BMNR treasury." options={[1.5, 2.0, 3.11, 4.0, 5.0, 6.0]} value={baseStakingAPY} onChange={setBaseStakingAPY} format="%" currentValue={3.11} />
+        <OverviewParameterCard title="Restaking Bonus (%)" explanation="Additional yield from EigenLayer restaking. Higher bonus = more income but increased smart contract risk." options={[0, 0.5, 1.0, 2.0, 3.0, 5.0]} value={restakingBonus} onChange={setRestakingBonus} format="%" currentValue={2.0} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+        <OverviewParameterCard title="% ETH Staked" explanation="Percentage of BMNR treasury ETH actively staked. Higher ratio = more income but less liquidity." options={[20, 40, 50, 67, 80, 95]} value={stakingRatio} onChange={setStakingRatio} format="%" currentValue={67.0} />
+        <OverviewParameterCard title="Slashing Risk (%/yr)" explanation="Annual probability of validator slashing penalty. Lower risk = safer staking income." options={[2.0, 1.5, 1.0, 0.5, 0.2, 0.1]} value={slashingRisk} onChange={setSlashingRisk} format="%" currentValue={0.5} />
       </div>
 
       {/* Output KPIs — Glass grid */}
@@ -2998,22 +3006,25 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Dilution<span style={{ color: 'var(--violet)' }}>.</span></h2>
         <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Model the impact of share issuance on NAV per share. Accretive when issued above NAV; dilutive when below.</p>
       </div>
+      {/* Dilution Parameters — Preset card layout */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dilution-params</div>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <OverviewParameterCard title="Dilution %" explanation="Percentage of new shares issued. Lower dilution preserves more value per share for existing shareholders." options={[25, 20, 15, 10, 5, 2]} value={dilutionPercent} onChange={setDilutionPercent} format="%" currentValue={5} />
+        <OverviewParameterCard title="Sale Discount %" explanation="Discount to market price for share offering. Lower discount = less value transferred from existing shareholders." options={[25, 20, 15, 10, 5, 0]} value={saleDiscount} onChange={setSaleDiscount} format="%" currentValue={5} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+        <OverviewParameterCard title="NAV Multiple" explanation="Market price as multiple of Net Asset Value. Higher multiple = greater market premium on ETH holdings." options={[0.5, 0.7, 1.0, 1.3, 1.5, 2.0]} value={navMultiple} onChange={setNavMultiple} currentValue={1.0} />
+      </div>
       {/* Single Tranche — Glass panel */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#single-tranche</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Single Tranche</span>
-        </div>
-        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-            <Input label="Dilution %" value={dilutionPercent} onChange={setDilutionPercent} max={100} />
-            <Input label="Sale Discount %" value={saleDiscount} onChange={setSaleDiscount} max={50} />
-            <Input label="NAV Multiple" value={navMultiple} onChange={setNavMultiple} step={0.1} />
-            <div>
-              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: 4 }}>Available</div>
-              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{(maxAuthorizedShares - currentShares).toLocaleString()}M</div>
-            </div>
-          </div>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text3)' }}>Available: {(maxAuthorizedShares - currentShares).toLocaleString()}M</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
           {[
@@ -3022,7 +3033,7 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
             { label: 'ETH Bought', value: `${(singleTranche.ethBought / 1e6).toFixed(2)}M`, sub: 'Purchased', color: 'var(--gold)' },
             { label: 'NAV Change', value: `${singleTranche.navChange >= 0 ? '+' : ''}${singleTranche.navChange.toFixed(1)}%`, sub: singleTranche.navChange >= 0 ? 'Accretive' : 'Dilutive', color: singleTranche.navChange >= 0 ? 'var(--mint)' : 'var(--coral)' },
           ].map(kpi => (
-            <div key={kpi.label} style={{ background: 'var(--surface)', padding: '20px 16px', textAlign: 'center' }}>
+            <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
               <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 22, fontWeight: 700, color: kpi.color, margin: '6px 0 2px' }}>{kpi.value}</div>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
@@ -3094,15 +3105,26 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Debt<span style={{ color: 'var(--coral)' }}>.</span></h2>
         <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Model convertible debt financing and analyze LTV covenant risks. Track death spiral trigger prices.</p>
       </div>
-      {/* Debt Parameters — Glass panel */}
+      {/* Debt Parameters — Preset card layout */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#debt-params</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Debt Parameters</span>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, color: 'var(--text2)' }}><input type="checkbox" checked={useDebt} onChange={e => setUseDebt(e.target.checked)} style={{ width: 16, height: 16 }} aria-label="Enable convertible debt modeling" />Enable Convertible Debt</label>
-        </div>
-        {useDebt && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}><Input label="Principal ($M)" value={debtAmount} onChange={setDebtAmount} /><Input label="Coupon (%)" value={debtRate} onChange={setDebtRate} step={0.1} /><Input label="Maturity (Yrs)" value={debtMaturity} onChange={setDebtMaturity} /><Input label="Conv. Premium (%)" value={conversionPremium} onChange={setConversionPremium} /><Input label="LTV Covenant (%)" value={debtCovenantLTV} onChange={setDebtCovenantLTV} /></div>}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Debt Parameters</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, color: 'var(--text2)' }}><input type="checkbox" checked={useDebt} onChange={e => setUseDebt(e.target.checked)} style={{ width: 16, height: 16 }} aria-label="Enable convertible debt modeling" />Enable Convertible Debt</label>
       </div>
+      {useDebt && <>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <OverviewParameterCard title="Principal ($M)" explanation="Total convertible debt raised. More capital = more ETH purchasing power but higher debt obligations." options={[25, 50, 100, 150, 200, 300]} value={debtAmount} onChange={setDebtAmount} format="$" currentValue={100} />
+        <OverviewParameterCard title="Coupon (%)" explanation="Annual interest rate on convertible debt. Lower coupon = cheaper cost of capital." options={[6, 5, 4, 3, 2.5, 1.5]} value={debtRate} onChange={setDebtRate} format="%" currentValue={2.5} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+        <OverviewParameterCard title="Maturity (Yrs)" explanation="Years until debt maturity or conversion. Longer maturity = more flexibility and time for ETH appreciation." options={[2, 3, 4, 5, 7, 10]} value={debtMaturity} onChange={setDebtMaturity} currentValue={5} />
+        <OverviewParameterCard title="Conv. Premium (%)" explanation="Premium to current stock price for conversion. Higher premium = less dilutive if conversion occurs." options={[10, 20, 30, 50, 75, 100]} value={conversionPremium} onChange={setConversionPremium} format="%" currentValue={50} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+        <OverviewParameterCard title="LTV Covenant (%)" explanation="Maximum loan-to-value ratio. Higher LTV = more borrowing capacity relative to ETH collateral." options={[20, 30, 40, 50, 60, 75]} value={debtCovenantLTV} onChange={setDebtCovenantLTV} format="%" currentValue={50} />
+      </div>
+      </>}
       {useDebt && (<>
         {/* Debt KPIs — Glass grid */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#debt-metrics</div>
@@ -10613,7 +10635,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
             { label: 'L2 TVL', value: `$${ecosystemMetrics.l2TVL}B`, color: 'var(--violet)' },
             { label: 'Supply Growth', value: `${ecosystemMetrics.supplyGrowth}%`, color: 'var(--gold)' },
           ].map(kpi => (
-            <div key={kpi.label} style={{ background: 'var(--surface)', padding: '20px 16px', textAlign: 'center' }}>
+            <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
               <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
               <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginTop: 4 }}>{kpi.label}</div>
             </div>
@@ -10693,7 +10715,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
 
       {/* Future of Finance Thesis */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#fut-header</div>
-      <div style={{ padding: '32px 0 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+      <div style={{ padding: '28px 0 12px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Thesis Framework</div>
         <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>Is Ethereum the Future of Finance<span style={{ color: 'var(--violet)' }}>?</span></h3>
       </div>
@@ -10949,7 +10971,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       
       {/* Ethereum Adoption Timeline - matches Timeline tab structure */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#adoption-timeline</div>
-      <div style={{ padding: '32px 0 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+      <div style={{ padding: '28px 0 12px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Ecosystem Intelligence</div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
           <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>Adoption Timeline<span style={{ color: 'var(--mint)' }}>.</span></h3>

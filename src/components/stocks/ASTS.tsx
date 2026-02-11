@@ -1461,7 +1461,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
           { level: 'Medium', count: upcomingCatalysts.filter(c => c.impact === 'Medium').length, color: 'var(--sky)', desc: 'Incremental' },
           { level: 'Low', count: upcomingCatalysts.filter(c => c.impact === 'Low').length, color: 'var(--text3)', desc: 'Nice to have' },
         ].map(s => (
-          <div key={s.level} style={{ background: 'var(--surface)', padding: '24px 20px', textAlign: 'center' }}>
+          <div key={s.level} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
             <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: s.color }}>{s.count}</div>
             <div style={{ fontSize: 12, fontWeight: 600, color: s.color, letterSpacing: '1px', textTransform: 'uppercase', marginTop: 4 }}>{s.level}</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>{s.desc}</div>
@@ -1635,11 +1635,19 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         </div>
       </div>
 
-      {/* Parameters — Clean section */}
+      {/* Parameters — Preset card layout */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#constellation-params</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Parameters</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}><Input label="Block 1 (BW3+BB1-5)" value={block1Sats} onChange={setBlock1Sats} /><Input label="Block 2 (BB6+)" value={block2Sats} onChange={setBlock2Sats} /><Input label="Target 2026" value={targetSats2026} onChange={setTargetSats2026} /><Input label="Failure %" value={launchFailureRate} onChange={setLaunchFailureRate} /></div>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <OverviewParameterCard title="Block 1 (BW3+BB1-5)" explanation="Number of Block 1 satellites. More satellites = greater initial coverage and service validation." options={[2, 4, 6, 8, 10, 12]} value={block1Sats} onChange={setBlock1Sats} currentValue={6} />
+        <OverviewParameterCard title="Block 2 (BB6+)" explanation="Number of next-gen Block 2 satellites. 3.5x larger arrays, 10x capacity. Drives commercial scale." options={[0, 1, 3, 5, 8, 12]} value={block2Sats} onChange={setBlock2Sats} currentValue={1} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+        <OverviewParameterCard title="Target 2026" explanation="Target satellites in orbit by 2026. Higher target = faster network buildout and revenue ramp." options={[20, 30, 45, 60, 80, 100]} value={targetSats2026} onChange={setTargetSats2026} currentValue={60} />
+        <OverviewParameterCard title="Failure %" explanation="Estimated satellite launch failure rate. Lower failure rate = more reliable deployment schedule." options={[20, 15, 10, 7, 3, 1]} value={launchFailureRate} onChange={setLaunchFailureRate} format="%" currentValue={7} />
       </div>
       
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
@@ -1729,11 +1737,18 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
         </div>
       </div>
 
-      {/* Parameters — Clean section */}
+      {/* Parameters — Preset card layout */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#subscriber-params</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Parameters</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <OverviewParameterCard title="Reach (M)" explanation="Total addressable subscribers through MNO partner networks. Larger reach = bigger revenue opportunity." options={[1000, 2000, 3200, 4500, 6000, 8000]} value={partnerReach} onChange={setPartnerReach} format="B" currentValue={3200} />
+        <OverviewParameterCard title="Penetration %" explanation="Subscriber penetration rate into addressable market. 1% of 3.2B = 32M paying subscribers." options={[0.5, 1, 2, 3, 5, 8]} value={penetrationRate} onChange={setPenetrationRate} format="%" currentValue={3} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+        <OverviewParameterCard title="ARPU ($)" explanation="Average revenue per user per month. Higher ARPU = more revenue per subscriber. Blended across markets." options={[5, 10, 15, 18, 25, 35]} value={blendedARPU} onChange={setBlendedARPU} format="$" currentValue={18} />
       </div>
       
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
@@ -1819,11 +1834,15 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
         </div>
       </div>
 
-      {/* Parameters — Clean section */}
+      {/* Parameters — Preset card layout */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-params</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Parameters</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}><Input label="Share %" value={revenueShare} onChange={setRevenueShare} /><Input label="Gov $M/yr" value={govRevenue} onChange={setGovRevenue} /></div>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <OverviewParameterCard title="Revenue Share %" explanation="ASTS revenue share from MNO partnerships. Higher share = more revenue retained per subscriber." options={[20, 30, 40, 50, 60, 70]} value={revenueShare} onChange={setRevenueShare} format="%" currentValue={50} />
+        <OverviewParameterCard title="Gov Revenue ($M/yr)" explanation="Annual government contract revenue from SDA, DIU, and FirstNet. Diversifies revenue beyond commercial." options={[0, 25, 50, 100, 200, 400]} value={govRevenue} onChange={setGovRevenue} format="$" currentValue={100} />
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
@@ -2918,16 +2937,19 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         </div>
       </div>
 
-      {/* Parameters — Clean section */}
+      {/* Parameters — Preset card layout */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-params</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Parameters</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-          <Input label="Pro Forma Cash $M" value={cashOnHand} onChange={setCashOnHand} />
-          <Input label="Q4 Burn Est. $M" value={quarterlyBurn} onChange={setQuarterlyBurn} />
-          <Input label="Remaining Debt $M" value={totalDebt} onChange={setTotalDebt} />
-          <Input label="Debt Rate %" value={debtRate} onChange={setDebtRate} step={0.25} />
-        </div>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <OverviewParameterCard title="Pro Forma Cash ($M)" explanation="Total cash and equivalents. More cash = longer runway before additional financing needed." options={[500, 750, 1000, 1220, 1500, 2000]} value={cashOnHand} onChange={setCashOnHand} format="$" currentValue={1220} />
+        <OverviewParameterCard title="Q4 Burn Est. ($M)" explanation="Quarterly cash burn rate. Lower burn = longer runway. Driven by satellite production and R&D spend." options={[500, 400, 350, 300, 200, 150]} value={quarterlyBurn} onChange={setQuarterlyBurn} format="$" currentValue={300} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+        <OverviewParameterCard title="Remaining Debt ($M)" explanation="Total outstanding debt obligations. Lower debt = less interest expense and financial risk." options={[1200, 1000, 800, 698, 500, 300]} value={totalDebt} onChange={setTotalDebt} format="$" currentValue={698} />
+        <OverviewParameterCard title="Debt Rate (%)" explanation="Weighted average interest rate on debt. Lower rate = cheaper cost of capital." options={[7, 6, 5, 4.25, 3.5, 2.5]} value={debtRate} onChange={setDebtRate} format="%" currentValue={4.25} />
       </div>
       
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>

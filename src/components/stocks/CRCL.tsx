@@ -4940,7 +4940,7 @@ function CRCLModel() {
                     {DATA.map((d, i) => {
                       const net = d.usdcMinted - d.usdcRedeemed;
                       return (
-                        <div key={d.quarter} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '10px 28px', borderBottom: i < DATA.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                        <div key={d.quarter} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '12px 28px', borderBottom: i < DATA.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
                           onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                           <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text)' }}>{d.quarter}</span>
@@ -4967,7 +4967,7 @@ function CRCLModel() {
                       ))}
                     </div>
                     {[50, 75, 100, 125, 150].map((c, ri) => (
-                      <div key={c} style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', padding: '10px 28px', borderBottom: ri < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: c === 75 ? 'color-mix(in srgb, var(--cyan) 3%, transparent)' : 'transparent', transition: 'background 0.15s' }}
+                      <div key={c} style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', padding: '12px 28px', borderBottom: ri < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: c === 75 ? 'color-mix(in srgb, var(--cyan) 3%, transparent)' : 'transparent', transition: 'background 0.15s' }}
                         onMouseEnter={e => { if (c !== 75) e.currentTarget.style.background = 'var(--surface2)'; }}
                         onMouseLeave={e => { if (c !== 75) e.currentTarget.style.background = 'transparent'; }}>
                         <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: c === 75 ? 'var(--cyan)' : 'var(--text)', fontWeight: 500 }}>${c}B</span>

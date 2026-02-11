@@ -590,7 +590,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitors</div>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,
-            padding: '20px 0 8px',
+            padding: '28px 0 12px',
           }}>
             <span style={{
               fontSize: 11, fontWeight: 600, color: 'var(--text3)',
@@ -629,7 +629,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       )}
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#research-sources</div>
-      <div style={{ padding: '20px 0 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{
           fontSize: 11, fontWeight: 600, color: 'var(--text3)',
           textTransform: 'uppercase', letterSpacing: '1.2px',
