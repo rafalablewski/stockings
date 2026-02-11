@@ -597,9 +597,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       )}
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#research-sources</div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '1.2px' }}>Research Sources</span>
-        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '1.2px', whiteSpace: 'nowrap' }}>Research Sources</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)', minWidth: 40 }} />
       </div>
       <div className="g2">
         {researchSources.map(group => (
