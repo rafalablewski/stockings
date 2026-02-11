@@ -114,7 +114,7 @@ import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
-import type { SourceGroup } from '../shared/SharedSourcesTab';
+import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, ScatterChart, Scatter, Cell, ReferenceLine,
@@ -725,6 +725,13 @@ const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?
   { id: 'timeline', label: 'Timeline', type: 'tracking' },
   { id: 'investment', label: 'Investment', type: 'tracking' },
   { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
+];
+
+const crclCompetitors: Competitor[] = [
+  { name: 'Tether', url: 'https://tether.to/en/transparency/' },
+  { name: 'PayPal PYUSD', url: 'https://www.paypal.com/pyusd' },
+  { name: 'Paxos', url: 'https://paxos.com' },
+  { name: 'Ripple RLUSD', url: 'https://ripple.com' },
 ];
 
 const crclResearchSources: SourceGroup[] = [
@@ -6164,7 +6171,7 @@ function CRCLModel() {
           )}
 
           {activeTab === 'sources' && (
-            <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} competitorLabel="Stablecoin Peers" />
+            <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} competitorLabel="Stablecoin Peers" competitors={crclCompetitors} />
           )}
         </main>
       </div>

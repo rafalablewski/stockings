@@ -205,7 +205,7 @@ import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
-import type { SourceGroup } from '../shared/SharedSourcesTab';
+import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -853,6 +853,13 @@ const BMNRDilutionAnalysis = () => {
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
   ];
 
+  const bmnrCompetitors: Competitor[] = [
+    { name: 'MicroStrategy', url: 'https://www.strategy.com/investor-relations' },
+    { name: 'Marathon Digital', url: 'https://ir.mara.com' },
+    { name: 'Riot Platforms', url: 'https://www.riotplatforms.com' },
+    { name: 'CleanSpark', url: 'https://www.cleanspark.com' },
+  ];
+
   const bmnrResearchSources: SourceGroup[] = [
     { category: 'Company / IR', sources: [
       { name: 'BMNR Investor Relations (PRNewswire)', url: 'https://www.prnewswire.com' },
@@ -1100,7 +1107,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
         {activeTab === 'sources' && (
-          <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="BTC Treasury Peers" />
+          <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="BTC Treasury Peers" competitors={bmnrCompetitors} />
         )}
         </main>
       </div>

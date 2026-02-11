@@ -117,7 +117,7 @@ import React, { useState, useMemo, useRef, useEffect, useCallback, Component, Er
 import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
-import type { SourceGroup } from '../shared/SharedSourcesTab';
+import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import StockChart from '../shared/StockChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ComposedChart, Cell, PieChart, Pie, Legend, ReferenceLine } from 'recharts';
 
@@ -691,6 +691,21 @@ const ASTSAnalysis = () => {
   // Chart refresh key - increment to trigger chart data refresh
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
 
+  // ASTS D2D competitors for live feeds
+  const astsCompetitors: Competitor[] = [
+    { name: 'OQ Technology', url: 'https://www.oqtec.space' },
+    { name: 'Iridium Communications', url: 'https://www.iridium.com' },
+    { name: 'Skylo Technologies', url: 'https://www.skylo.tech' },
+    { name: 'Lynk Global', url: 'https://lynk.world' },
+    { name: 'SpaceX / Starlink Direct to Cell', url: 'https://direct.starlink.com' },
+    { name: 'Viasat', url: 'https://www.viasat.com' },
+    { name: 'Amazon / Project Kuiper', url: 'https://www.aboutamazon.com/news/amazon-leo' },
+    { name: 'EchoStar / Hughes', url: 'https://www.echostar.com' },
+    { name: 'SES', url: 'https://www.ses.com' },
+    { name: 'Terrestar Solutions', url: 'https://terrestarsolutions.ca' },
+    { name: 'Space42 / Bayanat', url: 'https://space42.ai' },
+  ];
+
   // ASTS research sources for SharedSourcesTab
   const astsResearchSources: SourceGroup[] = [
     { category: 'Company / IR', sources: [
@@ -1010,7 +1025,7 @@ const ASTSAnalysis = () => {
           {activeTab === 'investment' && <InvestmentTab />}
           {activeTab === 'wall-street' && <WallStreetTab />}
           {activeTab === 'sources' && (
-            <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} competitorLabel="D2D Competitors" />
+            <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} competitorLabel="D2D Competitors" competitors={astsCompetitors} />
           )}
         </main>
       </div>
