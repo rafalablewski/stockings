@@ -221,6 +221,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
   // Competitor card states
   const [compCards, setCompCards] = useState<Record<string, CardData>>({});
+  const [compAiChecking, setCompAiChecking] = useState<Record<string, boolean>>({});
   const [loadingAll, setLoadingAll] = useState(false);
 
   // AI check for main stock only
@@ -293,7 +294,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker, checkAnalyzed]);
 
-  // Load a single competitor
+  // Load a single competitor + run AI check
   const loadCompetitor = useCallback(async (name: string) => {
     setCompCards(prev => ({
       ...prev,
@@ -306,23 +307,42 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       const data = await res.json();
 
       const prs: ArticleItem[] = (data.pressReleases || []).map((a: { title: string; date: string; url: string; source: string }) => ({
-        headline: a.title, date: a.date, url: a.url, source: a.source,
+        headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null,
       }));
       const news: ArticleItem[] = (data.news || []).map((a: { title: string; date: string; url: string; source: string }) => ({
-        headline: a.title, date: a.date, url: a.url, source: a.source,
+        headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null,
       }));
 
       setCompCards(prev => ({
         ...prev,
         [name]: { loading: false, loaded: true, error: null, activeTab: prev[name]?.activeTab || 'pr', pressReleases: prs, news },
       }));
+
+      // Run AI analysis check
+      const all = [...prs, ...news];
+      if (all.length > 0) {
+        setCompAiChecking(prev => ({ ...prev, [name]: true }));
+        try {
+          const checked = await checkAnalyzed(all);
+          setCompCards(prev => ({
+            ...prev,
+            [name]: {
+              ...prev[name],
+              pressReleases: checked.slice(0, prs.length),
+              news: checked.slice(prs.length),
+            },
+          }));
+        } catch { /* already handled */ } finally {
+          setCompAiChecking(prev => ({ ...prev, [name]: false }));
+        }
+      }
     } catch {
       setCompCards(prev => ({
         ...prev,
         [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: false, loaded: false, error: `Could not fetch feeds` },
       }));
     }
-  }, []);
+  }, [checkAnalyzed]);
 
   // Load everything
   const loadAll = useCallback(async () => {
@@ -411,6 +431,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             label={comp.name}
             url={comp.url}
             data={data}
+            showAnalysis
+            aiChecking={compAiChecking[comp.name] || false}
             onLoad={() => loadCompetitor(comp.name)}
             onTabChange={(tab) => setCompTab(comp.name, tab)}
           />
