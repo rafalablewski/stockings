@@ -10572,120 +10572,108 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         </div>
         
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#eth-metrics</div>
-        <div className="g4">
-          <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12 }}>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>NAV per Share</div>
-            <div style={{ fontSize: 22, fontFamily: 'Space Mono', color: 'var(--mint)' }}>${navPerShare.toFixed(2)}</div>
-            <div style={{ fontSize: 11, color: navPremium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-              {navPremium >= 0 ? '+' : ''}{navPremium.toFixed(1)}% {navPremium >= 0 ? 'premium' : 'discount'}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          {[
+            { label: 'NAV per Share', value: `$${navPerShare.toFixed(2)}`, sub: `${navPremium >= 0 ? '+' : ''}${navPremium.toFixed(1)}% ${navPremium >= 0 ? 'premium' : 'discount'}`, color: 'var(--mint)', subColor: navPremium >= 0 ? 'var(--mint)' : 'var(--coral)' },
+            { label: 'ETH per Share', value: ethPerShare.toFixed(4), sub: 'Your fractional ETH', color: 'var(--sky)', subColor: 'var(--text3)' },
+            { label: 'Implied ETH Price', value: `$${impliedEthPrice.toFixed(0)}`, sub: `vs $${ethPrice.toLocaleString()} spot`, color: 'var(--gold)', subColor: impliedEthPrice > ethPrice ? 'var(--mint)' : 'var(--coral)' },
+            { label: 'NAV Sensitivity', value: `$${navSensitivity.toFixed(2)}`, sub: 'per $100 ETH move', color: 'var(--violet)', subColor: 'var(--text3)' },
+          ].map(kpi => (
+            <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 22, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+              <div style={{ fontSize: 11, color: kpi.subColor }}>{kpi.sub}</div>
             </div>
-          </div>
-          <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12 }}>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>ETH per Share</div>
-            <div style={{ fontSize: 22, fontFamily: 'Space Mono', color: 'var(--sky)' }}>{ethPerShare.toFixed(4)}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Your fractional ETH</div>
-          </div>
-          <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12 }}>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Implied ETH Price</div>
-            <div style={{ fontSize: 22, fontFamily: 'Space Mono', color: 'var(--gold)' }}>${impliedEthPrice.toFixed(0)}</div>
-            <div style={{ fontSize: 11, color: impliedEthPrice > ethPrice ? 'var(--mint)' : 'var(--coral)' }}>
-              vs ${ethPrice.toLocaleString()} spot
-            </div>
-          </div>
-          <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12 }}>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>NAV Sensitivity</div>
-            <div style={{ fontSize: 22, fontFamily: 'Space Mono', color: 'var(--violet)' }}>${navSensitivity.toFixed(2)}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>per $100 ETH move</div>
-          </div>
+          ))}
         </div>
       </div>
       
       {/* Ecosystem Metrics */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#network-metrics</div>
-      <div className="card">
-        <div className="card-title">Ethereum Network Metrics</div>
-        <div className="g4" style={{ }}>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--mint)', fontWeight: 600 }}>{ecosystemMetrics.stakingRate}%</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>ETH Staked</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Ethereum Network Metrics</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
+          {[
+            { label: 'ETH Staked', value: `${ecosystemMetrics.stakingRate}%`, color: 'var(--mint)' },
+            { label: 'DeFi TVL', value: `$${ecosystemMetrics.defiTVL}B`, color: 'var(--sky)' },
+            { label: 'L2 TVL', value: `$${ecosystemMetrics.l2TVL}B`, color: 'var(--violet)' },
+            { label: 'Supply Growth', value: `${ecosystemMetrics.supplyGrowth}%`, color: 'var(--gold)' },
+          ].map(kpi => (
+            <div key={kpi.label} style={{ background: 'var(--surface)', padding: '20px 16px', textAlign: 'center' }}>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginTop: 4 }}>{kpi.label}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)' }}>
+          <div style={{ background: 'var(--surface)', padding: '16px 28px' }}>
+            {[
+              { label: 'Validators', value: `${(ecosystemMetrics.validatorCount / 1000).toFixed(0)}K`, color: 'var(--text)' },
+              { label: 'Daily Active Addresses', value: `${(ecosystemMetrics.dailyActiveAddresses / 1000).toFixed(0)}K`, color: 'var(--text)' },
+              { label: 'Avg Gas (Gwei)', value: `${ecosystemMetrics.avgGasFee}`, color: 'var(--text)' },
+            ].map(row => (
+              <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+                <span style={{ fontSize: 12, color: 'var(--text3)' }}>{row.label}</span>
+                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: row.color }}>{row.value}</span>
+              </div>
+            ))}
           </div>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--sky)', fontWeight: 600 }}>${ecosystemMetrics.defiTVL}B</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>DeFi TVL</div>
-          </div>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--violet)', fontWeight: 600 }}>${ecosystemMetrics.l2TVL}B</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>L2 TVL</div>
-          </div>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--gold)', fontWeight: 600 }}>{ecosystemMetrics.supplyGrowth}%</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Supply Growth</div>
+          <div style={{ background: 'var(--surface)', padding: '16px 28px' }}>
+            {[
+              { label: 'Network Revenue (24h)', value: `$${ecosystemMetrics.networkRevenue24h}M`, color: 'var(--mint)' },
+              { label: 'ETH Burned (24h)', value: `${ecosystemMetrics.burnRate24h}K ETH`, color: 'var(--coral)' },
+              { label: 'Total ETH Staked', value: `${ecosystemMetrics.totalStaked}M`, color: 'var(--text)' },
+            ].map(row => (
+              <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+                <span style={{ fontSize: 12, color: 'var(--text3)' }}>{row.label}</span>
+                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: row.color }}>{row.value}</span>
+              </div>
+            ))}
           </div>
         </div>
-        <div className="g3">
-          <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Validators</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>{(ecosystemMetrics.validatorCount / 1000).toFixed(0)}K</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Daily Active Addresses</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>{(ecosystemMetrics.dailyActiveAddresses / 1000).toFixed(0)}K</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Avg Gas (Gwei)</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>{ecosystemMetrics.avgGasFee}</span>
-            </div>
-          </div>
-          <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Network Revenue (24h)</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--mint)' }}>${ecosystemMetrics.networkRevenue24h}M</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>ETH Burned (24h)</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--coral)' }}>{ecosystemMetrics.burnRate24h}K ETH</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Total ETH Staked</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>{ecosystemMetrics.totalStaked}M</span>
-            </div>
-          </div>
-          <div style={{ padding: 12, background: 'linear-gradient(135deg, color-mix(in srgb, var(--mint) 10%, transparent), color-mix(in srgb, var(--violet) 10%, transparent))', borderRadius: 8, border: '1px solid var(--border)' }}>
-            <div style={{ fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>Why This Matters for BMNR</div>
-            <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.5 }}>
-              Higher network activity → More fees → More ETH burned → Deflationary pressure → ETH price appreciation → BMNR NAV growth
-            </div>
+        <div style={{ padding: '16px 28px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--mint) 8%, var(--surface)), color-mix(in srgb, var(--violet) 8%, var(--surface)))', borderTop: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, color: 'var(--mint)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Why This Matters for BMNR</div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginTop: 4 }}>
+            Higher network activity → More fees → More ETH burned → Deflationary pressure → ETH price appreciation → BMNR NAV growth
           </div>
         </div>
       </div>
       
       {/* ETF Flows */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#etf-flows</div>
-      <div className="card">
-        <div className="card-title">Institutional Flows (ETH ETFs)</div>
-        <div className="g2" style={{ }}>
-          <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 24, fontFamily: 'Space Mono', color: 'var(--mint)', fontWeight: 600 }}>${etfData.totalAUM}B</div>
-            <div style={{ fontSize: 12, color: 'var(--text3)' }}>Total ETF AUM</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Institutional Flows (ETH ETFs)</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: 'var(--border)' }}>
+          <div style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: 'var(--mint)' }}>${etfData.totalAUM}B</div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginTop: 4 }}>Total ETF AUM</div>
           </div>
-          <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 24, fontFamily: 'Space Mono', color: etfData.netFlows7d >= 0 ? 'var(--mint)' : 'var(--coral)', fontWeight: 600 }}>
+          <div style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: etfData.netFlows7d >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
               {etfData.netFlows7d >= 0 ? '+' : ''}${etfData.netFlows7d}M
             </div>
-            <div style={{ fontSize: 12, color: 'var(--text3)' }}>7-Day Net Flows</div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginTop: 4 }}>7-Day Net Flows</div>
           </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+            {['Fund', 'AUM', 'Change'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Fund' ? 'left' : 'right' }}>{h}</span>
+            ))}
+          </div>
           {etfData.topHolders.map((etf, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px', padding: '12px 28px', borderBottom: i < etfData.topHolders.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               <span style={{ fontSize: 13, color: 'var(--text)' }}>{etf.name}</span>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ fontSize: 13, fontFamily: 'Space Mono', color: 'var(--text2)' }}>${etf.aum}B</span>
-                <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: etf.change >= 0 ? 'var(--mint)' : 'var(--coral)', minWidth: 60, textAlign: 'right' }}>
-                  {etf.change >= 0 ? '+' : ''}{etf.change}%
-                </span>
-              </div>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${etf.aum}B</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: etf.change >= 0 ? 'var(--mint)' : 'var(--coral)', textAlign: 'right' }}>
+                {etf.change >= 0 ? '+' : ''}{etf.change}%
+              </span>
             </div>
           ))}
         </div>
@@ -10693,12 +10681,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
 
       {/* Future of Finance Thesis */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#fut-header</div>
-      <h3>Is Ethereum the Future of Finance?</h3>
+      <div style={{ padding: '32px 0 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Thesis Framework</div>
+        <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>Is Ethereum the Future of Finance<span style={{ color: 'var(--violet)' }}>?</span></h3>
+      </div>
 
       {/* Institutional Adoption Evidence */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#institutional-adoption</div>
-      <div className="card">
-        <div className="card-title">Institutional Adoption Evidence</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Institutional Adoption Evidence</span>
+        </div>
         <div style={{ padding: 16, background: 'linear-gradient(135deg, color-mix(in srgb, var(--violet) 10%, transparent), color-mix(in srgb, var(--mint) 10%, transparent))', borderRadius: 8 }}>
           <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6, fontStyle: 'italic' }}>
             "The evidence suggests a fundamental shift: the world's largest financial institutions are no longer asking <em>if</em> they should build on Ethereum, but <em>how fast</em> they can deploy."
@@ -10742,9 +10735,11 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
 
       {/* Value Accrual Mechanics */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#value-accrual-mechanics</div>
-      <div className="card">
-        <div className="card-title">Value Accrual Mechanics</div>
-        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: -8 }}>How institutional adoption translates to ETH value — a framework for analyzing network economics</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Value Accrual Mechanics</span>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>How institutional adoption translates to ETH value — a framework for analyzing network economics</div>
+        </div>
 
         {/* Step 1: Settlement Layer Capture */}
         <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: '3px solid var(--violet)' }}>
@@ -10918,19 +10913,23 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
 
       {/* Protocol Roadmap */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#protocol-roadmap</div>
-      <div className="card">
-        <div className="card-title">Ethereum Protocol Roadmap</div>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Ethereum Protocol Roadmap</span>
+        </div>
+        <div style={{ padding: 0 }}>
           {protocolRoadmap.map((item, i) => (
-            <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: `3px solid ${item.impact === 'Very High' ? 'var(--violet)' : item.impact === 'High' ? 'var(--mint)' : 'var(--sky)'}` }}>
+            <div key={i} style={{ padding: '16px 28px', borderBottom: i < protocolRoadmap.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', borderLeft: `3px solid ${item.impact === 'Very High' ? 'var(--violet)' : item.impact === 'High' ? 'var(--mint)' : 'var(--sky)'}`, transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{item.name}</span>
-                <div style={{ display: 'flex' }}>
-                  <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: item.status === 'Testing' ? 'color-mix(in srgb, var(--mint) 20%, transparent)' : item.status === 'Development' ? 'color-mix(in srgb, var(--sky) 20%, transparent)' : 'color-mix(in srgb, var(--violet) 20%, transparent)', color: item.status === 'Testing' ? 'var(--mint)' : item.status === 'Development' ? 'var(--sky)' : 'var(--violet)' }}>{item.status}</span>
-                  <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{item.date}</span>
+                <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{item.name}</span>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 10, letterSpacing: '0.3px', background: item.status === 'Complete' ? 'color-mix(in srgb, var(--mint) 15%, transparent)' : item.status === 'Development' ? 'color-mix(in srgb, var(--sky) 15%, transparent)' : 'color-mix(in srgb, var(--violet) 15%, transparent)', color: item.status === 'Complete' ? 'var(--mint)' : item.status === 'Development' ? 'var(--sky)' : 'var(--violet)' }}>{item.status}</span>
+                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--border) 60%, transparent)', color: 'var(--text3)' }}>{item.date}</span>
                 </div>
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text2)' }}>{item.description}</div>
+              <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5, marginTop: 4 }}>{item.description}</div>
             </div>
           ))}
         </div>
@@ -10938,29 +10937,32 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       
       {/* Ethereum Adoption Timeline - matches Timeline tab structure */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#adoption-timeline</div>
-      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center' }}>
-        <span>Ethereum Adoption Timeline</span>
-        <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredNews.length} events)</span>
-      </h3>
-      {/* Company Filter (like Topic filter in Timeline tab) */}
+      <div style={{ padding: '32px 0 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Ecosystem Intelligence</div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+          <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>Adoption Timeline<span style={{ color: 'var(--mint)' }}>.</span></h3>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text3)' }}>{filteredNews.length} events</span>
+        </div>
+      </div>
+
+      {/* Company Filter */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-filter</div>
-      <div className="highlight" style={{ padding: 16 }}>
-        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track news about the <strong>ETH ecosystem</strong> — institutional adoption, stablecoin launches, L2 growth, protocol upgrades, and enterprise partnerships building on Ethereum</p>
-        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginBottom: 16 }}>Asset-level news affecting ETH value and BMNR's NAV</p>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Company</span>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 28px', marginTop: 8 }}>
+        <p style={{ color: 'var(--text2)', fontSize: 13, lineHeight: 1.6, margin: '0 0 4px' }}>Track news about the <strong>ETH ecosystem</strong> — institutional adoption, stablecoin launches, L2 growth, protocol upgrades, and enterprise partnerships building on Ethereum</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', margin: '0 0 16px' }}>Asset-level news affecting ETH value and BMNR's NAV</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)' }}>Filter by Company</span>
           {companyFilter !== 'All' && (
             <button
               onClick={() => setCompanyFilter('All')}
-              className="pill"
-              style={{ fontSize: 11, transition: 'all 0.2s' }}
+              style={{ fontSize: 10, padding: '3px 10px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
               aria-label="Clear company filter"
             >
               Clear
             </button>
           )}
         </div>
-        <div className="pills">
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {companies.map(comp => {
             const isSelected = companyFilter === comp;
             const count = adoptionTimeline.filter(n => n.company === comp).length;
@@ -10968,8 +10970,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
               <button
                 key={comp}
                 onClick={() => setCompanyFilter(comp)}
-                className={`pill ${isSelected ? 'active' : ''}`}
-                style={{ transition: 'all 0.2s' }}
+                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isSelected ? 'var(--violet)' : 'var(--border)', background: isSelected ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'transparent', color: isSelected ? 'var(--violet)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
                 aria-label={`Filter by ${comp}`}
               >
                 {comp} ({comp === 'All' ? adoptionTimeline.length : count})
@@ -10978,24 +10979,26 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
           })}
         </div>
         {companyFilter !== 'All' && (
-          <div style={{ fontSize: 12, color: 'var(--text3)' }}>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8, fontFamily: 'Space Mono, monospace' }}>
             {companyFilter} → {filteredNews.length} results
           </div>
         )}
       </div>
-      
-      {/* Category pills row with Expand All button (like Timeline tab) */}
+
+      {/* Category pills row with Expand All button */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#category-filter</div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="pills" style={{ }}>
-          {categories.map(cat => (
-            <button key={cat} className={`pill ${timelineFilter === cat ? 'active' : ''}`} onClick={() => setTimelineFilter(cat)} style={{ transition: 'all 0.2s' }} aria-label={`Filter by category: ${cat}`}>
-              {cat === 'All' ? `All (${adoptionTimeline.length})` : `${cat} (${adoptionTimeline.filter(n => n.category === cat).length})`}
-            </button>
-          ))}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {categories.map(cat => {
+            const isActive = timelineFilter === cat;
+            return (
+              <button key={cat} onClick={() => setTimelineFilter(cat)} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--sky)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--sky) 15%, transparent)' : 'transparent', color: isActive ? 'var(--sky)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }} aria-label={`Filter by category: ${cat}`}>
+                {cat === 'All' ? `All (${adoptionTimeline.length})` : `${cat} (${adoptionTimeline.filter(n => n.category === cat).length})`}
+              </button>
+            );
+          })}
         </div>
         <button
-          className="pill"
           onClick={() => {
             if (expandedNews.size === filteredNews.length) {
               setExpandedNews(new Set());
@@ -11003,24 +11006,25 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
               setExpandedNews(new Set(filteredNews.map((_, i) => i)));
             }
           }}
-          style={{ whiteSpace: 'nowrap', transition: 'all 0.2s' }}
+          style={{ whiteSpace: 'nowrap', fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
           aria-label={expandedNews.size === filteredNews.length ? 'Collapse all news events' : 'Expand all news events'}
         >
-          {expandedNews.size === filteredNews.length ? '⊟ Collapse All' : '⊞ Expand All'}
+          {expandedNews.size === filteredNews.length ? '- Collapse All' : '+ Expand All'}
         </button>
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#adoption-events</div>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
           {filteredNews.map((news, i) => {
             const isExpanded = expandedNews.has(i);
+            const accentColor = news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)';
             return (
               <div
                 key={i}
                 role="button"
                 tabIndex={0}
                 aria-label={`${news.title} — ${news.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, cursor: 'pointer', borderLeft: `3px solid ${news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)'}`, transition: 'all 0.2s' }}
+                style={{ padding: '16px 28px', cursor: 'pointer', borderLeft: `3px solid ${accentColor}`, borderBottom: i < filteredNews.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
                 onClick={() => {
                   const next = new Set(expandedNews);
                   if (isExpanded) next.delete(i);
@@ -11035,43 +11039,41 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
                     setExpandedNews(next);
                   }
                 }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{news.date}</span>
-                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'color-mix(in srgb, var(--violet) 20%, transparent)', color: 'var(--violet)' }}>{news.category}</span>
-                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'color-mix(in srgb, var(--sky) 20%, transparent)', color: 'var(--sky)' }}>{news.company}</span>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
+                      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)' }}>{news.date}</span>
+                      <span style={{ padding: '1px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--violet) 12%, transparent)', color: 'var(--violet)' }}>{news.category}</span>
+                      <span style={{ padding: '1px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--sky) 12%, transparent)', color: 'var(--sky)' }}>{news.company}</span>
                     </div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{news.title}</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13, lineHeight: 1.4 }}>{news.title}</div>
                   </div>
-                  <span style={{ fontSize: 12, color: news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)', marginLeft: 12, whiteSpace: 'nowrap' }}>
-                    {news.impact === 'Bullish' ? '↑' : news.impact === 'Bearish' ? '↓' : '→'} {news.impact}
+                  <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: accentColor, marginLeft: 12, whiteSpace: 'nowrap' }}>
+                    {news.impact === 'Bullish' ? '+' : news.impact === 'Bearish' ? '-' : '~'} {news.impact}
                   </span>
                 </div>
                 {isExpanded && (
-                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                    {/* Summary */}
+                  <div style={{ paddingTop: 16, marginTop: 12, borderTop: '1px solid var(--border)' }}>
                     <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>{news.summary}</div>
-                    
-                    {/* Significance */}
+
                     {news.significance && (
-                      <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 8, borderLeft: '3px solid var(--violet)' }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--violet)' }}>📊 SIGNIFICANCE FOR ETHEREUM</div>
+                      <div style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--violet) 5%, var(--surface))', borderRadius: 12, borderLeft: '3px solid var(--violet)', marginTop: 12 }}>
+                        <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--violet)', marginBottom: 4 }}>Significance for Ethereum</div>
                         <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.significance}</div>
                       </div>
                     )}
-                    
-                    {/* BMNR Implication */}
+
                     {news.bmnrImplication && (
-                      <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 8, borderLeft: '3px solid var(--mint)' }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--mint)' }}>💰 BMNR IMPLICATION</div>
+                      <div style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 5%, var(--surface))', borderRadius: 12, borderLeft: '3px solid var(--mint)', marginTop: 8 }}>
+                        <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 4 }}>BMNR Implication</div>
                         <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.bmnrImplication}</div>
                       </div>
                     )}
-                    
-                    {/* Source */}
-                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>Source: {news.source}</div>
+
+                    <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: 'Space Mono, monospace', marginTop: 8 }}>Source: {news.source}</div>
                   </div>
                 )}
               </div>
