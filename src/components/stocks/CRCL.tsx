@@ -114,7 +114,7 @@ import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
-import type { SourceGroup } from '../shared/SharedSourcesTab';
+import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, ScatterChart, Scatter, Cell, ReferenceLine,
@@ -727,6 +727,13 @@ const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?
   { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
 ];
 
+const crclCompetitors: Competitor[] = [
+  { name: 'Tether', url: 'https://tether.to/en/transparency/' },
+  { name: 'PayPal PYUSD', url: 'https://www.paypal.com/pyusd' },
+  { name: 'Paxos', url: 'https://paxos.com' },
+  { name: 'Ripple RLUSD', url: 'https://ripple.com' },
+];
+
 const crclResearchSources: SourceGroup[] = [
   { category: 'Company / IR', sources: [
     { name: 'Circle — Official Website', url: 'https://circle.com' },
@@ -735,6 +742,14 @@ const crclResearchSources: SourceGroup[] = [
     { name: 'Circle — USDC Transparency', url: 'https://www.circle.com/usdc' },
     { name: 'Circle — Developer Docs', url: 'https://developers.circle.com' },
     { name: 'SEC EDGAR — Circle Internet Group (CRCL)', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=circle+internet&CIK=&type=&dateb=&owner=include&count=40&search_text=&action=getcompany' },
+  ]},
+  { category: 'Stablecoin Competitors', sources: [
+    { name: 'Tether — Transparency Reports', url: 'https://tether.to/en/transparency/' },
+    { name: 'PayPal — PYUSD', url: 'https://www.paypal.com/pyusd' },
+    { name: 'Paxos — USDP / BUSD', url: 'https://paxos.com' },
+    { name: 'MakerDAO — DAI', url: 'https://makerdao.com' },
+    { name: 'Ripple — RLUSD', url: 'https://ripple.com' },
+    { name: 'DefiLlama — Stablecoins Dashboard', url: 'https://defillama.com/stablecoins' },
   ]},
   { category: 'TradFi / Institutional Partners', sources: [
     { name: 'BlackRock — Digital Assets', url: 'https://www.blackrock.com/us/individual/investment-ideas/digital-assets' },
@@ -6156,7 +6171,7 @@ function CRCLModel() {
           )}
 
           {activeTab === 'sources' && (
-            <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} />
+            <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} competitorLabel="Stablecoin Peers" competitors={crclCompetitors} />
           )}
         </main>
       </div>
