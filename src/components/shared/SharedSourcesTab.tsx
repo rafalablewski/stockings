@@ -60,13 +60,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       });
       if (!res.ok) throw new Error(`AI check failed: ${res.status}`);
       const data = await res.json();
-      console.log('[SharedSourcesTab] AI check response:', JSON.stringify(data));
-      const mapped = articles.map((article, i) => ({
+      return articles.map((article, i) => ({
         ...article,
         analyzed: data.results?.[i]?.analyzed ?? null,
       }));
-      console.log('[SharedSourcesTab] Mapped results:', mapped.map(m => ({ h: m.headline.slice(0, 30), analyzed: m.analyzed })));
-      return mapped;
     } catch (err) {
       console.error('[SharedSourcesTab] AI check error:', err);
       return articles.map(a => ({ ...a, analyzed: null }));
@@ -133,8 +130,6 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       setAiChecking(true);
       try {
         const checked = await checkAnalyzed(allArticles);
-        console.log('[handleRefresh] prArticles.length:', prArticles.length, 'checked.length:', checked.length);
-        console.log('[handleRefresh] Setting news:', checked.slice(prArticles.length).map(c => ({ h: c.headline.slice(0, 30), analyzed: c.analyzed })));
         // Split results back and set final state
         setPressReleases(checked.slice(0, prArticles.length));
         setNewsArticles(checked.slice(prArticles.length));

@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Set ANTHROPIC_API_KEY in .env.local
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || '';
-
 interface Article {
   headline: string;
   date: string;
@@ -92,6 +89,9 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
 }
 
 export async function POST(request: NextRequest) {
+  // Read API key at runtime (not module level) to avoid Turbopack inlining
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || '';
+
   try {
     const body = await request.json();
     const { ticker, articles } = body as { ticker: string; articles: Article[] };
@@ -181,8 +181,6 @@ No other text, just the JSON array.`;
         analyzed: result?.analyzed ?? false,
       };
     });
-
-    console.log('[check-analyzed] Returning:', JSON.stringify(output.map(o => ({ h: o.headline.slice(0, 40), analyzed: o.analyzed }))));
 
     return NextResponse.json({ ticker, results: output });
   } catch (error) {
