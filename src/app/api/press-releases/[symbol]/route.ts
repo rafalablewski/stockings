@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 type RouteParams = Promise<{ symbol: string }>;
 
-// CIK mapping for supported stocks
-const COMPANY_CIK: Record<string, string> = {
-  ASTS: '0001780312',
-};
-
 // Human-readable descriptions for 8-K item codes
 const ITEM_DESCRIPTIONS: Record<string, string> = {
   '1.01': 'Material Definitive Agreement',
@@ -25,10 +20,47 @@ const ITEM_DESCRIPTIONS: Record<string, string> = {
 function describeItems(items: string): string {
   if (!items || items.trim() === '') return '8-K Filing';
   const codes = items.split(',').map(s => s.trim());
-  // Pick the most meaningful item (skip 9.01 which is just "exhibits included")
   const meaningful = codes.filter(c => c !== '9.01');
   const code = meaningful[0] || codes[0];
   return ITEM_DESCRIPTIONS[code] || `8-K (Item ${code})`;
+}
+
+// Cache for CIK lookups (ticker -> CIK)
+let cikCache: Record<string, string> = {};
+let cikCacheTime = 0;
+const CIK_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+async function lookupCIK(ticker: string): Promise<string | null> {
+  // Check cache first
+  if (cikCache[ticker] && Date.now() - cikCacheTime < CIK_CACHE_TTL) {
+    return cikCache[ticker];
+  }
+
+  try {
+    const res = await fetch('https://www.sec.gov/files/company_tickers.json', {
+      headers: {
+        'User-Agent': 'stockings-app/1.0 (research-tool)',
+        'Accept': 'application/json',
+      },
+    });
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    // Build cache: data is { "0": { cik_str, ticker, title }, "1": ... }
+    const newCache: Record<string, string> = {};
+    for (const key of Object.keys(data)) {
+      const entry = data[key];
+      if (entry.ticker) {
+        newCache[entry.ticker.toUpperCase()] = String(entry.cik_str).padStart(10, '0');
+      }
+    }
+    cikCache = newCache;
+    cikCacheTime = Date.now();
+
+    return cikCache[ticker] || null;
+  } catch {
+    return null;
+  }
 }
 
 export async function GET(
@@ -38,10 +70,10 @@ export async function GET(
   const { symbol: rawSymbol } = await params;
   const symbol = decodeURIComponent(rawSymbol).toUpperCase();
 
-  const cik = COMPANY_CIK[symbol];
+  const cik = await lookupCIK(symbol);
   if (!cik) {
     return NextResponse.json(
-      { error: `Unsupported symbol: ${symbol}` },
+      { error: `Could not find SEC CIK for symbol: ${symbol}` },
       { status: 400 }
     );
   }
@@ -53,7 +85,7 @@ export async function GET(
         'User-Agent': 'stockings-app/1.0 (research-tool)',
         'Accept': 'application/json',
       },
-      next: { revalidate: 600 }, // Cache for 10 minutes
+      next: { revalidate: 600 },
     });
 
     if (!response.ok) {
@@ -81,12 +113,13 @@ export async function GET(
       items: string;
     }> = [];
 
+    const cikNumeric = cik.replace(/^0+/, '');
     for (let i = 0; i < recent.form.length && releases.length < 5; i++) {
       if (recent.form[i] === '8-K') {
         const accession = recent.accessionNumber[i];
         const accessionNoDashes = accession.replace(/-/g, '');
         const primaryDoc = recent.primaryDocument[i];
-        const filingUrl = `https://www.sec.gov/Archives/edgar/data/${cik.replace(/^0+/, '')}/${accessionNoDashes}/${primaryDoc}`;
+        const filingUrl = `https://www.sec.gov/Archives/edgar/data/${cikNumeric}/${accessionNoDashes}/${primaryDoc}`;
 
         releases.push({
           date: recent.filingDate[i],
