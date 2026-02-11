@@ -101,11 +101,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!ANTHROPIC_API_KEY) {
-      // No API key configured — return all as unchecked
+      // No API key configured — return error so frontend can surface it
       return NextResponse.json({
         ticker,
         results: articles.map(a => ({ headline: a.headline, date: a.date, analyzed: null })),
-        error: 'ANTHROPIC_API_KEY not configured in .env.local',
+        error: 'ANTHROPIC_API_KEY not set — add it in Vercel Environment Variables and redeploy',
       });
     }
 
