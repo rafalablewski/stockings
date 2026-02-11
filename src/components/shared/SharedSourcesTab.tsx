@@ -489,16 +489,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-header</div>
       <h2 className="section-head">Sources</h2>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#live-feeds</div>
+      {/* Command bar */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '12px 20px',
+        padding: '12px 20px', marginBottom: 16,
         background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Progress ring */}
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="10" fill="none" stroke="var(--surface3)" strokeWidth="2.5" />
             <circle cx="12" cy="12" r="10" fill="none" stroke="var(--accent)" strokeWidth="2.5"
@@ -540,11 +540,15 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         </button>
       </div>
 
+      {/* Legend */}
       {(mainCard.loaded || loadedCount > 0) && (
         <div
           role="note"
           aria-label="Analysis status legend"
-          style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 11, color: 'var(--text3)' }}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 16, padding: '0 4px 12px',
+            fontSize: 11, color: 'var(--text3)',
+          }}
         >
           <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', opacity: 0.9 }} />
@@ -561,46 +565,81 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         </div>
       )}
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#main-feed</div>
-      <CompanyFeedCard
-        label={`${companyName} (${ticker})`}
-        data={mainCard}
-        showAnalysis
-        aiChecking={aiChecking}
-        isPrimary
-        onLoad={loadMainCard}
-        onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
-      />
+      {/* Main stock card */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <CompanyFeedCard
+          label={`${companyName} (${ticker})`}
+          data={mainCard}
+          showAnalysis
+          aiChecking={aiChecking}
+          isPrimary
+          onLoad={loadMainCard}
+          onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
+        />
+      </div>
 
+      {/* Competitor section */}
       {competitors && competitors.length > 0 && (
         <>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitors</div>
-          <h3 className="card-title">{competitorLabel || 'Competitors'}</h3>
-          {competitors.map(comp => {
-            const data: CardData = compCards[comp.name] || {
-              loading: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
-            };
-            return (
-              <CompanyFeedCard
-                key={comp.name}
-                label={comp.name}
-                url={comp.url}
-                data={data}
-                showAnalysis
-                aiChecking={compAiChecking[comp.name] || false}
-                onLoad={() => loadCompetitor(comp.name)}
-                onTabChange={(tab) => setCompTab(comp.name, tab)}
-              />
-            );
-          })}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: '20px 0 8px',
+          }}>
+            <span style={{
+              fontSize: 11, fontWeight: 600, color: 'var(--text3)',
+              textTransform: 'uppercase', letterSpacing: '1.2px',
+            }}>
+              {competitorLabel || 'Competitors'}
+            </span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+            <span style={{
+              fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)',
+            }}>
+              {competitors.length}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {competitors.map(comp => {
+              const data: CardData = compCards[comp.name] || {
+                loading: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
+              };
+              return (
+                <CompanyFeedCard
+                  key={comp.name}
+                  label={comp.name}
+                  url={comp.url}
+                  data={data}
+                  showAnalysis
+                  aiChecking={compAiChecking[comp.name] || false}
+                  onLoad={() => loadCompetitor(comp.name)}
+                  onTabChange={(tab) => setCompTab(comp.name, tab)}
+                />
+              );
+            })}
+          </div>
         </>
       )}
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#research-sources</div>
-      <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: 8, fontSize: 11, fontWeight: 600, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '1.2px' }}>Research Sources</div>
-      <div className="g2">
+      {/* Research sources */}
+      <div style={{ padding: '20px 0 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{
+          fontSize: 11, fontWeight: 600, color: 'var(--text3)',
+          textTransform: 'uppercase', letterSpacing: '1.2px',
+        }}>
+          Research Sources
+        </span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+
+      <div className="g2" style={{ gap: 12 }}>
         {researchSources.map(group => (
-          <div key={group.category} className="card" style={{ padding: '20px 24px' }}>
+          <div key={group.category} style={{
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: 16,
+            padding: '20px 24px',
+          }}>
             <div style={{
               fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
               letterSpacing: '1px', color: 'var(--text3)', marginBottom: 12,
