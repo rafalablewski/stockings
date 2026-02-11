@@ -1421,35 +1421,79 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
     return acc;
   }, {});
   const years = Object.keys(milestonesByYear).sort((a, b) => Number(b) - Number(a));
-  
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#catalysts-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#catalysts-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Catalyst Tracker<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#upcoming-catalysts</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
-        <div>{upcomingCatalysts.map((c, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 8, border: '1px solid', background: c.impact === 'Critical' ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'var(--surface2)', borderColor: c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)', transition: 'all 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = c.impact === 'Critical' ? 'var(--cyan)' : 'var(--text3)'; e.currentTarget.style.background = c.impact === 'Critical' ? 'color-mix(in srgb, var(--cyan) 20%, transparent)' : 'var(--surface3)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)'; e.currentTarget.style.background = c.impact === 'Critical' ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'var(--surface2)'; }}>
-            <div><div style={{ fontWeight: 500, color: 'var(--text1)' }}>{c.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.timeline}</div></div>
-            <span className="pill" style={{ background: c.impact === 'Critical' ? 'var(--cyan)' : 'color-mix(in srgb, var(--gold) 30%, transparent)', color: c.impact === 'Critical' ? 'var(--bg1)' : 'var(--gold)', fontSize: 11 }}>{c.impact}</span>
-          </div>
-        ))}</div>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Event Horizon</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Catalysts<span style={{ color: 'var(--gold)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Binary events and inflection points that define AST SpaceMobile's trajectory. Near-term: BB7-13, FCC approval, US service launch.</p>
       </div>
-      {years.map(year => (
-        <div key={year} className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{year} Completed<UpdateIndicators sources="PR" /></div>
-          <div className="g2">{milestonesByYear[year].map((m, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 8, borderRadius: 8, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--mint) 15%, transparent)'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--mint) 45%, transparent)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--mint) 10%, transparent)'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--mint) 30%, transparent)'; }}>
-              <span style={{ color: 'var(--mint)' }}>✓</span><div><div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div></div>
-            </div>
-          ))}</div>
+
+      {/* Impact Summary — Glass cards */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#impact-summary</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { level: 'Critical', count: upcomingCatalysts.filter(c => c.impact === 'Critical').length, color: '#ef4444', desc: 'Binary outcomes' },
+          { level: 'High', count: upcomingCatalysts.filter(c => c.impact === 'High').length, color: 'var(--gold)', desc: 'Significant value' },
+          { level: 'Medium', count: upcomingCatalysts.filter(c => c.impact === 'Medium').length, color: 'var(--sky)', desc: 'Incremental' },
+          { level: 'Low', count: upcomingCatalysts.filter(c => c.impact === 'Low').length, color: 'var(--text3)', desc: 'Nice to have' },
+        ].map(s => (
+          <div key={s.level} style={{ background: 'var(--surface)', padding: '24px 20px', textAlign: 'center' }}>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: s.color }}>{s.count}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: s.color, letterSpacing: '1px', textTransform: 'uppercase', marginTop: 4 }}>{s.level}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>{s.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Upcoming — Precision list */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#upcoming-catalysts</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Upcoming Catalysts</span>
         </div>
-      ))}
+        {upcomingCatalysts.map((c, i) => {
+          const impactColor = c.impact === 'Critical' ? '#ef4444' : c.impact === 'High' ? 'var(--gold)' : c.impact === 'Medium' ? 'var(--sky)' : 'var(--text3)';
+          const catColor = c.category === 'Constellation' ? 'var(--cyan)' : c.category === 'Regulatory' ? 'var(--violet)' : c.category === 'Commercial' ? 'var(--gold)' : c.category === 'Service' ? 'var(--mint)' : c.category === 'Defense' || c.category === 'Government' ? 'var(--coral)' : c.category === 'Financing' ? 'var(--sky)' : 'var(--text3)';
+          return (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '100px 1fr auto auto', alignItems: 'center', gap: 16, padding: '14px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)' }}>{c.timeline}</span>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{c.event}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: `color-mix(in srgb, ${catColor} 10%, transparent)`, color: catColor }}>{c.category}</span>
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: `color-mix(in srgb, ${impactColor} 12%, transparent)`, color: impactColor, minWidth: 60, textAlign: 'center' }}>{c.impact}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Completed Milestones — Achievement log */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#completed-milestones</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Completed Milestones</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--mint)' }}>{completedMilestones.length} achieved</span>
+        </div>
+        {completedMilestones.slice(0, 15).map((m, i) => {
+          const catColor = m.category === 'Constellation' ? 'var(--cyan)' : m.category === 'Regulatory' ? 'var(--violet)' : m.category === 'Commercial' ? 'var(--gold)' : m.category === 'Service' ? 'var(--mint)' : m.category === 'Capital' ? 'var(--sky)' : m.category === 'Defense' || m.category === 'Government' ? 'var(--coral)' : 'var(--text3)';
+          return (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '110px 1fr auto', alignItems: 'center', gap: 16, padding: '13px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)' }}>{m.date}</span>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: `color-mix(in srgb, ${catColor} 10%, transparent)`, color: catColor }}>{m.category}</span>
+            </div>
+          );
+        })}
+        {completedMilestones.length > 15 && (
+          <div style={{ padding: '14px 28px', textAlign: 'center', fontSize: 12, color: 'var(--text3)' }}>+ {completedMilestones.length - 15} earlier milestones</div>
+        )}
+      </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Catalyst Analysis" items={[
@@ -1483,25 +1527,29 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#constellation-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Constellation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#constellation-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Constellation Status<UpdateIndicators sources="PR" /></h3>
-        <div style={{ fontSize: 13, color: 'var(--text2)' }}>
-          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Block 1 (BW3 + BB1-5):</strong> 6 satellites in orbit. BW3 is the 693 sq ft prototype (Sept 2022). BB1-5 are first-generation commercial satellites (Sept 2024).</p>
-          <p style={{ }}><strong style={{ color: 'var(--gold)' }}>Block 2 (BB6+):</strong> Next-generation satellites with ~2,400 sq ft arrays (3.5x larger), AST5000 ASIC chips, and 10x capacity. BB6 launched Dec 23, 2025 via ISRO.</p>
-          <p><strong style={{ color: 'var(--mint)' }}>Target:</strong> 45-60 satellites by end of 2026 via SpaceX, Blue Origin, and ISRO. Launch cadence: every 1-2 months.</p>
-        </div>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Orbital Deployment</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Constellation<span style={{ color: 'var(--cyan)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Block 1 validated the technology. Block 2 scales it 10x. Target: 45-60 satellites by end 2026 via SpaceX, Blue Origin, and ISRO.</p>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#deployment-progress</div>
-      <div className="card" style={{ }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Deployment Progress<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g5">
-          <Card label="Block 1" value={block1Sats} sub="BW3+BB1-5 (693 sq ft)" color="cyan" />
-          <Card label="Block 2" value={block2Sats} sub="BB6+ (~2,400 sq ft)" color="yellow" />
-          <Card label="Total In Orbit" value={calc.totalSats} sub="Operational" color="green" />
-          <Card label="Target 2026" value={targetSats2026} sub="45-60 range" color="blue" />
-          <Card label="Progress" value={`${calc.constellationProgress.toFixed(0)}%`} sub="vs 2026 target" color="purple" />
-        </div>
+
+      {/* Deployment KPIs — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#deployment-progress</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Block 1', value: block1Sats, sub: 'BW3+BB1-5 (693 sq ft)', color: 'var(--cyan)' },
+          { label: 'Block 2', value: block2Sats, sub: 'BB6+ (~2,400 sq ft)', color: 'var(--gold)' },
+          { label: 'Total In Orbit', value: calc.totalSats, sub: 'Operational', color: 'var(--mint)' },
+          { label: 'Target 2026', value: targetSats2026, sub: '45-60 range', color: 'var(--sky)' },
+          { label: 'Progress', value: `${calc.constellationProgress.toFixed(0)}%`, sub: 'vs 2026 target', color: 'var(--violet)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+          </div>
+        ))}
       </div>
       
       {/* Satellite Generations Comparison */}
@@ -1558,18 +1606,28 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#subscribers-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Subscribers<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#subscribers-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Subscriber Analysis<UpdateIndicators sources="PR" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#subscriber-metrics</div>
-      <div className="card" style={{ }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g4">
-          <Card label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} sub="53+ MNOs" color="blue" />
-          <Card label="Penetration" value={`${penetrationRate}%`} color="cyan" />
-          <Card label="Subs" value={`${calc.potentialSubs.toFixed(0)}M`} color="green" />
-          <Card label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} color="yellow" />
-        </div>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Adoption Analytics</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Subscribers<span style={{ color: 'var(--cyan)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>3.2B addressable reach across 53+ MNO partners. Penetration rate is the single most important variable. 1% = 32M subscribers.</p>
+      </div>
+
+      {/* KPI Dashboard — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#subscriber-metrics</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Total Reach', value: `${(partnerReach / 1000).toFixed(1)}B`, sub: '53+ MNOs', color: 'var(--sky)' },
+          { label: 'Penetration', value: `${penetrationRate}%`, sub: 'Model assumption', color: 'var(--cyan)' },
+          { label: 'Potential Subs', value: `${calc.potentialSubs.toFixed(0)}M`, sub: 'Reach x penetration', color: 'var(--mint)' },
+          { label: 'Price / Sub', value: `$${calc.pricePerSub.toFixed(0)}`, sub: 'Market Cap / subs', color: 'var(--gold)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+          </div>
+        ))}
       </div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <table className="tbl" aria-label="Partner subscriber breakdown"><thead><tr><th>Partner</th><th className="r">Reach</th><th className="r">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name}><td>{p.name}</td><td className="r">{p.subs}M</td><td className="r">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
@@ -1597,10 +1655,30 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-sources</div>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Financial Engine</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Revenue<span style={{ color: 'var(--mint)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>MNO 50/50 revenue share, Gateway services, Government contracts, and spectrum. $1B+ contracted across the partnership ecosystem.</p>
+      </div>
+
+      {/* Revenue KPIs — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-metrics-kpi</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Gross Revenue', value: `$${(calc.grossAnnualRev / 1000).toFixed(1)}B`, color: 'var(--cyan)' },
+          { label: 'Revenue Share', value: `${revenueShare}%`, color: 'var(--sky)' },
+          { label: 'Contracted', value: `$${contractedRevenue}M+`, color: 'var(--violet)' },
+          { label: 'ASTS Revenue', value: `$${(calc.astsAnnualRev / 1000).toFixed(1)}B`, color: 'var(--mint)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, marginTop: 8 }}>{kpi.value}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 16 }}>#revenue-sources</div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--border)', borderRadius: 8, transition: 'all 0.2s' }}
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}><div><span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{r.source}</span><span style={{ color: 'var(--text3)', fontSize: 13, marginLeft: 8 }}>{r.description}</span></div><span className="pill" style={{ background: r.status.includes('Active') ? 'color-mix(in srgb, var(--mint) 15%, transparent)' : 'var(--surface2)', borderColor: r.status.includes('Active') ? 'var(--mint)' : 'var(--border)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{r.status}</span></div>))}</div>
@@ -1788,13 +1866,11 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partners-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Partners<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partners-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Partner & Spectrum Intelligence<UpdateIndicators sources="PR" /></h3>
-        <div style={{ fontSize: 13, color: 'var(--text2)' }}>
-          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
-          <p><strong style={{ color: 'var(--cyan)' }}>Spectrum:</strong> ~80 MHz owned/controlled in US (45 MHz L-band + 5 MHz + partner spectrum). 60 MHz S-band global ITU priority. 1,150 MHz tunable MNO spectrum globally.</p>
-        </div>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Strategic Ecosystem</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Partners<span style={{ color: 'var(--mint)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>50+ MNO agreements covering 3.2B subscribers. $1B+ contracted. 50/50 revenue share. ~80 MHz US spectrum owned/controlled plus 60 MHz S-band global ITU priority.</p>
       </div>
 
       {/* Key Metrics */}
@@ -2531,26 +2607,29 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#runway-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Runway<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#runway-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Cash Runway — Q3 2025 Actuals<UpdateIndicators sources={['PR', 'SEC']} /></h3>
-        <div style={{ fontSize: 13, color: 'var(--text2)' }}>
-          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
-          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Debt (Balance Sheet):</strong> $697.6M net long-term debt (~$724M gross). Principal outstanding: $1.625B ($50M + $575M + $1B converts).</p>
-          <p><strong style={{ color: 'var(--cyan)' }}>Q4 Guidance:</strong> CapEx $275-325M, OpEx ~$65M. Satellite cost: $21-23M average.</p>
-        </div>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Capital Position</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Cash Runway<span style={{ color: 'var(--gold)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Q3 GAAP cash $1.2B. ~4 quarters at current burn. $1.625B convertible debt outstanding. CapEx guidance $275-325M/Q, satellite cost $21-23M avg.</p>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#runway-metrics</div>
-      <div className="card" style={{ }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g5">
-          <Card label="Q3 GAAP Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} sub="~4Q runway at $300M/Q" color="green" />
-          <Card label="Q4 Burn Est." value={`$${quarterlyBurn}M`} sub="CapEx + OpEx" color="red" />
-          <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub={`~${(calc.cashRunwayQuarters / 4).toFixed(1)} years`} color="yellow" />
-          <Card label="Debt" value={`$${(totalDebt/1000).toFixed(1)}B`} sub={`${debtRate}% blended`} color="orange" />
-          <Card label="Employees" value="~1,800" sub="Global workforce" color="blue" />
-        </div>
+      {/* Treasury Dashboard — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-metrics</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Q3 GAAP Cash', value: `$${(cashOnHand / 1000).toFixed(1)}B`, sub: '~4Q at $300M/Q', color: 'var(--mint)' },
+          { label: 'Q4 Burn Est.', value: `$${quarterlyBurn}M`, sub: 'CapEx + OpEx', color: 'var(--coral)' },
+          { label: 'Runway', value: `${calc.cashRunwayQuarters.toFixed(1)}Q`, sub: `~${(calc.cashRunwayQuarters / 4).toFixed(1)} years`, color: 'var(--gold)' },
+          { label: 'Debt', value: `$${(totalDebt/1000).toFixed(1)}B`, sub: `${debtRate}% blended`, color: 'var(--sky)' },
+          { label: 'Employees', value: '~1,800', sub: 'Global workforce', color: 'var(--violet)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+          </div>
+        ))}
       </div>
 
       {/* Q3 2025 Financial Summary */}

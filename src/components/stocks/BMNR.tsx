@@ -2854,10 +2854,11 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Staking<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-intro</div>
-      <div className="highlight"><h3>ETH Staking Yield</h3>
-        <p style={{ fontSize: 14, color: 'var(--text2)' }}>BMNR generates yield by staking ETH through validators. Compare staking strategies and model compounding returns over time.</p>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Yield Engine</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Staking<span style={{ color: 'var(--mint)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>BMNR generates yield by staking ETH through validators. Compare staking strategies and model compounding returns over time.</p>
       </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-strategy</div>
       <div className="g3" aria-label="Staking strategy selection">
@@ -2939,10 +2940,11 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Dilution<UpdateIndicators sources="SEC" /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-intro</div>
-      <div className="highlight"><h3>Equity Dilution Analysis</h3>
-        <p style={{ fontSize: 14, color: 'var(--text2)' }}>Model the impact of share issuance on NAV per share. Accretive when issued above NAV; dilutive when below.</p>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Equity Structure</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Dilution<span style={{ color: 'var(--violet)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Model the impact of share issuance on NAV per share. Accretive when issued above NAV; dilutive when below.</p>
       </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#single-tranche</div>
       <div className="card"><div className="card-title">Single Tranche</div>
@@ -2994,10 +2996,11 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Debt<UpdateIndicators sources="SEC" /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-intro</div>
-      <div className="highlight"><h3>Leverage & Convertible Debt</h3>
-        <p style={{ fontSize: 14, color: 'var(--text2)' }}>Model convertible debt financing and analyze LTV covenant risks. Track death spiral trigger prices.</p>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Leverage Analysis</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Debt<span style={{ color: 'var(--coral)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Model convertible debt financing and analyze LTV covenant risks. Track death spiral trigger prices.</p>
       </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-params</div>
       <div className="card"><div className="card-title">Debt Parameters</div>
@@ -5951,10 +5954,11 @@ const SensitivityTab = ({ calc, currentETH, currentShares, ethPrice }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sensitivity-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sensitivity-intro</div>
-      <div className="highlight"><h3>Price Matrix & Tornado</h3>
-        <p style={{ fontSize: 14, color: 'var(--text2)' }}>Two-variable sensitivity showing stock price at different ETH prices and NAV multiples. Tornado chart shows parameter impact ranking.</p>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Scenario Engine</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Sensitivity<span style={{ color: 'var(--gold)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Two-variable sensitivity matrix showing implied stock price across ETH price and NAV multiple combinations. Tornado chart ranks parameter impact.</p>
       </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#price-matrix</div>
       <div className="card"><div className="card-title">Price Matrix</div>
@@ -5997,10 +6001,11 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Backtest<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-intro</div>
-      <div className="highlight"><h3>Historical NAV Simulation</h3>
-        <p style={{ fontSize: 14, color: 'var(--text2)' }}>What would NAV have been at historical ETH prices? Toggle staking yield to see compounding effect. Caveat: illustrative only.</p>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Historical Simulation</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Backtest<span style={{ color: 'var(--sky)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>What would NAV have been at historical ETH prices? Toggle staking yield to see compounding effect. Illustrative only.</p>
       </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-settings</div>
       <div className="card"><div className="card-title">Settings</div>
@@ -10902,7 +10907,12 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ethereum-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Ethereum Ecosystem<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Protocol Intelligence</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Ethereum<span style={{ color: 'var(--violet)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>BMNR-ETH correlation metrics, protocol roadmap, institutional adoption events, and ecosystem fundamentals driving the treasury thesis.</p>
+      </div>
       <V1 />
     </div>
   );
