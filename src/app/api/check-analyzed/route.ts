@@ -92,6 +92,8 @@ export async function POST(request: NextRequest) {
   // Read API key at runtime (not module level) to avoid Turbopack inlining
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || '';
 
+  console.log('[check-analyzed] POST called. API key present:', !!ANTHROPIC_API_KEY, 'key length:', ANTHROPIC_API_KEY.length);
+
   try {
     const body = await request.json();
     const { ticker, articles } = body as { ticker: string; articles: Article[] };
