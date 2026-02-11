@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const env = process.env as Record<string, string | undefined>;
-  const hasKey = !!env['ANTHROPIC_API_KEY'];
-  const keyPrefix = env['ANTHROPIC_API_KEY']?.slice(0, 10) || 'NOT SET';
+  // List all env var keys to diagnose what Vercel is passing
+  const allKeys = Object.keys(process.env).sort();
+  const anthropicKeys = allKeys.filter(k => k.includes('ANTHROPIC') || k.includes('API_KEY'));
+  const hasKey = allKeys.includes('ANTHROPIC_API_KEY');
+
   return NextResponse.json({
     hasKey,
-    keyPrefix: hasKey ? keyPrefix + '...' : 'NOT SET',
+    anthropicKeys,
+    totalEnvVars: allKeys.length,
+    sampleKeys: allKeys.slice(0, 20),
     nodeEnv: process.env.NODE_ENV,
   });
 }
