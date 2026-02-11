@@ -17,11 +17,12 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
 
   try {
     if (ticker === 'ASTS') {
-      const [partners, competitors, catalysts, pressReleases] = await Promise.all([
+      const [partners, competitors, catalysts, pressReleases, compsTimeline] = await Promise.all([
         import('@/data/asts/partners'),
         import('@/data/asts/competitors'),
         import('@/data/asts/catalysts'),
         import('@/data/asts/press-releases'),
+        import('@/data/asts/comps-timeline'),
       ]);
 
       if (partners.PARTNER_NEWS) {
@@ -32,6 +33,13 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
       if (competitors.COMPETITOR_NEWS) {
         for (const n of competitors.COMPETITOR_NEWS) {
           entries.push({ date: n.date, headline: n.headline, detail: n.summary });
+        }
+      }
+      // CompsTab competitor timeline — detailed per-company entries with bullet points
+      if (compsTimeline.COMPS_TIMELINE) {
+        for (const n of compsTimeline.COMPS_TIMELINE) {
+          const detail = [n.details?.join('; '), n.astsComparison].filter(Boolean).join(' | ');
+          entries.push({ date: n.date, headline: n.headline, detail });
         }
       }
       if (catalysts.COMPLETED_MILESTONES) {
@@ -86,7 +94,14 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
     console.error(`Failed to load analysis data for ${ticker}:`, error);
   }
 
-  return entries;
+  // Deduplicate by headline (normalized)
+  const seen = new Set<string>();
+  return entries.filter(e => {
+    const key = e.headline.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 80);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 export async function POST(request: NextRequest) {
