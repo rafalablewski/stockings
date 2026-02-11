@@ -8,29 +8,38 @@ interface Article {
 interface AnalysisEntry {
   date: string;
   headline: string;
+  detail?: string; // summary, notes, or other context
 }
 
-// Dynamically collect all analysis data for a ticker
+// Dynamically collect all analysis data for a ticker — with full context
 async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
   const entries: AnalysisEntry[] = [];
 
   try {
     if (ticker === 'ASTS') {
-      const [partners, competitors, catalysts, pressReleases] = await Promise.all([
+      const [partners, competitors, catalysts, pressReleases, compsTimeline] = await Promise.all([
         import('@/data/asts/partners'),
         import('@/data/asts/competitors'),
         import('@/data/asts/catalysts'),
         import('@/data/asts/press-releases'),
+        import('@/data/asts/comps-timeline'),
       ]);
 
       if (partners.PARTNER_NEWS) {
         for (const n of partners.PARTNER_NEWS) {
-          entries.push({ date: n.date, headline: n.headline });
+          entries.push({ date: n.date, headline: n.headline, detail: n.summary });
         }
       }
       if (competitors.COMPETITOR_NEWS) {
         for (const n of competitors.COMPETITOR_NEWS) {
-          entries.push({ date: n.date, headline: n.headline });
+          entries.push({ date: n.date, headline: n.headline, detail: n.summary });
+        }
+      }
+      // CompsTab competitor timeline — detailed per-company entries with bullet points
+      if (compsTimeline.COMPS_TIMELINE) {
+        for (const n of compsTimeline.COMPS_TIMELINE) {
+          const detail = [n.details?.join('; '), n.astsComparison].filter(Boolean).join(' | ');
+          entries.push({ date: n.date, headline: n.headline, detail });
         }
       }
       if (catalysts.COMPLETED_MILESTONES) {
@@ -85,7 +94,14 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
     console.error(`Failed to load analysis data for ${ticker}:`, error);
   }
 
-  return entries;
+  // Deduplicate by headline (normalized)
+  const seen = new Set<string>();
+  return entries.filter(e => {
+    const key = e.headline.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 80);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -101,7 +117,6 @@ export async function POST(request: NextRequest) {
     }
 
     if (!ANTHROPIC_API_KEY) {
-      // No API key configured — return error so frontend can surface it
       return NextResponse.json({
         ticker,
         results: articles.map(a => ({ headline: a.headline, date: a.date, analyzed: null })),
@@ -112,30 +127,46 @@ export async function POST(request: NextRequest) {
     // Gather all existing analysis data for this ticker
     const analysisData = await getAnalysisData(ticker.toUpperCase());
 
-    // Build a concise summary of existing analysis for Claude
+    // Build context-rich summary: include headline + truncated detail for semantic matching
     const existingSummary = analysisData
-      .slice(0, 200) // Cap at 200 entries to stay within token limits
-      .map(e => `[${e.date}] ${e.headline}`)
+      .slice(0, 150)
+      .map(e => {
+        const detail = e.detail
+          ? ` — ${e.detail.slice(0, 200)}`
+          : '';
+        return `[${e.date}] ${e.headline}${detail}`;
+      })
       .join('\n');
 
     const articleList = articles
       .map((a, i) => `${i + 1}. [${a.date}] ${a.headline}`)
       .join('\n');
 
-    const prompt = `You are analyzing a stock research database for ticker ${ticker}. Below is a list of events, news, and press releases that are ALREADY tracked in the analysis database.
+    const prompt = `You are checking whether news articles are already covered in a stock research database for ticker ${ticker}.
 
-EXISTING ANALYSIS DATA:
+EXISTING ANALYSIS DATABASE (headlines + summaries):
 ${existingSummary}
 
 NEW ARTICLES TO CHECK:
 ${articleList}
 
-For each new article (1-${articles.length}), determine if its content/topic is ALREADY COVERED in the existing analysis data. An article is "covered" if the same event, announcement, or topic appears in the existing data (even if worded differently). Be generous - if the same underlying event is referenced, it counts as covered.
+For each new article (1-${articles.length}), determine if the underlying event/topic is ALREADY COVERED somewhere in the existing database.
 
-Respond with ONLY a JSON array of objects, one per article, in order:
-[{"index": 1, "analyzed": true}, {"index": 2, "analyzed": false}, ...]
+Mark as "analyzed: true" when:
+- The same company announcement, product launch, partnership, regulatory event, or milestone is covered — even if worded completely differently
+- A news article reports on the same underlying event as a database entry (e.g. article says "Company X Sends First D2D Message" and database has entry mentioning "First European company to operate LEO constellation dedicated to D2D services" — same event, different wording)
+- The article covers a topic that is discussed within the summary/detail of an existing entry
+- Different news outlets covering the same story both count as covered if any version is in the database
 
-No other text, just the JSON array.`;
+Mark as "analyzed: false" when:
+- The specific event, development, or announcement has NO corresponding entry in the database
+- It's a genuinely new development not captured anywhere in the existing data
+- Stock price movement articles with no underlying tracked event
+
+Think about WHAT HAPPENED, not how it's worded. Match on substance, not phrasing.
+
+Respond with ONLY a JSON array, one object per article, in order:
+[{"index": 1, "analyzed": true}, {"index": 2, "analyzed": false}, ...]`;
 
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -146,7 +177,7 @@ No other text, just the JSON array.`;
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 512,
+        max_tokens: 1024,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
@@ -163,12 +194,10 @@ No other text, just the JSON array.`;
     // Parse Claude's JSON response
     let results: Array<{ index: number; analyzed: boolean }>;
     try {
-      // Extract JSON from response (Claude might wrap it in markdown code blocks)
       const jsonMatch = responseText.match(/\[[\s\S]*\]/);
       results = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
     } catch {
       console.error('Failed to parse Claude response:', responseText);
-      // Fallback: mark all as unknown
       results = articles.map((_, i) => ({ index: i + 1, analyzed: false }));
     }
 

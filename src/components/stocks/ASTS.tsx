@@ -117,7 +117,9 @@ import React, { useState, useMemo, useRef, useEffect, useCallback, Component, Er
 import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
-import type { SourceGroup } from '../shared/SharedSourcesTab';
+import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
+import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
+import type { CompsTimelineEntry } from '@/data/asts/comps-timeline';
 import StockChart from '../shared/StockChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ComposedChart, Cell, PieChart, Pie, Legend, ReferenceLine } from 'recharts';
 
@@ -258,29 +260,10 @@ interface ErrorBoundaryState {
 // COMPETITOR NEWS TRACKING INTERFACES
 // ============================================================================
 
-/** Competitor identifiers for D2D/satellite space */
-type CompetitorId = 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-leo' | 'echostar' | 'oq-technology' | 'other';
-
-/** News category types */
-type CompetitorNewsCategory = 'Launch' | 'Partnership' | 'Technology' | 'Regulatory' | 'Financial' | 'Coverage' | 'Product';
-
-/** Implication for ASTS competitive position */
-type ASTSImplication = 'positive' | 'neutral' | 'negative';
-
-/** Individual competitor news entry */
-interface CompetitorNewsEntry {
-  date: string;
-  competitor: CompetitorId;
-  category: CompetitorNewsCategory;
-  headline: string;
-  details: string[];
-  implication: ASTSImplication;
-  astsComparison?: string;  // How this compares to ASTS capability/position
-  source?: string;
-  sourceUrl?: string;
-  storyId?: string;         // Groups related news entries (e.g., 'qatar-starlink-aviation')
-  storyTitle?: string;      // Display title for the story group
-}
+// Competitor types re-exported from data file
+type CompetitorId = CompsTimelineEntry['competitor'];
+type CompetitorNewsCategory = CompsTimelineEntry['category'];
+type CompetitorNewsEntry = CompsTimelineEntry;
 
 /** Competitor profile with capabilities */
 interface CompetitorProfile {
@@ -691,6 +674,21 @@ const ASTSAnalysis = () => {
   // Chart refresh key - increment to trigger chart data refresh
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
 
+  // ASTS D2D competitors for live feeds
+  const astsCompetitors: Competitor[] = [
+    { name: 'OQ Technology', url: 'https://www.oqtec.space' },
+    { name: 'Iridium Communications', url: 'https://www.iridium.com' },
+    { name: 'Skylo Technologies', url: 'https://www.skylo.tech' },
+    { name: 'Lynk Global', url: 'https://lynk.world' },
+    { name: 'SpaceX / Starlink Direct to Cell', url: 'https://direct.starlink.com' },
+    { name: 'Viasat', url: 'https://www.viasat.com' },
+    { name: 'Amazon / Project Kuiper', url: 'https://www.aboutamazon.com/news/amazon-leo' },
+    { name: 'EchoStar / Hughes', url: 'https://www.echostar.com' },
+    { name: 'SES', url: 'https://www.ses.com' },
+    { name: 'Terrestar Solutions', url: 'https://terrestarsolutions.ca' },
+    { name: 'Space42 / Bayanat', url: 'https://space42.ai' },
+  ];
+
   // ASTS research sources for SharedSourcesTab
   const astsResearchSources: SourceGroup[] = [
     { category: 'Company / IR', sources: [
@@ -1010,7 +1008,7 @@ const ASTSAnalysis = () => {
           {activeTab === 'investment' && <InvestmentTab />}
           {activeTab === 'wall-street' && <WallStreetTab />}
           {activeTab === 'sources' && (
-            <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} />
+            <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} competitorLabel="D2D Competitors" competitors={astsCompetitors} />
           )}
         </main>
       </div>
@@ -1209,78 +1207,99 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
   return (
   <div style={{ display: 'flex', flexDirection: 'column' }}>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-thesis</div>
-    <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#opportunity</div>
-    <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>The Opportunity<UpdateIndicators sources="PR" /></h3>
-      <p style={{ fontSize: 14, color: 'var(--text2)' }}><strong style={{ color: 'var(--accent)' }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
+    {/* Hero — Ive×Tesla */}
+    <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Overview<span style={{ color: 'var(--accent)' }}>.</span></h2>
+      <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}><strong style={{ color: 'var(--text2)', fontWeight: 500 }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
-    <div className="g2">
-      <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bull</div>
-        <div className="thesis bull">
-          <h4 style={{ display: 'flex', alignItems: 'center' }}>↑ Bull Case<UpdateIndicators sources="PR" /></h4>
-          <ul>
-            <li>BB6 proving D2D technology works at scale</li>
-            <li>53+ MNO partners with 3.2B addressable subscribers</li>
-            <li>$1B+ contracted revenue locked in</li>
-            <li>First-mover advantage in direct-to-phone satellite</li>
-            <li>MDA SHIELD prime contractor + DoD/SDA contracts</li>
-            <li>Regulatory moat — licensed spectrum agreements</li>
-          </ul>
+    <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#opportunity</div>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginBottom: 8 }}>#thesis-bull</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--mint)' }}>Bull Case</span>
+          <UpdateIndicators sources="PR" />
         </div>
+        {[
+          'BB6 proving D2D technology works at scale',
+          '53+ MNO partners with 3.2B addressable subscribers',
+          '$1B+ contracted revenue locked in',
+          'First-mover advantage in direct-to-phone satellite',
+          'MDA SHIELD prime contractor + DoD/SDA contracts',
+          'Regulatory moat — licensed spectrum agreements',
+        ].map(item => (
+          <div key={item} style={{ display: 'flex', gap: 8, padding: '5px 0', fontSize: 13, color: 'var(--text2)', lineHeight: 1.5 }}>
+            <span style={{ color: 'var(--mint)', flexShrink: 0 }}>+</span>{item}
+          </div>
+        ))}
       </div>
-      <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#thesis-bear</div>
-        <div className="thesis bear">
-          <h4 style={{ display: 'flex', alignItems: 'center' }}>↓ Bear Case<UpdateIndicators sources="PR" /></h4>
-          <ul>
-            <li>Pre-revenue company, high execution risk</li>
-            <li>Dilution risk — $3.2B raised, may need more</li>
-            <li>Competition: Starlink/T-Mobile D2D partnership</li>
-            <li>Satellite launch/technology failure risk</li>
-            <li>Slow subscriber adoption by MNO partners</li>
-            <li>MNO partnership revenue share negotiations</li>
-          </ul>
+      <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginBottom: 8 }}>#thesis-bear</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--coral)' }}>Bear Case</span>
+          <UpdateIndicators sources="PR" />
         </div>
+        {[
+          'Pre-revenue company, high execution risk',
+          'Dilution risk — $3.2B raised, may need more',
+          'Competition: Starlink/T-Mobile D2D partnership',
+          'Satellite launch/technology failure risk',
+          'Slow subscriber adoption by MNO partners',
+          'MNO partnership revenue share negotiations',
+        ].map(item => (
+          <div key={item} style={{ display: 'flex', gap: 8, padding: '5px 0', fontSize: 13, color: 'var(--text2)', lineHeight: 1.5 }}>
+            <span style={{ color: 'var(--coral)', flexShrink: 0 }}>-</span>{item}
+          </div>
+        ))}
       </div>
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart</div>
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
-          {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}<UpdateIndicators sources="PR" />
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+            {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}
+          </span>
+          <UpdateIndicators sources="PR" />
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 6 }}>
           {[
             { id: 'constellation', label: 'Satellites' },
             { id: 'cash', label: 'Cash' },
-            { id: 'marketcap', label: 'Market Cap' },
-          ].map(btn => (
-            <button
-              key={btn.id}
-              onClick={() => setChartType(btn.id)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: 6,
-                border: chartType === btn.id ? '1px solid var(--accent)' : '1px solid var(--border)',
-                background: chartType === btn.id ? 'var(--accent-dim)' : 'transparent',
-                color: chartType === btn.id ? 'var(--accent)' : 'var(--text2)',
-                fontSize: 12,
-                cursor: 'pointer',
-              }}
-            >
-              {btn.label}
-            </button>
-          ))}
+            { id: 'marketcap', label: 'Mkt Cap' },
+          ].map(btn => {
+            const isActive = chartType === btn.id;
+            return (
+              <button
+                key={btn.id}
+                onClick={() => setChartType(btn.id)}
+                style={{
+                  padding: '4px 12px',
+                  borderRadius: 99,
+                  border: '1px solid',
+                  borderColor: isActive ? 'var(--accent)' : 'var(--border)',
+                  background: isActive ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
+                  color: isActive ? 'var(--accent)' : 'var(--text3)',
+                  fontSize: 11,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  fontFamily: 'inherit',
+                }}
+              >
+                {btn.label}
+              </button>
+            );
+          })}
         </div>
       </div>
-      <div className="bars">
+      <div className="bars" style={{ padding: '24px 28px 0' }}>
         {chartData.map((d, i) => (
           <div key={i} className="bar-col">
             <div className="bar-val">{d.display}</div>
-            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--accent)' }} />
+            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px` }} />
             <div className="bar-label">{d.label}</div>
           </div>
         ))}
@@ -1288,56 +1307,49 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-metrics</div>
-    <table className="tbl" style={{ width: '100%' }}>
-      <thead>
-        <tr>
-          <th style={{ textAlign: 'left' }}>Metric</th>
-          <th className="r">Value</th>
-          <th style={{ textAlign: 'left' }}>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Market Cap</td>
-          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${(calc.marketCap / 1000).toFixed(2)}B</td>
-          <td style={{ color: 'var(--text3)' }}>Equity value</td>
-        </tr>
-        <tr>
-          <td>Enterprise Value</td>
-          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${(calc.enterpriseValue / 1000).toFixed(2)}B</td>
-          <td style={{ color: 'var(--text3)' }}>MC + Debt - Cash</td>
-        </tr>
-        <tr>
-          <td>Constellation</td>
-          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--cyan)' }}>{calc.totalSats}/{targetSats2026}</td>
-          <td style={{ color: 'var(--text3)' }}>{calc.constellationProgress.toFixed(0)}% complete</td>
-        </tr>
-        <tr>
-          <td>Cash Runway</td>
-          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: calc.cashRunwayQuarters > 4 ? 'var(--mint)' : 'var(--gold)' }}>{calc.cashRunwayQuarters.toFixed(1)} quarters</td>
-          <td style={{ color: 'var(--text3)' }}>~{(calc.cashRunwayQuarters / 4).toFixed(1)} year runway</td>
-        </tr>
-      </tbody>
-    </table>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+        {['Metric', 'Value', 'Description'].map(h => (
+          <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Value' ? 'right' : 'left' }}>{h}</span>
+        ))}
+      </div>
+      {[
+        { metric: 'Market Cap', value: `$${(calc.marketCap / 1000).toFixed(2)}B`, desc: 'Equity value', color: 'var(--text)' },
+        { metric: 'Enterprise Value', value: `$${(calc.enterpriseValue / 1000).toFixed(2)}B`, desc: 'MC + Debt - Cash', color: 'var(--text)' },
+        { metric: 'Constellation', value: `${calc.totalSats}/${targetSats2026}`, desc: `${calc.constellationProgress.toFixed(0)}% complete`, color: 'var(--cyan)' },
+        { metric: 'Cash Runway', value: `${calc.cashRunwayQuarters.toFixed(1)} quarters`, desc: `~${(calc.cashRunwayQuarters / 4).toFixed(1)} year runway`, color: calc.cashRunwayQuarters > 4 ? 'var(--mint)' : 'var(--gold)' },
+      ].map((row, i, arr) => (
+        <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+          <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.metric}</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: row.color, textAlign: 'right' }}>{row.value}</span>
+          <span style={{ fontSize: 12, color: 'var(--text3)', paddingLeft: 16 }}>{row.desc}</span>
+        </div>
+      ))}
+    </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-snapshot</div>
-    <div className="card">
-      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Company Snapshot<UpdateIndicators sources={['PR', 'SEC']} /></div>
-      <div className="g3">
-        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Equity (Q3 2025)</div>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Company Snapshot</span>
+        <UpdateIndicators sources={['PR', 'SEC']} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)' }}>
+        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Equity (Q3 2025)</div>
           <Row label="Shares" value={`${currentShares}M`} />
           <Row label="Price" value={`$${currentStockPrice}`} />
           <Row label="Mkt Cap" value={`$${(calc.marketCap / 1000).toFixed(2)}B`} highlight />
           <Row label="Debt" value={`$${totalDebt}M`} />
           <Row label="Cash" value={`$${(cashOnHand / 1000).toFixed(2)}B`} />
         </div>
-        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Subscribers</div>
+        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Subscribers</div>
           <Row label="MNO Partners" value="53+" />
           <Row label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} highlight />
           <Row label={`@ ${penetrationRate}%`} value={`${calc.potentialSubs.toFixed(0)}M`} />
           <Row label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} />
           <Row label="Contracted" value={`$${contractedRevenue}M+`} />
         </div>
-        <div><div style={{ fontSize: 11, color: 'var(--text3)' }}>Constellation</div>
+        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Constellation</div>
           <Row label="Block 1 (BW3+BB1-5)" value={`${block1Sats} in orbit`} />
           <Row label="Block 2 (BB6+)" value={`${block2Sats} launched`} highlight />
           <Row label="Total Constellation" value={`${block1Sats + block2Sats} satellites`} />
@@ -1347,8 +1359,11 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
     </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-    <h3 className="section-head">Parameters</h3>
-    <div className="g2">
+    <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+      <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+    </div>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
       <OverviewParameterCard
         title="Shares Outstanding (M)"
         explanation="Total diluted shares outstanding. Higher share count = lower per-share metrics. Increases with equity raises, stock comp, warrant exercises."
@@ -1368,7 +1383,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         currentValue={DEFAULTS.currentStockPrice}
       />
     </div>
-    <div className="g3">
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
       <OverviewParameterCard
         title="Cash ($M)"
         explanation="Cash & equivalents. Determines runway = Cash ÷ Burn. Critical for pre-revenue companies."
@@ -1397,7 +1412,10 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
-    <h3 className="section-head">Stock Chart</h3>
+    <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Stock Chart</span>
+      <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+    </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#stock-chart</div>
     <StockChart symbol="ASTS" externalRefreshKey={chartRefreshKey} onPriceUpdate={(price) => setCurrentStockPrice(price)} />
 
@@ -1423,31 +1441,79 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
     return acc;
   }, {});
   const years = Object.keys(milestonesByYear).sort((a, b) => Number(b) - Number(a));
-  
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#catalysts-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Catalysts<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#catalysts-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Catalyst Tracker<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Near-term: BB7-13, FCC approval, US service. Five launches by Q1 2026.</p></div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#upcoming-catalysts</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
-        <div>{upcomingCatalysts.map((c, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 8, border: '1px solid', background: c.impact === 'Critical' ? 'rgba(34,211,238,0.15)' : 'var(--surface2)', borderColor: c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)' }}>
-            <div><div style={{ fontWeight: 500, color: 'var(--text1)' }}>{c.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.timeline}</div></div>
-            <span className="pill" style={{ background: c.impact === 'Critical' ? 'var(--cyan)' : 'rgba(234,179,8,0.3)', color: c.impact === 'Critical' ? 'var(--bg1)' : 'var(--gold)', fontSize: 11 }}>{c.impact}</span>
-          </div>
-        ))}</div>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Event Horizon</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Catalysts<span style={{ color: 'var(--gold)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Binary events and inflection points that define AST SpaceMobile's trajectory. Near-term: BB7-13, FCC approval, US service launch.</p>
       </div>
-      {years.map(year => (
-        <div key={year} className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{year} Completed<UpdateIndicators sources="PR" /></div>
-          <div className="g2">{milestonesByYear[year].map((m, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 8, borderRadius: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}>
-              <span style={{ color: 'var(--mint)' }}>✓</span><div><div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div></div>
-            </div>
-          ))}</div>
+
+      {/* Impact Summary — Glass cards */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#impact-summary</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { level: 'Critical', count: upcomingCatalysts.filter(c => c.impact === 'Critical').length, color: '#ef4444', desc: 'Binary outcomes' },
+          { level: 'High', count: upcomingCatalysts.filter(c => c.impact === 'High').length, color: 'var(--gold)', desc: 'Significant value' },
+          { level: 'Medium', count: upcomingCatalysts.filter(c => c.impact === 'Medium').length, color: 'var(--sky)', desc: 'Incremental' },
+          { level: 'Low', count: upcomingCatalysts.filter(c => c.impact === 'Low').length, color: 'var(--text3)', desc: 'Nice to have' },
+        ].map(s => (
+          <div key={s.level} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: s.color }}>{s.count}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: s.color, letterSpacing: '1px', textTransform: 'uppercase', marginTop: 4 }}>{s.level}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>{s.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Upcoming — Precision list */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#upcoming-catalysts</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Upcoming Catalysts</span>
         </div>
-      ))}
+        {upcomingCatalysts.map((c, i) => {
+          const impactColor = c.impact === 'Critical' ? '#ef4444' : c.impact === 'High' ? 'var(--gold)' : c.impact === 'Medium' ? 'var(--sky)' : 'var(--text3)';
+          const catColor = c.category === 'Constellation' ? 'var(--cyan)' : c.category === 'Regulatory' ? 'var(--violet)' : c.category === 'Commercial' ? 'var(--gold)' : c.category === 'Service' ? 'var(--mint)' : c.category === 'Defense' || c.category === 'Government' ? 'var(--coral)' : c.category === 'Financing' ? 'var(--sky)' : 'var(--text3)';
+          return (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '100px 1fr auto auto', alignItems: 'center', gap: 16, padding: '14px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)' }}>{c.timeline}</span>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{c.event}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: `color-mix(in srgb, ${catColor} 10%, transparent)`, color: catColor }}>{c.category}</span>
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: `color-mix(in srgb, ${impactColor} 12%, transparent)`, color: impactColor, minWidth: 60, textAlign: 'center' }}>{c.impact}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Completed Milestones — Achievement log */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#completed-milestones</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Completed Milestones</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--mint)' }}>{completedMilestones.length} achieved</span>
+        </div>
+        {completedMilestones.slice(0, 15).map((m, i) => {
+          const catColor = m.category === 'Constellation' ? 'var(--cyan)' : m.category === 'Regulatory' ? 'var(--violet)' : m.category === 'Commercial' ? 'var(--gold)' : m.category === 'Service' ? 'var(--mint)' : m.category === 'Capital' ? 'var(--sky)' : m.category === 'Defense' || m.category === 'Government' ? 'var(--coral)' : 'var(--text3)';
+          return (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '110px 1fr auto', alignItems: 'center', gap: 16, padding: '13px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)' }}>{m.date}</span>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: `color-mix(in srgb, ${catColor} 10%, transparent)`, color: catColor }}>{m.category}</span>
+            </div>
+          );
+        })}
+        {completedMilestones.length > 15 && (
+          <div style={{ padding: '14px 28px', textAlign: 'center', fontSize: 12, color: 'var(--text3)' }}>+ {completedMilestones.length - 15} earlier milestones</div>
+        )}
+      </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Catalyst Analysis" items={[
@@ -1481,62 +1547,108 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#constellation-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Constellation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#constellation-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Constellation Status<UpdateIndicators sources="PR" /></h3>
-        <div style={{ fontSize: 13, color: 'var(--text2)' }}>
-          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Block 1 (BW3 + BB1-5):</strong> 6 satellites in orbit. BW3 is the 693 sq ft prototype (Sept 2022). BB1-5 are first-generation commercial satellites (Sept 2024).</p>
-          <p style={{ }}><strong style={{ color: 'var(--gold)' }}>Block 2 (BB6+):</strong> Next-generation satellites with ~2,400 sq ft arrays (3.5x larger), AST5000 ASIC chips, and 10x capacity. BB6 launched Dec 23, 2025 via ISRO.</p>
-          <p><strong style={{ color: 'var(--mint)' }}>Target:</strong> 45-60 satellites by end of 2026 via SpaceX, Blue Origin, and ISRO. Launch cadence: every 1-2 months.</p>
-        </div>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Orbital Deployment</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Constellation<span style={{ color: 'var(--cyan)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Block 1 validated the technology. Block 2 scales it 10x. Target: 45-60 satellites by end 2026 via SpaceX, Blue Origin, and ISRO.</p>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#deployment-progress</div>
-      <div className="card" style={{ }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Deployment Progress<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g5">
-          <Card label="Block 1" value={block1Sats} sub="BW3+BB1-5 (693 sq ft)" color="cyan" />
-          <Card label="Block 2" value={block2Sats} sub="BB6+ (~2,400 sq ft)" color="yellow" />
-          <Card label="Total In Orbit" value={calc.totalSats} sub="Operational" color="green" />
-          <Card label="Target 2026" value={targetSats2026} sub="45-60 range" color="blue" />
-          <Card label="Progress" value={`${calc.constellationProgress.toFixed(0)}%`} sub="vs 2026 target" color="purple" />
-        </div>
+
+      {/* Deployment KPIs — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#deployment-progress</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Block 1', value: block1Sats, sub: 'BW3+BB1-5 (693 sq ft)', color: 'var(--cyan)' },
+          { label: 'Block 2', value: block2Sats, sub: 'BB6+ (~2,400 sq ft)', color: 'var(--gold)' },
+          { label: 'Total In Orbit', value: calc.totalSats, sub: 'Operational', color: 'var(--mint)' },
+          { label: 'Target 2026', value: targetSats2026, sub: '45-60 range', color: 'var(--sky)' },
+          { label: 'Progress', value: `${calc.constellationProgress.toFixed(0)}%`, sub: 'vs 2026 target', color: 'var(--violet)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+          </div>
+        ))}
       </div>
       
-      {/* Satellite Generations Comparison */}
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Satellite Generations<UpdateIndicators sources="PR" /></div>
-        <div className="g2">
-          <div style={{ padding: 16, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8 }}>
-            <h4 style={{ color: 'var(--cyan)', fontWeight: 500 }}>Block 1: BW3 + BB1-5</h4>
-            <ul style={{ fontSize: 13, color: 'var(--text2)' }}>
-              <li style={{ }}>• Array size: 693 sq ft each</li>
-              <li style={{ }}>• Launched: BW3 Sept 2022, BB1-5 Sept 2024</li>
-              <li style={{ }}>• Status: All 6 operational in orbit</li>
-              <li>• Purpose: Technology validation, early service</li>
-            </ul>
-          </div>
-          <div style={{ padding: 16, background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.3)', borderRadius: 8 }}>
-            <h4 style={{ color: 'var(--gold)', fontWeight: 500 }}>Block 2: BB6 onwards</h4>
-            <ul style={{ fontSize: 13, color: 'var(--text2)' }}>
-              <li style={{ }}>• Array size: ~2,400 sq ft (3.5x larger)</li>
-              <li style={{ }}>• AST5000 ASIC: Custom silicon, 120 Mbps peak</li>
-              <li style={{ }}>• Capacity: 10x improvement over Block 1</li>
-              <li style={{ }}>• BB6 launched Dec 23, 2025 (ISRO)</li>
-              <li>• BB7-25: In production, 6/month by Dec 2025</li>
-            </ul>
+      {/* Satellite Generations — Side-by-side panels with accent bars */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#satellite-generations</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ background: 'var(--surface)', padding: '28px', borderLeft: '3px solid var(--cyan)' }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cyan)', letterSpacing: '-0.2px', marginBottom: 16 }}>Block 1: BW3 + BB1-5</div>
+          {['Array size: 693 sq ft each', 'Launched: BW3 Sept 2022, BB1-5 Sept 2024', 'Status: All 6 operational in orbit', 'Purpose: Technology validation, early service'].map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--cyan)', flexShrink: 0 }} />
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{item}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '28px', borderLeft: '3px solid var(--gold)' }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)', letterSpacing: '-0.2px', marginBottom: 16 }}>Block 2: BB6 onwards</div>
+          {['Array size: ~2,400 sq ft (3.5x larger)', 'AST5000 ASIC: Custom silicon, 120 Mbps peak', 'Capacity: 10x improvement over Block 1', 'BB6 launched Dec 23, 2025 (ISRO)', 'BB7-25: In production, 6/month by Dec 2025'].map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--gold)', flexShrink: 0 }} />
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Launch Schedule — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#launch-schedule</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Launch Schedule</span>
+        </div>
+        <div style={{ padding: '20px 28px' }}>
+          <ResponsiveContainer width="100%" height={200}><ComposedChart data={schedule}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={(v, name, props) => [name === 'sats' ? `${v} sats (${props.payload.note})` : `${v} cumulative`, name === 'sats' ? 'Launched' : 'Total']} /><Bar dataKey="sats" fill="var(--cyan)" radius={[4, 4, 0, 0]} /><Line dataKey="cum" stroke="var(--gold)" strokeWidth={2} /></ComposedChart></ResponsiveContainer>
+          <div style={{ display: 'flex', gap: 16, marginTop: 12, fontSize: 11, color: 'var(--text3)', flexWrap: 'wrap' }}>
+            {['BW3 Sept 2022', 'BB1-5 Sept 2024', 'BB6 Dec 2025', 'BB7 ready'].map((m, i) => (
+              <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: i < 3 ? 'var(--mint)' : 'var(--gold)' }} />
+                {m}
+              </span>
+            ))}
           </div>
         </div>
       </div>
-      
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Launch Schedule (Actual + Projected)<UpdateIndicators sources="PR" /></div>
-        <ResponsiveContainer width="100%" height={200}><ComposedChart data={schedule}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={(v, name, props) => [name === 'sats' ? `${v} sats (${props.payload.note})` : `${v} cumulative`, name === 'sats' ? 'Launched' : 'Total']} /><Bar dataKey="sats" fill="var(--cyan)" /><Line dataKey="cum" stroke="var(--gold)" strokeWidth={2} /></ComposedChart></ResponsiveContainer>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-          ✓ BW3 Sept 2022 | ✓ BB1-5 Sept 2024 | ✓ BB6 Dec 2025 | BB7 ready, BB8-25 in production
+
+      {/* Coverage Milestones — Thin progress bars */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#coverage-milestones</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Coverage Milestones</span>
+        </div>
+        <div style={{ padding: '20px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {coverage.map(c => (
+            <div key={c.r}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 13, color: 'var(--text2)' }}>{c.r}</span>
+                <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)' }}>{c.n} sats ({c.pct.toFixed(0)}%)</span>
+              </div>
+              <div role="progressbar" aria-label={`${c.r} coverage progress`} aria-valuenow={Math.round(c.pct)} aria-valuemin={0} aria-valuemax={100} style={{ height: 4, borderRadius: 2, background: 'var(--surface3)', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${Math.min(100, c.pct)}%`, borderRadius: 2, background: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)', transition: 'width 0.6s ease' }} />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage Milestones<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        {coverage.map(c => (<div key={c.r} style={{ display: 'flex', alignItems: 'center', gap: 16 }}><div style={{ width: 144, fontSize: 13, color: 'var(--text2)' }}>{c.r}</div><div style={{ flex: 1, height: 20, background: 'var(--surface2)', borderRadius: 9999, overflow: 'hidden' }}><div style={{ height: '100%', width: `${c.pct}%`, background: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)' }} /></div><div style={{ width: 80, textAlign: 'right', fontSize: 13, color: 'var(--text2)' }}>{c.n} sats ({c.pct.toFixed(0)}%)</div></div>))}
+
+      {/* Parameters — Preset card layout */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#constellation-params</div>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
-      <div className="card"><div className="card-title">Parameters</div><div className="g4"><Input label="Block 1 (BW3+BB1-5)" value={block1Sats} onChange={setBlock1Sats} /><Input label="Block 2 (BB6+)" value={block2Sats} onChange={setBlock2Sats} /><Input label="Target 2026" value={targetSats2026} onChange={setTargetSats2026} /><Input label="Failure %" value={launchFailureRate} onChange={setLaunchFailureRate} /></div></div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <OverviewParameterCard title="Block 1 (BW3+BB1-5)" explanation="Number of Block 1 satellites. More satellites = greater initial coverage and service validation." options={[2, 4, 6, 8, 10, 12]} value={block1Sats} onChange={setBlock1Sats} currentValue={6} />
+        <OverviewParameterCard title="Block 2 (BB6+)" explanation="Number of next-gen Block 2 satellites. 3.5x larger arrays, 10x capacity. Drives commercial scale." options={[0, 1, 3, 5, 8, 12]} value={block2Sats} onChange={setBlock2Sats} currentValue={1} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+        <OverviewParameterCard title="Target 2026" explanation="Target satellites in orbit by 2026. Higher target = faster network buildout and revenue ramp." options={[20, 30, 45, 60, 80, 100]} value={targetSats2026} onChange={setTargetSats2026} currentValue={60} />
+        <OverviewParameterCard title="Failure %" explanation="Estimated satellite launch failure rate. Lower failure rate = more reliable deployment schedule." options={[20, 15, 10, 7, 3, 1]} value={launchFailureRate} onChange={setLaunchFailureRate} format="%" currentValue={7} />
+      </div>
       
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Constellation Economics" items={[
@@ -1556,26 +1668,88 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#subscribers-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Subscribers<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#subscribers-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Subscriber Analysis<UpdateIndicators sources="PR" /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>3.2B reach: Vodafone 500M, VI India 250M, AT&T 200M, Verizon 145M, stc 80M, others ~2B. 1% = 32M subs.</p></div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#subscriber-metrics</div>
-      <div className="card" style={{ }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g4">
-          <Card label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} sub="53+ MNOs" color="blue" />
-          <Card label="Penetration" value={`${penetrationRate}%`} color="cyan" />
-          <Card label="Subs" value={`${calc.potentialSubs.toFixed(0)}M`} color="green" />
-          <Card label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} color="yellow" />
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Adoption Analytics</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Subscribers<span style={{ color: 'var(--cyan)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>3.2B addressable reach across 53+ MNO partners. Penetration rate is the single most important variable. 1% = 32M subscribers.</p>
+      </div>
+
+      {/* KPI Dashboard — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#subscriber-metrics</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Total Reach', value: `${(partnerReach / 1000).toFixed(1)}B`, sub: '53+ MNOs', color: 'var(--sky)' },
+          { label: 'Penetration', value: `${penetrationRate}%`, sub: 'Model assumption', color: 'var(--cyan)' },
+          { label: 'Potential Subs', value: `${calc.potentialSubs.toFixed(0)}M`, sub: 'Reach x penetration', color: 'var(--mint)' },
+          { label: 'Price / Sub', value: `$${calc.pricePerSub.toFixed(0)}`, sub: 'Market Cap / subs', color: 'var(--gold)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+          </div>
+        ))}
+      </div>
+      {/* Breakdown — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#subscriber-breakdown</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Partner Breakdown</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ padding: 0 }}>
+          {partners.map((p, i) => (
+            <div key={p.name} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px', alignItems: 'center', padding: '12px 28px', borderBottom: i < partners.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{p.name}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--cyan)', textAlign: 'right' }}>{p.subs}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text3)', textAlign: 'right' }}>{((p.subs / partnerReach) * 100).toFixed(1)}%</span>
+            </div>
+          ))}
         </div>
       </div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl"><thead><tr><th>Partner</th><th className="r">Reach</th><th className="r">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name}><td>{p.name}</td><td className="r">{p.subs}M</td><td className="r">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
+
+      {/* Sensitivity — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#subscriber-sensitivity</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Penetration Sensitivity</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ padding: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+            {['Pen%', 'Subs', 'Rev/yr', '$/Sub'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Pen%' ? 'left' : 'right' }}>{h}</span>
+            ))}
+          </div>
+          {scenarios.map((s, i) => (
+            <div key={s.p} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', alignItems: 'center', padding: '12px 28px', borderBottom: i < scenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: s.p === penetrationRate ? 'color-mix(in srgb, var(--cyan) 8%, transparent)' : 'transparent', transition: 'background 0.15s' }}
+              onMouseEnter={e => { if (s.p !== penetrationRate) e.currentTarget.style.background = 'var(--surface2)'; }}
+              onMouseLeave={e => { if (s.p !== penetrationRate) e.currentTarget.style.background = 'transparent'; }}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: s.p === penetrationRate ? 'var(--cyan)' : 'var(--text)', fontWeight: s.p === penetrationRate ? 600 : 400 }}>{s.p}%</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{s.subs.toFixed(0)}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>${s.rev.toFixed(1)}B</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text3)', textAlign: 'right' }}>${(calc.marketCap / s.subs).toFixed(0)}</span>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl"><thead><tr><th>Pen%</th><th className="r">Subs</th><th className="r">Rev/yr</th><th className="r">$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={s.p === penetrationRate ? { background: 'var(--accent-dim)' } : undefined}><td>{s.p}%</td><td className="r">{s.subs.toFixed(0)}M</td><td className="r">${s.rev.toFixed(1)}B</td><td className="r">${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
+
+      {/* Parameters — Preset card layout */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#subscriber-params</div>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
-      <div className="card"><div className="card-title">Parameters</div><div className="g3"><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div></div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <OverviewParameterCard title="Reach (M)" explanation="Total addressable subscribers through MNO partner networks. Larger reach = bigger revenue opportunity." options={[1000, 2000, 3200, 4500, 6000, 8000]} value={partnerReach} onChange={setPartnerReach} format="B" currentValue={3200} />
+        <OverviewParameterCard title="Penetration %" explanation="Subscriber penetration rate into addressable market. 1% of 3.2B = 32M paying subscribers." options={[0.5, 1, 2, 3, 5, 8]} value={penetrationRate} onChange={setPenetrationRate} format="%" currentValue={3} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+        <OverviewParameterCard title="ARPU ($)" explanation="Average revenue per user per month. Higher ARPU = more revenue per subscriber. Blended across markets." options={[5, 10, 15, 18, 25, 35]} value={blendedARPU} onChange={setBlendedARPU} format="$" currentValue={18} />
+      </div>
       
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Subscriber Economics" items={[
@@ -1595,25 +1769,81 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Revenue<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-sources</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--border)' }}><div><span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{r.source}</span><span style={{ color: 'var(--text3)', fontSize: 13, marginLeft: 8 }}>{r.description}</span></div><span className="pill" style={{ background: r.status.includes('Active') ? 'rgba(16,185,129,0.15)' : 'var(--surface2)', borderColor: r.status.includes('Active') ? 'var(--mint)' : 'var(--border)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{r.status}</span></div>))}</div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-metrics</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g4">
-          <Card label="Gross" value={`$${(calc.grossAnnualRev / 1000).toFixed(1)}B`} color="cyan" />
-          <Card label="Share" value={`${revenueShare}%`} color="blue" />
-          <Card label="Contracted" value={`$${contractedRevenue}M+`} color="purple" />
-          <Card label="ASTS Rev" value={`$${(calc.astsAnnualRev / 1000).toFixed(1)}B`} color="green" />
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Financial Engine</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Revenue<span style={{ color: 'var(--mint)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>MNO 50/50 revenue share, Gateway services, Government contracts, and spectrum. $1B+ contracted across the partnership ecosystem.</p>
+      </div>
+
+      {/* Revenue KPIs — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-metrics-kpi</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Gross Revenue', value: `$${(calc.grossAnnualRev / 1000).toFixed(1)}B`, color: 'var(--cyan)' },
+          { label: 'Revenue Share', value: `${revenueShare}%`, color: 'var(--sky)' },
+          { label: 'Contracted', value: `$${contractedRevenue}M+`, color: 'var(--violet)' },
+          { label: 'ASTS Revenue', value: `$${(calc.astsAnnualRev / 1000).toFixed(1)}B`, color: 'var(--mint)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, marginTop: 8 }}>{kpi.value}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Revenue Sources — Glass panel precision list */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-sources</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Revenue Sources</span>
+          <UpdateIndicators sources={['PR', 'SEC', 'WS']} />
+        </div>
+        <div style={{ padding: 0 }}>
+          {revenueSources.map((r, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 28px', borderBottom: i < revenueSources.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ width: 4, height: 4, borderRadius: '50%', background: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', flexShrink: 0 }} />
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{r.source}</span>
+                <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.description}</span>
+              </div>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: r.status.includes('Active') ? 'color-mix(in srgb, var(--mint) 10%, transparent)' : 'color-mix(in srgb, var(--text3) 10%, transparent)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)' }}>{r.status}</span>
+            </div>
+          ))}
         </div>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-ramp</div>
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Ramp<UpdateIndicators sources={['PR', 'SEC']} /></div><ResponsiveContainer width="100%" height={220}><AreaChart data={ramp}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="year" stroke="var(--text3)" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v}B`} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} /><Legend /><Area type="monotone" dataKey="commercial" stackId="1" stroke="var(--cyan)" fill="var(--cyan)" fillOpacity={0.6} /><Area type="monotone" dataKey="gov" stackId="1" stroke="var(--gold)" fill="var(--gold)" fillOpacity={0.6} /><Area type="monotone" dataKey="gateway" stackId="1" stroke="var(--violet)" fill="var(--violet)" fillOpacity={0.6} /></AreaChart></ResponsiveContainer></div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-params</div>
-      <div className="card"><div className="card-title">Parameters</div><div className="g2"><Input label="Share %" value={revenueShare} onChange={setRevenueShare} /><Input label="Gov $M/yr" value={govRevenue} onChange={setGovRevenue} /></div></div>
+
+      {/* Revenue Ramp — Glass panel chart */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-ramp</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Revenue Ramp Projection</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ padding: '20px 28px' }}>
+          <ResponsiveContainer width="100%" height={220}><AreaChart data={ramp}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="year" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v}B`} fontSize={11} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} /><Legend wrapperStyle={{ fontSize: 11 }} /><Area type="monotone" dataKey="commercial" stackId="1" stroke="var(--cyan)" fill="var(--cyan)" fillOpacity={0.5} /><Area type="monotone" dataKey="gov" stackId="1" stroke="var(--gold)" fill="var(--gold)" fillOpacity={0.5} /><Area type="monotone" dataKey="gateway" stackId="1" stroke="var(--violet)" fill="var(--violet)" fillOpacity={0.5} /></AreaChart></ResponsiveContainer>
+          <div style={{ display: 'flex', gap: 20, marginTop: 12 }}>
+            {[{ label: 'Commercial', color: 'var(--cyan)' }, { label: 'Government', color: 'var(--gold)' }, { label: 'Gateway', color: 'var(--violet)' }].map(l => (
+              <span key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text3)' }}>
+                <span style={{ width: 8, height: 3, borderRadius: 1, background: l.color }} />{l.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Parameters — Preset card layout */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-params</div>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <OverviewParameterCard title="Revenue Share %" explanation="ASTS revenue share from MNO partnerships. Higher share = more revenue retained per subscriber." options={[20, 30, 40, 50, 60, 70]} value={revenueShare} onChange={setRevenueShare} format="%" currentValue={50} />
+        <OverviewParameterCard title="Gov Revenue ($M/yr)" explanation="Annual government contract revenue from SDA, DIU, and FirstNet. Diversifies revenue beyond commercial." options={[0, 25, 50, 100, 200, 400]} value={govRevenue} onChange={setGovRevenue} format="$" currentValue={100} />
+      </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Revenue Model" items={[
@@ -1784,328 +2014,281 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partners-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Partners<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partners-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Partner & Spectrum Intelligence<UpdateIndicators sources="PR" /></h3>
-        <div style={{ fontSize: 13, color: 'var(--text2)' }}>
-          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Commercial Strategy:</strong> 50+ MNO agreements covering ~3.2B subscribers. $1B+ contracted revenue commitments. 50/50 revenue share model.</p>
-          <p><strong style={{ color: 'var(--cyan)' }}>Spectrum:</strong> ~80 MHz owned/controlled in US (45 MHz L-band + 5 MHz + partner spectrum). 60 MHz S-band global ITU priority. 1,150 MHz tunable MNO spectrum globally.</p>
-        </div>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Strategic Ecosystem</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Partners<span style={{ color: 'var(--mint)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>50+ MNO agreements covering 3.2B subscribers. $1B+ contracted. 50/50 revenue share. ~80 MHz US spectrum owned/controlled plus 60 MHz S-band global ITU priority.</p>
       </div>
 
-      {/* Key Metrics */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-metrics</div>
-      <div className="card">
-        <div className="card-title">Partner & Spectrum Metrics</div>
-        <div className="g4" style={{ }}>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--mint)', fontWeight: 600 }}>$1B+</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Contracted Revenue</div>
-          </div>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--cyan)', fontWeight: 600 }}>${totalPrepay}M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Prepayments</div>
-          </div>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--violet)', fontWeight: 600 }}>50+</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>MNO Partners</div>
-          </div>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--gold)', fontWeight: 600 }}>3.2B</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Addressable Subs</div>
-          </div>
-        </div>
-        <div className="g3">
-          <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Definitive Partners</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>4</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Definitive Subs</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>{totalDefinitiveSubs}M</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Revenue Share</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>50/50</span>
-            </div>
-          </div>
-          <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>US Spectrum (Owned)</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--mint)' }}>45 MHz</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Global Tunable</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--cyan)' }}>1,150 MHz</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>S-band ITU Priority</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>60 MHz</span>
-            </div>
-          </div>
-          <div style={{ padding: 12, background: 'linear-gradient(135deg, rgba(0,212,170,0.1), rgba(139,92,246,0.1))', borderRadius: 8, border: '1px solid var(--border)' }}>
-            <div style={{ fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>Why This Matters for ASTS</div>
-            <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.5 }}>
-              More MNO partners → More spectrum access → Larger addressable market → Revenue share acceleration → Stock price appreciation
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Definitive Agreements - Detailed */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#definitive-agreements</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Definitive Commercial Agreements (Binding)<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Partner</th>
-                <th className="c">Region</th>
-                <th className="r">Subs</th>
-                <th className="c">Spectrum</th>
-                <th className="c">Term</th>
-                <th className="r">Prepayment</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {definitiveAgreements.map(p => (
-                <tr key={p.partner}>
-                  <td>{p.partner}</td>
-                  <td className="c">{p.region}</td>
-                  <td className="r">{p.subs}M</td>
-                  <td className="c"><span className="pill" style={{ fontSize: 11 }}>{p.spectrum}</span></td>
-                  <td className="c">{p.term}</td>
-                  <td className="r">${p.prepayment}M</td>
-                  <td>{p.prepayStatus}</td>
-                </tr>
-              ))}
-              <tr style={{ background: 'var(--accent-dim)' }}>
-                <td style={{ fontWeight: 600 }} colSpan={2}>Total Definitive</td>
-                <td className="r" style={{ fontWeight: 600 }}>{totalDefinitiveSubs}M</td>
-                <td colSpan={2}></td>
-                <td className="r" style={{ fontWeight: 600 }}>${totalPrepay}M</td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Contract Details Expansion */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-details</div>
-      <div className="g2" style={{ }}>
-        {definitiveAgreements.map(p => (
-          <div key={p.partner} className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{p.partner} Details<UpdateIndicators sources="PR" /></div>
-            <div>
-              <Row label="Signed" value={p.signDate} />
-              <Row label="Term" value={p.term} />
-              <Row label="Spectrum" value={`${p.spectrum} (${p.spectrumType})`} />
-              <Row label="Prepayment" value={`$${p.prepayment}M - ${p.prepayStatus}`} highlight />
-              <Row label="Revenue Commitment" value={p.revenueCommitment} />
-              <div style={{ padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>{p.notes}</div>
-            </div>
+      {/* KPI Dashboard — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#partner-metrics</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Contracted', value: '$1B+', sub: 'Hard commitments', color: 'var(--mint)' },
+          { label: 'Prepayments', value: `$${totalPrepay}M`, sub: 'Cash received/due', color: 'var(--cyan)' },
+          { label: 'MNO Partners', value: '50+', sub: 'Global agreements', color: 'var(--violet)' },
+          { label: 'Addressable', value: '3.2B', sub: 'Total subscribers', color: 'var(--gold)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
           </div>
         ))}
       </div>
 
-      {/* Spectrum Holdings */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#owned-spectrum</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Asset</th>
-              <th className="c">Band</th>
-              <th className="c">Size</th>
-              <th className="c">Coverage</th>
-              <th className="c">Term</th>
-              <th className="r">Cost</th>
-              <th className="c">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ownedSpectrum.map(s => (
-              <tr key={s.name}>
-                <td>{s.name}</td>
-                <td className="c">{s.band}</td>
-                <td className="c">{s.size}</td>
-                <td className="c">{s.coverage}</td>
-                <td className="c">{s.term}</td>
-                <td className="r">{s.cost}</td>
-                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{s.status}</span></td>
-              </tr>
+      {/* Quick Stats — Side-by-side panels */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 16 }}>
+        <div style={{ background: 'var(--surface)', padding: '20px 24px' }}>
+          {[{ l: 'Definitive Partners', v: '4' }, { l: 'Definitive Subs', v: `${totalDefinitiveSubs}M` }, { l: 'Revenue Share', v: '50/50' }].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text)' }}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '20px 24px' }}>
+          {[{ l: 'US Spectrum', v: '45 MHz', c: 'var(--mint)' }, { l: 'Global Tunable', v: '1,150 MHz', c: 'var(--cyan)' }, { l: 'S-band ITU', v: '60 MHz', c: 'var(--text)' }].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.c }}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '20px 24px', borderLeft: '3px solid var(--mint)' }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>Why This Matters</div>
+          <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.6 }}>More MNO partners → More spectrum → Larger TAM → Revenue share acceleration</div>
+        </div>
+      </div>
+
+      {/* Definitive Agreements — Glass panel precision list */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#definitive-agreements</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Definitive Commercial Agreements</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', minWidth: 700 }}>
+            {['Partner', 'Region', 'Subs', 'Spectrum', 'Term', 'Prepay', 'Status'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>{h}</span>
             ))}
-          </tbody>
-        </table>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
+          </div>
+          {definitiveAgreements.map((p, i) => (
+            <div key={p.partner} style={{ display: 'grid', gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', alignItems: 'center', padding: '14px 28px', borderBottom: i < definitiveAgreements.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s', minWidth: 700 }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{p.partner}</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.region}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--cyan)' }}>{p.subs}M</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)', display: 'inline-block' }}>{p.spectrum}</span>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{p.term}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>${p.prepayment}M</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{p.prepayStatus}</span>
+            </div>
+          ))}
+          <div style={{ display: 'grid', gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', padding: '14px 28px', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)', minWidth: 700 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', gridColumn: 'span 2' }}>Total Definitive</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700, color: 'var(--cyan)' }}>{totalDefinitiveSubs}M</span>
+            <span /><span />
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700, color: 'var(--mint)' }}>${totalPrepay}M</span>
+            <span />
+          </div>
+        </div>
+      </div>
+
+      {/* Partner Details — Accent-bar panels */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#partner-details</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {definitiveAgreements.map(p => (
+          <div key={p.partner} style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{p.partner}</span>
+              <UpdateIndicators sources="PR" />
+            </div>
+            {[
+              { l: 'Signed', v: p.signDate },
+              { l: 'Term', v: p.term },
+              { l: 'Spectrum', v: `${p.spectrum} (${p.spectrumType})` },
+              { l: 'Prepayment', v: `$${p.prepayment}M — ${p.prepayStatus}`, hl: true },
+              { l: 'Revenue', v: p.revenueCommitment },
+            ].map(row => (
+              <div key={row.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+                <span style={{ fontSize: 12, color: 'var(--text3)' }}>{row.l}</span>
+                <span style={{ fontFamily: row.hl ? 'Space Mono, monospace' : 'inherit', fontSize: 12, color: row.hl ? 'var(--mint)' : 'var(--text2)', fontWeight: row.hl ? 600 : 400 }}>{row.v}</span>
+              </div>
+            ))}
+            <div style={{ marginTop: 12, padding: '10px 14px', background: 'color-mix(in srgb, var(--border) 30%, transparent)', borderRadius: 8, fontSize: 11, color: 'var(--text3)', lineHeight: 1.5 }}>{p.notes}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Spectrum Holdings — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#owned-spectrum</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>ASTS-Owned Spectrum</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ padding: 0 }}>
+          {ownedSpectrum.map((s, i) => (
+            <div key={s.name} style={{ padding: '16px 28px', borderBottom: i < ownedSpectrum.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', borderLeft: '3px solid var(--cyan)', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{s.name}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', color: 'var(--mint)' }}>{s.status}</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+                {[{ l: 'Band', v: s.band }, { l: 'Size', v: s.size }, { l: 'Coverage', v: s.coverage }, { l: 'Cost', v: s.cost }].map(d => (
+                  <div key={d.l}>
+                    <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{d.l}</div>
+                    <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', marginTop: 2 }}>{d.v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
           Total owned: 45 MHz L-band (US/Canada) + 60 MHz S-band (global ITU priority). $80M/yr ongoing L-band payments.
         </div>
       </div>
 
-      {/* Partner Spectrum */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-spectrum</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Partner Spectrum (Shared Access)<UpdateIndicators sources="PR" /></div>
-        <div className="g2">
+      {/* Partner Spectrum — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#partner-spectrum</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Partner Spectrum (Shared)</span>
+          <UpdateIndicators sources="PR" />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: 'var(--border)' }}>
           {partnerSpectrum.map(s => (
-            <div key={s.partner} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{s.partner}</span>
-                <span className="pill" style={{ fontSize: 11 }}>{s.band}</span>
+            <div key={s.partner} style={{ background: 'var(--surface)', padding: '16px 24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)' }}>{s.partner}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)' }}>{s.band}</span>
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.type} • {s.coverage}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>{s.notes}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.type} · {s.coverage}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 2 }}>{s.notes}</div>
             </div>
           ))}
         </div>
-        <div style={{ padding: 8, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8, fontSize: 11 }}>
-          <strong style={{ color: 'var(--cyan)' }}>Key Insight:</strong> Combined AT&T + Verizon 850 MHz spectrum enables ~100% continental US geographic coverage.
-          Platform tunable across 1,150 MHz of global MNO spectrum.
+        <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', fontSize: 11, color: 'var(--text2)' }}>
+          <strong style={{ color: 'var(--cyan)' }}>Key:</strong> AT&T + Verizon 850 MHz = ~100% US geographic coverage. Platform tunable across 1,150 MHz globally.
         </div>
       </div>
 
-      {/* Government Contracts */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#gov-contracts</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Agency</th>
-              <th className="r">Value</th>
-              <th className="c">Status</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {govContracts.map(g => (
-              <tr key={g.agency}>
-                <td>{g.agency}</td>
-                <td className="r">{g.value}</td>
-                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{g.status}</span></td>
-                <td>{g.notes}</td>
-              </tr>
+      {/* Government Contracts — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#gov-contracts</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Government Contracts</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ padding: 0 }}>
+          {govContracts.map((g, i) => (
+            <div key={g.agency} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 120px 1fr', alignItems: 'center', padding: '14px 28px', borderBottom: i < govContracts.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{g.agency}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{g.value}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)' }}>{g.status}</span>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{g.notes}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Total disclosed: $63M+ (plus SHIELD IDIQ). MDA prime contractor status enables future task orders.
+        </div>
+      </div>
+
+      {/* Other Partners — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#other-partners</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Other Key Partners (MOUs & Agreements)</span>
+          <UpdateIndicators sources="PR" />
+        </div>
+        <div style={{ padding: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '130px 140px 80px 100px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+            {['Partner', 'Region', 'Subs', 'Status', 'Notes'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>{h}</span>
             ))}
-          </tbody>
-        </table>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-          Total disclosed government contracts: $63M+ (plus SHIELD IDIQ). Dual-use model validated. MDA prime contractor status enables future task orders.
+          </div>
+          {otherPartners.map((p, i) => (
+            <div key={p.partner} style={{ display: 'grid', gridTemplateColumns: '130px 140px 80px 100px 1fr', alignItems: 'center', padding: '12px 28px', borderBottom: i < otherPartners.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{p.partner}</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.region}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--cyan)' }}>{p.subs}M</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: p.status === 'Definitive' ? 'color-mix(in srgb, var(--mint) 10%, transparent)' : 'color-mix(in srgb, var(--gold) 10%, transparent)', color: p.status === 'Definitive' ? 'var(--mint)' : 'var(--gold)' }}>{p.status}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{p.notes}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Other MNO Partners */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#other-partners</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Partner</th>
-              <th className="c">Region</th>
-              <th className="r">Subs</th>
-              <th className="c">Status</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {otherPartners.map(p => (
-              <tr key={p.partner}>
-                <td>{p.partner}</td>
-                <td className="c">{p.region}</td>
-                <td className="r">{p.subs}M</td>
-                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{p.status}</span></td>
-                <td>{p.notes}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Revenue Commitments — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-commitments</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { value: '$1B+', label: 'Total Contracted Revenue', sub: 'Hard commitments, not soft MOUs', color: 'var(--mint)' },
+          { value: `$${totalPrepay}M`, label: 'Total Prepayments', sub: 'stc $175M due YE 2025', color: 'var(--cyan)' },
+          { value: '50/50', label: 'Revenue Share Model', sub: 'MNOs handle billing/support', color: 'var(--violet)' },
+        ].map(c => (
+          <div key={c.label} style={{ background: 'var(--surface)', padding: '28px 20px', textAlign: 'center' }}>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: c.color }}>{c.value}</div>
+            <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 6 }}>{c.label}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{c.sub}</div>
+          </div>
+        ))}
       </div>
 
-      {/* Revenue Commitment Summary */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-commitments</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Commitment Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g3">
-          <div style={{ padding: 16, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, textAlign: 'center' }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--mint)' }}>$1B+</div>
-            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Contracted Revenue</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Hard commitments, not soft MOUs</div>
+      {/* Partner Ecosystem Timeline — Glass panel header */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 32 }}>#partner-timeline</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div>
+              <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Partner Ecosystem Timeline</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', marginLeft: 12 }}>{filteredPartnerNews.length} events</span>
+            </div>
+            {partnerFilter !== 'All' && (
+              <button onClick={() => setPartnerFilter('All')} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--coral) 10%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer' }}>Clear Filter</button>
+            )}
           </div>
-          <div style={{ padding: 16, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 12, textAlign: 'center' }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--cyan)' }}>${totalPrepay}M</div>
-            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Prepayments</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>stc $175M due YE 2025</div>
-          </div>
-          <div style={{ padding: 16, background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.3)', borderRadius: 12, textAlign: 'center' }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--violet)' }}>50/50</div>
-            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Revenue Share Model</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>MNOs handle billing/support</div>
-          </div>
+          <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6, margin: 0 }}>Track news about ASTS MNO partners — IoT expansion, connected vehicles, 5G rollouts, coverage expansion</p>
         </div>
-      </div>
 
-      {/* Partner Ecosystem News Timeline - matches BMNR Ethereum Adoption Timeline structure */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-timeline</div>
-      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center' }}>
-        <span>Partner Ecosystem Timeline</span>
-        <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredPartnerNews.length} events)</span>
-      </h3>
-
-      {/* Partner Filter */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-filter</div>
-      <div className="highlight" style={{ padding: 16 }}>
-        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track news about <strong>ASTS MNO partners</strong> — IoT expansion, connected vehicles, 5G rollouts, coverage expansion, and commercial activities</p>
-        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginBottom: 16 }}>Partner ecosystem health impacts ASTS commercial prospects</p>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Partner</span>
-          {partnerFilter !== 'All' && (
-            <button
-              onClick={() => setPartnerFilter('All')}
-              className="pill"
-              style={{ fontSize: 11 }}
-            >
-              Clear
-            </button>
-          )}
-        </div>
-        <div className="pills">
+        {/* Partner Filter Pills */}
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)', display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {partnerNames.map(partner => {
             const isSelected = partnerFilter === partner;
             const count = PARTNER_NEWS.filter(n => n.partner === partner).length;
             return (
-              <button
-                key={partner}
-                onClick={() => setPartnerFilter(partner)}
-                className={`pill ${isSelected ? 'active' : ''}`}
-              >
+              <button key={partner} onClick={() => setPartnerFilter(partner)} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, border: 'none', cursor: 'pointer', background: isSelected ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'color-mix(in srgb, var(--border) 60%, transparent)', color: isSelected ? 'var(--cyan)' : 'var(--text3)', transition: 'all 0.15s' }}>
                 {partner} ({partner === 'All' ? PARTNER_NEWS.length : count})
               </button>
             );
           })}
         </div>
-      </div>
 
-      {/* Category Filter */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#category-filter</div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="pills" style={{ }}>
-          {categories.map(cat => (
-            <button key={cat} className={`pill ${categoryFilter === cat ? 'active' : ''}`} onClick={() => setCategoryFilter(cat)}>
-              {cat === 'All' ? `All (${PARTNER_NEWS.length})` : `${cat} (${PARTNER_NEWS.filter(n => n.category === cat).length})`}
-            </button>
-          ))}
+        {/* Category Filter + Expand/Collapse */}
+        <div style={{ padding: '12px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {categories.map(cat => (
+              <button key={cat} onClick={() => setCategoryFilter(cat)} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, border: 'none', cursor: 'pointer', background: categoryFilter === cat ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'color-mix(in srgb, var(--border) 60%, transparent)', color: categoryFilter === cat ? 'var(--violet)' : 'var(--text3)', transition: 'all 0.15s' }}>
+                {cat === 'All' ? `All (${PARTNER_NEWS.length})` : `${cat} (${PARTNER_NEWS.filter(n => n.category === cat).length})`}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => { if (expandedPartnerNews.size === filteredPartnerNews.length) { setExpandedPartnerNews(new Set()); } else { setExpandedPartnerNews(new Set(filteredPartnerNews.map((_, i) => i))); } }} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, border: 'none', cursor: 'pointer', background: 'color-mix(in srgb, var(--border) 60%, transparent)', color: 'var(--text3)', whiteSpace: 'nowrap' }}>
+            {expandedPartnerNews.size === filteredPartnerNews.length ? 'Collapse All' : 'Expand All'}
+          </button>
         </div>
-        <button
-          className="pill"
-          onClick={() => {
-            if (expandedPartnerNews.size === filteredPartnerNews.length) {
-              setExpandedPartnerNews(new Set());
-            } else {
-              setExpandedPartnerNews(new Set(filteredPartnerNews.map((_, i) => i)));
-            }
-          }}
-          style={{ whiteSpace: 'nowrap' }}
-        >
-          {expandedPartnerNews.size === filteredPartnerNews.length ? '⊟ Collapse All' : '⊞ Expand All'}
-        </button>
       </div>
 
       {/* Partner News Events */}
@@ -2117,7 +2300,13 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             return (
               <div
                 key={i}
-                style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, cursor: 'pointer', borderLeft: `3px solid ${news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)'}` }}
+                role="button"
+                tabIndex={0}
+                aria-label={`${news.headline} — ${news.partner} ${news.date}`}
+                onKeyDown={(e) => { if (e.key === 'Enter') { const next = new Set(expandedPartnerNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedPartnerNews(next); } }}
+                style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, cursor: 'pointer', borderLeft: `3px solid ${news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)'}`, transition: 'all 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface3)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface2)')}
                 onClick={() => {
                   const next = new Set(expandedPartnerNews);
                   if (isExpanded) next.delete(i);
@@ -2129,8 +2318,8 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 11, color: 'var(--text3)' }}>{news.date}</span>
-                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(34,211,238,0.2)', color: 'var(--cyan)' }}>{news.partner}</span>
-                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(139,92,246,0.2)', color: 'var(--violet)' }}>{news.category}</span>
+                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'color-mix(in srgb, var(--cyan) 20%, transparent)', color: 'var(--cyan)' }}>{news.partner}</span>
+                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'color-mix(in srgb, var(--violet) 20%, transparent)', color: 'var(--violet)' }}>{news.category}</span>
                     </div>
                     <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{news.headline}</div>
                   </div>
@@ -2521,290 +2710,246 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#runway-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Runway<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#runway-intro</div>
-      <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Cash Runway — Q3 2025 Actuals<UpdateIndicators sources={['PR', 'SEC']} /></h3>
-        <div style={{ fontSize: 13, color: 'var(--text2)' }}>
-          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Q3 GAAP Cash:</strong> $1.2B. ~4 quarters runway at current burn. Pro forma ($3.2B) pending 10-K confirmation.</p>
-          <p style={{ }}><strong style={{ color: 'var(--cyan)' }}>Debt (Balance Sheet):</strong> $697.6M net long-term debt (~$724M gross). Principal outstanding: $1.625B ($50M + $575M + $1B converts).</p>
-          <p><strong style={{ color: 'var(--cyan)' }}>Q4 Guidance:</strong> CapEx $275-325M, OpEx ~$65M. Satellite cost: $21-23M average.</p>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Capital Position</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Cash Runway<span style={{ color: 'var(--gold)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Q3 GAAP cash $1.2B. ~4 quarters at current burn. $1.625B convertible debt outstanding. CapEx guidance $275-325M/Q, satellite cost $21-23M avg.</p>
+      </div>
+
+      {/* Treasury Dashboard — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-metrics</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Q3 GAAP Cash', value: `$${(cashOnHand / 1000).toFixed(1)}B`, sub: '~4Q at $300M/Q', color: 'var(--mint)' },
+          { label: 'Q4 Burn Est.', value: `$${quarterlyBurn}M`, sub: 'CapEx + OpEx', color: 'var(--coral)' },
+          { label: 'Runway', value: `${calc.cashRunwayQuarters.toFixed(1)}Q`, sub: `~${(calc.cashRunwayQuarters / 4).toFixed(1)} years`, color: 'var(--gold)' },
+          { label: 'Debt', value: `$${(totalDebt/1000).toFixed(1)}B`, sub: `${debtRate}% blended`, color: 'var(--sky)' },
+          { label: 'Employees', value: '~1,800', sub: 'Global workforce', color: 'var(--violet)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Q3 2025 Financial Summary — Glass panel side-by-side */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#q3-financials</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Income Statement</span>
+            <UpdateIndicators sources="SEC" />
+          </div>
+          {[
+            { l: 'Q3 Revenue', v: `$${financials.q3Revenue}M`, hl: true },
+            { l: 'H2 2025 Guidance', v: `$${financials.h2Guidance}M` },
+            { l: 'Q3 Adj. OpEx', v: `$${financials.q3AdjOpex}M` },
+            { l: 'Q4 OpEx Guidance', v: financials.q4OpexGuide },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--mint)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Capital Expenditures</div>
+          {[
+            { l: 'Q3 CapEx', v: `$${financials.q3Capex}M` },
+            { l: 'Q4 CapEx Guidance', v: `$${financials.q4CapexGuide}M` },
+            { l: 'Satellite Cost (avg)', v: `$${financials.satCost}M`, hl: true },
+            { l: 'Manufacturing', v: '6 sats/month by Dec' },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--cyan)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#runway-metrics</div>
-      <div className="card" style={{ }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g5">
-          <Card label="Q3 GAAP Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} sub="~4Q runway at $300M/Q" color="green" />
-          <Card label="Q4 Burn Est." value={`$${quarterlyBurn}M`} sub="CapEx + OpEx" color="red" />
-          <Card label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} sub={`~${(calc.cashRunwayQuarters / 4).toFixed(1)} years`} color="yellow" />
-          <Card label="Debt" value={`$${(totalDebt/1000).toFixed(1)}B`} sub={`${debtRate}% blended`} color="orange" />
-          <Card label="Employees" value="~1,800" sub="Global workforce" color="blue" />
+      {/* Convertible Debt — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#convertible-debt</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Convertible Debt Outstanding (Q3 2025)</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', fontSize: 11, color: 'var(--text3)', lineHeight: 1.6 }}>
+          <strong style={{ color: 'var(--cyan)' }}>Balance Sheet vs Principal:</strong> Net carrying value ($697.6M) reflects accounting discounts. Principal ($1.625B) is the amount that must eventually be repaid or converted.
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)' }}>
+          {[
+            { value: '$49M', label: 'Jan 2025 (4.25%)', sub: 'Net carrying', sub2: 'Principal: $50M', color: 'var(--gold)' },
+            { value: '$530M', label: 'Jul 2025 (4.25%)', sub: 'Net carrying', sub2: 'Principal: $575M', color: 'var(--coral)' },
+            { value: '$119M', label: 'Oct 2025 (2.0%)', sub: 'Net carrying (Q3)', sub2: 'Principal: $1,000M', color: 'var(--cyan)' },
+            { value: '$698M', label: 'Balance Sheet', sub: 'Net long-term debt', sub2: 'Gross: ~$724M', color: 'var(--mint)' },
+            { value: '$1,625M', label: 'Principal Value', sub: 'Total outstanding', sub2: '~2.8% blended', color: 'var(--violet)' },
+          ].map(d => (
+            <div key={d.label} style={{ background: 'var(--surface)', padding: '20px 12px', textAlign: 'center' }}>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: d.color }}>{d.value}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6 }}>{d.label}</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.7, marginTop: 2 }}>{d.sub}</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5 }}>{d.sub2}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Jan 2025: $410M converted to equity (17.3M shares). Oct 2025 at best terms ($96.30 strike, 2% coupon).
         </div>
       </div>
 
-      {/* Q3 2025 Financial Summary */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#q3-financials</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
-        <div className="g2">
-          <div>
-            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)' }}>Income Statement</h4>
-            <Row label="Q3 Revenue" value={`$${financials.q3Revenue}M`} highlight />
-            <Row label="H2 2025 Guidance" value={`$${financials.h2Guidance}M`} />
-            <Row label="Q3 Adj. OpEx" value={`$${financials.q3AdjOpex}M`} />
-            <Row label="Q4 OpEx Guidance" value={financials.q4OpexGuide} />
-          </div>
-          <div>
-            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)' }}>Capital</h4>
-            <Row label="Q3 CapEx" value={`$${financials.q3Capex}M`} />
-            <Row label="Q4 CapEx Guidance" value={`$${financials.q4CapexGuide}M`} />
-            <Row label="Satellite Cost (avg)" value={`$${financials.satCost}M`} highlight />
-            <Row label="Manufacturing Rate" value="6 sats/month by Dec" />
+      {/* Cash Projection — Glass panel chart */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#cash-projection</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Cash Projection (at current burn)</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div style={{ padding: '20px 28px' }}>
+          <ResponsiveContainer width="100%" height={180}>
+            <AreaChart data={proj}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="q" stroke="var(--text3)" fontSize={10} />
+              <YAxis stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(1)}B`} fontSize={10} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={v => [`$${(v/1000).toFixed(2)}B`, 'Cash']} />
+              <Area dataKey="cash" stroke="var(--mint)" fill="var(--mint)" fillOpacity={0.2} strokeWidth={2} />
+            </AreaChart>
+          </ResponsiveContainer>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+            Does not include H2 revenue ($50-75M guidance) or future prepayments (stc $175M due YE 2025).
           </div>
         </div>
       </div>
 
-      {/* Convertible Debt Summary */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#convertible-debt</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
-        <div style={{ padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>
-          <strong style={{ color: 'var(--cyan)' }}>Balance Sheet vs Principal:</strong> Convertible notes are reported at net carrying value (gross less debt discounts and issuance costs).
-          The $697.6M on the balance sheet represents this accounting value, while $1.625B is the principal that must eventually be repaid or converted.
+      {/* Capital Raises — Glass panel with era sections */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-raises</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Capital Raises History (2021-2025)</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
         </div>
-        <div className="g5">
-          <div style={{ padding: 12, background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.3)', borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--gold)' }}>$49M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 2025 (4.25%)</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $50M</div>
-          </div>
-          <div style={{ padding: 12, background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.3)', borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--coral)' }}>$530M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Jul 2025 (4.25%)</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $575M</div>
-          </div>
-          <div style={{ padding: 12, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--cyan)' }}>$119M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Oct 2025 (2.0%)</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying (Q3)</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $1,000M</div>
-          </div>
-          <div style={{ padding: 12, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>$698M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Balance Sheet</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net long-term debt</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Gross: ~$724M</div>
-          </div>
-          <div style={{ padding: 12, background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.3)', borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--violet)' }}>$1,625M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Principal Value</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Total outstanding</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>~2.8% blended rate</div>
-          </div>
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-          Jan 2025: $410M converted to equity (17.3M shares). Oct 2025 raised at best terms in years ($96.30 strike, 2% coupon). Large discount on Oct notes due to favorable conversion terms.
-        </div>
-      </div>
-
-      {/* Cash Projection Chart */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cash-projection</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
-        <ResponsiveContainer width="100%" height={180}>
-          <AreaChart data={proj}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey="q" stroke="var(--text3)" fontSize={10} />
-            <YAxis stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(1)}B`} />
-            <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={v => [`$${(v/1000).toFixed(2)}B`, 'Cash']} />
-            <Area dataKey="cash" stroke="var(--mint)" fill="var(--mint)" fillOpacity={0.3} />
-          </AreaChart>
-        </ResponsiveContainer>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-          Note: Does not include H2 revenue ($50-75M guidance) or future prepayments (stc $175M due YE 2025).
-        </div>
-      </div>
-
-      {/* Funding Sources */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-raises</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-          <p style={{ fontSize: 13, color: 'var(--text3)' }}>
-            <strong style={{ color: 'var(--cyan)' }}>Understanding ASTS Financing:</strong> As a pre-revenue company building a global satellite constellation,
-            ASTS has used various instruments: SPAC, convertibles, equity offerings, and strategic investments.
-            Convertible notes are debt that can convert to equity at specified prices. When stock price rises above conversion price,
-            holders often convert (eliminating debt) or the company may force conversion. Below shows the full capital structure evolution.
-          </p>
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
+          <strong style={{ color: 'var(--cyan)' }}>Financing Overview:</strong> SPAC, convertibles, equity offerings, and strategic investments. $3.6B+ total raised. Convertible notes convert to equity at specified prices.
         </div>
 
-        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--gold)' }}>2025 Capital Raises</h4>
-        <table className="tbl" style={{ }}>
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th className="r">Amount</th>
-              <th className="c">Terms</th>
-              <th>Status & Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Jan 2025 Convertible</td>
-              <td className="r">$460M</td>
-              <td className="c">4.25%, 2032</td>
-              <td>$410M repurchased for equity (shares issued); $50M remains as debt</td>
-            </tr>
-            <tr>
-              <td>Jul 2025 Convertible</td>
-              <td className="r">$575M</td>
-              <td className="c">4.25%, 2032</td>
-              <td>$120.12 effective strike via capped call; outstanding as debt</td>
-            </tr>
-            <tr>
-              <td>Oct 2025 Convertible</td>
-              <td className="r">$1,000M</td>
-              <td className="c">2%, 2036</td>
-              <td>$96.30 strike; 10-year term; outstanding as debt</td>
-            </tr>
-            <tr>
-              <td>ATM Facility (Q3)</td>
-              <td className="r">$389M</td>
-              <td className="c">At-the-market</td>
-              <td>Shares sold at market; facility now terminated</td>
-            </tr>
-            <tr>
-              <td>Capped Call Unwind</td>
-              <td className="r">$74.5M</td>
-              <td className="c">—</td>
-              <td>Hedge monetized when Jan converts repurchased</td>
-            </tr>
-          </tbody>
-        </table>
+        {/* 2025 */}
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 12 }}>2025 Capital Raises</div>
+          {[
+            { s: 'Jan 2025 Convertible', a: '$460M', t: '4.25%, 2032', n: '$410M repurchased for equity; $50M remains' },
+            { s: 'Jul 2025 Convertible', a: '$575M', t: '4.25%, 2032', n: '$120.12 effective strike via capped call' },
+            { s: 'Oct 2025 Convertible', a: '$1,000M', t: '2%, 2036', n: '$96.30 strike; 10-year term' },
+            { s: 'ATM Facility (Q3)', a: '$389M', t: 'ATM', n: 'Shares sold at market; facility terminated' },
+            { s: 'Capped Call Unwind', a: '$74.5M', t: '—', n: 'Hedge monetized when Jan converts repurchased' },
+          ].map((r, i) => (
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.n}</span>
+            </div>
+          ))}
+        </div>
 
-        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--violet)' }}>2024 Capital Raises</h4>
-        <table className="tbl" style={{ }}>
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th className="r">Amount</th>
-              <th className="c">Terms</th>
-              <th>Status & Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2034 Strategic Convertibles</td>
-              <td className="r">$148.5M</td>
-              <td className="c">3.875%, 2034</td>
-              <td>AT&T, Google, Vodafone, Verizon. Force-converted to equity Jan 2025 (25.8M shares)</td>
-            </tr>
-            <tr>
-              <td>Public Warrant Exercise</td>
-              <td className="r">$153.6M</td>
-              <td className="c">$11.50/share</td>
-              <td>Warrants redeemed Sept 2024; ~13.4M shares issued</td>
-            </tr>
-            <tr>
-              <td>Verizon Strategic Investment</td>
-              <td className="r">$100M</td>
-              <td className="c">Equity + Commitment</td>
-              <td>May 2024; converted to definitive Oct 2025</td>
-            </tr>
-            <tr>
-              <td>Google Investment</td>
-              <td className="r">$100M</td>
-              <td className="c">Equity + Commitment</td>
-              <td>May 2024; strategic technology partnership</td>
-            </tr>
-          </tbody>
-        </table>
+        {/* 2024 */}
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--violet)', marginBottom: 12 }}>2024 Capital Raises</div>
+          {[
+            { s: '2034 Strategic Convertibles', a: '$148.5M', t: '3.875%, 2034', n: 'AT&T, Google, Vodafone, Verizon → force-converted Jan 2025' },
+            { s: 'Public Warrant Exercise', a: '$153.6M', t: '$11.50/share', n: 'Warrants redeemed Sept 2024; ~13.4M shares issued' },
+            { s: 'Verizon Strategic', a: '$100M', t: 'Equity', n: 'May 2024; converted to definitive Oct 2025' },
+            { s: 'Google Investment', a: '$100M', t: 'Equity', n: 'May 2024; strategic technology partnership' },
+          ].map((r, i) => (
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.n}</span>
+            </div>
+          ))}
+        </div>
 
-        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--sky)' }}>2021-2023 Foundation</h4>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th className="r">Amount</th>
-              <th className="c">Terms</th>
-              <th>Status & Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>SPAC (April 2021)</td>
-              <td className="r">$462M</td>
-              <td className="c">SPAC + PIPE</td>
-              <td>IPO via New Providence; $230M PIPE from Vodafone, Rakuten, American Tower</td>
-            </tr>
-            <tr>
-              <td>B. Riley ATM (2022)</td>
-              <td className="r">$75M</td>
-              <td className="c">ATM facility</td>
-              <td>24-month committed equity; used opportunistically</td>
-            </tr>
-            <tr>
-              <td>NanoAvionics Sale</td>
-              <td className="r">$28M net</td>
-              <td className="c">Asset sale</td>
-              <td>Subsidiary sold to Kongsberg (July 2022); focused ASTS on core mission</td>
-            </tr>
-            <tr>
-              <td>Atlas Facility</td>
-              <td className="r">$30M</td>
-              <td className="c">Secured loan</td>
-              <td>Equipment-backed; partially repaid</td>
-            </tr>
-          </tbody>
-        </table>
-        
-        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-          <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--mint)' }}>Debt Resolution Summary</h4>
-          <ul style={{ fontSize: 11, color: 'var(--text3)' }}>
-            <li style={{ }}>• <strong>2034 Strategic Converts ($148.5M):</strong> Force-converted to equity Jan 2025 when stock price exceeded trigger. Debt eliminated, 25.8M shares issued.</li>
-            <li style={{ }}>• <strong>Jan 2025 Converts ($460M):</strong> $410M repurchased via equity issuance (arbitrage opportunity). $50M still outstanding as 4.25% notes due 2032.</li>
-            <li style={{ }}>• <strong>Jul/Oct 2025 Converts ($1,575M):</strong> Currently outstanding as debt. Will convert to equity if stock exceeds strike prices ($120.12 / $96.30) or at maturity.</li>
-            <li>• <strong>Atlas/Lone Star Loans:</strong> Partially repaid; minimal remaining balance secured by equipment/real estate.</li>
-          </ul>
+        {/* 2021-2023 */}
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--sky)', marginBottom: 12 }}>2021-2023 Foundation</div>
+          {[
+            { s: 'SPAC (April 2021)', a: '$462M', t: 'SPAC + PIPE', n: 'IPO via New Providence; $230M PIPE' },
+            { s: 'B. Riley ATM (2022)', a: '$75M', t: 'ATM facility', n: '24-month committed equity' },
+            { s: 'NanoAvionics Sale', a: '$28M', t: 'Asset sale', n: 'Sold to Kongsberg (July 2022)' },
+            { s: 'Atlas Facility', a: '$30M', t: 'Secured', n: 'Equipment-backed; partially repaid' },
+          ].map((r, i) => (
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.n}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Debt Resolution */}
+        <div style={{ padding: '16px 28px', borderLeft: '3px solid var(--mint)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 12 }}>Debt Resolution Summary</div>
+          {[
+            '2034 Strategic ($148.5M): Force-converted to equity Jan 2025. 25.8M shares issued.',
+            'Jan 2025 ($460M): $410M repurchased via equity. $50M outstanding as 4.25% notes due 2032.',
+            'Jul/Oct 2025 ($1,575M): Outstanding as debt. Convert at $120.12 / $96.30 strike prices.',
+            'Atlas/Lone Star: Partially repaid; minimal remaining balance.',
+          ].map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '6px 0' }}>
+              <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--mint)', flexShrink: 0, marginTop: 5 }} />
+              <span style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5 }}>{item}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Dilution Analysis */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-scenarios</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Raise Amount</th>
-              <th className="r">New Shares</th>
-              <th className="r">Dilution</th>
-              <th className="r">Extended Runway</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dilution.map(d => (
-              <tr key={d.r}>
-                <td>${d.r}M</td>
-                <td className="r">{d.new.toFixed(1)}M</td>
-                <td className="r">{d.dil.toFixed(1)}%</td>
-                <td className="r">{d.runway.toFixed(1)}Q</td>
-              </tr>
+      {/* Dilution Analysis — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dilution-scenarios</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Hypothetical Dilution</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div style={{ padding: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+            {['Raise', 'New Shares', 'Dilution', 'Runway'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Raise' ? 'left' : 'right' }}>{h}</span>
             ))}
-          </tbody>
-        </table>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-          Note: Company states fully funded for 100+ satellites. Additional raises unlikely in near term.
+          </div>
+          {dilution.map((d, i) => (
+            <div key={d.r} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '12px 28px', borderBottom: i < dilution.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text)' }}>${d.r}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{d.new.toFixed(1)}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--coral)', textAlign: 'right' }}>{d.dil.toFixed(1)}%</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>{d.runway.toFixed(1)}Q</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Company states fully funded for 100+ satellites. Additional raises unlikely near term.
         </div>
       </div>
 
-      {/* Parameters */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#runway-params</div>
-      <div className="card"><div className="card-title">Parameters</div>
-        <div className="g4">
-          <Input label="Pro Forma Cash $M" value={cashOnHand} onChange={setCashOnHand} />
-          <Input label="Q4 Burn Est. $M" value={quarterlyBurn} onChange={setQuarterlyBurn} />
-          <Input label="Remaining Debt $M" value={totalDebt} onChange={setTotalDebt} />
-          <Input label="Debt Rate %" value={debtRate} onChange={setDebtRate} step={0.25} />
-        </div>
+      {/* Parameters — Preset card layout */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-params</div>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <OverviewParameterCard title="Pro Forma Cash ($M)" explanation="Total cash and equivalents. More cash = longer runway before additional financing needed." options={[500, 750, 1000, 1220, 1500, 2000]} value={cashOnHand} onChange={setCashOnHand} format="$" currentValue={1220} />
+        <OverviewParameterCard title="Q4 Burn Est. ($M)" explanation="Quarterly cash burn rate. Lower burn = longer runway. Driven by satellite production and R&D spend." options={[500, 400, 350, 300, 200, 150]} value={quarterlyBurn} onChange={setQuarterlyBurn} format="$" currentValue={300} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+        <OverviewParameterCard title="Remaining Debt ($M)" explanation="Total outstanding debt obligations. Lower debt = less interest expense and financial risk." options={[1200, 1000, 800, 698, 500, 300]} value={totalDebt} onChange={setTotalDebt} format="$" currentValue={698} />
+        <OverviewParameterCard title="Debt Rate (%)" explanation="Weighted average interest rate on debt. Lower rate = cheaper cost of capital." options={[7, 6, 5, 4.25, 3.5, 2.5]} value={debtRate} onChange={setDebtRate} format="%" currentValue={4.25} />
       </div>
       
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
@@ -9308,2131 +9453,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     }
   ];
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // COMPETITOR NEWS - Add new entries at TOP (newest first)
-  // NEVER delete old entries - this is an audit trail
-  // ═══════════════════════════════════════════════════════════════════════════
-  const COMPETITOR_NEWS: CompetitorNewsEntry[] = [
-    // ═══════════════════════════════════════════════════════════════════════════
-    // ADD NEW COMPETITOR NEWS ENTRIES HERE (newest first)
-    // Format:
-    // {
-    //   date: 'YYYY-MM-DD',
-    //   competitor: 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-leo' | 'echostar' | 'other',
-    //   category: 'Launch' | 'Partnership' | 'Technology' | 'Regulatory' | 'Financial' | 'Coverage' | 'Product',
-    //   headline: 'Brief headline',
-    //   details: ['Bullet point 1', 'Bullet point 2'],
-    //   implication: 'positive' | 'neutral' | 'negative',  // for ASTS
-    //   astsComparison: 'How this compares to ASTS',
-    //   source: 'Source name',
-    //   sourceUrl: 'https://...'
-    // },
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // TERRESTAR - HYBRID SATELLITE-CELLULAR IoT (CANADA)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-02-05',
-      competitor: 'other',
-      category: 'Product',
-      headline: 'Terrestar launches hybrid IoT service on standards-based open network platform in Canada',
-      details: [
-        'Terrestar Solutions launches Hybrid IoT connectivity service in Canada',
-        'First Canadian-controlled hybrid satellite-cellular IoT platform on open 3GPP NTN standards',
-        'Seamless switching between cellular and satellite networks across urban, rural, remote regions',
-        'LUBEX validated service over 32 weeks in Abitibi-Témiscamingue for equipment monitoring',
-        'Delivered over Canadian-licenced S-band spectrum via Echostar T1 satellite',
-        'Practical first step toward D2D satellite connectivity in Canada'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Terrestar focused on narrowband IoT (asset tracking, equipment monitoring) using single GEO satellite — not broadband D2D to smartphones. ASTS targets broadband voice/data to unmodified smartphones via LEO constellation. Validates 3GPP NTN standards approach but fundamentally different scale and capability.',
-      source: 'Terrestar Solutions',
-      sourceUrl: 'https://terrestarsolutions.ca',
-      storyId: 'terrestar-hybrid-iot',
-      storyTitle: 'Terrestar Hybrid IoT'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // INDUSTRY D2D MARKET ANALYSIS
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-12',
-      competitor: 'other',
-      category: 'Coverage',
-      headline: 'MEF: Satellite D2D promises 100% geographic coverage, wholesale market evolution ahead',
-      details: [
-        'Orange France launched "Message Satellite" D2D SMS service with Skylo (€5/month after 6-month free trial)',
-        'GSMA survey: 32% of consumers would pay up to 5% extra for satellite connectivity',
-        '61% willing to pay more, 47% would switch operators for D2D coverage',
-        'Starlink has ~7,600 LEOs with D2D partnerships across 9+ operators (Verizon, T-Mobile, Rogers, etc.)',
-        'Amazon Leo targeting 3,000+ satellites',
-        'D2D described as "early signal of a wholesale market evolution"',
-        'New wholesale frameworks needed for satellite-enabled roaming and hybrid settlement'
-      ],
-      implication: 'positive',
-      astsComparison: 'Strongly validates ASTS thesis: massive consumer demand for D2D with willingness to pay and even switch operators. The 47% switching intent is a powerful negotiating lever for ASTS in MNO partnership discussions. Most Starlink D2D services are SMS-only; ASTS targets broadband voice/data.',
-      source: 'MEF',
-      storyId: 'mef-d2d-market-analysis',
-      storyTitle: 'D2D Market Analysis'
-    },
-    {
-      date: '2025-12-03',
-      competitor: 'other',
-      category: 'Coverage',
-      headline: 'Viasat/GSMA report: 60% of consumers would pay more for D2D satellite, 47% would switch providers',
-      details: [
-        'Survey of 12,390 mobile phone users across 12 markets (US, UK, France, India, Japan, etc.)',
-        'More than a third lose basic mobile service at least twice monthly',
-        '60%+ globally willing to pay extra for satellite-enabled smartphone services',
-        'Willingness varies: India 89%, Indonesia 82%, US 56%, France 48%',
-        'Consumers willing to pay 5-7% more on monthly bill',
-        'Nearly half (47%) would switch operators if D2D coverage included',
-        'India compelling: $2.35 ARPU but larger population and higher willingness-to-pay',
-        'MNOs face "marketing gap" — balancing excitement without over-promising'
-      ],
-      implication: 'positive',
-      astsComparison: 'Highly bullish for ASTS. The 47% switching intent and 60%+ willingness-to-pay validate that D2D is must-have for MNOs. Directly supports ASTS MNO partnership value proposition. High enthusiasm in emerging markets aligns with ASTS global strategy. "Marketing gap" concern about data-rich services favors ASTS over SMS-only competitors.',
-      source: 'Viasat / GSMA Intelligence',
-      storyId: 'mef-d2d-market-analysis',
-      storyTitle: 'D2D Market Analysis'
-    },
-    {
-      date: '2025-07-17',
-      competitor: 'other',
-      category: 'Coverage',
-      headline: 'Kaleido Intelligence: D2D IoT connections to reach 30M by 2030, smartphone ARPU capped at $6/mo',
-      details: [
-        'Satellite D2D IoT connections will reach 30 million by 2030 (up from under 500K end of 2025)',
-        'Key IoT use cases: asset tracking, energy/utilities, agriculture (60% of connections)',
-        '51% of IoT enterprises view D2D as viable WAN connectivity solution',
-        'Since 2015, satellite payloads launched into orbit increased 1,105%',
-        'At least 60,000 satellites expected in LEO orbit',
-        'Monthly smartphone D2D ARPU unlikely to exceed $6 globally by 2030',
-        '6 million smartphone D2D users expected by end of 2025',
-        'OEM subsidies for satellite connectivity could drive smartphone traction'
-      ],
-      implication: 'neutral',
-      astsComparison: '$6/month global ARPU ceiling for smartphone D2D is concerning for ASTS revenue model. However, 30M IoT connections by 2030 validates growing demand. ASTS differentiates with large satellite arrays (BlueBird) that compensate for smartphone antenna limitations. LEO congestion warnings (60K+ sats) could favor ASTS approach of fewer, larger satellites.',
-      source: 'Kaleido Intelligence',
-      storyId: 'mef-d2d-market-analysis',
-      storyTitle: 'D2D Market Analysis'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // OQ TECHNOLOGY - EUROPEAN 5G NTN LEO OPERATOR (IoT + D2D)
-    // Founded 2016 Luxembourg by Omar Qaise (ex-SES). 10 LEO 6U cubesats,
-    // 60 MHz MSS S-band. Backed by Aramco Wa'ed, SES/LSSD, EIC. 20+ MNO roaming.
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    // --- 2026 ---
-    {
-      date: '2026-01-20',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'OQ Technology and Eseye partner for global 5G IoT via seamless satellite-terrestrial integration',
-      details: [
-        'Strategic partnership with UK-based Eseye for ubiquitous IoT connectivity',
-        'OQ LEO constellation integrated with Eseye AnyNet Connectivity Hub',
-        'Single SIM solution bridging terrestrial and satellite networks',
-        '3GPP Release 17 multi-RAT connectivity — automatic roam between cellular and satellite',
-        'Global uninterrupted 5G IoT for maritime, logistics, energy, mining, agriculture',
-        'OQ LEO satellites in S-band deliver low-latency connectivity for M2M applications',
-        'Targets maritime, logistics, energy, mining, agriculture, environmental monitoring'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ continuing to build IoT partnership ecosystem. Eseye integration is similar to Monogoto partnership (announced same month) — extending OQ reach through connectivity platforms. Still NB-IoT focused, not broadband D2D. Growing IoT footprint could support OQ\'s transition to D2D services.',
-      source: 'New Electronics / Via Satellite',
-      storyId: 'oq-partnerships',
-      storyTitle: 'OQ Technology MNO & Distribution'
-    },
-    {
-      date: '2026-01-08',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'Monogoto adds OQ Technology LEO constellation to hybrid connectivity platform at CES 2026',
-      details: [
-        'OQ Technology and Monogoto announce strategic partnership at CES 2026',
-        'Adds OQ LEO constellation to Monogoto hybrid ecosystem (cellular + Wi-Fi + GEO + LEO)',
-        'Single SIM, unified IP addressing, consistent APIs across all networks',
-        'OQ operates 3GPP-compliant 5G NTN NB-IoT service using 60 MHz MSS S-band',
-        'Monogoto: "For the first time, LEO is joining the hybrid connectivity landscape"',
-        'Targets energy, logistics, maritime, agriculture, utilities'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ expanding IoT connectivity ecosystem via partnerships. Still NB-IoT focused but growing D2D ambitions following Nov 2025 emergency broadcast demo. Not direct competition to ASTS broadband smartphone D2D yet.',
-      source: 'OQ Technology / Monogoto',
-      storyId: 'oq-partnerships',
-      storyTitle: 'OQ Technology MNO & Distribution'
-    },
-
-    // --- 2025 ---
-    {
-      date: '2025-12-17',
-      competitor: 'oq-technology',
-      category: 'Technology',
-      headline: 'OQ Technology certifies Nordic Semiconductor nRF9151 for NTN NB-IoT — first standard module-to-LEO connection',
-      details: [
-        'Successful end-to-end NB-IoT connection from Nordic nRF9151 module to OQ LEO constellation',
-        'Powered entirely by OQ\'s own 3GPP NTN NB-IoT RAN stack and 5G core — full vertical integration',
-        'Nordic module connects directly to OQ satellites without hardware modifications',
-        'Validates readiness of mass-market NTN IoT for broad commercial deployment',
-        'OQ claims "unparalleled control over performance, reliability" via vertical integration',
-        'Enables industries in remote sectors (energy, mining, logistics, agriculture)',
-        '75%+ of world landmass and maritime waters lack cellular coverage — OQ addresses this gap'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ validating NB-IoT standards-based connectivity from mass-market modules to LEO satellites. Nordic is also Iridium\'s NTN Direct chipset partner — OQ and Iridium competing for same NB-IoT ecosystem. OQ\'s vertical integration (own RAN + core) gives more control vs ASTS which works with MNO infrastructure. Different markets: OQ IoT sensors, ASTS smartphones.',
-      source: 'Nordic Semiconductor / Via Satellite',
-      storyId: 'oq-technology-rd',
-      storyTitle: 'OQ Technology R&D & Certification'
-    },
-    {
-      date: '2025-11-19',
-      competitor: 'oq-technology',
-      category: 'Technology',
-      headline: 'OQ Technology achieves Europe\'s first D2D emergency broadcast from space — plans 30 sats and D2D messaging by end 2026',
-      details: [
-        'First European satellite operator to deliver D2D emergency broadcast from LEO to unmodified iPhones and Androids',
-        'Live demo in Luxembourg at Space Tech Europe (Bremen) — transmitted without hardware/software modifications',
-        '10 LEO satellites currently in orbit, 30 more planned by end 2026 (5 launches)',
-        'D2D text messaging service expected by end 2026, voice services to follow',
-        '60 MHz MSS S-band spectrum + upper C-band + IMT band partnerships',
-        'Targeting 100 satellites in constellation within 2-3 years',
-        'Positioning as "clear European sovereign operator for D2D connectivity"',
-        'Interested in EU 2GHz MSS spectrum renewal in 2027 (currently held by Inmarsat/Solaris Mobile)',
-        'Backed by Luxembourg Space Agency, ESA, European Innovation Council, EU Cassini Accelerator',
-        'Has contributed to multiple 3GPP working groups shaping NTN standards'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ Technology is evolving from IoT-only to a serious European D2D contender. 30 new sats by 2026 + D2D messaging/voice plans increase competitive overlap with ASTS. Key differences: OQ targets narrowband D2D (messaging/voice) while ASTS targets broadband (video/data). OQ\'s 20+ MNO partners and EU sovereign positioning compete with ASTS/Vodafone SatCo JV for European market. OQ eyeing EU 2GHz MSS spectrum renewal creates potential spectrum conflict. Scale mismatch: OQ targeting 100 sats vs ASTS constellation of much larger, higher-throughput BlueBirds.',
-      source: 'GlobeNewswire / Light Reading / Via Satellite',
-      storyId: 'oq-technology-rd',
-      storyTitle: 'OQ Technology R&D & Certification'
-    },
-    {
-      date: '2025-11-04',
-      competitor: 'oq-technology',
-      category: 'Regulatory',
-      headline: 'OQ Technology granted official Luxembourg government concession for satellite 5G NTN and D2D services',
-      details: [
-        'Official government concession from Luxembourg for satellite-based 5G D2D and IoT',
-        'Issued by Minister Elisabeth Margue (Media and Connectivity)',
-        'Authorized to deploy and operate satellite networks for D2D and IoT connectivity',
-        'Standard 5G smartphones and NB-IoT devices connect via satellite without custom hardware',
-        'Luxembourg among first European countries to authorize 5G NTN and D2D operations',
-        'Grants regulatory rights under internationally coordinated ITU frequency/orbit filings',
-        'Linked to 5NETSAT mission backed by €2.5M EIC grant'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Luxembourg concession gives OQ official regulatory authority for European D2D — a competitive advantage in European market vs ASTS/SatCo which operates through MNO spectrum partnerships. OQ building sovereign EU regulatory position while ASTS relies on MNO agreements. Different regulatory paths to same market.',
-      source: 'Advanced Television / SpaceWatch Global',
-      storyId: 'oq-funding',
-      storyTitle: 'OQ Technology Funding & Regulation'
-    },
-    {
-      date: '2025-10-17',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'OQ Technology joins Mobile Satellite Services Association (MSSA) for D2D and NTN spectrum advocacy',
-      details: [
-        'OQ Technology joins MSSA — industry body progressing D2D IoT and NTN connectivity',
-        'MSSA launched Feb 2024 to develop global ecosystem using L- and S-band spectrum',
-        'Focus on spectrum already allocated and licensed for mobile satellite services',
-        'MSSA Board Chairman Mark Dankberg (Viasat): "very pleased to welcome OQ Technology"',
-        'OQ described as "industry leader and provider in 5G non-terrestrial network connectivity"'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ joining MSSA alongside other satellite players strengthens industry coalition for D2D spectrum. MSSA focuses on L- and S-band, different from ASTS which uses MNO spectrum via partnerships. OQ accumulating industry group memberships and regulatory positions in European D2D market.',
-      source: 'SatellitePro ME',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-    {
-      date: '2025-10-02',
-      competitor: 'oq-technology',
-      category: 'Coverage',
-      headline: 'OQ Technology expands satellite IoT services to Australia — S-band spectrum license secured from ACMA',
-      details: [
-        'Official launch into Australian market with new office',
-        'Secured S-band spectrum license from Australian Communications and Media Authority (ACMA)',
-        'Australia joins Luxembourg, Germany, Saudi Arabia, Rwanda, Nigeria in OQ\'s licensed countries',
-        'Services delivered through own spectrum + 20+ MNO roaming agreements worldwide',
-        'Enterprise customers include Aramco',
-        'Targeting agriculture, mining, oil & gas, logistics, utilities, emergency response',
-        'Claims 80% cost reduction vs providers requiring proprietary hardware'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ expanding geographically — Australia is a key market for satellite connectivity due to vast rural areas. ASTS also targets Australia via MNO partnerships (Telstra MOU). OQ focused on NB-IoT enterprise market while ASTS targets consumer smartphone broadband. Different use cases but competing for "satellite connectivity" narrative in same geography.',
-      source: 'SpaceNews',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-    {
-      date: '2025-09-30',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'OQ Technology and KPN sign roaming agreement for global 5G IoT coverage',
-      details: [
-        'Strategic roaming agreement with Dutch telecom KPN',
-        'KPN customers seamlessly roam onto OQ satellite network when terrestrial unavailable',
-        'KPN\'s second satellite-IoT partnership in 2025 (after Skylo in April)',
-        'LEO satellites provide global coverage including polar regions above 70° and remote ocean routes',
-        'Advantage over GEO systems in high-latitude and obstructed environments',
-        'Targets maritime, logistics, energy, agriculture customers'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ building MNO roaming partnerships similar to ASTS MNO partnership model. KPN is not an ASTS partner. OQ focused on IoT connectivity extension while ASTS targets smartphone broadband. OQ\'s LEO advantage in polar regions is relevant for maritime/logistics verticals.',
-      source: 'Via Satellite / SpaceNews',
-      storyId: 'oq-partnerships',
-      storyTitle: 'OQ Technology MNO & Distribution'
-    },
-    {
-      date: '2025-09-25',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'OQ Technology and UDS sign MoU for 5G NTN satellite connectivity for defense drones',
-      details: [
-        'MoU with Lithuanian Unmanned Defense Systems (UDS) for satellite-connected drones',
-        'Integrating 5G NTN D2D and IoT connectivity via LEO satellites into defense drone systems',
-        'Use cases: beyond-line-of-sight comms, real-time data in contested environments',
-        'Defense applications: surveillance, reconnaissance, logistics, tactical operations',
-        'Uses MSS S-band and upper C-band spectrum for secure communications',
-        'OQ expanding from commercial IoT into defense vertical'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ expanding into defense sector — a vertical ASTS has also targeted (US government contracts). Defense D2D requires secure, resilient comms in contested environments. Different scale: OQ small LEO sats for drone command/data, ASTS large arrays for broadband. Both pursuing government revenue diversification.',
-      source: 'OQ Technology / UDS',
-      storyId: 'oq-partnerships',
-      storyTitle: 'OQ Technology MNO & Distribution'
-    },
-    {
-      date: '2025-08-13',
-      competitor: 'oq-technology',
-      category: 'Launch',
-      headline: 'OQ Technology launches 5NETSAT mission — Europe\'s first 5G NTN LEO service demo, backed by €2.5M EIC grant',
-      details: [
-        'Official launch of flagship 5NETSAT mission supported by €2.5M EIC Accelerator grant',
-        'Also selected for equity investment by EIC Fund',
-        'Demonstrates D2D capabilities: emergency SMS and broadcast alerts to standard 5G devices using IMT spectrum',
-        'Europe\'s first service demonstration of a 5G NTN in LEO',
-        'OQ is first Luxembourg space company to receive EIC Accelerator funding',
-        'Only 4 out of 71 EIC-selected companies this year were space-related'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ achieving key EU milestones — 5NETSAT is Europe\'s first 5G NTN LEO service demo. EU institutional backing (EIC) positions OQ as Europe\'s preferred sovereign D2D operator. ASTS competing for European market through Vodafone SatCo JV and MNO partnerships; OQ building direct EU institutional support. Scale remains very different: OQ 6U cubesats vs ASTS 64m² BlueBird arrays.',
-      source: 'SatNews / telecoms.com',
-      storyId: 'oq-constellation',
-      storyTitle: 'OQ Technology Constellation & Launches'
-    },
-    {
-      date: '2025-03-04',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'OQ Technology becomes commercial roaming partner of Deutsche Telekom at MWC 2025',
-      details: [
-        'Commercial roaming agreement signed with Deutsche Telekom at MWC 2025',
-        'DT users can roam into OQ\'s NTN globally for enterprise IoT',
-        'Builds on MoU announced at MWC 2024',
-        'Targets utilities, logistics, maritime, and energy sectors',
-        'OQ integrated into Deutsche Telekom\'s network infrastructure'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Deutsche Telekom is a Tier-1 European MNO — OQ securing DT as commercial roaming partner strengthens European IoT position. Different service tiers: OQ provides NB-IoT for enterprise sensors, ASTS targets smartphone broadband via large-array satellites. Both competing for MNO mindshare in the NTN space.',
-      source: 'OQ Technology',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-    {
-      date: '2025-02-26',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'OQ Technology signs distributor agreement with Aramco Digital for NTN IoT in Saudi Arabia',
-      details: [
-        'Aramco Digital to act as official distributor of OQ NTN IoT solutions in Saudi Arabia',
-        'Deepens existing Aramco-OQ relationship (Wa\'ed Ventures led Series A in 2022)',
-        'Enables satellite-powered IoT connectivity for Saudi industries',
-        'Aramco Digital is the digital innovation arm of Saudi Aramco',
-        'OQ already has local Saudi presence in Al Khobar'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ deepening Saudi enterprise foothold via Aramco relationship. Aramco is one of world\'s largest companies — distribution agreement validates OQ\'s IoT service for energy sector. ASTS pursuing Middle East through MNO partnerships; OQ has direct enterprise channel via Aramco. Different markets: OQ for industrial IoT, ASTS for consumer broadband.',
-      source: 'OQ Technology / SatellitePro ME',
-      storyId: 'oq-partnerships',
-      storyTitle: 'OQ Technology MNO & Distribution'
-    },
-    {
-      date: '2025-02-19',
-      competitor: 'oq-technology',
-      category: 'Financial',
-      headline: 'OQ Technology secures up to €17.5M from EU EIC Accelerator for direct-to-smartphone satellite efforts',
-      details: [
-        'Package includes secured €2.5M grant and up to €15M in equity financing for Series B',
-        'Supports OQ\'s efforts to connect unmodified smartphones via small satellite constellation',
-        'Series B aims to raise €35-40M total, backed by Luxembourg government (LSSD)',
-        'Existing 10 cubesats need significant payload and software upgrades for smartphone connectivity',
-        'Successfully tested upgraded payload in representative environment',
-        'First enhanced satellite targeting 2026 launch',
-        'First Luxembourg space company to receive EIC Accelerator funding'
-      ],
-      implication: 'neutral',
-      astsComparison: 'EU funding validates OQ\'s D2D smartphone ambitions but €17.5M is modest compared to ASTS\'s capital raises (hundreds of millions raised publicly). OQ needs significant payload upgrades to go from IoT cubesats to smartphone connectivity — ASTS designed BlueBird arrays specifically for smartphone broadband from the start. OQ\'s EU institutional backing is a competitive advantage in European market.',
-      source: 'SpaceNews',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-
-    // --- 2024 ---
-    {
-      date: '2024-10-21',
-      competitor: 'oq-technology',
-      category: 'Financial',
-      headline: 'OQ Technology secures convertible investment from LSSD fund (SES + Luxembourg Gov\'t) in Series B',
-      details: [
-        'Convertible loan investment from Luxembourg Space Sector Development fund (LSSD)',
-        'LSSD co-led by SES S.A. and Luxembourg government',
-        'Existing shareholders Wa\'ed Ventures (Aramco VC) and Phaistos (Greece) also participated',
-        'Previous Series A raised €13M in 2022',
-        'SES backing notable: world\'s largest GEO satellite operator investing in LEO NTN startup',
-        'CEO: "backed by both the world\'s largest satellite operator and the VC arm of the oil and gas giant"'
-      ],
-      implication: 'neutral',
-      astsComparison: 'SES investment in OQ is notable — world\'s largest GEO operator backing OQ\'s LEO NTN IoT. OQ funding scale (€13M Series A + convertible) remains modest compared to ASTS which has raised hundreds of millions. However, institutional backing (SES, Aramco, Luxembourg Gov\'t) gives OQ significant credibility in European market.',
-      source: 'SpaceNews / SatNews',
-      storyId: 'oq-funding',
-      storyTitle: 'OQ Technology Funding & Regulation'
-    },
-    {
-      date: '2024-05-06',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'OQ Technology and Transatel collaborate for global converged satellite 5G IoT connectivity',
-      details: [
-        'Collaboration for converged mobile satellite connectivity service',
-        'Transatel offers global 5G roaming, enabling NB-IoT solutions worldwide',
-        'Hybrid terrestrial + NTN combined solution on compatible devices',
-        'OQ has 10 satellites in orbit with more planned',
-        'Targets low-latency, large capacity IoT communication'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ continuing to build MNO/MVNO roaming partnerships. Transatel is a global IoT MVNO — different from ASTS\'s MNO partnerships with AT&T, Vodafone. OQ consistently adding connectivity platform integrations for IoT. Still IoT-only at this stage, not smartphone D2D.',
-      source: 'SatNews / Transatel',
-      storyId: 'oq-partnerships',
-      storyTitle: 'OQ Technology MNO & Distribution'
-    },
-    {
-      date: '2024-03-10',
-      competitor: 'oq-technology',
-      category: 'Launch',
-      headline: 'OQ Technology launches Tiger-7 and Tiger-8 — constellation reaches 10 LEO satellites',
-      details: [
-        'Tiger-7 and Tiger-8 launched on SpaceX Falcon 9 Transporter-10 rideshare',
-        'Both 6U nanosatellites carry NB-IoT payloads, facilitated by Nanoavionics',
-        'Only 3 months after Tiger-5 & Tiger-6 on Transporter-9',
-        'OQ constellation reaches 10 satellites total — Series A milestone achieved',
-        'CEO: "leading the pack as fastest-growing LEO NTN NB-IoT 3GPP standard constellation"',
-        'Now preparing for batch-2 satellites with enhanced capabilities'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ reaching 10-satellite milestone with 6U cubesats. Very different scale: ASTS building large phased-array satellites (planned BlueBird production sats) for broadband D2D. OQ cubesats designed for narrowband IoT; ASTS arrays designed for broadband voice/data. OQ rapid launch cadence (4 sats in ~4 months) enabled by small form factor and rideshare missions.',
-      source: 'SatellitePro ME',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-    {
-      date: '2024-03-06',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'OQ Technology signs MoU with Deutsche Telekom IoT for converged satellite-cellular service at MWC 2024',
-      details: [
-        'MoU with Deutsche Telekom IoT (DT IoT) announced at MWC 2024',
-        'DT IoT to offer converged mobile satellite connectivity service',
-        'OQ satellite network integrates with DT T IoT Hub and Core Network',
-        'Provides global IoT network coverage for DT enterprise customers',
-        'Significant milestone: DT is one of Europe\'s largest telcos'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Deutsche Telekom is a Tier-1 European MNO — MoU with OQ validates satellite-IoT roaming model. ASTS also pursues large MNO partnerships but for smartphone broadband. OQ steadily building MNO ecosystem for narrowband IoT. Different value propositions: OQ extends IoT to remote areas, ASTS delivers broadband where there are coverage gaps.',
-      source: 'GSMA / IoT Insider',
-      storyId: 'oq-partnerships',
-      storyTitle: 'OQ Technology MNO & Distribution'
-    },
-    {
-      date: '2024-02-08',
-      competitor: 'oq-technology',
-      category: 'Technology',
-      headline: 'OQ Technology receives ESA/Luxembourg contract to study direct-to-smartphone capability from LEO',
-      details: [
-        'Six-month feasibility contract funded by Luxembourg via LuxImpulse innovation program',
-        'Study ways to connect unmodified smartphones from OQ\'s LEO constellation',
-        'Current 8 cubesats can connect IoT devices but smartphones need more satellite power + Doppler management',
-        'CEO anticipates D2D satellite or hosted payload within two years, pending funding',
-        'Marks OQ\'s formal pivot from IoT-only to smartphone D2D ambitions'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ beginning to study D2D smartphone capability — still at feasibility stage. ASTS has been designing specifically for smartphone D2D from inception, with BW3 test satellite already in orbit (since Sep 2023). OQ would need significantly more powerful satellites to reach smartphones from its 6U cubesat platform. Years behind ASTS in D2D smartphone development.',
-      source: 'SpaceNews',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-
-    // --- 2023 ---
-    {
-      date: '2023-11-14',
-      competitor: 'oq-technology',
-      category: 'Launch',
-      headline: 'OQ Technology launches Tiger-5 and Tiger-6 on SpaceX Transporter-9 — constellation grows to 8 satellites',
-      details: [
-        'Tiger-5 and Tiger-6 launched on SpaceX Falcon 9 Transporter-9 rideshare',
-        'Both 6U nanosatellites carry NB-IoT payloads',
-        'Constellation grows to 8 satellites total',
-        'CEO: "on track completing batch 1 of 10 satellites to serve critical clients globally"'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ adding IoT satellites steadily via rideshare missions. ASTS BW3 test satellite launched same period (Sep 2023) with fundamentally different approach — single large 64m² array vs many small cubesats. OQ for narrowband IoT sensors, ASTS for broadband smartphone D2D.',
-      source: 'SatNews',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-    {
-      date: '2023-11-19',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'O2 Telefónica partners with OQ Technology for worldwide satellite IoT coverage',
-      details: [
-        'O2 Telefónica expands IoT network coverage for business customers via OQ partnership',
-        'Worldwide 5G roaming for NB-IoT solutions from Q2 2024',
-        'OQ satellite network integrated via Telefónica IPX cloud and Kite IoT platform',
-        'Enables IoT connectivity across all continents and oceans',
-        'Telefónica is one of Europe\'s largest telcos with global IoT reach'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Telefónica/O2 is a major European MNO. OQ winning Telefónica for IoT roaming shows OQ building competitive European MNO footprint. OQ provides narrowband IoT while ASTS pursues broadband smartphone D2D via its own MNO partnerships (AT&T, Vodafone). Both competing for MNO attention in overlapping markets.',
-      source: 'Telefónica Germany',
-      storyId: 'oq-partnerships',
-      storyTitle: 'OQ Technology MNO & Distribution'
-    },
-    {
-      date: '2023-07-19',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'OQ Technology signs new MoU with Aramco for automation and satellite IoT at remote sites',
-      details: [
-        'New MoU strengthening existing Aramco-OQ collaboration',
-        'Focus on automation and satellite IoT connectivity for Aramco remote site infrastructure',
-        'Builds on Wa\'ed Ventures (Aramco VC) leading OQ\'s Series A in 2022',
-        'Aramco is world\'s largest oil company — validates satellite IoT for energy sector'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ deepening relationship with world\'s largest oil company for industrial IoT. ASTS focused on consumer/MNO broadband, not industrial IoT. OQ carving out niche in energy/enterprise satellite IoT that doesn\'t directly compete with ASTS consumer D2D plans.',
-      source: 'SatNews',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-    {
-      date: '2023-05-15',
-      competitor: 'oq-technology',
-      category: 'Partnership',
-      headline: 'OQ Technology partners with iot squared (stc Group/PIF JV) for satellite IoT services in Saudi Arabia',
-      details: [
-        'MoU with iot squared — 50:50 JV between stc Group and Saudi PIF (SR492M funded)',
-        'OQ to provide satellite IoT connectivity services and products in Saudi Arabia',
-        'Target sectors: traffic management, energy, safety, waste management, smart cities',
-        'OQ supported by Aramco Wa\'ed Ventures, established local presence in Al Khobar',
-        'OQ CEO: "Only 25% of Earth\'s land mass covered by cell towers — OQ addressing this via LEO nanosatellites"',
-        'Aligns with Saudi Arabia\'s national digital transformation objectives',
-        'iot squared positioned as regional IoT hub for MENA'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Notable: iot squared is a stc Group / PIF joint venture. stc is one of the largest telcos in the Middle East and a potential ASTS partner market. OQ targeting IoT sensors/smart city in Saudi Arabia while ASTS targets smartphone broadband D2D. Aramco Wa\'ed Ventures backing gives OQ Saudi enterprise foothold. Different service tiers: OQ for machine connectivity (narrowband IoT), ASTS for human connectivity (broadband).',
-      source: 'OQ Technology / iot squared',
-      storyId: 'oq-partnerships',
-      storyTitle: 'OQ Technology MNO & Distribution'
-    },
-    {
-      date: '2023-03-13',
-      competitor: 'oq-technology',
-      category: 'Launch',
-      headline: 'OQ Technology orders five 6U nanosatellites (Tiger-4 through Tiger-8) for constellation expansion',
-      details: [
-        'Five additional 6U nanosatellites ordered: Tiger-4 to Tiger-8',
-        'Tiger-4, Tiger-7, Tiger-8 built by Kongsberg NanoAvionics',
-        'Tiger-5, Tiger-6 built by Space Inventor (Denmark)',
-        'All launches planned through 2023-2024',
-        'CEO: "well ahead in the 5G IoT NTN market, continuing expansion of global coverage"'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ expanding with small 6U cubesats for IoT — very different constellation strategy from ASTS which is building large phased-array satellites for broadband D2D. OQ cubesat approach is faster/cheaper to deploy but fundamentally limited in capability. Different target markets: OQ for IoT sensors, ASTS for smartphones.',
-      source: 'SatellitePro ME',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-
-    // --- 2022 ---
-    {
-      date: '2022-09-01',
-      competitor: 'oq-technology',
-      category: 'Financial',
-      headline: 'OQ Technology closes ~€13M Series A led by Aramco\'s Wa\'ed Ventures',
-      details: [
-        '~€13 million Series A funding round closed',
-        'Led by Wa\'ed Ventures, venture capital arm of Saudi Aramco',
-        'Participation from Phaistos Investment Fund (Greece)',
-        'Funds constellation expansion to 10 satellites and commercial IoT deployment',
-        'Establishes OQ\'s strategic link to Saudi energy ecosystem'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ\'s €13M Series A is modest — ASTS is publicly traded with much larger fundraising capabilities. Aramco VC backing gives OQ strategic access to energy sector IoT market. Different scale of ambition: OQ building narrowband IoT service, ASTS building broadband D2D infrastructure.',
-      source: 'SpaceNews',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-    {
-      date: '2022-03-03',
-      competitor: 'oq-technology',
-      category: 'Technology',
-      headline: 'Alif Semiconductor and OQ Technology collaborate on AI-enabled NB-IoT connectivity for hybrid networks',
-      details: [
-        'Collaboration to deploy NB-IoT connectivity for hybrid terrestrial-satellite networks',
-        'AI-enabled, standardized solution for significant cost reduction vs existing satellite connectivity',
-        'Uses 3GPP NTN standards for interoperability',
-        'Targets cost-effective IoT in remote areas without cellular coverage'
-      ],
-      implication: 'neutral',
-      astsComparison: 'OQ building chipset partnerships for IoT ecosystem. ASTS focused on smartphone broadband via existing phone chipsets. Different technology strategies: OQ needs IoT-specific chipset partners for NB-IoT modules, ASTS leverages existing smartphone chipset ecosystem (Qualcomm, MediaTek).',
-      source: 'OQ Technology',
-      storyId: 'oq-technology-d2d',
-      storyTitle: 'OQ Technology D2D & IoT'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // VIASAT / INMARSAT - MULTI-ORBIT SATELLITE PLATFORM
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-06',
-      competitor: 'other',
-      category: 'Partnership',
-      headline: 'Evergreen Marine confirms fleetwide rollout of Inmarsat NexusWave bonded connectivity',
-      details: [
-        'Evergreen Marine upgrades entire fleet to NexusWave bonded connectivity from Inmarsat Maritime (Viasat)',
-        'First Taiwanese operator to adopt NexusWave across full fleet',
-        'Unlimited data, always-on performance with bonded multi-network connectivity',
-        'Enables predictive analytics, real-time reefer monitoring, integrated IoT',
-        'Leverages ViaSat-3 ultra-high-capacity network',
-        'Follows Viasat\'s May 2023 acquisition of Inmarsat'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Maritime connectivity is not D2D to smartphones. Viasat\'s scale could fund their Equatys D2D venture with Space42. Maritime fleet connectivity is fundamentally different from ASTS consumer smartphone D2D.',
-      source: 'Viasat / Inmarsat Maritime',
-      storyId: 'viasat-multi-orbit',
-      storyTitle: 'Viasat Multi-Orbit Platform'
-    },
-    {
-      date: '2025-11-18',
-      competitor: 'other',
-      category: 'Partnership',
-      headline: 'Etihad Airways deploys Viasat Amara connectivity across entire fleet including LEO partner satellites',
-      details: [
-        'Etihad deploying Viasat Amara connectivity across A321LR, A350, and Boeing 787 Dreamliner fleet',
-        'Enables streaming, Live TV, social media, browsing via Viasat Ka-band satellites + upcoming LEO partners',
-        'Factory-installed on new Airbus fleet from April 2025',
-        'Multi-network, multi-orbit systems with guaranteed quality of service',
-        'Mention of "upcoming LEO partner satellites" signals Viasat building multi-orbit capability'
-      ],
-      implication: 'neutral',
-      astsComparison: 'In-flight connectivity is different from D2D. Viasat\'s multi-orbit infrastructure could extend to D2D through Equatys venture. Not a direct threat to ASTS smartphone D2D market.',
-      source: 'Viasat',
-      storyId: 'viasat-multi-orbit',
-      storyTitle: 'Viasat Multi-Orbit Platform'
-    },
-    {
-      date: '2025-11-17',
-      competitor: 'other',
-      category: 'Technology',
-      headline: 'Viasat to integrate Telesat Lightspeed LEO into JetXP business aviation broadband',
-      details: [
-        'Viasat integrating Telesat Lightspeed LEO capacity into JetXP in-flight broadband',
-        'Combines Viasat GEO (ViaSat-3) with LEO capacity for enhanced performance',
-        'Intelligent routing between GEO and LEO optimizing for latency-sensitive applications',
-        'Multi-orbit capabilities (GEO+LEO+HEO) as single offering',
-        'HEO payloads for Arctic coverage from 2026',
-        'Commercial LEO integration service scheduled late 2027',
-        'Currently deployed on 5,000+ business jets worldwide'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Multi-orbit orchestration (GEO+LEO+HEO) could be transferable to D2D services via Equatys. Business aviation is niche market (5K jets). ASTS targets billions of smartphone users — fundamentally larger addressable market.',
-      source: 'Viasat',
-      storyId: 'viasat-multi-orbit',
-      storyTitle: 'Viasat Multi-Orbit Platform'
-    },
-    {
-      date: '2025-11-13',
-      competitor: 'other',
-      category: 'Technology',
-      headline: 'Viasat successfully tests HaloNet launch telemetry solution for NASA on Blue Origin New Glenn',
-      details: [
-        'First flight test of launch telemetry data relay service on Blue Origin NG-2 mission',
-        'Part of NASA Communications Services Project (CSP)',
-        'HaloNet uses Viasat global L-band satellite network with GEO satellites',
-        'Maintained persistent connection during launch for real-time flight data',
-        'Part of NASA effort to replace Tracking and Data Relay Satellite fleet by 2031',
-        'Second Blue Origin demo planned early 2026, additional HaloNet missions planned'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Launch telemetry has no direct relevance to D2D smartphones. Demonstrates Viasat L-band infrastructure and government relationships that could support Equatys D2D venture. Indirect competitive signal: Viasat investing across multiple satellite verticals.',
-      source: 'Viasat',
-      storyId: 'viasat-multi-orbit',
-      storyTitle: 'Viasat Multi-Orbit Platform'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // BAHRAIN - D2D REGULATORY MILESTONE
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-24',
-      competitor: 'other',
-      category: 'Regulatory',
-      headline: 'Bahrain becomes first GCC country to authorize satellite direct-to-device services',
-      details: [
-        'Bahrain TRA authorizes Satellite D2D services — first GCC country to do so',
-        'Licensed MNOs can partner with Starlink and AST SpaceMobile specifically mentioned',
-        'TRA: "ensures people remain connected even beyond reach of terrestrial networks"',
-        'Standard smartphones communicate directly with LEO satellites, no specialized equipment',
-        'Bahrain ranked #1 in MENA/GCC in Global Network Excellence Index for 4G/5G',
-        'Could catalyze similar frameworks across Saudi Arabia, UAE, Qatar, other Gulf states'
-      ],
-      implication: 'positive',
-      astsComparison: 'Directly bullish — Bahrain regulatory framework explicitly names AST SpaceMobile as potential D2D partner. Concrete regulatory pathway for ASTS in Gulf market. GCC countries = high-ARPU markets with maritime/desert coverage gaps ideal for satellite D2D. First GCC D2D authorization could catalyze region-wide adoption.',
-      source: 'Gulf Daily News / Bahrain TRA',
-      storyId: 'bahrain-d2d-regulatory',
-      storyTitle: 'Bahrain D2D Authorization'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // SES / LYNK GLOBAL - D2D PARTNERSHIP
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-03-10',
-      competitor: 'lynk',
-      category: 'Financial',
-      headline: 'SES and Lynk Global announce strategic partnership with Series B funding and MEO-relay for D2D',
-      details: [
-        'SES provides Series B funding for Lynk D2D constellation',
-        'MEO-Relay: routes D2D traffic between LEO and SES MEO network, reducing ground infrastructure',
-        'Network-as-a-Service: global ground network gateway access and GEO-based TTC&M',
-        'Strategic channel partnership for government, MNO, and automotive customers',
-        'SES and Lynk to collaborate on satellite manufacturing in US and Europe',
-        'Could signal deeper SES involvement in D2D market long-term'
-      ],
-      implication: 'negative',
-      astsComparison: 'SES investment in Lynk validates D2D market but strengthens a direct competitor. Lynk gains SES MEO relay (reducing ground station needs) and channel partnerships. Lynk remains focused on messaging/voice with smaller satellites; ASTS targets broadband D2D. SES "multi-orbit" approach is innovative but unproven at scale.',
-      source: 'SES / Lynk Global',
-      sourceUrl: 'https://www.ses.com',
-      storyId: 'lynk-omnispace-merger',
-      storyTitle: 'Lynk-Omnispace Merger'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // ECHOSTAR - MDA AURORA D2D LEO CONSTELLATION ($5B PROJECT)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-08-01',
-      competitor: 'echostar',
-      category: 'Technology',
-      headline: 'EchoStar selects MDA Space for world\'s first Open RAN broadband NTN LEO constellation',
-      details: [
-        'EchoStar selects MDA Space as prime contractor for D2D LEO constellation',
-        'Initial $1.3B contract for 100+ MDA AURORA software-defined D2D satellites',
-        'Full initial config: 200 satellites, scalable to thousands',
-        'Total LEO project cost: $5 billion (total NTN investment since 2012: $18B+)',
-        'Coverage: 350M Americans + 7B globally',
-        'Services: Talk, text, broadband data, video to standard 5G NTN devices',
-        'Spectrum: 2GHz S-band/AWS-4 with highest ITU priority (up to 25x20 MHz)',
-        '3GPP NTN compliant — works with current NTN devices without modifications',
-        'Satellites delivery: 2028, commercial service: 2029',
-        'EchoStar already delivering texting in Europe via 2GHz (Lyra sats)',
-        'North America texting via existing GEO planned H1 2026'
-      ],
-      implication: 'negative',
-      astsComparison: 'EchoStar is a serious D2D competitor with $5B LEO investment, $18B total NTN spend, and highest-priority 2GHz spectrum globally. Key difference: 2029 commercial service vs ASTS 2025-2026 launches. ASTS has 3-4 year head start. However, EchoStar\'s MDA AURORA is purpose-built D2D broadband (voice+text+data+video) like ASTS, not just SMS. EchoStar\'s Open RAN 5G and existing US 5G network provide terrestrial integration. Long-term threat.',
-      source: 'EchoStar PR',
-      sourceUrl: 'https://www.prnewswire.com/news-releases/echostar-selects-mda-space-for-worlds-first-open-ran-broadband-ntn-leo-constellation-302519409.html',
-      storyId: 'echostar-mda-leo',
-      storyTitle: 'EchoStar MDA AURORA D2D LEO'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // AMAZON LEO (fka Project Kuiper) - LEO BROADBAND (TERMINAL-BASED)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-02-04',
-      competitor: 'amazon-leo',
-      category: 'Partnership',
-      headline: 'AT&T partners with Amazon Leo for fixed broadband to business customers',
-      details: [
-        'AT&T to use Amazon Leo for fixed broadband services to business customers',
-        'Extends AT&T connectivity to areas needing broadband services',
-        'Part of broader AT&T/AWS collaboration for cloud modernization',
-        'AT&T migrating workloads to AWS Outposts (managed hybrid cloud)',
-        'AT&T connecting AWS data centers with high-capacity fiber',
-        'Amazon Leo: 3,000+ satellite constellation with Leo Nano/Pro/Ultra terminals',
-        'Announced at MWC 2026',
-        'AT&T covers 99%+ of US population terrestrially'
-      ],
-      implication: 'neutral',
-      astsComparison: 'AT&T using Amazon Leo for FIXED broadband (terminal-based) to business customers. This is DIFFERENT from ASTS D2D to smartphones. AT&T has ASTS partnership for direct-to-device cellular (unmodified phones). AT&T hedging: Amazon Leo for fixed enterprise backhaul, ASTS for mobile D2D. Complementary not competing.',
-      source: 'AT&T/Amazon',
-      sourceUrl: 'https://www.businesswire.com/news/home/20260204att-aws-amazon-leo',
-      storyId: 'amazon-leo-att',
-      storyTitle: 'Amazon Leo AT&T Partnership'
-    },
-    {
-      date: '2026-02-03',
-      competitor: 'amazon-leo',
-      category: 'Regulatory',
-      headline: 'Amazon Leo seeks 24-month FCC extension due to launch shortages — only 180 of 1,618 sats deployed',
-      details: [
-        'Amazon requests deadline extension from July 2026 to July 2028 for half-constellation (1,618 sats)',
-        'Cites "near-term shortage of available rockets" despite $10B+ investment',
-        'Only 180 satellites in orbit; projects ~700 by original July 2026 deadline — less than half required',
-        'Original strategy bet on unproven rockets (Vulcan, Ariane 6, New Glenn) — all faced delays',
-        'SpaceX initially excluded from bidding; 2023 shareholder lawsuit alleged Bezos rivalry caused "bad faith"',
-        'Late pivot: booked 3 Falcon 9 launches (Dec 2023), added 10 more + 12 New Glenn (Jan 2026)',
-        'Only 7 of 20+ planned 2025 launches completed due to manufacturing disruptions and rocket delays',
-        'Manufacturing at 30 sats/week capacity — producing faster than rockets can carry them',
-        'Starlink comparison: 9,000+ satellites, ~9M customers vs Amazon Leo 180 satellites',
-        'Industry rumors of potential spinoff of Amazon Leo to Blue Origin'
-      ],
-      implication: 'positive',
-      astsComparison: 'Amazon Leo\'s execution struggles highlight how difficult constellation deployment is at scale. ASTS faces similar launch dependency risks but has fundamentally different approach: fewer, larger satellites (each BlueBird covers more area). Amazon still terminal-based broadband, not D2D — but their regulatory struggles and delayed timeline reduce competitive pressure on the broader satellite connectivity market. FCC extension request shows even $10B cannot overcome launch bottleneck.',
-      source: 'FCC Filing / Industry Analysis',
-      storyId: 'amazon-leo-constellation',
-      storyTitle: 'Amazon Leo Constellation'
-    },
-    {
-      date: '2026-01-30',
-      competitor: 'amazon-leo',
-      category: 'Launch',
-      headline: 'Amazon Leo preparing for 8th mission - 212 satellites launched, LE-01 with Arianespace Feb 12',
-      details: [
-        'LE-01 mission on Feb 12, 2026 - first launch with Arianespace on Ariane 64',
-        'Will add 32 satellites bringing total to 212 spacecraft in orbit',
-        '8th mission overall, first of 18 planned Arianespace launches',
-        'Previous 7 missions: KA-01 (Apr), KA-02 (Jun), KF-01 (Jul), KF-02 (Aug), KA-03 (Sep), KF-03 (Oct), LA-04 (Dec)',
-        'Targeting 3,000+ satellite constellation with 80+ launches secured',
-        'Launch providers: Arianespace, Blue Origin, SpaceX, ULA'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Amazon Leo is TERMINAL-BASED broadband (dishes/antennas), NOT direct-to-device. Their Leo Ultra terminal requires installation. ASTS addresses different market: unmodified smartphones.',
-      source: 'Amazon',
-      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
-      storyId: 'amazon-leo-constellation',
-      storyTitle: 'Amazon Leo Constellation'
-    },
-    {
-      date: '2025-11-24',
-      competitor: 'amazon-leo',
-      category: 'Product',
-      headline: 'Amazon Leo debuts gigabit-speed "Ultra" antenna, begins enterprise preview',
-      details: [
-        'Leo Ultra: enterprise terminal up to 1 Gbps down, 400 Mbps up',
-        '"Fastest commercial phased array antenna in production"',
-        'Three tiers: Leo Nano (100 Mbps), Leo Pro (400 Mbps), Leo Ultra (1 Gbps)',
-        'Enterprise features: Direct to AWS (D2A), private network interconnect',
-        'Customers: JetBlue, Vanu Inc., Hunt Energy Network, Connected Farms',
-        'Enterprise preview testing before broader 2026 rollout'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Amazon targeting enterprise/government with premium terminals - different segment than ASTS consumer mobile. Leo Ultra requires professional installation. ASTS delivers to EXISTING smartphones.',
-      source: 'Amazon',
-      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
-      storyId: 'amazon-leo-constellation',
-      storyTitle: 'Amazon Leo Constellation'
-    },
-    {
-      date: '2025-11-13',
-      competitor: 'amazon-leo',
-      category: 'Technology',
-      headline: 'Project Kuiper rebranded to "Amazon Leo" - permanent identity for satellite network',
-      details: [
-        'Official rebrand from Project Kuiper to Amazon Leo',
-        'Nod to Low Earth Orbit constellation',
-        '150+ satellites in orbit at rebrand',
-        'Production line up to 5 satellites/day at Kirkland facility',
-        'Customers signed: JetBlue, L3Harris, DIRECTV Latin America, Sky Brasil, NBN Co. Australia'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Rebranding signals Amazon\'s long-term commitment. Still terminal-based system - not direct competition to ASTS\'s D2D approach. Both building toward "connectivity everywhere" via different paths.',
-      source: 'Amazon',
-      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
-      storyId: 'amazon-leo-constellation',
-      storyTitle: 'Amazon Leo Constellation'
-    },
-    {
-      date: '2025-09-04',
-      competitor: 'amazon-leo',
-      category: 'Partnership',
-      headline: 'JetBlue chooses Amazon Project Kuiper for free in-flight Wi-Fi starting 2027',
-      details: [
-        'First airline to implement Amazon satellite internet',
-        'Will enhance JetBlue\'s free Fly-Fi service beginning 2027',
-        'Aviation terminal supports up to 1 Gbps downloads',
-        'Amazon also signed agreement with Airbus to integrate into aircraft catalog',
-        'Over 100 satellites in orbit at time of announcement'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Amazon targeting aviation with dedicated terminals. ASTS has different angle: enabling passengers\' existing phones to work via satellite over coverage gaps. Amazon requires aircraft modification.',
-      source: 'Amazon',
-      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
-      storyId: 'amazon-leo-constellation',
-      storyTitle: 'Amazon Leo Constellation'
-    },
-    {
-      date: '2025-04-28',
-      competitor: 'amazon-leo',
-      category: 'Launch',
-      headline: 'Amazon Project Kuiper completes first full-scale launch - 27 production satellites deployed',
-      details: [
-        'KA-01 mission: first batch of 27 production satellites',
-        'ULA Atlas V 551 from Cape Canaveral',
-        'Transition from prototype testing to full-scale deployment',
-        'First of 80+ planned missions for 3,232-satellite constellation',
-        'Manufacturing: up to 5 satellites/day capacity',
-        '"Largest commercial procurement of launch vehicles in history"'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Amazon beginning serious constellation deployment. ASTS has technology lead with 5G broadband calls on BlueBird. Amazon\'s scale impressive but solving different problem than ASTS D2D.',
-      source: 'Amazon',
-      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
-      storyId: 'amazon-leo-constellation',
-      storyTitle: 'Amazon Leo Constellation'
-    },
-    {
-      date: '2021-11-01',
-      competitor: 'amazon-leo',
-      category: 'Launch',
-      headline: 'Amazon Kuiper announces KuiperSat-1 and KuiperSat-2 prototype satellites',
-      details: [
-        'FCC application to launch two prototype satellites',
-        'Testing phased array and parabolic antennas, modems, terminals',
-        'Partnership with ABL Space Systems for RS1 rocket',
-        '750+ people working on Project Kuiper',
-        'Active deorbit plans for responsible space stewardship'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Amazon Kuiper is terminal-based LEO broadband (like Starlink), NOT direct-to-device. Targets home/business internet vs ASTS mobile subscribers in coverage gaps.',
-      source: 'Amazon',
-      sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
-      storyId: 'amazon-leo-constellation',
-      storyTitle: 'Amazon Leo Constellation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // STARLINK DIRECT-TO-CELL - CORE D2D COMPETITOR
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2024-01-08',
-      competitor: 'starlink-tmobile',
-      category: 'Technology',
-      headline: 'Starlink/T-Mobile send first text messages via Direct to Cell satellites',
-      details: [
-        'First text messages sent/received using T-Mobile spectrum through D2C satellites',
-        'Launched first 6 D2C satellites on Jan 2, 2024 - less than 6 days to first texts',
-        'Custom silicon + 2.7m x 2.3m phased arrays for phone connectivity from space',
-        'Validates link budget closes - system works with unmodified phones (0.2W transmit)',
-        'Plans: text service 2024, voice/data/IoT in 2025',
-        'MNO partners: T-Mobile, Rogers (Canada), Optus (Australia), One NZ, KDDI (Japan), Salt (Switzerland), Entel (Chile/Peru)',
-        'Leverages existing Starlink infrastructure: laser backhaul, ground stations, PoPs',
-        'SpaceX claims unique position with vertical integration (launch + satellite production)'
-      ],
-      implication: 'negative',
-      astsComparison: 'Direct competitor milestone. Starlink\'s 6.2m² antenna vs ASTS planned 64m² arrays. Starlink starting with text-only, limited bandwidth. ASTS demonstrated 5G broadband voice/video with BW3 in 2023. Different approach: Starlink betting on massive constellation (hundreds of D2C sats), ASTS betting on fewer large high-throughput satellites.',
-      source: 'SpaceX',
-      sourceUrl: 'https://direct.starlink.com/',
-      storyId: 'starlink-d2c-launch',
-      storyTitle: 'Starlink Direct-to-Cell Launch'
-    },
-    {
-      date: '2025-11-24',
-      competitor: 'starlink-tmobile',
-      category: 'Coverage',
-      headline: 'Kyivstar launches Starlink Direct to Cell in Ukraine - first in Europe',
-      details: [
-        'Ukraine becomes first European country with Starlink D2C commercial service',
-        'Kyivstar (22.5M mobile customers) partnered with SpaceX',
-        'SMS messaging available now; voice/data planned for future phases',
-        '650+ D2C satellites in LEO constellation',
-        'Works with existing 4G LTE Android phones (iOS coming soon)',
-        'Critical for wartime: blackouts, damaged infrastructure, de-occupied territories',
-        'Free to all Kyivstar subscribers under existing plans',
-        'Coverage: entire Ukraine except occupied/combat zones',
-        'Starlink D2C described as "world\'s largest 4G coverage provider"'
-      ],
-      implication: 'negative',
-      astsComparison: 'Starlink D2C commercial expansion into Europe - ASTS target market. However, still SMS-only (no voice/data yet). Ukraine unique wartime use case - damaged terrestrial infrastructure makes satellite critical. ASTS targeting European commercial launch via Vodafone/SatCo JV with broadband capability (voice/video demonstrated). Different value propositions: Starlink = emergency texts, ASTS = full cellular experience.',
-      source: 'Kyivstar/SpaceX',
-      sourceUrl: 'https://investors.kyivstar.ua/news/',
-      storyId: 'starlink-d2c-europe',
-      storyTitle: 'Starlink D2C European Expansion'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // IRIDIUM NTN DIRECT - STANDARDS-BASED D2D/IoT
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-21',
-      competitor: 'iridium',
-      category: 'Technology',
-      headline: 'Iridium NTN Direct begins on-air testing - first two-way message transmission',
-      details: [
-        'Successful on-air testing of Iridium NTN Direct with two-way messages',
-        'First message: "To Iridium and Beyond"',
-        'Uses Nordic Semiconductor nRF9151 low-power NB-IoT/NTN module',
-        '5G waveform algorithms implemented on software-defined satellites',
-        'NB-IoT standards-based protocol per 3GPP',
-        'Beta testing and commercial service planned for 2026',
-        'Target: emergency messaging, asset tracking, automotive, utilities, agriculture',
-        'Designed for 100% global coverage leveraging existing 66-satellite constellation'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Iridium NTN Direct progressing toward commercial launch. Key differentiator: Iridium = NB-IoT narrowband (low-power IoT sensors, messaging), ASTS = broadband cellular (voice/video/data). Iridium has truly global coverage advantage but narrowband only. ASTS regional but broadband. Different use cases, minimal direct overlap.',
-      source: 'Iridium',
-      sourceUrl: 'https://www.iridium.com/press-release/iridium-ntn-direct-on-air-trials/',
-      storyId: 'iridium-ntn-testing',
-      storyTitle: 'Iridium NTN Direct Testing & Technology'
-    },
-    {
-      date: '2025-11-04',
-      competitor: 'iridium',
-      category: 'Partnership',
-      headline: 'Vodafone IoT partners with Iridium for NTN NB-IoT connectivity',
-      details: [
-        'Vodafone IoT to integrate Iridium NTN Direct service',
-        'Extends Vodafone IoT coverage to most remote locations globally',
-        'Vodafone IoT: 215 million devices connected across 180+ countries',
-        'Commercial launch planned 2026',
-        'Use cases: windfarms, oil pipelines, shipping tracking, emergency services',
-        'Vodafone IoT network spans 760+ networks worldwide',
-        'Iridium provides truly global L-band coverage including poles',
-        'Standards-based 3GPP NB-IoT integration'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Notable: Vodafone IoT choosing Iridium for IoT while Vodafone Group partners with ASTS for D2D smartphone service. Different divisions, different use cases. IoT = narrowband sensors/tracking (Iridium strength). Smartphones = broadband voice/data (ASTS strength). Validates segmented market approach.',
-      source: 'Iridium/Vodafone IoT',
-      sourceUrl: 'https://www.iridium.com/blog/vodafone-iot-partnership/',
-      storyId: 'iridium-ntn-partnerships',
-      storyTitle: 'Iridium NTN Direct Partnerships'
-    },
-    {
-      date: '2025-09-16',
-      competitor: 'iridium',
-      category: 'Partnership',
-      headline: 'Iridium begins NTN Direct integration with Deutsche Telekom',
-      details: [
-        'Deutsche Telekom to gain roaming access to Iridium NTN Direct',
-        'First MNO to begin integrating Iridium NTN Direct with terrestrial infrastructure',
-        '3GPP standards-based 5G service for NB-IoT D2D connectivity',
-        'Coverage from pole to pole via Iridium constellation',
-        'Use cases: cargo logistics, utility monitoring, smart agriculture, emergency response',
-        'Commercial launch planned 2026',
-        'Affordable 3GPP-standardized 5G devices work across terrestrial and NTN',
-        'Deutsche Telekom at forefront of standards-based IoT innovation'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Deutsche Telekom choosing Iridium for IoT coverage extension. ASTS has Deutsche Telekom as a shareholder but different focus: ASTS = smartphone broadband, Iridium = narrowband IoT. Both can coexist - different service tiers for different use cases.',
-      source: 'Iridium',
-      sourceUrl: 'https://www.iridium.com/blog/deutsche-telekom-partnership/',
-      storyId: 'iridium-ntn-partnerships',
-      storyTitle: 'Iridium NTN Direct Partnerships'
-    },
-    {
-      date: '2025-05-29',
-      competitor: 'iridium',
-      category: 'Partnership',
-      headline: 'Iridium partners with Syniverse to bring NTN Direct to MNOs worldwide',
-      details: [
-        'Syniverse to support Iridium NTN Direct rollout with mobile network operators',
-        '85% of MNOs seeking LEO solution for global coverage (GSMA 2025 survey)',
-        'Syniverse serves ~600 carriers in 170 countries, connects 830+ mobile operators',
-        'Iridium NTN Direct: truly global, standards-based D2D and NB-IoT messaging/SOS',
-        'Part of 3GPP Release 19 - first devices planned for 2026',
-        'Syniverse handles roaming, authentication, billing for seamless MNO integration',
-        'Target: consumer devices, automobiles, industrial IoT (agriculture, transport, energy)'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Iridium pursuing NB-IoT/messaging niche vs ASTS broadband. Iridium has truly global coverage (66 sats) but narrowband only. ASTS offers broadband throughput but regional coverage initially. Different markets: Iridium for SOS/messaging, ASTS for full cellular experience.',
-      source: 'Iridium',
-      sourceUrl: 'https://www.iridium.com/blog/iridium-and-syniverse-partner/',
-      storyId: 'iridium-ntn-partnerships',
-      storyTitle: 'Iridium NTN Direct Partnerships'
-    },
-    {
-      date: '2025-03-03',
-      competitor: 'iridium',
-      category: 'Technology',
-      headline: 'Iridium and Gatehouse Satcom advance NTN Direct RAN infrastructure for global NB-IoT',
-      details: [
-        'Gatehouse Satcom chosen to deliver NodeB for Iridium NTN Direct Radio Access Network',
-        'NodeB handles uplink/downlink transmissions, modulation, encoding, scheduling',
-        'First 3GPP standards-based satellite D2D and NB-IoT service with truly global coverage',
-        'Gatehouse also conducted feasibility study validating the technical concept',
-        'Iridium constellation (66 LEO sats) will receive software upgrade for NB-IoT capability',
-        'Runs both traditional Iridium services and NB-IoT NTN Direct on same network',
-        'On-air testing planned around mid-2025, commercial service 2026',
-        'Gatehouse CEO: "Growth of satellite industry will be driven by 3GPP standards"'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Iridium NTN Direct advancing toward deployment by building out RAN infrastructure. Software upgrade to existing 66-sat constellation is capital-efficient approach. However, NB-IoT only — narrowband messaging/SOS/IoT, not broadband voice/video/data. ASTS and Iridium target fundamentally different service tiers. Iridium global coverage advantage for IoT; ASTS broadband advantage for smartphones.',
-      source: 'Gatehouse Satcom / Iridium',
-      storyId: 'iridium-ntn-testing',
-      storyTitle: 'Iridium NTN Direct Testing & Technology'
-    },
-    {
-      date: '2024-10-09',
-      competitor: 'iridium',
-      category: 'Partnership',
-      headline: 'Iridium collaborates with Nordic Semiconductor on NTN Direct chipset integration',
-      details: [
-        'Nordic Semiconductor for early integration of Iridium NTN Direct',
-        'Nordic: global leader in cellular IoT (LTE-M, NB-IoT) modules/chipsets',
-        'Part of 3GPP Release 19 NTN roadmap',
-        'Planned: world\'s first truly global NB-IoT service',
-        'nRF9151 chipset to connect to Iridium satellite network',
-        'Target: consumer/industrial devices with universal connectivity',
-        '3GPP Release 19 expected completed end of 2025'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Iridium building ecosystem for NB-IoT standards devices. ASTS works with existing LTE/5G phones - no special chipset needed. Iridium targeting IoT mass market; ASTS targeting smartphone users.',
-      source: 'Iridium',
-      sourceUrl: 'https://www.iridium.com/blog/iridium-nordic-semiconductor-collaboration/',
-      storyId: 'iridium-ntn-partnerships',
-      storyTitle: 'Iridium NTN Direct Partnerships'
-    },
-    {
-      date: '2024-01-10',
-      competitor: 'iridium',
-      category: 'Technology',
-      headline: 'Iridium unveils Project Stardust - NB-IoT NTN service for existing constellation',
-      details: [
-        'Announces NB-IoT NTN standards-based service development',
-        'Will upload capability to existing 66-satellite LEO constellation',
-        'Targeting smartphones, OEMs, chipmakers, MNOs',
-        'Initial offering: 5G NTN messaging and SOS for smartphones, tablets, cars',
-        'Collaborating with device manufacturers on requirements',
-        'Testing planned 2025, service in 2026',
-        '2.2 million existing users, 1.7 million IoT customers',
-        'Only network providing true global coverage including poles'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Iridium leveraging existing constellation for NB-IoT - capital efficient but narrowband. ASTS requires new satellite builds but offers broadband. Iridium\'s L-band spectrum vs ASTS using MNO spectrum. Iridium = global messaging/SOS, ASTS = regional broadband cellular.',
-      source: 'Iridium',
-      sourceUrl: 'https://www.iridium.com/project-stardust/',
-      storyId: 'iridium-ntn-testing',
-      storyTitle: 'Iridium NTN Direct Testing & Technology'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // SKYLO TECHNOLOGIES - NB-NTN VIA GEO (GOOGLE PIXEL, VERIZON)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-28',
-      competitor: 'skylo',
-      category: 'Partnership',
-      headline: 'Skylo partners with Vodafone IoT for NTN NB-IoT satellite connectivity trial',
-      details: [
-        'Vodafone IoT to trial Skylo NTN NB-IoT for global hybrid connectivity',
-        'Single Vodafone SIM enables seamless switch between cellular and satellite',
-        'Skylo network: 36 countries, 70M sq km coverage',
-        'Use cases: asset tracking, energy, environmental monitoring, fleet management',
-        'Vodafone IoT: 220M+ devices across 180+ countries',
-        'Managed via Vodafone IoT Managed Connectivity Platform',
-        'Skylo orchestrates across multiple satellite constellations',
-        'Commercial service planned after trial phase'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Notable: Vodafone IoT now partnering with BOTH Iridium (Nov 2025) AND Skylo (Jan 2026) for NB-IoT. Shows Vodafone hedging with multiple narrowband providers. ASTS relationship is with Vodafone Group (smartphones/broadband), not IoT division. Market segmentation: Skylo/Iridium = narrowband IoT sensors, ASTS = broadband cellular to smartphones.',
-      source: 'Skylo/Vodafone IoT',
-      sourceUrl: 'https://iot.vodafone.com/news-and-insights/vodafone-iot-partners-with-skylo',
-      storyId: 'skylo-vodafone-iot',
-      storyTitle: 'Skylo Vodafone IoT Partnership'
-    },
-    {
-      date: '2025-08-20',
-      competitor: 'skylo',
-      category: 'Product',
-      headline: 'Google/Skylo expand satellite connectivity to Pixel 10 + launch Pixel Watch 4 with satellite SOS',
-      details: [
-        'Pixel 10 Series with satellite SOS + first satellite-based location sharing in Android 16',
-        'Pixel Watch 4: world\'s first smartwatch with 2-way satellite emergency messaging',
-        'Qualcomm Snapdragon W5 Gen 2 enables standalone satellite SOS without phone',
-        'Skylo NB-NTN service powers all satellite features',
-        'Pixel 9 won "Best Smartphone" at MWC Barcelona 2025 (satellite cited)',
-        'Skylo named "Best NTN Provider" at MWC for second consecutive year',
-        'Coverage: US, Canada, Europe, Australia (Watch 4 US first, expanding)',
-        'Features: emergency SOS, location sharing via satellite, SMS (carrier-dependent)'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Skylo expanding consumer reach via Google partnership - validates D2D market. However, Skylo = NB-NTN narrowband (emergency SOS/SMS only). ASTS = broadband voice/video/data. Different service tiers: Skylo for "when all else fails" emergencies, ASTS for "full cellular experience anywhere." Pixel Watch shows wearables market opportunity ASTS could address with MNO partners.',
-      source: 'Skylo',
-      sourceUrl: 'https://www.skylo.tech/blog/google-and-skylo-expand-satellite-connectivity-pixel-10-pixel-watch-4',
-      storyId: 'skylo-google-partnership',
-      storyTitle: 'Skylo Google Partnership'
-    },
-    {
-      date: '2025-04-28',
-      competitor: 'skylo',
-      category: 'Partnership',
-      headline: 'Skylo partners with Syniverse to implement SMS over satellite for Verizon',
-      details: [
-        'Syniverse Evolved Mobility enables seamless SMS over satellite integration',
-        'First time MNO can integrate SMS over NTN with no architecture changes',
-        'Skylo uses licensed MSS L-band spectrum (avoids interference with terrestrial)',
-        'Verizon first MNO worldwide to commercially launch on Skylo NTN',
-        'Same Diameter Protocol MNOs use for terrestrial network integration',
-        'Cloud-deployed, scalable solution',
-        'Extends Skylo emergency messaging launched 2024 to full SMS capability'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Syniverse enabling Skylo-Verizon integration - same Syniverse partnering with Iridium for NTN Direct. Shows Syniverse as key NTN integration enabler. Skylo using own MSS spectrum vs ASTS using MNO spectrum. Skylo narrowband SMS vs ASTS broadband - complementary not competing for Verizon.',
-      source: 'Syniverse/Skylo',
-      sourceUrl: 'https://www.businesswire.com/news/home/20250428skylo',
-      storyId: 'skylo-verizon-partnership',
-      storyTitle: 'Skylo Verizon Partnership'
-    },
-    {
-      date: '2025-03-19',
-      competitor: 'skylo',
-      category: 'Coverage',
-      headline: 'Verizon launches first US satellite texting to ANY device with Samsung S25 and Pixel 9',
-      details: [
-        'First in US to enable satellite texting to any recipient device (not just emergency)',
-        'Available on Samsung Galaxy S25 series and Google Pixel 9 series',
-        'Powered by Skylo NTN network',
-        'Verizon network covers 99% of US population terrestrially',
-        'Satellite extends coverage to remaining areas',
-        'Also testing data services and video calling via satellite',
-        'Using satellite for emergency portable assets, temporary backhaul, IoT'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Verizon expanding Skylo from emergency-only to general SMS. Still narrowband text only (no voice/video). ASTS partnership with AT&T targets broadband voice/data. Verizon hedging with multiple satellite approaches: Skylo (narrowband), own testing (data/video). Market validating need for satellite connectivity.',
-      source: 'Verizon',
-      sourceUrl: 'https://www.verizon.com/about/news/verizon-customers-satellite-texting-select-android-smartphones',
-      storyId: 'skylo-verizon-partnership',
-      storyTitle: 'Skylo Verizon Partnership'
-    },
-    {
-      date: '2025-02-27',
-      competitor: 'skylo',
-      category: 'Financial',
-      headline: 'Skylo raises $30M oversubscribed round led by NGP Capital — expands to Brazil, Australia, NZ',
-      details: [
-        '$30M oversubscribed funding round led by NGP Capital',
-        'Westly Group joined; Intel Capital, BMW i Ventures, Samsung Catalyst Fund, Next47 participated',
-        'Expanded coverage: Brazil, Australia, New Zealand + full US (Alaska, Hawaii, territories)',
-        'Geographic expansion in partnership with Viasat satellite infrastructure',
-        'World\'s largest standards-based D2D network — millions of messages sent globally',
-        'Played pivotal role during US hurricanes and wildfires for emergency messaging',
-        'NGP Capital: "Skylo stands apart as the category leader in D2D satellite connectivity"',
-        'Demonstrating SOS, SMS, and AI chat over satellite at MWC Barcelona 2025'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Skylo raising $30M is modest compared to ASTS ($1B+ raised). Shows Skylo operating lean but also capital-constrained vs ASTS. Skylo expanding geographic coverage via Viasat partnership — uses existing GEO sats, not own constellation. ASTS building proprietary LEO constellation for broadband. Skylo\'s emergency use case validation during natural disasters supports overall D2D market thesis that benefits ASTS too.',
-      source: 'BusinessWire / Skylo',
-      storyId: 'skylo-growth-ecosystem',
-      storyTitle: 'Skylo Growth & Ecosystem'
-    },
-    {
-      date: '2025-01-08',
-      competitor: 'skylo',
-      category: 'Product',
-      headline: 'Skylo declares itself world\'s largest commercial standards-based D2D network at CES 2025',
-      details: [
-        'Skylo claims "world\'s largest commercial standards-based direct-to-device network"',
-        'Unlocked satellite connectivity potential for 1B+ devices across multiple categories',
-        'Survey: 76% of Americans frustrated/anxious/unsafe due to cellular coverage gaps',
-        '59% consistently face poor signals, 20% experience it daily',
-        '70% said most critical use case is emergency services or navigation',
-        '46% face coverage gaps in neighborhoods, commuting, or visiting friends/family',
-        'Skylo connects to multiple satellite constellations — provides overlay without urban coverage gaps',
-        'Ecosystem built from ground up: chipsets, modules, device manufacturers, SIM providers, carriers',
-        'Uses MSS spectrum — existing worldwide regulatory framework, no carrier spectrum needed'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Skylo\'s consumer survey validates massive demand for satellite connectivity — 76% frustrated by coverage gaps. This is the exact problem ASTS solves, but at broadband level vs Skylo narrowband SMS. Skylo\'s "1B+ devices" potential is aspirational — still NB-NTN only. Key Skylo advantage: MSS spectrum with global regulatory framework already in place. ASTS using MNO terrestrial spectrum requires per-market regulatory coordination.',
-      source: 'Skylo',
-      storyId: 'skylo-growth-ecosystem',
-      storyTitle: 'Skylo Growth & Ecosystem'
-    },
-    {
-      date: '2024-08-28',
-      competitor: 'skylo',
-      category: 'Partnership',
-      headline: 'Verizon partners with Skylo to launch commercial direct-to-device messaging',
-      details: [
-        'Verizon first MNO worldwide to commercially launch on Skylo NTN',
-        'Emergency messaging and location sharing available fall 2024',
-        'Two-way texting via satellite planned for 2025',
-        'Skylo uses dedicated licensed MSS spectrum (no interference with cellular)',
-        'Successful IoT satellite roaming proof-of-concept completed',
-        'Use cases: agriculture, maritime, asset tracking, environmental monitoring',
-        'Verizon-enabled IoT device can roam to satellite when out of terrestrial range'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Verizon launching narrowband satellite messaging with Skylo. Different market from ASTS broadband approach. Skylo = emergency/IoT messaging via GEO. ASTS = full cellular experience via LEO. Verizon not exclusive to Skylo - could still partner with ASTS for broadband service tier.',
-      source: 'Verizon/Skylo',
-      sourceUrl: 'https://www.verizon.com/about/news/verizon-skylo-direct-to-device',
-      storyId: 'skylo-verizon-partnership',
-      storyTitle: 'Skylo Verizon Partnership'
-    },
-    {
-      date: '2024-11-26',
-      competitor: 'skylo',
-      category: 'Technology',
-      headline: 'Deutsche Telekom, Skylo and Qualcomm complete first operator-native NB-NTN SMS over satellite in Europe',
-      details: [
-        'First time in Europe an operator terrestrial mobile network integrated into satellite for D2H texting',
-        'End-to-end trial of SMS send/receipt over GEO satellite based on 3GPP Release 17 specs',
-        'Proof-of-concept conducted at Deutsche Telekom\'s Cosmote network in Greece',
-        'Device powered by Snapdragon X80 5G Modem-RF System with integrated NB-NTN',
-        'Skylo NTN commercially available network integrated into Cosmote production network',
-        'Uses dedicated licensed MSS spectrum — pan-European, no cross-border spectrum coordination needed',
-        'DT SVP Antje Williams: "Direct-to-handset will be an add-on to our mobile networks"'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Deutsche Telekom is an ASTS shareholder but testing Skylo for narrowband SMS. Different tier: Skylo = NB-NTN text-only via GEO, ASTS = broadband voice/video/data via LEO. DT hedging bets across multiple D2D solutions. Pan-European MSS spectrum advantage for Skylo avoids regulatory hurdles ASTS faces with MNO terrestrial spectrum. Validates European MNO demand for satellite connectivity.',
-      source: 'Deutsche Telekom / Skylo / Qualcomm',
-      storyId: 'skylo-qualcomm-ntn',
-      storyTitle: 'Skylo Qualcomm NB-NTN Ecosystem'
-    },
-    {
-      date: '2024-09-12',
-      competitor: 'skylo',
-      category: 'Technology',
-      headline: 'Skylo introduces satellite connectivity for smartphones with Qualcomm Snapdragon X80',
-      details: [
-        'Snapdragon X80 5G Modem-RF System completed all testing and is Skylo certified',
-        'Enables two-way peer-to-peer text messaging, location sharing, and SOS via satellite',
-        'Skylo global NTN: dedicated MSS spectrum, 9 earth stations, 6+ partner constellations',
-        '50M+ sq km of satellite coverage for seamless cellular-to-satellite switching',
-        'MSS spectrum avoids carriers allocating terrestrial spectrum or regulatory hurdles',
-        'Qualcomm VP Francesco Grilli: "First we brought seamless NTN to IoT and together, we\'re making significant strides in smartphone connectivity"'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Skylo + Qualcomm chipset integration is significant ecosystem milestone for NB-NTN. However, still narrowband (SMS/SOS only) — not broadband voice/video/data like ASTS. Snapdragon X80 NB-NTN support means more devices can connect to Skylo, but the service tier is fundamentally limited vs ASTS broadband capability.',
-      source: 'Skylo / Qualcomm',
-      storyId: 'skylo-qualcomm-ntn',
-      storyTitle: 'Skylo Qualcomm NB-NTN Ecosystem'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // INDUSTRY / OTHER - NTN ECOSYSTEM DEVELOPMENTS
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-08',
-      competitor: 'other',
-      category: 'Technology',
-      headline: 'Keysight + Samsung achieve live NR-NTN connection in n252 band with SAT-to-SAT mobility',
-      details: [
-        'Live NR-NTN connection in 3GPP Release 19 band n252 at CES 2026',
-        'Samsung next-generation modem chipset validated',
-        'Includes satellite-to-satellite mobility using commercial-grade silicon',
-        'All major NR-NTN FR1 bands now validated: n252, n255, n256',
-        'Cross-vendor interoperability demonstrated',
-        'Commercial NTN services expected to scale in 2026',
-        'Keysight NTN Network Emulator recreates multi-orbit LEO conditions'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Industry validation of 3GPP NTN standards accelerates ecosystem. Benefits all D2D players including ASTS. Samsung chipset readiness means device support for NTN services. Standards maturity reduces technical risk for commercial deployments.',
-      source: 'Keysight Technologies',
-      sourceUrl: 'https://www.keysight.com/us/en/about/newsroom/news-releases/2026/0108-pr26-007-keysight-samsung-nr-ntn.html',
-      storyId: 'ntn-industry-standards',
-      storyTitle: 'NTN Industry Standards Progress'
-    },
-    {
-      date: '2025-09-15',
-      competitor: 'other',
-      category: 'Partnership',
-      headline: 'Space42 and Viasat to launch Equatys - "space tower company" for global D2D services',
-      details: [
-        'Equatys: jointly held entity for global D2D and 5G NTN services',
-        'Expected to support 100+ MHz of harmonized MSS spectrum across 160+ markets',
-        '"Space tower company" model: shared multi-tenant infrastructure',
-        '3GPP NTN Release compliant platform for smartphones and IoT',
-        'Commercial rollout targeted within 3 years',
-        'Enables governments to maintain data sovereignty',
-        'Lean infrastructure provider reducing redundant investments',
-        'Financial investors offered infrastructure-grade returns',
-        'Follows March 2025 MOU between Space42 and Viasat'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Space42/Viasat creating competing D2D infrastructure. "Space tower company" model differs from ASTS owned-and-operated approach. Equatys targeting MSS spectrum vs ASTS using MNO spectrum. 3-year timeline to commercial means 2028+ competition. ASTS has first-mover advantage with commercial service in 2025-2026. Multi-tenant model could fragment market or provide infrastructure partners.',
-      source: 'Space42/Viasat',
-      sourceUrl: 'https://space42.ai/space42-viasat-equatys/',
-      storyId: 'space42-viasat-equatys',
-      storyTitle: 'Space42/Viasat Equatys Venture'
-    },
-    {
-      date: '2025-03-11',
-      competitor: 'other',
-      category: 'Partnership',
-      headline: 'Space42 and Viasat announce MOU for shared 5G NTN infrastructure',
-      details: [
-        'MOU to explore ecosystem partnership for 5G NTN development',
-        'Multi-tenant, multi-orbit infrastructure with open architecture',
-        'D2D, NB-IoT, and next-gen MSS services targeted',
-        'L-band and S-band spectrum utilization',
-        'Independent research projects $50B D2D satellite market by 2032',
-        '3GPP standards-based for global roaming',
-        'Space42 (UAE) + Viasat building coalition of partners',
-        'Follows Viasat alliance with ESA for NTN D2D systems'
-      ],
-      implication: 'neutral',
-      astsComparison: 'More players entering D2D validates market opportunity. Space42/Viasat pursuing different architecture (multi-orbit, GEO+LEO hybrid). ASTS focused on LEO with massive arrays. Market large enough for multiple approaches - $50B projection supports ASTS TAM thesis.',
-      source: 'Space42/Viasat',
-      sourceUrl: 'https://space42.ai/space42-and-viasat-announce-partnership/',
-      storyId: 'ntn-industry-partnerships',
-      storyTitle: 'NTN Industry Partnerships'
-    },
-    {
-      date: '2025-08-20',
-      competitor: 'other',
-      category: 'Technology',
-      headline: 'Qualcomm Snapdragon W5+ Gen 2 becomes first wearable platform with NB-NTN satellite support',
-      details: [
-        'Snapdragon W5+ Gen 2 and W5 Gen 2: first wearable platforms with NB-NTN emergency satellite comms',
-        'Smartwatches can transmit/receive emergency messages via satellite without phone',
-        'Cutting-edge RFFE solution for NB-NTN connectivity on wrist-sized devices',
-        'Optimized power efficiency critical for limited wearable batteries',
-        'Supports Wi-Fi 6, Bluetooth 5.3, and NB-NTN satellite',
-        'Use cases: hiker distress signals, disaster area comms, remote location tracking',
-        'Builds on Snapdragon X80 NB-NTN foundation, extending to new device categories'
-      ],
-      implication: 'neutral',
-      astsComparison: 'NB-NTN expanding from smartphones to wearables validates growing satellite connectivity ecosystem. However, wearable NB-NTN is emergency SOS/messaging only — extreme narrowband. ASTS broadband D2D targets smartphones with full voice/video/data capability. Wearable NB-NTN and ASTS broadband address completely different use cases.',
-      source: 'Qualcomm',
-      storyId: 'qualcomm-ntn-chipsets',
-      storyTitle: 'Qualcomm NTN Chipset Ecosystem'
-    },
-    {
-      date: '2024-02-26',
-      competitor: 'other',
-      category: 'Technology',
-      headline: 'Qualcomm unveils Snapdragon X80 — first 5G modem with fully integrated NB-NTN satellite support',
-      details: [
-        'Snapdragon X80 5G Modem-RF System: 7th gen modem-to-antenna solution',
-        'World\'s first 5G modem with fully integrated NB-NTN satellite communications support',
-        'Dedicated 5G AI Processor and 5G-Advanced-ready architecture',
-        'Also first: 6-antenna architecture for smartphones, 6X carrier aggregation',
-        'AI-based mmWave range extension for fixed wireless access CPE',
-        'Dedicated tensor accelerator for AI optimization of throughput, QoS, coverage, latency',
-        '5G Advanced capabilities across smartphones, PCs, XR, automotive, industrial IoT',
-        'Commercial devices launched second half of 2024'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Qualcomm integrating NB-NTN into flagship modem is a major ecosystem enabler — means every premium smartphone chipset will support satellite connectivity natively. This benefits Skylo (NB-NTN) but also validates the broader satellite D2D market ASTS operates in. Key distinction: X80 supports NB-NTN (narrowband SMS/SOS), while ASTS requires standard LTE/5G NR capability already in phones — no special NTN modem needed for ASTS broadband service.',
-      source: 'Qualcomm',
-      storyId: 'qualcomm-ntn-chipsets',
-      storyTitle: 'Qualcomm NTN Chipset Ecosystem'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // FLYDUBAI - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-11-18',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'flydubai selects Starlink for 100 Boeing 737 aircraft',
-      details: [
-        'Dubai-based carrier selects Starlink for entire fleet',
-        'Announced at Dubai Airshow 2025 (same event as Emirates)',
-        '100 Boeing 737 aircraft to be equipped in 2026',
-        'Free high-speed internet for customers',
-        '100+ destinations coverage',
-        'Installation times measured in hours, not days',
-        'Real-time data for crew plus passenger connectivity',
-        'Joins Emirates in Dubai carriers adopting Starlink'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Middle East LCC market - different from ASTS D2D cellular to unmodified phones.',
-      source: 'flydubai',
-      sourceUrl: 'https://news.flydubai.com/flydubai-announces-starlink-inflight-connectivity-partner',
-      storyId: 'flydubai-starlink-aviation',
-      storyTitle: 'flydubai Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // IAG (INTERNATIONAL AIRLINES GROUP) - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-11-06',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'IAG announces Starlink for 500+ aircraft across 5 airlines',
-      details: [
-        '500+ aircraft across 5 airlines: Aer Lingus, British Airways, Iberia, LEVEL, Vueling',
-        'First aircraft live early 2026',
-        'More aircraft with high-speed WiFi than any other European airline group',
-        'Fleet of 601 aircraft total (all non-retiring aircraft included)',
-        'Covers short-haul Europe + long-haul transatlantic/global routes',
-        '150-450 Mbps download, 20-70 Mbps upload',
-        '122 million customers/year to 260 destinations across 91 countries',
-        'One of world\'s largest airline groups'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Major European airline group - different market from ASTS D2D cellular.',
-      source: 'IAG',
-      sourceUrl: 'https://www.iairgroup.com/newsroom/iag-starlink-announcement/',
-      storyId: 'iag-starlink-aviation',
-      storyTitle: 'IAG (British Airways, Iberia, Aer Lingus) Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // VIRGIN ATLANTIC - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-07-08',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'Virgin Atlantic becomes first UK airline to announce free fleet-wide Starlink',
-      details: [
-        'First UK airline to announce Starlink fleet-wide',
-        'Free streaming-quality WiFi for Flying Club members',
-        'Installation: Q3 2026 start, complete by end of 2027',
-        'Fleet: Boeing 787s, Airbus A350s, A330neos (45 aircraft by 2028)',
-        'Gate-to-gate connectivity',
-        'Joint venture partner with Delta Air Lines',
-        'SkyTeam member (first UK airline in alliance)',
-        'Young fleet with average age under 7 years'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. UK market - different from ASTS D2D cellular to unmodified phones.',
-      source: 'Virgin Atlantic',
-      sourceUrl: 'https://corporate.virginatlantic.com/gb/en/media/press-releases/virgin-atlantic-starlink.html',
-      storyId: 'virgin-atlantic-starlink-aviation',
-      storyTitle: 'Virgin Atlantic Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // SAS (SCANDINAVIAN AIRLINES) - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-01-27',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'SAS introduces free Starlink WiFi across entire fleet',
-      details: [
-        'Free Starlink WiFi across entire SAS fleet',
-        'Phased rollout starting end of 2025',
-        'Free for EuroBonus members in all travel classes',
-        'Gate-to-gate connectivity (board to disembark)',
-        'Coverage over North Pole, Atlantic Ocean, North Sea - challenging regions for traditional satellites',
-        'Sustainability: reduced aerodynamic drag and fuel consumption',
-        'Multi-device support',
-        'Ends frustrating interruptions from conventional satellite services'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Nordic/European carrier - different market from ASTS D2D cellular.',
-      source: 'SAS',
-      sourceUrl: 'https://www.sasgroup.net/newsroom/press-releases/2025/sas-introduces-free-starlink-wifi/',
-      storyId: 'sas-starlink-aviation',
-      storyTitle: 'SAS Scandinavian Airlines Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // SES CRUISE - STARLINK MARITIME (MEO-LEO Integration)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2023-09-13',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'SES launches cruise industry\'s first integrated MEO-LEO service with Starlink',
-      details: [
-        'Industry first: Integrated MEO-LEO managed service for cruise',
-        'SES (satellite company) partnering with SpaceX Starlink',
-        '"SES Cruise mPOWERED + Starlink" product',
-        'Premium tier: up to 3 Gbps/ship, Pro tier: 1.5 Gbps/ship',
-        'Combines Starlink LEO + SES MEO constellation for 24/7 global coverage',
-        'Managed end-to-end service sold by SES',
-        'Available Q4 2023',
-        'Targets guest experience, smart ship operations, crew connectivity'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Maritime satellite service ecosystem. B2B offering for cruise operators - different from ASTS D2D cellular.',
-      source: 'SES',
-      sourceUrl: 'https://www.ses.com/press-release/ses-introduces-cruise-industrys-first-integrated-meo-leo-service-starlink',
-      storyId: 'ses-starlink-maritime',
-      storyTitle: 'SES Cruise MEO-LEO + Starlink Maritime'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // OCEANIA CRUISES - STARLINK MARITIME (NCLH subsidiary)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2024-12-04',
-      competitor: 'starlink-tmobile',
-      category: 'Coverage',
-      headline: 'Oceania Cruises completes Starlink installation across entire fleet',
-      details: [
-        'All 8 Oceania Cruises ships now Starlink-equipped',
-        'Subsidiary of Norwegian Cruise Line Holdings (NCLH)',
-        'Unlimited WiFi included in cruise fare ("Your World Included" promise)',
-        'Two complimentary logins per stateroom',
-        'Additional ships on order for 2027-2029',
-        'World\'s leading culinary- and destination-focused cruise line'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Maritime connectivity market. Different from ASTS D2D cellular - cruise ships use dedicated Starlink terminals.',
-      source: 'PR Newswire',
-      sourceUrl: 'https://www.prnewswire.com/news-releases/oceania-cruises-completes-installation-of-starlink-internet-across-entire-fleet-302322123.html',
-      storyId: 'nclh-starlink-maritime',
-      storyTitle: 'Norwegian Cruise Line Holdings Starlink Maritime'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // WESTJET - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-10-01',
-      competitor: 'starlink-tmobile',
-      category: 'Coverage',
-      headline: 'WestJet reaches 100th Starlink aircraft - world\'s largest 737 Starlink fleet',
-      details: [
-        'World\'s largest fleet of Boeing 737 Starlink-equipped aircraft',
-        '100 Boeing 737s now equipped with Starlink',
-        'Free for WestJet Rewards members ("WestJet Wi-Fi presented by TELUS")',
-        'Partnership with TELUS (Canadian telecom)',
-        'Rollout began February 2025',
-        'Completing all 737-800 and 737-8 MAX by end of 2025',
-        'Only airline in Canada offering Starlink on mainline fleet',
-        'Also covers Sunwing (WestJet subsidiary)'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Different market from ASTS D2D cellular to unmodified phones.',
-      source: 'WestJet',
-      sourceUrl: 'https://www.westjet.com/en-ca/news/2025/westjet-wifi-100th-aircraft',
-      storyId: 'westjet-starlink-aviation',
-      storyTitle: 'WestJet Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // ALASKA AIRLINES - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-08-20',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'Alaska Airlines selects Starlink for entire fleet - free for loyal guests',
-      details: [
-        'Entire Alaska Airlines fleet to get Starlink (regional, narrowbody, widebody)',
-        'Starting 2026, complete by 2027',
-        'Building on Hawaiian Airlines\' lead (both part of Alaska Air Group)',
-        'First U.S. airline with Starlink long-haul flights from Seattle',
-        'Free for most loyal guests via exclusive partnership',
-        'Latency <99ms, speeds up to 500 Mbps (7x faster than GEO satellite WiFi)',
-        '8,000+ Starlink satellites in orbit',
-        'Sustainability: lightest equipment, saves 800,000+ gallons fuel/year'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular.',
-      source: 'Alaska Airlines',
-      sourceUrl: 'https://newsroom.alaskaair.com/alaska-airlines-selects-starlink',
-      storyId: 'alaska-starlink-aviation',
-      storyTitle: 'Alaska Airlines Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // ROYAL CARIBBEAN - STARLINK MARITIME
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2024-08-29',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'Royal Caribbean extends Starlink to Juneau community - ship-to-shore pilot',
-      details: [
-        'Innovative ship-to-shore Starlink extension pilot program',
-        'Free WiFi for locals, cruise guests, and businesses in downtown Juneau',
-        'Partnership with Goldbelt Inc. (Alaska Native corporation)',
-        'Addresses internet congestion during busy cruise days',
-        'Installation at Goldbelt Tram Lower Terminal and Franklin Street businesses',
-        'Peplink access points for seamless coverage between locations',
-        'Pilot may expand to other cruise destinations'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Maritime/community connectivity. Different from ASTS D2D cellular service.',
-      source: 'Royal Caribbean Group',
-      sourceUrl: 'https://www.royalcaribbeangroup.com/news/royal-caribbean-group-debuts-free-starlink-juneau/',
-      storyId: 'royal-caribbean-starlink-maritime',
-      storyTitle: 'Royal Caribbean Starlink Maritime'
-    },
-    {
-      date: '2022-08-30',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'Royal Caribbean becomes first cruise line to adopt Starlink fleet-wide',
-      details: [
-        'First in cruise industry to adopt Starlink fleet-wide',
-        'Covers 3 brands: Royal Caribbean International, Celebrity Cruises, Silversea Cruises',
-        'Plus all new vessels for each brand',
-        'Trial on Freedom of the Seas with positive feedback',
-        '"Biggest public deployment of Starlink in travel industry" at the time',
-        'Installation completed by Q1 2023',
-        '68 ships across portfolio'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Maritime connectivity market - cruise industry pioneer. Different from ASTS D2D cellular.',
-      source: 'Royal Caribbean Group',
-      sourceUrl: 'https://www.royalcaribbeangroup.com/news/royal-caribbean-group-spacex-starlink/',
-      storyId: 'royal-caribbean-starlink-maritime',
-      storyTitle: 'Royal Caribbean Starlink Maritime'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // CARNIVAL CORPORATION - STARLINK MARITIME
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2024-05-14',
-      competitor: 'starlink-tmobile',
-      category: 'Coverage',
-      headline: 'Carnival Corporation completes Starlink rollout across 90+ ship global fleet',
-      details: [
-        'World\'s largest cruise company - 100% of 90+ ships now Starlink-equipped',
-        'Rollout began December 2022',
-        'Covers 9 cruise brands: Carnival Cruise Line, Princess Cruises, Holland America Line, Costa Cruises, Cunard, P&O Cruises (UK & Australia), AIDA Cruises, Seabourn',
-        'Part of multi-provider strategy - quadrupled fleetwide bandwidth since 2019',
-        '800+ ports worldwide coverage',
-        'Benefits guests, crew connectivity, and operational systems'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Maritime connectivity market. Different from ASTS D2D cellular to unmodified phones.',
-      source: 'PR Newswire',
-      sourceUrl: 'https://www.prnewswire.com/news-releases/carnival-corporation-rolls-out-spacexs-innovative-starlink-across-entire-global-fleet-302144123.html',
-      storyId: 'carnival-starlink-maritime',
-      storyTitle: 'Carnival Corporation Starlink Maritime'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // NORWEGIAN CRUISE LINE HOLDINGS - STARLINK MARITIME
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2023-04-06',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'Norwegian Cruise Line Holdings to offer Starlink across fleet',
-      details: [
-        'NCLH covers 3 brands: Norwegian Cruise Line, Oceania Cruises, Regent Seven Seas Cruises',
-        'Testing began on Norwegian Breakaway',
-        'Phased rollout across entire fleet',
-        'Target: 7 additional vessels by end of 2023',
-        'Including new ships: Oceania\'s Vista, Norwegian Viva, Regent\'s Seven Seas Grandeur',
-        'Benefits guests, crew, and ship-to-shore operations'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Maritime connectivity market. Different from ASTS D2D cellular service.',
-      source: 'Norwegian Cruise Line Holdings',
-      sourceUrl: 'https://www.nclhltd.com/news-releases/norwegian-cruise-line-holdings-starlink',
-      storyId: 'nclh-starlink-maritime',
-      storyTitle: 'Norwegian Cruise Line Holdings Starlink Maritime'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // ZIPAIR - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2023-01-31',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'ZIPAIR becomes first airline in Asia to select Starlink',
-      details: [
-        'First airline in Asia to work with SpaceX Starlink',
-        'Japan Airlines subsidiary (100% JAL-owned)',
-        'Japan\'s first international LCC (low-cost carrier)',
-        'Routes: Narita → Seoul, Bangkok, Singapore, Honolulu, Los Angeles, San Jose',
-        'At time of announcement: engineering review and regulatory certification in progress',
-        'Seamless high-speed, low-latency connectivity for all passengers'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Asian pioneer - different market from ASTS D2D cellular.',
-      source: 'ZIPAIR Tokyo',
-      sourceUrl: 'https://www.zip-air.net/en/news/2023/starlink.html',
-      storyId: 'zipair-starlink-aviation',
-      storyTitle: 'ZIPAIR Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KOREAN AIR / HANJIN GROUP - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-11',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'Korean Air, Hanjin Group Airlines select Starlink for fleetwide in-flight Wi-Fi',
-      details: [
-        'All five Hanjin Group airlines to deploy Starlink: Korean Air, Asiana Airlines, Jin Air, Air Busan, Air Seoul',
-        'Installation and testing begins late 2025, passenger service expected Q3 2026',
-        'Korean Air and Asiana prioritizing long-haul Boeing 777-300ER and Airbus A350-900 first',
-        'Complete Starlink installation across combined mainline fleet by end of 2027',
-        'Jin Air starting with Boeing 737-8 fleet',
-        'Connectivity positioned as "core infrastructure" rather than afterthought',
-        'Part of broader industry shift toward LEO satellite connectivity'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi market. Different from ASTS D2D cellular to unmodified phones on ground.',
-      source: 'Paxex.Aero',
-      sourceUrl: 'https://paxex.aero/2025/12/korean-air-hanjin-group-starlink/',
-      storyId: 'korean-air-starlink-aviation',
-      storyTitle: 'Korean Air / Hanjin Group Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // EMIRATES - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-11-18',
-      competitor: 'starlink-tmobile',
-      category: 'Technology',
-      headline: 'Emirates retrofit programme: 111 aircraft with Starlink and next-gen cabin',
-      details: [
-        'Next phase: 60 A380s and 51 Boeing 777s set for retrofit starting August 2026',
-        'Starlink connectivity installed concurrently with cabin retrofit programme',
-        'Partners: Airbus, Safran, Recaro, Panasonic, Starlink, UUDS',
-        'Panasonic Astrova IFE with 4K OLED HDR10+ displays and Spatial Audio',
-        'Total retrofit programme expanded to 219 aircraft',
-        '76 aircraft already refurbished, two completed per month',
-        'Fleet-wide product consistency strategy across all routes'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi integrated with cabin modernization. Different market from ASTS D2D phone service.',
-      source: 'Emirates Media Centre',
-      sourceUrl: 'https://www.emirates.com/media-centre/emirates-to-roll-out-next-phase-of-fleet-retrofit-programme/',
-      storyId: 'emirates-starlink-aviation',
-      storyTitle: 'Emirates Starlink Aviation'
-    },
-    {
-      date: '2025-11-17',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'Emirates to operate world\'s largest Starlink-enabled international widebody fleet',
-      details: [
-        '232 aircraft (Boeing 777 and A380 fleet) to be equipped with Starlink',
-        'World\'s largest Starlink-enabled international wide-body fleet',
-        'Free service for all customers across all cabin classes',
-        'First commercial flight: November 23, 2025 on Boeing 777-300ER',
-        'World\'s first Starlink-equipped A380 starting February 2026',
-        'Complete rollout by mid-2027, installation rate ~14 aircraft per month',
-        'Two antennae per 777, three per A380 (industry first)',
-        'Live TV over Starlink from late December 2025'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones.',
-      source: 'Emirates Media Centre',
-      sourceUrl: 'https://www.emirates.com/media-centre/emirates-starlink-announcement/',
-      storyId: 'emirates-starlink-aviation',
-      storyTitle: 'Emirates Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // LUFTHANSA GROUP - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-14',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'Lufthansa Group selects Starlink for 850-aircraft fleet',
-      details: [
-        'Largest European airline group to adopt Starlink for in-flight WiFi',
-        'All 850 aircraft to be equipped by 2029, rollout starts H2 2026',
-        'Covers Lufthansa, SWISS, Austrian, Brussels Airlines, ITA Airways, Eurowings, Air Dolomiti, Edelweiss',
-        'Free for Miles & More Travel ID users (free to register)',
-        'Enables streaming, cloud-based work, high-speed applications in-flight',
-        'Joins United, Qatar, Air France, Emirates, Virgin Atlantic, IAG on Starlink aviation'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Different market: Starlink aviation = in-flight WiFi with dedicated equipment. ASTS = direct-to-phone cellular on ground. No overlap.',
-      source: 'Lufthansa Group Newsroom',
-      sourceUrl: 'https://newsroom.lufthansagroup.com/en/new-lufthansa-group-collaboration-with-starlink-high-speed-internet-on-all-fleets-across-all-airlines/',
-      storyId: 'lufthansa-starlink-aviation',
-      storyTitle: 'Lufthansa Group Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // QATAR AIRWAYS - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-08',
-      competitor: 'starlink-tmobile',
-      category: 'Technology',
-      headline: 'World\'s first Starlink-equipped Boeing 787-8, A350 fleet complete',
-      details: [
-        'First airline globally to enable Starlink on Boeing 787-8 Dreamliner',
-        'Entire Airbus A350 fleet now Starlink-equipped (completed in record 8 months)',
-        'Nearly 120 widebody aircraft with Starlink (58% of widebody fleet)',
-        'Three Starlink-enabled 787 Dreamliners now operational',
-        '10M+ passengers used Qatar Starlink - nearly half of all 21M global Starlink airline passengers',
-        '500 Mbps speeds, free gate-to-gate WiFi',
-        'Operational benefits: real-time crew updates, IFE monitoring, faster turnarounds'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones on ground.',
-      source: 'Aviation A2Z',
-      sourceUrl: 'https://aviationa2z.com/index.php/2026/01/08/qatar-airways-first-starlink-equipped-boeing-787/',
-      storyId: 'qatar-starlink-aviation',
-      storyTitle: 'Qatar Airways Starlink Aviation'
-    },
-    {
-      date: '2025-11-16',
-      competitor: 'starlink-tmobile',
-      category: 'Coverage',
-      headline: '100+ Starlink-equipped widebody aircraft milestone',
-      details: [
-        'Over 100 widebody aircraft now equipped with Starlink',
-        'More than 50% of widebody fleet Starlink-connected',
-        'Over 30,000 flights operated with Starlink connectivity',
-        'Only carrier in MENA region offering Starlink',
-        'Boeing 777 rollout complete, A350 rollout in progress',
-        'Up to 200 daily Starlink-connected flights',
-        'Speeds faster than many home Wi-Fi services'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi market expansion. No overlap with ASTS D2D phone service.',
-      source: 'Qatar News Agency',
-      sourceUrl: 'https://qna.org.qa/en/news/news-details?id=qatar-airways-sets-new-benchmark-with-over-100-starlink-enabled-widebody-aircraft&date=16/11/2025',
-      storyId: 'qatar-starlink-aviation',
-      storyTitle: 'Qatar Airways Starlink Aviation'
-    },
-    {
-      date: '2024-10-01',
-      competitor: 'starlink-tmobile',
-      category: 'Launch',
-      headline: 'Qatar Airways launches first Starlink-equipped flights',
-      details: [
-        'First airline to offer Starlink on widebody aircraft',
-        'Service launched with free gate-to-gate high-speed WiFi',
-        'Initial rollout on Boeing 777 fleet',
-        'Global launch customer for Starlink aviation on widebodies'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation WiFi launch - different market from ASTS ground-based D2D cellular.',
-      source: 'Future Travel Experience',
-      sourceUrl: 'https://www.futuretravelexperience.com/2026/01/qatar-airways-launches-worlds-first-starlink-equipped-boeing-787-and-completes-airbus-a350-starlink-rollout/',
-      storyId: 'qatar-starlink-aviation',
-      storyTitle: 'Qatar Airways Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // AIR NEW ZEALAND - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-06-10',
-      competitor: 'starlink-tmobile',
-      category: 'Launch',
-      headline: 'Air New Zealand begins Starlink Wi-Fi trial on domestic aircraft',
-      details: [
-        'Trial launched June 10, 2025 on Airbus A320 (ZK-OXE)',
-        'Global first: First airline to trial Wi-Fi on a turboprop aircraft (ATR)',
-        'ATR turboprop joining trial later in June 2025',
-        'Free Wi-Fi during trial period',
-        'Currently in test phase, gathering customer feedback',
-        'Results will guide decision on domestic fleet rollout',
-        'Passengers can stream, work on live documents, browse social media'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi trial on regional/domestic aircraft. Different market from ASTS D2D phone service.',
-      source: 'Air New Zealand',
-      sourceUrl: 'https://www.airnewzealand.co.nz/press-release-2025-onboard-starlink-wifi-trial',
-      storyId: 'airnz-starlink-aviation',
-      storyTitle: 'Air New Zealand Starlink Aviation'
-    },
-    {
-      date: '2023-12-13',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'Air New Zealand partners with Starlink to redefine domestic travel connectivity',
-      details: [
-        'Partnership announced for free internet on domestic aircraft',
-        'First Starlink install on a domestic jet planned for 2025',
-        'World first: Starlink installation on ATR turboprop aircraft',
-        'Latency as low as 30ms for streaming and real-time applications',
-        'Initial 4-6 month trial period planned',
-        'Already offers free Wi-Fi on international flights',
-        'Focus on New Zealand domestic market ("Aotearoa")'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi targeting regional/domestic aircraft. Different market from ASTS ground-based D2D.',
-      source: 'Air New Zealand',
-      sourceUrl: 'https://www.airnewzealand.co.nz/press-release-2023-starlink-connectivity',
-      storyId: 'airnz-starlink-aviation',
-      storyTitle: 'Air New Zealand Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // UNITED AIRLINES - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-02-02',
-      competitor: 'starlink-tmobile',
-      category: 'Coverage',
-      headline: 'United completes Starlink on 300+ regional aircraft, 800+ total by end 2026',
-      details: [
-        '300+ two-cabin regional aircraft equipped with Starlink in less than a year',
-        'Expects 500+ mainline aircraft by end 2026 (800+ total)',
-        '25%+ of daily departures (1,200 flights) now have Starlink',
-        '7M+ passengers flown on Starlink aircraft, 3.7M devices connected',
-        'Wi-Fi customer satisfaction scores nearly doubled on Starlink planes',
-        'Big Game (Super Bowl) ad campaign showcasing Starlink capabilities',
-        'Seeking FAA approval for Boeing 737-900ER, Airbus A321, Boeing 777',
-        'Gate-to-gate connectivity enables streaming, gaming, video calls'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi - different market from ASTS D2D cellular. United passengers can stream/game at 30,000 feet but ASTS addresses phones on ground in coverage gaps. Starlink aviation success validates satellite connectivity demand but not directly competitive.',
-      source: 'United Airlines',
-      sourceUrl: 'https://www.prnewswire.com/news-releases/united-spotlights-starlink-wi-fi-302393847.html',
-      storyId: 'united-starlink-aviation',
-      storyTitle: 'United Airlines Starlink Aviation'
-    },
-    {
-      date: '2024-09-13',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'United signs industry\'s largest Starlink deal: 1,000+ aircraft, free Wi-Fi',
-      details: [
-        'Industry\'s largest agreement: 1,000+ mainline and regional aircraft',
-        'Service will be free for all passengers',
-        'Gate-to-gate connectivity with high-speed, low-latency internet',
-        'Testing begins early 2025, passenger flights expected later that year',
-        'Coverage over oceans, polar regions, and remote areas',
-        'Largest airline across both Atlantic and Pacific to adopt Starlink',
-        'First carrier to commit to offering Starlink at this scale',
-        'Enables streaming, gaming, video calls, and real-time productivity'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones on ground.',
-      source: 'United Airlines PR',
-      sourceUrl: 'https://www.prnewswire.com/news-releases/the-inflight-wi-fi-revolution-now-arriving-united-signs-starlink-deal-302247925.html',
-      storyId: 'united-starlink-aviation',
-      storyTitle: 'United Airlines Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // HAWAIIAN AIRLINES - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2024-09-24',
-      competitor: 'starlink-tmobile',
-      category: 'Coverage',
-      headline: 'Hawaiian Airlines completes Starlink installation across entire Airbus fleet',
-      details: [
-        'First major U.S. carrier to debut Starlink (February 2024 on A321neo)',
-        'Completed installation across all 24-plane A330 fleet',
-        'Free high-speed, low-latency Wi-Fi for all guests',
-        'Will also install on Boeing 787-9 flagship fleet',
-        'Not deploying on Boeing 717 (short inter-island flights)',
-        'Now part of Alaska Air Group (ALK)',
-        'Starlink performing well across remote Pacific Ocean routes',
-        'Internet speeds suitable for working, streaming, and gaming'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Different market from ASTS D2D phone service - Pacific routes benefit from Starlink ocean coverage.',
-      source: 'Hawaiian Airlines',
-      sourceUrl: 'https://newsroom.hawaiianairlines.com/releases/hawaiian-airlines-now-offering-fast-and-free-starlink-wi-fi',
-      storyId: 'hawaiian-starlink-aviation',
-      storyTitle: 'Hawaiian Airlines Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // AIRBALTIC - STARLINK AVIATION
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2023-01-10',
-      competitor: 'starlink-tmobile',
-      category: 'Partnership',
-      headline: 'airBaltic becomes first European airline to implement Starlink fleetwide',
-      details: [
-        'First European airline to implement Starlink fleet-wide',
-        'Entire Airbus A220-300 fleet (39 aircraft) to be equipped',
-        'Free, high-speed internet for all passengers',
-        'No login pages - internet works from moment passengers board',
-        'Up to 350 Mbps speeds, latency as low as 20ms',
-        'Latvian state-owned airline (97.96% government stake)',
-        'Installation began in 2023',
-        'Setting new standard for European in-flight connectivity'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Early European Starlink aviation adopter - different market from ASTS D2D cellular.',
-      source: 'airBaltic',
-      sourceUrl: 'https://www.airbaltic.com/en/airbaltic-starlink-announcement',
-      storyId: 'airbaltic-starlink-aviation',
-      storyTitle: 'airBaltic Starlink Aviation'
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // LYNK GLOBAL - D2D SATELLITE (SMALL SATELLITES)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-10-22',
-      competitor: 'lynk',
-      category: 'Financial',
-      headline: 'Lynk and Omnispace announce merger plans - SES becomes major strategic shareholder',
-      details: [
-        'Lynk Global and Omnispace to merge for comprehensive D2D solution',
-        'SES (major satellite operator) becomes major strategic shareholder',
-        'Omnispace contributes 60 MHz globally coordinated S-band spectrum',
-        'Largest S-band market access footprint: 1B+ people across Americas, Europe, Africa, Asia',
-        'Lynk brings patented, proven, low-cost multi-spectrum satellite technology',
-        'Combined: 50+ MNO customers across 50+ countries',
-        '3GPP NTN-compliant spectrum for standards-based D2D',
-        'SES provides multi-orbit network access and global ground infrastructure',
-        'Target close: late 2025 or early 2026'
-      ],
-      implication: 'negative',
-      astsComparison: 'Significant consolidation in D2D space. Lynk+Omnispace+SES creates formidable competitor with spectrum, technology, and MNO relationships. However, still small satellite approach vs ASTS broadband arrays. Key question: can merged entity match ASTS throughput for voice/video? S-band spectrum valuable but Lynk tech historically limited to messaging.',
-      source: 'Lynk Global/Omnispace',
-      sourceUrl: 'https://www.businesswire.com/news/home/20251022791234/en/',
-      storyId: 'lynk-omnispace-merger',
-      storyTitle: 'Lynk-Omnispace Merger'
-    },
-    {
-      date: '2025-04-30',
-      competitor: 'lynk',
-      category: 'Regulatory',
-      headline: 'FCC grants Lynk license modification for commercial D2D service in US',
-      details: [
-        'Second D2D provider licensed for commercial service in US (after Starlink)',
-        'License modification enables service in US territories',
-        'Partnership with DOCOMO Pacific for Guam and Northern Mariana Islands',
-        'Previously held world\'s first commercial license for international satellite D2D',
-        'Targets underserved areas out of reach from conventional mobile networks',
-        'Lynk: "taking great strides on our mission to connect everyone, everywhere"'
-      ],
-      implication: 'neutral',
-      astsComparison: 'Lynk gaining US regulatory approval - validates D2D regulatory path. ASTS has FCC experimental licenses and MNO partnerships for US coverage. Lynk starting in US territories (small market); ASTS targeting continental US with major carriers.',
-      source: 'Lynk Global',
-      sourceUrl: 'https://www.businesswire.com/news/home/20250430287453/en/',
-      storyId: 'lynk-regulatory-progress',
-      storyTitle: 'Lynk Regulatory Progress'
-    },
-    {
-      date: '2023-07-25',
-      competitor: 'lynk',
-      category: 'Technology',
-      headline: 'Lynk Demonstrates First-Ever Two-Way Standard Phone Voice Calls by Satellite',
-      details: [
-        'Claims "first-ever" two-way satellite voice calls with standard phones',
-        'Demo via software update to existing Lynk-02 satellites already in orbit',
-        'Announced 12 satellites in orbit (15 total launched), 36 more approved for 2024',
-        'Voice adds to existing text (SMS) and IoT data services',
-        'Working with 35+ MNO partners in 50+ countries',
-        'Voice capability described as "relatively simple software update"',
-        'Focusing on areas with zero cellular coverage initially'
-      ],
-      implication: 'neutral',
-      astsComparison: 'ASTS demonstrated voice calls with BlueWalker 3 in April 2023 - before Lynk\'s July announcement. Key difference: ASTS uses massive 64m² phased arrays for broadband-grade throughput; Lynk uses small form-factor satellites for basic connectivity. ASTS targets MNO-integrated coverage expansion; Lynk targets emergency/gap coverage.',
-      source: 'Lynk Global',
-      sourceUrl: 'https://lynk.world/news/lynk-demonstrates-first-ever-two-way-standard-phone-voice-calls-by-satellite',
-      storyId: 'lynk-voice-capability',
-      storyTitle: 'Lynk Voice Capability'
-    }
-  ];
+  // Competitor news timeline — imported from @/data/asts/comps-timeline.ts
+  // Add new entries there, not here.
+  const COMPETITOR_NEWS: CompetitorNewsEntry[] = COMPS_TIMELINE;
 
   // Filter news by competitor, sort by date (newest first)
   const filteredNews = React.useMemo(() =>

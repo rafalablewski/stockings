@@ -445,13 +445,15 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   color: var(--text3);
 }
 
-/* Bar Charts */
+/* Bar Charts — Ive×Tesla */
 .bars {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
+  gap: 6px;
   height: 220px;
-  padding: 20px 0;
+  padding: 24px 0 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  position: relative;
 }
 
 .bar-col {
@@ -459,35 +461,55 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0;
 }
 
 .bar-val {
   font-family: 'Space Mono', monospace;
-  font-size: 12px;
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  color: var(--text2);
+  margin-bottom: 6px;
+  font-weight: 500;
+  opacity: 0.7;
+  transition: opacity 0.25s ease, color 0.25s ease;
+}
+
+.bar-col:hover .bar-val {
+  opacity: 1;
   color: var(--text);
-  margin-bottom: 0;
-  font-weight: 600;
 }
 
 .bar {
-  width: 100%;
-  border-radius: 8px 8px 0 0;
-  background: linear-gradient(180deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 80%, #000) 100%);
-  transition: all 0.3s ease;
+  width: 60%;
+  min-width: 18px;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 60%, transparent) 100%);
+  transition: width 0.25s ease, filter 0.25s ease, background 0.25s ease;
   position: relative;
 }
 
-.bar:hover {
-  filter: brightness(1.15);
-  transform: scaleY(1.02);
-  transform-origin: bottom;
+.bar-col:hover .bar {
+  width: 80%;
+  filter: brightness(1.2);
+  background: linear-gradient(180deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 85%, transparent) 100%);
 }
 
 .bar-label {
-  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
   color: var(--text3);
   margin-top: 10px;
+  padding-bottom: 8px;
   font-weight: 500;
+  opacity: 0.6;
+  transition: opacity 0.25s ease;
+}
+
+.bar-col:hover .bar-label {
+  opacity: 1;
 }
 
 /* Big Stats */
@@ -914,14 +936,16 @@ input[type="range"]::-webkit-slider-thumb {
   /* Bar Charts */
   .bars {
     height: 180px;
-    gap: 8px;
-    padding: 16px 0;
+    gap: 4px;
+    padding: 16px 0 0;
   }
   .bar-val {
-    font-size: 10px;
+    font-size: 9px;
   }
   .bar-label {
-    font-size: 9px;
+    font-size: 8px;
+    margin-top: 8px;
+    padding-bottom: 6px;
   }
 
   /* Monte Carlo Chart */

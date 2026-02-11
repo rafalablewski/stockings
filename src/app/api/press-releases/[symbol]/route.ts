@@ -1,76 +1,219 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { stocks } from '@/lib/stocks';
 
 type RouteParams = Promise<{ symbol: string }>;
 
-// Human-readable descriptions for 8-K item codes
-const ITEM_DESCRIPTIONS: Record<string, string> = {
-  '1.01': 'Material Definitive Agreement',
-  '1.02': 'Termination of Material Agreement',
-  '2.02': 'Results of Operations & Financial Condition',
-  '2.05': 'Costs Associated with Exit Activities',
-  '3.01': 'Delisting / Transfer of Listing',
-  '5.02': 'Director/Officer Changes',
-  '5.03': 'Amendments to Articles',
-  '5.07': 'Shareholder Vote Results',
-  '7.01': 'Regulation FD Disclosure',
-  '8.01': 'Other Events',
-  '9.01': 'Financial Statements and Exhibits',
+// IR page URLs per ticker (direct press release pages)
+const IR_URLS: Record<string, string> = {
+  ASTS: 'https://investors.ast-science.com/press-releases',
+  CRCL: 'https://investors.circle.com/press-releases',
 };
 
-function describeItems(items: string): string {
-  if (!items || items.trim() === '') return '8-K Filing';
-  const codes = items.split(',').map(s => s.trim());
-  const meaningful = codes.filter(c => c !== '9.01');
-  const code = meaningful[0] || codes[0];
-  return ITEM_DESCRIPTIONS[code] || `8-K (Item ${code})`;
+// Wire services we aggregate from
+const WIRE_SERVICES = [
+  'prnewswire.com',
+  'businesswire.com',
+  'globenewswire.com',
+];
+
+function decodeHTMLEntities(text: string): string {
+  return text
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'");
 }
 
-// Fallback CIK map for known tickers (used when SEC lookup fails)
-const KNOWN_CIK: Record<string, string> = {
-  ASTS: '0001780312',
-  BMNR: '0001843588',
-  CRCL: '0001876042',
-};
+interface PressRelease {
+  title: string;
+  url: string;
+  date: string; // YYYY-MM-DD
+  source: string;
+}
 
-// Cache for CIK lookups (ticker -> CIK)
-let cikCache: Record<string, string> = {};
-let cikCacheTime = 0;
-const CIK_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+// ─── Source 1: Google News RSS filtered to wire services ───
 
-async function lookupCIK(ticker: string): Promise<string | null> {
-  // Check cache first
-  if (cikCache[ticker] && Date.now() - cikCacheTime < CIK_CACHE_TTL) {
-    return cikCache[ticker];
+async function fetchWireServiceRSS(companyName: string, ticker: string): Promise<PressRelease[]> {
+  const wireSites = WIRE_SERVICES.map(s => `site:${s}`).join(' OR ');
+  const query = `"${companyName}" (${wireSites})`;
+  const encoded = encodeURIComponent(query);
+  const rssUrl = `https://news.google.com/rss/search?q=${encoded}&hl=en-US&gl=US&ceid=US:en`;
+
+  try {
+    const response = await fetch(rssUrl, {
+      headers: { 'User-Agent': 'stockings-app/1.0 (research-tool)' },
+      next: { revalidate: 600 },
+    });
+
+    if (!response.ok) return [];
+
+    const xml = await response.text();
+    return parseRSSItems(xml, 15);
+  } catch {
+    console.error(`[press-releases] Wire service RSS failed for ${ticker}`);
+    return [];
+  }
+}
+
+function parseRSSItems(xml: string, limit: number): PressRelease[] {
+  const items: PressRelease[] = [];
+  const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+  let match;
+
+  while ((match = itemRegex.exec(xml)) !== null && items.length < limit) {
+    const itemXml = match[1];
+    const title = itemXml.match(/<title>([\s\S]*?)<\/title>/)?.[1]
+      ?.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim() || '';
+    const link = itemXml.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() || '';
+    const pubDate = itemXml.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() || '';
+    const source = itemXml.match(/<source[^>]*>([\s\S]*?)<\/source>/)?.[1]
+      ?.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim() || '';
+
+    if (title) {
+      items.push({
+        title: decodeHTMLEntities(title),
+        url: link,
+        date: pubDate ? new Date(pubDate).toISOString().split('T')[0] : '',
+        source: decodeHTMLEntities(source),
+      });
+    }
   }
 
-  // Try dynamic lookup from SEC
+  return items;
+}
+
+// ─── Source 2: Company IR page direct scrape ───
+
+async function fetchIRPage(symbol: string): Promise<PressRelease[]> {
+  const irUrl = IR_URLS[symbol];
+  if (!irUrl) return [];
+
   try {
-    const res = await fetch('https://www.sec.gov/files/company_tickers.json', {
+    const response = await fetch(irUrl, {
       headers: {
-        'User-Agent': 'stockings-app/1.0 (research-tool)',
-        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       },
+      next: { revalidate: 600 },
     });
-    if (res.ok) {
-      const data = await res.json();
-      const newCache: Record<string, string> = {};
-      for (const key of Object.keys(data)) {
-        const entry = data[key];
-        if (entry.ticker) {
-          newCache[entry.ticker.toUpperCase()] = String(entry.cik_str).padStart(10, '0');
+
+    if (!response.ok) return [];
+
+    const html = await response.text();
+    return parseIRPageHTML(html, irUrl);
+  } catch {
+    // IR page fetch may fail in restricted environments — graceful fallback
+    console.error(`[press-releases] IR page fetch failed for ${symbol}`);
+    return [];
+  }
+}
+
+function parseIRPageHTML(html: string, baseUrl: string): PressRelease[] {
+  const items: PressRelease[] = [];
+  const origin = new URL(baseUrl).origin;
+
+  // Pattern 1: Common IR platforms (Notified, Q4) — links with dates nearby
+  // Look for anchor tags with press-release-like paths
+  const linkRegex = /<a[^>]+href=["']([^"']*(?:press-release|news-release|press_release)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let match;
+
+  while ((match = linkRegex.exec(html)) !== null && items.length < 15) {
+    const href = match[1];
+    const linkText = match[2].replace(/<[^>]+>/g, '').trim();
+    if (!linkText || linkText.length < 10) continue;
+
+    const url = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
+
+    // Try to extract date from nearby context or URL
+    const date = extractDateFromContext(html, match.index) || extractDateFromURL(href);
+
+    items.push({
+      title: decodeHTMLEntities(linkText),
+      url,
+      date: date || '',
+      source: 'Investor Relations',
+    });
+  }
+
+  // Pattern 2: Structured data / JSON-LD
+  const jsonLdRegex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let jsonMatch;
+  while ((jsonMatch = jsonLdRegex.exec(html)) !== null) {
+    try {
+      const data = JSON.parse(jsonMatch[1]);
+      const articles = Array.isArray(data) ? data : [data];
+      for (const article of articles) {
+        if (article['@type'] === 'NewsArticle' || article['@type'] === 'Article') {
+          items.push({
+            title: article.headline || article.name || '',
+            url: article.url || baseUrl,
+            date: article.datePublished ? new Date(article.datePublished).toISOString().split('T')[0] : '',
+            source: 'Investor Relations',
+          });
         }
       }
-      cikCache = newCache;
-      cikCacheTime = Date.now();
-      if (cikCache[ticker]) return cikCache[ticker];
+    } catch {
+      // Ignore malformed JSON-LD
     }
-  } catch {
-    // Dynamic lookup failed — fall through to known CIKs
   }
 
-  // Fallback to known CIKs
-  return KNOWN_CIK[ticker] || null;
+  return items;
 }
+
+function extractDateFromContext(html: string, matchIndex: number): string {
+  // Look in a window around the link for date patterns
+  const start = Math.max(0, matchIndex - 500);
+  const end = Math.min(html.length, matchIndex + 1000);
+  const context = html.slice(start, end);
+
+  // Match dates like "February 11, 2026", "Feb 11, 2026", "2026-02-11", "02/11/2026"
+  const datePatterns = [
+    /(\d{4}-\d{2}-\d{2})/,
+    /(\w+ \d{1,2},? \d{4})/,
+    /(\d{1,2}\/\d{1,2}\/\d{4})/,
+  ];
+
+  for (const pattern of datePatterns) {
+    const m = context.match(pattern);
+    if (m) {
+      try {
+        const d = new Date(m[1]);
+        if (!isNaN(d.getTime())) {
+          return d.toISOString().split('T')[0];
+        }
+      } catch { /* skip */ }
+    }
+  }
+  return '';
+}
+
+function extractDateFromURL(href: string): string {
+  // Many IR URLs contain dates like /2026/02/11/ or /2026-02-11
+  const m = href.match(/\/(\d{4})\/(\d{1,2})\/(\d{1,2})\//);
+  if (m) return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+  return '';
+}
+
+// ─── Deduplication ───
+
+function deduplicateReleases(items: PressRelease[]): PressRelease[] {
+  const seen = new Set<string>();
+  return items.filter(item => {
+    // Normalize title for dedup: lowercase, strip trailing source tags like "- Business Wire"
+    const normalized = item.title
+      .toLowerCase()
+      .replace(/\s*[-–—]\s*(business wire|pr newswire|globenewswire|prnewswire).*$/i, '')
+      .replace(/[^a-z0-9]/g, '')
+      .slice(0, 60); // compare first 60 chars to catch near-duplicates
+    if (seen.has(normalized)) return false;
+    seen.add(normalized);
+    return true;
+  });
+}
+
+// ─── Main handler ───
 
 export async function GET(
   request: NextRequest,
@@ -79,74 +222,50 @@ export async function GET(
   const { symbol: rawSymbol } = await params;
   const symbol = decodeURIComponent(rawSymbol).toUpperCase();
 
-  const cik = await lookupCIK(symbol);
-  if (!cik) {
+  const stock = stocks[symbol];
+  if (!stock) {
     return NextResponse.json(
-      { error: `Could not find SEC CIK for symbol: ${symbol}` },
+      { error: `Unknown symbol: ${symbol}` },
       { status: 400 }
     );
   }
 
   try {
-    const url = `https://data.sec.gov/submissions/CIK${cik}.json`;
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'stockings-app/1.0 (research-tool)',
-        'Accept': 'application/json',
-      },
-      next: { revalidate: 600 },
-    });
+    // Fetch from wire services and IR page in parallel
+    const [wireResults, irResults] = await Promise.allSettled([
+      fetchWireServiceRSS(stock.name, symbol),
+      fetchIRPage(symbol),
+    ]);
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: 'Failed to fetch from SEC EDGAR', status: response.status },
-        { status: response.status }
-      );
-    }
+    const wireArticles = wireResults.status === 'fulfilled' ? wireResults.value : [];
+    const irArticles = irResults.status === 'fulfilled' ? irResults.value : [];
 
-    const data = await response.json();
-    const recent = data?.filings?.recent;
+    // Merge: IR page results first (most authoritative), then wire services
+    const merged = [...irArticles, ...wireArticles];
 
-    if (!recent?.form) {
-      return NextResponse.json(
-        { error: 'Unexpected EDGAR response format' },
-        { status: 502 }
-      );
-    }
+    // Deduplicate
+    const unique = deduplicateReleases(merged);
 
-    // Extract 8-K filings (press releases / material events)
-    const releases: Array<{
-      date: string;
-      headline: string;
-      url: string;
-      items: string;
-    }> = [];
+    // Sort by date descending (newest first)
+    unique.sort((a, b) => b.date.localeCompare(a.date));
 
-    const cikNumeric = cik.replace(/^0+/, '');
-    for (let i = 0; i < recent.form.length && releases.length < 5; i++) {
-      if (recent.form[i] === '8-K') {
-        const accession = recent.accessionNumber[i];
-        const accessionNoDashes = accession.replace(/-/g, '');
-        const primaryDoc = recent.primaryDocument[i];
-        const filingUrl = `https://www.sec.gov/Archives/edgar/data/${cikNumeric}/${accessionNoDashes}/${primaryDoc}`;
-
-        releases.push({
-          date: recent.filingDate[i],
-          headline: describeItems(recent.items?.[i] || ''),
-          url: filingUrl,
-          items: recent.items?.[i] || '',
-        });
-      }
-    }
+    // Return top 5
+    const releases = unique.slice(0, 5).map(a => ({
+      date: a.date,
+      headline: a.title,
+      url: a.url,
+      source: a.source,
+      items: '',
+    }));
 
     return NextResponse.json({
       symbol,
-      companyName: data.name || symbol,
+      companyName: stock.name,
       releases,
       fetchedAt: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('SEC EDGAR API error:', error);
+    console.error('Press releases API error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch press releases' },
       { status: 500 }
