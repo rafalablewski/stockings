@@ -2,11 +2,14 @@
  * SharedSourcesTab - Unified Sources Tab with Press Releases + News
  *
  * Shared component for all stocks. Features:
- * - Two sub-tabs: SEC Press Releases and Google News
- * - Refresh button fetches 5 latest articles per tab
+ * - Two sub-tabs: Press Releases (wire services + IR) and Google News (all latest)
+ * - Refresh button fetches latest articles per tab
  * - AI-powered check marks articles already in analysis
  *
- * @version 1.0.0
+ * Press Releases aggregates from: PR Newswire, Business Wire, GlobeNewswire, company IR
+ * Google News shows all latest news coverage
+ *
+ * @version 2.0.0
  */
 
 'use client';
@@ -90,12 +93,13 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
     const [prResult, newsResult] = await Promise.allSettled([
       fetch(`/api/press-releases/${ticker}`).then(async (res) => {
-        if (!res.ok) throw new Error('Failed to fetch from SEC');
+        if (!res.ok) throw new Error('Failed to fetch press releases');
         const data = await res.json();
-        return (data.releases || []).slice(0, 5).map((r: { date: string; headline: string; url: string; items?: string }) => ({
+        return (data.releases || []).slice(0, 10).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
           headline: r.headline,
           date: r.date,
           url: r.url,
+          source: r.source,
           items: r.items,
           analyzed: null as boolean | null,
         }));
@@ -103,7 +107,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       fetch(`/api/news/${ticker}`).then(async (res) => {
         if (!res.ok) throw new Error('Failed to fetch news');
         const data = await res.json();
-        return (data.articles || []).slice(0, 5).map((a: { title: string; date: string; url: string; source: string }) => ({
+        return (data.articles || []).slice(0, 15).map((a: { title: string; date: string; url: string; source: string }) => ({
           headline: a.title,
           date: a.date,
           url: a.url,
@@ -116,7 +120,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     if (prResult.status === 'fulfilled') {
       prArticles = prResult.value;
     } else {
-      setPrError('Could not fetch from SEC EDGAR');
+      setPrError('Could not fetch press releases');
     }
     if (newsResult.status === 'fulfilled') {
       newsItems = newsResult.value;
@@ -212,7 +216,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       <div className="highlight">
         <h3>Live Sources & Research</h3>
         <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-          Live article feeds for {companyName} ({ticker}). Refresh to pull latest press releases and news, with AI-powered analysis status check.
+          Live article feeds for {companyName} ({ticker}). Press releases aggregated from PR Newswire, Business Wire, GlobeNewswire &amp; investor relations. Latest News pulls all recent coverage. AI-powered analysis status check included.
         </p>
       </div>
 
@@ -221,10 +225,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <div style={{ display: 'flex', gap: 4 }}>
             <button onClick={() => setActiveSubTab('press-releases')} style={subTabStyle('press-releases')}>
-              SEC Press Releases
+              Press Releases
             </button>
             <button onClick={() => setActiveSubTab('news')} style={subTabStyle('news')}>
-              Google News
+              Latest News
             </button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -270,7 +274,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {prError && <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 8 }}>{prError}</div>}
             {pressReleases.length === 0 && !prLoading && (
               <div style={{ fontSize: 12, color: 'var(--text3)', padding: '8px 0' }}>
-                Click Refresh to fetch latest SEC 8-K filings for {ticker}.
+                Click Refresh to fetch latest press releases for {ticker} from PR Newswire, Business Wire, GlobeNewswire, and IR.
               </div>
             )}
             {pressReleases.length > 0 && (
@@ -287,7 +291,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {newsError && <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 8 }}>{newsError}</div>}
             {newsArticles.length === 0 && !newsLoading && (
               <div style={{ fontSize: 12, color: 'var(--text3)', padding: '8px 0' }}>
-                Click Refresh to fetch latest Google News articles for {companyName}.
+                Click Refresh to fetch all latest news for {companyName} ({ticker}).
               </div>
             )}
             {newsArticles.length > 0 && (
