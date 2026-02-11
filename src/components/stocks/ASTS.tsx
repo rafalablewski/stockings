@@ -116,6 +116,8 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback, Component, ErrorInfo, ReactNode } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
+import SharedSourcesTab from '../shared/SharedSourcesTab';
+import type { SourceGroup } from '../shared/SharedSourcesTab';
 import StockChart from '../shared/StockChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ComposedChart, Cell, PieChart, Pie, Legend, ReferenceLine } from 'recharts';
 
@@ -125,7 +127,6 @@ import {
   PARTNERS,
   PARTNER_NEWS,
   COMPETITOR_NEWS,
-  PRESS_RELEASES,
   REVENUE_SOURCES,
   UPCOMING_CATALYSTS,
   COMPLETED_MILESTONES,
@@ -690,24 +691,58 @@ const ASTSAnalysis = () => {
   // Chart refresh key - increment to trigger chart data refresh
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
 
-  // Press releases refresh state
-  const [livePressReleases, setLivePressReleases] = useState<Array<{ date: string; headline: string; url: string; items: string }> | null>(null);
-  const [prLoading, setPrLoading] = useState(false);
-  const [prError, setPrError] = useState<string | null>(null);
-  const refreshPressReleases = useCallback(async () => {
-    setPrLoading(true);
-    setPrError(null);
-    try {
-      const res = await fetch('/api/press-releases/ASTS');
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setLivePressReleases(data.releases || []);
-    } catch {
-      setPrError('Could not fetch from SEC EDGAR');
-    } finally {
-      setPrLoading(false);
-    }
-  }, []);
+  // ASTS research sources for SharedSourcesTab
+  const astsResearchSources: SourceGroup[] = [
+    { category: 'Company / IR', sources: [
+      { name: 'AST SpaceMobile Investor Relations', url: 'https://investors.ast-science.com' },
+      { name: 'SEC EDGAR (ASTS Filings)', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=ast+spacemobile&CIK=&type=&dateb=&owner=include&count=40&search_text=&action=getcompany' },
+    ]},
+    { category: 'Competitors / D2D Players', sources: [
+      { name: 'OQ Technology', url: 'https://www.oqtec.space' },
+      { name: 'Iridium Communications', url: 'https://www.iridium.com' },
+      { name: 'Skylo Technologies', url: 'https://www.skylo.tech' },
+      { name: 'Lynk Global', url: 'https://lynk.world' },
+      { name: 'SpaceX / Starlink Direct to Cell', url: 'https://direct.starlink.com' },
+      { name: 'Viasat', url: 'https://www.viasat.com' },
+      { name: 'Amazon / Project Kuiper', url: 'https://www.aboutamazon.com/news/amazon-leo' },
+      { name: 'EchoStar / Hughes', url: 'https://www.echostar.com' },
+      { name: 'SES', url: 'https://www.ses.com' },
+      { name: 'Terrestar Solutions', url: 'https://terrestarsolutions.ca' },
+      { name: 'Space42 / Bayanat', url: 'https://space42.ai' },
+    ]},
+    { category: 'Satellite / Telecom Industry', sources: [
+      { name: 'SpaceNews', url: 'https://spacenews.com' },
+      { name: 'Via Satellite', url: 'https://www.viasatellite.com' },
+      { name: 'SatellitePro ME', url: 'https://www.satelliteprome.com' },
+      { name: 'SatNews', url: 'https://www.satnews.com' },
+      { name: 'Advanced Television', url: 'https://advanced-television.com' },
+      { name: 'New Electronics', url: 'https://www.newelectronics.co.uk' },
+      { name: 'Light Reading', url: 'https://www.lightreading.com' },
+    ]},
+    { category: 'Research / Market Data', sources: [
+      { name: 'GSMA Intelligence', url: 'https://www.gsmaintelligence.com' },
+      { name: 'Kaleido Intelligence', url: 'https://www.kaleidointelligence.com' },
+      { name: 'MEF (Mobile Ecosystem Forum)', url: 'https://mobileecosystemforum.com' },
+    ]},
+    { category: 'Regulatory', sources: [
+      { name: 'FCC (Federal Communications Commission)', url: 'https://www.fcc.gov' },
+    ]},
+    { category: 'Financial / Analyst', sources: [
+      { name: 'TipRanks', url: 'https://www.tipranks.com' },
+      { name: 'Seeking Alpha', url: 'https://seekingalpha.com' },
+      { name: 'GuruFocus', url: 'https://www.gurufocus.com' },
+      { name: 'Yahoo Finance', url: 'https://finance.yahoo.com' },
+      { name: 'MarketBeat', url: 'https://www.marketbeat.com' },
+      { name: 'Investing.com', url: 'https://www.investing.com' },
+      { name: 'Benzinga', url: 'https://www.benzinga.com' },
+      { name: 'Quiver Quant', url: 'https://www.quiverquant.com' },
+    ]},
+    { category: 'Press / News Wires', sources: [
+      { name: 'PR Newswire', url: 'https://www.prnewswire.com' },
+      { name: 'Business Wire', url: 'https://www.businesswire.com' },
+      { name: 'GlobeNewswire', url: 'https://www.globenewswire.com' },
+    ]},
+  ];
 
   // Live price refresh hook - gets price from chart's API response
   const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
@@ -975,136 +1010,7 @@ const ASTSAnalysis = () => {
           {activeTab === 'investment' && <InvestmentTab />}
           {activeTab === 'wall-street' && <WallStreetTab />}
           {activeTab === 'sources' && (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-header</div>
-              <h2 className="section-head">Research Sources</h2>
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-intro</div>
-              <div className="highlight"><h3>Sources & References</h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sites and sources used for ASTS analysis, competitor tracking, and industry research.</p></div>
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#press-releases</div>
-              <div className="card">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <div className="card-title" style={{ marginBottom: 0 }}>Latest Press Releases</div>
-                  <button
-                    onClick={refreshPressReleases}
-                    disabled={prLoading}
-                    style={{
-                      background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 6,
-                      color: 'var(--text2)', fontSize: 11, padding: '4px 10px', cursor: prLoading ? 'wait' : 'pointer',
-                      display: 'flex', alignItems: 'center', gap: 4, opacity: prLoading ? 0.6 : 1,
-                    }}
-                  >
-                    <span style={{ display: 'inline-block', animation: prLoading ? 'spin 1s linear infinite' : 'none' }}>↻</span>
-                    {prLoading ? 'Fetching...' : 'Refresh from SEC'}
-                  </button>
-                </div>
-                {prError && <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 8 }}>{prError}</div>}
-                {(() => {
-                  // If we have live data from SEC EDGAR, show it with cross-reference against tracked PRESS_RELEASES
-                  if (livePressReleases) {
-                    const displayReleases = livePressReleases.slice(0, 3);
-                    if (displayReleases.length === 0) return <div style={{ fontSize: 12, color: 'var(--text3)' }}>No 8-K filings found.</div>;
-                    return (
-                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {displayReleases.map((pr, i) => {
-                          // Cross-reference: check if this filing date matches a tracked press release
-                          const tracked = PRESS_RELEASES.some(s => s.date === pr.date && s.tracked);
-                          return (
-                            <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                              <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1, color: tracked ? '#22c55e' : '#ef4444' }}>{tracked ? '✓' : '✗'}</span>
-                              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <a href={pr.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                                  {pr.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
-                                </a>
-                                <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date} · {tracked ? 'Added to analysis' : 'Not yet in analysis'}</span>
-                              </div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    );
-                  }
-                  // Default: show static PRESS_RELEASES data
-                  return (
-                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {PRESS_RELEASES.slice(0, 3).map((pr, i) => (
-                        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                          <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1, color: pr.tracked ? '#22c55e' : '#ef4444' }}>{pr.tracked ? '✓' : '✗'}</span>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <a href={pr.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                              {pr.headline} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
-                            </a>
-                            <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date} · {pr.tracked ? 'Added to analysis' : 'Not yet in analysis'}</span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  );
-                })()}
-              </div>
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources</div>
-              {[
-                { category: 'Company / IR', sources: [
-                  { name: 'AST SpaceMobile Investor Relations', url: 'https://investors.ast-science.com' },
-                  { name: 'SEC EDGAR (ASTS Filings)', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=ast+spacemobile&CIK=&type=&dateb=&owner=include&count=40&search_text=&action=getcompany' },
-                ]},
-                { category: 'Competitors / D2D Players', sources: [
-                  { name: 'OQ Technology', url: 'https://www.oqtec.space' },
-                  { name: 'Iridium Communications', url: 'https://www.iridium.com' },
-                  { name: 'Skylo Technologies', url: 'https://www.skylo.tech' },
-                  { name: 'Lynk Global', url: 'https://lynk.world' },
-                  { name: 'SpaceX / Starlink Direct to Cell', url: 'https://direct.starlink.com' },
-                  { name: 'Viasat', url: 'https://www.viasat.com' },
-                  { name: 'Amazon / Project Kuiper', url: 'https://www.aboutamazon.com/news/amazon-leo' },
-                  { name: 'EchoStar / Hughes', url: 'https://www.echostar.com' },
-                  { name: 'SES', url: 'https://www.ses.com' },
-                  { name: 'Terrestar Solutions', url: 'https://terrestarsolutions.ca' },
-                  { name: 'Space42 / Bayanat', url: 'https://space42.ai' },
-                ]},
-                { category: 'Satellite / Telecom Industry', sources: [
-                  { name: 'SpaceNews', url: 'https://spacenews.com' },
-                  { name: 'Via Satellite', url: 'https://www.viasatellite.com' },
-                  { name: 'SatellitePro ME', url: 'https://www.satelliteprome.com' },
-                  { name: 'SatNews', url: 'https://www.satnews.com' },
-                  { name: 'Advanced Television', url: 'https://advanced-television.com' },
-                  { name: 'New Electronics', url: 'https://www.newelectronics.co.uk' },
-                  { name: 'Light Reading', url: 'https://www.lightreading.com' },
-                ]},
-                { category: 'Research / Market Data', sources: [
-                  { name: 'GSMA Intelligence', url: 'https://www.gsmaintelligence.com' },
-                  { name: 'Kaleido Intelligence', url: 'https://www.kaleidointelligence.com' },
-                  { name: 'MEF (Mobile Ecosystem Forum)', url: 'https://mobileecosystemforum.com' },
-                ]},
-                { category: 'Regulatory', sources: [
-                  { name: 'FCC (Federal Communications Commission)', url: 'https://www.fcc.gov' },
-                ]},
-                { category: 'Financial / Analyst', sources: [
-                  { name: 'TipRanks', url: 'https://www.tipranks.com' },
-                  { name: 'Seeking Alpha', url: 'https://seekingalpha.com' },
-                  { name: 'GuruFocus', url: 'https://www.gurufocus.com' },
-                  { name: 'Yahoo Finance', url: 'https://finance.yahoo.com' },
-                  { name: 'MarketBeat', url: 'https://www.marketbeat.com' },
-                  { name: 'Investing.com', url: 'https://www.investing.com' },
-                  { name: 'Benzinga', url: 'https://www.benzinga.com' },
-                  { name: 'Quiver Quant', url: 'https://www.quiverquant.com' },
-                ]},
-                { category: 'Press / News Wires', sources: [
-                  { name: 'PR Newswire', url: 'https://www.prnewswire.com' },
-                  { name: 'Business Wire', url: 'https://www.businesswire.com' },
-                  { name: 'GlobeNewswire', url: 'https://www.globenewswire.com' },
-                ]},
-              ].map(group => (
-                <div key={group.category} className="card">
-                  <div className="card-title">{group.category}</div>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    {group.sources.map(s => (
-                      <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                        {s.name} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} />
           )}
         </main>
       </div>
