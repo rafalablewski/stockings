@@ -1431,16 +1431,20 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#upcoming-catalysts</div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming<UpdateIndicators sources="PR" /></div>
         <div>{upcomingCatalysts.map((c, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 8, border: '1px solid', background: c.impact === 'Critical' ? 'rgba(34,211,238,0.15)' : 'var(--surface2)', borderColor: c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)' }}>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 8, border: '1px solid', background: c.impact === 'Critical' ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'var(--surface2)', borderColor: c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)', transition: 'all 0.2s' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = c.impact === 'Critical' ? 'var(--cyan)' : 'var(--text3)'; e.currentTarget.style.background = c.impact === 'Critical' ? 'color-mix(in srgb, var(--cyan) 20%, transparent)' : 'var(--surface3)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = c.impact === 'Critical' ? 'var(--cyan)' : 'var(--border)'; e.currentTarget.style.background = c.impact === 'Critical' ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'var(--surface2)'; }}>
             <div><div style={{ fontWeight: 500, color: 'var(--text1)' }}>{c.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{c.timeline}</div></div>
-            <span className="pill" style={{ background: c.impact === 'Critical' ? 'var(--cyan)' : 'rgba(234,179,8,0.3)', color: c.impact === 'Critical' ? 'var(--bg1)' : 'var(--gold)', fontSize: 11 }}>{c.impact}</span>
+            <span className="pill" style={{ background: c.impact === 'Critical' ? 'var(--cyan)' : 'color-mix(in srgb, var(--gold) 30%, transparent)', color: c.impact === 'Critical' ? 'var(--bg1)' : 'var(--gold)', fontSize: 11 }}>{c.impact}</span>
           </div>
         ))}</div>
       </div>
       {years.map(year => (
         <div key={year} className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{year} Completed<UpdateIndicators sources="PR" /></div>
           <div className="g2">{milestonesByYear[year].map((m, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 8, borderRadius: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 8, borderRadius: 8, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--mint) 15%, transparent)'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--mint) 45%, transparent)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--mint) 10%, transparent)'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--mint) 30%, transparent)'; }}>
               <span style={{ color: 'var(--mint)' }}>✓</span><div><div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div><div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div></div>
             </div>
           ))}</div>
@@ -1503,7 +1507,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
       {/* Satellite Generations Comparison */}
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Satellite Generations<UpdateIndicators sources="PR" /></div>
         <div className="g2">
-          <div style={{ padding: 16, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8 }}>
+          <div style={{ padding: 16, background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--cyan) 30%, transparent)', borderRadius: 16, transition: 'border-color 0.2s, background 0.2s' }}>
             <h4 style={{ color: 'var(--cyan)', fontWeight: 500 }}>Block 1: BW3 + BB1-5</h4>
             <ul style={{ fontSize: 13, color: 'var(--text2)' }}>
               <li style={{ }}>• Array size: 693 sq ft each</li>
@@ -1512,7 +1516,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
               <li>• Purpose: Technology validation, early service</li>
             </ul>
           </div>
-          <div style={{ padding: 16, background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.3)', borderRadius: 8 }}>
+          <div style={{ padding: 16, background: 'color-mix(in srgb, var(--gold) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--gold) 30%, transparent)', borderRadius: 16, transition: 'border-color 0.2s, background 0.2s' }}>
             <h4 style={{ color: 'var(--gold)', fontWeight: 500 }}>Block 2: BB6 onwards</h4>
             <ul style={{ fontSize: 13, color: 'var(--text2)' }}>
               <li style={{ }}>• Array size: ~2,400 sq ft (3.5x larger)</li>
@@ -1532,7 +1536,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         </div>
       </div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage Milestones<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        {coverage.map(c => (<div key={c.r} style={{ display: 'flex', alignItems: 'center', gap: 16 }}><div style={{ width: 144, fontSize: 13, color: 'var(--text2)' }}>{c.r}</div><div style={{ flex: 1, height: 20, background: 'var(--surface2)', borderRadius: 9999, overflow: 'hidden' }}><div style={{ height: '100%', width: `${c.pct}%`, background: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)' }} /></div><div style={{ width: 80, textAlign: 'right', fontSize: 13, color: 'var(--text2)' }}>{c.n} sats ({c.pct.toFixed(0)}%)</div></div>))}
+        {coverage.map(c => (<div key={c.r} style={{ display: 'flex', alignItems: 'center', gap: 16 }}><div style={{ width: 144, fontSize: 13, color: 'var(--text2)' }}>{c.r}</div><div role="progressbar" aria-label={`${c.r} coverage progress`} aria-valuenow={Math.round(c.pct)} aria-valuemin={0} aria-valuemax={100} style={{ flex: 1, height: 20, background: 'var(--surface2)', borderRadius: 9999, overflow: 'hidden' }}><div style={{ height: '100%', width: `${c.pct}%`, background: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)', transition: 'width 0.4s ease' }} /></div><div style={{ width: 80, textAlign: 'right', fontSize: 13, color: 'var(--text2)' }}>{c.n} sats ({c.pct.toFixed(0)}%)</div></div>))}
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g4"><Input label="Block 1 (BW3+BB1-5)" value={block1Sats} onChange={setBlock1Sats} /><Input label="Block 2 (BB6+)" value={block2Sats} onChange={setBlock2Sats} /><Input label="Target 2026" value={targetSats2026} onChange={setTargetSats2026} /><Input label="Failure %" value={launchFailureRate} onChange={setLaunchFailureRate} /></div></div>
       
@@ -1568,10 +1572,10 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
         </div>
       </div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl"><thead><tr><th>Partner</th><th className="r">Reach</th><th className="r">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name}><td>{p.name}</td><td className="r">{p.subs}M</td><td className="r">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
+        <table className="tbl" aria-label="Partner subscriber breakdown"><thead><tr><th>Partner</th><th className="r">Reach</th><th className="r">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name}><td>{p.name}</td><td className="r">{p.subs}M</td><td className="r">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
       </div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl"><thead><tr><th>Pen%</th><th className="r">Subs</th><th className="r">Rev/yr</th><th className="r">$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={s.p === penetrationRate ? { background: 'var(--accent-dim)' } : undefined}><td>{s.p}%</td><td className="r">{s.subs.toFixed(0)}M</td><td className="r">${s.rev.toFixed(1)}B</td><td className="r">${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
+        <table className="tbl" aria-label="Penetration rate sensitivity analysis"><thead><tr><th>Pen%</th><th className="r">Subs</th><th className="r">Rev/yr</th><th className="r">$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={s.p === penetrationRate ? { background: 'color-mix(in srgb, var(--accent) 15%, transparent)' } : undefined}><td>{s.p}%</td><td className="r">{s.subs.toFixed(0)}M</td><td className="r">${s.rev.toFixed(1)}B</td><td className="r">${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
       </div>
       <div className="card"><div className="card-title">Parameters</div><div className="g3"><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div></div>
       
@@ -1597,7 +1601,9 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-intro</div>
       <div className="highlight"><h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h3><p style={{ fontSize: 13, color: 'var(--text2)' }}>Sources: MNO 50/50, Gateway ($14.7M Q3), Gov ($63M+ plus SHIELD IDIQ), Prepayments, Spectrum. $1B+ contracted.</p></div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-sources</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--border)' }}><div><span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{r.source}</span><span style={{ color: 'var(--text3)', fontSize: 13, marginLeft: 8 }}>{r.description}</span></div><span className="pill" style={{ background: r.status.includes('Active') ? 'rgba(16,185,129,0.15)' : 'var(--surface2)', borderColor: r.status.includes('Active') ? 'var(--mint)' : 'var(--border)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{r.status}</span></div>))}</div>
+      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--border)', borderRadius: 8, transition: 'all 0.2s' }}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}><div><span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{r.source}</span><span style={{ color: 'var(--text3)', fontSize: 13, marginLeft: 8 }}>{r.description}</span></div><span className="pill" style={{ background: r.status.includes('Active') ? 'color-mix(in srgb, var(--mint) 15%, transparent)' : 'var(--surface2)', borderColor: r.status.includes('Active') ? 'var(--mint)' : 'var(--border)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{r.status}</span></div>))}</div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-metrics</div>
       <div className="card">
         <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
@@ -1842,7 +1848,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>60 MHz</span>
             </div>
           </div>
-          <div style={{ padding: 12, background: 'linear-gradient(135deg, rgba(0,212,170,0.1), rgba(139,92,246,0.1))', borderRadius: 8, border: '1px solid var(--border)' }}>
+          <div style={{ padding: 12, background: 'linear-gradient(135deg, color-mix(in srgb, var(--mint) 10%, transparent), color-mix(in srgb, var(--violet) 10%, transparent))', borderRadius: 8, border: '1px solid var(--border)' }}>
             <div style={{ fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>Why This Matters for ASTS</div>
             <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.5 }}>
               More MNO partners → More spectrum access → Larger addressable market → Revenue share acceleration → Stock price appreciation
@@ -1855,7 +1861,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#definitive-agreements</div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Definitive Commercial Agreements (Binding)<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
+          <table className="tbl" aria-label="Definitive commercial agreements">
             <thead>
               <tr>
                 <th>Partner</th>
@@ -1869,7 +1875,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             </thead>
             <tbody>
               {definitiveAgreements.map(p => (
-                <tr key={p.partner}>
+                <tr key={p.partner} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                   <td>{p.partner}</td>
                   <td className="c">{p.region}</td>
                   <td className="r">{p.subs}M</td>
@@ -1911,7 +1917,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       {/* Spectrum Holdings */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#owned-spectrum</div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl">
+        <table className="tbl" aria-label="ASTS-owned spectrum holdings">
           <thead>
             <tr>
               <th>Asset</th>
@@ -1947,7 +1953,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Partner Spectrum (Shared Access)<UpdateIndicators sources="PR" /></div>
         <div className="g2">
           {partnerSpectrum.map(s => (
-            <div key={s.partner} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+            <div key={s.partner} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)', transition: 'border-color 0.2s, background 0.2s' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{s.partner}</span>
                 <span className="pill" style={{ fontSize: 11 }}>{s.band}</span>
@@ -1957,7 +1963,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             </div>
           ))}
         </div>
-        <div style={{ padding: 8, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8, fontSize: 11 }}>
+        <div style={{ padding: 8, background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--cyan) 30%, transparent)', borderRadius: 8, fontSize: 11 }}>
           <strong style={{ color: 'var(--cyan)' }}>Key Insight:</strong> Combined AT&T + Verizon 850 MHz spectrum enables ~100% continental US geographic coverage.
           Platform tunable across 1,150 MHz of global MNO spectrum.
         </div>
@@ -1966,7 +1972,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       {/* Government Contracts */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#gov-contracts</div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl">
+        <table className="tbl" aria-label="Government contracts">
           <thead>
             <tr>
               <th>Agency</th>
@@ -1994,7 +2000,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       {/* Other MNO Partners */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#other-partners</div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
-        <table className="tbl">
+        <table className="tbl" aria-label="Other MNO partners">
           <thead>
             <tr>
               <th>Partner</th>
@@ -2022,17 +2028,17 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-commitments</div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Commitment Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <div className="g3">
-          <div style={{ padding: 16, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, textAlign: 'center' }}>
+          <div style={{ padding: 16, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
             <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--mint)' }}>$1B+</div>
             <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Contracted Revenue</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Hard commitments, not soft MOUs</div>
           </div>
-          <div style={{ padding: 16, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 12, textAlign: 'center' }}>
+          <div style={{ padding: 16, background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--cyan) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
             <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--cyan)' }}>${totalPrepay}M</div>
             <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Prepayments</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>stc $175M due YE 2025</div>
           </div>
-          <div style={{ padding: 16, background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.3)', borderRadius: 12, textAlign: 'center' }}>
+          <div style={{ padding: 16, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--violet) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
             <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--violet)' }}>50/50</div>
             <div style={{ fontSize: 13, color: 'var(--text3)' }}>Revenue Share Model</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>MNOs handle billing/support</div>
@@ -2115,7 +2121,13 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             return (
               <div
                 key={i}
-                style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, cursor: 'pointer', borderLeft: `3px solid ${news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)'}` }}
+                role="button"
+                tabIndex={0}
+                aria-label={`${news.headline} — ${news.partner} ${news.date}`}
+                onKeyDown={(e) => { if (e.key === 'Enter') { const next = new Set(expandedPartnerNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedPartnerNews(next); } }}
+                style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, cursor: 'pointer', borderLeft: `3px solid ${news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)'}`, transition: 'all 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface3)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface2)')}
                 onClick={() => {
                   const next = new Set(expandedPartnerNews);
                   if (isExpanded) next.delete(i);
@@ -2127,8 +2139,8 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 11, color: 'var(--text3)' }}>{news.date}</span>
-                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(34,211,238,0.2)', color: 'var(--cyan)' }}>{news.partner}</span>
-                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'rgba(139,92,246,0.2)', color: 'var(--violet)' }}>{news.category}</span>
+                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'color-mix(in srgb, var(--cyan) 20%, transparent)', color: 'var(--cyan)' }}>{news.partner}</span>
+                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, background: 'color-mix(in srgb, var(--violet) 20%, transparent)', color: 'var(--violet)' }}>{news.category}</span>
                     </div>
                     <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{news.headline}</div>
                   </div>
@@ -2570,31 +2582,31 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
           The $697.6M on the balance sheet represents this accounting value, while $1.625B is the principal that must eventually be repaid or converted.
         </div>
         <div className="g5">
-          <div style={{ padding: 12, background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.3)', borderRadius: 8, textAlign: 'center' }}>
+          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--gold) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--gold) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
             <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--gold)' }}>$49M</div>
             <div style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 2025 (4.25%)</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $50M</div>
           </div>
-          <div style={{ padding: 12, background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.3)', borderRadius: 8, textAlign: 'center' }}>
+          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--coral) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--coral) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
             <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--coral)' }}>$530M</div>
             <div style={{ fontSize: 11, color: 'var(--text3)' }}>Jul 2025 (4.25%)</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $575M</div>
           </div>
-          <div style={{ padding: 12, background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 8, textAlign: 'center' }}>
+          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--cyan) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
             <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--cyan)' }}>$119M</div>
             <div style={{ fontSize: 11, color: 'var(--text3)' }}>Oct 2025 (2.0%)</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying (Q3)</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $1,000M</div>
           </div>
-          <div style={{ padding: 12, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, textAlign: 'center' }}>
+          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
             <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>$698M</div>
             <div style={{ fontSize: 11, color: 'var(--text3)' }}>Balance Sheet</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net long-term debt</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Gross: ~$724M</div>
           </div>
-          <div style={{ padding: 12, background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.3)', borderRadius: 8, textAlign: 'center' }}>
+          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--violet) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
             <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--violet)' }}>$1,625M</div>
             <div style={{ fontSize: 11, color: 'var(--text3)' }}>Principal Value</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Total outstanding</div>
@@ -2636,7 +2648,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         </div>
 
         <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--gold)' }}>2025 Capital Raises</h4>
-        <table className="tbl" style={{ }}>
+        <table className="tbl" aria-label="2025 capital raises" style={{ }}>
           <thead>
             <tr>
               <th>Source</th>
@@ -2680,7 +2692,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         </table>
 
         <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--violet)' }}>2024 Capital Raises</h4>
-        <table className="tbl" style={{ }}>
+        <table className="tbl" aria-label="2024 capital raises" style={{ }}>
           <thead>
             <tr>
               <th>Source</th>
@@ -2718,7 +2730,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         </table>
 
         <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--sky)' }}>2021-2023 Foundation</h4>
-        <table className="tbl">
+        <table className="tbl" aria-label="2021-2023 foundation capital raises">
           <thead>
             <tr>
               <th>Source</th>
@@ -2769,7 +2781,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       {/* Dilution Analysis */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-scenarios</div>
       <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
-        <table className="tbl">
+        <table className="tbl" aria-label="Hypothetical dilution scenarios">
           <thead>
             <tr>
               <th>Raise Amount</th>
