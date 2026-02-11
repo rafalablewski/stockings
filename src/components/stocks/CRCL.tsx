@@ -5623,7 +5623,7 @@ function CRCLModel() {
                           { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
                         ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcDiscountMax(opt); setMcPreset('custom'); }} style={{
+                          <div key={opt} onClick={() => { setMcDiscountMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMax(opt); setMcPreset('custom'); })()} style={{
                             padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
