@@ -2041,15 +2041,16 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart</div>
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ETH Holdings Growth<UpdateIndicators sources="PR" /></div>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>ETH Holdings Growth</span>
+        <UpdateIndicators sources="PR" />
       </div>
-      <div className="bars">
+      <div className="bars" style={{ padding: '24px 28px 0' }}>
         {holdingsData.map((d, i) => (
           <div key={i} className="bar-col">
             <div className="bar-val">{d.display}</div>
-            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--accent)' }} />
+            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px` }} />
             <div className="bar-label">{d.label}</div>
           </div>
         ))}

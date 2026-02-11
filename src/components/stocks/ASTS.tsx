@@ -1245,40 +1245,49 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart</div>
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
-          {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}<UpdateIndicators sources="PR" />
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+            {chartType === 'constellation' ? 'Constellation Build-Out' : chartType === 'cash' ? 'Cash Position' : 'Market Cap'}
+          </span>
+          <UpdateIndicators sources="PR" />
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 6 }}>
           {[
             { id: 'constellation', label: 'Satellites' },
             { id: 'cash', label: 'Cash' },
-            { id: 'marketcap', label: 'Market Cap' },
-          ].map(btn => (
-            <button
-              key={btn.id}
-              onClick={() => setChartType(btn.id)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: 6,
-                border: chartType === btn.id ? '1px solid var(--accent)' : '1px solid var(--border)',
-                background: chartType === btn.id ? 'var(--accent-dim)' : 'transparent',
-                color: chartType === btn.id ? 'var(--accent)' : 'var(--text2)',
-                fontSize: 12,
-                cursor: 'pointer',
-              }}
-            >
-              {btn.label}
-            </button>
-          ))}
+            { id: 'marketcap', label: 'Mkt Cap' },
+          ].map(btn => {
+            const isActive = chartType === btn.id;
+            return (
+              <button
+                key={btn.id}
+                onClick={() => setChartType(btn.id)}
+                style={{
+                  padding: '4px 12px',
+                  borderRadius: 99,
+                  border: '1px solid',
+                  borderColor: isActive ? 'var(--accent)' : 'var(--border)',
+                  background: isActive ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
+                  color: isActive ? 'var(--accent)' : 'var(--text3)',
+                  fontSize: 11,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  fontFamily: 'inherit',
+                }}
+              >
+                {btn.label}
+              </button>
+            );
+          })}
         </div>
       </div>
-      <div className="bars">
+      <div className="bars" style={{ padding: '24px 28px 0' }}>
         {chartData.map((d, i) => (
           <div key={i} className="bar-col">
             <div className="bar-val">{d.display}</div>
-            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px`, background: 'var(--accent)' }} />
+            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px` }} />
             <div className="bar-label">{d.label}</div>
           </div>
         ))}
