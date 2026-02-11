@@ -3632,29 +3632,36 @@ function CRCLModel() {
                   <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Company Snapshot</span>
                   <UpdateIndicators sources={['PR', 'SEC']} />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)' }}>
-                  <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Equity (Q3 2025)</div>
-                    <Row label="Shares Outstanding" value={`${currentShares.toFixed(1)}M`} />
-                    <Row label="Stock Price" value={`$${currentStockPrice.toFixed(2)}`} />
-                    <Row label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} highlight />
-                    <Row label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} />
-                    <Row label="Since IPO" value={`+${ipoReturn.toFixed(0)}%`} />
-                  </div>
-                  <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>USDC Metrics</div>
-                    <Row label="USDC Circulation" value={`$${currentUSDC.toFixed(1)}B`} />
-                    <Row label="Market Share" value={`${currentMarketShare}%`} highlight />
-                    <Row label="Total Stablecoin Mkt" value={`$${calc.totalStablecoins.toFixed(0)}B`} />
-                    <Row label="YoY Growth" value={`+${usdcGrowth.toFixed(0)}%`} />
-                    <Row label="Active Wallets" value={`${latest.meaningfulWallets}M`} />
-                  </div>
-                  <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Revenue</div>
-                    <Row label="Q3 Revenue" value={`$${latest.totalRevenue}M`} />
-                    <Row label="RLDC" value={`$${latest.rldc}M`} highlight />
-                    <Row label="RLDC Margin" value={`${latest.rldcMargin}%`} />
-                    <Row label="Adj. EBITDA" value={`$${latest.adjustedEbitda}M`} />
-                    <Row label="Rev/B USDC" value={`$${calc.revenuePerBillionUsdc.toFixed(0)}M`} />
-                  </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+                  {['Metric', 'Value', 'Category'].map(h => (
+                    <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Value' ? 'right' : 'left' }}>{h}</span>
+                  ))}
                 </div>
+                {[
+                  { metric: 'Shares Outstanding', value: `${currentShares.toFixed(1)}M`, desc: 'Equity', color: 'var(--text)' },
+                  { metric: 'Stock Price', value: `$${currentStockPrice.toFixed(2)}`, desc: 'Equity', color: 'var(--text)' },
+                  { metric: 'Market Cap', value: `$${(calc.marketCap / 1000).toFixed(1)}B`, desc: 'Equity', color: 'var(--accent)' },
+                  { metric: 'P/E Ratio', value: `${MARKET.pe.toFixed(0)}x`, desc: 'Equity', color: 'var(--text)' },
+                  { metric: 'Since IPO', value: `+${ipoReturn.toFixed(0)}%`, desc: 'Equity', color: 'var(--text)' },
+                  { metric: 'USDC Circulation', value: `$${currentUSDC.toFixed(1)}B`, desc: 'USDC Metrics', color: 'var(--text)' },
+                  { metric: 'Market Share', value: `${currentMarketShare}%`, desc: 'USDC Metrics', color: 'var(--accent)' },
+                  { metric: 'Total Stablecoin Mkt', value: `$${calc.totalStablecoins.toFixed(0)}B`, desc: 'USDC Metrics', color: 'var(--text)' },
+                  { metric: 'YoY Growth', value: `+${usdcGrowth.toFixed(0)}%`, desc: 'USDC Metrics', color: 'var(--text)' },
+                  { metric: 'Active Wallets', value: `${latest.meaningfulWallets}M`, desc: 'USDC Metrics', color: 'var(--text)' },
+                  { metric: 'Q3 Revenue', value: `$${latest.totalRevenue}M`, desc: 'Revenue', color: 'var(--text)' },
+                  { metric: 'RLDC', value: `$${latest.rldc}M`, desc: 'Revenue', color: 'var(--accent)' },
+                  { metric: 'RLDC Margin', value: `${latest.rldcMargin}%`, desc: 'Revenue', color: 'var(--text)' },
+                  { metric: 'Adj. EBITDA', value: `$${latest.adjustedEbitda}M`, desc: 'Revenue', color: 'var(--text)' },
+                  { metric: 'Rev/B USDC', value: `$${calc.revenuePerBillionUsdc.toFixed(0)}M`, desc: 'Revenue', color: 'var(--text)' },
+                ].map((row, i, arr) => (
+                  <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                    <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.metric}</span>
+                    <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: row.color, textAlign: 'right' }}>{row.value}</span>
+                    <span style={{ fontSize: 12, color: 'var(--text3)', paddingLeft: 16 }}>{row.desc}</span>
+                  </div>
+                ))}
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>

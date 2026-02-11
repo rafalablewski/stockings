@@ -1334,29 +1334,36 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Company Snapshot</span>
         <UpdateIndicators sources={['PR', 'SEC']} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)' }}>
-        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Equity (Q3 2025)</div>
-          <Row label="Shares" value={`${currentShares}M`} />
-          <Row label="Price" value={`$${currentStockPrice}`} />
-          <Row label="Mkt Cap" value={`$${(calc.marketCap / 1000).toFixed(2)}B`} highlight />
-          <Row label="Debt" value={`$${totalDebt}M`} />
-          <Row label="Cash" value={`$${(cashOnHand / 1000).toFixed(2)}B`} />
-        </div>
-        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Subscribers</div>
-          <Row label="MNO Partners" value="53+" />
-          <Row label="Reach" value={`${(partnerReach / 1000).toFixed(1)}B`} highlight />
-          <Row label={`@ ${penetrationRate}%`} value={`${calc.potentialSubs.toFixed(0)}M`} />
-          <Row label="$/Sub" value={`$${calc.pricePerSub.toFixed(0)}`} />
-          <Row label="Contracted" value={`$${contractedRevenue}M+`} />
-        </div>
-        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Constellation</div>
-          <Row label="Block 1 (BW3+BB1-5)" value={`${block1Sats} in orbit`} />
-          <Row label="Block 2 (BB6+)" value={`${block2Sats} launched`} highlight />
-          <Row label="Total Constellation" value={`${block1Sats + block2Sats} satellites`} />
-          <Row label="Target" value={targetSats2026} />
-          <Row label="Next" value="BB7-13 Q1'26" />
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+        {['Metric', 'Value', 'Category'].map(h => (
+          <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Value' ? 'right' : 'left' }}>{h}</span>
+        ))}
       </div>
+      {[
+        { metric: 'Shares', value: `${currentShares}M`, desc: 'Equity', color: 'var(--text)' },
+        { metric: 'Price', value: `$${currentStockPrice}`, desc: 'Equity', color: 'var(--text)' },
+        { metric: 'Mkt Cap', value: `$${(calc.marketCap / 1000).toFixed(2)}B`, desc: 'Equity', color: 'var(--accent)' },
+        { metric: 'Debt', value: `$${totalDebt}M`, desc: 'Equity', color: 'var(--text)' },
+        { metric: 'Cash', value: `$${(cashOnHand / 1000).toFixed(2)}B`, desc: 'Equity', color: 'var(--text)' },
+        { metric: 'MNO Partners', value: '53+', desc: 'Subscribers', color: 'var(--text)' },
+        { metric: 'Reach', value: `${(partnerReach / 1000).toFixed(1)}B`, desc: 'Subscribers', color: 'var(--accent)' },
+        { metric: `@ ${penetrationRate}%`, value: `${calc.potentialSubs.toFixed(0)}M`, desc: 'Subscribers', color: 'var(--text)' },
+        { metric: '$/Sub', value: `$${calc.pricePerSub.toFixed(0)}`, desc: 'Subscribers', color: 'var(--text)' },
+        { metric: 'Contracted', value: `$${contractedRevenue}M+`, desc: 'Subscribers', color: 'var(--text)' },
+        { metric: 'Block 1 (BW3+BB1-5)', value: `${block1Sats} in orbit`, desc: 'Constellation', color: 'var(--text)' },
+        { metric: 'Block 2 (BB6+)', value: `${block2Sats} launched`, desc: 'Constellation', color: 'var(--accent)' },
+        { metric: 'Total Constellation', value: `${block1Sats + block2Sats} satellites`, desc: 'Constellation', color: 'var(--text)' },
+        { metric: 'Target', value: targetSats2026, desc: 'Constellation', color: 'var(--text)' },
+        { metric: 'Next', value: "BB7-13 Q1'26", desc: 'Constellation', color: 'var(--text)' },
+      ].map((row, i, arr) => (
+        <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+          <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.metric}</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: row.color, textAlign: 'right' }}>{row.value}</span>
+          <span style={{ fontSize: 12, color: 'var(--text3)', paddingLeft: 16 }}>{row.desc}</span>
+        </div>
+      ))}
     </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
     <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
