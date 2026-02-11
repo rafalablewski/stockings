@@ -205,7 +205,7 @@ import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
-import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
+import type { SourceGroup } from '../shared/SharedSourcesTab';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -853,26 +853,10 @@ const BMNRDilutionAnalysis = () => {
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
   ];
 
-  const bmnrCompetitors: Competitor[] = [
-    { name: 'MicroStrategy', url: 'https://www.strategy.com/investor-relations' },
-    { name: 'Marathon Digital', url: 'https://ir.mara.com' },
-    { name: 'Riot Platforms', url: 'https://www.riotplatforms.com' },
-    { name: 'CleanSpark', url: 'https://www.cleanspark.com' },
-  ];
-
   const bmnrResearchSources: SourceGroup[] = [
     { category: 'Company / IR', sources: [
       { name: 'BMNR Investor Relations (PRNewswire)', url: 'https://www.prnewswire.com' },
       { name: 'SEC EDGAR (BMNR Filings)', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=vinanz&CIK=&type=&dateb=&owner=include&count=40&search_text=&action=getcompany' },
-    ]},
-    { category: 'Crypto Treasury Competitors', sources: [
-      { name: 'Strategy (MSTR) Investor Relations', url: 'https://www.strategy.com/investor-relations' },
-      { name: 'Coinbase Blog', url: 'https://www.coinbase.com/blog' },
-      { name: 'Coinbase Investor Relations', url: 'https://investor.coinbase.com' },
-      { name: 'Marathon Digital (MARA)', url: 'https://ir.mara.com' },
-      { name: 'Riot Platforms (RIOT)', url: 'https://www.riotplatforms.com' },
-      { name: 'CleanSpark (CLSK)', url: 'https://www.cleanspark.com' },
-      { name: 'ETHZilla (ETHZ) IR', url: 'https://ir.ethzilla.com' },
     ]},
     { category: 'Ethereum Protocol / Foundation', sources: [
       { name: 'Ethereum Foundation Blog', url: 'https://blog.ethereum.org' },
@@ -1107,7 +1091,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
         {activeTab === 'sources' && (
-          <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="BTC Treasury Peers" competitors={bmnrCompetitors} />
+          <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} />
         )}
         </main>
       </div>

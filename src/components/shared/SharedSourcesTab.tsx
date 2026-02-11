@@ -20,17 +20,10 @@ export interface SourceGroup {
   sources: { name: string; url: string }[];
 }
 
-export interface Competitor {
-  name: string;
-  url: string;
-}
-
 interface SharedSourcesTabProps {
   ticker: string;
   companyName: string;
   researchSources: SourceGroup[];
-  competitorLabel?: string;
-  competitors?: Competitor[];
 }
 
 interface ArticleItem {
@@ -384,14 +377,11 @@ const CompanyFeedCard: React.FC<{
 };
 
 // ── Main component ──────────────────────────────────────────────────────────
-const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName, researchSources, competitorLabel, competitors }) => {
+const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName, researchSources }) => {
   const [mainCard, setMainCard] = useState<CardData>({
     loading: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
   });
   const [aiChecking, setAiChecking] = useState(false);
-  const [compCards, setCompCards] = useState<Record<string, CardData>>({});
-  const [compAiChecking, setCompAiChecking] = useState<Record<string, boolean>>({});
-  const [loadingAll, setLoadingAll] = useState(false);
 
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
@@ -449,99 +439,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker, checkAnalyzed]);
 
-  const loadCompetitor = useCallback(async (name: string) => {
-    setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: true, loaded: false, error: null } }));
-    try {
-      const res = await fetch(`/api/competitor-feed/${encodeURIComponent(name)}`);
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      const prs: ArticleItem[] = (data.pressReleases || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
-      const news: ArticleItem[] = (data.news || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
-      setCompCards(prev => ({ ...prev, [name]: { loading: false, loaded: true, error: null, activeTab: prev[name]?.activeTab || 'pr', pressReleases: prs, news } }));
-      const all = [...prs, ...news];
-      if (all.length > 0) {
-        setCompAiChecking(prev => ({ ...prev, [name]: true }));
-        try {
-          const checked = await checkAnalyzed(all);
-          setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checked.slice(0, prs.length), news: checked.slice(prs.length) } }));
-        } catch { /* handled */ } finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
-      }
-    } catch {
-      setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: false, loaded: false, error: 'Could not fetch feeds' } }));
-    }
-  }, [checkAnalyzed]);
-
-  const loadAll = useCallback(async () => {
-    setLoadingAll(true);
-    const promises: Promise<unknown>[] = [];
-    if (!mainCard.loaded && !mainCard.loading) promises.push(loadMainCard());
-    if (competitors?.length) { for (const c of competitors) promises.push(loadCompetitor(c.name)); }
-    await Promise.allSettled(promises);
-    setLoadingAll(false);
-  }, [mainCard.loaded, mainCard.loading, loadMainCard, competitors, loadCompetitor]);
-
-  const setCompTab = (name: string, tab: 'pr' | 'news') => {
-    setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { loading: false, loaded: false, error: null, pressReleases: [], news: [] }), activeTab: tab } }));
-  };
-
-  const totalCompanies = 1 + (competitors?.length || 0);
-  const loadedCount = (mainCard.loaded ? 1 : 0) + (competitors?.filter(c => compCards[c.name]?.loaded).length || 0);
+  const loaded = mainCard.loaded;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Sources</h2>
 
-      {/* Command bar */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '12px 20px', marginBottom: 16,
-        background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Progress ring */}
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="10" fill="none" stroke="var(--surface3)" strokeWidth="2.5" />
-            <circle cx="12" cy="12" r="10" fill="none" stroke="var(--accent)" strokeWidth="2.5"
-              strokeDasharray={`${(loadedCount / totalCompanies) * 62.8} 62.8`}
-              strokeLinecap="round"
-              transform="rotate(-90 12 12)"
-              style={{ transition: 'stroke-dasharray 0.4s ease' }}
-            />
-          </svg>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>
-              {loadedCount === 0 ? 'Intelligence Feeds' : `${loadedCount} of ${totalCompanies} loaded`}
-            </span>
-            <span style={{ fontSize: 11, color: 'var(--text3)' }}>
-              {totalCompanies} {totalCompanies === 1 ? 'company' : 'companies'} monitored
-            </span>
-          </div>
-        </div>
-        <button
-          onClick={loadAll}
-          disabled={loadingAll}
-          aria-label={loadedCount > 0 ? 'Refresh all feeds' : 'Load all feeds'}
-          style={{
-            padding: '8px 18px', fontSize: 12, fontWeight: 600,
-            color: loadingAll ? 'var(--text3)' : 'var(--bg)',
-            background: loadingAll ? 'var(--surface2)' : 'var(--accent)',
-            border: 'none', borderRadius: 8,
-            cursor: loadingAll ? 'wait' : 'pointer',
-            display: 'flex', alignItems: 'center', gap: 7,
-            transition: 'all 0.2s',
-            outline: 'none',
-          }}
-        >
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ animation: loadingAll ? 'spin 1s linear infinite' : 'none' }}>
-            <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          {loadingAll ? 'Loading...' : loadedCount > 0 ? 'Refresh All' : 'Load All'}
-        </button>
-      </div>
-
       {/* Legend */}
-      {(mainCard.loaded || loadedCount > 0) && (
+      {loaded && (
         <div
           role="note"
           aria-label="Analysis status legend"
@@ -566,60 +471,15 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       )}
 
       {/* Main stock card */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <CompanyFeedCard
-          label={`${companyName} (${ticker})`}
-          data={mainCard}
-          showAnalysis
-          aiChecking={aiChecking}
-          isPrimary
-          onLoad={loadMainCard}
-          onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
-        />
-      </div>
-
-      {/* Competitor section */}
-      {competitors && competitors.length > 0 && (
-        <>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            padding: '20px 0 8px',
-          }}>
-            <span style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--text3)',
-              textTransform: 'uppercase', letterSpacing: '1.2px',
-            }}>
-              {competitorLabel || 'Competitors'}
-            </span>
-            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-            <span style={{
-              fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)',
-            }}>
-              {competitors.length}
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {competitors.map(comp => {
-              const data: CardData = compCards[comp.name] || {
-                loading: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
-              };
-              return (
-                <CompanyFeedCard
-                  key={comp.name}
-                  label={comp.name}
-                  url={comp.url}
-                  data={data}
-                  showAnalysis
-                  aiChecking={compAiChecking[comp.name] || false}
-                  onLoad={() => loadCompetitor(comp.name)}
-                  onTabChange={(tab) => setCompTab(comp.name, tab)}
-                />
-              );
-            })}
-          </div>
-        </>
-      )}
+      <CompanyFeedCard
+        label={`${companyName} (${ticker})`}
+        data={mainCard}
+        showAnalysis
+        aiChecking={aiChecking}
+        isPrimary
+        onLoad={loadMainCard}
+        onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
+      />
 
       {/* Research sources */}
       <div style={{ padding: '20px 0 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
