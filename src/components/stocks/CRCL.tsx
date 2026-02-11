@@ -1186,6 +1186,9 @@ const CRCLParameterCard = ({
             <div
               key={opt}
               onClick={() => { onChange(opt); setCustomMode(false); }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && (() => { onChange(opt); setCustomMode(false); })()}
               style={{
                 padding: '10px 4px',
                 borderRadius: 8,
@@ -1236,6 +1239,10 @@ const CRCLParameterCard = ({
         ) : (
           <div
             onClick={() => setCustomMode(true)}
+            role="button"
+            tabIndex={0}
+            aria-label="Enter custom value"
+            onKeyDown={(e) => e.key === 'Enter' && setCustomMode(true)}
             style={{
               padding: '10px 4px',
               borderRadius: 8,
@@ -1323,6 +1330,9 @@ const OverviewParameterCard = ({
             <div
               key={opt}
               onClick={() => { onChange(opt); setCustomMode(false); }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && (() => { onChange(opt); setCustomMode(false); })()}
               style={{
                 padding: '10px 4px',
                 borderRadius: 8,
@@ -1387,6 +1397,10 @@ const OverviewParameterCard = ({
         ) : (
           <div
             onClick={() => setCustomMode(true)}
+            role="button"
+            tabIndex={0}
+            aria-label="Enter custom value"
+            onKeyDown={(e) => e.key === 'Enter' && setCustomMode(true)}
             style={{
               padding: '10px 4px',
               borderRadius: 8,
@@ -1547,6 +1561,10 @@ const CRCLModelTab = ({
                 <div
                   key={s}
                   onClick={() => applyScenario(s)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${preset.label} scenario`}
+                  onKeyDown={(e) => e.key === 'Enter' && applyScenario(s)}
                   style={{
                     padding: 12,
                     borderRadius: 10,
@@ -4683,7 +4701,7 @@ function CRCLModel() {
                         </div>
 
                         {/* Technical Analyst Perspective */}
-                        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 16, borderRadius: 8, border: '1px solid rgba(52,211,153,0.2)' }}>
+                        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 16, borderRadius: 8, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
                             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Chart Patterns & Price Action</span>
@@ -4983,6 +5001,10 @@ function CRCLModel() {
                   <div
                     key={nav.id}
                     onClick={() => setCapitalView(nav.id)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`View ${nav.label}`}
+                    onKeyDown={(e) => e.key === 'Enter' && setCapitalView(nav.id)}
                     className="card"
                     style={{
                       cursor: 'pointer',
@@ -5443,7 +5465,7 @@ function CRCLModel() {
                           { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
                         ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); }} style={{
+                          <div key={opt} onClick={() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); })()} style={{
                             padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
@@ -5473,7 +5495,7 @@ function CRCLModel() {
                           { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
                         ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); }} style={{
+                          <div key={opt} onClick={() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); })()} style={{
                             padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
@@ -5507,7 +5529,7 @@ function CRCLModel() {
                           { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
                         ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcMarginMin(opt); setMcPreset('custom'); }} style={{
+                          <div key={opt} onClick={() => { setMcMarginMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMin(opt); setMcPreset('custom'); })()} style={{
                             padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
@@ -5537,7 +5559,7 @@ function CRCLModel() {
                           { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
                         ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcMarginMax(opt); setMcPreset('custom'); }} style={{
+                          <div key={opt} onClick={() => { setMcMarginMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMax(opt); setMcPreset('custom'); })()} style={{
                             padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
@@ -5571,7 +5593,7 @@ function CRCLModel() {
                           { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
                         ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcDiscountMin(opt); setMcPreset('custom'); }} style={{
+                          <div key={opt} onClick={() => { setMcDiscountMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMin(opt); setMcPreset('custom'); })()} style={{
                             padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
@@ -7619,13 +7641,19 @@ const CompsTab = () => {
                     >
                       <div
                         onClick={() => setExpandedNews(isExpanded ? null : expandKey)}
+                        role="button"
+                        tabIndex={0}
+                        aria-expanded={isExpanded}
+                        aria-label={`Toggle news details for ${news.date}`}
+                        onKeyDown={(e) => e.key === 'Enter' && setExpandedNews(isExpanded ? null : expandKey)}
                         style={{
                           display: 'grid',
                           gridTemplateColumns: '90px 100px 1fr auto auto',
                           gap: 12,
                           padding: '14px 20px',
                           cursor: 'pointer',
-                          alignItems: 'center'
+                          alignItems: 'center',
+                          transition: 'all 0.2s'
                         }}
                       >
                         {/* Date */}
