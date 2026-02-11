@@ -216,7 +216,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       <div className="highlight">
         <h3>Live Sources & Research</h3>
         <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-          Live article feeds for {companyName} ({ticker}). Press releases aggregated from PR Newswire, Business Wire, GlobeNewswire &amp; investor relations. Latest News pulls all recent coverage. AI-powered analysis status check included.
+          Live article feeds for {companyName} ({ticker}). Press releases sourced from the company IR page, PR Newswire, Business Wire &amp; GlobeNewswire. Latest News pulls all recent coverage. AI-powered analysis status check included.
         </p>
       </div>
 
