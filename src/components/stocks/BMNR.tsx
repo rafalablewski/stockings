@@ -2860,34 +2860,74 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Staking<span style={{ color: 'var(--mint)' }}>.</span></h2>
         <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>BMNR generates yield by staking ETH through validators. Compare staking strategies and model compounding returns over time.</p>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-strategy</div>
-      <div className="g3" aria-label="Staking strategy selection">
-        <div role="button" tabIndex={0} aria-label="Select solo staking strategy" onClick={() => setStakingType('solo')} onKeyDown={(e) => e.key === 'Enter' && setStakingType('solo')} style={{ padding: 16, borderRadius: 12, border: stakingType === 'solo' ? '2px solid var(--violet)' : '1px solid var(--border)', background: stakingType === 'solo' ? 'var(--violet-dim)' : 'var(--surface2)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><span style={{ fontWeight: 500 }}>Solo Staking</span><span style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>{soloAPY.toFixed(1)}%</span></div>
-          <p style={{ fontSize: 12, color: 'var(--text3)' }}>Run validators. +0.5% MEV/tips.</p><p style={{ fontSize: 12, color: 'var(--gold)', marginTop: 4 }}>Higher risk: slashing, technical</p>
-        </div>
-        <div role="button" tabIndex={0} aria-label="Select liquid staking strategy" onClick={() => setStakingType('liquid')} onKeyDown={(e) => e.key === 'Enter' && setStakingType('liquid')} style={{ padding: 16, borderRadius: 12, border: stakingType === 'liquid' ? '2px solid var(--violet)' : '1px solid var(--border)', background: stakingType === 'liquid' ? 'var(--violet-dim)' : 'var(--surface2)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><span style={{ fontWeight: 500 }}>Liquid Staking</span><span style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>{liquidAPY.toFixed(1)}%</span></div>
-          <p style={{ fontSize: 12, color: 'var(--text3)' }}>Lido (stETH), Rocket Pool (rETH)</p><p style={{ fontSize: 12, color: 'var(--gold)', marginTop: 4 }}>Medium risk: smart contract</p>
-        </div>
-        <div role="button" tabIndex={0} aria-label="Select restaking strategy" onClick={() => setStakingType('restaking')} onKeyDown={(e) => e.key === 'Enter' && setStakingType('restaking')} style={{ padding: 16, borderRadius: 12, border: stakingType === 'restaking' ? '2px solid var(--violet)' : '1px solid var(--border)', background: stakingType === 'restaking' ? 'var(--violet-dim)' : 'var(--surface2)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><span style={{ fontWeight: 500 }}>Restaking</span><span style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>{restakingAPY.toFixed(1)}%</span></div>
-          <p style={{ fontSize: 12, color: 'var(--text3)' }}>EigenLayer + LSTs. +{restakingBonus}% bonus.</p><p style={{ fontSize: 12, color: 'var(--coral)', marginTop: 4 }}>Higher risk: AVS slashing</p>
-        </div>
+      {/* Strategy Selector — Glass grid interactive */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#staking-strategy</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }} aria-label="Staking strategy selection">
+        {[
+          { key: 'solo', label: 'Solo Staking', apy: soloAPY, desc: 'Run validators. +0.5% MEV/tips.', risk: 'Higher risk: slashing, technical', riskColor: 'var(--gold)' },
+          { key: 'liquid', label: 'Liquid Staking', apy: liquidAPY, desc: 'Lido (stETH), Rocket Pool (rETH)', risk: 'Medium risk: smart contract', riskColor: 'var(--gold)' },
+          { key: 'restaking', label: 'Restaking', apy: restakingAPY, desc: `EigenLayer + LSTs. +${restakingBonus}% bonus.`, risk: 'Higher risk: AVS slashing', riskColor: 'var(--coral)' },
+        ].map(s => (
+          <div key={s.key} role="button" tabIndex={0} aria-label={`Select ${s.label} strategy`}
+            onClick={() => setStakingType(s.key)} onKeyDown={(e) => e.key === 'Enter' && setStakingType(s.key)}
+            style={{ background: stakingType === s.key ? 'color-mix(in srgb, var(--violet) 8%, var(--surface))' : 'var(--surface)', padding: '24px 20px', cursor: 'pointer', transition: 'all 0.2s', borderBottom: stakingType === s.key ? '3px solid var(--violet)' : '3px solid transparent' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: stakingType === s.key ? 'var(--text)' : 'var(--text2)' }}>{s.label}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: 'var(--mint)' }}>{s.apy.toFixed(1)}%</span>
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>{s.desc}</div>
+            <div style={{ fontSize: 11, color: s.riskColor }}>{s.risk}</div>
+          </div>
+        ))}
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-params</div>
-      <div className="card"><div className="card-title">Parameters</div><div className="g4"><Input label="Base APY (%)" value={baseStakingAPY} onChange={setBaseStakingAPY} step={0.1} /><Input label="Restaking Bonus (%)" value={restakingBonus} onChange={setRestakingBonus} step={0.1} /><Input label="% ETH Staked" value={stakingRatio} onChange={setStakingRatio} max={100} /><Input label="Slashing Risk (%/yr)" value={slashingRisk} onChange={setSlashingRisk} step={0.1} /></div></div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-output</div>
-      <div className="g4">
-        <Card label="Effective APY" value={`${calc.effectiveAPY.toFixed(2)}%`} sub="Net annual yield" color="green" updateSource="PR" />
-        <Card label="Staked ETH" value={`${(calc.stakedETH / 1e6).toFixed(2)}M`} sub={`${stakingRatio}% of holdings`} color="blue" updateSource="PR" />
-        <Card label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} sub="Before slashing" color="yellow" updateSource="PR" />
-        <Card label="Yield Value" value={`$${(calc.annualYieldUSD / 1e6).toFixed(1)}M`} sub="At current price" color="purple" updateSource={['PR', 'MARKET']} />
+
+      {/* Parameters — Clean section */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#staking-params</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Parameters</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}><Input label="Base APY (%)" value={baseStakingAPY} onChange={setBaseStakingAPY} step={0.1} /><Input label="Restaking Bonus (%)" value={restakingBonus} onChange={setRestakingBonus} step={0.1} /><Input label="% ETH Staked" value={stakingRatio} onChange={setStakingRatio} max={100} /><Input label="Slashing Risk (%/yr)" value={slashingRisk} onChange={setSlashingRisk} step={0.1} /></div>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#staking-projections</div>
-      <div className="card"><div className="card-title">Yield Projections (Compounding)</div>
-        <table className="tbl" aria-label="Staking yield projections"><thead><tr><th>Year</th><th className="r">Yield ETH</th><th className="r">Total ETH</th><th className="r">NAV/Share</th></tr></thead>
-        <tbody>{projections.map(p => (<tr key={p.year}><td>{p.year}Y</td><td className="r mint">+{Math.round(p.yieldETH).toLocaleString()}</td><td className="r">{(p.totalETH / 1e6).toFixed(2)}M</td><td className="r" style={{ fontWeight: 500 }}>${p.nav.toFixed(2)}</td></tr>))}</tbody></table>
+
+      {/* Output KPIs — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#staking-output</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Effective APY', value: `${calc.effectiveAPY.toFixed(2)}%`, sub: 'Net annual yield', color: 'var(--mint)' },
+          { label: 'Staked ETH', value: `${(calc.stakedETH / 1e6).toFixed(2)}M`, sub: `${stakingRatio}% of holdings`, color: 'var(--sky)' },
+          { label: 'Annual Yield', value: `${Math.round(calc.annualYieldETH).toLocaleString()} ETH`, sub: 'Before slashing', color: 'var(--gold)' },
+          { label: 'Yield Value', value: `$${(calc.annualYieldUSD / 1e6).toFixed(1)}M`, sub: 'At current price', color: 'var(--violet)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Yield Projections — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#staking-projections</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Yield Projections (Compounding)</span>
+        </div>
+        <div style={{ padding: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+            {['Year', 'Yield ETH', 'Total ETH', 'NAV/Share'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Year' ? 'left' : 'right' }}>{h}</span>
+            ))}
+          </div>
+          {projections.map((p, i) => (
+            <div key={p.year} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '12px 28px', borderBottom: i < projections.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text)' }}>{p.year}Y</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>+{Math.round(p.yieldETH).toLocaleString()}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{(p.totalETH / 1e6).toFixed(2)}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text)', fontWeight: 600, textAlign: 'right' }}>${p.nav.toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
@@ -2946,31 +2986,71 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Dilution<span style={{ color: 'var(--violet)' }}>.</span></h2>
         <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Model the impact of share issuance on NAV per share. Accretive when issued above NAV; dilutive when below.</p>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#single-tranche</div>
-      <div className="card"><div className="card-title">Single Tranche</div>
-        <div className="g4"><Input label="Dilution %" value={dilutionPercent} onChange={setDilutionPercent} max={100} /><Input label="Sale Discount %" value={saleDiscount} onChange={setSaleDiscount} max={50} /><Input label="NAV Multiple" value={navMultiple} onChange={setNavMultiple} step={0.1} /><div style={{ fontSize: 14 }}><div style={{ color: 'var(--text3)' }}>Available</div><div style={{ fontWeight: 500 }}>{(maxAuthorizedShares - currentShares).toLocaleString()}M</div></div></div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-output</div>
-        <div className="g4">
-          <Card label="New Shares" value={`${singleTranche.newShares.toFixed(0)}M`} sub="Issued" color="blue" />
-          <Card label="Proceeds" value={`$${(singleTranche.proceeds / 1e9).toFixed(2)}B`} sub="Raised" color="green" />
-          <Card label="ETH Bought" value={`${(singleTranche.ethBought / 1e6).toFixed(2)}M`} sub="Purchased" color="yellow" />
-          <Card label="NAV Change" value={`${singleTranche.navChange >= 0 ? '+' : ''}${singleTranche.navChange.toFixed(1)}%`} sub={singleTranche.navChange >= 0 ? 'Accretive ✓' : 'Dilutive ✗'} color={singleTranche.navChange >= 0 ? 'green' : 'red'} />
+      {/* Single Tranche — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#single-tranche</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Single Tranche</span>
         </div>
-      </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#multi-tranche</div>
-      <div className="card"><div className="card-title">Multi-Tranche Schedule</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }} aria-label="Multi-tranche dilution schedule">{tranches.map(t => (
-          <div key={t.id} style={{ padding: 12, borderRadius: 8, border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 16, background: t.enabled ? 'var(--surface2)' : 'var(--surface)', opacity: t.enabled ? 1 : 0.6, transition: 'all 0.2s' }}>
-            <input type="checkbox" checked={t.enabled} onChange={e => updateTranche(t.id, 'enabled', e.target.checked)} style={{ width: 16, height: 16 }} aria-label={`Enable tranche ${t.id}`} />
-            <div className="g4" style={{ flex: 1 }}>
-              <Input label="Year" value={t.year} onChange={v => updateTranche(t.id, 'year', v)} step={0.5} />
-              <Input label="Shares (M)" value={t.sharesM} onChange={v => updateTranche(t.id, 'sharesM', v)} />
-              <Input label="ETH Price ($)" value={t.ethPrice} onChange={v => updateTranche(t.id, 'ethPrice', v)} />
-              {multiTranche.results.find(r => r.id === t.id) && <div style={{ fontSize: 14 }}><div style={{ color: 'var(--text3)' }}>Accretion</div><div style={{ color: multiTranche.results.find(r => r.id === t.id)?.accretion >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{multiTranche.results.find(r => r.id === t.id)?.accretion >= 0 ? '+' : ''}{multiTranche.results.find(r => r.id === t.id)?.accretion.toFixed(1)}%</div></div>}
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+            <Input label="Dilution %" value={dilutionPercent} onChange={setDilutionPercent} max={100} />
+            <Input label="Sale Discount %" value={saleDiscount} onChange={setSaleDiscount} max={50} />
+            <Input label="NAV Multiple" value={navMultiple} onChange={setNavMultiple} step={0.1} />
+            <div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: 4 }}>Available</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{(maxAuthorizedShares - currentShares).toLocaleString()}M</div>
             </div>
           </div>
-        ))}</div>
-        <div style={{ borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text3)' }}>Active: {tranches.filter(t => t.enabled).length}</span><div style={{ textAlign: 'right' }}><div style={{ color: 'var(--text3)', fontSize: 14 }}>Cumulative</div><div style={{ fontSize: 20, fontWeight: 700, color: multiTranche.totalAccretion >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{multiTranche.totalAccretion >= 0 ? '+' : ''}{multiTranche.totalAccretion.toFixed(1)}%</div></div></div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
+          {[
+            { label: 'New Shares', value: `${singleTranche.newShares.toFixed(0)}M`, sub: 'Issued', color: 'var(--sky)' },
+            { label: 'Proceeds', value: `$${(singleTranche.proceeds / 1e9).toFixed(2)}B`, sub: 'Raised', color: 'var(--mint)' },
+            { label: 'ETH Bought', value: `${(singleTranche.ethBought / 1e6).toFixed(2)}M`, sub: 'Purchased', color: 'var(--gold)' },
+            { label: 'NAV Change', value: `${singleTranche.navChange >= 0 ? '+' : ''}${singleTranche.navChange.toFixed(1)}%`, sub: singleTranche.navChange >= 0 ? 'Accretive' : 'Dilutive', color: singleTranche.navChange >= 0 ? 'var(--mint)' : 'var(--coral)' },
+          ].map(kpi => (
+            <div key={kpi.label} style={{ background: 'var(--surface)', padding: '20px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 22, fontWeight: 700, color: kpi.color, margin: '6px 0 2px' }}>{kpi.value}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Multi-Tranche — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#multi-tranche</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Multi-Tranche Schedule</span>
+          <span style={{ fontSize: 11, color: 'var(--text3)' }}>Active: {tranches.filter(t => t.enabled).length}</span>
+        </div>
+        <div style={{ padding: '16px 28px', display: 'flex', flexDirection: 'column', gap: 12 }} aria-label="Multi-tranche dilution schedule">
+          {tranches.map(t => {
+            const result = multiTranche.results.find(r => r.id === t.id);
+            return (
+              <div key={t.id} style={{ padding: '16px 20px', borderRadius: 12, border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 16, background: t.enabled ? 'color-mix(in srgb, var(--violet) 3%, var(--surface))' : 'var(--surface)', opacity: t.enabled ? 1 : 0.5, transition: 'all 0.2s' }}>
+                <input type="checkbox" checked={t.enabled} onChange={e => updateTranche(t.id, 'enabled', e.target.checked)} style={{ width: 16, height: 16 }} aria-label={`Enable tranche ${t.id}`} />
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, flex: 1 }}>
+                  <Input label="Year" value={t.year} onChange={v => updateTranche(t.id, 'year', v)} step={0.5} />
+                  <Input label="Shares (M)" value={t.sharesM} onChange={v => updateTranche(t.id, 'sharesM', v)} />
+                  <Input label="ETH Price ($)" value={t.ethPrice} onChange={v => updateTranche(t.id, 'ethPrice', v)} />
+                  {result && <div>
+                    <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: 4 }}>Accretion</div>
+                    <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: result.accretion >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{result.accretion >= 0 ? '+' : ''}{result.accretion.toFixed(1)}%</div>
+                  </div>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ padding: '16px 28px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Cumulative Accretion</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: multiTranche.totalAccretion >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{multiTranche.totalAccretion >= 0 ? '+' : ''}{multiTranche.totalAccretion.toFixed(1)}%</div>
+          </div>
+        </div>
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
@@ -3002,21 +3082,50 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Debt<span style={{ color: 'var(--coral)' }}>.</span></h2>
         <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Model convertible debt financing and analyze LTV covenant risks. Track death spiral trigger prices.</p>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-params</div>
-      <div className="card"><div className="card-title">Debt Parameters</div>
-        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}><input type="checkbox" checked={useDebt} onChange={e => setUseDebt(e.target.checked)} style={{ width: 16, height: 16 }} aria-label="Enable convertible debt modeling" /><span>Enable Convertible Debt</span></label>
-        {useDebt && <div className="g5"><Input label="Principal ($M)" value={debtAmount} onChange={setDebtAmount} /><Input label="Coupon (%)" value={debtRate} onChange={setDebtRate} step={0.1} /><Input label="Maturity (Yrs)" value={debtMaturity} onChange={setDebtMaturity} /><Input label="Conv. Premium (%)" value={conversionPremium} onChange={setConversionPremium} /><Input label="LTV Covenant (%)" value={debtCovenantLTV} onChange={setDebtCovenantLTV} /></div>}
+      {/* Debt Parameters — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#debt-params</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Debt Parameters</span>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, color: 'var(--text2)' }}><input type="checkbox" checked={useDebt} onChange={e => setUseDebt(e.target.checked)} style={{ width: 16, height: 16 }} aria-label="Enable convertible debt modeling" />Enable Convertible Debt</label>
+        </div>
+        {useDebt && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}><Input label="Principal ($M)" value={debtAmount} onChange={setDebtAmount} /><Input label="Coupon (%)" value={debtRate} onChange={setDebtRate} step={0.1} /><Input label="Maturity (Yrs)" value={debtMaturity} onChange={setDebtMaturity} /><Input label="Conv. Premium (%)" value={conversionPremium} onChange={setConversionPremium} /><Input label="LTV Covenant (%)" value={debtCovenantLTV} onChange={setDebtCovenantLTV} /></div>}
       </div>
       {useDebt && (<>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#debt-metrics</div>
-        <div className="g4">
-          <Card label="Leverage" value={`${(calc.leverageRatio * 100).toFixed(1)}%`} sub="Debt/Mkt Cap" color="blue" />
-          <Card label="Current LTV" value={`${(calc.ltv * 100).toFixed(1)}%`} sub={`Covenant: ${debtCovenantLTV}%`} color={calc.ltv * 100 < debtCovenantLTV * 0.8 ? 'green' : calc.ltv * 100 < debtCovenantLTV ? 'yellow' : 'red'} />
-          <Card label="Conv. Price" value={`$${calc.conversionPrice.toFixed(2)}`} sub={`+${conversionPremium}%`} color="purple" />
-          <Card label="Death Spiral" value={`$${calc.deathSpiralETHPrice.toFixed(0)}`} sub="ETH trigger" color="red" />
+        {/* Debt KPIs — Glass grid */}
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#debt-metrics</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+          {[
+            { label: 'Leverage', value: `${(calc.leverageRatio * 100).toFixed(1)}%`, sub: 'Debt/Mkt Cap', color: 'var(--sky)' },
+            { label: 'Current LTV', value: `${(calc.ltv * 100).toFixed(1)}%`, sub: `Covenant: ${debtCovenantLTV}%`, color: calc.ltv * 100 < debtCovenantLTV * 0.8 ? 'var(--mint)' : calc.ltv * 100 < debtCovenantLTV ? 'var(--gold)' : 'var(--coral)' },
+            { label: 'Conv. Price', value: `$${calc.conversionPrice.toFixed(2)}`, sub: `+${conversionPremium}%`, color: 'var(--violet)' },
+            { label: 'Death Spiral', value: `$${calc.deathSpiralETHPrice.toFixed(0)}`, sub: 'ETH trigger', color: 'var(--coral)' },
+          ].map(kpi => (
+            <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+            </div>
+          ))}
         </div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ltv-drawdown</div>
-        <div className="card"><div className="card-title">LTV Under Drawdown</div><div className="g5" aria-label="LTV drawdown scenarios">{drawdown.map(d => (<div key={d.drawdown} style={{ padding: 12, borderRadius: 8, textAlign: 'center', background: d.breach ? 'var(--coral-dim)' : 'var(--surface2)', border: d.breach ? '1px solid var(--coral)' : '1px solid var(--border)', transition: 'all 0.2s' }}><div style={{ fontSize: 12, color: 'var(--text3)' }}>{d.drawdown === 0 ? 'Current' : `${d.drawdown}%`}</div><div style={{ fontWeight: 500 }}>${d.ethPrice.toFixed(0)}</div><div style={{ fontSize: 18, fontWeight: 700, color: d.breach ? 'var(--coral)' : 'var(--mint)' }}>{d.ltv.toFixed(0)}%</div>{d.breach && <div style={{ fontSize: 12, color: 'var(--coral)' }}>⚠️ BREACH</div>}</div>))}</div></div>
+
+        {/* LTV Drawdown — Glass grid scenarios */}
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#ltv-drawdown</div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>LTV Under Drawdown</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)' }} aria-label="LTV drawdown scenarios">
+            {drawdown.map(d => (
+              <div key={d.drawdown} style={{ background: d.breach ? 'color-mix(in srgb, var(--coral) 5%, var(--surface))' : 'var(--surface)', padding: '20px 12px', textAlign: 'center' }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{d.drawdown === 0 ? 'Current' : `${d.drawdown}%`}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', marginTop: 4 }}>${d.ethPrice.toFixed(0)}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 22, fontWeight: 700, color: d.breach ? 'var(--coral)' : 'var(--mint)', margin: '6px 0' }}>{d.ltv.toFixed(0)}%</div>
+                {d.breach && <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--coral)', textTransform: 'uppercase' }}>Breach</div>}
+              </div>
+            ))}
+          </div>
+        </div>
       </>)}
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
@@ -5960,14 +6069,56 @@ const SensitivityTab = ({ calc, currentETH, currentShares, ethPrice }) => {
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Sensitivity<span style={{ color: 'var(--gold)' }}>.</span></h2>
         <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Two-variable sensitivity matrix showing implied stock price across ETH price and NAV multiple combinations. Tornado chart ranks parameter impact.</p>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#price-matrix</div>
-      <div className="card"><div className="card-title">Price Matrix</div>
-        <table className="tbl" aria-label="Price sensitivity matrix"><thead><tr><th>ETH</th>{[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(nm => <th key={nm} className="c">{nm}x NAV</th>)}</tr></thead>
-        <tbody>{matrix.map(row => (<tr key={row.ethMult} style={row.ethMult === 1.0 ? { background: 'var(--accent-dim)' } : undefined}><td style={{ fontWeight: 500 }}>${row.ethPrice.toLocaleString()} ({row.ethMult}x)</td>{row.scenarios.map(s => (<td key={s.navMult} className="c" style={row.ethMult === 1.0 && s.navMult === 1.0 ? { background: 'var(--accent-dim)', fontWeight: 600 } : undefined}><span style={{ color: s.price >= calc.currentNAV ? 'var(--mint)' : 'var(--coral)' }}>${s.price.toFixed(2)}</span></td>))}</tr>))}</tbody></table>
+      {/* Price Matrix — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#price-matrix</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Price Matrix</span>
+        </div>
+        <div style={{ overflowX: 'auto', padding: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '180px repeat(6, 1fr)', borderBottom: '1px solid var(--border)', minWidth: 700 }}>
+            <div style={{ padding: '12px 28px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>ETH Price</div>
+            {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(nm => (
+              <div key={nm} style={{ padding: '12px 8px', textAlign: 'center', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: nm === 1.0 ? 'var(--cyan)' : 'var(--text3)' }}>{nm}x NAV</div>
+            ))}
+          </div>
+          {matrix.map((row, ri) => (
+            <div key={row.ethMult} style={{ display: 'grid', gridTemplateColumns: '180px repeat(6, 1fr)', borderBottom: ri < matrix.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: row.ethMult === 1.0 ? 'color-mix(in srgb, var(--cyan) 5%, transparent)' : 'transparent', transition: 'background 0.15s', minWidth: 700 }}
+              onMouseEnter={e => { if (row.ethMult !== 1.0) e.currentTarget.style.background = 'var(--surface2)'; }}
+              onMouseLeave={e => { if (row.ethMult !== 1.0) e.currentTarget.style.background = 'transparent'; }}>
+              <div style={{ padding: '12px 28px', fontSize: 12, fontWeight: 500, color: row.ethMult === 1.0 ? 'var(--cyan)' : 'var(--text)' }}>${row.ethPrice.toLocaleString()} ({row.ethMult}x)</div>
+              {row.scenarios.map(s => (
+                <div key={s.navMult} style={{ padding: '12px 8px', textAlign: 'center', fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: row.ethMult === 1.0 && s.navMult === 1.0 ? 700 : 400, color: s.price >= calc.currentNAV ? 'var(--mint)' : 'var(--coral)', background: row.ethMult === 1.0 && s.navMult === 1.0 ? 'color-mix(in srgb, var(--cyan) 10%, transparent)' : 'transparent' }}>
+                  ${s.price.toFixed(2)}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#tornado-chart</div>
-      <div className="card"><div className="card-title">Tornado Chart (±20%)</div>
-        <div style={{ display: 'flex', flexDirection: 'column' }} aria-label="Tornado sensitivity chart">{[{ param: 'ETH Price', down: -20, up: 20 }, { param: 'NAV Multiple', down: -20, up: 20 }, { param: 'ETH Holdings', down: -20, up: 20 }, { param: 'Shares Out', down: 25, up: -17 }].map(t => (<div key={t.param} style={{ display: 'flex', alignItems: 'center' }} aria-label={`${t.param}: ${t.down}% downside, ${t.up > 0 ? '+' : ''}${t.up}% upside`}><div style={{ width: 112, fontSize: 14, color: 'var(--text2)' }}>{t.param}</div><div style={{ flex: 1, height: 32, background: 'var(--surface)', borderRadius: 4, position: 'relative' }}><div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: 'var(--border)' }} /><div style={{ position: 'absolute', height: '100%', background: 'var(--coral-dim)', right: '50%', width: `${Math.abs(Math.min(t.down, 0)) * 2}%` }} /><div style={{ position: 'absolute', height: '100%', background: 'var(--mint-dim)', left: '50%', width: `${Math.max(t.up, 0) * 2}%` }} /><div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 500 }}><span style={{ color: 'var(--coral)' }}>{t.down}%</span><span style={{ color: 'var(--mint)' }}>{t.up > 0 ? '+' : ''}{t.up}%</span></div></div></div>))}</div>
+
+      {/* Tornado Chart — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#tornado-chart</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Tornado Chart (±20%)</span>
+        </div>
+        <div style={{ padding: '20px 28px', display: 'flex', flexDirection: 'column', gap: 12 }} aria-label="Tornado sensitivity chart">
+          {[{ param: 'ETH Price', down: -20, up: 20 }, { param: 'NAV Multiple', down: -20, up: 20 }, { param: 'ETH Holdings', down: -20, up: 20 }, { param: 'Shares Out', down: 25, up: -17 }].map(t => (
+            <div key={t.param} style={{ display: 'flex', alignItems: 'center', gap: 16 }} aria-label={`${t.param}: ${t.down}% downside, ${t.up > 0 ? '+' : ''}${t.up}% upside`}>
+              <div style={{ width: 100, fontSize: 12, color: 'var(--text2)', fontWeight: 500 }}>{t.param}</div>
+              <div style={{ flex: 1, height: 28, background: 'color-mix(in srgb, var(--border) 40%, transparent)', borderRadius: 4, position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: 'var(--border)', zIndex: 1 }} />
+                <div style={{ position: 'absolute', height: '100%', background: 'color-mix(in srgb, var(--coral) 25%, transparent)', right: '50%', width: `${Math.abs(Math.min(t.down, 0)) * 2}%`, borderRadius: '4px 0 0 4px' }} />
+                <div style={{ position: 'absolute', height: '100%', background: 'color-mix(in srgb, var(--mint) 25%, transparent)', left: '50%', width: `${Math.max(t.up, 0) * 2}%`, borderRadius: '0 4px 4px 0' }} />
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', zIndex: 2 }}>
+                  <span style={{ color: 'var(--coral)' }}>{t.down}%</span>
+                  <span style={{ color: 'var(--mint)' }}>{t.up > 0 ? '+' : ''}{t.up}%</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
@@ -6007,20 +6158,56 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Backtest<span style={{ color: 'var(--sky)' }}>.</span></h2>
         <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>What would NAV have been at historical ETH prices? Toggle staking yield to see compounding effect. Illustrative only.</p>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-settings</div>
-      <div className="card"><div className="card-title">Settings</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}><label style={{ fontSize: 14, color: 'var(--text3)' }}>Start:</label><select value={startYear} onChange={e => setStartYear(Number(e.target.value))} aria-label="Backtest start year" style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: '4px 12px', fontSize: 14, color: 'var(--text1)' }}>{[2020, 2021, 2022, 2023, 2024].map(y => <option key={y} value={y}>{y}</option>)}</select></div>
-          <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}><input type="checkbox" checked={includeYield} onChange={e => setIncludeYield(e.target.checked)} style={{ width: 16, height: 16 }} aria-label="Include staking yield in backtest" /><span style={{ fontSize: 14 }}>Include Yield ({baseStakingAPY}%)</span></label>
-          <div style={{ display: 'flex', alignItems: 'center' }}><label style={{ fontSize: 14, color: 'var(--text3)' }}>NAV Multiple:</label><input type="number" value={assumedMult} onChange={e => setAssumedMult(Number(e.target.value))} step={0.1} min={0.5} max={3} aria-label="Assumed NAV multiple" style={{ width: 80, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: '4px 8px', fontSize: 14, color: 'var(--text1)' }} /></div>
+      {/* Settings — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#backtest-settings</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Settings</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <label style={{ fontSize: 12, color: 'var(--text3)', letterSpacing: '0.5px' }}>Start:</label>
+            <select value={startYear} onChange={e => setStartYear(Number(e.target.value))} aria-label="Backtest start year" style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--text)', fontFamily: 'Space Mono, monospace' }}>{[2020, 2021, 2022, 2023, 2024].map(y => <option key={y} value={y}>{y}</option>)}</select>
+          </div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, color: 'var(--text2)' }}><input type="checkbox" checked={includeYield} onChange={e => setIncludeYield(e.target.checked)} style={{ width: 16, height: 16 }} aria-label="Include staking yield in backtest" />Include Yield ({baseStakingAPY}%)</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <label style={{ fontSize: 12, color: 'var(--text3)', letterSpacing: '0.5px' }}>NAV Multiple:</label>
+            <input type="number" value={assumedMult} onChange={e => setAssumedMult(Number(e.target.value))} step={0.1} min={0.5} max={3} aria-label="Assumed NAV multiple" style={{ width: 72, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 8px', fontSize: 12, color: 'var(--text)', fontFamily: 'Space Mono, monospace' }} />
+          </div>
         </div>
       </div>
-      {stats && (<><div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-results</div>
-      <div className="g4"><Card label="Total Return" value={`${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(0)}%`} sub={`Since ${startYear}`} color={stats.totalReturn >= 0 ? 'green' : 'red'} /><Card label="Current NAV" value={`$${stats.currentNav.toFixed(2)}`} sub="Latest" color="blue" /><Card label="Stock Price" value={`$${stats.currentPrice.toFixed(2)}`} sub={`At ${assumedMult.toFixed(1)}x`} color="green" /><Card label="Max Drawdown" value={`${stats.maxDD.toFixed(0)}%`} sub="Peak to trough" color="red" /></div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#backtest-chart</div>
-      <div className="card" aria-label="Backtest chart"><div className="card-title">Historical NAV & Stock Price</div>
-        <ResponsiveContainer width="100%" height={350}><AreaChart data={data.data}><defs><linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/><stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/></linearGradient><linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" tick={{ fontSize: 10 }} interval="preserveStartEnd" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: '8px' }} formatter={(v, name) => [`$${v.toFixed(2)}`, name === 'nav' ? 'NAV' : 'Stock']} /><Area type="monotone" dataKey="nav" stroke="var(--violet)" strokeWidth={2} fill="url(#navGrad)" name="nav" /><Area type="monotone" dataKey="stockPrice" stroke="var(--mint)" strokeWidth={2} fill="url(#priceGrad)" name="stockPrice" /></AreaChart></ResponsiveContainer>
-        <div style={{ display: 'flex', justifyContent: 'center', fontSize: 12 }}><div style={{ display: 'flex', alignItems: 'center' }}><div style={{ width: 12, height: 2, background: 'var(--violet)' }} /> NAV</div><div style={{ display: 'flex', alignItems: 'center' }}><div style={{ width: 12, height: 2, background: 'var(--mint)' }} /> Stock ({assumedMult.toFixed(1)}x)</div></div>
+      {stats && (<>
+      {/* Results KPIs — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#backtest-results</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Total Return', value: `${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(0)}%`, sub: `Since ${startYear}`, color: stats.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)' },
+          { label: 'Current NAV', value: `$${stats.currentNav.toFixed(2)}`, sub: 'Latest', color: 'var(--sky)' },
+          { label: 'Stock Price', value: `$${stats.currentPrice.toFixed(2)}`, sub: `At ${assumedMult.toFixed(1)}x`, color: 'var(--mint)' },
+          { label: 'Max Drawdown', value: `${stats.maxDD.toFixed(0)}%`, sub: 'Peak to trough', color: 'var(--coral)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Chart — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#backtest-chart</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }} aria-label="Backtest chart">
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Historical NAV & Stock Price</span>
+        </div>
+        <div style={{ padding: '20px 28px' }}>
+          <ResponsiveContainer width="100%" height={350}><AreaChart data={data.data}><defs><linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/><stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/></linearGradient><linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" tick={{ fontSize: 10 }} interval="preserveStartEnd" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} fontSize={10} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={(v, name) => [`$${v.toFixed(2)}`, name === 'nav' ? 'NAV' : 'Stock']} /><Area type="monotone" dataKey="nav" stroke="var(--violet)" strokeWidth={2} fill="url(#navGrad)" name="nav" /><Area type="monotone" dataKey="stockPrice" stroke="var(--mint)" strokeWidth={2} fill="url(#priceGrad)" name="stockPrice" /></AreaChart></ResponsiveContainer>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
+            {[{ label: 'NAV', color: 'var(--violet)' }, { label: `Stock (${assumedMult.toFixed(1)}x)`, color: 'var(--mint)' }].map(l => (
+              <span key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text3)' }}>
+                <span style={{ width: 12, height: 3, borderRadius: 1, background: l.color }} />{l.label}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>

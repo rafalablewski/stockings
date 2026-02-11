@@ -1552,41 +1552,75 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         ))}
       </div>
       
-      {/* Satellite Generations Comparison */}
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Satellite Generations<UpdateIndicators sources="PR" /></div>
-        <div className="g2">
-          <div style={{ padding: 16, background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--cyan) 30%, transparent)', borderRadius: 16, transition: 'border-color 0.2s, background 0.2s' }}>
-            <h4 style={{ color: 'var(--cyan)', fontWeight: 500 }}>Block 1: BW3 + BB1-5</h4>
-            <ul style={{ fontSize: 13, color: 'var(--text2)' }}>
-              <li style={{ }}>• Array size: 693 sq ft each</li>
-              <li style={{ }}>• Launched: BW3 Sept 2022, BB1-5 Sept 2024</li>
-              <li style={{ }}>• Status: All 6 operational in orbit</li>
-              <li>• Purpose: Technology validation, early service</li>
-            </ul>
-          </div>
-          <div style={{ padding: 16, background: 'color-mix(in srgb, var(--gold) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--gold) 30%, transparent)', borderRadius: 16, transition: 'border-color 0.2s, background 0.2s' }}>
-            <h4 style={{ color: 'var(--gold)', fontWeight: 500 }}>Block 2: BB6 onwards</h4>
-            <ul style={{ fontSize: 13, color: 'var(--text2)' }}>
-              <li style={{ }}>• Array size: ~2,400 sq ft (3.5x larger)</li>
-              <li style={{ }}>• AST5000 ASIC: Custom silicon, 120 Mbps peak</li>
-              <li style={{ }}>• Capacity: 10x improvement over Block 1</li>
-              <li style={{ }}>• BB6 launched Dec 23, 2025 (ISRO)</li>
-              <li>• BB7-25: In production, 6/month by Dec 2025</li>
-            </ul>
+      {/* Satellite Generations — Side-by-side panels with accent bars */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#satellite-generations</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ background: 'var(--surface)', padding: '28px', borderLeft: '3px solid var(--cyan)' }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cyan)', letterSpacing: '-0.2px', marginBottom: 16 }}>Block 1: BW3 + BB1-5</div>
+          {['Array size: 693 sq ft each', 'Launched: BW3 Sept 2022, BB1-5 Sept 2024', 'Status: All 6 operational in orbit', 'Purpose: Technology validation, early service'].map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--cyan)', flexShrink: 0 }} />
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{item}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '28px', borderLeft: '3px solid var(--gold)' }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)', letterSpacing: '-0.2px', marginBottom: 16 }}>Block 2: BB6 onwards</div>
+          {['Array size: ~2,400 sq ft (3.5x larger)', 'AST5000 ASIC: Custom silicon, 120 Mbps peak', 'Capacity: 10x improvement over Block 1', 'BB6 launched Dec 23, 2025 (ISRO)', 'BB7-25: In production, 6/month by Dec 2025'].map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--gold)', flexShrink: 0 }} />
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Launch Schedule — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#launch-schedule</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Launch Schedule</span>
+        </div>
+        <div style={{ padding: '20px 28px' }}>
+          <ResponsiveContainer width="100%" height={200}><ComposedChart data={schedule}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={(v, name, props) => [name === 'sats' ? `${v} sats (${props.payload.note})` : `${v} cumulative`, name === 'sats' ? 'Launched' : 'Total']} /><Bar dataKey="sats" fill="var(--cyan)" radius={[4, 4, 0, 0]} /><Line dataKey="cum" stroke="var(--gold)" strokeWidth={2} /></ComposedChart></ResponsiveContainer>
+          <div style={{ display: 'flex', gap: 16, marginTop: 12, fontSize: 11, color: 'var(--text3)', flexWrap: 'wrap' }}>
+            {['BW3 Sept 2022', 'BB1-5 Sept 2024', 'BB6 Dec 2025', 'BB7 ready'].map((m, i) => (
+              <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: i < 3 ? 'var(--mint)' : 'var(--gold)' }} />
+                {m}
+              </span>
+            ))}
           </div>
         </div>
       </div>
-      
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Launch Schedule (Actual + Projected)<UpdateIndicators sources="PR" /></div>
-        <ResponsiveContainer width="100%" height={200}><ComposedChart data={schedule}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={(v, name, props) => [name === 'sats' ? `${v} sats (${props.payload.note})` : `${v} cumulative`, name === 'sats' ? 'Launched' : 'Total']} /><Bar dataKey="sats" fill="var(--cyan)" /><Line dataKey="cum" stroke="var(--gold)" strokeWidth={2} /></ComposedChart></ResponsiveContainer>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-          ✓ BW3 Sept 2022 | ✓ BB1-5 Sept 2024 | ✓ BB6 Dec 2025 | BB7 ready, BB8-25 in production
+
+      {/* Coverage Milestones — Thin progress bars */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#coverage-milestones</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Coverage Milestones</span>
+        </div>
+        <div style={{ padding: '20px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {coverage.map(c => (
+            <div key={c.r}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 13, color: 'var(--text2)' }}>{c.r}</span>
+                <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)' }}>{c.n} sats ({c.pct.toFixed(0)}%)</span>
+              </div>
+              <div role="progressbar" aria-label={`${c.r} coverage progress`} aria-valuenow={Math.round(c.pct)} aria-valuemin={0} aria-valuemax={100} style={{ height: 4, borderRadius: 2, background: 'var(--surface3)', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${Math.min(100, c.pct)}%`, borderRadius: 2, background: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)', transition: 'width 0.6s ease' }} />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Coverage Milestones<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        {coverage.map(c => (<div key={c.r} style={{ display: 'flex', alignItems: 'center', gap: 16 }}><div style={{ width: 144, fontSize: 13, color: 'var(--text2)' }}>{c.r}</div><div role="progressbar" aria-label={`${c.r} coverage progress`} aria-valuenow={Math.round(c.pct)} aria-valuemin={0} aria-valuemax={100} style={{ flex: 1, height: 20, background: 'var(--surface2)', borderRadius: 9999, overflow: 'hidden' }}><div style={{ height: '100%', width: `${c.pct}%`, background: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)', transition: 'width 0.4s ease' }} /></div><div style={{ width: 80, textAlign: 'right', fontSize: 13, color: 'var(--text2)' }}>{c.n} sats ({c.pct.toFixed(0)}%)</div></div>))}
+
+      {/* Parameters — Clean section */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#constellation-params</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Parameters</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}><Input label="Block 1 (BW3+BB1-5)" value={block1Sats} onChange={setBlock1Sats} /><Input label="Block 2 (BB6+)" value={block2Sats} onChange={setBlock2Sats} /><Input label="Target 2026" value={targetSats2026} onChange={setTargetSats2026} /><Input label="Failure %" value={launchFailureRate} onChange={setLaunchFailureRate} /></div>
       </div>
-      <div className="card"><div className="card-title">Parameters</div><div className="g4"><Input label="Block 1 (BW3+BB1-5)" value={block1Sats} onChange={setBlock1Sats} /><Input label="Block 2 (BB6+)" value={block2Sats} onChange={setBlock2Sats} /><Input label="Target 2026" value={targetSats2026} onChange={setTargetSats2026} /><Input label="Failure %" value={launchFailureRate} onChange={setLaunchFailureRate} /></div></div>
       
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Constellation Economics" items={[
@@ -1629,13 +1663,58 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
           </div>
         ))}
       </div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl" aria-label="Partner subscriber breakdown"><thead><tr><th>Partner</th><th className="r">Reach</th><th className="r">%</th></tr></thead><tbody>{partners.map(p => (<tr key={p.name}><td>{p.name}</td><td className="r">{p.subs}M</td><td className="r">{((p.subs / partnerReach) * 100).toFixed(1)}%</td></tr>))}</tbody></table>
+      {/* Breakdown — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#subscriber-breakdown</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Partner Breakdown</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ padding: 0 }}>
+          {partners.map((p, i) => (
+            <div key={p.name} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px', alignItems: 'center', padding: '12px 28px', borderBottom: i < partners.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{p.name}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--cyan)', textAlign: 'right' }}>{p.subs}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text3)', textAlign: 'right' }}>{((p.subs / partnerReach) * 100).toFixed(1)}%</span>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sensitivity<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl" aria-label="Penetration rate sensitivity analysis"><thead><tr><th>Pen%</th><th className="r">Subs</th><th className="r">Rev/yr</th><th className="r">$/Sub</th></tr></thead><tbody>{scenarios.map(s => (<tr key={s.p} style={s.p === penetrationRate ? { background: 'color-mix(in srgb, var(--accent) 15%, transparent)' } : undefined}><td>{s.p}%</td><td className="r">{s.subs.toFixed(0)}M</td><td className="r">${s.rev.toFixed(1)}B</td><td className="r">${(calc.marketCap / s.subs).toFixed(0)}</td></tr>))}</tbody></table>
+
+      {/* Sensitivity — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#subscriber-sensitivity</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Penetration Sensitivity</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ padding: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+            {['Pen%', 'Subs', 'Rev/yr', '$/Sub'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Pen%' ? 'left' : 'right' }}>{h}</span>
+            ))}
+          </div>
+          {scenarios.map((s, i) => (
+            <div key={s.p} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', alignItems: 'center', padding: '12px 28px', borderBottom: i < scenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: s.p === penetrationRate ? 'color-mix(in srgb, var(--cyan) 8%, transparent)' : 'transparent', transition: 'background 0.15s' }}
+              onMouseEnter={e => { if (s.p !== penetrationRate) e.currentTarget.style.background = 'var(--surface2)'; }}
+              onMouseLeave={e => { if (s.p !== penetrationRate) e.currentTarget.style.background = 'transparent'; }}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: s.p === penetrationRate ? 'var(--cyan)' : 'var(--text)', fontWeight: s.p === penetrationRate ? 600 : 400 }}>{s.p}%</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{s.subs.toFixed(0)}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>${s.rev.toFixed(1)}B</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text3)', textAlign: 'right' }}>${(calc.marketCap / s.subs).toFixed(0)}</span>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="card"><div className="card-title">Parameters</div><div className="g3"><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div></div>
+
+      {/* Parameters — Clean section */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#subscriber-params</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Parameters</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}><Input label="Reach (M)" value={partnerReach} onChange={setPartnerReach} /><Input label="Pen %" value={penetrationRate} onChange={setPenetrationRate} step={0.5} /><Input label="ARPU $" value={blendedARPU} onChange={setBlendedARPU} /></div>
+      </div>
       
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Subscriber Economics" items={[
@@ -1678,24 +1757,54 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
         ))}
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 16 }}>#revenue-sources</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sources<UpdateIndicators sources={['PR', 'SEC', 'WS']} /></div>{revenueSources.map((r, i) => (<div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--border)', borderRadius: 8, transition: 'all 0.2s' }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}><div><span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{r.source}</span><span style={{ color: 'var(--text3)', fontSize: 13, marginLeft: 8 }}>{r.description}</span></div><span className="pill" style={{ background: r.status.includes('Active') ? 'color-mix(in srgb, var(--mint) 15%, transparent)' : 'var(--surface2)', borderColor: r.status.includes('Active') ? 'var(--mint)' : 'var(--border)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', fontSize: 11 }}>{r.status}</span></div>))}</div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-metrics</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g4">
-          <Card label="Gross" value={`$${(calc.grossAnnualRev / 1000).toFixed(1)}B`} color="cyan" />
-          <Card label="Share" value={`${revenueShare}%`} color="blue" />
-          <Card label="Contracted" value={`$${contractedRevenue}M+`} color="purple" />
-          <Card label="ASTS Rev" value={`$${(calc.astsAnnualRev / 1000).toFixed(1)}B`} color="green" />
+      {/* Revenue Sources — Glass panel precision list */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-sources</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Revenue Sources</span>
+          <UpdateIndicators sources={['PR', 'SEC', 'WS']} />
+        </div>
+        <div style={{ padding: 0 }}>
+          {revenueSources.map((r, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 28px', borderBottom: i < revenueSources.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ width: 4, height: 4, borderRadius: '50%', background: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', flexShrink: 0 }} />
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{r.source}</span>
+                <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.description}</span>
+              </div>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: r.status.includes('Active') ? 'color-mix(in srgb, var(--mint) 10%, transparent)' : 'color-mix(in srgb, var(--text3) 10%, transparent)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)' }}>{r.status}</span>
+            </div>
+          ))}
         </div>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-ramp</div>
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Ramp<UpdateIndicators sources={['PR', 'SEC']} /></div><ResponsiveContainer width="100%" height={220}><AreaChart data={ramp}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="year" stroke="var(--text3)" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v}B`} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} /><Legend /><Area type="monotone" dataKey="commercial" stackId="1" stroke="var(--cyan)" fill="var(--cyan)" fillOpacity={0.6} /><Area type="monotone" dataKey="gov" stackId="1" stroke="var(--gold)" fill="var(--gold)" fillOpacity={0.6} /><Area type="monotone" dataKey="gateway" stackId="1" stroke="var(--violet)" fill="var(--violet)" fillOpacity={0.6} /></AreaChart></ResponsiveContainer></div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-params</div>
-      <div className="card"><div className="card-title">Parameters</div><div className="g2"><Input label="Share %" value={revenueShare} onChange={setRevenueShare} /><Input label="Gov $M/yr" value={govRevenue} onChange={setGovRevenue} /></div></div>
+
+      {/* Revenue Ramp — Glass panel chart */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-ramp</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Revenue Ramp Projection</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ padding: '20px 28px' }}>
+          <ResponsiveContainer width="100%" height={220}><AreaChart data={ramp}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="year" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v}B`} fontSize={11} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} /><Legend wrapperStyle={{ fontSize: 11 }} /><Area type="monotone" dataKey="commercial" stackId="1" stroke="var(--cyan)" fill="var(--cyan)" fillOpacity={0.5} /><Area type="monotone" dataKey="gov" stackId="1" stroke="var(--gold)" fill="var(--gold)" fillOpacity={0.5} /><Area type="monotone" dataKey="gateway" stackId="1" stroke="var(--violet)" fill="var(--violet)" fillOpacity={0.5} /></AreaChart></ResponsiveContainer>
+          <div style={{ display: 'flex', gap: 20, marginTop: 12 }}>
+            {[{ label: 'Commercial', color: 'var(--cyan)' }, { label: 'Government', color: 'var(--gold)' }, { label: 'Gateway', color: 'var(--violet)' }].map(l => (
+              <span key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text3)' }}>
+                <span style={{ width: 8, height: 3, borderRadius: 1, background: l.color }} />{l.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Parameters — Clean section */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-params</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Parameters</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}><Input label="Share %" value={revenueShare} onChange={setRevenueShare} /><Input label="Gov $M/yr" value={govRevenue} onChange={setGovRevenue} /></div>
+      </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Revenue Model" items={[
@@ -1873,319 +1982,274 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>50+ MNO agreements covering 3.2B subscribers. $1B+ contracted. 50/50 revenue share. ~80 MHz US spectrum owned/controlled plus 60 MHz S-band global ITU priority.</p>
       </div>
 
-      {/* Key Metrics */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-metrics</div>
-      <div className="card">
-        <div className="card-title">Partner & Spectrum Metrics</div>
-        <div className="g4" style={{ }}>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--mint)', fontWeight: 600 }}>$1B+</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Contracted Revenue</div>
-          </div>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--cyan)', fontWeight: 600 }}>${totalPrepay}M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Prepayments</div>
-          </div>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--violet)', fontWeight: 600 }}>50+</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>MNO Partners</div>
-          </div>
-          <div style={{ background: 'var(--surface2)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontFamily: 'Space Mono', color: 'var(--gold)', fontWeight: 600 }}>3.2B</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Addressable Subs</div>
-          </div>
-        </div>
-        <div className="g3">
-          <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Definitive Partners</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>4</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Definitive Subs</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>{totalDefinitiveSubs}M</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Revenue Share</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>50/50</span>
-            </div>
-          </div>
-          <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>US Spectrum (Owned)</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--mint)' }}>45 MHz</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>Global Tunable</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--cyan)' }}>1,150 MHz</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>S-band ITU Priority</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono', color: 'var(--text)' }}>60 MHz</span>
-            </div>
-          </div>
-          <div style={{ padding: 12, background: 'linear-gradient(135deg, color-mix(in srgb, var(--mint) 10%, transparent), color-mix(in srgb, var(--violet) 10%, transparent))', borderRadius: 8, border: '1px solid var(--border)' }}>
-            <div style={{ fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>Why This Matters for ASTS</div>
-            <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.5 }}>
-              More MNO partners → More spectrum access → Larger addressable market → Revenue share acceleration → Stock price appreciation
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Definitive Agreements - Detailed */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#definitive-agreements</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Definitive Commercial Agreements (Binding)<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div style={{ overflowX: 'auto' }}>
-          <table className="tbl" aria-label="Definitive commercial agreements">
-            <thead>
-              <tr>
-                <th>Partner</th>
-                <th className="c">Region</th>
-                <th className="r">Subs</th>
-                <th className="c">Spectrum</th>
-                <th className="c">Term</th>
-                <th className="r">Prepayment</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {definitiveAgreements.map(p => (
-                <tr key={p.partner} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                  <td>{p.partner}</td>
-                  <td className="c">{p.region}</td>
-                  <td className="r">{p.subs}M</td>
-                  <td className="c"><span className="pill" style={{ fontSize: 11 }}>{p.spectrum}</span></td>
-                  <td className="c">{p.term}</td>
-                  <td className="r">${p.prepayment}M</td>
-                  <td>{p.prepayStatus}</td>
-                </tr>
-              ))}
-              <tr style={{ background: 'var(--accent-dim)' }}>
-                <td style={{ fontWeight: 600 }} colSpan={2}>Total Definitive</td>
-                <td className="r" style={{ fontWeight: 600 }}>{totalDefinitiveSubs}M</td>
-                <td colSpan={2}></td>
-                <td className="r" style={{ fontWeight: 600 }}>${totalPrepay}M</td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Contract Details Expansion */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-details</div>
-      <div className="g2" style={{ }}>
-        {definitiveAgreements.map(p => (
-          <div key={p.partner} className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{p.partner} Details<UpdateIndicators sources="PR" /></div>
-            <div>
-              <Row label="Signed" value={p.signDate} />
-              <Row label="Term" value={p.term} />
-              <Row label="Spectrum" value={`${p.spectrum} (${p.spectrumType})`} />
-              <Row label="Prepayment" value={`$${p.prepayment}M - ${p.prepayStatus}`} highlight />
-              <Row label="Revenue Commitment" value={p.revenueCommitment} />
-              <div style={{ padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>{p.notes}</div>
-            </div>
+      {/* KPI Dashboard — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#partner-metrics</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Contracted', value: '$1B+', sub: 'Hard commitments', color: 'var(--mint)' },
+          { label: 'Prepayments', value: `$${totalPrepay}M`, sub: 'Cash received/due', color: 'var(--cyan)' },
+          { label: 'MNO Partners', value: '50+', sub: 'Global agreements', color: 'var(--violet)' },
+          { label: 'Addressable', value: '3.2B', sub: 'Total subscribers', color: 'var(--gold)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
           </div>
         ))}
       </div>
 
-      {/* Spectrum Holdings */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#owned-spectrum</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>ASTS-Owned Spectrum Holdings<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl" aria-label="ASTS-owned spectrum holdings">
-          <thead>
-            <tr>
-              <th>Asset</th>
-              <th className="c">Band</th>
-              <th className="c">Size</th>
-              <th className="c">Coverage</th>
-              <th className="c">Term</th>
-              <th className="r">Cost</th>
-              <th className="c">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ownedSpectrum.map(s => (
-              <tr key={s.name}>
-                <td>{s.name}</td>
-                <td className="c">{s.band}</td>
-                <td className="c">{s.size}</td>
-                <td className="c">{s.coverage}</td>
-                <td className="c">{s.term}</td>
-                <td className="r">{s.cost}</td>
-                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{s.status}</span></td>
-              </tr>
+      {/* Quick Stats — Side-by-side panels */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 16 }}>
+        <div style={{ background: 'var(--surface)', padding: '20px 24px' }}>
+          {[{ l: 'Definitive Partners', v: '4' }, { l: 'Definitive Subs', v: `${totalDefinitiveSubs}M` }, { l: 'Revenue Share', v: '50/50' }].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text)' }}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '20px 24px' }}>
+          {[{ l: 'US Spectrum', v: '45 MHz', c: 'var(--mint)' }, { l: 'Global Tunable', v: '1,150 MHz', c: 'var(--cyan)' }, { l: 'S-band ITU', v: '60 MHz', c: 'var(--text)' }].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.c }}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '20px 24px', borderLeft: '3px solid var(--mint)' }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>Why This Matters</div>
+          <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.6 }}>More MNO partners → More spectrum → Larger TAM → Revenue share acceleration</div>
+        </div>
+      </div>
+
+      {/* Definitive Agreements — Glass panel precision list */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#definitive-agreements</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Definitive Commercial Agreements</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', minWidth: 700 }}>
+            {['Partner', 'Region', 'Subs', 'Spectrum', 'Term', 'Prepay', 'Status'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>{h}</span>
             ))}
-          </tbody>
-        </table>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
+          </div>
+          {definitiveAgreements.map((p, i) => (
+            <div key={p.partner} style={{ display: 'grid', gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', alignItems: 'center', padding: '14px 28px', borderBottom: i < definitiveAgreements.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s', minWidth: 700 }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{p.partner}</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.region}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--cyan)' }}>{p.subs}M</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)', display: 'inline-block' }}>{p.spectrum}</span>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{p.term}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>${p.prepayment}M</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{p.prepayStatus}</span>
+            </div>
+          ))}
+          <div style={{ display: 'grid', gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', padding: '14px 28px', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)', minWidth: 700 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', gridColumn: 'span 2' }}>Total Definitive</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700, color: 'var(--cyan)' }}>{totalDefinitiveSubs}M</span>
+            <span /><span />
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700, color: 'var(--mint)' }}>${totalPrepay}M</span>
+            <span />
+          </div>
+        </div>
+      </div>
+
+      {/* Partner Details — Accent-bar panels */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#partner-details</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {definitiveAgreements.map(p => (
+          <div key={p.partner} style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{p.partner}</span>
+              <UpdateIndicators sources="PR" />
+            </div>
+            {[
+              { l: 'Signed', v: p.signDate },
+              { l: 'Term', v: p.term },
+              { l: 'Spectrum', v: `${p.spectrum} (${p.spectrumType})` },
+              { l: 'Prepayment', v: `$${p.prepayment}M — ${p.prepayStatus}`, hl: true },
+              { l: 'Revenue', v: p.revenueCommitment },
+            ].map(row => (
+              <div key={row.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+                <span style={{ fontSize: 12, color: 'var(--text3)' }}>{row.l}</span>
+                <span style={{ fontFamily: row.hl ? 'Space Mono, monospace' : 'inherit', fontSize: 12, color: row.hl ? 'var(--mint)' : 'var(--text2)', fontWeight: row.hl ? 600 : 400 }}>{row.v}</span>
+              </div>
+            ))}
+            <div style={{ marginTop: 12, padding: '10px 14px', background: 'color-mix(in srgb, var(--border) 30%, transparent)', borderRadius: 8, fontSize: 11, color: 'var(--text3)', lineHeight: 1.5 }}>{p.notes}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Spectrum Holdings — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#owned-spectrum</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>ASTS-Owned Spectrum</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ padding: 0 }}>
+          {ownedSpectrum.map((s, i) => (
+            <div key={s.name} style={{ padding: '16px 28px', borderBottom: i < ownedSpectrum.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', borderLeft: '3px solid var(--cyan)', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{s.name}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', color: 'var(--mint)' }}>{s.status}</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+                {[{ l: 'Band', v: s.band }, { l: 'Size', v: s.size }, { l: 'Coverage', v: s.coverage }, { l: 'Cost', v: s.cost }].map(d => (
+                  <div key={d.l}>
+                    <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{d.l}</div>
+                    <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', marginTop: 2 }}>{d.v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
           Total owned: 45 MHz L-band (US/Canada) + 60 MHz S-band (global ITU priority). $80M/yr ongoing L-band payments.
         </div>
       </div>
 
-      {/* Partner Spectrum */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-spectrum</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Partner Spectrum (Shared Access)<UpdateIndicators sources="PR" /></div>
-        <div className="g2">
+      {/* Partner Spectrum — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#partner-spectrum</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Partner Spectrum (Shared)</span>
+          <UpdateIndicators sources="PR" />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: 'var(--border)' }}>
           {partnerSpectrum.map(s => (
-            <div key={s.partner} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)', transition: 'border-color 0.2s, background 0.2s' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: 500, color: 'var(--cyan)' }}>{s.partner}</span>
-                <span className="pill" style={{ fontSize: 11 }}>{s.band}</span>
+            <div key={s.partner} style={{ background: 'var(--surface)', padding: '16px 24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)' }}>{s.partner}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)' }}>{s.band}</span>
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.type} • {s.coverage}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>{s.notes}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.type} · {s.coverage}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 2 }}>{s.notes}</div>
             </div>
           ))}
         </div>
-        <div style={{ padding: 8, background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--cyan) 30%, transparent)', borderRadius: 8, fontSize: 11 }}>
-          <strong style={{ color: 'var(--cyan)' }}>Key Insight:</strong> Combined AT&T + Verizon 850 MHz spectrum enables ~100% continental US geographic coverage.
-          Platform tunable across 1,150 MHz of global MNO spectrum.
+        <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', fontSize: 11, color: 'var(--text2)' }}>
+          <strong style={{ color: 'var(--cyan)' }}>Key:</strong> AT&T + Verizon 850 MHz = ~100% US geographic coverage. Platform tunable across 1,150 MHz globally.
         </div>
       </div>
 
-      {/* Government Contracts */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#gov-contracts</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Government Contracts<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <table className="tbl" aria-label="Government contracts">
-          <thead>
-            <tr>
-              <th>Agency</th>
-              <th className="r">Value</th>
-              <th className="c">Status</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {govContracts.map(g => (
-              <tr key={g.agency}>
-                <td>{g.agency}</td>
-                <td className="r">{g.value}</td>
-                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{g.status}</span></td>
-                <td>{g.notes}</td>
-              </tr>
+      {/* Government Contracts — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#gov-contracts</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Government Contracts</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
+        </div>
+        <div style={{ padding: 0 }}>
+          {govContracts.map((g, i) => (
+            <div key={g.agency} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 120px 1fr', alignItems: 'center', padding: '14px 28px', borderBottom: i < govContracts.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{g.agency}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{g.value}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)' }}>{g.status}</span>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{g.notes}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Total disclosed: $63M+ (plus SHIELD IDIQ). MDA prime contractor status enables future task orders.
+        </div>
+      </div>
+
+      {/* Other Partners — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#other-partners</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Other Key Partners (MOUs & Agreements)</span>
+          <UpdateIndicators sources="PR" />
+        </div>
+        <div style={{ padding: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '130px 140px 80px 100px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+            {['Partner', 'Region', 'Subs', 'Status', 'Notes'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>{h}</span>
             ))}
-          </tbody>
-        </table>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-          Total disclosed government contracts: $63M+ (plus SHIELD IDIQ). Dual-use model validated. MDA prime contractor status enables future task orders.
+          </div>
+          {otherPartners.map((p, i) => (
+            <div key={p.partner} style={{ display: 'grid', gridTemplateColumns: '130px 140px 80px 100px 1fr', alignItems: 'center', padding: '12px 28px', borderBottom: i < otherPartners.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{p.partner}</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.region}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--cyan)' }}>{p.subs}M</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: p.status === 'Definitive' ? 'color-mix(in srgb, var(--mint) 10%, transparent)' : 'color-mix(in srgb, var(--gold) 10%, transparent)', color: p.status === 'Definitive' ? 'var(--mint)' : 'var(--gold)' }}>{p.status}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{p.notes}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Other MNO Partners */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#other-partners</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Other Key Partners (MOUs & Agreements)<UpdateIndicators sources="PR" /></div>
-        <table className="tbl" aria-label="Other MNO partners">
-          <thead>
-            <tr>
-              <th>Partner</th>
-              <th className="c">Region</th>
-              <th className="r">Subs</th>
-              <th className="c">Status</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {otherPartners.map(p => (
-              <tr key={p.partner}>
-                <td>{p.partner}</td>
-                <td className="c">{p.region}</td>
-                <td className="r">{p.subs}M</td>
-                <td className="c"><span className="pill" style={{ fontSize: 11 }}>{p.status}</span></td>
-                <td>{p.notes}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Revenue Commitments — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-commitments</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { value: '$1B+', label: 'Total Contracted Revenue', sub: 'Hard commitments, not soft MOUs', color: 'var(--mint)' },
+          { value: `$${totalPrepay}M`, label: 'Total Prepayments', sub: 'stc $175M due YE 2025', color: 'var(--cyan)' },
+          { value: '50/50', label: 'Revenue Share Model', sub: 'MNOs handle billing/support', color: 'var(--violet)' },
+        ].map(c => (
+          <div key={c.label} style={{ background: 'var(--surface)', padding: '28px 20px', textAlign: 'center' }}>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: c.color }}>{c.value}</div>
+            <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 6 }}>{c.label}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{c.sub}</div>
+          </div>
+        ))}
       </div>
 
-      {/* Revenue Commitment Summary */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-commitments</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Revenue Commitment Breakdown<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g3">
-          <div style={{ padding: 16, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--mint)' }}>$1B+</div>
-            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Contracted Revenue</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Hard commitments, not soft MOUs</div>
+      {/* Partner Ecosystem Timeline — Glass panel header */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 32 }}>#partner-timeline</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div>
+              <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Partner Ecosystem Timeline</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', marginLeft: 12 }}>{filteredPartnerNews.length} events</span>
+            </div>
+            {partnerFilter !== 'All' && (
+              <button onClick={() => setPartnerFilter('All')} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--coral) 10%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer' }}>Clear Filter</button>
+            )}
           </div>
-          <div style={{ padding: 16, background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--cyan) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--cyan)' }}>${totalPrepay}M</div>
-            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Total Prepayments</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>stc $175M due YE 2025</div>
-          </div>
-          <div style={{ padding: 16, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--violet) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--violet)' }}>50/50</div>
-            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Revenue Share Model</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>MNOs handle billing/support</div>
-          </div>
+          <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6, margin: 0 }}>Track news about ASTS MNO partners — IoT expansion, connected vehicles, 5G rollouts, coverage expansion</p>
         </div>
-      </div>
 
-      {/* Partner Ecosystem News Timeline - matches BMNR Ethereum Adoption Timeline structure */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-timeline</div>
-      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center' }}>
-        <span>Partner Ecosystem Timeline</span>
-        <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredPartnerNews.length} events)</span>
-      </h3>
-
-      {/* Partner Filter */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#partner-filter</div>
-      <div className="highlight" style={{ padding: 16 }}>
-        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track news about <strong>ASTS MNO partners</strong> — IoT expansion, connected vehicles, 5G rollouts, coverage expansion, and commercial activities</p>
-        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginBottom: 16 }}>Partner ecosystem health impacts ASTS commercial prospects</p>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Partner</span>
-          {partnerFilter !== 'All' && (
-            <button
-              onClick={() => setPartnerFilter('All')}
-              className="pill"
-              style={{ fontSize: 11 }}
-            >
-              Clear
-            </button>
-          )}
-        </div>
-        <div className="pills">
+        {/* Partner Filter Pills */}
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)', display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {partnerNames.map(partner => {
             const isSelected = partnerFilter === partner;
             const count = PARTNER_NEWS.filter(n => n.partner === partner).length;
             return (
-              <button
-                key={partner}
-                onClick={() => setPartnerFilter(partner)}
-                className={`pill ${isSelected ? 'active' : ''}`}
-              >
+              <button key={partner} onClick={() => setPartnerFilter(partner)} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, border: 'none', cursor: 'pointer', background: isSelected ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'color-mix(in srgb, var(--border) 60%, transparent)', color: isSelected ? 'var(--cyan)' : 'var(--text3)', transition: 'all 0.15s' }}>
                 {partner} ({partner === 'All' ? PARTNER_NEWS.length : count})
               </button>
             );
           })}
         </div>
-      </div>
 
-      {/* Category Filter */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#category-filter</div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="pills" style={{ }}>
-          {categories.map(cat => (
-            <button key={cat} className={`pill ${categoryFilter === cat ? 'active' : ''}`} onClick={() => setCategoryFilter(cat)}>
-              {cat === 'All' ? `All (${PARTNER_NEWS.length})` : `${cat} (${PARTNER_NEWS.filter(n => n.category === cat).length})`}
-            </button>
-          ))}
+        {/* Category Filter + Expand/Collapse */}
+        <div style={{ padding: '12px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {categories.map(cat => (
+              <button key={cat} onClick={() => setCategoryFilter(cat)} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, border: 'none', cursor: 'pointer', background: categoryFilter === cat ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'color-mix(in srgb, var(--border) 60%, transparent)', color: categoryFilter === cat ? 'var(--violet)' : 'var(--text3)', transition: 'all 0.15s' }}>
+                {cat === 'All' ? `All (${PARTNER_NEWS.length})` : `${cat} (${PARTNER_NEWS.filter(n => n.category === cat).length})`}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => { if (expandedPartnerNews.size === filteredPartnerNews.length) { setExpandedPartnerNews(new Set()); } else { setExpandedPartnerNews(new Set(filteredPartnerNews.map((_, i) => i))); } }} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, border: 'none', cursor: 'pointer', background: 'color-mix(in srgb, var(--border) 60%, transparent)', color: 'var(--text3)', whiteSpace: 'nowrap' }}>
+            {expandedPartnerNews.size === filteredPartnerNews.length ? 'Collapse All' : 'Expand All'}
+          </button>
         </div>
-        <button
-          className="pill"
-          onClick={() => {
-            if (expandedPartnerNews.size === filteredPartnerNews.length) {
-              setExpandedPartnerNews(new Set());
-            } else {
-              setExpandedPartnerNews(new Set(filteredPartnerNews.map((_, i) => i)));
-            }
-          }}
-          style={{ whiteSpace: 'nowrap' }}
-        >
-          {expandedPartnerNews.size === filteredPartnerNews.length ? '⊟ Collapse All' : '⊞ Expand All'}
-        </button>
       </div>
 
       {/* Partner News Events */}
@@ -2632,263 +2696,213 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         ))}
       </div>
 
-      {/* Q3 2025 Financial Summary */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#q3-financials</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Q3 2025 Financial Summary<UpdateIndicators sources="SEC" /></div>
-        <div className="g2">
-          <div>
-            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)' }}>Income Statement</h4>
-            <Row label="Q3 Revenue" value={`$${financials.q3Revenue}M`} highlight />
-            <Row label="H2 2025 Guidance" value={`$${financials.h2Guidance}M`} />
-            <Row label="Q3 Adj. OpEx" value={`$${financials.q3AdjOpex}M`} />
-            <Row label="Q4 OpEx Guidance" value={financials.q4OpexGuide} />
+      {/* Q3 2025 Financial Summary — Glass panel side-by-side */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#q3-financials</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Income Statement</span>
+            <UpdateIndicators sources="SEC" />
           </div>
-          <div>
-            <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)' }}>Capital</h4>
-            <Row label="Q3 CapEx" value={`$${financials.q3Capex}M`} />
-            <Row label="Q4 CapEx Guidance" value={`$${financials.q4CapexGuide}M`} />
-            <Row label="Satellite Cost (avg)" value={`$${financials.satCost}M`} highlight />
-            <Row label="Manufacturing Rate" value="6 sats/month by Dec" />
+          {[
+            { l: 'Q3 Revenue', v: `$${financials.q3Revenue}M`, hl: true },
+            { l: 'H2 2025 Guidance', v: `$${financials.h2Guidance}M` },
+            { l: 'Q3 Adj. OpEx', v: `$${financials.q3AdjOpex}M` },
+            { l: 'Q4 OpEx Guidance', v: financials.q4OpexGuide },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--mint)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Capital Expenditures</div>
+          {[
+            { l: 'Q3 CapEx', v: `$${financials.q3Capex}M` },
+            { l: 'Q4 CapEx Guidance', v: `$${financials.q4CapexGuide}M` },
+            { l: 'Satellite Cost (avg)', v: `$${financials.satCost}M`, hl: true },
+            { l: 'Manufacturing', v: '6 sats/month by Dec' },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--cyan)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Convertible Debt — Glass grid */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#convertible-debt</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Convertible Debt Outstanding (Q3 2025)</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', fontSize: 11, color: 'var(--text3)', lineHeight: 1.6 }}>
+          <strong style={{ color: 'var(--cyan)' }}>Balance Sheet vs Principal:</strong> Net carrying value ($697.6M) reflects accounting discounts. Principal ($1.625B) is the amount that must eventually be repaid or converted.
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)' }}>
+          {[
+            { value: '$49M', label: 'Jan 2025 (4.25%)', sub: 'Net carrying', sub2: 'Principal: $50M', color: 'var(--gold)' },
+            { value: '$530M', label: 'Jul 2025 (4.25%)', sub: 'Net carrying', sub2: 'Principal: $575M', color: 'var(--coral)' },
+            { value: '$119M', label: 'Oct 2025 (2.0%)', sub: 'Net carrying (Q3)', sub2: 'Principal: $1,000M', color: 'var(--cyan)' },
+            { value: '$698M', label: 'Balance Sheet', sub: 'Net long-term debt', sub2: 'Gross: ~$724M', color: 'var(--mint)' },
+            { value: '$1,625M', label: 'Principal Value', sub: 'Total outstanding', sub2: '~2.8% blended', color: 'var(--violet)' },
+          ].map(d => (
+            <div key={d.label} style={{ background: 'var(--surface)', padding: '20px 12px', textAlign: 'center' }}>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: d.color }}>{d.value}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6 }}>{d.label}</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.7, marginTop: 2 }}>{d.sub}</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5 }}>{d.sub2}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Jan 2025: $410M converted to equity (17.3M shares). Oct 2025 at best terms ($96.30 strike, 2% coupon).
+        </div>
+      </div>
+
+      {/* Cash Projection — Glass panel chart */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#cash-projection</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Cash Projection (at current burn)</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div style={{ padding: '20px 28px' }}>
+          <ResponsiveContainer width="100%" height={180}>
+            <AreaChart data={proj}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="q" stroke="var(--text3)" fontSize={10} />
+              <YAxis stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(1)}B`} fontSize={10} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={v => [`$${(v/1000).toFixed(2)}B`, 'Cash']} />
+              <Area dataKey="cash" stroke="var(--mint)" fill="var(--mint)" fillOpacity={0.2} strokeWidth={2} />
+            </AreaChart>
+          </ResponsiveContainer>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
+            Does not include H2 revenue ($50-75M guidance) or future prepayments (stc $175M due YE 2025).
           </div>
         </div>
       </div>
 
-      {/* Convertible Debt Summary */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#convertible-debt</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Convertible Debt Outstanding (Q3 2025)<UpdateIndicators sources="SEC" /></div>
-        <div style={{ padding: 8, background: 'var(--surface2)', borderRadius: 8, fontSize: 11, color: 'var(--text3)' }}>
-          <strong style={{ color: 'var(--cyan)' }}>Balance Sheet vs Principal:</strong> Convertible notes are reported at net carrying value (gross less debt discounts and issuance costs).
-          The $697.6M on the balance sheet represents this accounting value, while $1.625B is the principal that must eventually be repaid or converted.
+      {/* Capital Raises — Glass panel with era sections */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-raises</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Capital Raises History (2021-2025)</span>
+          <UpdateIndicators sources={['PR', 'SEC']} />
         </div>
-        <div className="g5">
-          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--gold) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--gold) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--gold)' }}>$49M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 2025 (4.25%)</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $50M</div>
-          </div>
-          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--coral) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--coral) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--coral)' }}>$530M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Jul 2025 (4.25%)</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $575M</div>
-          </div>
-          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--cyan) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--cyan)' }}>$119M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Oct 2025 (2.0%)</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net carrying (Q3)</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Principal: $1,000M</div>
-          </div>
-          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--mint)' }}>$698M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Balance Sheet</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Net long-term debt</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>Gross: ~$724M</div>
-          </div>
-          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--violet) 30%, transparent)', borderRadius: 16, textAlign: 'center', transition: 'border-color 0.2s, background 0.2s' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--violet)' }}>$1,625M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>Principal Value</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7 }}>Total outstanding</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.5 }}>~2.8% blended rate</div>
-          </div>
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-          Jan 2025: $410M converted to equity (17.3M shares). Oct 2025 raised at best terms in years ($96.30 strike, 2% coupon). Large discount on Oct notes due to favorable conversion terms.
-        </div>
-      </div>
-
-      {/* Cash Projection Chart */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cash-projection</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Cash Projection (at current burn)<UpdateIndicators sources="SEC" /></div>
-        <ResponsiveContainer width="100%" height={180}>
-          <AreaChart data={proj}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey="q" stroke="var(--text3)" fontSize={10} />
-            <YAxis stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(1)}B`} />
-            <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)' }} formatter={v => [`$${(v/1000).toFixed(2)}B`, 'Cash']} />
-            <Area dataKey="cash" stroke="var(--mint)" fill="var(--mint)" fillOpacity={0.3} />
-          </AreaChart>
-        </ResponsiveContainer>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-          Note: Does not include H2 revenue ($50-75M guidance) or future prepayments (stc $175M due YE 2025).
-        </div>
-      </div>
-
-      {/* Funding Sources */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-raises</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Capital Raises History (2021-2025)<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-          <p style={{ fontSize: 13, color: 'var(--text3)' }}>
-            <strong style={{ color: 'var(--cyan)' }}>Understanding ASTS Financing:</strong> As a pre-revenue company building a global satellite constellation,
-            ASTS has used various instruments: SPAC, convertibles, equity offerings, and strategic investments.
-            Convertible notes are debt that can convert to equity at specified prices. When stock price rises above conversion price,
-            holders often convert (eliminating debt) or the company may force conversion. Below shows the full capital structure evolution.
-          </p>
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
+          <strong style={{ color: 'var(--cyan)' }}>Financing Overview:</strong> SPAC, convertibles, equity offerings, and strategic investments. $3.6B+ total raised. Convertible notes convert to equity at specified prices.
         </div>
 
-        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--gold)' }}>2025 Capital Raises</h4>
-        <table className="tbl" aria-label="2025 capital raises" style={{ }}>
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th className="r">Amount</th>
-              <th className="c">Terms</th>
-              <th>Status & Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Jan 2025 Convertible</td>
-              <td className="r">$460M</td>
-              <td className="c">4.25%, 2032</td>
-              <td>$410M repurchased for equity (shares issued); $50M remains as debt</td>
-            </tr>
-            <tr>
-              <td>Jul 2025 Convertible</td>
-              <td className="r">$575M</td>
-              <td className="c">4.25%, 2032</td>
-              <td>$120.12 effective strike via capped call; outstanding as debt</td>
-            </tr>
-            <tr>
-              <td>Oct 2025 Convertible</td>
-              <td className="r">$1,000M</td>
-              <td className="c">2%, 2036</td>
-              <td>$96.30 strike; 10-year term; outstanding as debt</td>
-            </tr>
-            <tr>
-              <td>ATM Facility (Q3)</td>
-              <td className="r">$389M</td>
-              <td className="c">At-the-market</td>
-              <td>Shares sold at market; facility now terminated</td>
-            </tr>
-            <tr>
-              <td>Capped Call Unwind</td>
-              <td className="r">$74.5M</td>
-              <td className="c">—</td>
-              <td>Hedge monetized when Jan converts repurchased</td>
-            </tr>
-          </tbody>
-        </table>
+        {/* 2025 */}
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 12 }}>2025 Capital Raises</div>
+          {[
+            { s: 'Jan 2025 Convertible', a: '$460M', t: '4.25%, 2032', n: '$410M repurchased for equity; $50M remains' },
+            { s: 'Jul 2025 Convertible', a: '$575M', t: '4.25%, 2032', n: '$120.12 effective strike via capped call' },
+            { s: 'Oct 2025 Convertible', a: '$1,000M', t: '2%, 2036', n: '$96.30 strike; 10-year term' },
+            { s: 'ATM Facility (Q3)', a: '$389M', t: 'ATM', n: 'Shares sold at market; facility terminated' },
+            { s: 'Capped Call Unwind', a: '$74.5M', t: '—', n: 'Hedge monetized when Jan converts repurchased' },
+          ].map((r, i) => (
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.n}</span>
+            </div>
+          ))}
+        </div>
 
-        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--violet)' }}>2024 Capital Raises</h4>
-        <table className="tbl" aria-label="2024 capital raises" style={{ }}>
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th className="r">Amount</th>
-              <th className="c">Terms</th>
-              <th>Status & Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2034 Strategic Convertibles</td>
-              <td className="r">$148.5M</td>
-              <td className="c">3.875%, 2034</td>
-              <td>AT&T, Google, Vodafone, Verizon. Force-converted to equity Jan 2025 (25.8M shares)</td>
-            </tr>
-            <tr>
-              <td>Public Warrant Exercise</td>
-              <td className="r">$153.6M</td>
-              <td className="c">$11.50/share</td>
-              <td>Warrants redeemed Sept 2024; ~13.4M shares issued</td>
-            </tr>
-            <tr>
-              <td>Verizon Strategic Investment</td>
-              <td className="r">$100M</td>
-              <td className="c">Equity + Commitment</td>
-              <td>May 2024; converted to definitive Oct 2025</td>
-            </tr>
-            <tr>
-              <td>Google Investment</td>
-              <td className="r">$100M</td>
-              <td className="c">Equity + Commitment</td>
-              <td>May 2024; strategic technology partnership</td>
-            </tr>
-          </tbody>
-        </table>
+        {/* 2024 */}
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--violet)', marginBottom: 12 }}>2024 Capital Raises</div>
+          {[
+            { s: '2034 Strategic Convertibles', a: '$148.5M', t: '3.875%, 2034', n: 'AT&T, Google, Vodafone, Verizon → force-converted Jan 2025' },
+            { s: 'Public Warrant Exercise', a: '$153.6M', t: '$11.50/share', n: 'Warrants redeemed Sept 2024; ~13.4M shares issued' },
+            { s: 'Verizon Strategic', a: '$100M', t: 'Equity', n: 'May 2024; converted to definitive Oct 2025' },
+            { s: 'Google Investment', a: '$100M', t: 'Equity', n: 'May 2024; strategic technology partnership' },
+          ].map((r, i) => (
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.n}</span>
+            </div>
+          ))}
+        </div>
 
-        <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--sky)' }}>2021-2023 Foundation</h4>
-        <table className="tbl" aria-label="2021-2023 foundation capital raises">
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th className="r">Amount</th>
-              <th className="c">Terms</th>
-              <th>Status & Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>SPAC (April 2021)</td>
-              <td className="r">$462M</td>
-              <td className="c">SPAC + PIPE</td>
-              <td>IPO via New Providence; $230M PIPE from Vodafone, Rakuten, American Tower</td>
-            </tr>
-            <tr>
-              <td>B. Riley ATM (2022)</td>
-              <td className="r">$75M</td>
-              <td className="c">ATM facility</td>
-              <td>24-month committed equity; used opportunistically</td>
-            </tr>
-            <tr>
-              <td>NanoAvionics Sale</td>
-              <td className="r">$28M net</td>
-              <td className="c">Asset sale</td>
-              <td>Subsidiary sold to Kongsberg (July 2022); focused ASTS on core mission</td>
-            </tr>
-            <tr>
-              <td>Atlas Facility</td>
-              <td className="r">$30M</td>
-              <td className="c">Secured loan</td>
-              <td>Equipment-backed; partially repaid</td>
-            </tr>
-          </tbody>
-        </table>
-        
-        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-          <h4 style={{ fontSize: 13, fontWeight: 500, color: 'var(--mint)' }}>Debt Resolution Summary</h4>
-          <ul style={{ fontSize: 11, color: 'var(--text3)' }}>
-            <li style={{ }}>• <strong>2034 Strategic Converts ($148.5M):</strong> Force-converted to equity Jan 2025 when stock price exceeded trigger. Debt eliminated, 25.8M shares issued.</li>
-            <li style={{ }}>• <strong>Jan 2025 Converts ($460M):</strong> $410M repurchased via equity issuance (arbitrage opportunity). $50M still outstanding as 4.25% notes due 2032.</li>
-            <li style={{ }}>• <strong>Jul/Oct 2025 Converts ($1,575M):</strong> Currently outstanding as debt. Will convert to equity if stock exceeds strike prices ($120.12 / $96.30) or at maturity.</li>
-            <li>• <strong>Atlas/Lone Star Loans:</strong> Partially repaid; minimal remaining balance secured by equipment/real estate.</li>
-          </ul>
+        {/* 2021-2023 */}
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--sky)', marginBottom: 12 }}>2021-2023 Foundation</div>
+          {[
+            { s: 'SPAC (April 2021)', a: '$462M', t: 'SPAC + PIPE', n: 'IPO via New Providence; $230M PIPE' },
+            { s: 'B. Riley ATM (2022)', a: '$75M', t: 'ATM facility', n: '24-month committed equity' },
+            { s: 'NanoAvionics Sale', a: '$28M', t: 'Asset sale', n: 'Sold to Kongsberg (July 2022)' },
+            { s: 'Atlas Facility', a: '$30M', t: 'Secured', n: 'Equipment-backed; partially repaid' },
+          ].map((r, i) => (
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.n}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Debt Resolution */}
+        <div style={{ padding: '16px 28px', borderLeft: '3px solid var(--mint)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 12 }}>Debt Resolution Summary</div>
+          {[
+            '2034 Strategic ($148.5M): Force-converted to equity Jan 2025. 25.8M shares issued.',
+            'Jan 2025 ($460M): $410M repurchased via equity. $50M outstanding as 4.25% notes due 2032.',
+            'Jul/Oct 2025 ($1,575M): Outstanding as debt. Convert at $120.12 / $96.30 strike prices.',
+            'Atlas/Lone Star: Partially repaid; minimal remaining balance.',
+          ].map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '6px 0' }}>
+              <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--mint)', flexShrink: 0, marginTop: 5 }} />
+              <span style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5 }}>{item}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Dilution Analysis */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-scenarios</div>
-      <div className="card" style={{ }}><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Hypothetical Dilution (if additional raise needed)<UpdateIndicators sources="SEC" /></div>
-        <table className="tbl" aria-label="Hypothetical dilution scenarios">
-          <thead>
-            <tr>
-              <th>Raise Amount</th>
-              <th className="r">New Shares</th>
-              <th className="r">Dilution</th>
-              <th className="r">Extended Runway</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dilution.map(d => (
-              <tr key={d.r}>
-                <td>${d.r}M</td>
-                <td className="r">{d.new.toFixed(1)}M</td>
-                <td className="r">{d.dil.toFixed(1)}%</td>
-                <td className="r">{d.runway.toFixed(1)}Q</td>
-              </tr>
+      {/* Dilution Analysis — Glass panel */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dilution-scenarios</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Hypothetical Dilution</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div style={{ padding: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+            {['Raise', 'New Shares', 'Dilution', 'Runway'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Raise' ? 'left' : 'right' }}>{h}</span>
             ))}
-          </tbody>
-        </table>
-        <div style={{ fontSize: 11, color: 'var(--text3)' }}>
-          Note: Company states fully funded for 100+ satellites. Additional raises unlikely in near term.
+          </div>
+          {dilution.map((d, i) => (
+            <div key={d.r} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '12px 28px', borderBottom: i < dilution.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text)' }}>${d.r}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{d.new.toFixed(1)}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--coral)', textAlign: 'right' }}>{d.dil.toFixed(1)}%</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>{d.runway.toFixed(1)}Q</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Company states fully funded for 100+ satellites. Additional raises unlikely near term.
         </div>
       </div>
 
-      {/* Parameters */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#runway-params</div>
-      <div className="card"><div className="card-title">Parameters</div>
-        <div className="g4">
+      {/* Parameters — Clean section */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-params</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Parameters</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
           <Input label="Pro Forma Cash $M" value={cashOnHand} onChange={setCashOnHand} />
           <Input label="Q4 Burn Est. $M" value={quarterlyBurn} onChange={setQuarterlyBurn} />
           <Input label="Remaining Debt $M" value={totalDebt} onChange={setTotalDebt} />
