@@ -1010,7 +1010,7 @@ const ASTSAnalysis = () => {
           {activeTab === 'investment' && <InvestmentTab />}
           {activeTab === 'wall-street' && <WallStreetTab />}
           {activeTab === 'sources' && (
-            <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} />
+            <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} competitorLabel="D2D Competitors" />
           )}
         </main>
       </div>

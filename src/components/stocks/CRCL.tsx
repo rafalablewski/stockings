@@ -6164,7 +6164,7 @@ function CRCLModel() {
           )}
 
           {activeTab === 'sources' && (
-            <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} />
+            <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} competitorLabel="Stablecoin Peers" />
           )}
         </main>
       </div>

@@ -1,15 +1,16 @@
 /**
- * SharedSourcesTab - Unified Sources Tab with Press Releases + News
+ * SharedSourcesTab - Unified Sources Tab with Press Releases + News + Competitor News
  *
  * Shared component for all stocks. Features:
- * - Two sub-tabs: Press Releases (wire services + IR) and Google News (all latest)
- * - Refresh button fetches latest articles per tab
+ * - Three sub-tabs: Press Releases, Latest News, Competitor News
+ * - Refresh button fetches 5 latest articles per tab
  * - AI-powered check marks articles already in analysis
  *
  * Press Releases aggregates from: PR Newswire, Business Wire, GlobeNewswire, company IR
- * Google News shows all latest news coverage
+ * Latest News shows all recent coverage via Google News
+ * Competitor News shows latest from key competitors/peers
  *
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 'use client';
@@ -25,6 +26,7 @@ interface SharedSourcesTabProps {
   ticker: string;
   companyName: string;
   researchSources: SourceGroup[];
+  competitorLabel?: string; // e.g. "D2D Competitors", "BTC Treasury Peers"
 }
 
 interface ArticleItem {
@@ -36,17 +38,20 @@ interface ArticleItem {
   analyzed?: boolean | null; // null = not checked yet
 }
 
-type SubTab = 'press-releases' | 'news';
+type SubTab = 'press-releases' | 'news' | 'competitors';
 
-const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName, researchSources }) => {
+const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName, researchSources, competitorLabel }) => {
   const [activeSubTab, setActiveSubTab] = useState<SubTab>('press-releases');
   const [pressReleases, setPressReleases] = useState<ArticleItem[]>([]);
   const [newsArticles, setNewsArticles] = useState<ArticleItem[]>([]);
+  const [competitorArticles, setCompetitorArticles] = useState<ArticleItem[]>([]);
   const [prLoading, setPrLoading] = useState(false);
   const [newsLoading, setNewsLoading] = useState(false);
+  const [compLoading, setCompLoading] = useState(false);
   const [aiChecking, setAiChecking] = useState(false);
   const [prError, setPrError] = useState<string | null>(null);
   const [newsError, setNewsError] = useState<string | null>(null);
+  const [compError, setCompError] = useState<string | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<string | null>(null);
 
@@ -79,19 +84,22 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker]);
 
-  // Combined refresh: fetch both sources, then run AI check, then set state once
+  // Combined refresh: fetch all three sources, then run AI check
   const handleRefresh = useCallback(async () => {
     setPrLoading(true);
     setNewsLoading(true);
+    setCompLoading(true);
     setPrError(null);
     setNewsError(null);
+    setCompError(null);
     setAiError(null);
 
-    // Fetch both in parallel
+    // Fetch all three in parallel
     let prArticles: ArticleItem[] = [];
     let newsItems: ArticleItem[] = [];
+    let compItems: ArticleItem[] = [];
 
-    const [prResult, newsResult] = await Promise.allSettled([
+    const [prResult, newsResult, compResult] = await Promise.allSettled([
       fetch(`/api/press-releases/${ticker}`).then(async (res) => {
         if (!res.ok) throw new Error('Failed to fetch press releases');
         const data = await res.json();
@@ -115,6 +123,17 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           analyzed: null as boolean | null,
         }));
       }),
+      fetch(`/api/competitor-news/${ticker}`).then(async (res) => {
+        if (!res.ok) throw new Error('Failed to fetch competitor news');
+        const data = await res.json();
+        return (data.articles || []).slice(0, 5).map((a: { title: string; date: string; url: string; source: string }) => ({
+          headline: a.title,
+          date: a.date,
+          url: a.url,
+          source: a.source,
+          analyzed: null as boolean | null,
+        }));
+      }),
     ]);
 
     if (prResult.status === 'fulfilled') {
@@ -127,21 +146,27 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     } else {
       setNewsError('Could not fetch from Google News');
     }
+    if (compResult.status === 'fulfilled') {
+      compItems = compResult.value;
+    } else {
+      setCompError('Could not fetch competitor news');
+    }
 
     setPrLoading(false);
     setNewsLoading(false);
+    setCompLoading(false);
 
     // Show articles immediately while AI checks
     setPressReleases(prArticles);
     setNewsArticles(newsItems);
+    setCompetitorArticles(compItems);
 
-    // Run AI analysis check on all fetched articles
-    const allArticles = [...prArticles, ...newsItems];
-    if (allArticles.length > 0) {
+    // Run AI analysis check on press releases + news (not competitors)
+    const ownArticles = [...prArticles, ...newsItems];
+    if (ownArticles.length > 0) {
       setAiChecking(true);
       try {
-        const checked = await checkAnalyzed(allArticles);
-        // Split results back and set final state
+        const checked = await checkAnalyzed(ownArticles);
         const checkedPr = checked.slice(0, prArticles.length);
         const checkedNews = checked.slice(prArticles.length);
         setPressReleases(checkedPr);
@@ -157,14 +182,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     setLastFetched(new Date().toLocaleTimeString());
   }, [ticker, checkAnalyzed]);
 
-  const isLoading = prLoading || newsLoading || aiChecking;
+  const isLoading = prLoading || newsLoading || compLoading || aiChecking;
 
-  const renderArticle = (article: ArticleItem, i: number) => {
-    const statusIcon = article.analyzed === null
-      ? <span style={{ fontSize: 13, color: 'var(--text3)', flexShrink: 0, marginTop: 2 }}>?</span>
-      : article.analyzed
-        ? <span style={{ fontSize: 15, color: '#22c55e', flexShrink: 0, marginTop: 1 }}>✓</span>
-        : <span style={{ fontSize: 15, color: '#ef4444', flexShrink: 0, marginTop: 1 }}>✗</span>;
+  const renderArticle = (article: ArticleItem, i: number, showStatus = true) => {
+    const statusIcon = !showStatus
+      ? null
+      : article.analyzed === null
+        ? <span style={{ fontSize: 13, color: 'var(--text3)', flexShrink: 0, marginTop: 2 }}>?</span>
+        : article.analyzed
+          ? <span style={{ fontSize: 15, color: '#22c55e', flexShrink: 0, marginTop: 1 }}>✓</span>
+          : <span style={{ fontSize: 15, color: '#ef4444', flexShrink: 0, marginTop: 1 }}>✗</span>;
 
     const statusText = article.analyzed === null
       ? 'Not checked'
@@ -188,10 +215,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {article.date}
             {article.source ? ` · ${article.source}` : ''}
             {article.items ? ` · ${article.items}` : ''}
-            {' · '}
-            <span style={{ color: article.analyzed === true ? '#22c55e' : article.analyzed === false ? '#ef4444' : 'var(--text3)' }}>
-              {statusText}
-            </span>
+            {showStatus && (
+              <>
+                {' · '}
+                <span style={{ color: article.analyzed === true ? '#22c55e' : article.analyzed === false ? '#ef4444' : 'var(--text3)' }}>
+                  {statusText}
+                </span>
+              </>
+            )}
           </span>
         </div>
       </li>
@@ -210,13 +241,15 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     transition: 'all 0.15s',
   });
 
+  const compTabLabel = competitorLabel || 'Competitor News';
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Sources</h2>
       <div className="highlight">
         <h3>Live Sources & Research</h3>
         <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-          Live article feeds for {companyName} ({ticker}). Press releases sourced from the company IR page, PR Newswire, Business Wire &amp; GlobeNewswire. Latest News pulls all recent coverage. AI-powered analysis status check included.
+          Live article feeds for {companyName} ({ticker}). Press releases sourced from the company IR page, PR Newswire, Business Wire &amp; GlobeNewswire. Latest News pulls all recent coverage. {compTabLabel} tracks key peers. AI-powered analysis status check included.
         </p>
       </div>
 
@@ -229,6 +262,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </button>
             <button onClick={() => setActiveSubTab('news')} style={subTabStyle('news')}>
               Latest News
+            </button>
+            <button onClick={() => setActiveSubTab('competitors')} style={subTabStyle('competitors')}>
+              {compTabLabel}
             </button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -257,7 +293,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <span style={{ display: 'inline-block', animation: isLoading ? 'spin 1s linear infinite' : 'none' }}>
                 ↻
               </span>
-              {prLoading || newsLoading ? 'Fetching...' : aiChecking ? 'AI Checking...' : 'Refresh'}
+              {prLoading || newsLoading || compLoading ? 'Fetching...' : aiChecking ? 'AI Checking...' : 'Refresh'}
             </button>
           </div>
         </div>
@@ -297,6 +333,23 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {newsArticles.length > 0 && (
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {newsArticles.map((article, i) => renderArticle(article, i))}
+              </ul>
+            )}
+          </div>
+        )}
+
+        {/* Competitor News sub-tab */}
+        {activeSubTab === 'competitors' && (
+          <div>
+            {compError && <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 8 }}>{compError}</div>}
+            {competitorArticles.length === 0 && !compLoading && (
+              <div style={{ fontSize: 12, color: 'var(--text3)', padding: '8px 0' }}>
+                Click Refresh to fetch latest competitor &amp; peer news.
+              </div>
+            )}
+            {competitorArticles.length > 0 && (
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {competitorArticles.map((article, i) => renderArticle(article, i, false))}
               </ul>
             )}
           </div>
