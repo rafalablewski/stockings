@@ -182,6 +182,8 @@ No other text, just the JSON array.`;
       };
     });
 
+    console.log('[check-analyzed] Returning:', JSON.stringify(output.map(o => ({ h: o.headline.slice(0, 40), analyzed: o.analyzed }))));
+
     return NextResponse.json({ ticker, results: output });
   } catch (error) {
     console.error('Check-analyzed error:', error);
