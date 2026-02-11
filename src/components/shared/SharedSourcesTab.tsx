@@ -95,7 +95,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       fetch(`/api/press-releases/${ticker}`).then(async (res) => {
         if (!res.ok) throw new Error('Failed to fetch press releases');
         const data = await res.json();
-        return (data.releases || []).slice(0, 10).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
+        return (data.releases || []).slice(0, 5).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
           headline: r.headline,
           date: r.date,
           url: r.url,
@@ -107,7 +107,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       fetch(`/api/news/${ticker}`).then(async (res) => {
         if (!res.ok) throw new Error('Failed to fetch news');
         const data = await res.json();
-        return (data.articles || []).slice(0, 15).map((a: { title: string; date: string; url: string; source: string }) => ({
+        return (data.articles || []).slice(0, 5).map((a: { title: string; date: string; url: string; source: string }) => ({
           headline: a.title,
           date: a.date,
           url: a.url,

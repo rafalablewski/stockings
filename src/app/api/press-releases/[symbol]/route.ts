@@ -249,8 +249,8 @@ export async function GET(
     // Sort by date descending (newest first)
     unique.sort((a, b) => b.date.localeCompare(a.date));
 
-    // Return top 10
-    const releases = unique.slice(0, 10).map(a => ({
+    // Return top 5
+    const releases = unique.slice(0, 5).map(a => ({
       date: a.date,
       headline: a.title,
       url: a.url,
