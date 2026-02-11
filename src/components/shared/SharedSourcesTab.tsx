@@ -44,6 +44,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [aiChecking, setAiChecking] = useState(false);
   const [prError, setPrError] = useState<string | null>(null);
   const [newsError, setNewsError] = useState<string | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<string | null>(null);
 
   // AI check: send articles to backend for analysis comparison
@@ -61,6 +62,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       });
       if (!res.ok) throw new Error(`AI check failed: ${res.status}`);
       const data = await res.json();
+      if (data.error) {
+        console.warn('[checkAnalyzed] Server error:', data.error);
+        throw new Error(data.error);
+      }
       return articles.map((article, i) => ({
         ...article,
         analyzed: data.results?.[i]?.analyzed ?? null,
@@ -77,6 +82,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     setNewsLoading(true);
     setPrError(null);
     setNewsError(null);
+    setAiError(null);
 
     // Fetch both in parallel
     let prArticles: ArticleItem[] = [];
@@ -138,6 +144,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         setNewsArticles(checkedNews);
       } catch (err) {
         console.error('[handleRefresh] checkAnalyzed error:', err);
+        setAiError(err instanceof Error ? err.message : 'AI check failed');
       } finally {
         setAiChecking(false);
       }
@@ -250,6 +257,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </button>
           </div>
         </div>
+
+        {aiError && (
+          <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 8, padding: '6px 10px', background: 'rgba(239,68,68,0.08)', borderRadius: 6 }}>
+            AI Check: {aiError}
+          </div>
+        )}
 
         {/* Press Releases sub-tab */}
         {activeSubTab === 'press-releases' && (
