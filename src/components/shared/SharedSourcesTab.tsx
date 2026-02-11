@@ -166,23 +166,24 @@ const FeedTab: React.FC<{
     aria-selected={active}
     onClick={onClick}
     style={{
-      padding: '8px 16px',
-      fontSize: 12,
+      padding: '5px 14px',
+      fontSize: 11,
       fontWeight: active ? 600 : 400,
       color: active ? color : 'var(--text3)',
-      background: active ? `color-mix(in srgb, ${color} 10%, transparent)` : 'transparent',
-      border: active ? `1px solid color-mix(in srgb, ${color} 20%, transparent)` : '1px solid transparent',
-      borderRadius: 8,
+      background: active ? `color-mix(in srgb, ${color} 12%, transparent)` : 'transparent',
+      border: '1px solid',
+      borderColor: active ? `color-mix(in srgb, ${color} 25%, transparent)` : 'var(--border)',
+      borderRadius: 99,
       cursor: 'pointer',
-      transition: 'all 0.2s',
+      transition: 'all 0.25s',
       outline: 'none',
-      letterSpacing: active ? '0px' : '0px',
+      fontFamily: 'inherit',
     }}
   >
     {label}
     <span style={{
-      fontFamily: 'Space Mono, monospace', fontSize: 11, marginLeft: 6,
-      opacity: active ? 1 : 0.6,
+      fontFamily: 'Space Mono, monospace', fontSize: 10, marginLeft: 6,
+      opacity: active ? 1 : 0.5,
     }}>
       {count}
     </span>
@@ -289,11 +290,11 @@ const CompanyFeedCard: React.FC<{
           disabled={isActive}
           aria-label={data.loaded ? `Refresh ${label} feeds` : `Load ${label} feeds`}
           style={{
-            padding: '7px 14px', fontSize: 11, fontWeight: 500,
+            padding: '6px 14px', fontSize: 11, fontWeight: 500,
             color: isActive ? 'var(--text3)' : 'var(--text2)',
-            background: 'var(--surface2)',
+            background: 'transparent',
             border: '1px solid var(--border)',
-            borderRadius: 8,
+            borderRadius: 99,
             cursor: isActive ? 'wait' : 'pointer',
             display: 'flex', alignItems: 'center', gap: 6,
             opacity: isActive ? 0.5 : 1,
@@ -490,22 +491,27 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sources-header</div>
-      <h2 className="section-head">Sources</h2>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Intelligence</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Sources<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Live press releases, news coverage, and competitor intelligence for {companyName}.</p>
+      </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#live-feeds</div>
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '12px 20px', marginBottom: 16,
-        background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
+        padding: '16px 28px', marginTop: 8,
+        background: 'var(--surface)', borderRadius: 16, border: '1px solid var(--border)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           {/* Progress ring */}
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="10" fill="none" stroke="var(--surface3)" strokeWidth="2.5" />
-            <circle cx="12" cy="12" r="10" fill="none" stroke="var(--accent)" strokeWidth="2.5"
-              strokeDasharray={`${(loadedCount / totalCompanies) * 62.8} 62.8`}
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+            <circle cx="14" cy="14" r="12" fill="none" stroke="color-mix(in srgb, var(--border) 60%, transparent)" strokeWidth="2" />
+            <circle cx="14" cy="14" r="12" fill="none" stroke="var(--accent)" strokeWidth="2"
+              strokeDasharray={`${(loadedCount / totalCompanies) * 75.4} 75.4`}
               strokeLinecap="round"
-              transform="rotate(-90 12 12)"
+              transform="rotate(-90 14 14)"
               style={{ transition: 'stroke-dasharray 0.4s ease' }}
             />
           </svg>
@@ -523,17 +529,17 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           disabled={loadingAll}
           aria-label={loadedCount > 0 ? 'Refresh all feeds' : 'Load all feeds'}
           style={{
-            padding: '8px 18px', fontSize: 12, fontWeight: 600,
+            padding: '8px 20px', fontSize: 11, fontWeight: 600, letterSpacing: '0.3px',
             color: loadingAll ? 'var(--text3)' : 'var(--bg)',
             background: loadingAll ? 'var(--surface2)' : 'var(--accent)',
-            border: 'none', borderRadius: 8,
+            border: 'none', borderRadius: 99,
             cursor: loadingAll ? 'wait' : 'pointer',
             display: 'flex', alignItems: 'center', gap: 7,
-            transition: 'all 0.2s',
+            transition: 'all 0.25s',
             outline: 'none',
           }}
         >
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ animation: loadingAll ? 'spin 1s linear infinite' : 'none' }}>
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ animation: loadingAll ? 'spin 1s linear infinite' : 'none' }}>
             <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -547,21 +553,21 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           role="note"
           aria-label="Analysis status legend"
           style={{
-            display: 'flex', alignItems: 'center', gap: 16, padding: '0 4px 12px',
-            fontSize: 11, color: 'var(--text3)',
+            display: 'flex', alignItems: 'center', gap: 20, padding: '16px 4px 12px',
+            fontSize: 10, color: 'var(--text3)', letterSpacing: '0.3px',
           }}
         >
-          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', opacity: 0.9 }} />
-            Tracked in analysis
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--mint)', opacity: 0.9 }} />
+            Tracked
           </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', opacity: 0.9 }} />
-            New / not tracked
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--coral)', opacity: 0.9 }} />
+            New
           </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-            Pending check
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+            Pending
           </span>
         </div>
       )}
@@ -633,21 +639,19 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
 
-      <div className="g2" style={{ gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         {researchSources.map(group => (
           <div key={group.category} style={{
             background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 16,
-            padding: '20px 24px',
+            padding: '24px 28px',
           }}>
             <div style={{
-              fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-              letterSpacing: '1px', color: 'var(--text3)', marginBottom: 12,
+              fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
+              letterSpacing: '1.5px', color: 'var(--text3)', marginBottom: 16,
             }}>
               {group.category}
             </div>
-            <nav aria-label={`${group.category} links`} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <nav aria-label={`${group.category} links`} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {group.sources.map(s => (
                 <a
                   key={s.url}
@@ -656,14 +660,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   rel="noopener noreferrer"
                   style={{
                     fontSize: 13, color: 'var(--text2)', textDecoration: 'none',
-                    padding: '4px 0', display: 'flex', alignItems: 'center', gap: 6,
-                    transition: 'color 0.15s',
+                    padding: '6px 8px', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6,
+                    transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--text2)')}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--surface2)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'transparent'; }}
                 >
                   {s.name}
-                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ opacity: 0.4, flexShrink: 0 }}>
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ opacity: 0.3, flexShrink: 0 }}>
                     <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </a>
