@@ -8,9 +8,10 @@ interface Article {
 interface AnalysisEntry {
   date: string;
   headline: string;
+  detail?: string; // summary, notes, or other context
 }
 
-// Dynamically collect all analysis data for a ticker
+// Dynamically collect all analysis data for a ticker — with full context
 async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
   const entries: AnalysisEntry[] = [];
 
@@ -25,12 +26,12 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
 
       if (partners.PARTNER_NEWS) {
         for (const n of partners.PARTNER_NEWS) {
-          entries.push({ date: n.date, headline: n.headline });
+          entries.push({ date: n.date, headline: n.headline, detail: n.summary });
         }
       }
       if (competitors.COMPETITOR_NEWS) {
         for (const n of competitors.COMPETITOR_NEWS) {
-          entries.push({ date: n.date, headline: n.headline });
+          entries.push({ date: n.date, headline: n.headline, detail: n.summary });
         }
       }
       if (catalysts.COMPLETED_MILESTONES) {
@@ -101,7 +102,6 @@ export async function POST(request: NextRequest) {
     }
 
     if (!ANTHROPIC_API_KEY) {
-      // No API key configured — return error so frontend can surface it
       return NextResponse.json({
         ticker,
         results: articles.map(a => ({ headline: a.headline, date: a.date, analyzed: null })),
@@ -112,43 +112,46 @@ export async function POST(request: NextRequest) {
     // Gather all existing analysis data for this ticker
     const analysisData = await getAnalysisData(ticker.toUpperCase());
 
-    // Build a concise summary of existing analysis for Claude
+    // Build context-rich summary: include headline + truncated detail for semantic matching
     const existingSummary = analysisData
-      .slice(0, 200) // Cap at 200 entries to stay within token limits
-      .map(e => `[${e.date}] ${e.headline}`)
+      .slice(0, 150)
+      .map(e => {
+        const detail = e.detail
+          ? ` — ${e.detail.slice(0, 200)}`
+          : '';
+        return `[${e.date}] ${e.headline}${detail}`;
+      })
       .join('\n');
 
     const articleList = articles
       .map((a, i) => `${i + 1}. [${a.date}] ${a.headline}`)
       .join('\n');
 
-    const prompt = `You are analyzing a stock research database for ticker ${ticker}. Below is a list of events, news, and press releases that are ALREADY tracked in the analysis database.
+    const prompt = `You are checking whether news articles are already covered in a stock research database for ticker ${ticker}.
 
-EXISTING ANALYSIS DATA:
+EXISTING ANALYSIS DATABASE (headlines + summaries):
 ${existingSummary}
 
 NEW ARTICLES TO CHECK:
 ${articleList}
 
-For each new article (1-${articles.length}), determine if its content/topic is ALREADY COVERED in the existing analysis data.
+For each new article (1-${articles.length}), determine if the underlying event/topic is ALREADY COVERED somewhere in the existing database.
 
-Rules for marking as "analyzed: true":
-- The SPECIFIC event, announcement, or press release described in the article must appear in the existing data
-- A direct press release or company announcement that matches an existing entry = true
-- An article reporting on the SAME specific event as an existing entry = true
+Mark as "analyzed: true" when:
+- The same company announcement, product launch, partnership, regulatory event, or milestone is covered — even if worded completely differently
+- A news article reports on the same underlying event as a database entry (e.g. article says "Company X Sends First D2D Message" and database has entry mentioning "First European company to operate LEO constellation dedicated to D2D services" — same event, different wording)
+- The article covers a topic that is discussed within the summary/detail of an existing entry
+- Different news outlets covering the same story both count as covered if any version is in the database
 
-Rules for marking as "analyzed: false":
-- General news commentary, stock price movement articles, opinion pieces = false (even if they mention a tracked event)
-- Articles from news outlets simply reporting that a stock went up/down = false
-- ETF launches, lawsuits, analyst opinions, third-party commentary = false (unless that specific item is tracked)
-- If unsure, default to false
+Mark as "analyzed: false" when:
+- The specific event, development, or announcement has NO corresponding entry in the database
+- It's a genuinely new development not captured anywhere in the existing data
+- Stock price movement articles with no underlying tracked event
 
-Be STRICT. Only mark true when the specific announcement/event itself is directly tracked.
+Think about WHAT HAPPENED, not how it's worded. Match on substance, not phrasing.
 
-Respond with ONLY a JSON array of objects, one per article, in order:
-[{"index": 1, "analyzed": true}, {"index": 2, "analyzed": false}, ...]
-
-No other text, just the JSON array.`;
+Respond with ONLY a JSON array, one object per article, in order:
+[{"index": 1, "analyzed": true}, {"index": 2, "analyzed": false}, ...]`;
 
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -176,12 +179,10 @@ No other text, just the JSON array.`;
     // Parse Claude's JSON response
     let results: Array<{ index: number; analyzed: boolean }>;
     try {
-      // Extract JSON from response (Claude might wrap it in markdown code blocks)
       const jsonMatch = responseText.match(/\[[\s\S]*\]/);
       results = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
     } catch {
       console.error('Failed to parse Claude response:', responseText);
-      // Fallback: mark all as unknown
       results = articles.map((_, i) => ({ index: i + 1, analyzed: false }));
     }
 
