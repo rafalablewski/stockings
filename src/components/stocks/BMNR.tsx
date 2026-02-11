@@ -2097,27 +2097,34 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Company Snapshot</span>
         <UpdateIndicators sources={['PR', 'SEC']} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)' }}>
-        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>ETH Holdings</div>
-          <Row label="Total ETH" value={currentETH.toLocaleString()} />
-          <Row label="ETH Price" value={`$${ethPrice.toLocaleString()}`} />
-          <Row label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`} highlight />
-          <Row label="Annual Yield" value={`${Math.round(calc.annualYieldETH).toLocaleString()} ETH`} />
-        </div>
-        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Share Structure</div>
-          <Row label="Shares Outstanding" value={`${currentShares}M`} />
-          <Row label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(2)}B`} />
-          <Row label="NAV Multiple" value={`${(currentStockPrice / calc.currentNAV).toFixed(2)}x`} highlight />
-          <Row label="ETH/Share" value={calc.ethPerShare.toFixed(6)} />
-        </div>
-        <div style={{ background: 'var(--surface)', padding: '20px 28px' }}><div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Dividend</div>
-          <Row label="Quarterly Dividend" value={`$${quarterlyDividend.toFixed(2)}`} />
-          <Row label="Annual Dividend" value={`$${calc.annualDividend.toFixed(2)}`} />
-          <Row label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} highlight />
-          <Row label="Annual Payout" value={`$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`} />
-          <Row label="Payout Ratio" value={`${calc.dividendPayoutRatio.toFixed(1)}% of staking`} />
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+        {['Metric', 'Value', 'Category'].map(h => (
+          <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Value' ? 'right' : 'left' }}>{h}</span>
+        ))}
       </div>
+      {[
+        { metric: 'Total ETH', value: currentETH.toLocaleString(), desc: 'ETH Holdings', color: 'var(--text)' },
+        { metric: 'ETH Price', value: `$${ethPrice.toLocaleString()}`, desc: 'ETH Holdings', color: 'var(--text)' },
+        { metric: 'Total Value', value: `$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`, desc: 'ETH Holdings', color: 'var(--accent)' },
+        { metric: 'Annual Yield', value: `${Math.round(calc.annualYieldETH).toLocaleString()} ETH`, desc: 'ETH Holdings', color: 'var(--text)' },
+        { metric: 'Shares Outstanding', value: `${currentShares}M`, desc: 'Share Structure', color: 'var(--text)' },
+        { metric: 'Market Cap', value: `$${(calc.marketCap / 1e9).toFixed(2)}B`, desc: 'Share Structure', color: 'var(--text)' },
+        { metric: 'NAV Multiple', value: `${(currentStockPrice / calc.currentNAV).toFixed(2)}x`, desc: 'Share Structure', color: 'var(--accent)' },
+        { metric: 'ETH/Share', value: calc.ethPerShare.toFixed(6), desc: 'Share Structure', color: 'var(--text)' },
+        { metric: 'Quarterly Dividend', value: `$${quarterlyDividend.toFixed(2)}`, desc: 'Dividend', color: 'var(--text)' },
+        { metric: 'Annual Dividend', value: `$${calc.annualDividend.toFixed(2)}`, desc: 'Dividend', color: 'var(--text)' },
+        { metric: 'Dividend Yield', value: `${calc.dividendYield.toFixed(2)}%`, desc: 'Dividend', color: 'var(--accent)' },
+        { metric: 'Annual Payout', value: `$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`, desc: 'Dividend', color: 'var(--text)' },
+        { metric: 'Payout Ratio', value: `${calc.dividendPayoutRatio.toFixed(1)}% of staking`, desc: 'Dividend', color: 'var(--text)' },
+      ].map((row, i, arr) => (
+        <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+          <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.metric}</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: row.color, textAlign: 'right' }}>{row.value}</span>
+          <span style={{ fontSize: 12, color: 'var(--text3)', paddingLeft: 16 }}>{row.desc}</span>
+        </div>
+      ))}
     </div>
 
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters-header</div>
