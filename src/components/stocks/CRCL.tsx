@@ -4869,30 +4869,40 @@ function CRCLModel() {
           {activeTab === 'usdc' && (
             <>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#usdc-header</div>
-              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>USDC Dynamics<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#usdc-intro</div>
-              <div className="highlight">
-                <h3>Stablecoin Economics</h3>
-                <p className="text-sm">
+              {/* Hero — Ive×Tesla */}
+              <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Stablecoin Intelligence<UpdateIndicators sources={['PR', 'SEC']} /></div>
+                <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>USDC<span style={{ color: 'var(--mint)' }}>.</span></h2>
+                <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>
                   USDC is a fully-reserved stablecoin backed 1:1 by USD and short-dated Treasuries. Circle earns
                   yield on reserves (~4-5% in current rate environment). Platform % represents USDC held directly
-                  in Circle accounts vs public blockchain - higher platform % means better unit economics.
+                  in Circle accounts vs public blockchain — higher platform % means better unit economics.
                 </p>
               </div>
-              
+
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#usdc-metrics</div>
-              <div className="g4">
-                <Card label="Circulation" value={`$${latest.usdcCirculation.toFixed(1)}B`} sub="Total USDC supply" color="mint" />
-                <Card label="YoY Growth" value={`+${usdcGrowth.toFixed(0)}%`} sub="Year over year" color="green" />
-                <Card label="Market Share" value={`${latest.marketShare}%`} sub="Of stablecoins" color="blue" />
-                <Card label="On Platform" value={`${latest.platformPct.toFixed(1)}%`} sub="Higher margin" color="purple" />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+                {[
+                  { label: 'Circulation', value: `$${latest.usdcCirculation.toFixed(1)}B`, sub: 'Total USDC supply', color: 'var(--mint)' },
+                  { label: 'YoY Growth', value: `+${usdcGrowth.toFixed(0)}%`, sub: 'Year over year', color: '#4ade80' },
+                  { label: 'Market Share', value: `${latest.marketShare}%`, sub: 'Of stablecoins', color: 'var(--sky)' },
+                  { label: 'On Platform', value: `${latest.platformPct.toFixed(1)}%`, sub: 'Higher margin', color: 'var(--violet)' },
+                ].map(kpi => (
+                  <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+                    <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+                  </div>
+                ))}
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#usdc-circulation</div>
-              <div className="card" style={{ transition: 'border-color 0.2s' }}>
-                <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Circulation Growth<UpdateIndicators sources="SEC" /></div>
-                <div className="bars">
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Circulation Growth</span>
+                  <UpdateIndicators sources="SEC" />
+                </div>
+                <div className="bars" style={{ padding: '20px 28px' }}>
                   {DATA.map((d, i) => (
                     <div key={i} className="bar-col" style={{ transition: 'all 0.2s' }}>
                       <div className="bar-val">${d.usdcCirculation.toFixed(1)}B</div>
@@ -4904,46 +4914,59 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#usdc-activity</div>
-              <div className="g2" style={{ }}>
-                <div className="card" style={{ transition: 'border-color 0.2s' }}>
-                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Mint / Redeem Activity ($B)<UpdateIndicators sources="SEC" /></div>
-                  <table className="tbl" aria-label="USDC mint and redeem activity">
-                    <thead>
-                      <tr><th>Quarter</th><th className="r">Minted</th><th className="r">Redeemed</th><th className="r">Net</th></tr>
-                    </thead>
-                    <tbody>
-                      {DATA.map(d => (
-                        <tr key={d.quarter}>
-                          <td>{d.quarter}</td>
-                          <td className="r mint">{d.usdcMinted.toFixed(1)}</td>
-                          <td className="r coral">{d.usdcRedeemed.toFixed(1)}</td>
-                          <td className={`r ${d.usdcMinted - d.usdcRedeemed >= 0 ? 'mint' : 'coral'}`}>
-                            {(d.usdcMinted - d.usdcRedeemed).toFixed(1)}
-                          </td>
-                        </tr>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 8 }}>
+                {/* Mint / Redeem Activity */}
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Mint / Redeem Activity ($B)</span>
+                    <UpdateIndicators sources="SEC" />
+                  </div>
+                  <div style={{ padding: 0 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+                      {['Quarter', 'Minted', 'Redeemed', 'Net'].map(h => (
+                        <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Quarter' ? 'left' : 'right' }}>{h}</span>
                       ))}
-                    </tbody>
-                  </table>
+                    </div>
+                    {DATA.map((d, i) => {
+                      const net = d.usdcMinted - d.usdcRedeemed;
+                      return (
+                        <div key={d.quarter} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '10px 28px', borderBottom: i < DATA.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text)' }}>{d.quarter}</span>
+                          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>{d.usdcMinted.toFixed(1)}</span>
+                          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--coral)', textAlign: 'right' }}>{d.usdcRedeemed.toFixed(1)}</span>
+                          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: net >= 0 ? 'var(--mint)' : 'var(--coral)', textAlign: 'right', fontWeight: 600 }}>{net.toFixed(1)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                <div className="card" style={{ transition: 'border-color 0.2s' }}>
-                  <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Rate Sensitivity Matrix ($B Annual)<UpdateIndicators sources="SEC" /></div>
-                  <div className="matrix" style={{ gridTemplateColumns: 'repeat(6, 1fr)' }} aria-label="Rate sensitivity matrix">
-                    <div className="matrix-cell head">USDC \ Rate</div>
-                    <div className="matrix-cell head">3.0%</div>
-                    <div className="matrix-cell head">3.5%</div>
-                    <div className="matrix-cell head">4.0%</div>
-                    <div className="matrix-cell head">4.5%</div>
-                    <div className="matrix-cell head">5.0%</div>
-                    {[50, 75, 100, 125, 150].map(c => (
-                      <React.Fragment key={c}>
-                        <div className="matrix-cell head">${c}B</div>
+                {/* Rate Sensitivity Matrix */}
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Rate Sensitivity Matrix ($B Annual)</span>
+                    <UpdateIndicators sources="SEC" />
+                  </div>
+                  <div style={{ padding: 0, overflowX: 'auto' }} aria-label="Rate sensitivity matrix">
+                    <div style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+                      <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>USDC \ Rate</span>
+                      {[3.0, 3.5, 4.0, 4.5, 5.0].map(r => (
+                        <span key={r} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: 'center' }}>{r}%</span>
+                      ))}
+                    </div>
+                    {[50, 75, 100, 125, 150].map((c, ri) => (
+                      <div key={c} style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', padding: '10px 28px', borderBottom: ri < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: c === 75 ? 'color-mix(in srgb, var(--cyan) 3%, transparent)' : 'transparent', transition: 'background 0.15s' }}
+                        onMouseEnter={e => { if (c !== 75) e.currentTarget.style.background = 'var(--surface2)'; }}
+                        onMouseLeave={e => { if (c !== 75) e.currentTarget.style.background = 'transparent'; }}>
+                        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: c === 75 ? 'var(--cyan)' : 'var(--text)', fontWeight: 500 }}>${c}B</span>
                         {[3, 3.5, 4, 4.5, 5].map(r => (
-                          <div key={r} className={`matrix-cell ${c === 75 && r === 4 ? 'hl' : ''}`}>
+                          <span key={r} style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'center', color: c === 75 && r === 4 ? 'var(--cyan)' : 'var(--text2)', fontWeight: c === 75 && r === 4 ? 700 : 400, background: c === 75 && r === 4 ? 'color-mix(in srgb, var(--cyan) 10%, transparent)' : 'transparent', borderRadius: 4, padding: '2px 0' }}>
                             ${(c * r / 100).toFixed(1)}
-                          </div>
+                          </span>
                         ))}
-                      </React.Fragment>
+                      </div>
                     ))}
                   </div>
                 </div>
