@@ -49,6 +49,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   // AI check: send articles to backend for analysis comparison
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
+    console.log('[checkAnalyzed] Starting fetch for', articles.length, 'articles, ticker:', ticker);
     try {
       const res = await fetch('/api/check-analyzed', {
         method: 'POST',
@@ -126,13 +127,18 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
     // Run AI analysis check on all fetched articles
     const allArticles = [...prArticles, ...newsItems];
+    console.log('[handleRefresh] allArticles count:', allArticles.length, 'prCount:', prArticles.length);
     if (allArticles.length > 0) {
       setAiChecking(true);
       try {
+        console.log('[handleRefresh] Calling checkAnalyzed...');
         const checked = await checkAnalyzed(allArticles);
+        console.log('[handleRefresh] checkAnalyzed returned:', checked.map(c => ({ h: c.headline.slice(0, 30), analyzed: c.analyzed })));
         // Split results back and set final state
         setPressReleases(checked.slice(0, prArticles.length));
         setNewsArticles(checked.slice(prArticles.length));
+      } catch (err) {
+        console.error('[handleRefresh] checkAnalyzed error:', err);
       } finally {
         setAiChecking(false);
       }
