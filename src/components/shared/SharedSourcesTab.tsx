@@ -597,7 +597,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       )}
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#research-sources</div>
-      <h3 className="card-title">Research Sources</h3>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '1.2px' }}>Research Sources</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
       <div className="g2">
         {researchSources.map(group => (
           <div key={group.category} className="card" style={{ padding: '20px 24px' }}>
