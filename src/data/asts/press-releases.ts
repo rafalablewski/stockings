@@ -7,7 +7,7 @@
  * has been integrated into the relevant database tabs (partner news,
  * competitor news, timeline, catalysts, financials, etc.).
  *
- * LAST UPDATED: 2026-02-10
+ * LAST UPDATED: 2026-02-11
  * NEXT UPDATE: After new press releases
  *
  * AI AGENT INSTRUCTIONS:
@@ -24,7 +24,7 @@ import type { PressRelease, DataMetadata } from '../shared/types';
 // ============================================================================
 
 export const PRESS_RELEASES_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-10',
+  lastUpdated: '2026-02-11',
   source: 'Company IR pages, PR Newswire, Business Wire, GlobeNewswire',
   nextExpectedUpdate: 'After new press releases',
   notes: 'Press releases for ASTS and all D2D competitors with analysis tracking status',
@@ -42,21 +42,33 @@ export const PRESS_RELEASES: PressRelease[] = [
     tracked: true,
   },
   {
+    date: '2026-01-22',
+    headline: 'INVESTOR ALERT: Pomerantz Law Firm Investigates Claims On Behalf of Investors of AST SpaceMobile, Inc. - ASTS',
+    url: 'https://www.prnewswire.com/news-releases/investor-alert-pomerantz-law-firm-investigates-claims-on-behalf-of-investors-of-ast-spacemobile-inc-asts.html',
+    tracked: true, // Ambulance-chaser law firm PR — not material, no database integration needed
+  },
+  {
+    date: '2026-01-16',
+    headline: 'AST SpaceMobile Awarded Prime Contract Position on U.S. Missile Defense Agency SHIELD Program',
+    url: 'https://www.businesswire.com/news/home/20260116shield/en/',
+    tracked: true, // Integrated into catalysts.ts COMPLETED_MILESTONES
+  },
+  {
+    date: '2025-10-21',
+    headline: 'AST SpaceMobile Prices Repurchase of Convertible Senior Notes to be Funded By Concurrent Registered Direct Offering of Class A Common Stock',
+    url: 'https://www.businesswire.com/news/home/20251021repurchase/en/',
+    tracked: true, // Integrated into capital.ts (Jan 2025 Convert repurchase: $410M for equity)
+  },
+  {
+    date: '2025-10-21',
+    headline: 'AST SpaceMobile Announces Pricing of Private Offering of $1.0 Billion of Convertible Senior Notes Due 2036',
+    url: 'https://www.businesswire.com/news/home/20251021converts/en/',
+    tracked: true, // Integrated into capital.ts (Oct 2025 Convertible: $1,150M at 2.0% due 2036)
+  },
+  {
     date: '2025-06-13',
     headline: 'AST SpaceMobile Announces Settlement Term Sheet for 45 MHz L-Band Spectrum from Ligado — $550M Deal',
     url: 'https://www.businesswire.com/news/home/20250613520945/en/',
-    tracked: true,
-  },
-  {
-    date: '2025-01-29',
-    headline: 'AST SpaceMobile and Vodafone Make World\'s First Space Video Call Using Standard Smartphones',
-    url: 'https://investors.ast-science.com',
-    tracked: true,
-  },
-  {
-    date: '2024-09-12',
-    headline: 'AST SpaceMobile Successfully Launches First Five Commercial BlueBird Satellites',
-    url: 'https://investors.ast-science.com',
     tracked: true,
   },
 ];
