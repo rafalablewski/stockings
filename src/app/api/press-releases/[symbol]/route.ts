@@ -99,6 +99,9 @@ export async function GET(
 
     const articles = await fetchGoogleNewsRSS(query, 10);
 
+    // Sort by date descending (newest first)
+    articles.sort((a, b) => b.date.localeCompare(a.date));
+
     // Map to press-release format matching existing API contract
     const releases = articles.map(a => ({
       date: a.date,

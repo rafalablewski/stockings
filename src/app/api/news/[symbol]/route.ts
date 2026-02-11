@@ -66,6 +66,9 @@ export async function GET(
       }
     }
 
+    // Sort by date descending (newest first)
+    items.sort((a, b) => b.date.localeCompare(a.date));
+
     return NextResponse.json({
       symbol,
       companyName: stock.name,

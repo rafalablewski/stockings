@@ -130,7 +130,20 @@ ${existingSummary}
 NEW ARTICLES TO CHECK:
 ${articleList}
 
-For each new article (1-${articles.length}), determine if its content/topic is ALREADY COVERED in the existing analysis data. An article is "covered" if the same event, announcement, or topic appears in the existing data (even if worded differently). Be generous - if the same underlying event is referenced, it counts as covered.
+For each new article (1-${articles.length}), determine if its content/topic is ALREADY COVERED in the existing analysis data.
+
+Rules for marking as "analyzed: true":
+- The SPECIFIC event, announcement, or press release described in the article must appear in the existing data
+- A direct press release or company announcement that matches an existing entry = true
+- An article reporting on the SAME specific event as an existing entry = true
+
+Rules for marking as "analyzed: false":
+- General news commentary, stock price movement articles, opinion pieces = false (even if they mention a tracked event)
+- Articles from news outlets simply reporting that a stock went up/down = false
+- ETF launches, lawsuits, analyst opinions, third-party commentary = false (unless that specific item is tracked)
+- If unsure, default to false
+
+Be STRICT. Only mark true when the specific announcement/event itself is directly tracked.
 
 Respond with ONLY a JSON array of objects, one per article, in order:
 [{"index": 1, "analyzed": true}, {"index": 2, "analyzed": false}, ...]
@@ -146,7 +159,7 @@ No other text, just the JSON array.`;
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 512,
+        max_tokens: 1024,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
