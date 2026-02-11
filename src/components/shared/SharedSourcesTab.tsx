@@ -1,22 +1,19 @@
 /**
- * SharedSourcesTab — flat list of company feed cards
+ * SharedSourcesTab — Live Intelligence Feed
  *
- * Every company (the stock itself + each competitor) gets an identical card:
- *   ┌─ Company Name ──────────────────── [↻ Load] ┐
- *   │ [Press Releases (N)] [Latest News (N)]       │
- *   │  • headline ...                               │
- *   └──────────────────────────────────────────────┘
+ * Institutional-grade sources tab with per-company feed cards.
+ * Uses the app's design system: surface layers, semantic colors,
+ * Outfit + Space Mono typography, 16px card radii, accent-dim patterns.
  *
- * Main stock uses /api/press-releases + /api/news.
- * Competitors use /api/competitor-feed/[company].
- * AI analysis check runs only on the main stock card.
+ * Accessibility: ARIA roles, keyboard nav, focus-visible rings,
+ * screen reader labels, reduced-motion support.
  *
- * @version 5.0.0
+ * @version 6.0.0
  */
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 
 export interface SourceGroup {
   category: string;
@@ -54,177 +51,348 @@ interface CardData {
   news: ArticleItem[];
 }
 
-// ── Reusable article list ───────────────────────────────────────────────────
+// ── Status dot ──────────────────────────────────────────────────────────────
+const StatusDot: React.FC<{ analyzed: boolean | null | undefined; showAnalysis?: boolean }> = ({ analyzed, showAnalysis }) => {
+  if (!showAnalysis) return null;
+  const color = analyzed === null || analyzed === undefined
+    ? 'var(--text3)' : analyzed ? 'var(--mint)' : 'var(--coral)';
+  const label = analyzed === null || analyzed === undefined
+    ? 'Not checked' : analyzed ? 'In analysis' : 'Not in analysis';
+  return (
+    <span
+      role="img"
+      aria-label={label}
+      title={label}
+      style={{
+        width: 7, height: 7, borderRadius: '50%', background: color,
+        flexShrink: 0, marginTop: 6, opacity: analyzed === null ? 0.4 : 0.9,
+        transition: 'opacity 0.2s, background 0.2s',
+      }}
+    />
+  );
+};
+
+// ── Article list ────────────────────────────────────────────────────────────
 const ArticleList: React.FC<{
   articles: ArticleItem[];
   empty: string;
   showAnalysis?: boolean;
 }> = ({ articles, empty, showAnalysis }) => {
   if (articles.length === 0) {
-    return <div style={{ fontSize: 12, color: 'var(--text3)', padding: '6px 0' }}>{empty}</div>;
+    return (
+      <div style={{ fontSize: 13, color: 'var(--text3)', padding: '16px 0 8px', lineHeight: 1.6 }}>
+        {empty}
+      </div>
+    );
   }
   return (
-    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-      {articles.map((a, i) => {
-        const statusIcon = !showAnalysis ? null
-          : a.analyzed === null
-            ? <span style={{ fontSize: 12, color: 'var(--text3)', flexShrink: 0, marginTop: 2 }}>?</span>
-            : a.analyzed
-              ? <span style={{ fontSize: 14, color: '#22c55e', flexShrink: 0, marginTop: 1 }}>✓</span>
-              : <span style={{ fontSize: 14, color: '#ef4444', flexShrink: 0, marginTop: 1 }}>✗</span>;
-        const statusText = !showAnalysis ? null
-          : a.analyzed === null ? 'Not checked'
-          : a.analyzed ? 'In analysis' : 'Not in analysis';
-        return (
-          <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-            {statusIcon}
-            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-              <a href={a.url} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none', lineHeight: 1.4 }}>
-                {a.headline} <span style={{ color: 'var(--text3)', fontSize: 10 }}>↗</span>
-              </a>
-              <span style={{ fontSize: 10, color: 'var(--text3)' }}>
-                {a.date}
-                {a.source ? ` · ${a.source}` : ''}
-                {a.items ? ` · ${a.items}` : ''}
-                {showAnalysis && statusText && (
-                  <>
-                    {' · '}
-                    <span style={{ color: a.analyzed === true ? '#22c55e' : a.analyzed === false ? '#ef4444' : 'var(--text3)' }}>
-                      {statusText}
-                    </span>
-                  </>
-                )}
-              </span>
+    <ul role="list" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {articles.map((a, i) => (
+        <li
+          key={i}
+          role="listitem"
+          style={{
+            display: 'flex', alignItems: 'flex-start', gap: 10,
+            padding: '10px 12px', borderRadius: 10,
+            transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+        >
+          <StatusDot analyzed={a.analyzed} showAnalysis={showAnalysis} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, flex: 1 }}>
+            <a
+              href={a.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontSize: 13, color: 'var(--text)', textDecoration: 'none', lineHeight: 1.5,
+                transition: 'color 0.15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}
+              onFocus={e => (e.currentTarget.style.color = 'var(--accent)')}
+              onBlur={e => (e.currentTarget.style.color = 'var(--text)')}
+            >
+              {a.headline}
+            </a>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              {a.date && (
+                <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', letterSpacing: '-0.2px' }}>
+                  {a.date}
+                </span>
+              )}
+              {a.source && (
+                <>
+                  <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                  <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.source}</span>
+                </>
+              )}
+              {a.items && (
+                <>
+                  <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                  <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.items}</span>
+                </>
+              )}
+              {showAnalysis && a.analyzed !== null && a.analyzed !== undefined && (
+                <>
+                  <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                  <span style={{
+                    fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+                    color: a.analyzed ? 'var(--mint)' : 'var(--coral)',
+                  }}>
+                    {a.analyzed ? 'Tracked' : 'New'}
+                  </span>
+                </>
+              )}
             </div>
-          </li>
-        );
-      })}
+          </div>
+        </li>
+      ))}
     </ul>
   );
 };
 
-// ── Single company card ─────────────────────────────────────────────────────
+// ── Feed tab button ─────────────────────────────────────────────────────────
+const FeedTab: React.FC<{
+  active: boolean;
+  label: string;
+  count: number;
+  onClick: () => void;
+  color: string;
+}> = ({ active, label, count, onClick, color }) => (
+  <button
+    role="tab"
+    aria-selected={active}
+    onClick={onClick}
+    style={{
+      padding: '8px 16px',
+      fontSize: 12,
+      fontWeight: active ? 600 : 400,
+      color: active ? color : 'var(--text3)',
+      background: active ? `color-mix(in srgb, ${color} 10%, transparent)` : 'transparent',
+      border: active ? `1px solid color-mix(in srgb, ${color} 20%, transparent)` : '1px solid transparent',
+      borderRadius: 8,
+      cursor: 'pointer',
+      transition: 'all 0.2s',
+      outline: 'none',
+      letterSpacing: active ? '0px' : '0px',
+    }}
+  >
+    {label}
+    <span style={{
+      fontFamily: 'Space Mono, monospace', fontSize: 11, marginLeft: 6,
+      opacity: active ? 1 : 0.6,
+    }}>
+      {count}
+    </span>
+  </button>
+);
+
+// ── Company feed card ───────────────────────────────────────────────────────
 const CompanyFeedCard: React.FC<{
   label: string;
   url?: string;
   data: CardData;
   showAnalysis?: boolean;
   aiChecking?: boolean;
+  isPrimary?: boolean;
   onLoad: () => void;
   onTabChange: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, onLoad, onTabChange }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, onLoad, onTabChange }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
-
-  const tabBtn = (tab: 'pr' | 'news', text: string, count: number, color: string, bgAlpha: string) => (
-    <button
-      onClick={() => onTabChange(tab)}
-      style={{
-        padding: '5px 12px',
-        fontSize: 11,
-        fontWeight: data.activeTab === tab ? 600 : 400,
-        color: data.activeTab === tab ? color : 'var(--text3)',
-        background: data.activeTab === tab ? bgAlpha : 'transparent',
-        border: data.activeTab === tab ? `1px solid ${color}33` : '1px solid transparent',
-        borderRadius: 6,
-        cursor: 'pointer',
-        transition: 'all 0.15s',
-      }}
-    >
-      {text} ({count})
-    </button>
-  );
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+    <article
+      aria-label={`${label} news feed`}
+      style={{
+        background: 'var(--surface)',
+        border: isPrimary
+          ? '1px solid color-mix(in srgb, var(--accent) 25%, transparent)'
+          : '1px solid var(--border)',
+        borderRadius: 16,
+        overflow: 'hidden',
+        transition: 'border-color 0.2s',
+      }}
+    >
       {/* Header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 16px', borderBottom: '1px solid var(--stroke)',
+        padding: '16px 20px',
+        borderBottom: data.loaded ? '1px solid var(--border)' : 'none',
+        background: isPrimary ? 'color-mix(in srgb, var(--accent) 4%, transparent)' : 'transparent',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-          <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--text1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+          {/* Status indicator */}
+          {data.loaded && (
+            <span
+              aria-hidden="true"
+              style={{
+                width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+                background: isActive
+                  ? 'var(--gold)'
+                  : 'var(--mint)',
+                boxShadow: isActive
+                  ? '0 0 8px var(--gold-dim)'
+                  : '0 0 8px var(--mint-dim)',
+                transition: 'all 0.3s',
+              }}
+            />
+          )}
+          <h3 style={{
+            margin: 0, fontSize: isPrimary ? 15 : 14, fontWeight: 700,
+            color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>
             {label}
-          </span>
+          </h3>
           {url && (
-            <a href={url} target="_blank" rel="noopener noreferrer"
-              style={{ fontSize: 11, color: 'var(--text3)', textDecoration: 'none', flexShrink: 0 }}>↗</a>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Visit ${label} website`}
+              style={{
+                fontSize: 10, color: 'var(--text3)', textDecoration: 'none', flexShrink: 0,
+                padding: '2px 6px', borderRadius: 4,
+                transition: 'color 0.15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text3)')}
+            >
+              ↗
+            </a>
+          )}
+          {/* Counts when loaded */}
+          {data.loaded && !isActive && (
+            <div aria-label={`${prCount} press releases, ${newsCount} news articles`} style={{ display: 'flex', gap: 4, marginLeft: 4 }}>
+              <span style={{
+                fontSize: 10, fontFamily: 'Space Mono, monospace', padding: '2px 7px',
+                borderRadius: 5, background: 'var(--sky-dim)', color: 'var(--sky)',
+              }}>
+                {prCount}
+              </span>
+              <span style={{
+                fontSize: 10, fontFamily: 'Space Mono, monospace', padding: '2px 7px',
+                borderRadius: 5, background: 'var(--mint-dim)', color: 'var(--mint)',
+              }}>
+                {newsCount}
+              </span>
+            </div>
           )}
         </div>
         <button
+          ref={buttonRef}
           onClick={onLoad}
           disabled={isActive}
+          aria-label={data.loaded ? `Refresh ${label} feeds` : `Load ${label} feeds`}
           style={{
-            padding: '4px 10px', fontSize: 11,
-            color: isActive ? 'var(--text3)' : 'var(--accent)',
-            background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 6,
+            padding: '7px 14px', fontSize: 11, fontWeight: 500,
+            color: isActive ? 'var(--text3)' : 'var(--text2)',
+            background: 'var(--surface2)',
+            border: '1px solid var(--border)',
+            borderRadius: 8,
             cursor: isActive ? 'wait' : 'pointer',
-            display: 'flex', alignItems: 'center', gap: 4,
-            opacity: isActive ? 0.6 : 1,
+            display: 'flex', alignItems: 'center', gap: 6,
+            opacity: isActive ? 0.5 : 1,
+            transition: 'all 0.2s',
+            outline: 'none',
           }}
+          onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; } }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = isActive ? 'var(--text3)' : 'var(--text2)'; }}
         >
-          <span style={{ display: 'inline-block', animation: isActive ? 'spin 1s linear infinite' : 'none' }}>↻</span>
-          {data.loading ? 'Fetching...' : (aiChecking ? 'Checking...' : data.loaded ? 'Refresh' : 'Load')}
+          <svg
+            width="12" height="12" viewBox="0 0 16 16" fill="none"
+            style={{ animation: isActive ? 'spin 1s linear infinite' : 'none', transition: 'transform 0.2s' }}
+          >
+            <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {data.loading ? 'Fetching' : aiChecking ? 'Analyzing' : data.loaded ? 'Refresh' : 'Load'}
         </button>
       </div>
 
       {/* Body */}
-      <div style={{ padding: '10px 16px 14px' }}>
+      <div style={{ padding: data.loaded || data.loading || data.error ? '16px 20px 20px' : '16px 20px' }}>
         {data.error && (
-          <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 8, padding: '6px 10px', background: 'rgba(239,68,68,0.08)', borderRadius: 6 }}>
+          <div role="alert" style={{
+            fontSize: 12, color: 'var(--coral)', marginBottom: 12,
+            padding: '10px 14px', background: 'var(--coral-dim)', borderRadius: 10,
+            display: 'flex', alignItems: 'center', gap: 8,
+          }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             {data.error}
           </div>
         )}
 
-        {!data.loaded && !data.loading && (
-          <div style={{ fontSize: 12, color: 'var(--text3)' }}>
-            Click Load to fetch latest press releases &amp; news.
+        {!data.loaded && !data.loading && !data.error && (
+          <div style={{
+            fontSize: 13, color: 'var(--text3)', lineHeight: 1.6,
+            padding: '4px 0 4px',
+          }}>
+            Press <strong style={{ color: 'var(--text2)', fontWeight: 500 }}>Load</strong> to fetch latest wire releases and news coverage.
           </div>
         )}
 
         {data.loading && (
-          <div style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'center', padding: '8px 0' }}>
-            Fetching press releases &amp; news...
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+            padding: '20px 0', color: 'var(--text3)',
+          }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
+              <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+            <span style={{ fontSize: 12 }}>Fetching press releases & news...</span>
           </div>
         )}
 
         {data.loaded && (
           <>
             {/* Tab switcher */}
-            <div style={{ display: 'flex', gap: 4, marginBottom: 10 }}>
-              {tabBtn('pr', 'Press Releases', prCount, '#3b82f6', 'rgba(59,130,246,0.08)')}
-              {tabBtn('news', 'Latest News', newsCount, '#22c55e', 'rgba(34,197,94,0.08)')}
+            <div role="tablist" aria-label="Feed type" style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
+              <FeedTab
+                active={data.activeTab === 'pr'}
+                label="Press Releases"
+                count={prCount}
+                onClick={() => onTabChange('pr')}
+                color="var(--sky)"
+              />
+              <FeedTab
+                active={data.activeTab === 'news'}
+                label="Latest News"
+                count={newsCount}
+                onClick={() => onTabChange('news')}
+                color="var(--mint)"
+              />
             </div>
 
-            {data.activeTab === 'pr' && (
-              <ArticleList articles={data.pressReleases} empty="No press releases found." showAnalysis={showAnalysis} />
-            )}
-            {data.activeTab === 'news' && (
-              <ArticleList articles={data.news} empty="No recent news found." showAnalysis={showAnalysis} />
-            )}
+            <div role="tabpanel">
+              {data.activeTab === 'pr' && (
+                <ArticleList articles={data.pressReleases} empty="No press releases found from wire services." showAnalysis={showAnalysis} />
+              )}
+              {data.activeTab === 'news' && (
+                <ArticleList articles={data.news} empty="No recent news coverage found." showAnalysis={showAnalysis} />
+              )}
+            </div>
           </>
         )}
       </div>
-    </div>
+    </article>
   );
 };
 
 // ── Main component ──────────────────────────────────────────────────────────
 const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName, researchSources, competitorLabel, competitors }) => {
-  // Main stock card state
   const [mainCard, setMainCard] = useState<CardData>({
     loading: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
   });
   const [aiChecking, setAiChecking] = useState(false);
-
-  // Competitor card states
   const [compCards, setCompCards] = useState<Record<string, CardData>>({});
   const [compAiChecking, setCompAiChecking] = useState<Record<string, boolean>>({});
   const [loadingAll, setLoadingAll] = useState(false);
 
-  // AI check for main stock only
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
     try {
@@ -243,10 +411,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker]);
 
-  // Load main stock card
   const loadMainCard = useCallback(async () => {
     setMainCard(prev => ({ ...prev, loading: true, error: null }));
-
     let prs: ArticleItem[] = [];
     let news: ArticleItem[] = [];
 
@@ -269,100 +435,53 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
     if (prResult.status === 'fulfilled') prs = prResult.value;
     if (newsResult.status === 'fulfilled') news = newsResult.value;
-    const error = (prResult.status === 'rejected' && newsResult.status === 'rejected')
-      ? 'Could not fetch feeds' : null;
+    const error = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
 
-    setMainCard(prev => ({
-      ...prev, loading: false, loaded: true, error,
-      pressReleases: prs, news,
-    }));
+    setMainCard(prev => ({ ...prev, loading: false, loaded: true, error, pressReleases: prs, news }));
 
-    // AI analysis check
     const all = [...prs, ...news];
     if (all.length > 0) {
       setAiChecking(true);
       try {
         const checked = await checkAnalyzed(all);
-        setMainCard(prev => ({
-          ...prev,
-          pressReleases: checked.slice(0, prs.length),
-          news: checked.slice(prs.length),
-        }));
-      } catch { /* already handled */ } finally {
-        setAiChecking(false);
-      }
+        setMainCard(prev => ({ ...prev, pressReleases: checked.slice(0, prs.length), news: checked.slice(prs.length) }));
+      } catch { /* handled */ } finally { setAiChecking(false); }
     }
   }, [ticker, checkAnalyzed]);
 
-  // Load a single competitor + run AI check
   const loadCompetitor = useCallback(async (name: string) => {
-    setCompCards(prev => ({
-      ...prev,
-      [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: true, loaded: false, error: null },
-    }));
-
+    setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: true, loaded: false, error: null } }));
     try {
       const res = await fetch(`/api/competitor-feed/${encodeURIComponent(name)}`);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-
-      const prs: ArticleItem[] = (data.pressReleases || []).map((a: { title: string; date: string; url: string; source: string }) => ({
-        headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null,
-      }));
-      const news: ArticleItem[] = (data.news || []).map((a: { title: string; date: string; url: string; source: string }) => ({
-        headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null,
-      }));
-
-      setCompCards(prev => ({
-        ...prev,
-        [name]: { loading: false, loaded: true, error: null, activeTab: prev[name]?.activeTab || 'pr', pressReleases: prs, news },
-      }));
-
-      // Run AI analysis check
+      const prs: ArticleItem[] = (data.pressReleases || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
+      const news: ArticleItem[] = (data.news || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
+      setCompCards(prev => ({ ...prev, [name]: { loading: false, loaded: true, error: null, activeTab: prev[name]?.activeTab || 'pr', pressReleases: prs, news } }));
       const all = [...prs, ...news];
       if (all.length > 0) {
         setCompAiChecking(prev => ({ ...prev, [name]: true }));
         try {
           const checked = await checkAnalyzed(all);
-          setCompCards(prev => ({
-            ...prev,
-            [name]: {
-              ...prev[name],
-              pressReleases: checked.slice(0, prs.length),
-              news: checked.slice(prs.length),
-            },
-          }));
-        } catch { /* already handled */ } finally {
-          setCompAiChecking(prev => ({ ...prev, [name]: false }));
-        }
+          setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checked.slice(0, prs.length), news: checked.slice(prs.length) } }));
+        } catch { /* handled */ } finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
       }
     } catch {
-      setCompCards(prev => ({
-        ...prev,
-        [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: false, loaded: false, error: `Could not fetch feeds` },
-      }));
+      setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: false, loaded: false, error: 'Could not fetch feeds' } }));
     }
   }, [checkAnalyzed]);
 
-  // Load everything
   const loadAll = useCallback(async () => {
     setLoadingAll(true);
     const promises: Promise<unknown>[] = [];
     if (!mainCard.loaded && !mainCard.loading) promises.push(loadMainCard());
-    if (competitors?.length) {
-      for (const c of competitors) {
-        promises.push(loadCompetitor(c.name));
-      }
-    }
+    if (competitors?.length) { for (const c of competitors) promises.push(loadCompetitor(c.name)); }
     await Promise.allSettled(promises);
     setLoadingAll(false);
   }, [mainCard.loaded, mainCard.loading, loadMainCard, competitors, loadCompetitor]);
 
   const setCompTab = (name: string, tab: 'pr' | 'news') => {
-    setCompCards(prev => ({
-      ...prev,
-      [name]: { ...(prev[name] || { loading: false, loaded: false, error: null, pressReleases: [], news: [] }), activeTab: tab },
-    }));
+    setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { loading: false, loaded: false, error: null, pressReleases: [], news: [] }), activeTab: tab } }));
   };
 
   const totalCompanies = 1 + (competitors?.length || 0);
@@ -372,87 +491,186 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2 className="section-head">Sources</h2>
 
-      {/* Load All bar */}
+      {/* Command bar */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '8px 14px', marginBottom: 8,
-        background: 'var(--bg2)', borderRadius: 8, border: '1px solid var(--stroke)',
+        padding: '12px 20px', marginBottom: 16,
+        background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
       }}>
-        <span style={{ fontSize: 12, color: 'var(--text2)' }}>
-          {loadedCount === 0
-            ? `${totalCompanies} companies — load individually or all at once`
-            : `${loadedCount} of ${totalCompanies} loaded`}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Progress ring */}
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="var(--surface3)" strokeWidth="2.5" />
+            <circle cx="12" cy="12" r="10" fill="none" stroke="var(--accent)" strokeWidth="2.5"
+              strokeDasharray={`${(loadedCount / totalCompanies) * 62.8} 62.8`}
+              strokeLinecap="round"
+              transform="rotate(-90 12 12)"
+              style={{ transition: 'stroke-dasharray 0.4s ease' }}
+            />
+          </svg>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>
+              {loadedCount === 0 ? 'Intelligence Feeds' : `${loadedCount} of ${totalCompanies} loaded`}
+            </span>
+            <span style={{ fontSize: 11, color: 'var(--text3)' }}>
+              {totalCompanies} {totalCompanies === 1 ? 'company' : 'companies'} monitored
+            </span>
+          </div>
+        </div>
         <button
           onClick={loadAll}
           disabled={loadingAll}
+          aria-label={loadedCount > 0 ? 'Refresh all feeds' : 'Load all feeds'}
           style={{
-            padding: '5px 14px', fontSize: 11, fontWeight: 600,
-            color: loadingAll ? 'var(--text3)' : 'var(--accent)',
-            background: 'var(--bg1)', border: '1px solid var(--border)', borderRadius: 6,
+            padding: '8px 18px', fontSize: 12, fontWeight: 600,
+            color: loadingAll ? 'var(--text3)' : 'var(--bg)',
+            background: loadingAll ? 'var(--surface2)' : 'var(--accent)',
+            border: 'none', borderRadius: 8,
             cursor: loadingAll ? 'wait' : 'pointer',
-            display: 'flex', alignItems: 'center', gap: 5,
-            opacity: loadingAll ? 0.6 : 1,
+            display: 'flex', alignItems: 'center', gap: 7,
+            transition: 'all 0.2s',
+            outline: 'none',
           }}
         >
-          <span style={{ display: 'inline-block', animation: loadingAll ? 'spin 1s linear infinite' : 'none' }}>↻</span>
-          {loadingAll ? 'Loading all...' : loadedCount > 0 ? 'Refresh All' : 'Load All'}
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ animation: loadingAll ? 'spin 1s linear infinite' : 'none' }}>
+            <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {loadingAll ? 'Loading...' : loadedCount > 0 ? 'Refresh All' : 'Load All'}
         </button>
       </div>
 
-      {/* Main stock card */}
-      <CompanyFeedCard
-        label={`${companyName} (${ticker})`}
-        data={mainCard}
-        showAnalysis
-        aiChecking={aiChecking}
-        onLoad={loadMainCard}
-        onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
-      />
-
-      {/* Competitor section label */}
-      {competitors && competitors.length > 0 && (
-        <div style={{
-          fontSize: 11, fontWeight: 600, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 1,
-          padding: '12px 4px 4px',
-        }}>
-          {competitorLabel || 'Competitors'}
+      {/* Legend */}
+      {(mainCard.loaded || loadedCount > 0) && (
+        <div
+          role="note"
+          aria-label="Analysis status legend"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 16, padding: '0 4px 12px',
+            fontSize: 11, color: 'var(--text3)',
+          }}
+        >
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', opacity: 0.9 }} />
+            Tracked in analysis
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', opacity: 0.9 }} />
+            New / not tracked
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+            Pending check
+          </span>
         </div>
       )}
 
-      {/* Competitor cards */}
-      {competitors?.map(comp => {
-        const data: CardData = compCards[comp.name] || {
-          loading: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
-        };
-        return (
-          <CompanyFeedCard
-            key={comp.name}
-            label={comp.name}
-            url={comp.url}
-            data={data}
-            showAnalysis
-            aiChecking={compAiChecking[comp.name] || false}
-            onLoad={() => loadCompetitor(comp.name)}
-            onTabChange={(tab) => setCompTab(comp.name, tab)}
-          />
-        );
-      })}
+      {/* Main stock card */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <CompanyFeedCard
+          label={`${companyName} (${ticker})`}
+          data={mainCard}
+          showAnalysis
+          aiChecking={aiChecking}
+          isPrimary
+          onLoad={loadMainCard}
+          onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
+        />
+      </div>
 
-      {/* Static research sources */}
-      {researchSources.map(group => (
-        <div key={group.category} className="card">
-          <div className="card-title">{group.category}</div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {group.sources.map(s => (
-              <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-                {s.name} <span style={{ color: 'var(--text3)', fontSize: 11 }}>↗</span>
-              </a>
-            ))}
+      {/* Competitor section */}
+      {competitors && competitors.length > 0 && (
+        <>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: '20px 0 8px',
+          }}>
+            <span style={{
+              fontSize: 11, fontWeight: 600, color: 'var(--text3)',
+              textTransform: 'uppercase', letterSpacing: '1.2px',
+            }}>
+              {competitorLabel || 'Competitors'}
+            </span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+            <span style={{
+              fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)',
+            }}>
+              {competitors.length}
+            </span>
           </div>
-        </div>
-      ))}
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {competitors.map(comp => {
+              const data: CardData = compCards[comp.name] || {
+                loading: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
+              };
+              return (
+                <CompanyFeedCard
+                  key={comp.name}
+                  label={comp.name}
+                  url={comp.url}
+                  data={data}
+                  showAnalysis
+                  aiChecking={compAiChecking[comp.name] || false}
+                  onLoad={() => loadCompetitor(comp.name)}
+                  onTabChange={(tab) => setCompTab(comp.name, tab)}
+                />
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {/* Research sources */}
+      <div style={{ padding: '20px 0 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{
+          fontSize: 11, fontWeight: 600, color: 'var(--text3)',
+          textTransform: 'uppercase', letterSpacing: '1.2px',
+        }}>
+          Research Sources
+        </span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+
+      <div className="g2" style={{ gap: 12 }}>
+        {researchSources.map(group => (
+          <div key={group.category} style={{
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: 16,
+            padding: '20px 24px',
+          }}>
+            <div style={{
+              fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+              letterSpacing: '1px', color: 'var(--text3)', marginBottom: 12,
+            }}>
+              {group.category}
+            </div>
+            <nav aria-label={`${group.category} links`} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {group.sources.map(s => (
+                <a
+                  key={s.url}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontSize: 13, color: 'var(--text2)', textDecoration: 'none',
+                    padding: '4px 0', display: 'flex', alignItems: 'center', gap: 6,
+                    transition: 'color 0.15s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--text2)')}
+                >
+                  {s.name}
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ opacity: 0.4, flexShrink: 0 }}>
+                    <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </a>
+              ))}
+            </nav>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
