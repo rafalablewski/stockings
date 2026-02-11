@@ -127,17 +127,13 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
     // Run AI analysis check on all fetched articles
     const allArticles = [...prArticles, ...newsItems];
-    console.log('[handleRefresh] allArticles count:', allArticles.length, 'prCount:', prArticles.length);
     if (allArticles.length > 0) {
       setAiChecking(true);
       try {
-        console.log('[handleRefresh] Calling checkAnalyzed...');
         const checked = await checkAnalyzed(allArticles);
-        console.log('[handleRefresh] RESULTS:', JSON.stringify(checked.map(c => ({ h: c.headline.slice(0, 30), a: c.analyzed }))));
         // Split results back and set final state
         const checkedPr = checked.slice(0, prArticles.length);
         const checkedNews = checked.slice(prArticles.length);
-        console.log('[handleRefresh] Setting PR:', checkedPr.length, 'News:', checkedNews.length);
         setPressReleases(checkedPr);
         setNewsArticles(checkedNews);
       } catch (err) {
