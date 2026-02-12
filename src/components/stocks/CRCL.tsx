@@ -3702,7 +3702,10 @@ function CRCLModel() {
               {/* SECTION 1: HEADER                                                   */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#financials-header</div>
-              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
+              <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Quarterly Data<UpdateIndicators sources="SEC" /></div>
+                <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Financials<span style={{ color: 'var(--accent)' }}>.</span></h2>
+              </div>
 
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 2: HIGHLIGHT BOX                                            */}
@@ -3767,7 +3770,10 @@ function CRCLModel() {
               {/* Controls */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-header</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+                <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Due Diligence<UpdateIndicators sources={['PR', 'SEC']} /></div>
+                  <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Investment Analysis<span style={{ color: 'var(--accent)' }}>.</span></h2>
+                </div>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                   <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
                   <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
@@ -4965,7 +4971,10 @@ function CRCLModel() {
           {activeTab === 'capital' && (
             <>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-header</div>
-              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
+              <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Financial Position<UpdateIndicators sources="SEC" /></div>
+                <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Capital Structure<span style={{ color: 'var(--accent)' }}>.</span></h2>
+              </div>
 
               {/* Highlight Box */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-strategy</div>
@@ -5836,7 +5845,10 @@ function CRCLModel() {
           {activeTab === 'timeline' && (
             <>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#timeline-header</div>
-              <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Timeline<UpdateIndicators sources="PR" /></h2>
+              <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Corporate Events<UpdateIndicators sources="PR" /></div>
+                <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Timeline<span style={{ color: 'var(--accent)' }}>.</span></h2>
+              </div>
 
               {/* Latest SEC Filings - Enhanced with filtering and pagination */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sec-filings</div>
@@ -5851,14 +5863,15 @@ function CRCLModel() {
                       onClick={() => { setSecFilter(type); setShowAllFilings(false); }}
                       style={{
                         padding: '4px 12px',
-                        borderRadius: 6,
-                        fontSize: 12,
+                        borderRadius: 99,
+                        fontSize: 11,
                         fontWeight: 500,
-                        border: 'none',
+                        border: '1px solid',
+                        borderColor: secFilter === type ? 'var(--cyan)' : 'var(--border)',
                         cursor: 'pointer',
-                        background: secFilter === type ? 'var(--cyan)' : 'var(--surface3)',
-                        color: secFilter === type ? 'white' : 'var(--text2)',
-                        transition: 'all 0.15s ease'
+                        background: secFilter === type ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'transparent',
+                        color: secFilter === type ? 'var(--cyan)' : 'var(--text3)',
+                        transition: 'all 0.2s'
                       }}
                     >
                       {type}

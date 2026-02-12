@@ -107,10 +107,10 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>
-        Wall Street Coverage
-        <UpdateIndicators sources="WS" />
-      </h2>
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Analyst Research<UpdateIndicators sources="WS" /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Wall Street Coverage<span style={{ color: 'var(--accent)' }}>.</span></h2>
+      </div>
 
       {/* Consensus Snapshot */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-consensus</div>
@@ -123,19 +123,19 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
           {/* Price Target Summary */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12, textAlign: 'center' }}>
                 <div style={{ fontSize: 11, color: 'var(--text3)' }}>AVG PT</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--violet)', fontFamily: 'Space Mono' }}>
                   {avgPT ? `$${avgPT.toFixed(0)}` : '—'}
                 </div>
               </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12, textAlign: 'center' }}>
                 <div style={{ fontSize: 11, color: 'var(--text3)' }}>MEDIAN PT</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--sky)', fontFamily: 'Space Mono' }}>
                   {medianPT ? `$${medianPT.toFixed(0)}` : '—'}
                 </div>
               </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12, textAlign: 'center' }}>
                 <div style={{ fontSize: 11, color: 'var(--text3)' }}>HIGH / LOW</div>
                 <div style={{ fontSize: 18, fontWeight: 700, fontFamily: 'Space Mono' }}>
                   <span style={{ color: 'var(--mint)' }}>{highPT ? `$${highPT}` : '—'}</span>
@@ -143,7 +143,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                   <span style={{ color: 'var(--coral)' }}>{lowPT ? `$${lowPT}` : '—'}</span>
                 </div>
               </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12, textAlign: 'center' }}>
                 <div style={{ fontSize: 11, color: 'var(--text3)' }}>ANALYSTS</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text)', fontFamily: 'Space Mono' }}>
                   {totalAnalysts}
@@ -157,7 +157,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
             <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>RATINGS DISTRIBUTION</div>
             {totalAnalysts > 0 ? (
               <>
-                <div style={{ display: 'flex', height: 24, borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
+                <div style={{ display: 'flex', height: 24, borderRadius: 99, overflow: 'hidden', marginBottom: 8 }}>
                   {ratingCounts.bullish > 0 && (
                     <div style={{ width: `${(ratingCounts.bullish / totalAnalysts) * 100}%`, background: 'var(--mint)' }} />
                   )}
@@ -226,11 +226,11 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                     {/* Current Rating Badge */}
                     <div style={{
                       padding: '4px 12px',
-                      borderRadius: 6,
+                      borderRadius: 99,
                       background: `${getRatingColor(cov.currentRating, cov.currentRatingNormalized)}22`,
                       border: `1px solid ${getRatingColor(cov.currentRating, cov.currentRatingNormalized)}44`,
                     }}>
-                      <span style={{ color: getRatingColor(cov.currentRating, cov.currentRatingNormalized), fontWeight: 600, fontSize: 12 }}>
+                      <span style={{ color: getRatingColor(cov.currentRating, cov.currentRatingNormalized), fontWeight: 600, fontSize: 11 }}>
                         {cov.currentRating.toUpperCase()}
                       </span>
                     </div>
@@ -244,11 +244,11 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
                     {/* Report counts */}
                     <div style={{ display: 'flex', gap: 8, fontSize: 11 }}>
-                      <span style={{ padding: '2px 6px', background: 'var(--violet)', color: 'white', borderRadius: 4 }}>
+                      <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--violet) 15%, transparent)', color: 'var(--violet)' }}>
                         {fullReportCount} Report{fullReportCount !== 1 ? 's' : ''}
                       </span>
                       {updateCount > 0 && (
-                        <span style={{ padding: '2px 6px', background: 'var(--surface3)', color: 'var(--text3)', borderRadius: 4 }}>
+                        <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--border) 60%, transparent)', color: 'var(--text3)' }}>
                           {updateCount} Update{updateCount !== 1 ? 's' : ''}
                         </span>
                       )}
@@ -290,11 +290,11 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                 </span>
                                 <span style={{
                                   color: getActionColor(report.action),
-                                  fontSize: 11,
+                                  fontSize: 10,
                                   fontWeight: 600,
                                   padding: '2px 8px',
                                   background: `${getActionColor(report.action)}22`,
-                                  borderRadius: 4
+                                  borderRadius: 99
                                 }}>
                                   {report.action}
                                 </span>
