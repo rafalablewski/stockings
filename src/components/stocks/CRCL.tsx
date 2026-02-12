@@ -7330,80 +7330,86 @@ const CompsTab = () => {
         {/* SOTP Valuation */}
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sotp</div>
-          <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Segment</th>
-                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Metric</th>
-                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
-                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {SOTP.map((s, i) => (
-                <tr key={i}>
-                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
-                    <div style={{ fontWeight: 500 }}>{s.segment}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
-                  </td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.metric}</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.multiple}</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>
-                    {s.value ? `$${s.value}B` : s.valueLow && s.valueHigh ? `$${s.valueLow}-${s.valueHigh}B` : '—'}
-                  </td>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
+              <p style={{ color: 'var(--text3)', fontSize: 13, margin: '4px 0 0' }}>Value each business segment separately</p>
+            </div>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Segment</th>
+                  <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Metric</th>
+                  <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
+                  <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Value</th>
                 </tr>
-              ))}
-              <tr style={{ fontWeight: 600 }}>
-                <td colSpan={3} style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>SOTP Range</td>
-                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>$15.5-17.5B</td>
-              </tr>
-            </tbody>
-          </table>
-          <div style={{ fontSize: 12, color: 'var(--text3)' }}>
-            Current market cap: $18.9B ({((18.9 / 16.5 - 1) * 100).toFixed(0)}% premium to midpoint)
-          </div>
+              </thead>
+              <tbody>
+                {SOTP.map((s, i) => (
+                  <tr key={i}>
+                    <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                      <div style={{ fontWeight: 500 }}>{s.segment}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
+                    </td>
+                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.metric}</td>
+                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.multiple}</td>
+                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>
+                      {s.value ? `$${s.value}B` : s.valueLow && s.valueHigh ? `$${s.valueLow}-${s.valueHigh}B` : '—'}
+                    </td>
+                  </tr>
+                ))}
+                <tr style={{ fontWeight: 600 }}>
+                  <td colSpan={3} style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>SOTP Range</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>$15.5-17.5B</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style={{ padding: '12px 20px', fontSize: 12, color: 'var(--text3)' }}>
+              Current market cap: $18.9B ({((18.9 / 16.5 - 1) * 100).toFixed(0)}% premium to midpoint)
+            </div>
           </div>
         </div>
 
         {/* Transaction Comps */}
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#transaction-comps</div>
-          <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Transaction Comps<UpdateIndicators sources={['WS']} /></div>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Date</th>
-                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Target</th>
-                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Value</th>
-                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {TRANSACTIONS.map((t, i) => (
-                <tr key={i}>
-                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{t.date}</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
-                    <div style={{ fontWeight: 500 }}>{t.target}</div>
-                    {t.notes && <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.notes}</div>}
-                  </td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{t.value ? `$${t.value}B` : '—'}</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}><span style={{
-                    fontSize: 10,
-                    padding: '3px 8px',
-                    borderRadius: 4,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                    fontWeight: 600,
-                    background: t.type === 'M&A' ? 'var(--mint-dim)' : t.type === 'Funding' ? 'var(--sky-dim)' : 'var(--gold-dim)',
-                    color: t.type === 'M&A' ? 'var(--mint)' : t.type === 'Funding' ? 'var(--sky)' : 'var(--gold)'
-                  }}>{t.type}</span></td>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>Transaction Comps<UpdateIndicators sources={['WS']} /></div>
+              <p style={{ color: 'var(--text3)', fontSize: 13, margin: '4px 0 0' }}>Recent M&A and funding deals in the space</p>
+            </div>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Date</th>
+                  <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Target</th>
+                  <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Value</th>
+                  <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Type</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {TRANSACTIONS.map((t, i) => (
+                  <tr key={i}>
+                    <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{t.date}</td>
+                    <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                      <div style={{ fontWeight: 500 }}>{t.target}</div>
+                      {t.notes && <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.notes}</div>}
+                    </td>
+                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{t.value ? `$${t.value}B` : '—'}</td>
+                    <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}><span style={{
+                      fontSize: 10,
+                      padding: '3px 8px',
+                      borderRadius: 4,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      fontWeight: 600,
+                      background: t.type === 'M&A' ? 'var(--mint-dim)' : t.type === 'Funding' ? 'var(--sky-dim)' : 'var(--gold-dim)',
+                      color: t.type === 'M&A' ? 'var(--mint)' : t.type === 'Funding' ? 'var(--sky)' : 'var(--gold)'
+                    }}>{t.type}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -7495,23 +7501,29 @@ const CompsTab = () => {
         </div>
       </div>
 
-      {/* Competitor News Intelligence Section */}
+      {/* Competitor News Intelligence Section - Eyebrow + Title + Dot Header */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
-      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Competitor News Intelligence<UpdateIndicators sources="PR" /></div>
-        <p style={{ color: 'var(--text2)', marginBottom: 8, fontSize: 13 }}>Track what <strong>competitors and distribution partners</strong> are doing — stablecoin developments, exchange partnerships, regulatory moves, yield products, and tokenization initiatives</p>
-        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>Company-level news affecting CRCL's relative positioning in stablecoins and digital payments</p>
+      <div style={{ padding: '28px 0 12px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Competitive Intelligence<UpdateIndicators sources="PR" /></div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+          <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>Competitor News<span style={{ color: 'var(--accent)' }}>.</span></h3>
+        </div>
       </div>
 
-      {/* Filter Bar */}
+      {/* Competitor Filter - Card container + pill buttons */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
-      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: '12px 16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 28px', marginTop: 8 }}>
+        <p style={{ color: 'var(--text2)', fontSize: 13, lineHeight: 1.6, margin: '0 0 4px' }}>Track what peer companies are doing — stablecoins, exchanges, regulatory moves affecting USDC market position.</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', margin: '0 0 16px' }}>Company-level news affecting CRCL's competitive positioning</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)' }}>Filter by Competitor</span>
+          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} style={{ fontSize: 10, padding: '3px 10px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}>Clear</button>}
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {(() => { const isActive = competitorFilter === 'all'; return (
             <button
               onClick={() => setCompetitorFilter('all')}
-              style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
+              style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--violet)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'transparent', color: isActive ? 'var(--violet)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
             >
               All ({COMPETITOR_NEWS.length})
             </button>
@@ -7524,7 +7536,7 @@ const CompsTab = () => {
               <button
                 key={comp.id}
                 onClick={() => setCompetitorFilter(comp.id)}
-                style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
+                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--violet)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'transparent', color: isActive ? 'var(--violet)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
               >
                 {comp.name} ({count})
               </button>
@@ -7533,7 +7545,7 @@ const CompsTab = () => {
           {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (() => { const isActive = competitorFilter === 'other'; return (
             <button
               onClick={() => setCompetitorFilter('other')}
-              style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
+              style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--violet)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'transparent', color: isActive ? 'var(--violet)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
             >
               Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
             </button>
@@ -7541,189 +7553,85 @@ const CompsTab = () => {
         </div>
       </div>
 
-      {/* News Timeline - Grouped by Company, then by Story */}
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {companySections.length === 0 ? (
-          <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, textAlign: 'center', padding: 40 }}>
-            <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
+      {/* Category Filter Row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {newsCategories.map(cat => {
+            const isActive = newsCategoryFilter === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setNewsCategoryFilter(cat)}
+                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--sky)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--sky) 15%, transparent)' : 'transparent', color: isActive ? 'var(--sky)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+        <button
+          onClick={() => {
+            if (expandedNews.size > 0) {
+              setExpandedNews(new Set());
+            } else {
+              setExpandedNews(new Set(filteredCompNews.map((_, i) => i)));
+            }
+          }}
+          style={{ fontSize: 10, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+        >
+          {expandedNews.size > 0 ? 'Collapse All' : 'Expand All'}
+        </button>
+      </div>
+
+      {/* News Timeline - Flat list */}
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {filteredCompNews.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 40 }}>
+            <p style={{ color: 'var(--text3)' }}>No competitor news matching current filters.</p>
           </div>
         ) : (
-          companySections.map((section) => {
-            const totalEntries = section.stories.reduce((sum, s) => sum + s.entries.length, 0);
-            const oldestDate = section.stories[section.stories.length - 1]?.entries[section.stories[section.stories.length - 1]?.entries.length - 1]?.date || '';
-            const newestDate = section.stories[0]?.entries[0]?.date || '';
+          filteredCompNews.map((news, i) => {
+            const isExpanded = expandedNews.has(i);
+            const accentColor = news.implication === 'positive' ? 'var(--mint)' : news.implication === 'negative' ? 'var(--coral)' : 'var(--sky)';
+            const impLabel = news.implication === 'positive' ? 'Favorable' : news.implication === 'negative' ? 'Threat' : 'Neutral';
+            const competitorName = getCompetitorName(news.competitor);
             return (
-            <div key={section.competitorId} style={{ border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginTop: 16, background: 'var(--surface)' }}>
-              <div onClick={() => togglePanel(section.competitorId)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 20px', cursor: 'pointer', userSelect: 'none' }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1 }}>{section.name}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
-                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{totalEntries} {totalEntries === 1 ? 'entry' : 'entries'}</span>
-                      {oldestDate && newestDate && <span style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.6 }}>{newestDate} — {oldestDate}</span>}
+              <div key={i} role="button" tabIndex={0}
+                aria-label={`${news.headline} — click to ${isExpanded ? 'collapse' : 'expand'}`}
+                style={{ padding: '16px 28px', cursor: 'pointer', borderLeft: `3px solid ${accentColor}`, borderBottom: i < filteredCompNews.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                onClick={() => { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); } }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
+                      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)' }}>{news.date}</span>
+                      <span style={{ padding: '1px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--violet) 12%, transparent)', color: 'var(--violet)' }}>{news.category}</span>
+                      <span style={{ padding: '1px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--sky) 12%, transparent)', color: 'var(--sky)' }}>{competitorName}</span>
                     </div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13, lineHeight: 1.4 }}>{news.headline}</div>
                   </div>
-                  <div style={{ flexShrink: 0, transition: 'transform 0.25s ease', transform: openPanels.has(section.competitorId) ? 'rotate(180deg)' : 'rotate(0deg)' }} aria-hidden="true"><svg viewBox="0 0 24 24" style={{ width: 16, height: 16, stroke: 'var(--text3)', strokeWidth: 2, fill: 'none' }}><polyline points="6 9 12 15 18 9" /></svg></div>
-              </div>
-              {openPanels.has(section.competitorId) && <div style={{ borderTop: '1px solid var(--border)' }}>
-              {section.stories.map((story) => (
-            <div key={story.storyId} style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 0, overflow: 'hidden' }}>
-              {/* Story Header */}
-              <div style={{
-                padding: '16px 20px',
-                background: 'var(--surface2)',
-                borderBottom: '1px solid var(--border)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{story.title}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text3)' }}>
-                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[story.entries.length - 1]?.date} → {story.entries[0]?.date}
-                  </div>
+                  <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: accentColor, marginLeft: 12, whiteSpace: 'nowrap' }}>
+                    {news.implication === 'positive' ? '+' : news.implication === 'negative' ? '-' : '~'} {impLabel}
+                  </span>
                 </div>
-              </div>
-
-              {/* Story Entries - Chronological */}
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {story.entries.map((news, entryIdx) => {
-                  const implStyle = getImplicationStyle(news.implication);
-                  const catStyle = getCategoryStyle(news.category);
-                  const expandKey = `${story.storyId}-${entryIdx}`;
-                  const isExpanded = expandedNews === expandKey;
-
-                  return (
-                    <div
-                      key={entryIdx}
-                      style={{
-                        borderBottom: entryIdx < story.entries.length - 1 ? '1px solid var(--border)' : 'none',
-                        background: isExpanded ? 'var(--surface2)' : 'transparent',
-                        transition: 'background 0.2s'
-                      }}
-                    >
-                      <div
-                        onClick={() => setExpandedNews(isExpanded ? null : expandKey)}
-                        role="button"
-                        tabIndex={0}
-                        aria-expanded={isExpanded}
-                        aria-label={`Toggle news details for ${news.date}`}
-                        onKeyDown={(e) => e.key === 'Enter' && setExpandedNews(isExpanded ? null : expandKey)}
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: '90px 100px 1fr auto auto',
-                          gap: 12,
-                          padding: '14px 20px',
-                          cursor: 'pointer',
-                          alignItems: 'center',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        {/* Date */}
-                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>{news.date}</span>
-
-                        {/* Category */}
-                        <span
-                          style={{
-                            fontSize: '9px',
-                            padding: '3px 8px',
-                            borderRadius: '4px',
-                            background: catStyle.bg,
-                            color: catStyle.color,
-                            fontWeight: 600,
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.5px'
-                          }}
-                        >
-                          {news.category}
-                        </span>
-
-                        {/* Headline */}
-                        <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{news.headline}</span>
-
-                        {/* Implication Badge */}
-                        <span
-                          style={{
-                            fontSize: '9px',
-                            padding: '3px 8px',
-                            borderRadius: '4px',
-                            background: implStyle.bg,
-                            color: implStyle.color,
-                            fontWeight: 600
-                          }}
-                        >
-                          {news.implication === 'positive' ? '✓' : news.implication === 'negative' ? '⚠' : '○'}
-                        </span>
-
-                        {/* Toggle */}
-                        <span style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: 6,
-                          background: isExpanded ? 'var(--accent)' : 'var(--surface3)',
-                          color: isExpanded ? 'var(--bg)' : 'var(--text3)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 14,
-                          transition: 'all 0.2s'
-                        }}>
-                          {isExpanded ? '−' : '+'}
-                        </span>
-                      </div>
-
-                      {/* Expanded Details */}
-                      {isExpanded && (
-                        <div style={{ padding: '0 20px 16px 20px' }}>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 20 }}>
-                            <div>
-                              <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
-                                {news.details.map((d, i) => (
-                                  <li key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: 'var(--text2)' }}>
-                                    <span style={{ color: 'var(--accent)' }}>•</span>
-                                    {d}
-                                  </li>
-                                ))}
-                              </ul>
-                              {news.crclComparison && (
-                                <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--accent-dim)', borderRadius: 6, borderLeft: '3px solid var(--accent)' }}>
-                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent)' }}>
-                                    CRCL Comparison
-                                  </div>
-                                  <div style={{ fontSize: 13, color: 'var(--text)' }}>{news.crclComparison}</div>
-                                </div>
-                              )}
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 140 }}>
-                              <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
-                                <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Impact</div>
-                                <div style={{ fontSize: 12, fontWeight: 600, color: implStyle.color }}>
-                                  {news.implication === 'positive' ? 'Favorable' : news.implication === 'negative' ? 'Threat' : 'Neutral'}
-                                </div>
-                              </div>
-                              {news.source && (
-                                <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
-                                  <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Source</div>
-                                  <div style={{ fontSize: 11 }}>
-                                    {news.sourceUrl ? (
-                                      <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
-                                        {news.source} ↗
-                                      </a>
-                                    ) : news.source}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                {isExpanded && (
+                  <div style={{ paddingTop: 16, marginTop: 12, borderTop: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+                      {news.details.map((d, j) => <div key={j} style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--accent)', flexShrink: 0 }}>•</span>{d}</div>)}
                     </div>
-                  );
-                })}
+                    {news.crclComparison && (
+                      <div style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 5%, var(--surface))', borderRadius: 12, borderLeft: '3px solid var(--mint)', marginTop: 12 }}>
+                        <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 4 }}>CRCL Comparison</div>
+                        <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.crclComparison}</div>
+                      </div>
+                    )}
+                    {news.source && <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: 'Space Mono, monospace', marginTop: 8 }}>Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>{news.source} ↗</a> : news.source}</div>}
+                  </div>
+                )}
               </div>
-            </div>
-              ))}
-              </div>}
-            </div>
             );
           })
         )}
