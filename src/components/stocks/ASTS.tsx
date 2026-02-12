@@ -4373,39 +4373,32 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div>
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-header</div>
-        <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      </div>
-
-      {/* Highlight Box */}
-      <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-description</div>
-        <div className="highlight" style={{ }}>
-          <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue-Based Valuation Simulation</h3>
-          <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-            Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
-            and log-normal revenue distribution. Terminal value discounted to present.
-          </p>
-        </div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Revenue-Based Valuation Simulation<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Monte Carlo<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>
+          Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
+          and log-normal revenue distribution. Terminal value discounted to present.
+        </p>
       </div>
 
       {/* Scenario Presets */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-scenarios</div>
-        <div className="card" style={{ }}>
-          <div className="card-title">Select Scenario</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', borderBottom: '1px solid var(--border)' }}>Select Scenario</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
             {Object.entries(presets).filter(([key]) => key !== 'mgmt').map(([key, p]) => (
               <button
                 key={key}
                 onClick={() => loadPreset(key)}
                 style={{
                   padding: '12px 16px',
-                  borderRadius: 8,
                   textAlign: 'left',
-                  border: `2px solid ${activePreset === key ? 'var(--accent)' : 'transparent'}`,
-                  background: activePreset === key ? 'var(--accent-dim)' : 'var(--surface2)',
+                  border: 'none',
+                  borderBottom: activePreset === key ? '2px solid var(--accent)' : '2px solid transparent',
+                  background: activePreset === key ? 'var(--accent-dim)' : 'var(--surface)',
                   color: activePreset === key ? 'var(--accent)' : 'var(--text)',
                   cursor: 'pointer',
                   transition: 'all 0.15s'
@@ -4422,7 +4415,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Horizon & Simulation Controls */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-controls</div>
-        <div className="g2" style={{ }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div className="card" style={{ }}>
             <div className="card-title">Time Horizon</div>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -4481,8 +4474,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Parameters - Model Tab Style */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-parameters</div>
-        <h3 style={{ color: 'var(--accent)' }}>Revenue Model</h3>
-        <div className="g2" style={{ }}>
+        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Revenue Model</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div className="card" style={{ }}>
             <div className="card-title">Base Revenue ($B)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -4543,8 +4539,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           </div>
         </div>
 
-        <h3 style={{ color: 'var(--mint)' }}>Operating Model</h3>
-        <div className="g2" style={{ }}>
+        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Operating Model</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div className="card" style={{ }}>
             <div className="card-title">EBITDA Margin (%)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -4605,8 +4604,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           </div>
         </div>
 
-        <h3 style={{ color: 'var(--coral)' }}>Risk Factors</h3>
-        <div className="g3" style={{ }}>
+        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Risk Factors</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           <div className="card" style={{ }}>
             <div className="card-title">Launch Risk (%)</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -4706,6 +4708,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Percentile Distribution */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-percentiles</div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
         <table className="tbl" style={{ width: '100%' }}>
           <thead>
             <tr>
@@ -4735,11 +4738,13 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Risk Metrics */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
         <table className="tbl" style={{ width: '100%' }}>
           <thead>
             <tr>
@@ -4781,6 +4786,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Distribution Chart */}
@@ -9586,10 +9592,12 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
-
-      <div className="highlight"><h3>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h3><p>Unified view: valuation metrics, qualitative assessment, and D2D capabilities per company. No direct comps — Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Comparables & Competitor Intelligence<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Unified view: valuation metrics, qualitative assessment, and D2D capabilities per company. No direct comps — Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p>
+      </div>
 
       {/* Peer Group Selector */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -9686,7 +9694,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         })}
       </div>
 
-      <div className="g2">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ev-rev-comparison</div>
           <div className="card">
@@ -9725,13 +9733,18 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Advanced Valuation Matrices */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-framework</div>
-      <div className="highlight"><h3>📈 Valuation Framework</h3><p>Multiple methodologies for a pre-revenue, high-growth space company. TAM-based and comparable approaches.</p></div>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Framework</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
 
       {/* Valuation Methodology Matrix */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
-        <p style={{ color: 'var(--text3)', fontSize: 13 }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', margin: 0 }}>Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
+          <p style={{ color: 'var(--text3)', fontSize: 13, margin: '4px 0 0' }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
+        </div>
         <table className="tbl">
           <thead>
             <tr>
@@ -9765,11 +9778,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </table>
       </div>
 
-      <div className="g2" style={{ }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         {/* SOTP Valuation */}
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sotp</div>
-          <div className="card">
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
           <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13 }}>Value each business segment separately</p>
           <table className="tbl">
@@ -9811,7 +9824,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         {/* Risk-Adjusted Scenarios */}
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#risk-adjusted-scenarios</div>
-          <div className="card">
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
             <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13 }}>Probability-weighted valuation outcomes</p>
           <table className="tbl">
@@ -9852,9 +9865,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Competitor News Intelligence Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
-      <div className="highlight">
-        <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
-        <p>Track competitor developments to assess ASTS competitive position</p>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Competitor News Intelligence</span>
+        <UpdateIndicators sources="PR" />
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
 
       {/* Filter Bar */}

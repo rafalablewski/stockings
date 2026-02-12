@@ -1536,24 +1536,21 @@ const CRCLModelTab = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#model-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Stablecoin DCF Valuation<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Model<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Configure model assumptions for Circle's USDC business. Changes flow to revenue projections and DCF valuation. Key drivers: USDC circulation growth, Fed funds rate (reserve yield), and Coinbase distribution cost.</p>
+      </div>
 
       {/* ASSUMPTIONS SECTION */}
       <>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario</div>
-        <div className="highlight">
-          <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
-          <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-            Configure model assumptions for Circle's USDC business. Changes flow to revenue projections and DCF valuation.
-            Key drivers: USDC circulation growth, Fed funds rate (reserve yield), and Coinbase distribution cost.
-          </p>
-        </div>
 
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-presets</div>
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
-        <div className="card">
-          <div className="card-title">Scenario Presets</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
+        <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Scenario Presets</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 10, overflow: 'hidden' }}>
             {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
               const preset = CRCL_SCENARIO_PRESETS[s];
               const isActive = selectedScenario === s;
@@ -1567,12 +1564,11 @@ const CRCLModelTab = ({
                   onKeyDown={(e) => e.key === 'Enter' && applyScenario(s)}
                   style={{
                     padding: 12,
-                    borderRadius: 10,
-                    border: isActive ? `2px solid ${preset.color}` : '1px solid var(--border)',
-                    background: isActive ? `${preset.color}15` : 'var(--surface2)',
+                    background: isActive ? `${preset.color}15` : 'var(--surface)',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                     textAlign: 'center',
+                    borderBottom: isActive ? `2px solid ${preset.color}` : '2px solid transparent',
                   }}
                 >
                   <div style={{ fontSize: 20 }}>{preset.icon}</div>
@@ -1594,9 +1590,12 @@ const CRCLModelTab = ({
 
         {/* USDC & REVENUE PARAMETERS */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-model</div>
-        <h3 style={{ color: 'var(--cyan)' }}>USDC & Revenue Model</h3>
+        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>USDC & Revenue Model</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
 
-        <div className="g2">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <CRCLParameterCard
             title="USDC Annual Growth Rate (%)"
             explanation="Expected annual USDC circulation growth. Historical: 500%+ (2020-21), -50% (2022-23), +40% (2024). Crypto cycles are volatile. Stablecoin TAM could grow 10x+ with institutional adoption and regulatory clarity."
@@ -1615,7 +1614,7 @@ const CRCLModelTab = ({
           />
         </div>
 
-        <div className="g2">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <CRCLParameterCard
             title="Market Share (%)"
             explanation="USDC % of total stablecoin market. Currently ~29%. USDT dominates at ~68%. USDC's advantage: regulatory compliance, transparency, US-friendly. Risk: CBDCs, new entrants (PayPal USD), USDT resilience."
@@ -1637,9 +1636,12 @@ const CRCLModelTab = ({
 
         {/* OPERATING PARAMETERS */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#operating-model</div>
-        <h3 style={{ color: 'var(--mint)' }}>Operating Model</h3>
+        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Operating Model</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
 
-        <div className="g2">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <CRCLParameterCard
             title="Operating Margin (%)"
             explanation="EBITDA margin on net revenue (after Coinbase). Fintech peers: 30-50%+. Scale benefits: compliance/tech costs spread over larger base. 25% = pressured, 40%+ = scale achieved, 60% = best-in-class."
@@ -1665,9 +1667,12 @@ const CRCLModelTab = ({
 
         {/* VALUATION PARAMETERS */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-params</div>
-        <h3 style={{ color: 'var(--violet)' }}>Valuation Parameters</h3>
+        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Parameters</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
 
-        <div className="g2">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <CRCLParameterCard
             title="Discount Rate / WACC (%)"
             explanation="Required return for discounting future cash flows. 10% = mature fintech. 14% = growth with execution risk. 20%+ = speculative. Higher if rate/regulatory risk is elevated."
@@ -1689,12 +1694,15 @@ const CRCLModelTab = ({
 
         {/* RISK PARAMETERS */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#risk-factors</div>
-        <h3 style={{ color: 'var(--coral)' }}>Risk Probability Factors</h3>
+        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Risk Probability Factors</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
         <p style={{ fontSize: 12, color: 'var(--text3)' }}>
           Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Comp) × (1-Rate) = {(riskFactor * 100).toFixed(0)}% success probability.
         </p>
 
-        <div className="g3">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           <CRCLParameterCard
             title="Regulatory Risk (%)"
             explanation="Probability of adverse stablecoin regulation. SEC/banking agency scrutiny, reserve requirements, licensing issues. 5% = favorable legislation. 30%+ = CBDC mandates or stablecoin restrictions."
@@ -1726,87 +1734,51 @@ const CRCLModelTab = ({
 
         {/* DCF VALUATION OUTPUT */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-output</div>
-        <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
-          <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (5-Year Terminal)</div>
-          <table className="tbl" style={{ width: '100%' }}>
-            <thead>
-              <tr>
-                <th style={{ textAlign: 'left' }}>Metric</th>
-                <th className="r">Value</th>
-                <th style={{ textAlign: 'left' }}>Detail</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style={{ background: 'var(--accent-dim)' }}>
-                <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Target Stock Price</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: 'var(--accent)' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</td>
-                <td style={{ color: 'var(--text3)' }}>vs ${currentStockPrice.toFixed(0)} current</td>
-              </tr>
-              <tr style={{ background: 'var(--accent-dim)' }}>
-                <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Implied Upside</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</td>
-                <td style={{ color: 'var(--text3)' }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</td>
-              </tr>
-              <tr>
-                <td style={{ color: 'var(--text2)' }}>Present Value</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${riskAdjustedEV.toFixed(1)}B</td>
-                <td style={{ color: 'var(--text3)' }}>{(riskFactor * 100).toFixed(0)}% prob × ${presentValueEV.toFixed(1)}B</td>
-              </tr>
-              <tr>
-                <td style={{ color: 'var(--text2)' }}>Market Cap</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${currentMarketCap.toFixed(1)}B</td>
-                <td style={{ color: 'var(--text3)' }}>{currentPSRatio.toFixed(1)}x Net Revenue</td>
-              </tr>
-              <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
-              <tr>
-                <td style={{ color: 'var(--text2)' }}>Terminal USDC</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalUSDC.toFixed(0)}B</td>
-                <td style={{ color: 'var(--text3)' }}>{usdcGrowthRate > 0 ? '+' : ''}{usdcGrowthRate}%/yr × 5yrs</td>
-              </tr>
-              <tr>
-                <td style={{ color: 'var(--text2)' }}>Terminal Gross Rev</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalGrossRevenue.toFixed(2)}B</td>
-                <td style={{ color: 'var(--text3)' }}>${terminalUSDC.toFixed(0)}B × {reserveYield}%</td>
-              </tr>
-              <tr>
-                <td style={{ color: 'var(--text2)' }}>Terminal Net Rev</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalNetRevenue.toFixed(2)}B</td>
-                <td style={{ color: 'var(--text3)' }}>After {distributionCost}% dist.</td>
-              </tr>
-              <tr>
-                <td style={{ color: 'var(--text2)' }}>Terminal EBITDA</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalEBITDA.toFixed(2)}B</td>
-                <td style={{ color: 'var(--text3)' }}>{operatingMargin}% margin</td>
-              </tr>
-              <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
-              <tr>
-                <td style={{ color: 'var(--text2)' }}>Terminal EV/Rev</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalEVperRev.toFixed(1)}x</td>
-                <td style={{ color: 'var(--text3)' }}>${terminalEV.toFixed(1)}B EV</td>
-              </tr>
-              <tr>
-                <td style={{ color: 'var(--text2)' }}>Terminal EV/EBITDA</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalEVperEBITDA.toFixed(1)}x</td>
-                <td style={{ color: 'var(--text3)' }}>Terminal multiple</td>
-              </tr>
-              <tr>
-                <td style={{ color: 'var(--text2)' }}>Terminal FCF</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalFCF.toFixed(2)}B</td>
-                <td style={{ color: 'var(--text3)' }}>{(fcfConversion * 100).toFixed(0)}% conversion</td>
-              </tr>
-              <tr>
-                <td style={{ color: 'var(--text2)' }}>Diluted Shares</td>
-                <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalShares.toFixed(0)}M</td>
-                <td style={{ color: 'var(--text3)' }}>+{((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution</td>
-              </tr>
-            </tbody>
-          </table>
+        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DCF Valuation Output (5-Year Terminal)</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+        {/* Hero KPI row - 2 column */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 14, overflow: 'hidden', marginBottom: 12 }}>
+          <div style={{ background: 'var(--accent-dim)', padding: 24, textAlign: 'center' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 8 }}>Target Stock Price</div>
+            <div style={{ fontFamily: 'Space Mono', fontSize: 36, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 6 }}>vs ${currentStockPrice.toFixed(0)} current</div>
+          </div>
+          <div style={{ background: 'var(--accent-dim)', padding: 24, textAlign: 'center' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 8 }}>Implied Upside</div>
+            <div style={{ fontFamily: 'Space Mono', fontSize: 36, fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)', lineHeight: 1 }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 6 }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
+          </div>
+        </div>
+        {/* 4-column metrics grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 14, overflow: 'hidden' }}>
+          {[
+            { label: 'Present Value', value: `$${riskAdjustedEV.toFixed(1)}B`, detail: `${(riskFactor * 100).toFixed(0)}% prob` },
+            { label: 'Market Cap', value: `$${currentMarketCap.toFixed(1)}B`, detail: `${currentPSRatio.toFixed(1)}x Net Rev` },
+            { label: 'Terminal USDC', value: `$${terminalUSDC.toFixed(0)}B`, detail: `${usdcGrowthRate > 0 ? '+' : ''}${usdcGrowthRate}%/yr` },
+            { label: 'Terminal Gross Rev', value: `$${terminalGrossRevenue.toFixed(2)}B`, detail: `${reserveYield}% yield` },
+            { label: 'Terminal Net Rev', value: `$${terminalNetRevenue.toFixed(2)}B`, detail: `After ${distributionCost}% dist.` },
+            { label: 'Terminal EBITDA', value: `$${terminalEBITDA.toFixed(2)}B`, detail: `${operatingMargin}% margin` },
+            { label: 'Terminal EV/Rev', value: `${terminalEVperRev.toFixed(1)}x`, detail: `$${terminalEV.toFixed(1)}B EV` },
+            { label: 'Terminal EV/EBITDA', value: `${terminalEVperEBITDA.toFixed(1)}x`, detail: 'Terminal multiple' },
+            { label: 'Terminal FCF', value: `$${terminalFCF.toFixed(2)}B`, detail: `${(fcfConversion * 100).toFixed(0)}% conversion` },
+            { label: 'Diluted Shares', value: `${terminalShares.toFixed(0)}M`, detail: `+${((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution` },
+            { label: 'Risk Factor', value: `${(riskFactor * 100).toFixed(0)}%`, detail: 'Success prob.' },
+            { label: 'Equity Value', value: `$${equityValue.toFixed(1)}B`, detail: 'Risk-adj' },
+          ].map((m, i) => (
+            <div key={i} style={{ background: 'var(--surface)', padding: 16, textAlign: 'center' }}>
+              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 4 }}>{m.label}</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{m.value}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{m.detail}</div>
+            </div>
+          ))}
         </div>
 
         {/* CALCULATION METHODOLOGY */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#methodology</div>
-        <div className="card">
-          <div className="card-title">Calculation Methodology</div>
+        <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20, marginTop: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Calculation Methodology</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
             <p style={{ }}>
               This DCF model calculates Circle intrinsic value using a <strong>revenue-based terminal value approach</strong>,
@@ -5365,27 +5337,19 @@ function CRCLModel() {
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-header</div>
-                <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-              </div>
-
-              {/* Highlight Box */}
-              <div>
-                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-description</div>
-                <div className="highlight" style={{ }}>
-                  <h3 style={{ display: 'flex', alignItems: 'center' }}>Stablecoin DCF Simulation</h3>
-                  <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-                    Runs {mcSim.n.toLocaleString()} simulations over {mcYears} years with randomized inputs (USDC growth, margins, rates, multiples)
-                    to generate a probability distribution of fair values.
-                  </p>
+                <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Stablecoin DCF Simulation<UpdateIndicators sources={['PR', 'SEC']} /></div>
+                  <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Monte Carlo<span style={{ color: 'var(--accent)' }}>.</span></h2>
+                  <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Runs {mcSim.n.toLocaleString()} simulations over {mcYears} years with randomized inputs (USDC growth, margins, rates, multiples) to generate a probability distribution of fair values.</p>
                 </div>
               </div>
 
               {/* Scenario Presets */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-scenarios</div>
-                <div className="card" style={{ }}>
-                  <div className="card-title">Select Scenario</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+                <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Select Scenario</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 10, overflow: 'hidden' }}>
                     {(['bear', 'base', 'bull', 'custom'] as const).map(key => {
                       const p = mcPresets[key];
                       const isActive = mcPreset === key;
@@ -5395,10 +5359,10 @@ function CRCLModel() {
                           onClick={() => applyMcPreset(key)}
                           style={{
                             padding: '12px 16px',
-                            borderRadius: 8,
                             textAlign: 'left',
-                            border: `2px solid ${isActive ? 'var(--accent)' : 'transparent'}`,
-                            background: isActive ? 'var(--accent-dim)' : 'var(--surface2)',
+                            border: 'none',
+                            borderBottom: isActive ? '2px solid var(--accent)' : '2px solid transparent',
+                            background: isActive ? 'var(--accent-dim)' : 'var(--surface)',
                             color: isActive ? 'var(--accent)' : 'var(--text)',
                             cursor: 'pointer',
                             transition: 'all 0.15s'
@@ -5416,7 +5380,7 @@ function CRCLModel() {
               {/* Horizon & Simulation Controls */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-controls</div>
-                <div className="g2" style={{ }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="card" style={{ }}>
                     <div className="card-title">Time Horizon</div>
                     <div style={{ display: 'flex', gap: 8 }}>
@@ -5475,8 +5439,11 @@ function CRCLModel() {
               {/* Parameters - Model Tab Style */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-parameters</div>
-                <h3 style={{ color: 'var(--accent)' }}>USDC Growth Parameters</h3>
-                <div className="g2" style={{ }}>
+                <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>USDC Growth Parameters</span>
+                  <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="card" style={{ }}>
                     <div className="card-title">Revenue Growth Min (%)</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -5539,8 +5506,11 @@ function CRCLModel() {
                   </div>
                 </div>
 
-                <h3 style={{ color: 'var(--gold)' }}>Profitability Parameters</h3>
-                <div className="g2" style={{ }}>
+                <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Profitability Parameters</span>
+                  <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="card" style={{ }}>
                     <div className="card-title">Margin Min (%)</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -5603,8 +5573,11 @@ function CRCLModel() {
                   </div>
                 </div>
 
-                <h3 style={{ color: 'var(--coral)' }}>Valuation Parameters</h3>
-                <div className="g2" style={{ }}>
+                <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Parameters</span>
+                  <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="card" style={{ }}>
                     <div className="card-title">Discount Rate Min (%)</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -5666,7 +5639,7 @@ function CRCLModel() {
                     </div>
                   </div>
                 </div>
-                <div className="g2" style={{ }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="card" style={{ }}>
                     <div className="card-title">Terminal Multiple Min</div>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -5739,6 +5712,8 @@ function CRCLModel() {
               {/* Percentile Distribution */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-percentiles</div>
+                <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Percentile Distribution</div>
                 <table className="tbl" style={{ width: '100%' }}>
                   <thead>
                     <tr>
@@ -5768,11 +5743,14 @@ function CRCLModel() {
                     })}
                   </tbody>
                 </table>
+                </div>
               </div>
 
               {/* Risk Metrics */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
+                <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Risk Metrics</div>
                 <table className="tbl" style={{ width: '100%' }}>
                   <thead>
                     <tr>
@@ -5814,6 +5792,7 @@ function CRCLModel() {
                     </tr>
                   </tbody>
                 </table>
+                </div>
               </div>
 
               {/* Distribution Chart */}
@@ -7170,18 +7149,10 @@ const CompsTab = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['WS']} /></h2>
-
-      {/* Unified Peer Analysis Highlight */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#peer-analysis</div>
-      <div className="highlight">
-        <h3>Peer Analysis Framework<UpdateIndicators sources="PR" /></h3>
-        <p>
-          Circle sits at the intersection of multiple peer groups: crypto infrastructure (Coinbase),
-          payments networks (Visa, PayPal), and high-growth fintech. Each lens provides different valuation
-          context. Crypto peers trade at premium P/S; payments peers show margin potential. Threat levels
-          indicate competitive overlap with CRCL's USDC model.
-        </p>
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Peer Analysis Framework<UpdateIndicators sources={['WS']} /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Comparables & Competitor Intelligence<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Circle sits at the intersection of multiple peer groups: crypto infrastructure (Coinbase), payments networks (Visa, PayPal), and high-growth fintech. Each lens provides different valuation context. Crypto peers trade at premium P/S; payments peers show margin potential.</p>
       </div>
 
       {/* Peer Group Selector */}
@@ -7302,8 +7273,8 @@ const CompsTab = () => {
 
       {/* Multi-Methodology Valuation Matrix */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
+      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Circle's value under different peer multiples (current: $18.9B)</p>
         <table className="tbl">
           <thead>
@@ -7333,8 +7304,8 @@ const CompsTab = () => {
 
       {/* Growth vs P/S Scatter Plot */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#growth-vs-ps</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Growth vs. P/S Multiple<UpdateIndicators sources={['WS']} /></div>
+      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Growth vs. P/S Multiple<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Circle's positioning relative to peers (bubble size = market cap)</p>
         <div style={{ height: 300 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -7391,12 +7362,12 @@ const CompsTab = () => {
         </div>
       </div>
 
-      <div className="g2" style={{ }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         {/* SOTP Valuation */}
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sotp</div>
-          <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
+          <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <table className="tbl">
             <thead>
               <tr>
@@ -7435,8 +7406,8 @@ const CompsTab = () => {
         {/* Transaction Comps */}
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#transaction-comps</div>
-          <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Transaction Comps<UpdateIndicators sources={['WS']} /></div>
+          <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Transaction Comps<UpdateIndicators sources={['WS']} /></div>
           <table className="tbl">
             <thead>
               <tr>
@@ -7475,8 +7446,8 @@ const CompsTab = () => {
 
       {/* Sensitivity Matrix */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-sensitivity</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Valuation Sensitivity: USDC × Interest Rates<UpdateIndicators sources={['WS']} /></div>
+      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Valuation Sensitivity: USDC × Interest Rates<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Implied enterprise value at Coinbase P/S multiple (13x net revenue)</p>
         <div style={{ overflowX: 'auto' }}>
           <table className="tbl">
@@ -7515,8 +7486,8 @@ const CompsTab = () => {
 
       {/* Historical Multiple Tracking */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ps-multiple-history</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>P/S Multiple Since IPO<UpdateIndicators sources={['WS']} /></div>
+      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>P/S Multiple Since IPO<UpdateIndicators sources={['WS']} /></div>
         <div style={{ height: 280 }}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={HISTORICAL_MULTIPLES} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
@@ -7541,9 +7512,9 @@ const CompsTab = () => {
       </div>
 
       {/* Rule of 40 Analysis */}
-      <div className="highlight" style={{ }}>
-        <h3>Rule of 40 Analysis</h3>
-        <p style={{ }}>Growth Rate + Profit Margin ≥ 40% indicates healthy SaaS/fintech</p>
+      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Rule of 40 Analysis</div>
+        <p style={{ color: 'var(--text3)', fontSize: 13 }}>Growth Rate + Profit Margin &ge; 40% indicates healthy SaaS/fintech</p>
         <div className="g4">
           <div className="big-stat">
             <div className="num mint">105</div>
@@ -7566,9 +7537,9 @@ const CompsTab = () => {
 
       {/* Competitor News Intelligence Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
-      <div className="highlight">
-        <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
-        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track what <strong>competitors and distribution partners</strong> are doing — stablecoin developments, exchange partnerships, regulatory moves, yield products, and tokenization initiatives</p>
+      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Competitor News Intelligence<UpdateIndicators sources="PR" /></div>
+        <p style={{ color: 'var(--text2)', marginBottom: 8, fontSize: 13 }}>Track what <strong>competitors and distribution partners</strong> are doing — stablecoin developments, exchange partnerships, regulatory moves, yield products, and tokenization initiatives</p>
         <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>Company-level news affecting CRCL's relative positioning in stablecoins and digital payments</p>
       </div>
 
