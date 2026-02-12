@@ -28,10 +28,10 @@ import type { DataMetadata, StockDefaults } from '../shared/types';
 // ============================================================================
 
 export const ASTS_METADATA: DataMetadata = {
-  lastUpdated: '2025-12-30',
-  source: 'Q3 2025 10-Q (Nov 10, 2025)',
+  lastUpdated: '2026-02-12',
+  source: 'Feb 11, 2026 8-K, Pricing Term Sheets, BB6 unfolding PR',
   nextExpectedUpdate: 'Q4 2025 10-K (~March 2026)',
-  notes: 'BB6 launched Dec 23, 2025 per press release',
+  notes: 'BB6 unfolded Feb 10, 2026. Feb 2026: $1B new converts, $614M registered directs, $296.5M notes repurchased.',
 };
 
 // ============================================================================
@@ -68,18 +68,18 @@ export const COMPANY_INFO = {
  */
 export const DEFAULTS: StockDefaults = {
   // === MARKET DATA ===
-  currentStockPrice: 71,      // UPDATE REGULARLY - Last: Dec 30, 2025
-  priceAsOf: '2025-12-30',    // Date of stock price above
+  currentStockPrice: 96.92,   // UPDATE REGULARLY - Last: Feb 11, 2026
+  priceAsOf: '2026-02-11',    // Date of stock price above
 
-  // === SHARE COUNT (Q3 2025 10-Q) ===
-  // Class A: 272M + Class B: 11.2M + Class C: 78.2M = 361.4M
-  currentShares: 361,         // Total implied shares outstanding (M)
+  // === SHARE COUNT (post-Feb 2026 offerings) ===
+  // Class A: ~290M + Class B: 11.2M + Class C: 78.2M = ~379.4M
+  currentShares: 380,         // Total implied shares outstanding (M)
 
-  // === BALANCE SHEET (Q3 2025 10-Q) ===
-  cashOnHand: 1220,           // $1,220,123K per balance sheet
+  // === BALANCE SHEET (8-K preliminary as of Dec 31, 2025) ===
+  cashOnHand: 2780,           // $2,780M total cash per 8-K. Pro forma post-Feb offerings: ~$3,760M
   quarterlyBurn: 300,         // Q3 guidance: CapEx + OpEx ~$300M/quarter
-  totalDebt: 698,             // $697.6M net long-term debt (convertibles)
-  debtRate: 4.25,             // Convertible notes at ~4.25% weighted avg
+  totalDebt: 2264,            // $2,264M per 8-K. Pro forma post-Feb converts: ~$2,968M
+  debtRate: 2.15,             // Weighted avg: $3.5M@4.25%, $325M@2.375%, $1.15B@2.00%, $1B@2.25%
 };
 
 // ============================================================================
@@ -97,7 +97,7 @@ export const DEFAULTS: StockDefaults = {
 export const OPERATIONAL_METRICS = {
   // === CONSTELLATION ===
   block1Sats: 6,              // BW3 + BB1-5 (operational)
-  block2Sats: 1,              // BB6 launched Dec 23, 2025
+  block2Sats: 1,              // BB6 launched Dec 23, 2025. Unfolded Feb 10, 2026 (~2,400 sq ft array)
   targetSats2026: 60,         // Per PRs: 45-60 range, using upper end
   launchFailureRate: 7,       // Historical SpaceX failure rate ~7%
 
@@ -142,8 +142,8 @@ export const MODEL_ASSUMPTIONS = {
  * For display in the UI data freshness badge
  */
 export const DATA_FRESHNESS = {
-  dataAsOf: 'Dec 31, 2025',
-  lastFiling: '10-Q (Nov 10, 2025)',
+  dataAsOf: 'Feb 12, 2026',
+  lastFiling: '8-K (Feb 11, 2026)',
   nextFiling: '10-K (~March 2026)',
   priceNote: 'Update prices regularly',
 };

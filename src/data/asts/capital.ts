@@ -10,7 +10,7 @@
  * - Equity offerings: 8-K filings, press releases
  * - SBC: 10-Q/10-K compensation disclosures
  *
- * LAST UPDATED: 2025-11-15 (from Nov 2025 13D/A)
+ * LAST UPDATED: 2026-02-12 (Feb 2026 offerings + 13G + Form 4)
  * NEXT UPDATE: After Q4 2025 10-K or new proxy filing
  *
  * AI AGENT INSTRUCTIONS:
@@ -28,10 +28,10 @@ import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata } from 
 // ============================================================================
 
 export const CAPITAL_METADATA: DataMetadata = {
-  lastUpdated: '2025-11-15',
-  source: '13D/A filed Nov 2025, Q3 2025 10-Q',
+  lastUpdated: '2026-02-12',
+  source: 'Feb 2026 8-K, Pricing Term Sheets, 13G (Vanguard), Form 4 (Gupta)',
   nextExpectedUpdate: 'Q4 2025 10-K (~March 2026)',
-  notes: 'Class A grew from 5.75M (SPAC) to 279M (Nov 2025)',
+  notes: 'Feb 2026: $1B new converts, two registered directs (~$614M), $296.5M notes repurchased. Vanguard 13G: 7.68%. ATM: ~$706M sold.',
 };
 
 // ============================================================================
@@ -50,7 +50,7 @@ export const CAPITAL_METADATA: DataMetadata = {
 export const SHARE_CLASSES: ShareClass[] = [
   {
     classType: 'Class A',
-    shares: 278.8,            // Q3 2025 10-Q: 271,981,894 + subsequent issuances
+    shares: 290.4,            // ~272M (Q3 10-Q) + 2M (Oct RD) + 10.1M (ATM thru Feb 10) + 6.3M (Feb RDs)
     description: 'Public trading shares (NASDAQ: ASTS)',
     votingRights: '1 vote per share',
     conversion: 'N/A',
@@ -93,8 +93,10 @@ export const TOTAL_VOTING_SHARES =
 /**
  * Fully diluted share count
  * Including options, RSUs, remaining converts
+ * Post-Feb 2026: 4.25% ($3.5M, ~0.1M), 2.375% ($325M, ~4.5M),
+ * 2.00% ($1.15B, ~11.9M), new 2.25% ($1B, ~8.6M) = ~25.1M from converts
  */
-export const FULLY_DILUTED_SHARES = 395.0;
+export const FULLY_DILUTED_SHARES = 415.0;
 
 // ============================================================================
 // MAJOR SHAREHOLDERS
@@ -118,6 +120,15 @@ export const MAJOR_SHAREHOLDERS: MajorShareholder[] = [
     pct: (78.2 / TOTAL_BASIC_SHARES * 100).toFixed(1) + '%',
     votingPct: ((78.2 * 10) / TOTAL_VOTING_SHARES * 100).toFixed(1) + '%',
     notes: '10x voting power via Class C. ~65% voting control.',
+  },
+  {
+    name: 'The Vanguard Group',
+    role: 'Institutional Investor',
+    shares: 21.5,
+    shareClass: 'Class A',
+    pct: '7.7%',
+    votingPct: (21.5 / TOTAL_VOTING_SHARES * 100).toFixed(1) + '%',
+    notes: 'Per 13G/A filed Jan 30, 2026. 21,488,180 shares as of 12/31/2025. Shared voting: 1.8M, shared dispositive: 21.5M.',
   },
   {
     name: 'AT&T',
@@ -287,6 +298,51 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
     shares: null,
     notes: 'At-the-market sales. Facility terminated.',
   },
+  {
+    date: '2025-10-14',
+    event: 'Oct 2025 Registered Direct (4.25% Notes Repurchase)',
+    type: 'Registered Direct',
+    amount: 161,
+    price: 78.61,
+    shares: 2.0,
+    notes: '2,048,849 shares at $78.61. Funded repurchase of $50M principal 4.25% notes for ~$161.1M. Cross-conditional.',
+  },
+  {
+    date: '2025-10-15',
+    event: 'Oct 2025 ATM Program ($800M)',
+    type: 'ATM',
+    amount: 706,
+    price: null,
+    shares: 10.1,
+    notes: '$800M capacity. ~10.1M shares sold thru Feb 10, 2026 for ~$706.3M net. ~$80M remaining.',
+  },
+  {
+    date: '2026-02-11',
+    event: 'Feb 2026 Convertible Notes',
+    type: 'Convertible',
+    amount: 1000,
+    price: 116.30,
+    shares: 8.6,
+    notes: '2.25% due 2036. Conversion rate 8.5982/share per $1K. Rule 144A. UBS lead. $150M greenshoe option. Net ~$983.7M.',
+  },
+  {
+    date: '2026-02-11',
+    event: 'Feb 2026 Registered Direct #1 (4.25% Notes Repurchase)',
+    type: 'Registered Direct',
+    amount: 180,
+    price: 96.92,
+    shares: 1.9,
+    notes: '1,862,741 shares at $96.92. Funded repurchase of $46.5M principal 4.25% notes for ~$180.5M. Cross-conditional.',
+  },
+  {
+    date: '2026-02-11',
+    event: 'Feb 2026 Registered Direct #2 (2.375% Notes Repurchase)',
+    type: 'Registered Direct',
+    amount: 433,
+    price: 96.92,
+    shares: 4.5,
+    notes: '4,475,223 shares at $96.92. Funded repurchase of $250M principal 2.375% notes for ~$433.7M. Cross-conditional.',
+  },
 ];
 
 // ============================================================================
@@ -313,6 +369,8 @@ export const DILUTION_HISTORY = [
   { quarter: 'Q1 2025', classA: 220.0, implied: 309.4, fullyDiluted: 350.0, event: 'Jan convert repurchase' },
   { quarter: 'Q2 2025', classA: 245.0, implied: 334.4, fullyDiluted: 380.0, event: 'Jul converts issued' },
   { quarter: 'Q3 2025', classA: 272.0, implied: 361.4, fullyDiluted: 395.0, event: 'Oct converts + ATM' },
+  { quarter: 'Q4 2025', classA: 280.0, implied: 369.4, fullyDiluted: 400.0, event: 'ATM sales + Oct RD. Vanguard 13G: 7.68% (21.5M shares)' },
+  { quarter: 'Q1 2026', classA: 290.4, implied: 379.8, fullyDiluted: 415.0, event: 'Feb 2026: $1B converts + two RDs (6.3M shares) + ATM continued' },
 ];
 
 // ============================================================================

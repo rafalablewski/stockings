@@ -37,10 +37,10 @@ import type { QuarterlyFinancials, DataMetadata } from '../shared/types';
 // ============================================================================
 
 export const FINANCIALS_METADATA: DataMetadata = {
-  lastUpdated: '2025-12-30',
-  source: 'Q3 2025 10-Q (Nov 10, 2025)',
+  lastUpdated: '2026-02-12',
+  source: 'Feb 11, 2026 8-K (preliminary FY 2025), Q3 2025 10-Q',
   nextExpectedUpdate: 'Q4 2025 10-K (~March 2026)',
-  notes: 'All figures in millions USD unless noted',
+  notes: 'All figures in millions USD unless noted. Q4 2025 derived from 8-K preliminary FY 2025 ranges.',
 };
 
 // ============================================================================
@@ -61,23 +61,27 @@ export const QUARTERLY_DATA: Record<string, QuarterlyFinancials> = {
   // ========== 2025 ==========
   'Q4 2025': {
     quarter: 'Q4 2025',
-    filing: 'Pending 10-K (PR data only)',
-    cashAndEquiv: null,
-    totalDebt: null,
-    revenue: null,
-    opEx: null,
-    netIncome: null,
-    sharesOutstanding: null,
-    impliedSharesOut: null,
-    fullyDiluted: null,
-    stockPrice: 71.00,
-    satellites: 7,
+    filing: 'Preliminary 8-K (Feb 11, 2026). 10-K pending (~Mar 2026)',
+    cashAndEquiv: 2780,             // $2,780M total cash/restricted cash per 8-K
+    totalDebt: 2264,                // $2,264M: $50M 4.25%, $575M 2.375%, $1.15B 2.00%, $420M UBS, ~$69M secured
+    revenue: 50,                    // Derived: FY $63-71M range minus Q1-Q3 $16.6M → ~$46-54M, midpoint ~$50M
+    opEx: 127,                      // Derived: FY $355-363M minus Q1-Q3 $232.1M → ~$123-131M, midpoint ~$127M
+    opExSBC: null,                  // Pending 10-K
+    netIncome: null,                // Pending 10-K
+    sharesOutstanding: 280.0,       // Estimated from Vanguard 13G (7.68% of Class A = ~280M)
+    impliedSharesOut: 369.4,        // Class A ~280 + B 11.2 + C 78.2
+    fullyDiluted: 400.0,            // Pre-Feb 2026 converts
+    stockPrice: 96.92,              // Feb 11, 2026 close
+    satellites: 7,                  // BW3 + BB1-6
     employees: null,
     definitiveAgreements: 6,
     mous: 50,
     spectrumOwned: 105,
+    grossPPE: 1600,                 // ~$1.6B per 8-K
+    accumulatedDA: 174,             // ~$174M per 8-K
+    adjOpEx: null,                  // FY adj opex $257-263M, Q4 derived ~$25-31M range pending 10-K
     contractedRevenue: 1000,
-    note: 'BB6 launched Dec 23, 2025 (PR). Financial data pending 10-K filing (~Mar 2026).',
+    note: 'Preliminary per 8-K Feb 11, 2026. FY 2025: rev $63-71M, opex $355-363M, adj opex $257-263M, SBC+D&A $98-100M. Cash $2,780M. Debt $2,264M. BB6 launched Dec 23, unfolded Feb 10, 2026.',
   },
   'Q3 2025': {
     quarter: 'Q3 2025',
