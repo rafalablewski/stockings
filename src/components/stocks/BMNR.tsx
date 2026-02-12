@@ -5610,8 +5610,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
         ))}
       </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#yield-advantage</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Yield Advantage<UpdateIndicators sources={['WS']} /></div>
+      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Yield Advantage<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>ETH staking generates yield vs BTC's 0% — structural advantage</p>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <div className="big-stat">
@@ -5772,15 +5772,16 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
       {/* Competitor News Intelligence Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
-      <div className="highlight">
-        <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
-        <p style={{ color: 'var(--text2)', marginBottom: 8 }}>Track what <strong>peer companies</strong> are doing — treasury purchases, financing activities, strategic moves by crypto treasury competitors (Strategy, Marathon, Riot, etc.)</p>
-        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>Company-level news affecting BMNR's relative positioning vs competitors</p>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Competitor News Intelligence</span>
+        <UpdateIndicators sources="PR" />
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
+      <p style={{ fontSize: 13, color: 'var(--text3)', marginBottom: 12, fontWeight: 300 }}>Track what peer companies are doing — treasury purchases, financing activities, strategic moves by crypto treasury competitors.</p>
 
       {/* Filter Bar */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
-      <div className="card" style={{ padding: '12px 16px' }}>
+      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: '12px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
           <button
@@ -5816,7 +5817,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       {/* News Timeline - Grouped by Company, then by Story */}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {companySections.length === 0 ? (
-          <div className="card" style={{ textAlign: 'center', padding: 40 }}>
+          <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, textAlign: 'center', padding: 40 }}>
             <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
           </div>
         ) : (
@@ -5840,7 +5841,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
               </summary>
               <div className="comp-panel-body">
               {section.stories.map((story) => (
-            <div key={story.storyId} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div key={story.storyId} style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 0, overflow: 'hidden' }}>
               {/* Story Header */}
               <div style={{
                 padding: '16px 20px',
@@ -5999,8 +6000,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
       {/* Competitor Profiles (Collapsible) */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-profiles</div>
-      <div className="card">
-        <div className="card-title">📋 Competitor Profiles</div>
+      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Competitor Profiles</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {COMPETITOR_PROFILES.map(comp => (
             <div key={comp.id} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>

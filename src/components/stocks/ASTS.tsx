@@ -9697,8 +9697,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ev-rev-comparison</div>
-          <div className="card">
-            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>EV/Rev Comparison<UpdateIndicators sources="WS" /></div>
+          <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>EV/Rev Comparison<UpdateIndicators sources="WS" /></div>
             <ResponsiveContainer width="100%" height={150}>
               <BarChart data={filteredComps} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -9714,8 +9714,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#subscriber-comparison</div>
-          <div className="card">
-            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>$/Subscriber Comparison<UpdateIndicators sources="WS" /></div>
+          <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>$/Subscriber Comparison<UpdateIndicators sources="WS" /></div>
             <ResponsiveContainer width="100%" height={150}>
               <BarChart data={filteredComps} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -9742,7 +9742,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', margin: 0 }}>Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, margin: '4px 0 0' }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
         </div>
         <table className="tbl">
@@ -9783,7 +9783,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sotp</div>
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13 }}>Value each business segment separately</p>
           <table className="tbl">
             <thead>
@@ -9825,7 +9825,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#risk-adjusted-scenarios</div>
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13 }}>Probability-weighted valuation outcomes</p>
           <table className="tbl">
             <thead>
@@ -9873,7 +9873,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Filter Bar */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
-      <div className="card" style={{ padding: '12px 16px' }}>
+      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: '12px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
           <button
@@ -9909,7 +9909,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       {/* News Timeline - Grouped by Company, then by Story */}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {companySections.length === 0 ? (
-          <div className="card" style={{ textAlign: 'center', padding: 40 }}>
+          <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, textAlign: 'center', padding: 40 }}>
             <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
           </div>
         ) : (
@@ -9933,7 +9933,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               </summary>
               <div className="comp-panel-body">
               {section.stories.map((story) => (
-            <div key={story.storyId} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div key={story.storyId} style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 0, overflow: 'hidden' }}>
               {/* Story Header */}
               <div style={{
                 padding: '16px 20px',
@@ -10092,8 +10092,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Competitor Profiles (Collapsible) */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-profiles</div>
-      <div className="card">
-        <div className="card-title">📋 Competitor Profiles</div>
+      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Competitor Profiles</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {COMPETITOR_PROFILES.map(comp => (
             <div key={comp.id} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
