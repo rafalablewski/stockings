@@ -481,8 +481,59 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                     )}
 
                                     {report.fullNotes && (
-                                      <div style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
-                                        {report.fullNotes}
+                                      <div style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5 }}>
+                                        {(() => {
+                                          const lines = report.fullNotes.split('\n');
+                                          const blocks: { type: 'text' | 'table'; content: string; rows?: string[][] }[] = [];
+                                          let i = 0;
+                                          while (i < lines.length) {
+                                            const line = lines[i];
+                                            if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+                                              const tableRows: string[][] = [];
+                                              while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
+                                                const cells = lines[i].trim().split('|').filter(c => c.trim() !== '').map(c => c.trim());
+                                                tableRows.push(cells);
+                                                i++;
+                                              }
+                                              blocks.push({ type: 'table', content: '', rows: tableRows });
+                                            } else {
+                                              blocks.push({ type: 'text', content: line });
+                                              i++;
+                                            }
+                                          }
+                                          return blocks.map((block, bIdx) => {
+                                            if (block.type === 'table' && block.rows && block.rows.length > 0) {
+                                              const headers = block.rows[0];
+                                              const dataRows = block.rows.slice(1);
+                                              const colCount = headers.length;
+                                              const cols = colCount <= 2 ? '1fr 120px' : `1fr ${Array(colCount - 1).fill('100px').join(' ')}`;
+                                              return (
+                                                <div key={bIdx} style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)', marginBottom: 8 }}>
+                                                  <div style={{ display: 'grid', gridTemplateColumns: cols, borderBottom: '1px solid var(--border)' }}>
+                                                    {headers.map((h, hIdx) => (
+                                                      <span key={hIdx} style={{ padding: '8px 12px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: hIdx === 0 ? 'left' : 'right' }}>{h}</span>
+                                                    ))}
+                                                  </div>
+                                                  {dataRows.map((row, rIdx) => (
+                                                    <div key={rIdx} style={{ display: 'grid', gridTemplateColumns: cols, borderBottom: rIdx < dataRows.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                                                      onMouseEnter={ev => (ev.currentTarget.style.background = 'var(--surface2)')}
+                                                      onMouseLeave={ev => (ev.currentTarget.style.background = 'transparent')}>
+                                                      {row.map((cell, cIdx) => (
+                                                        <span key={cIdx} style={{ padding: '8px 12px', fontSize: 12, fontFamily: cIdx > 0 ? "'Space Mono', monospace" : 'inherit', color: cIdx > 0 ? 'var(--text2)' : 'var(--text)', textAlign: cIdx === 0 ? 'left' : 'right' }}>{cell}</span>
+                                                      ))}
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              );
+                                            }
+                                            if (block.content.trim() === '') return null;
+                                            const isHeader = block.content.trim().endsWith(':') && block.content.trim() === block.content.trim().toUpperCase();
+                                            if (isHeader) {
+                                              return <div key={bIdx} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginTop: bIdx > 0 ? 12 : 0, marginBottom: 4 }}>{block.content.replace(/:$/, '')}</div>;
+                                            }
+                                            return <div key={bIdx} style={{ color: 'var(--text3)', fontSize: 11 }}>{block.content}</div>;
+                                          });
+                                        })()}
                                       </div>
                                     )}
                                   </div>
