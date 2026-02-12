@@ -2037,7 +2037,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         {holdingsData.map((d, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
             <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-            <div style={{ width: '100%', background: 'var(--accent)', borderRadius: '4px 4px 0 0', height: `${maxValue > 0 ? (d.value / maxValue) * 100 : 0}%`, transition: 'height 0.3s' }} />
+            <div style={{ width: '100%', background: 'var(--accent)', borderRadius: '4px 4px 0 0', height: maxValue > 0 ? Math.round((d.value / maxValue) * 150) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
             <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
           </div>
         ))}
@@ -8419,14 +8419,14 @@ const BMNRQuarterlyMetricsPanel = () => {
               value: q.cash,
               display: q.cash >= 1000 ? `$${(q.cash / 1000).toFixed(1)}B` : q.cash >= 100 ? `$${q.cash}M` : `$${(q.cash * 1000).toFixed(0)}K`
             }));
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
                 <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                   {data.map((d, i) => (
                     <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                       <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: `${maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                       <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                     </div>
                   ))}
@@ -8448,13 +8448,13 @@ const BMNRQuarterlyMetricsPanel = () => {
               value: q.opEx,
               display: `$${q.opEx}M`
             }));
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: `${maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
@@ -8523,13 +8523,13 @@ const BMNRQuarterlyMetricsPanel = () => {
               value: q.shares,
               display: `${q.shares.toFixed(0)}M`
             }));
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: `${maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
@@ -8550,13 +8550,13 @@ const BMNRQuarterlyMetricsPanel = () => {
               { label: 'Q4 2025', value: 8800, display: '$8.8B' },
               { label: 'Q1 2026', value: 7200, display: '$7.2B' },
             ];
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: `${maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
@@ -8579,13 +8579,13 @@ const BMNRQuarterlyMetricsPanel = () => {
               value: q.crypto,
               display: q.crypto >= 1000 ? `$${(q.crypto / 1000).toFixed(1)}B` : `$${q.crypto}M`
             }));
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: `${maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
@@ -8604,7 +8604,7 @@ const BMNRQuarterlyMetricsPanel = () => {
               value: q.netIncome,
               display: q.netIncome >= 1000 ? `$${(q.netIncome / 1000).toFixed(1)}B` : q.netIncome <= -1000 ? `($${(Math.abs(q.netIncome) / 1000).toFixed(1)}B)` : q.netIncome >= 0 ? `$${q.netIncome}M` : `($${Math.abs(q.netIncome)}M)`
             }));
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             const hasPositive = data.some(d => d.value >= 0);
             const hasNegative = data.some(d => d.value < 0);
             return (
@@ -8614,7 +8614,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                         {d.value >= 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>}
-                        <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: `${d.value >= 0 && maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                        <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? Math.round((d.value / maxVal) * 80) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
                       </div>
                     ))}
                   </div>
@@ -8628,7 +8628,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, height: hasPositive ? 100 : 200 }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
-                        <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: `${d.value < 0 && maxVal > 0 ? (Math.abs(d.value) / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                        <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 80) : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
                         {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginTop: 4 }}>{d.display}</div>}
                       </div>
                     ))}

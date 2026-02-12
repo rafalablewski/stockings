@@ -2738,14 +2738,14 @@ const CRCLQuarterlyMetricsPanel = () => {
               value: d.cashPosition,
               display: `$${(d.cashPosition/1000).toFixed(1)}B`
             }));
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
                 <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                   {data.map((d, i) => (
                     <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                       <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: `${maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                       <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                     </div>
                   ))}
@@ -2767,13 +2767,13 @@ const CRCLQuarterlyMetricsPanel = () => {
               value: d.opex,
               display: `$${d.opex}M`
             }));
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: `${maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
@@ -2848,13 +2848,13 @@ const CRCLQuarterlyMetricsPanel = () => {
               { label: 'Q2 2025', value: 225, display: '225M' },
               { label: 'Q3 2025', value: 230, display: '230M' },
             ];
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: `${maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
@@ -2877,13 +2877,13 @@ const CRCLQuarterlyMetricsPanel = () => {
               { label: 'Q2 2025', value: 14.1, display: '$14.1B' },
               { label: 'Q3 2025', value: 18.8, display: '$18.8B' },
             ];
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: `${maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
@@ -2906,13 +2906,13 @@ const CRCLQuarterlyMetricsPanel = () => {
               value: d.usdcCirculation,
               display: `$${d.usdcCirculation}B`
             }));
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: `${maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
@@ -2931,13 +2931,13 @@ const CRCLQuarterlyMetricsPanel = () => {
               value: d.adjustedEbitda,
               display: `$${d.adjustedEbitda}M`
             }));
-            const maxVal = Math.max(...data.map(d => Math.abs(d.value)));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: `${maxVal > 0 ? (d.value / maxVal) * 100 : 0}%`, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
