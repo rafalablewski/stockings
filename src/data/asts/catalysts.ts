@@ -30,10 +30,10 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-01-22',
-  source: 'Q3 2025 earnings call and press releases',
+  lastUpdated: '2026-02-12',
+  source: 'Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR',
   nextExpectedUpdate: 'After Q4 2025 earnings (~March 2026)',
-  notes: 'BB7 launch timing announced Jan 22, 2026 (late Feb on New Glenn)',
+  notes: 'BB6 unfolded Feb 10, 2026. $1B new converts + $614M registered directs announced Feb 11.',
 };
 
 // ============================================================================
@@ -55,12 +55,6 @@ export const CATALYSTS_METADATA: DataMetadata = {
  */
 export const UPCOMING_CATALYSTS: Catalyst[] = [
   // === LAUNCHES & CONSTELLATION ===
-  {
-    event: 'BB6 Unfolding Phased Array',
-    timeline: 'Q1 2026',
-    impact: 'High',
-    category: 'Constellation',
-  },
   {
     event: 'BB7 Launch (New Glenn, Cape Canaveral)',
     timeline: 'Late Feb 2026',
@@ -182,10 +176,10 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
     category: 'Service',
   },
   {
-    event: '$50-75M Revenue Delivery',
-    timeline: '2H 2025',
-    impact: 'High',
-    category: 'Service',
+    event: 'Q4 2025 10-K Filing & Full Year Financials',
+    timeline: 'March 2026',
+    impact: 'Medium',
+    category: 'Financing',
   },
 
   // === GOVERNMENT & DEFENSE ===
@@ -245,6 +239,11 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
  */
 export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   // === 2026 ===
+  { event: '$1B 2.25% Convertible Notes + $614M Registered Directs + $296.5M Notes Repurchased', date: 'Feb 11, 2026', category: 'Financing' },
+  { event: 'BB6 Phased Array Unfolded (~2,400 sq ft, largest commercial LEO array)', date: 'Feb 10, 2026', category: 'Constellation' },
+  { event: 'FY 2025 Revenue $63-71M (8-K preliminary)', date: 'Feb 11, 2026', category: 'Service' },
+  { event: 'Vanguard 13G: 7.68% Ownership (21.5M shares)', date: 'Jan 30, 2026', category: 'Corporate' },
+  { event: 'Mikitani (Rakuten) Resigned from Board (dilution threshold); Rakuten retains observer', date: 'Jan 13, 2026', category: 'Corporate' },
   { event: 'MDA SHIELD Prime Contract Award', date: 'Jan 16, 2026', category: 'Government' },
 
   // === 2025 ===
