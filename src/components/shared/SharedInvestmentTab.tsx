@@ -56,7 +56,7 @@ const CollapsibleSection = ({
   onToggle: () => void;
   children: React.ReactNode;
 }) => (
-  <div className="card">
+  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
     <div
       onClick={onToggle}
       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -66,7 +66,7 @@ const CollapsibleSection = ({
       aria-label={`Toggle ${title}`}
       onKeyDown={(e) => e.key === 'Enter' && onToggle()}
     >
-      <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
+      <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', display: 'flex', alignItems: 'center' }}>
         {title}
         {sources && <UpdateIndicators sources={sources} />}
       </div>
@@ -119,16 +119,16 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         #investment-header
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 className="section-head" style={{ display: 'flex', alignItems: 'center', margin: 0 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text)', display: 'flex', alignItems: 'center', margin: 0 }}>
           Investment Analysis
           <UpdateIndicators sources={['PR', 'SEC']} />
         </h2>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>
-            ⊞ Expand All
+          <button onClick={expandAll} style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', fontSize: 11, fontWeight: 500, background: 'var(--surface2)', color: 'var(--text2)', cursor: 'pointer' }}>
+            Expand All
           </button>
-          <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>
-            ⊟ Collapse All
+          <button onClick={collapseAll} style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', fontSize: 11, fontWeight: 500, background: 'var(--surface2)', color: 'var(--text2)', cursor: 'pointer' }}>
+            Collapse All
           </button>
         </div>
       </div>
@@ -155,7 +155,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       </div>
 
       {/* Rating Header Card */}
-      <div className="card" style={{ borderLeft: `4px solid var(--${current.verdictColor})`, marginBottom: 16 }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', borderLeft: `4px solid var(--${current.verdictColor})`, marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
@@ -336,7 +336,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         isOpen={investmentSections.has('moat')}
         onToggle={() => toggleSection('moat')}
       >
-        <div className="g2" style={{ marginBottom: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
           {/* Moat Sources */}
           <div>
             <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 13, marginBottom: 12 }}>
@@ -465,7 +465,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         isOpen={investmentSections.has('perspectives')}
         onToggle={() => toggleSection('perspectives')}
       >
-        <div className="g3">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {Object.entries(current.perspectives).map(([key, p]) => (
             <div
               key={key}
@@ -523,7 +523,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         isOpen={investmentSections.has('position')}
         onToggle={() => toggleSection('position')}
       >
-        <div className="g4">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
           {Object.entries(current.positionSizing).map(([key, size]) => (
             <div
               key={key}
