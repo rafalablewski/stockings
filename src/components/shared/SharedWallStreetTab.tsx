@@ -211,7 +211,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div>
-                      <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>{cov.firm}</div>
+                      <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: 15, lineHeight: 1.2 }}>{cov.firm}</div>
                       <div style={{ color: 'var(--text3)', fontSize: 12 }}>{cov.analyst} · Since {cov.coverageSince}</div>
                     </div>
                   </div>
@@ -255,6 +255,39 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                   </div>
                 </div>
 
+                {/* Metrics Grid Summary */}
+                {!isExpanded && (
+                  <div style={{ padding: '0 28px 16px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 6, padding: 10, background: 'var(--surface2)', borderRadius: 10 }}>
+                      <div style={{ textAlign: 'center', padding: '4px 0' }}>
+                        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{cov.currentPT ? `$${cov.currentPT}` : '\u2014'}</div>
+                        <div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Price Target</div>
+                      </div>
+                      <div style={{ textAlign: 'center', padding: '4px 0' }}>
+                        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: getRatingColor(cov.currentRating, cov.currentRatingNormalized), lineHeight: 1.2 }}>{cov.currentRating}</div>
+                        <div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Rating</div>
+                      </div>
+                      <div style={{ textAlign: 'center', padding: '4px 0' }}>
+                        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{cov.reports.length}</div>
+                        <div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Reports</div>
+                      </div>
+                      <div style={{ textAlign: 'center', padding: '4px 0' }}>
+                        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{cov.coverageSince}</div>
+                        <div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Since</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Firm Notes */}
+                {cov.notes && (
+                  <div style={{ padding: '0 28px 16px' }}>
+                    <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
+                      {cov.notes}
+                    </div>
+                  </div>
+                )}
+
                 {/* Expanded History */}
                 {isExpanded && (
                   <div style={{ padding: '24px 28px', background: 'var(--surface)' }}>
@@ -273,9 +306,9 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                               padding: '12px 16px',
                               background: report.isFullReport ? 'var(--surface2)' : 'transparent',
                               borderRadius: 8,
-                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions)) ? '3px solid var(--violet)' : 'none',
+                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions)) ? '3px solid var(--violet)' : '3px solid transparent',
                               transition: 'background 0.15s',
-                              cursor: 'default'
+                              cursor: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? 'pointer' : 'default'
                             }}
                             onMouseEnter={ev => { if (!report.isFullReport) ev.currentTarget.style.background = 'var(--surface2)'; }}
                             onMouseLeave={ev => { if (!report.isFullReport) ev.currentTarget.style.background = 'transparent'; }}
