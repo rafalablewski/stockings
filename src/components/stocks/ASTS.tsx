@@ -167,11 +167,11 @@ import {
 //    - Company PRs: ast-science.com/news or businesswire
 //    - Always cite sources in timeline entries
 //
-// 4. MODEL LAST UPDATED: January 8, 2026
-//    - Timeline: 123 entries (2019-2025)
-//    - Latest PR processed: BB6 Launch Dec 24, 2025
-//    - Latest filing processed: 10-Q Nov 10, 2025 (Q3 2025)
-//    - Debt update: Corrected to $697.6M net (balance sheet) vs $1.625B principal
+// 4. MODEL LAST UPDATED: February 12, 2026
+//    - Timeline: 128+ entries (2019-2026)
+//    - Latest PR processed: $1B Converts + RDs, Feb 11, 2026
+//    - Latest filing processed: 8-K Feb 11, 2026 (FY 2025 preliminary)
+//    - Debt update: $2,264M (8-K); pro forma ~$2,968M post-Feb 2026 raises
 //    - SPAC SEC filings integrated: 10-K FY2019, 10-K FY2020, 10-K/A FY2020
 //    - Added: Earnings call insights (Q1 FY2023 - Q3 FY2025)
 //    - New: LAUNCH category (4 launches: BB6, BB1-5, BW3, BW1)
@@ -3110,7 +3110,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#share-classes</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure (Q3 2025)<UpdateIndicators sources="SEC" /></span>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure (Feb 2026)<UpdateIndicators sources="SEC" /></span>
         </div>
         <div style={{ padding: '24px 28px' }}>
         <div>
@@ -3282,13 +3282,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             </div>
           ))}
           <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', padding: '12px 16px', background: 'var(--accent-dim)' }}>
-            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600, gridColumn: 'span 3' }}>Total Capital Raised (2019-2025)</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>~$3.6B</span>
+            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600, gridColumn: 'span 3' }}>Total Capital Raised (2019-2026)</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>~$6.3B</span>
             <span style={{ gridColumn: 'span 2' }}></span>
           </div>
         </div>
         <div style={{ fontSize: 13, color: 'var(--text3)' }}>
-          Equity + Convertibles + ATM programs. Fully funded for 100+ satellite constellation.
+          Equity + Convertibles + ATM + Registered Directs. Feb 2026: $1B converts + ~$614M RDs. Fully funded for 100+ satellites.
         </div>
         </div>
       </div>
