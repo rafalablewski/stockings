@@ -687,23 +687,24 @@ const IndicatorToggle = ({
     aria-pressed={active}
     aria-label={`${label} indicator ${active ? 'enabled' : 'disabled'}`}
     style={{
-      padding: '6px 10px',
-      fontSize: 11,
-      fontWeight: 500,
+      padding: '5px 10px',
+      fontSize: 10,
+      fontWeight: active ? 600 : 400,
+      letterSpacing: '0.3px',
       borderRadius: 6,
-      border: active ? `1px solid ${color || 'var(--accent)'}` : '1px solid var(--border)',
+      border: 'none',
       cursor: 'pointer',
-      background: active ? (color ? `${color}20` : 'var(--accent-light, rgba(99, 102, 241, 0.1))') : 'transparent',
+      background: active ? (color ? `${color}18` : 'color-mix(in srgb, var(--accent) 10%, transparent)') : 'var(--surface2)',
       color: active ? color || 'var(--accent)' : 'var(--text3)',
       transition: 'all 0.15s',
       display: 'flex',
       alignItems: 'center',
       gap: 4,
-      minHeight: 32,
+      minHeight: 28,
       touchAction: 'manipulation',
     }}
   >
-    {color && <span style={{ width: 8, height: 2, background: color, borderRadius: 1 }} />}
+    {color && <span style={{ width: 8, height: 2, background: active ? color : 'var(--text3)', borderRadius: 1, opacity: active ? 1 : 0.3, transition: 'all 0.15s' }} />}
     {label}
   </button>
 );
@@ -722,7 +723,7 @@ const ToggleSection = ({
   children: React.ReactNode;
   count?: number;
 }) => (
-  <div style={{ marginBottom: 8 }}>
+  <div style={{ marginBottom: 4 }}>
     <button
       onClick={onToggle}
       aria-expanded={isOpen}
@@ -731,9 +732,11 @@ const ToggleSection = ({
         display: 'flex',
         alignItems: 'center',
         gap: 6,
-        padding: '8px 0',
-        fontSize: 11,
+        padding: '6px 0',
+        fontSize: 10,
         fontWeight: 600,
+        letterSpacing: '0.8px',
+        textTransform: 'uppercase',
         color: 'var(--text3)',
         background: 'none',
         border: 'none',
@@ -744,9 +747,10 @@ const ToggleSection = ({
       }}
     >
       <span style={{
-        fontSize: 10,
+        fontSize: 8,
         transition: 'transform 0.2s',
         transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+        opacity: 0.5,
       }}>
         ▶
       </span>
@@ -754,10 +758,12 @@ const ToggleSection = ({
       {count !== undefined && count > 0 && (
         <span style={{
           fontSize: 9,
-          padding: '2px 6px',
-          background: 'var(--accent)',
-          color: 'white',
-          borderRadius: 10,
+          fontFamily: 'Space Mono, monospace',
+          padding: '1px 5px',
+          background: 'color-mix(in srgb, var(--accent) 15%, transparent)',
+          color: 'var(--accent)',
+          borderRadius: 4,
+          fontWeight: 600,
         }}>
           {count}
         </span>
@@ -766,11 +772,10 @@ const ToggleSection = ({
     {isOpen && (
       <div style={{
         display: 'flex',
-        gap: 6,
+        gap: 4,
         flexWrap: 'wrap',
         alignItems: 'center',
-        paddingLeft: 16,
-        paddingBottom: 8,
+        paddingBottom: 6,
       }}>
         {children}
       </div>
@@ -1118,62 +1123,51 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
           <div
             role="group"
             aria-label="Chart type"
-            style={{ display: 'flex', gap: 2, background: 'var(--surface2)', borderRadius: 6, padding: 2 }}
+            style={{ display: 'flex', gap: 0, background: 'var(--surface2)', borderRadius: 8, padding: 2 }}
           >
-            <button
-              onClick={() => setChartType('line')}
-              aria-pressed={chartType === 'line'}
-              aria-label="Line chart"
-              style={{
-                padding: '8px 12px',
-                fontSize: 14,
-                borderRadius: 4,
-                border: 'none',
-                cursor: 'pointer',
-                background: chartType === 'line' ? 'var(--surface)' : 'transparent',
-                color: chartType === 'line' ? 'var(--text)' : 'var(--text3)',
-                transition: 'all 0.15s',
-                minHeight: 36,
-                touchAction: 'manipulation',
-              }}
-            >
-              📈
-            </button>
-            <button
-              onClick={() => setChartType('candle')}
-              aria-pressed={chartType === 'candle'}
-              aria-label="Candlestick chart"
-              style={{
-                padding: '8px 12px',
-                fontSize: 14,
-                borderRadius: 4,
-                border: 'none',
-                cursor: 'pointer',
-                background: chartType === 'candle' ? 'var(--surface)' : 'transparent',
-                color: chartType === 'candle' ? 'var(--text)' : 'var(--text3)',
-                transition: 'all 0.15s',
-                minHeight: 36,
-                touchAction: 'manipulation',
-              }}
-            >
-              🕯️
-            </button>
+            {([['line', 'Line'], ['candle', 'OHLC']] as const).map(([type, label]) => (
+              <button
+                key={type}
+                onClick={() => setChartType(type as 'line' | 'candle')}
+                aria-pressed={chartType === type}
+                aria-label={`${label} chart`}
+                style={{
+                  padding: '6px 14px',
+                  fontSize: 11,
+                  fontWeight: chartType === type ? 600 : 400,
+                  letterSpacing: '0.5px',
+                  borderRadius: 6,
+                  border: 'none',
+                  cursor: 'pointer',
+                  background: chartType === type ? 'var(--surface)' : 'transparent',
+                  color: chartType === type ? 'var(--text)' : 'var(--text3)',
+                  transition: 'all 0.15s',
+                  minHeight: 32,
+                  touchAction: 'manipulation',
+                  fontFamily: 'inherit',
+                }}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Time range buttons - horizontally scrollable on mobile */}
+        {/* Time range buttons */}
         <div
           role="group"
           aria-label="Time range"
           style={{
             display: 'flex',
-            gap: 6,
+            gap: 2,
             marginTop: 12,
             overflowX: 'auto',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            paddingBottom: 4,
+            background: 'var(--surface2)',
+            borderRadius: 8,
+            padding: 2,
           }}
         >
           {RANGES.map(r => (
@@ -1183,19 +1177,21 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
               aria-pressed={range === r.value}
               aria-label={`${r.label} time range`}
               style={{
-                padding: '8px 14px',
-                fontSize: 12,
-                fontWeight: 600,
+                padding: '6px 12px',
+                fontSize: 11,
+                fontWeight: range === r.value ? 600 : 400,
+                letterSpacing: '0.3px',
                 borderRadius: 6,
                 border: 'none',
                 cursor: 'pointer',
-                background: range === r.value ? 'var(--accent)' : 'var(--surface2)',
+                background: range === r.value ? 'var(--accent)' : 'transparent',
                 color: range === r.value ? 'white' : 'var(--text3)',
                 transition: 'all 0.15s',
-                minHeight: 36,
+                minHeight: 30,
                 whiteSpace: 'nowrap',
                 flexShrink: 0,
                 touchAction: 'manipulation',
+                fontFamily: 'Space Mono, monospace',
               }}
             >
               {r.label}
@@ -1206,17 +1202,17 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
             disabled={loading}
             aria-label="Refresh chart data"
             style={{
-              padding: '8px 14px',
-              fontSize: 14,
-              fontWeight: 500,
+              padding: '6px 10px',
+              fontSize: 12,
+              fontWeight: 400,
               borderRadius: 6,
               border: 'none',
               cursor: loading ? 'not-allowed' : 'pointer',
-              background: 'var(--surface2)',
+              background: 'transparent',
               color: 'var(--text3)',
               transition: 'all 0.15s',
-              opacity: loading ? 0.5 : 1,
-              minHeight: 36,
+              opacity: loading ? 0.3 : 0.6,
+              minHeight: 30,
               flexShrink: 0,
               touchAction: 'manipulation',
             }}
@@ -1226,8 +1222,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
         </div>
       </div>
 
-      {/* Indicator Controls - Collapsible sections for mobile */}
-      <div style={{ borderTop: '1px solid var(--border)', paddingTop: 8 }}>
+      {/* Indicator Controls */}
+      <div style={{ borderTop: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', paddingTop: 6 }}>
         {/* Indicators Section */}
         <ToggleSection
           label="Indicators"

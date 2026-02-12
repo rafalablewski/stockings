@@ -1329,39 +1329,28 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       ))}
     </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-snapshot</div>
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Company Snapshot</span>
-        <UpdateIndicators sources={['PR', 'SEC']} />
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
-        {['Metric', 'Value', 'Category'].map(h => (
-          <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Value' ? 'right' : 'left' }}>{h}</span>
-        ))}
-      </div>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
       {[
-        { metric: 'Shares', value: `${currentShares}M`, desc: 'Equity', color: 'var(--text)' },
-        { metric: 'Price', value: `$${currentStockPrice}`, desc: 'Equity', color: 'var(--text)' },
-        { metric: 'Mkt Cap', value: `$${(calc.marketCap / 1000).toFixed(2)}B`, desc: 'Equity', color: 'var(--accent)' },
-        { metric: 'Debt', value: `$${totalDebt}M`, desc: 'Equity', color: 'var(--text)' },
-        { metric: 'Cash', value: `$${(cashOnHand / 1000).toFixed(2)}B`, desc: 'Equity', color: 'var(--text)' },
-        { metric: 'MNO Partners', value: '53+', desc: 'Subscribers', color: 'var(--text)' },
-        { metric: 'Reach', value: `${(partnerReach / 1000).toFixed(1)}B`, desc: 'Subscribers', color: 'var(--accent)' },
-        { metric: `@ ${penetrationRate}%`, value: `${calc.potentialSubs.toFixed(0)}M`, desc: 'Subscribers', color: 'var(--text)' },
-        { metric: '$/Sub', value: `$${calc.pricePerSub.toFixed(0)}`, desc: 'Subscribers', color: 'var(--text)' },
-        { metric: 'Contracted', value: `$${contractedRevenue}M+`, desc: 'Subscribers', color: 'var(--text)' },
-        { metric: 'Block 1 (BW3+BB1-5)', value: `${block1Sats} in orbit`, desc: 'Constellation', color: 'var(--text)' },
-        { metric: 'Block 2 (BB6+)', value: `${block2Sats} launched`, desc: 'Constellation', color: 'var(--accent)' },
-        { metric: 'Total Constellation', value: `${block1Sats + block2Sats} satellites`, desc: 'Constellation', color: 'var(--text)' },
-        { metric: 'Target', value: targetSats2026, desc: 'Constellation', color: 'var(--text)' },
-        { metric: 'Next', value: "BB7-13 Q1'26", desc: 'Constellation', color: 'var(--text)' },
-      ].map((row, i, arr) => (
-        <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-          <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.metric}</span>
-          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: row.color, textAlign: 'right' }}>{row.value}</span>
-          <span style={{ fontSize: 12, color: 'var(--text3)', paddingLeft: 16 }}>{row.desc}</span>
+        { metric: 'Shares', value: `${currentShares}M`, sub: 'Outstanding', color: 'var(--text)' },
+        { metric: 'Price', value: `$${currentStockPrice}`, sub: 'Current', color: 'var(--text)' },
+        { metric: 'Mkt Cap', value: `$${(calc.marketCap / 1000).toFixed(2)}B`, sub: 'Equity', color: 'var(--accent)' },
+        { metric: 'Debt', value: `$${totalDebt}M`, sub: 'Total debt', color: 'var(--text)' },
+        { metric: 'Cash', value: `$${(cashOnHand / 1000).toFixed(2)}B`, sub: 'On hand', color: 'var(--text)' },
+        { metric: 'MNO Partners', value: '53+', sub: 'Signed', color: 'var(--text)' },
+        { metric: 'Reach', value: `${(partnerReach / 1000).toFixed(1)}B`, sub: 'Subscribers', color: 'var(--accent)' },
+        { metric: `@ ${penetrationRate}%`, value: `${calc.potentialSubs.toFixed(0)}M`, sub: 'Potential subs', color: 'var(--text)' },
+        { metric: '$/Sub', value: `$${calc.pricePerSub.toFixed(0)}`, sub: 'Price per sub', color: 'var(--text)' },
+        { metric: 'Contracted', value: `$${contractedRevenue}M+`, sub: 'Revenue', color: 'var(--text)' },
+        { metric: 'Block 1', value: `${block1Sats} in orbit`, sub: 'BW3+BB1-5', color: 'var(--text)' },
+        { metric: 'Block 2', value: `${block2Sats} launched`, sub: 'BB6+', color: 'var(--accent)' },
+        { metric: 'Constellation', value: `${block1Sats + block2Sats} sats`, sub: 'Total deployed', color: 'var(--text)' },
+        { metric: 'Target', value: targetSats2026, sub: '2026 goal', color: 'var(--text)' },
+        { metric: 'Next Launch', value: "BB7-13", sub: "Q1'26", color: 'var(--text)' },
+      ].map(row => (
+        <div key={row.metric} style={{ background: 'var(--surface)', padding: '16px', textAlign: 'center' }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{row.metric}</div>
+          <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 18, fontWeight: 700, color: row.color, margin: '6px 0 4px' }}>{row.value}</div>
+          <div style={{ fontSize: 11, color: 'var(--text3)' }}>{row.sub}</div>
         </div>
       ))}
     </div>
@@ -3796,62 +3785,58 @@ const ModelTab = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#model-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>DCF Valuation<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Model<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Configure assumptions and scenario presets. All changes flow directly to DCF projections and terminal value calculation.</p>
+      </div>
 
       {/* ASSUMPTIONS SECTION */}
       <>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario</div>
-          <div className="highlight">
-            <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
-            <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-              Configure model assumptions. Changes flow to projections and DCF valuation.
-            </p>
-          </div>
-
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-presets</div>
-          {/* Scenario Presets - 6 scenarios from Worst to Moon */}
-          <div className="card">
-            <div className="card-title">Scenario Presets</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
-              {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
-                const preset = SCENARIO_PRESETS[s];
-                const isActive = selectedScenario === s;
-                return (
-                  <div
-                    key={s}
-                    onClick={() => applyScenario(s)}
-                    style={{
-                      padding: 12,
-                      borderRadius: 10,
-                      border: isActive ? `2px solid ${preset.color}` : '1px solid var(--border)',
-                      background: isActive ? `${preset.color}15` : 'var(--surface2)',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <div style={{ fontSize: 20 }}>{preset.icon}</div>
-                    <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)' }}>
-                      {preset.label}
-                    </div>
-                    <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
-                      {preset.penetrationRate}% · ${preset.blendedARPU}
-                    </div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#scenario-presets</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+            {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
+              const preset = SCENARIO_PRESETS[s];
+              const isActive = selectedScenario === s;
+              return (
+                <div
+                  key={s}
+                  onClick={() => applyScenario(s)}
+                  style={{
+                    padding: '16px 8px',
+                    background: isActive ? `${preset.color}15` : 'var(--surface)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                    textAlign: 'center',
+                    borderBottom: isActive ? `2px solid ${preset.color}` : '2px solid transparent',
+                  }}
+                >
+                  <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{preset.label}</div>
+                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: isActive ? preset.color : 'var(--text)', margin: '4px 0 2px' }}>
+                    {preset.penetrationRate}%
                   </div>
-                );
-              })}
-            </div>
-            {/* Always show to prevent layout shift */}
-            <div style={{ padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
-              ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
-            </div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>
+                    ${preset.blendedARPU}/mo
+                  </div>
+                </div>
+              );
+            })}
           </div>
+          {selectedScenario === 'custom' && (
+            <div style={{ padding: '8px 12px', background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 8, fontSize: 11, color: 'var(--violet)', marginTop: 8 }}>
+              Custom scenario — parameters modified from preset
+            </div>
+          )}
 
           {/* SUBSCRIBER & REVENUE PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-model</div>
-          <h3 style={{ color: 'var(--cyan)' }}>Subscriber & Revenue Model</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-model</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Subscriber & Revenue Model</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          </div>
 
-          <div className="g2">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <ParameterCard
               title="Penetration Rate (%)"
               explanation="Percentage of partner MNO subscribers who adopt ASTS service. Management targets 3-5%. Analyst estimates range 1-10%. Higher penetration = more subscribers = more revenue. Depends on pricing, network quality, and Starlink competition."
@@ -3870,7 +3855,7 @@ const ModelTab = ({
             />
           </div>
 
-          <div className="g2">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
             <ParameterCard
               title="Revenue Share (%)"
               explanation="ASTS's share of gross subscriber revenue. Standard MNO deals: 50/50. Some partners may negotiate 60/40 in their favor. Higher share = more revenue flows to ASTS. Could vary by region."
@@ -3891,10 +3876,13 @@ const ModelTab = ({
           </div>
 
           {/* OPERATING PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#operating-model</div>
-          <h3 style={{ color: 'var(--mint)' }}>Operating Assumptions</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#operating-model</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Operating Assumptions</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          </div>
 
-          <div className="g2">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <ParameterCard
               title="Terminal EBITDA Margin (%)"
               explanation="Operating margin at scale. Satellite businesses typically achieve 50-70% EBITDA margins. ASTS management targets 85%+. Lower margins possible if pricing pressure or higher opex. 25-30% if competition is brutal."
@@ -3914,7 +3902,7 @@ const ModelTab = ({
             />
           </div>
 
-          <div className="g2">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
             <ParameterCard
               title="Annual Dilution (%)"
               explanation="Share count increase from stock comp, warrants, and equity raises. ASTS is capital-intensive. 2-4% = well-funded. 10-15% = ongoing raises needed. High dilution erodes per-share value."
@@ -3936,10 +3924,13 @@ const ModelTab = ({
           </div>
 
           {/* VALUATION PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-params</div>
-          <h3 style={{ color: 'var(--violet)' }}>Valuation Parameters</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#valuation-params</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Parameters</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          </div>
 
-          <div className="g2">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <ParameterCard
               title="Discount Rate / WACC (%)"
               explanation="Required return for discounting future cash flows. 10% = blue chip. 15-20% = high-growth tech. 25%+ = speculative pre-revenue. Lower rates justified as execution de-risks."
@@ -3960,13 +3951,14 @@ const ModelTab = ({
           </div>
 
           {/* RISK PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#risk-factors</div>
-          <h3 style={{ color: 'var(--coral)' }}>Risk Probability Factors</h3>
-          <p style={{ fontSize: 12, color: 'var(--text3)' }}>
-            Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Tech) × (1-Comp) = {(riskFactor * 100).toFixed(0)}% success probability.
-          </p>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#risk-factors</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Risk Probability Factors</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)' }}>{(riskFactor * 100).toFixed(0)}% success</span>
+          </div>
 
-          <div className="g3">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
             <ParameterCard
               title="Regulatory Risk (%)"
               explanation="Probability of adverse regulatory action. ASTS has FCC approval but needs country-by-country clearance. 2-5% = most approvals done. 20-30% = major regulatory uncertainty remains."
@@ -3996,96 +3988,64 @@ const ModelTab = ({
             />
           </div>
 
-          {/* DCF VALUATION OUTPUT - Unified section with consistent styling */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-output</div>
-          <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
-            <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (2030 Terminal Year)</div>
-            <table className="tbl" style={{ width: '100%' }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: 'left' }}>Metric</th>
-                  <th className="r">Value</th>
-                  <th style={{ textAlign: 'left' }}>Detail</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style={{ background: 'var(--accent-dim)' }}>
-                  <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Target Stock Price</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: 'var(--accent)' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</td>
-                  <td style={{ color: 'var(--text3)' }}>vs ${currentStockPrice} current</td>
-                </tr>
-                <tr style={{ background: 'var(--accent-dim)' }}>
-                  <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Implied Upside</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</td>
-                  <td style={{ color: 'var(--text3)' }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>Present Value EV</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${riskAdjustedEV.toFixed(1)}B</td>
-                  <td style={{ color: 'var(--text3)' }}>{(riskFactor * 100).toFixed(0)}% prob × ${presentValueEV.toFixed(1)}B</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>Equity Value</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${equityValue.toFixed(1)}B</td>
-                  <td style={{ color: 'var(--text3)' }}>{netDebtB < 0 ? `+ $${Math.abs(netDebtB).toFixed(2)}B net cash` : `- $${netDebtB.toFixed(2)}B net debt`}</td>
-                </tr>
-                <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 Subscribers</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalSubs.toFixed(0)}M</td>
-                  <td style={{ color: 'var(--text3)' }}>{penetrationRate}% × {(partnerReach/1000).toFixed(1)}B × {100 - competitionDiscount}%</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 Revenue</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalRev.toFixed(2)}B</td>
-                  <td style={{ color: 'var(--text3)' }}>{revenueShare}% of ${terminalGrossRev.toFixed(2)}B</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 EBITDA</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalEBITDA.toFixed(2)}B</td>
-                  <td style={{ color: 'var(--text3)' }}>{terminalMargin}% margin</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 FCF</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalFCF.toFixed(2)}B</td>
-                  <td style={{ color: 'var(--text3)' }}>{terminalMargin - terminalCapex}% FCF margin</td>
-                </tr>
-                <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 EV/Revenue</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalEVperRev.toFixed(1)}x</td>
-                  <td style={{ color: 'var(--text3)' }}>${terminalEV.toFixed(1)}B EV</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 EV/EBITDA</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalEVperEBITDA.toFixed(1)}x</td>
-                  <td style={{ color: 'var(--text3)' }}>Terminal multiple</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 FCF Yield</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalFCFyield.toFixed(1)}%</td>
-                  <td style={{ color: 'var(--text3)' }}>FCF / Terminal EV</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>Diluted Shares</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{finalDilutedShares.toFixed(0)}M</td>
-                  <td style={{ color: 'var(--text3)' }}>{dilutionRate}%/yr × {discountYears}yrs</td>
-                </tr>
-              </tbody>
-            </table>
+          {/* DCF VALUATION OUTPUT */}
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dcf-output</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DCF Output — 2030 Terminal Year</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
           </div>
 
-          {/* CALCULATION METHODOLOGY - Full explanation */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#methodology</div>
-          <div className="card">
-            <div className="card-title">Calculation Methodology</div>
-            <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
-              <p style={{ }}>
-                This DCF model calculates ASTS intrinsic value using a <strong>terminal value approach</strong> with
-                Gordon Growth Model, discounted to present value and adjusted for execution risk.
+          {/* Primary Output — Hero KPIs */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'color-mix(in srgb, var(--accent) 30%, var(--border))', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))', padding: '24px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 600 }}>Target Price</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: 'var(--accent)', margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>vs ${currentStockPrice} current</div>
+            </div>
+            <div style={{ background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))', padding: '24px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 600 }}>Implied Upside</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--coral)', margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
+            </div>
+          </div>
+
+          {/* Valuation Metrics Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 12 }}>
+            {[
+              { label: 'PV Enterprise Value', value: `$${riskAdjustedEV.toFixed(1)}B`, sub: `${(riskFactor * 100).toFixed(0)}% prob`, color: 'var(--text)' },
+              { label: 'Equity Value', value: `$${equityValue.toFixed(1)}B`, sub: netDebtB < 0 ? `+$${Math.abs(netDebtB).toFixed(2)}B cash` : `-$${netDebtB.toFixed(2)}B debt`, color: 'var(--text)' },
+              { label: '2030 Subscribers', value: `${terminalSubs.toFixed(0)}M`, sub: `${penetrationRate}% penetration`, color: 'var(--text)' },
+              { label: '2030 Revenue', value: `$${terminalRev.toFixed(2)}B`, sub: `${revenueShare}% share`, color: 'var(--accent)' },
+              { label: '2030 EBITDA', value: `$${terminalEBITDA.toFixed(2)}B`, sub: `${terminalMargin}% margin`, color: 'var(--text)' },
+              { label: '2030 FCF', value: `$${terminalFCF.toFixed(2)}B`, sub: `${terminalMargin - terminalCapex}% FCF margin`, color: 'var(--text)' },
+              { label: 'EV/Revenue', value: `${terminalEVperRev.toFixed(1)}x`, sub: '2030 terminal', color: 'var(--text)' },
+              { label: 'EV/EBITDA', value: `${terminalEVperEBITDA.toFixed(1)}x`, sub: '2030 terminal', color: 'var(--text)' },
+              { label: 'FCF Yield', value: `${terminalFCFyield.toFixed(1)}%`, sub: 'FCF / EV', color: 'var(--text)' },
+              { label: 'Diluted Shares', value: `${finalDilutedShares.toFixed(0)}M`, sub: `${dilutionRate}%/yr × ${discountYears}yr`, color: 'var(--text)' },
+              { label: 'Terminal EV', value: `$${terminalEV.toFixed(1)}B`, sub: 'Before discounting', color: 'var(--text)' },
+              { label: 'Discount Factor', value: `${discountFactor.toFixed(3)}x`, sub: `${discountRate}% × ${discountYears}yr`, color: 'var(--text)' },
+            ].map(kpi => (
+              <div key={kpi.label} style={{ background: 'var(--surface)', padding: '16px', textAlign: 'center' }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 18, fontWeight: 700, color: kpi.color, margin: '6px 0 4px' }}>{kpi.value}</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* CALCULATION METHODOLOGY */}
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#methodology</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Methodology</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          </div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', overflow: 'hidden' }}>
+            <div style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.6 }}>
+              <p>
+                Terminal value approach with Gordon Growth Model, discounted to present value and adjusted for execution risk.
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 16 }}>
                 <div>
                   <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 1-5: Terminal Year Metrics (2030)</div>
                   <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
@@ -4137,8 +4097,8 @@ const ModelTab = ({
                 </div>
               </div>
 
-              <div style={{ padding: 10, background: 'var(--accent-dim)', borderRadius: 6, fontSize: 11 }}>
-                <strong>Key Assumptions:</strong> Terminal year is {2025 + discountYears} ({discountYears} years out).
+              <div style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--accent) 8%, transparent)', borderRadius: 8, fontSize: 11, color: 'var(--text3)', lineHeight: 1.6, marginTop: 12 }}>
+                <strong style={{ color: 'var(--text2)' }}>Key Assumptions:</strong> Terminal year is {2025 + discountYears} ({discountYears} years out).
                 FCF margin = EBITDA margin - CapEx (simplified, ignores taxes/WC).
                 Risk factors are multiplicative (independent events).
                 Gordon Growth assumes perpetual {terminalGrowth}% growth after terminal year.

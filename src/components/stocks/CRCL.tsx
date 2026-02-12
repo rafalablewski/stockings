@@ -3261,7 +3261,7 @@ function CRCLModel() {
     return topics;
   };
 
-  const latest = DATA[DATA.length - 1];
+  const latest = DATA[0];  // Most recent quarter (array is most-recent-first)
   const prevYear = DATA.find(d => d.quarter === "Q3 2024");
   const revGrowth = prevYear && prevYear.totalRevenue > 0 ? ((latest.totalRevenue - prevYear.totalRevenue) / prevYear.totalRevenue * 100) : 0;
   const usdcGrowth = prevYear && prevYear.usdcCirculation > 0 ? ((latest.usdcCirculation - prevYear.usdcCirculation) / prevYear.usdcCirculation * 100) : 0;
@@ -3467,7 +3467,7 @@ function CRCLModel() {
 
         {/* Stats */}
         <div className="stats-row">
-          <Stat label="Market Cap" value={`$${(MARKET.marketCap / 1e9).toFixed(1)}B`} updateSource="MARKET" />
+          <Stat label="Market Cap" value={`$${(MARKET.marketCap / 1000).toFixed(1)}B`} updateSource="MARKET" />
           <Stat label="USDC Circulation" value={`$${latest.usdcCirculation.toFixed(1)}B`} color="mint" updateSource="PR" />
           <Stat label="Q3 Revenue" value={`$${latest.totalRevenue}M`} updateSource="SEC" />
           <Stat label="RLDC Margin" value={`${latest.rldcMargin}%`} updateSource="SEC" />
@@ -3592,8 +3592,9 @@ function CRCLModel() {
                 </div>
                 <div className="bars" style={{ padding: '24px 28px 0' }}>
                   {(() => {
-                    const maxRevenue = Math.max(...DATA.map(d => d.totalRevenue));
-                    return DATA.map((d, i) => (
+                    const chronological = [...DATA].reverse();  // Oldest first for left-to-right progression
+                    const maxRevenue = Math.max(...chronological.map(d => d.totalRevenue));
+                    return chronological.map((d, i) => (
                       <div key={i} className="bar-col">
                         <div className="bar-val">${d.totalRevenue}M</div>
                         <div className="bar" style={{ height: `${maxRevenue > 0 ? (d.totalRevenue / maxRevenue) * 150 : 0}px` }} />
@@ -3627,39 +3628,28 @@ function CRCLModel() {
                 ))}
               </div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-snapshot</div>
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Company Snapshot</span>
-                  <UpdateIndicators sources={['PR', 'SEC']} />
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
-                  {['Metric', 'Value', 'Category'].map(h => (
-                    <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Value' ? 'right' : 'left' }}>{h}</span>
-                  ))}
-                </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
                 {[
-                  { metric: 'Shares Outstanding', value: `${currentShares.toFixed(1)}M`, desc: 'Equity', color: 'var(--text)' },
-                  { metric: 'Stock Price', value: `$${currentStockPrice.toFixed(2)}`, desc: 'Equity', color: 'var(--text)' },
-                  { metric: 'Market Cap', value: `$${(calc.marketCap / 1000).toFixed(1)}B`, desc: 'Equity', color: 'var(--accent)' },
-                  { metric: 'P/E Ratio', value: `${MARKET.pe.toFixed(0)}x`, desc: 'Equity', color: 'var(--text)' },
-                  { metric: 'Since IPO', value: `+${ipoReturn.toFixed(0)}%`, desc: 'Equity', color: 'var(--text)' },
-                  { metric: 'USDC Circulation', value: `$${currentUSDC.toFixed(1)}B`, desc: 'USDC Metrics', color: 'var(--text)' },
-                  { metric: 'Market Share', value: `${currentMarketShare}%`, desc: 'USDC Metrics', color: 'var(--accent)' },
-                  { metric: 'Total Stablecoin Mkt', value: `$${calc.totalStablecoins.toFixed(0)}B`, desc: 'USDC Metrics', color: 'var(--text)' },
-                  { metric: 'YoY Growth', value: `+${usdcGrowth.toFixed(0)}%`, desc: 'USDC Metrics', color: 'var(--text)' },
-                  { metric: 'Active Wallets', value: `${latest.meaningfulWallets}M`, desc: 'USDC Metrics', color: 'var(--text)' },
-                  { metric: 'Q3 Revenue', value: `$${latest.totalRevenue}M`, desc: 'Revenue', color: 'var(--text)' },
-                  { metric: 'RLDC', value: `$${latest.rldc}M`, desc: 'Revenue', color: 'var(--accent)' },
-                  { metric: 'RLDC Margin', value: `${latest.rldcMargin}%`, desc: 'Revenue', color: 'var(--text)' },
-                  { metric: 'Adj. EBITDA', value: `$${latest.adjustedEbitda}M`, desc: 'Revenue', color: 'var(--text)' },
-                  { metric: 'Rev/B USDC', value: `$${calc.revenuePerBillionUsdc.toFixed(0)}M`, desc: 'Revenue', color: 'var(--text)' },
-                ].map((row, i, arr) => (
-                  <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                    <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.metric}</span>
-                    <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: row.color, textAlign: 'right' }}>{row.value}</span>
-                    <span style={{ fontSize: 12, color: 'var(--text3)', paddingLeft: 16 }}>{row.desc}</span>
+                  { metric: 'Shares', value: `${currentShares.toFixed(1)}M`, sub: 'Outstanding', color: 'var(--text)' },
+                  { metric: 'Price', value: `$${currentStockPrice.toFixed(2)}`, sub: 'Current', color: 'var(--text)' },
+                  { metric: 'Mkt Cap', value: `$${(calc.marketCap / 1000).toFixed(1)}B`, sub: 'Equity', color: 'var(--accent)' },
+                  { metric: 'P/E Ratio', value: `${MARKET.pe.toFixed(0)}x`, sub: 'Trailing', color: 'var(--text)' },
+                  { metric: 'Since IPO', value: `+${ipoReturn.toFixed(0)}%`, sub: 'Return', color: 'var(--text)' },
+                  { metric: 'USDC Circ.', value: `$${currentUSDC.toFixed(1)}B`, sub: 'In circulation', color: 'var(--text)' },
+                  { metric: 'Market Share', value: `${currentMarketShare}%`, sub: 'Stablecoins', color: 'var(--accent)' },
+                  { metric: 'Stablecoin Mkt', value: `$${calc.totalStablecoins.toFixed(0)}B`, sub: 'Total TAM', color: 'var(--text)' },
+                  { metric: 'YoY Growth', value: `+${usdcGrowth.toFixed(0)}%`, sub: 'USDC circ.', color: 'var(--text)' },
+                  { metric: 'Wallets', value: `${latest.meaningfulWallets}M`, sub: 'Active', color: 'var(--text)' },
+                  { metric: 'Revenue', value: `$${latest.totalRevenue}M`, sub: `${latest.quarter}`, color: 'var(--text)' },
+                  { metric: 'RLDC', value: `$${latest.rldc}M`, sub: `${latest.rldcMargin}% margin`, color: 'var(--accent)' },
+                  { metric: 'Adj. EBITDA', value: `$${latest.adjustedEbitda}M`, sub: `${latest.quarter}`, color: 'var(--text)' },
+                  { metric: 'Rev/B USDC', value: `$${calc.revenuePerBillionUsdc.toFixed(0)}M`, sub: 'Efficiency', color: 'var(--text)' },
+                  { metric: 'Reserve Rate', value: `${latest.reserveReturnRate.toFixed(2)}%`, sub: 'Annualized', color: 'var(--text)' },
+                ].map(row => (
+                  <div key={row.metric} style={{ background: 'var(--surface)', padding: '16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{row.metric}</div>
+                    <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 18, fontWeight: 700, color: row.color, margin: '6px 0 4px' }}>{row.value}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{row.sub}</div>
                   </div>
                 ))}
               </div>
@@ -5022,7 +5012,7 @@ function CRCLModel() {
                 <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['SEC', 'MARKET']} /></div>
                 <div className="g4">
                   <Card label="Shares Outstanding" value={`${MARKET.shares.toFixed(1)}M`} sub="All classes" color="mint" />
-                  <Card label="Market Cap" value={`$${(MARKET.marketCap / 1e9).toFixed(1)}B`} sub="Current valuation" color="blue" />
+                  <Card label="Market Cap" value={`$${(MARKET.marketCap / 1000).toFixed(1)}B`} sub="Current valuation" color="blue" />
                   <Card label="Cash Position" value="$1.1B" sub="Sep 2024" color="green" />
                   <Card label="Convertible Debt" value="$206M" sub="Fair value" color="yellow" />
                 </div>

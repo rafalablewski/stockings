@@ -754,7 +754,7 @@ const BMNRDilutionAnalysis = () => {
   const [baseStakingAPY, setBaseStakingAPY] = useState(3.11);
   const [restakingBonus, setRestakingBonus] = useState(2.0);
   const [stakingRatio, setStakingRatio] = useState(67.0);  // 2,897,459 / 4,325,738 = 67.0% (Feb 9, 2026 PR)
-  const [useDebt, setUseDebt] = useState(false);
+  const [useDebt, setUseDebt] = useState(true);
   const [debtAmount, setDebtAmount] = useState(100);
   const [debtRate, setDebtRate] = useState(2.5);
   const [debtMaturity, setDebtMaturity] = useState(5);
@@ -2092,37 +2092,25 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
       ))}
     </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-snapshot</div>
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Company Snapshot</span>
-        <UpdateIndicators sources={['PR', 'SEC']} />
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
-        {['Metric', 'Value', 'Category'].map(h => (
-          <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Value' ? 'right' : 'left' }}>{h}</span>
-        ))}
-      </div>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
       {[
-        { metric: 'Total ETH', value: currentETH.toLocaleString(), desc: 'ETH Holdings', color: 'var(--text)' },
-        { metric: 'ETH Price', value: `$${ethPrice.toLocaleString()}`, desc: 'ETH Holdings', color: 'var(--text)' },
-        { metric: 'Total Value', value: `$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`, desc: 'ETH Holdings', color: 'var(--accent)' },
-        { metric: 'Annual Yield', value: `${Math.round(calc.annualYieldETH).toLocaleString()} ETH`, desc: 'ETH Holdings', color: 'var(--text)' },
-        { metric: 'Shares Outstanding', value: `${currentShares}M`, desc: 'Share Structure', color: 'var(--text)' },
-        { metric: 'Market Cap', value: `$${(calc.marketCap / 1e9).toFixed(2)}B`, desc: 'Share Structure', color: 'var(--text)' },
-        { metric: 'NAV Multiple', value: `${(currentStockPrice / calc.currentNAV).toFixed(2)}x`, desc: 'Share Structure', color: 'var(--accent)' },
-        { metric: 'ETH/Share', value: calc.ethPerShare.toFixed(6), desc: 'Share Structure', color: 'var(--text)' },
-        { metric: 'Quarterly Dividend', value: `$${quarterlyDividend.toFixed(2)}`, desc: 'Dividend', color: 'var(--text)' },
-        { metric: 'Annual Dividend', value: `$${calc.annualDividend.toFixed(2)}`, desc: 'Dividend', color: 'var(--text)' },
-        { metric: 'Dividend Yield', value: `${calc.dividendYield.toFixed(2)}%`, desc: 'Dividend', color: 'var(--accent)' },
-        { metric: 'Annual Payout', value: `$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`, desc: 'Dividend', color: 'var(--text)' },
-        { metric: 'Payout Ratio', value: `${calc.dividendPayoutRatio.toFixed(1)}% of staking`, desc: 'Dividend', color: 'var(--text)' },
-      ].map((row, i, arr) => (
-        <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-          <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.metric}</span>
-          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: row.color, textAlign: 'right' }}>{row.value}</span>
-          <span style={{ fontSize: 12, color: 'var(--text3)', paddingLeft: 16 }}>{row.desc}</span>
+        { metric: 'Total ETH', value: currentETH.toLocaleString(), sub: 'Holdings', color: 'var(--text)' },
+        { metric: 'ETH Price', value: `$${ethPrice.toLocaleString()}`, sub: 'Current', color: 'var(--text)' },
+        { metric: 'Total Value', value: `$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`, sub: 'ETH holdings', color: 'var(--accent)' },
+        { metric: 'Annual Yield', value: `${Math.round(calc.annualYieldETH).toLocaleString()} ETH`, sub: 'Staking', color: 'var(--text)' },
+        { metric: 'Shares', value: `${currentShares}M`, sub: 'Outstanding', color: 'var(--text)' },
+        { metric: 'Market Cap', value: `$${(calc.marketCap / 1e9).toFixed(2)}B`, sub: 'Equity', color: 'var(--text)' },
+        { metric: 'NAV Multiple', value: `${(currentStockPrice / calc.currentNAV).toFixed(2)}x`, sub: 'Premium/Discount', color: 'var(--accent)' },
+        { metric: 'ETH/Share', value: calc.ethPerShare.toFixed(6), sub: 'Per share', color: 'var(--text)' },
+        { metric: 'Quarterly Div', value: `$${quarterlyDividend.toFixed(2)}`, sub: 'Per share', color: 'var(--text)' },
+        { metric: 'Annual Div', value: `$${calc.annualDividend.toFixed(2)}`, sub: 'Per share', color: 'var(--text)' },
+        { metric: 'Div Yield', value: `${calc.dividendYield.toFixed(2)}%`, sub: 'Annualized', color: 'var(--accent)' },
+        { metric: 'Payout', value: `$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`, sub: 'Annual total', color: 'var(--text)' },
+      ].map(row => (
+        <div key={row.metric} style={{ background: 'var(--surface)', padding: '16px', textAlign: 'center' }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{row.metric}</div>
+          <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 18, fontWeight: 700, color: row.color, margin: '6px 0 4px' }}>{row.value}</div>
+          <div style={{ fontSize: 11, color: 'var(--text3)' }}>{row.sub}</div>
         </div>
       ))}
     </div>
@@ -3117,7 +3105,6 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
       <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Debt Parameters</span>
         <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, color: 'var(--text2)' }}><input type="checkbox" checked={useDebt} onChange={e => setUseDebt(e.target.checked)} style={{ width: 16, height: 16 }} aria-label="Enable convertible debt modeling" />Enable Convertible Debt</label>
       </div>
       {useDebt && <>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -6201,17 +6188,28 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
       </div>
       {/* Settings — Glass panel */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#backtest-settings</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', marginTop: 8 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>Settings</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <label style={{ fontSize: 12, color: 'var(--text3)', letterSpacing: '0.5px' }}>Start:</label>
-            <select value={startYear} onChange={e => setStartYear(Number(e.target.value))} aria-label="Backtest start year" style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--text)', fontFamily: 'Space Mono, monospace' }}>{[2020, 2021, 2022, 2023, 2024].map(y => <option key={y} value={y}>{y}</option>)}</select>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ background: 'var(--surface)', padding: '20px 16px' }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginBottom: 8 }}>Start Year</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {[2020, 2021, 2022, 2023, 2024].map(y => (
+              <button key={y} onClick={() => setStartYear(y)} aria-label={`Start from ${y}`} style={{ padding: '6px 10px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: startYear === y ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: startYear === y ? 'var(--accent)' : 'var(--surface2)', color: startYear === y ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>{y}</button>
+            ))}
           </div>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, color: 'var(--text2)' }}><input type="checkbox" checked={includeYield} onChange={e => setIncludeYield(e.target.checked)} style={{ width: 16, height: 16 }} aria-label="Include staking yield in backtest" />Include Yield ({baseStakingAPY}%)</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <label style={{ fontSize: 12, color: 'var(--text3)', letterSpacing: '0.5px' }}>NAV Multiple:</label>
-            <input type="number" value={assumedMult} onChange={e => setAssumedMult(Number(e.target.value))} step={0.1} min={0.5} max={3} aria-label="Assumed NAV multiple" style={{ width: 72, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 8px', fontSize: 12, color: 'var(--text)', fontFamily: 'Space Mono, monospace' }} />
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '20px 16px' }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginBottom: 8 }}>Staking Yield</div>
+          <div style={{ display: 'flex', gap: 4 }}>
+            <button onClick={() => setIncludeYield(true)} aria-pressed={includeYield} style={{ padding: '6px 10px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: includeYield ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: includeYield ? 'var(--accent)' : 'var(--surface2)', color: includeYield ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>On ({baseStakingAPY}%)</button>
+            <button onClick={() => setIncludeYield(false)} aria-pressed={!includeYield} style={{ padding: '6px 10px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: !includeYield ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: !includeYield ? 'var(--accent)' : 'var(--surface2)', color: !includeYield ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>Off</button>
+          </div>
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '20px 16px' }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginBottom: 8 }}>NAV Multiple</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {[0.8, 1.0, 1.2, 1.5, 2.0].map(m => (
+              <button key={m} onClick={() => setAssumedMult(m)} aria-label={`${m}x NAV multiple`} style={{ padding: '6px 10px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: assumedMult === m ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: assumedMult === m ? 'var(--accent)' : 'var(--surface2)', color: assumedMult === m ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>{m.toFixed(1)}x</button>
+            ))}
           </div>
         </div>
       </div>
