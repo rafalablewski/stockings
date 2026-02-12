@@ -256,13 +256,13 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 
 /* Filter Buttons - For inline filtering (competitor filters, peer group selectors) */
 .filter-btn {
-  padding: 8px 14px;
-  font-size: 13px;
+  padding: 4px 12px;
+  font-size: 11px;
   font-weight: 500;
-  border-radius: 8px;
-  background: var(--surface2);
+  border-radius: 99px;
+  background: transparent;
   border: 1px solid var(--border);
-  color: var(--text2);
+  color: var(--text3);
   cursor: pointer;
   transition: all 0.2s;
   font-family: 'Outfit', sans-serif;
@@ -273,7 +273,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   color: var(--text);
 }
 .filter-btn.active {
-  background: var(--accent-dim);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
   border-color: var(--accent);
   color: var(--accent);
   font-weight: 600;
@@ -371,9 +371,9 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 }
 
 .card-title {
-  font-size: 13px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2.5px;
   color: var(--text3);
   margin-bottom: 0;
   font-weight: 600;
@@ -583,21 +583,21 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 }
 
 .pill {
-  padding: 10px 20px;
-  font-size: 13px;
+  padding: 4px 12px;
+  font-size: 11px;
   font-weight: 500;
-  background: var(--surface2);
+  background: transparent;
   border: 1px solid var(--border);
-  border-radius: 100px;
+  border-radius: 99px;
   cursor: pointer;
   transition: all 0.2s;
-  color: var(--text2);
+  color: var(--text3);
   font-family: 'Outfit', sans-serif;
 }
 
 .pill:hover, .pill.active {
-  background: var(--accent);
-  color: var(--bg);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
   border-color: var(--accent);
 }
 
@@ -728,7 +728,7 @@ input[type="range"]::-webkit-slider-thumb {
   input[type="range"]::-webkit-slider-thumb { width: 32px; height: 32px; }
   .nav-btn { min-height: 44px; }
   button, .btn { min-height: 44px; }
-  .pill { min-height: 44px; padding: 12px 20px; }
+  .pill { min-height: 44px; padding: 10px 16px; }
   .nav-dropdown-item { min-height: 44px; padding: 12px 16px; }
 }
 
@@ -862,9 +862,9 @@ input[type="range"]::-webkit-slider-thumb {
     margin-bottom: 0;
   }
   .card-title {
-    font-size: 12px;
+    font-size: 11px;
     margin-bottom: 0;
-    letter-spacing: 1.2px;
+    letter-spacing: 2px;
   }
 
   /* Highlight boxes */
@@ -959,8 +959,8 @@ input[type="range"]::-webkit-slider-thumb {
     margin-bottom: 0;
   }
   .pill {
-    padding: 10px 16px;
-    font-size: 12px;
+    padding: 4px 12px;
+    font-size: 11px;
   }
 
   /* Sliders */

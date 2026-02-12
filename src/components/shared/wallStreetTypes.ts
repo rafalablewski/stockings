@@ -48,6 +48,7 @@ export interface AnalystCoverage {
   currentRating: string;
   currentRatingNormalized: 'bullish' | 'neutral' | 'bearish';
   reports: AnalystReport[];
+  notes?: string;
 }
 
 export interface SharedWallStreetTabProps {

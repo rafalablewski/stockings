@@ -450,8 +450,8 @@ const Guide = React.memo<GuideProps>(({ title, children }) => (
 Guide.displayName = 'Guide';
 
 const Panel = React.memo<PanelProps>(({ title, children }) => (
-  <div className="card">
-    {title && <div className="card-title">{title}</div>}
+  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
+    {title && <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>}
     {children}
   </div>
 ));
@@ -1065,8 +1065,8 @@ const OverviewParameterCard = ({
   };
 
   return (
-    <div className="card">
-      <div className="card-title">{title}</div>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>
       <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
         {explanation}
       </p>
@@ -1295,12 +1295,12 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           })}
         </div>
       </div>
-      <div className="bars" style={{ padding: '24px 28px 0' }}>
+      <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
         {chartData.map((d, i) => (
-          <div key={i} className="bar-col">
-            <div className="bar-val">{d.display}</div>
-            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px` }} />
-            <div className="bar-label">{d.label}</div>
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
+            <div style={{ width: '100%', background: 'var(--accent)', borderRadius: '4px 4px 0 0', height: maxValue > 0 ? Math.round((d.value / maxValue) * 150) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
+            <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
           </div>
         ))}
       </div>
@@ -1329,39 +1329,28 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       ))}
     </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#company-snapshot</div>
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Company Snapshot</span>
-        <UpdateIndicators sources={['PR', 'SEC']} />
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
-        {['Metric', 'Value', 'Category'].map(h => (
-          <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Value' ? 'right' : 'left' }}>{h}</span>
-        ))}
-      </div>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
       {[
-        { metric: 'Shares', value: `${currentShares}M`, desc: 'Equity', color: 'var(--text)' },
-        { metric: 'Price', value: `$${currentStockPrice}`, desc: 'Equity', color: 'var(--text)' },
-        { metric: 'Mkt Cap', value: `$${(calc.marketCap / 1000).toFixed(2)}B`, desc: 'Equity', color: 'var(--accent)' },
-        { metric: 'Debt', value: `$${totalDebt}M`, desc: 'Equity', color: 'var(--text)' },
-        { metric: 'Cash', value: `$${(cashOnHand / 1000).toFixed(2)}B`, desc: 'Equity', color: 'var(--text)' },
-        { metric: 'MNO Partners', value: '53+', desc: 'Subscribers', color: 'var(--text)' },
-        { metric: 'Reach', value: `${(partnerReach / 1000).toFixed(1)}B`, desc: 'Subscribers', color: 'var(--accent)' },
-        { metric: `@ ${penetrationRate}%`, value: `${calc.potentialSubs.toFixed(0)}M`, desc: 'Subscribers', color: 'var(--text)' },
-        { metric: '$/Sub', value: `$${calc.pricePerSub.toFixed(0)}`, desc: 'Subscribers', color: 'var(--text)' },
-        { metric: 'Contracted', value: `$${contractedRevenue}M+`, desc: 'Subscribers', color: 'var(--text)' },
-        { metric: 'Block 1 (BW3+BB1-5)', value: `${block1Sats} in orbit`, desc: 'Constellation', color: 'var(--text)' },
-        { metric: 'Block 2 (BB6+)', value: `${block2Sats} launched`, desc: 'Constellation', color: 'var(--accent)' },
-        { metric: 'Total Constellation', value: `${block1Sats + block2Sats} satellites`, desc: 'Constellation', color: 'var(--text)' },
-        { metric: 'Target', value: targetSats2026, desc: 'Constellation', color: 'var(--text)' },
-        { metric: 'Next', value: "BB7-13 Q1'26", desc: 'Constellation', color: 'var(--text)' },
-      ].map((row, i, arr) => (
-        <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-          <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.metric}</span>
-          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 600, color: row.color, textAlign: 'right' }}>{row.value}</span>
-          <span style={{ fontSize: 12, color: 'var(--text3)', paddingLeft: 16 }}>{row.desc}</span>
+        { metric: 'Shares', value: `${currentShares}M`, sub: 'Outstanding', color: 'var(--text)' },
+        { metric: 'Price', value: `$${currentStockPrice}`, sub: 'Current', color: 'var(--text)' },
+        { metric: 'Mkt Cap', value: `$${(calc.marketCap / 1000).toFixed(2)}B`, sub: 'Equity', color: 'var(--accent)' },
+        { metric: 'Debt', value: `$${totalDebt}M`, sub: 'Total debt', color: 'var(--text)' },
+        { metric: 'Cash', value: `$${(cashOnHand / 1000).toFixed(2)}B`, sub: 'On hand', color: 'var(--text)' },
+        { metric: 'MNO Partners', value: '53+', sub: 'Signed', color: 'var(--text)' },
+        { metric: 'Reach', value: `${(partnerReach / 1000).toFixed(1)}B`, sub: 'Subscribers', color: 'var(--accent)' },
+        { metric: `@ ${penetrationRate}%`, value: `${calc.potentialSubs.toFixed(0)}M`, sub: 'Potential subs', color: 'var(--text)' },
+        { metric: '$/Sub', value: `$${calc.pricePerSub.toFixed(0)}`, sub: 'Price per sub', color: 'var(--text)' },
+        { metric: 'Contracted', value: `$${contractedRevenue}M+`, sub: 'Revenue', color: 'var(--text)' },
+        { metric: 'Block 1', value: `${block1Sats} in orbit`, sub: 'BW3+BB1-5', color: 'var(--text)' },
+        { metric: 'Block 2', value: `${block2Sats} launched`, sub: 'BB6+', color: 'var(--accent)' },
+        { metric: 'Constellation', value: `${block1Sats + block2Sats} sats`, sub: 'Total deployed', color: 'var(--text)' },
+        { metric: 'Target', value: targetSats2026, sub: '2026 goal', color: 'var(--text)' },
+        { metric: 'Next Launch', value: "BB7-13", sub: "Q1'26", color: 'var(--text)' },
+      ].map(row => (
+        <div key={row.metric} style={{ background: 'var(--surface)', padding: '16px', textAlign: 'center' }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{row.metric}</div>
+          <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 18, fontWeight: 700, color: row.color, margin: '6px 0 4px' }}>{row.value}</div>
+          <div style={{ fontSize: 11, color: 'var(--text3)' }}>{row.sub}</div>
         </div>
       ))}
     </div>
@@ -2548,7 +2537,7 @@ const CompetitorsTab = () => {
 
       {/* Key Competitors Overview */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-overview</div>
-      <h2 className="section-head">Key Competitors</h2>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}><span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Key Competitors</span><span style={{ flex: 1, height: 1, background: 'var(--border)' }} /></div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
         {keyCompetitors.map((comp, i) => (
           <div key={i} className={`competitor-card threat-${comp.threat.toLowerCase()}`}>
@@ -2566,9 +2555,7 @@ const CompetitorsTab = () => {
 
       {/* Competitor News Timeline */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-timeline</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span>Competitor Intelligence ({filteredCompetitorNews.length} events)</span>
-      </h2>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}><span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Competitor Intelligence ({filteredCompetitorNews.length} events)</span></div>
 
       {/* Competitor Filter */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
@@ -2582,7 +2569,7 @@ const CompetitorsTab = () => {
               <button
                 key={comp}
                 onClick={() => setCompetitorFilter(comp)}
-                className={`pill ${isSelected ? 'active' : ''}`}
+                style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, cursor: 'pointer', borderColor: isSelected ? 'var(--accent)' : 'var(--border)', background: isSelected ? 'var(--accent-dim)' : 'var(--surface2)', color: isSelected ? 'var(--accent)' : 'var(--text2)' }}
               >
                 {comp} ({comp === 'All' ? COMPETITOR_NEWS.length : count})
               </button>
@@ -2594,17 +2581,20 @@ const CompetitorsTab = () => {
       {/* Category Filter */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#category-filter</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16, alignItems: 'center' }}>
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setCategoryFilter(cat)}
-            className={`pill ${categoryFilter === cat ? 'active' : ''}`}
-          >
-            {cat === 'All' ? `All (${COMPETITOR_NEWS.length})` : `${cat} (${COMPETITOR_NEWS.filter(n => n.category === cat).length})`}
-          </button>
-        ))}
+        {categories.map(cat => {
+          const isActive = categoryFilter === cat;
+          return (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(cat)}
+              style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, cursor: 'pointer', borderColor: isActive ? 'var(--accent)' : 'var(--border)', background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', color: isActive ? 'var(--accent)' : 'var(--text2)' }}
+            >
+              {cat === 'All' ? `All (${COMPETITOR_NEWS.length})` : `${cat} (${COMPETITOR_NEWS.filter(n => n.category === cat).length})`}
+            </button>
+          );
+        })}
         <button
-          className="pill"
+          style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', fontSize: 11, fontWeight: 500, cursor: 'pointer', background: 'var(--surface2)', color: 'var(--text2)' }}
           onClick={() => {
             if (expandedCompetitorNews.size === filteredCompetitorNews.length) {
               setExpandedCompetitorNews(new Set());
@@ -2675,7 +2665,7 @@ const CompetitorsTab = () => {
 
       {/* Competitive Moat Summary */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#competitive-moat</div>
-      <h2 className="section-head">ASTS Competitive Advantages</h2>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}><span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>ASTS Competitive Advantages</span><span style={{ flex: 1, height: 1, background: 'var(--border)' }} /></div>
       <div className="competitor-card" style={{ borderLeft: '3px solid var(--mint)' }}>
         <div style={{ display: 'grid', gap: 12 }}>
           <div className="competitor-detail"><strong>🛰️ True D2D Broadband:</strong> Only solution offering full mobile broadband (voice, data, video) to unmodified smartphones. Starlink D2D is text/voice only.</div>
@@ -3020,32 +3010,76 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Capital Structure<UpdateIndicators sources="SEC" /></h2>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-strategy</div>
-      <div className="highlight">
-        <h3>Share Classes, Offerings & Dilution</h3>
-        <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-          Three-class structure with Abel Avellan controlling ~65% of voting power via Class C (10x votes).
-          ~$5B+ total raised since SPAC (equity + converts). Fully funded for 100+ satellites.
-          Class A shares grew from 5.75M (SPAC) to ~290M (Feb 2026).
-        </p>
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Financial Position<UpdateIndicators sources="SEC" /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Capital Structure<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Three-class voting structure with founder control via Class C super-voting shares. ~$5B+ total raised since SPAC. Class A grew from 5.75M (SPAC) to ~290M (Feb 2026). Fully funded for 100+ satellites.</p>
       </div>
 
       {/* Summary Cards */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Key Metrics</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-metrics</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <div className="g4">
-          <Card label="Class A Shares" value={`${shareClasses[0].shares}M`} sub="Public float" color="sky" />
-          <Card label="Fully Diluted" value={`${fullyDiluted}M`} sub={`+${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}% dilution`} color="violet" />
-          <Card label="Basic Mkt Cap" value={`$${(marketCap / 1000).toFixed(1)}B`} sub={`@ $${currentStockPrice}`} color="green" />
-          <Card label="FD Mkt Cap" value={`$${(fullyDiluted * currentStockPrice / 1000).toFixed(1)}B`} sub="All securities" color="gold" />
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Key Metrics</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
+          {[
+            { label: 'Class A Shares', value: `${shareClasses[0].shares}M`, color: 'var(--sky)' },
+            { label: 'Fully Diluted', value: `${fullyDiluted}M`, color: 'var(--violet)' },
+            { label: 'Basic Mkt Cap', value: `$${(marketCap / 1000).toFixed(1)}B`, color: 'var(--mint)' },
+            { label: 'FD Mkt Cap', value: `$${(fullyDiluted * currentStockPrice / 1000).toFixed(1)}B`, color: 'var(--gold)' },
+          ].map(kpi => (
+            <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginTop: 4 }}>{kpi.label}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)' }}>
+          <div style={{ background: 'var(--surface)', padding: '16px 28px' }}>
+            {[
+              { label: 'Stock Price', value: `$${currentStockPrice}`, color: 'var(--text)' },
+              { label: 'Dilution', value: `+${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%`, color: 'var(--coral)' },
+              { label: 'Class B Shares', value: `${shareClasses[1]?.shares || 0}M`, color: 'var(--text)' },
+            ].map(row => (
+              <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+                <span style={{ fontSize: 12, color: 'var(--text3)' }}>{row.label}</span>
+                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: row.color }}>{row.value}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: 'var(--surface)', padding: '16px 28px' }}>
+            {[
+              { label: 'Class C Shares', value: `${shareClasses[2]?.shares || 0}M`, color: 'var(--text)' },
+              { label: 'Total Basic', value: `${totalBasic}M`, color: 'var(--text)' },
+              { label: 'Source', value: 'SEC', color: 'var(--text3)' },
+            ].map(row => (
+              <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+                <span style={{ fontSize: 12, color: 'var(--text3)' }}>{row.label}</span>
+                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: row.color }}>{row.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding: '16px 28px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--mint) 8%, var(--surface)), color-mix(in srgb, var(--violet) 8%, var(--surface)))', borderTop: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, color: 'var(--mint)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Multi-Class Structure</div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginTop: 4 }}>
+            Three share classes with different voting rights. Significant dilution from warrants, RSUs, and convertible instruments.
+          </div>
         </div>
       </div>
 
       {/* Navigation Cards */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Navigation</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-navigation</div>
-      <div className="g5">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 24 }}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Strategic + founder' },
@@ -3056,8 +3090,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <div
             key={nav.id}
             onClick={() => setCapitalView(nav.id)}
-            className="card"
             style={{
+              background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 28,
               cursor: 'pointer',
               borderLeft: capitalView === nav.id ? '4px solid var(--sky)' : '4px solid transparent',
               transition: 'border-color 0.2s',
@@ -3074,65 +3108,70 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'structure' && (
       <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#share-classes</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Class Structure (Q3 2025)<UpdateIndicators sources="SEC" /></div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Class</th>
-              <th className="r">Shares (M)</th>
-              <th className="r">% of Basic</th>
-              <th>Voting Rights</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Class A</td>
-              <td className="r">{shareClasses[0].shares}</td>
-              <td className="r">{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</td>
-              <td>1 vote/share</td>
-              <td>Public trading (NASDAQ: ASTS)</td>
-            </tr>
-            <tr>
-              <td>Class B</td>
-              <td className="r">11.2</td>
-              <td className="r">{(11.2 / totalBasic * 100).toFixed(1)}%</td>
-              <td>1 vote/share</td>
-              <td>Founder/insider shares</td>
-            </tr>
-            <tr>
-              <td>Class C</td>
-              <td className="r">78.2</td>
-              <td className="r">{(78.2 / totalBasic * 100).toFixed(1)}%</td>
-              <td>10 votes/share</td>
-              <td>Abel Avellan (CEO)</td>
-            </tr>
-            <tr style={{ background: 'var(--accent-dim)' }}>
-              <td style={{ fontWeight: 600 }}>Total Basic</td>
-              <td className="r" style={{ fontWeight: 600 }}>{totalBasic.toFixed(1)}</td>
-              <td className="r" style={{ fontWeight: 600 }}>100%</td>
-              <td colSpan={2}></td>
-            </tr>
-            <tr>
-              <td>+ Options/RSUs/Converts</td>
-              <td className="r">{(fullyDiluted - totalBasic).toFixed(1)}</td>
-              <td className="r">+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</td>
-              <td colSpan={2}>Remaining converts, options, RSUs</td>
-            </tr>
-            <tr style={{ background: 'var(--accent-dim)' }}>
-              <td style={{ fontWeight: 600 }}>Fully Diluted</td>
-              <td className="r" style={{ fontWeight: 600 }}>{fullyDiluted.toFixed(1)}</td>
-              <td className="r" style={{ fontWeight: 600 }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</td>
-              <td colSpan={2}></td>
-            </tr>
-          </tbody>
-        </table>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure (Q3 2025)<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Class</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Shares (M)</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>% of Basic</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Voting Rights</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Description</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <span style={{ fontSize: 13, color: 'var(--text)' }}>Class A</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{shareClasses[0].shares}</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</span>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}>1 vote/share</span>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Public trading (NASDAQ: ASTS)</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <span style={{ fontSize: 13, color: 'var(--text)' }}>Class B</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>11.2</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(11.2 / totalBasic * 100).toFixed(1)}%</span>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}>1 vote/share</span>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Founder/insider shares</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <span style={{ fontSize: 13, color: 'var(--text)' }}>Class C</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>78.2</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(78.2 / totalBasic * 100).toFixed(1)}%</span>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}>10 votes/share</span>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Abel Avellan (CEO)</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--accent-dim)' }}>
+            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Total Basic</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>{totalBasic.toFixed(1)}</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>100%</span>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <span style={{ fontSize: 13, color: 'var(--text)' }}>+ Options/RSUs/Converts</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(fullyDiluted - totalBasic).toFixed(1)}</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</span>
+            <span style={{ fontSize: 13, color: 'var(--text2)', gridColumn: 'span 2' }}>Remaining converts, options, RSUs</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', background: 'var(--accent-dim)' }}>
+            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Fully Diluted</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>{fullyDiluted.toFixed(1)}</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
+            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
+          </div>
+        </div>
 
         {/* Voting Power Analysis */}
         <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)' }}>Voting Power Analysis</div>
-          <div className="g2">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
             <div>
               <div style={{ fontSize: 12, color: 'var(--text3)' }}>ECONOMIC OWNERSHIP</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
@@ -3168,6 +3207,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <strong style={{ color: 'var(--gold)' }}>Note:</strong> Abel Avellan maintains ~73% voting control despite ~22% economic ownership via Class C super-voting shares.
           </div>
         </div>
+        </div>
       </div>
       </>
       )}
@@ -3176,36 +3216,37 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'shareholders' && (
       <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#major-shareholders</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Major Shareholders (Known from SEC Filings)<UpdateIndicators sources="SEC" /></div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Shareholder</th>
-              <th>Role</th>
-              <th className="r">Shares (M)</th>
-              <th>Class</th>
-              <th className="r">% Own</th>
-              <th className="r">% Vote</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {majorShareholders.map((sh, i) => (
-              <tr key={i}>
-                <td>{sh.name}</td>
-                <td>{sh.role}</td>
-                <td className="r">{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</td>
-                <td>{sh.shareClass}</td>
-                <td className="r">{sh.pct}%</td>
-                <td className="r">{sh.votingPct}%</td>
-                <td>{sh.notes}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Major Shareholders (Known from SEC Filings)<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Shareholder</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Role</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Shares (M)</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Class</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>% Own</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>% Vote</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Notes</span>
+          </div>
+          {majorShareholders.map((sh, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr', padding: '12px 16px', borderBottom: i < majorShareholders.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{sh.name}</span>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{sh.role}</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</span>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{sh.shareClass}</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{sh.pct}%</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{sh.votingPct}%</span>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{sh.notes}</span>
+            </div>
+          ))}
+        </div>
         <div style={{ fontSize: 13, color: 'var(--text3)' }}>
           Data from 13F (institutional) and DEF 14A (insiders). Strategic shares based on converts and PIPE disclosures.
+        </div>
         </div>
       </div>
       </>
@@ -3215,39 +3256,40 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'offerings' && (
       <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#equity-offerings</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Equity Offerings Timeline<UpdateIndicators sources="SEC" /></div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Event</th>
-              <th>Type</th>
-              <th className="r">Amount</th>
-              <th className="r">Price</th>
-              <th className="r">Shares (M)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {equityOfferings.map((offering, i) => (
-              <tr key={i}>
-                <td>{offering.date}</td>
-                <td style={{ fontWeight: 500 }}>{offering.event}</td>
-                <td>{offering.type}</td>
-                <td className="r">${offering.amount}M</td>
-                <td className="r">{offering.price ? `$${offering.price.toFixed(2)}` : '—'}</td>
-                <td className="r">{offering.shares ? offering.shares.toFixed(1) : '—'}</td>
-              </tr>
-            ))}
-            <tr style={{ background: 'var(--accent-dim)' }}>
-              <td colSpan={3} style={{ fontWeight: 600 }}>Total Capital Raised (2019-2025)</td>
-              <td className="r" style={{ fontWeight: 600 }}>~$3.6B</td>
-              <td colSpan={2}></td>
-            </tr>
-          </tbody>
-        </table>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Equity Offerings Timeline<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Date</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Event</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Type</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Amount</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Price</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Shares (M)</span>
+          </div>
+          {equityOfferings.map((offering, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{offering.date}</span>
+              <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{offering.event}</span>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{offering.type}</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${offering.amount}M</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{offering.price ? `$${offering.price.toFixed(2)}` : '\u2014'}</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{offering.shares ? offering.shares.toFixed(1) : '\u2014'}</span>
+            </div>
+          ))}
+          <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', padding: '12px 16px', background: 'var(--accent-dim)' }}>
+            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600, gridColumn: 'span 3' }}>Total Capital Raised (2019-2025)</span>
+            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>~$3.6B</span>
+            <span style={{ gridColumn: 'span 2' }}></span>
+          </div>
+        </div>
         <div style={{ fontSize: 13, color: 'var(--text3)' }}>
           Equity + Convertibles + ATM programs. Fully funded for 100+ satellite constellation.
+        </div>
         </div>
       </div>
       </>
@@ -3257,28 +3299,28 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'incentives' && (
       <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#equity-plans</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Stock-Based Compensation (SBC)<UpdateIndicators sources="SEC" /></div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Quarter</th>
-              <th className="r">Total SBC</th>
-              <th className="r">Engineering</th>
-              <th className="r">G&A</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sbcHistory.map((row, i) => (
-              <tr key={i}>
-                <td>{row.quarter}</td>
-                <td className="r">${row.sbc.toFixed(1)}M</td>
-                <td className="r">${row.engineering.toFixed(1)}M</td>
-                <td className="r">${row.gAndA.toFixed(1)}M</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Stock-Based Compensation (SBC)<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Quarter</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Total SBC</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Engineering</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>G&A</span>
+          </div>
+          {sbcHistory.map((row, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px', padding: '12px 16px', borderBottom: i < sbcHistory.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.quarter}</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${row.sbc.toFixed(1)}M</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${row.engineering.toFixed(1)}M</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${row.gAndA.toFixed(1)}M</span>
+            </div>
+          ))}
+        </div>
 
         {/* SBC Chart */}
         <div style={{ height: 192 }}>
@@ -3294,13 +3336,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           </ResponsiveContainer>
         </div>
 
-        <div className="g2" style={{ }}>
-          <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+          <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 12 }}>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>2025 YTD SBC</div>
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>$32.3M</div>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>Q1-Q3 2025</div>
           </div>
-          <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
+          <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 12 }}>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>FY2024 Total SBC</div>
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>$31.9M</div>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full year</div>
@@ -3310,6 +3352,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div style={{ fontSize: 13, color: 'var(--text3)' }}>
           SBC consists of RSUs and stock options. Included in GAAP OpEx but excluded from Adjusted OpEx.
         </div>
+        </div>
       </div>
       </>
       )}
@@ -3318,30 +3361,30 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'dilution' && (
       <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-analysis</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Share Count Evolution<UpdateIndicators sources="SEC" /></div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Quarter</th>
-              <th className="r">Class A (M)</th>
-              <th className="r">Implied (M)</th>
-              <th className="r">Fully Diluted (M)</th>
-              <th>Key Event</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dilutionHistory.map((row, i) => (
-              <tr key={i}>
-                <td>{row.quarter}</td>
-                <td className="r">{row.classA.toFixed(1)}</td>
-                <td className="r">{row.implied.toFixed(1)}</td>
-                <td className="r">{row.fullyDiluted.toFixed(1)}</td>
-                <td>{row.event}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Count Evolution<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '100px 100px 100px 120px 1fr', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Quarter</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Class A (M)</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Implied (M)</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Fully Diluted (M)</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Key Event</span>
+          </div>
+          {dilutionHistory.map((row, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '100px 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: i < dilutionHistory.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.quarter}</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{row.classA.toFixed(1)}</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{row.implied.toFixed(1)}</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{row.fullyDiluted.toFixed(1)}</span>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{row.event}</span>
+            </div>
+          ))}
+        </div>
 
         {/* Dilution Chart */}
         <div style={{ height: 256 }}>
@@ -3381,29 +3424,31 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         {/* Potential Future Dilution */}
         <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text2)' }}>Potential Future Dilution</div>
-          <table className="tbl">
-            <tbody>
-              <tr>
-                <td>Jan 2025 Converts (remaining $50M @ $26.58)</td>
-                <td className="r">+1.9M</td>
-              </tr>
-              <tr>
-                <td>Jul 2025 Converts ($575M @ $120.12)</td>
-                <td className="r">+4.8M</td>
-              </tr>
-              <tr>
-                <td>Oct 2025 Converts ($1,150M @ $96.30)</td>
-                <td className="r">+11.9M</td>
-              </tr>
-              <tr style={{ background: 'var(--accent-dim)' }}>
-                <td style={{ fontWeight: 600 }}>Maximum Additional Dilution</td>
-                <td className="r" style={{ fontWeight: 600 }}>+18.6M (~5%)</td>
-              </tr>
-            </tbody>
-          </table>
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>Jan 2025 Converts (remaining $50M @ $26.58)</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>+1.9M</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>Jul 2025 Converts ($575M @ $120.12)</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>+4.8M</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>Oct 2025 Converts ($1,150M @ $96.30)</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>+11.9M</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', padding: '12px 16px', background: 'var(--accent-dim)' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Maximum Additional Dilution</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>+18.6M (~5%)</span>
+            </div>
+          </div>
           <div style={{ fontSize: 13, color: 'var(--text3)' }}>
             Converts only dilute if stock price exceeds strike prices. Company may repurchase for cash.
           </div>
+        </div>
         </div>
       </div>
       </>
@@ -3411,12 +3456,10 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Capital Structure" items={[
-        { term: 'Share Class Structure', def: 'Class A (public, 1 vote), Class B (insiders, 1 vote), Class C (founder, 10 votes). Dual/triple class gives founders control.' },
-        { term: 'Voting vs Economic Rights', def: 'Abel Avellan\'s Class C shares give ~73% voting control despite ~22% economic ownership.' },
-        { term: 'Fully Diluted Shares', def: 'Basic shares + options + RSUs + converts. Use for per-share calculations to avoid overstating value.' },
-        { term: 'ATM (At-The-Market) Program', def: 'Allows gradual share issuance at market prices. $1.5B filed capacity. Dilutive but opportunistic.' },
-        { term: 'Convertible Bonds', def: '$1.625B face value in 3 tranches. Strike prices $80-$180+. Convert to equity above strike or repay in cash.' },
-        { term: 'Weighted Average Shares', def: 'For EPS calculation, weight shares by time outstanding during period.' },
+        { term: 'Dual/Multi-Class Shares', def: 'Multiple share classes with different voting rights. Class C (10x votes) allows founder to maintain control despite minority economic ownership. Common in tech/growth companies.' },
+        { term: 'Fully Diluted Shares', def: 'Total shares if all options, RSUs, warrants, and convertible securities are exercised. Always higher than basic shares outstanding. Use FD for conservative valuation.' },
+        { term: 'ATM (At-The-Market) Programs', def: 'Shelf offerings allowing companies to sell shares directly into the open market at prevailing prices. Less dilutive than block offerings but can create selling pressure.' },
+        { term: 'SBC (Stock-Based Compensation)', def: 'Non-cash expense for employee equity compensation (options, RSUs). Reduces reported earnings but doesn\'t affect cash flow. Creates future dilution when vested.' },
       ]} />
     </div>
   );
@@ -3593,8 +3636,8 @@ const ParameterCard = ({
   };
 
   return (
-    <div className="card">
-      <div className="card-title">{title}</div>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>
       <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
         {explanation}
       </p>
@@ -3825,62 +3868,58 @@ const ModelTab = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#model-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Model<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>DCF Valuation<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Model<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Configure assumptions and scenario presets. All changes flow directly to DCF projections and terminal value calculation.</p>
+      </div>
 
       {/* ASSUMPTIONS SECTION */}
       <>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario</div>
-          <div className="highlight">
-            <h3 style={{ display: 'flex', alignItems: 'center' }}>{scenario.icon} {scenario.name} Scenario</h3>
-            <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-              Configure model assumptions. Changes flow to projections and DCF valuation.
-            </p>
-          </div>
-
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-presets</div>
-          {/* Scenario Presets - 6 scenarios from Worst to Moon */}
-          <div className="card">
-            <div className="card-title">Scenario Presets</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
-              {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
-                const preset = SCENARIO_PRESETS[s];
-                const isActive = selectedScenario === s;
-                return (
-                  <div
-                    key={s}
-                    onClick={() => applyScenario(s)}
-                    style={{
-                      padding: 12,
-                      borderRadius: 10,
-                      border: isActive ? `2px solid ${preset.color}` : '1px solid var(--border)',
-                      background: isActive ? `${preset.color}15` : 'var(--surface2)',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <div style={{ fontSize: 20 }}>{preset.icon}</div>
-                    <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)' }}>
-                      {preset.label}
-                    </div>
-                    <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
-                      {preset.penetrationRate}% · ${preset.blendedARPU}
-                    </div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#scenario-presets</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+            {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
+              const preset = SCENARIO_PRESETS[s];
+              const isActive = selectedScenario === s;
+              return (
+                <div
+                  key={s}
+                  onClick={() => applyScenario(s)}
+                  style={{
+                    padding: '16px 8px',
+                    background: isActive ? `${preset.color}15` : 'var(--surface)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                    textAlign: 'center',
+                    borderBottom: isActive ? `2px solid ${preset.color}` : '2px solid transparent',
+                  }}
+                >
+                  <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{preset.label}</div>
+                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: isActive ? preset.color : 'var(--text)', margin: '4px 0 2px' }}>
+                    {preset.penetrationRate}%
                   </div>
-                );
-              })}
-            </div>
-            {/* Always show to prevent layout shift */}
-            <div style={{ padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
-              ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
-            </div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>
+                    ${preset.blendedARPU}/mo
+                  </div>
+                </div>
+              );
+            })}
           </div>
+          {selectedScenario === 'custom' && (
+            <div style={{ padding: '8px 12px', background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 8, fontSize: 11, color: 'var(--violet)', marginTop: 8 }}>
+              Custom scenario — parameters modified from preset
+            </div>
+          )}
 
           {/* SUBSCRIBER & REVENUE PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-model</div>
-          <h3 style={{ color: 'var(--cyan)' }}>Subscriber & Revenue Model</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#revenue-model</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Subscriber & Revenue Model</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          </div>
 
-          <div className="g2">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <ParameterCard
               title="Penetration Rate (%)"
               explanation="Percentage of partner MNO subscribers who adopt ASTS service. Management targets 3-5%. Analyst estimates range 1-10%. Higher penetration = more subscribers = more revenue. Depends on pricing, network quality, and Starlink competition."
@@ -3899,7 +3938,7 @@ const ModelTab = ({
             />
           </div>
 
-          <div className="g2">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
             <ParameterCard
               title="Revenue Share (%)"
               explanation="ASTS's share of gross subscriber revenue. Standard MNO deals: 50/50. Some partners may negotiate 60/40 in their favor. Higher share = more revenue flows to ASTS. Could vary by region."
@@ -3920,10 +3959,13 @@ const ModelTab = ({
           </div>
 
           {/* OPERATING PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#operating-model</div>
-          <h3 style={{ color: 'var(--mint)' }}>Operating Assumptions</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#operating-model</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Operating Assumptions</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          </div>
 
-          <div className="g2">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <ParameterCard
               title="Terminal EBITDA Margin (%)"
               explanation="Operating margin at scale. Satellite businesses typically achieve 50-70% EBITDA margins. ASTS management targets 85%+. Lower margins possible if pricing pressure or higher opex. 25-30% if competition is brutal."
@@ -3943,7 +3985,7 @@ const ModelTab = ({
             />
           </div>
 
-          <div className="g2">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
             <ParameterCard
               title="Annual Dilution (%)"
               explanation="Share count increase from stock comp, warrants, and equity raises. ASTS is capital-intensive. 2-4% = well-funded. 10-15% = ongoing raises needed. High dilution erodes per-share value."
@@ -3965,10 +4007,13 @@ const ModelTab = ({
           </div>
 
           {/* VALUATION PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-params</div>
-          <h3 style={{ color: 'var(--violet)' }}>Valuation Parameters</h3>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#valuation-params</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Parameters</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          </div>
 
-          <div className="g2">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <ParameterCard
               title="Discount Rate / WACC (%)"
               explanation="Required return for discounting future cash flows. 10% = blue chip. 15-20% = high-growth tech. 25%+ = speculative pre-revenue. Lower rates justified as execution de-risks."
@@ -3989,13 +4034,14 @@ const ModelTab = ({
           </div>
 
           {/* RISK PARAMETERS */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#risk-factors</div>
-          <h3 style={{ color: 'var(--coral)' }}>Risk Probability Factors</h3>
-          <p style={{ fontSize: 12, color: 'var(--text3)' }}>
-            Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Tech) × (1-Comp) = {(riskFactor * 100).toFixed(0)}% success probability.
-          </p>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#risk-factors</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Risk Probability Factors</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)' }}>{(riskFactor * 100).toFixed(0)}% success</span>
+          </div>
 
-          <div className="g3">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
             <ParameterCard
               title="Regulatory Risk (%)"
               explanation="Probability of adverse regulatory action. ASTS has FCC approval but needs country-by-country clearance. 2-5% = most approvals done. 20-30% = major regulatory uncertainty remains."
@@ -4025,96 +4071,64 @@ const ModelTab = ({
             />
           </div>
 
-          {/* DCF VALUATION OUTPUT - Unified section with consistent styling */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-output</div>
-          <div className="card" style={{ border: '2px solid var(--accent)', background: 'var(--accent-dim)' }}>
-            <div className="card-title" style={{ color: 'var(--accent)', fontSize: 16 }}>DCF Valuation Output (2030 Terminal Year)</div>
-            <table className="tbl" style={{ width: '100%' }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: 'left' }}>Metric</th>
-                  <th className="r">Value</th>
-                  <th style={{ textAlign: 'left' }}>Detail</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style={{ background: 'var(--accent-dim)' }}>
-                  <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Target Stock Price</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: 'var(--accent)' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</td>
-                  <td style={{ color: 'var(--text3)' }}>vs ${currentStockPrice} current</td>
-                </tr>
-                <tr style={{ background: 'var(--accent-dim)' }}>
-                  <td style={{ fontWeight: 600, color: 'var(--accent)' }}>Implied Upside</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</td>
-                  <td style={{ color: 'var(--text3)' }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>Present Value EV</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${riskAdjustedEV.toFixed(1)}B</td>
-                  <td style={{ color: 'var(--text3)' }}>{(riskFactor * 100).toFixed(0)}% prob × ${presentValueEV.toFixed(1)}B</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>Equity Value</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${equityValue.toFixed(1)}B</td>
-                  <td style={{ color: 'var(--text3)' }}>{netDebtB < 0 ? `+ $${Math.abs(netDebtB).toFixed(2)}B net cash` : `- $${netDebtB.toFixed(2)}B net debt`}</td>
-                </tr>
-                <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 Subscribers</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalSubs.toFixed(0)}M</td>
-                  <td style={{ color: 'var(--text3)' }}>{penetrationRate}% × {(partnerReach/1000).toFixed(1)}B × {100 - competitionDiscount}%</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 Revenue</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalRev.toFixed(2)}B</td>
-                  <td style={{ color: 'var(--text3)' }}>{revenueShare}% of ${terminalGrossRev.toFixed(2)}B</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 EBITDA</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalEBITDA.toFixed(2)}B</td>
-                  <td style={{ color: 'var(--text3)' }}>{terminalMargin}% margin</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 FCF</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>${terminalFCF.toFixed(2)}B</td>
-                  <td style={{ color: 'var(--text3)' }}>{terminalMargin - terminalCapex}% FCF margin</td>
-                </tr>
-                <tr><td colSpan={3} style={{ height: 8, background: 'transparent' }}></td></tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 EV/Revenue</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalEVperRev.toFixed(1)}x</td>
-                  <td style={{ color: 'var(--text3)' }}>${terminalEV.toFixed(1)}B EV</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 EV/EBITDA</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalEVperEBITDA.toFixed(1)}x</td>
-                  <td style={{ color: 'var(--text3)' }}>Terminal multiple</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>2030 FCF Yield</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{terminalFCFyield.toFixed(1)}%</td>
-                  <td style={{ color: 'var(--text3)' }}>FCF / Terminal EV</td>
-                </tr>
-                <tr>
-                  <td style={{ color: 'var(--text2)' }}>Diluted Shares</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500 }}>{finalDilutedShares.toFixed(0)}M</td>
-                  <td style={{ color: 'var(--text3)' }}>{dilutionRate}%/yr × {discountYears}yrs</td>
-                </tr>
-              </tbody>
-            </table>
+          {/* DCF VALUATION OUTPUT */}
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dcf-output</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DCF Output — 2030 Terminal Year</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
           </div>
 
-          {/* CALCULATION METHODOLOGY - Full explanation */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#methodology</div>
-          <div className="card">
-            <div className="card-title">Calculation Methodology</div>
-            <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
-              <p style={{ }}>
-                This DCF model calculates ASTS intrinsic value using a <strong>terminal value approach</strong> with
-                Gordon Growth Model, discounted to present value and adjusted for execution risk.
+          {/* Primary Output — Hero KPIs */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'color-mix(in srgb, var(--accent) 30%, var(--border))', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))', padding: '24px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 600 }}>Target Price</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: 'var(--accent)', margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>vs ${currentStockPrice} current</div>
+            </div>
+            <div style={{ background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))', padding: '24px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 600 }}>Implied Upside</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--coral)', margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
+            </div>
+          </div>
+
+          {/* Valuation Metrics Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 12 }}>
+            {[
+              { label: 'PV Enterprise Value', value: `$${riskAdjustedEV.toFixed(1)}B`, sub: `${(riskFactor * 100).toFixed(0)}% prob`, color: 'var(--text)' },
+              { label: 'Equity Value', value: `$${equityValue.toFixed(1)}B`, sub: netDebtB < 0 ? `+$${Math.abs(netDebtB).toFixed(2)}B cash` : `-$${netDebtB.toFixed(2)}B debt`, color: 'var(--text)' },
+              { label: '2030 Subscribers', value: `${terminalSubs.toFixed(0)}M`, sub: `${penetrationRate}% penetration`, color: 'var(--text)' },
+              { label: '2030 Revenue', value: `$${terminalRev.toFixed(2)}B`, sub: `${revenueShare}% share`, color: 'var(--accent)' },
+              { label: '2030 EBITDA', value: `$${terminalEBITDA.toFixed(2)}B`, sub: `${terminalMargin}% margin`, color: 'var(--text)' },
+              { label: '2030 FCF', value: `$${terminalFCF.toFixed(2)}B`, sub: `${terminalMargin - terminalCapex}% FCF margin`, color: 'var(--text)' },
+              { label: 'EV/Revenue', value: `${terminalEVperRev.toFixed(1)}x`, sub: '2030 terminal', color: 'var(--text)' },
+              { label: 'EV/EBITDA', value: `${terminalEVperEBITDA.toFixed(1)}x`, sub: '2030 terminal', color: 'var(--text)' },
+              { label: 'FCF Yield', value: `${terminalFCFyield.toFixed(1)}%`, sub: 'FCF / EV', color: 'var(--text)' },
+              { label: 'Diluted Shares', value: `${finalDilutedShares.toFixed(0)}M`, sub: `${dilutionRate}%/yr × ${discountYears}yr`, color: 'var(--text)' },
+              { label: 'Terminal EV', value: `$${terminalEV.toFixed(1)}B`, sub: 'Before discounting', color: 'var(--text)' },
+              { label: 'Discount Factor', value: `${discountFactor.toFixed(3)}x`, sub: `${discountRate}% × ${discountYears}yr`, color: 'var(--text)' },
+            ].map(kpi => (
+              <div key={kpi.label} style={{ background: 'var(--surface)', padding: '16px', textAlign: 'center' }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 18, fontWeight: 700, color: kpi.color, margin: '6px 0 4px' }}>{kpi.value}</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* CALCULATION METHODOLOGY */}
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#methodology</div>
+          <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Methodology</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          </div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px', overflow: 'hidden' }}>
+            <div style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.6 }}>
+              <p>
+                Terminal value approach with Gordon Growth Model, discounted to present value and adjusted for execution risk.
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 16 }}>
                 <div>
                   <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 1-5: Terminal Year Metrics (2030)</div>
                   <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
@@ -4166,8 +4180,8 @@ const ModelTab = ({
                 </div>
               </div>
 
-              <div style={{ padding: 10, background: 'var(--accent-dim)', borderRadius: 6, fontSize: 11 }}>
-                <strong>Key Assumptions:</strong> Terminal year is {2025 + discountYears} ({discountYears} years out).
+              <div style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--accent) 8%, transparent)', borderRadius: 8, fontSize: 11, color: 'var(--text3)', lineHeight: 1.6, marginTop: 12 }}>
+                <strong style={{ color: 'var(--text2)' }}>Key Assumptions:</strong> Terminal year is {2025 + discountYears} ({discountYears} years out).
                 FCF margin = EBITDA margin - CapEx (simplified, ignores taxes/WC).
                 Risk factors are multiplicative (independent events).
                 Gordon Growth assumes perpetual {terminalGrowth}% growth after terminal year.
@@ -4442,39 +4456,32 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div>
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-header</div>
-        <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Monte Carlo<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-      </div>
-
-      {/* Highlight Box */}
-      <div>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-description</div>
-        <div className="highlight" style={{ }}>
-          <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue-Based Valuation Simulation</h3>
-          <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-            Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
-            and log-normal revenue distribution. Terminal value discounted to present.
-          </p>
-        </div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Revenue-Based Valuation Simulation<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Monte Carlo<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>
+          Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
+          and log-normal revenue distribution. Terminal value discounted to present.
+        </p>
       </div>
 
       {/* Scenario Presets */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-scenarios</div>
-        <div className="card" style={{ }}>
-          <div className="card-title">Select Scenario</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', borderBottom: '1px solid var(--border)' }}>Select Scenario</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
             {Object.entries(presets).filter(([key]) => key !== 'mgmt').map(([key, p]) => (
               <button
                 key={key}
                 onClick={() => loadPreset(key)}
                 style={{
                   padding: '12px 16px',
-                  borderRadius: 8,
                   textAlign: 'left',
-                  border: `2px solid ${activePreset === key ? 'var(--accent)' : 'transparent'}`,
-                  background: activePreset === key ? 'var(--accent-dim)' : 'var(--surface2)',
+                  border: 'none',
+                  borderBottom: activePreset === key ? '2px solid var(--accent)' : '2px solid transparent',
+                  background: activePreset === key ? 'var(--accent-dim)' : 'var(--surface)',
                   color: activePreset === key ? 'var(--accent)' : 'var(--text)',
                   cursor: 'pointer',
                   transition: 'all 0.15s'
@@ -4491,9 +4498,10 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Horizon & Simulation Controls */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-controls</div>
-        <div className="g2" style={{ }}>
-          <div className="card" style={{ }}>
-            <div className="card-title">Time Horizon</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>TIME HORIZON</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <div style={{ display: 'flex', gap: 8 }}>
               {[3, 5, 7].map(yr => (
                 <button
@@ -4517,9 +4525,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 </button>
               ))}
             </div>
+            </div>
           </div>
-          <div className="card" style={{ }}>
-            <div className="card-title">Simulations</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>SIMULATIONS</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <div style={{ display: 'flex', gap: 8 }}>
               {[1000, 2000, 5000].map(simCount => (
                 <button
@@ -4543,6 +4553,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 </button>
               ))}
             </div>
+            </div>
           </div>
         </div>
       </div>
@@ -4550,10 +4561,14 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Parameters - Model Tab Style */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-parameters</div>
-        <h3 style={{ color: 'var(--accent)' }}>Revenue Model</h3>
-        <div className="g2" style={{ }}>
-          <div className="card" style={{ }}>
-            <div className="card-title">Base Revenue ($B)</div>
+        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Revenue Model</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>BASE REVENUE ($B)</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Expected terminal year revenue. Source: DCF model or analyst estimates.
             </p>
@@ -4580,9 +4595,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 );
               })}
             </div>
+            </div>
           </div>
-          <div className="card" style={{ }}>
-            <div className="card-title">Revenue Volatility (%)</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>REVENUE VOLATILITY (%)</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Log-normal std dev. 35% = outcomes range 0.7x-1.4x base revenue.
             </p>
@@ -4609,13 +4626,18 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 );
               })}
             </div>
+            </div>
           </div>
         </div>
 
-        <h3 style={{ color: 'var(--mint)' }}>Operating Model</h3>
-        <div className="g2" style={{ }}>
-          <div className="card" style={{ }}>
-            <div className="card-title">EBITDA Margin (%)</div>
+        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Operating Model</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>EBITDA MARGIN (%)</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Terminal margin at scale. Satellite/telecom: 40-60%. Operating leverage applies.
             </p>
@@ -4642,9 +4664,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 );
               })}
             </div>
+            </div>
           </div>
-          <div className="card" style={{ }}>
-            <div className="card-title">EV/EBITDA Multiple</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>EV/EBITDA MULTIPLE</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Terminal valuation multiple. Growth: 10-15x, Mature telcos: 6-8x.
             </p>
@@ -4671,13 +4695,18 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 );
               })}
             </div>
+            </div>
           </div>
         </div>
 
-        <h3 style={{ color: 'var(--coral)' }}>Risk Factors</h3>
-        <div className="g3" style={{ }}>
-          <div className="card" style={{ }}>
-            <div className="card-title">Launch Risk (%)</div>
+        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Risk Factors</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>LAUNCH RISK (%)</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Prob. of constellation failure. If triggered: -40% revenue.
             </p>
@@ -4704,9 +4733,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 );
               })}
             </div>
+            </div>
           </div>
-          <div className="card" style={{ }}>
-            <div className="card-title">Regulatory Risk (%)</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>REGULATORY RISK (%)</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Prob. of FCC/spectrum issues. If triggered: -30% revenue.
             </p>
@@ -4733,9 +4764,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 );
               })}
             </div>
+            </div>
           </div>
-          <div className="card" style={{ }}>
-            <div className="card-title">Discount Rate (%)</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DISCOUNT RATE (%)</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Required return / WACC. Pre-revenue space: 12-18%.
             </p>
@@ -4762,6 +4795,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 );
               })}
             </div>
+            </div>
           </div>
         </div>
 
@@ -4775,88 +4809,71 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Percentile Distribution */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-percentiles</div>
-        <table className="tbl" style={{ width: '100%' }}>
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'left' }}>Percentile</th>
-              <th className="r">Price Target</th>
-              <th className="r">vs Current</th>
-              <th className="r">Implied Return</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              { label: 'P5 (Bear Case)', value: sim.p5 },
-              { label: 'P25', value: sim.p25 },
-              { label: 'P50 (Median)', value: sim.p50, highlight: true },
-              { label: 'P75', value: sim.p75 },
-              { label: 'P95 (Bull Case)', value: sim.p95 },
-            ].map((row, i) => {
-              const pctChange = ((row.value / currentStockPrice - 1) * 100);
-              return (
-                <tr key={i} style={row.highlight ? { background: 'var(--accent-dim)' } : {}}>
-                  <td style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--text2)' }}>${(row.value - currentStockPrice).toFixed(2)}</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '14px 28px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+            <span style={{ textAlign: 'left' }}>Percentile</span>
+            <span style={{ textAlign: 'right' }}>Price Target</span>
+            <span style={{ textAlign: 'right' }}>vs Current</span>
+            <span style={{ textAlign: 'right' }}>Implied Return</span>
+          </div>
+          {[
+            { label: 'P5 (Bear Case)', value: sim.p5 },
+            { label: 'P25', value: sim.p25 },
+            { label: 'P50 (Median)', value: sim.p50, highlight: true },
+            { label: 'P75', value: sim.p75 },
+            { label: 'P95 (Bull Case)', value: sim.p95 },
+          ].map((row, i) => {
+            const pctChange = ((row.value / currentStockPrice - 1) * 100);
+            return (
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: row.highlight ? 'var(--accent-dim)' : 'transparent', transition: 'background 0.15s', cursor: 'default' }}
+                onMouseEnter={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
+                onMouseLeave={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
+              >
+                <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
+                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
+                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>${(row.value - currentStockPrice).toFixed(2)}</span>
+                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Risk Metrics */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
-        <table className="tbl" style={{ width: '100%' }}>
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'left' }}>Risk Metric</th>
-              <th className="r">Value</th>
-              <th style={{ textAlign: 'left' }}>Interpretation</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Win Probability</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.winProbability > 50 ? 'var(--mint)' : 'var(--red)' }}>{sim.winProbability.toFixed(1)}%</td>
-              <td style={{ color: 'var(--text3)' }}>Prob. of exceeding current price</td>
-            </tr>
-            <tr>
-              <td>Expected Value</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${sim.mean.toFixed(2)}</td>
-              <td style={{ color: 'var(--text3)' }}>Mean simulated fair value</td>
-            </tr>
-            <tr>
-              <td>Sharpe Ratio</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sharpe > 1 ? 'var(--mint)' : sim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sharpe.toFixed(2)}</td>
-              <td style={{ color: 'var(--text3)' }}>{sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return'}</td>
-            </tr>
-            <tr>
-              <td>Sortino Ratio</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sortino > 1 ? 'var(--mint)' : sim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sortino.toFixed(2)}</td>
-              <td style={{ color: 'var(--text3)' }}>Downside-adjusted return</td>
-            </tr>
-            <tr>
-              <td>VaR (5%)</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</td>
-              <td style={{ color: 'var(--text3)' }}>95% confidence floor</td>
-            </tr>
-            <tr>
-              <td>CVaR (5%)</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.cvar5.toFixed(1)}%</td>
-              <td style={{ color: 'var(--text3)' }}>Expected tail loss</td>
-            </tr>
-          </tbody>
-        </table>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '14px 28px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+            <span style={{ textAlign: 'left' }}>Risk Metric</span>
+            <span style={{ textAlign: 'right' }}>Value</span>
+            <span style={{ textAlign: 'left' }}>Interpretation</span>
+          </div>
+          {[
+            { label: 'Win Probability', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.winProbability > 50 ? 'var(--mint)' : 'var(--red)' }}>{sim.winProbability.toFixed(1)}%</span>, interp: 'Prob. of exceeding current price' },
+            { label: 'Expected Value', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${sim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
+            { label: 'Sharpe Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sharpe > 1 ? 'var(--mint)' : sim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sharpe.toFixed(2)}</span>, interp: sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
+            { label: 'Sortino Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sortino > 1 ? 'var(--mint)' : sim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
+            { label: 'VaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
+            { label: 'CVaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
+          ].map((row, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', transition: 'background 0.15s', cursor: 'default' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
+            >
+              <span style={{ color: 'var(--text2)' }}>{row.label}</span>
+              <span style={{ textAlign: 'right' }}>{row.value}</span>
+              <span style={{ color: 'var(--text3)' }}>{row.interp}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Distribution Chart */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-distribution</div>
-        <div className="card" style={{ }}>
-          <div className="card-title">Fair Value Distribution</div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>FAIR VALUE DISTRIBUTION</span></div>
+          <div style={{ padding: '24px 28px' }}>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={sim.histogram}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -4874,6 +4891,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)' }}>
             <span>White line = current price (${currentStockPrice})</span>
             <span>Simulations: {sim.n.toLocaleString()}</span>
+          </div>
           </div>
         </div>
       </div>
@@ -4940,8 +4958,8 @@ const SECFilingTracker = () => {
   };
 
   return (
-    <div className="card"><div className="card-title">📁 SEC Filing Tracker</div>
-      <div className="g2">
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}><div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>SEC Filing Tracker</span></div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, padding: '24px 28px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing History</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -4970,7 +4988,7 @@ const SECFilingTracker = () => {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Latest Filings by Type</div>
-          <div className="g2" style={{ fontSize: 13 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 13 }}>
             {Object.entries(filingData.filings).map(([type, info]) => {
               const style = colorStyles[info.color] || colorStyles.cyan;
               return (
@@ -5689,68 +5707,71 @@ const QuarterlyMetricsPanel = () => {
     <>
       {/* #quarterly-metrics */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#quarterly-metrics</div>
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></span>
+      </div>
+      <div style={{ padding: '24px 28px' }}>
       {/* Dynamic Summary Badges */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-        <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
+        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid var(--cyan)', fontSize: 11, fontWeight: 500, background: 'rgba(34,211,238,0.15)', color: 'var(--cyan)' }}>
           {summaryStats.quarterCount} quarters of data ({summaryStats.firstQuarter} - {summaryStats.lastQuarter})
         </span>
-        <span className="pill" style={{ background: 'rgba(34,197,94,0.15)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
+        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid var(--mint)', fontSize: 11, fontWeight: 500, background: 'rgba(34,197,94,0.15)', color: 'var(--mint)' }}>
           Cash: {summaryStats.cashRange.first !== null ? `$${summaryStats.cashRange.first.toFixed(0)}M` : 'N/A'} → {summaryStats.cashRange.last !== null ? `$${summaryStats.cashRange.last.toFixed(0)}M` : 'N/A'}
         </span>
-        <span className="pill" style={{ background: 'rgba(251,146,60,0.15)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>
+        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid var(--gold)', fontSize: 11, fontWeight: 500, background: 'rgba(251,146,60,0.15)', color: 'var(--gold)' }}>
           Shares: {summaryStats.sharesRange.first !== null ? `${summaryStats.sharesRange.first.toFixed(0)}M` : 'N/A'} → {summaryStats.sharesRange.last !== null ? `${summaryStats.sharesRange.last.toFixed(0)}M` : 'N/A'}
         </span>
-        <span className="pill" style={{ background: 'rgba(168,85,247,0.15)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
+        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid var(--violet)', fontSize: 11, fontWeight: 500, background: 'rgba(168,85,247,0.15)', color: 'var(--violet)' }}>
           Satellites: {summaryStats.satellitesRange.first ?? 'N/A'} → {summaryStats.satellitesRange.last ?? 'N/A'}
         </span>
       </div>
-      
+
       {/* All Quarters Table */}
       <div style={{ overflowX: 'auto' }}>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
-              {displayQuarters.map((q, idx) => (
-                <th key={q} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === 0 ? { background: 'var(--accent-dim)' } : {}) }}>
-                  {q.replace('Q', '').replace(' ', "'")}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {metrics.map(metric => (
-              <tr key={metric.label}>
-                <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
-                  {metric.label}
-                </td>
-                {displayQuarters.map(q => {
-                  const data = quarterlyData[q];
-                  const val = getValue(data, metric);
-                  const tooltip = metric.tooltipKey && data[metric.tooltipKey] !== undefined
-                    ? `Cash only: $${data[metric.tooltipKey].toFixed(1)}M`
-                    : null;
-                  const cellColor = metric.color ? metric.color(val) : undefined;
-                  const isLatestQuarter = q === displayQuarters[0];
-                  return (
-                    <td
-                      key={q}
-                      className="r"
-                      title={tooltip}
-                      style={{
-                        ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
-                        ...(cellColor ? { color: cellColor } : {})
-                      }}
-                    >
-                      {metric.format(val)}
-                    </td>
-                  );
-                })}
-              </tr>
+        <div style={{ minWidth: `${100 + displayQuarters.length * 70}px` }}>
+          {/* Header row */}
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(100px, 1.5fr) repeat(${displayQuarters.length}, minmax(70px, 1fr))`, background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ padding: '14px 16px', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600 }}>Metric</div>
+            {displayQuarters.map((q, idx) => (
+              <div key={q} style={{ padding: '14px 16px', textAlign: 'right', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, whiteSpace: 'nowrap', background: idx === 0 ? 'var(--accent-dim)' : 'var(--surface2)' }}>
+                {q.replace('Q', '').replace(' ', "'")}
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+          {/* Data rows */}
+          {metrics.map(metric => (
+            <div key={metric.label} style={{ display: 'grid', gridTemplateColumns: `minmax(100px, 1.5fr) repeat(${displayQuarters.length}, minmax(70px, 1fr))`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <div style={{ fontWeight: 500, padding: '14px 16px' }}>
+                {metric.label}
+              </div>
+              {displayQuarters.map(q => {
+                const data = quarterlyData[q];
+                const val = getValue(data, metric);
+                const tooltip = metric.tooltipKey && data[metric.tooltipKey] !== undefined
+                  ? `Cash only: $${data[metric.tooltipKey].toFixed(1)}M`
+                  : null;
+                const cellColor = metric.color ? metric.color(val) : undefined;
+                const isLatestQuarter = q === displayQuarters[0];
+                return (
+                  <div
+                    key={q}
+                    title={tooltip ?? undefined}
+                    style={{
+                      padding: '14px 16px',
+                      textAlign: 'right',
+                      ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
+                      ...(cellColor ? { color: cellColor } : {})
+                    }}
+                  >
+                    {metric.format(val)}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
       
       {/* Footnote */}
@@ -5759,85 +5780,109 @@ const QuarterlyMetricsPanel = () => {
         <p style={{ }}>* Total Debt shows Long-Term Debt only (balance sheet line item). Other sources may report "Total Debt" which includes current portion, accrued interest, and finance leases—explaining differences of $3-45M. Notable: Q3 2024 shows $156M here vs $201M elsewhere because the $48.5M Atlas Credit Facility was classified as current (due within 12 months) and repaid in Q4 2024.</p>
         <p>* Employees estimates from PRs/filings. Data from SEC filings (10-K, 10-Q).</p>
       </div>
-      
+      </div>
+      </div>
+
       {/* Key Notes from Filing - Matching BMNR style */}
       <div style={{ }}>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#latest-quarter-summary</div>
-        <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary (Q3 2025)<UpdateIndicators sources="SEC" /></div>
-        <div className="g2">
-          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Latest Quarter Summary (Q3 2025)<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 12 }}>
             <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing Source</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].filing}</div>
           </div>
-          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 12 }}>
             <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Satellites in Orbit</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].satellites} (BW3 + BB1-5)</div>
           </div>
-          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 12 }}>
             <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>MNO Partnerships</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].definitiveAgreements} definitive, {quarterlyData['Q3 2025'].mous}+ MOUs/LOIs</div>
           </div>
-          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 12 }}>
             <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Contracted Revenue</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>${quarterlyData['Q3 2025'].contractedRevenue}M+ committed</div>
           </div>
-          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 12 }}>
             <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Spectrum Position</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>
               {quarterlyData['Q3 2025'].spectrumOwned} MHz owned | {quarterlyData['Q3 2025'].spectrumUS}+ MHz US
             </div>
           </div>
-          <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 12 }}>
             <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Headcount</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].employees ? quarterlyData['Q3 2025'].employees.toLocaleString() : '—'} employees</div>
           </div>
         </div>
+        </div>
       </div>
       </div>
-      
+
       <div style={{ fontSize: 11, color: 'var(--text3)' }}>
         Data sourced from SEC filings (10-K, 10-K/A, 10-Q). Latest filing: Q3 2025 10-Q (Nov 10, 2025).
-      </div>
       </div>
 
       {/* Historical Trend Charts */}
       {/* ROW 1: Cash Position & OpEx */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-1</div>
-      <div className="g2">
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
-          <ResponsiveContainer width="100%" height={150}>
-            <AreaChart data={Object.values(quarterlyData).filter(q => q.cashAndEquiv !== null).reverse()}>
-              <defs>
-                <linearGradient id="cashGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="label" stroke="var(--text3)" fontSize={10} />
-              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${v.toFixed(0)}M`, 'Cash']} />
-              <Area type="monotone" dataKey="cashAndEquiv" stroke="var(--mint)" fill="url(#cashGradient)" />
-            </AreaChart>
-          </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Cash & Equivalents</span></div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--cyan)', display: 'flex', alignItems: 'center', gap: 8 }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></span>
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text3)' }}>Major raises: $462M SPAC (Apr'21), $210M equity (Jan'24), $500M ATM (Aug'25). Includes restricted cash.</div>
+          {(() => {
+            const data = Object.values(quarterlyData).filter(q => q.cashAndEquiv !== null).reverse().map(q => ({
+              label: q.label,
+              value: q.cashAndEquiv,
+              display: `$${q.cashAndEquiv}M`
+            }));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            return (
+              <>
+                <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+                  {data.map((d, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
+                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ padding: '0 28px 24px', fontSize: 11, color: 'var(--text3)' }}>Major raises: $462M SPAC (Apr'21), $210M equity (Jan'24), $500M ATM (Aug'25). Includes restricted cash.</div>
+              </>
+            );
+          })()}
         </div>
 
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></div>
-          <ResponsiveContainer width="100%" height={150}>
-            <LineChart data={Object.values(quarterlyData).filter(q => q.opEx !== null).reverse()}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="label" stroke="var(--text3)" fontSize={10} />
-              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={v => [`$${v.toFixed(0)}M`, 'OpEx']} />
-              <Line type="monotone" dataKey="opEx" stroke="var(--violet)" strokeWidth={2} dot={{ fill: 'var(--violet)' }} />
-            </LineChart>
-          </ResponsiveContainer>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--violet)', display: 'flex', alignItems: 'center', gap: 8 }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></span>
+          </div>
+          <div style={{ padding: '24px 28px' }}>
+          {(() => {
+            const data = Object.values(quarterlyData).filter(q => q.opEx !== null).reverse().map(q => ({
+              label: q.label,
+              value: q.opEx,
+              display: `$${q.opEx}M`
+            }));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            return (
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+                {data.map((d, i) => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
+                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
           {/* OpEx Breakdown with quarter selector */}
           {opExQuarters.length > 0 && (
             <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
@@ -5855,7 +5900,7 @@ const QuarterlyMetricsPanel = () => {
               </div>
               {quarterlyData[opExQuarter]?.opExEngineering && (
                 <>
-                  <div className="g2" style={{ fontSize: 11 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 11 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'var(--text3)' }}>Engineering:</span>
                       <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExEngineering}M</span>
@@ -5909,77 +5954,99 @@ const QuarterlyMetricsPanel = () => {
               )}
             </div>
           )}
+          </div>
         </div>
       </div>
-      
+
       {/* ROW 2: Share Count & Market Cap */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-2</div>
-      <div className="g2">
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></div>
-          <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0)}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="label" stroke="var(--text3)" fontSize={10} />
-              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `${v}M`} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v, name) => [`${v.toFixed(0)}M`, name === 'sharesOutstanding' ? 'Outstanding (Class A)' : name === 'impliedSharesOut' ? 'Implied (A+B+C)' : 'Fully Diluted']} />
-              <Bar dataKey="sharesOutstanding" fill="var(--coral)" name="sharesOutstanding" />
-              <Bar dataKey="impliedSharesOut" fill="var(--gold)" name="impliedSharesOut" />
-              <Bar dataKey="fullyDiluted" fill="var(--sand)" name="fullyDiluted" />
-            </BarChart>
-          </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--coral)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Outstanding (Class A)</span></div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--gold)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Implied (A+B+C)</span></div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sand)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Fully Diluted</span></div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></span>
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text3)' }}>Class B (founders) + Class C (strategic partners) convert to Class A over time. Dilution from ATM, converts, RSUs.</div>
+          {(() => {
+            const data = Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0).map(d => ({
+              label: d.label,
+              value: d.sharesOutstanding,
+              display: `${d.sharesOutstanding}M`
+            }));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            return (
+              <>
+                <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+                  {data.map((d, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
+                      <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ padding: '0 28px 24px', fontSize: 11, color: 'var(--text3)' }}>Class B (founders) + Class C (strategic partners) convert to Class A over time. Dilution from ATM, converts, RSUs.</div>
+              </>
+            );
+          })()}
         </div>
 
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--sky)' }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></div>
-          <ResponsiveContainer width="100%" height={150}>
-            <AreaChart data={Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0 && d.stockPrice > 0).map(d => ({ ...d, marketCap: d.sharesOutstanding * d.stockPrice, impliedMktCap: d.impliedSharesOut * d.stockPrice }))}>
-              <defs>
-                <linearGradient id="mcapGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="label" stroke="var(--text3)" fontSize={10} />
-              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${(v/1000).toFixed(1)}B`} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v, name) => [`$${(v/1000).toFixed(2)}B`, name === 'marketCap' ? 'Mkt Cap (Outstanding)' : 'Mkt Cap (Implied)']} />
-              <Area type="monotone" dataKey="impliedMktCap" stroke="#60a5fa" fill="none" strokeDasharray="5 5" />
-              <Area type="monotone" dataKey="marketCap" stroke="#3b82f6" fill="url(#mcapGradient)" />
-            </AreaChart>
-          </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap (Outstanding)</span></div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 24, height: 2, background: 'var(--sky)', opacity: 0.6 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap (Implied)</span></div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--sky)', display: 'flex', alignItems: 'center', gap: 8 }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></span>
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text3)' }}>Price × shares. Rally post Block 1 launch (Sep'24). Peak ~$78 (Oct'25). Implied includes Class B/C.</div>
+          {(() => {
+            const data = Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0 && d.stockPrice > 0).map(d => ({
+              label: d.label,
+              value: d.sharesOutstanding * d.stockPrice,
+              display: (d.sharesOutstanding * d.stockPrice) >= 1000 ? `$${((d.sharesOutstanding * d.stockPrice) / 1000).toFixed(1)}B` : `$${(d.sharesOutstanding * d.stockPrice).toFixed(0)}M`
+            }));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            return (
+              <>
+                <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+                  {data.map((d, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
+                      <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ padding: '0 28px 24px', fontSize: 11, color: 'var(--text3)' }}>Price × shares. Rally post Block 1 launch (Sep'24). Peak ~$78 (Oct'25). Implied includes Class B/C.</div>
+              </>
+            );
+          })()}
         </div>
       </div>
 
       {/* ROW 3: Company-Specific (Satellites) */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-3</div>
-      <div className="g2">
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Satellites Deployed<UpdateIndicators sources="PR" /></div>
-          <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={Object.values(quarterlyData).reverse()}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="label" stroke="var(--text3)" fontSize={10} />
-              <YAxis stroke="var(--text3)" fontSize={10} domain={[0, 10]} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} />
-              <Bar dataKey="satellites" fill="var(--cyan)" />
-            </BarChart>
-          </ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--cyan)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Satellites Deployed</span></div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--cyan)', display: 'flex', alignItems: 'center', gap: 8 }}>Satellites Deployed<UpdateIndicators sources="PR" /></span>
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text3)' }}>BW3 (test, Sep'22) → BB1-5 (Block 1, Sep'24) → BB6 (Block 2, Dec'25). Target: 168 sats for global coverage.</div>
+          {(() => {
+            const data = Object.values(quarterlyData).reverse().map(d => ({
+              label: d.label,
+              value: d.satellites,
+              display: `${d.satellites}`
+            }));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            return (
+              <>
+                <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+                  {data.map((d, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
+                      <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ padding: '0 28px 24px', fontSize: 11, color: 'var(--text3)' }}>BW3 (test, Sep'22) → BB1-5 (Block 1, Sep'24) → BB6 (Block 2, Dec'25). Target: 168 sats for global coverage.</div>
+              </>
+            );
+          })()}
         </div>
       </div>
     </>
@@ -9089,13 +9156,24 @@ const TimelineTab = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#timeline-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Timeline<UpdateIndicators sources="PR" /></h2>
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Corporate Events<UpdateIndicators sources="PR" /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Timeline<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>SEC filings, press releases, upcoming events, and key corporate milestones. Chronological record of all official communications and regulatory submissions.</p>
+      </div>
 
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>SEC Filings</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sec-filings</div>
-      <div className="card" style={{ }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
-        
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>SEC Filings<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+
         {/* Filter Buttons */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {secFilterTypes.map(type => (
@@ -9104,67 +9182,63 @@ const TimelineTab = () => {
               onClick={() => { setSecFilter(type); setShowAllFilings(false); }}
               style={{
                 padding: '4px 12px',
-                borderRadius: 6,
-                fontSize: 12,
+                borderRadius: 99,
+                fontSize: 11,
                 fontWeight: 500,
-                border: 'none',
+                border: '1px solid',
+                borderColor: secFilter === type ? 'var(--cyan)' : 'var(--border)',
                 cursor: 'pointer',
-                background: secFilter === type ? 'var(--cyan)' : 'var(--surface3)',
-                color: secFilter === type ? 'white' : 'var(--text2)',
-                transition: 'all 0.15s ease'
+                background: secFilter === type ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'transparent',
+                color: secFilter === type ? 'var(--cyan)' : 'var(--text3)',
+                transition: 'all 0.2s'
               }}
             >
               {type}
             </button>
           ))}
         </div>
-        
+
         {/* Filings Table */}
-        <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>Period</th>
-                <th className="r">Link</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayedFilings.map((filing, idx) => (
-                <tr key={idx}>
-                  <td style={{ whiteSpace: 'nowrap' }}>{filing.date}</td>
-                  <td>
-                    <span style={{
-                      background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)',
-                      color: secTypeColors[filing.type]?.text || 'var(--text2)',
-                      padding: '2px 8px',
-                      borderRadius: 4,
-                      fontSize: 11,
-                      fontWeight: 600
-                    }}>
-                      {filing.type}
-                    </span>
-                  </td>
-                  <td>{filing.description}</td>
-                  <td>{filing.period}</td>
-                  <td className="r">
-                    <a
-                      href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: 'var(--cyan)' }}
-                    >
-                      SEC →
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '120px 80px 1fr 100px 80px', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Date</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Type</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Description</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Period</span>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Link</span>
+          </div>
+          {displayedFilings.map((filing, idx) => (
+            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '120px 80px 1fr 100px 80px', padding: '12px 16px', borderBottom: idx < displayedFilings.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 13, color: 'var(--text2)', whiteSpace: 'nowrap' }}>{filing.date}</span>
+              <span style={{ fontSize: 13 }}>
+                <span style={{
+                  background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)',
+                  color: secTypeColors[filing.type]?.text || 'var(--text2)',
+                  padding: '2px 8px',
+                  borderRadius: 99,
+                  fontSize: 11,
+                  fontWeight: 600
+                }}>
+                  {filing.type}
+                </span>
+              </span>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{filing.description}</span>
+              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{filing.period}</span>
+              <span style={{ fontSize: 13, textAlign: 'right' }}>
+                <a
+                  href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'var(--cyan)' }}
+                >
+                  SEC →
+                </a>
+              </span>
+            </div>
+          ))}
         </div>
-        
+
         {/* Show More/Less Button */}
         {filteredFilings.length > 6 && (
           <button
@@ -9174,7 +9248,7 @@ const TimelineTab = () => {
               padding: '8px',
               background: 'var(--surface2)',
               border: '1px solid var(--border)',
-              borderRadius: 6,
+              borderRadius: 99,
               color: 'var(--text2)',
               fontSize: 12,
               cursor: 'pointer',
@@ -9184,7 +9258,7 @@ const TimelineTab = () => {
             {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
           </button>
         )}
-        
+
         {/* Footer with metadata and Last PR marker */}
         <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 12 }}>
@@ -9200,9 +9274,9 @@ const TimelineTab = () => {
               <span style={{ color: 'var(--text3)' }}>Exchange:</span>
               <span style={{ color: 'var(--text2)', marginLeft: 6 }}>{secMeta.exchange}</span>
             </div>
-            <a 
+            <a
               href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=&dateb=&owner=include&count=40`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
               style={{ color: 'var(--sky)', marginLeft: 'auto' }}
             >
@@ -9214,16 +9288,24 @@ const TimelineTab = () => {
             <span style={{ display: 'flex', alignItems: 'center' }}>Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}<UpdateIndicators sources="PR" /></span>
           </div>
         </div>
+        </div>
       </div>
 
       {/* Upcoming Events + Recent Press Releases */}
-      <div className="g2" style={{ }}>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Events & Press Releases</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#upcoming-events</div>
-          <div className="card">
-            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Upcoming Events<UpdateIndicators sources="PR" /></span>
+            </div>
+            <div style={{ padding: '24px 28px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>Q4 2025 Earnings</div>
                 <div style={{ fontSize: 12, color: 'var(--text3)' }}>10-K Annual Report</div>
@@ -9233,7 +9315,7 @@ const TimelineTab = () => {
                 <div style={{ fontSize: 11, color: 'var(--text3)' }}>Est.</div>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>BB7-BB11 Launches</div>
                 <div style={{ fontSize: 12, color: 'var(--text3)' }}>Block 2 constellation expansion</div>
@@ -9243,7 +9325,7 @@ const TimelineTab = () => {
                 <div style={{ fontSize: 11, color: 'var(--text3)' }}>45-60 sats by EOY</div>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>Commercial Service Launch</div>
                 <div style={{ fontSize: 12, color: 'var(--text3)' }}>Initial revenue generation</div>
@@ -9253,7 +9335,7 @@ const TimelineTab = () => {
                 <div style={{ fontSize: 11, color: 'var(--text3)' }}>Post-constellation</div>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>Convertible Notes Maturity</div>
                 <div style={{ fontSize: 12, color: 'var(--text3)' }}>$698M converts @ 4.25%</div>
@@ -9264,43 +9346,47 @@ const TimelineTab = () => {
               </div>
             </div>
           </div>
+            </div>
           </div>
         </div>
 
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#recent-press-releases</div>
-          <div className="card">
-            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Recent Press Releases<UpdateIndicators sources="PR" /></span>
+            </div>
+            <div style={{ padding: '24px 28px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 22, 2026</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Launch</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>BlueBird 7 Launch Timing — Late Feb on New Glenn</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 16, 2026</span>
                 <span style={{ fontSize: 11, color: 'var(--gold)' }}>Government</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>MDA SHIELD Prime Contract Award — Golden Dome Program</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Dec 24, 2025</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Launch</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>BlueBird 6 Successfully Deployed — First Block 2 Satellite in Orbit</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Nov 2025</span>
                 <span style={{ fontSize: 11, color: 'var(--gold)' }}>Earnings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Q3 2025 Results: $1.22B Cash, 6 Satellites Operational</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Oct 2025</span>
                 <span style={{ fontSize: 11, color: 'var(--cyan)' }}>Partnership</span>
@@ -9308,33 +9394,32 @@ const TimelineTab = () => {
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Verizon Definitive Agreement — $100M+ Commitment</div>
             </div>
           </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Event Timeline Section - CRCL Style */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Event Timeline ({filteredEntries.length} events)</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#event-timeline</div>
-      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span>Event Timeline</span>
-        <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredEntries.length} events)</span>
-        <UpdateIndicators sources="PR" />
-      </h3>
 
       {/* Topic Filters (AND logic multi-select) */}
-      <div className="highlight" style={{ padding: 16 }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Topic</span>
           {selectedTopics.length > 0 && (
-            <button 
+            <button
               onClick={() => setSelectedTopics([])}
-              className="pill"
-              style={{ fontSize: 11 }}
+              style={{ padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }}
             >
               Clear ({selectedTopics.length})
             </button>
           )}
         </div>
-        <div className="pills">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 0 }}>
           {Object.entries(topicTags).map(([topic, style]) => {
             const isSelected = selectedTopics.includes(topic);
             const count = timelineEvents.filter(p => detectTopics(p).includes(topic)).length;
@@ -9342,8 +9427,10 @@ const TimelineTab = () => {
               <button
                 key={topic}
                 onClick={() => toggleTopic(topic)}
-                className={`pill ${isSelected ? 'active' : ''}`}
-                style={isSelected ? { background: style.color, borderColor: style.color } : {}}
+                style={isSelected
+                  ? { padding: '4px 12px', fontSize: 11, fontWeight: 500, border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", background: style.color, borderColor: style.color, color: 'var(--accent)' }
+                  : { padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }
+                }
               >
                 {style.label} ({count})
               </button>
@@ -9358,18 +9445,23 @@ const TimelineTab = () => {
       </div>
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="pills" style={{ }}>
-          <button className={`pill ${filterCategory === 'ALL' ? 'active' : ''}`} onClick={() => setFilterCategory('ALL')}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 0 }}>
+          <button style={filterCategory === 'ALL'
+            ? { padding: '4px 12px', fontSize: 11, fontWeight: 500, border: '1px solid var(--accent)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)' }
+            : { padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }
+          } onClick={() => setFilterCategory('ALL')}>
             All ({timelineEvents.length})
           </button>
           {Object.entries(categoryColors).map(([cat, style]) => (
-            <button key={cat} className={`pill ${filterCategory === cat ? 'active' : ''}`} onClick={() => setFilterCategory(cat)}>
+            <button key={cat} style={filterCategory === cat
+              ? { padding: '4px 12px', fontSize: 11, fontWeight: 500, border: '1px solid var(--accent)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)' }
+              : { padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }
+            } onClick={() => setFilterCategory(cat)}>
               {style.label} ({timelineEvents.filter(p => p.category === cat).length})
             </button>
           ))}
         </div>
-        <button 
-          className="pill"
+        <button
           onClick={() => {
             if (expanded.size === filteredEntries.length) {
               setExpanded(new Set());
@@ -9377,7 +9469,7 @@ const TimelineTab = () => {
               setExpanded(new Set(filteredEntries.map((_, i) => i)));
             }
           }}
-          style={{ whiteSpace: 'nowrap' }}
+          style={{ padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
         >
           {expanded.size === filteredEntries.length ? '⊟ Collapse All' : '⊞ Expand All'}
         </button>
@@ -9392,37 +9484,119 @@ const TimelineTab = () => {
             else next.add(i);
             setExpanded(next);
           };
-          const catClass = entry.category.toLowerCase();
-          const verdictClass = entry.impact === 'Positive' ? 'positive' : entry.impact === 'Negative' ? 'negative' : 'neutral';
-          
+          const catColorMap: Record<string, { bg: string; color: string }> = {
+            guidance: { bg: 'rgba(168,85,247,0.15)', color: '#c084fc' },
+            data: { bg: 'rgba(59,130,246,0.15)', color: '#60a5fa' },
+            event: { bg: 'rgba(234,179,8,0.15)', color: '#facc15' },
+            launch: { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
+          };
+          const catKey = entry.category.toLowerCase();
+          const catStyle = catColorMap[catKey] || { bg: 'var(--surface3)', color: 'var(--text3)' };
+
+          const verdictStyleMap: Record<string, { bg: string; color: string }> = {
+            Positive: { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
+            Negative: { bg: 'rgba(239,68,68,0.15)', color: '#f87171' },
+            Neutral: { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8' },
+          };
+          const vStyle = verdictStyleMap[entry.impact] || verdictStyleMap.Neutral;
+
+          const metaValueColor = entry.impact === 'Positive' ? '#4ade80' : entry.impact === 'Negative' ? '#f87171' : 'var(--text)';
+
           return (
-            <div key={i} className={`timeline-item ${isExpanded ? 'expanded' : ''}`}>
-              <div className="timeline-header" onClick={toggleExpand}>
-                <div className="t-date">{entry.date}</div>
-                <div className={`t-cat ${catClass}`}>{entry.category}</div>
-                <div className="t-event">{entry.title}</div>
-                <div className={`t-verdict ${verdictClass}`}>
+            <div key={i} style={{
+              border: isExpanded ? '1px solid var(--accent)' : '1px solid var(--border)',
+              borderRadius: 12,
+              marginBottom: 0,
+              overflow: 'hidden',
+              transition: 'all 0.2s',
+              background: isExpanded ? 'var(--surface2)' : 'var(--surface)',
+            }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '100px 100px 1fr auto auto',
+                gap: 16,
+                padding: '18px 20px',
+                cursor: 'pointer',
+                alignItems: 'center',
+                transition: 'background 0.2s',
+              }} onClick={toggleExpand}>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: 'var(--accent)', fontWeight: 600 }}>{entry.date}</div>
+                <div style={{
+                  fontSize: 10,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.8px',
+                  padding: '5px 10px',
+                  borderRadius: 5,
+                  fontWeight: 600,
+                  background: catStyle.bg,
+                  color: catStyle.color,
+                  width: 'fit-content',
+                }}>{entry.category}</div>
+                <div style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500, lineHeight: 1.5 }}>{entry.title}</div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  background: vStyle.bg,
+                  color: vStyle.color,
+                }}>
                   {entry.impact === 'Positive' && '↑'}
                   {entry.impact === 'Negative' && '↓'}
                   {entry.impact === 'Neutral' && '→'}
                   {entry.impact?.toLowerCase() || 'neutral'}
                 </div>
-                <div className="t-toggle">▼</div>
+                <div style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
+                  background: isExpanded ? 'var(--accent)' : 'var(--surface3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 18,
+                  color: isExpanded ? 'var(--bg)' : 'var(--text3)',
+                  transition: 'all 0.2s',
+                  transform: isExpanded ? 'rotate(180deg)' : 'none',
+                }}>▼</div>
               </div>
-              <div className="timeline-details">
-                <div className="t-details-content">
-                  <div className="t-details-text">
+              <div style={{
+                maxHeight: isExpanded ? 2000 : 0,
+                overflow: 'hidden',
+                transition: 'max-height 0.3s ease, padding 0.3s ease',
+                background: 'var(--surface2)',
+                borderTop: '1px solid var(--border)',
+                padding: isExpanded ? 20 : 0,
+              }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24 }}>
+                  <div style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text2)' }}>
                     <p style={{ color: 'var(--text2)' }}>{entry.summary}</p>
-                    <ul>
+                    <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
                       {entry.details.map((detail, j) => (
-                        <li key={j}>{detail}</li>
+                        <li key={j} style={{ display: 'flex', gap: 8, marginBottom: 0 }}>
+                          <span style={{ color: 'var(--accent)', fontWeight: 'bold' }}>•</span>
+                          {detail}
+                        </li>
                       ))}
                     </ul>
                     {/* Topic Tags */}
                     {detectTopics(entry).length > 0 && (
-                      <div className="t-topic-tags">
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
                         {detectTopics(entry).filter(topic => topicTags[topic]).map(topic => (
-                          <span key={topic} className="t-topic-tag" style={{ background: topicTags[topic].color }}>
+                          <span key={topic} style={{
+                            fontSize: 10,
+                            padding: '3px 8px',
+                            borderRadius: 4,
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            background: topicTags[topic].color,
+                          }}>
                             {topicTags[topic].label}
                           </span>
                         ))}
@@ -9437,19 +9611,19 @@ const TimelineTab = () => {
                       </div>
                     )}
                   </div>
-                  <div className="t-details-meta">
-                    <div className="t-meta-item">
-                      <div className="t-meta-label">Impact</div>
-                      <div className={`t-meta-value ${verdictClass === 'positive' ? 'green' : verdictClass === 'negative' ? 'red' : ''}`}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 180 }}>
+                    <div style={{ background: 'var(--surface3)', padding: '12px 16px', borderRadius: 8 }}>
+                      <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', marginBottom: 0 }}>Impact</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: metaValueColor }}>
                         {entry.impact === 'Positive' && '● Bullish'}
                         {entry.impact === 'Negative' && '● Bearish'}
                         {entry.impact === 'Neutral' && '● Neutral'}
                         {!entry.impact && '● Unknown'}
                       </div>
                     </div>
-                    <div className="t-meta-item">
-                      <div className="t-meta-label">Sources</div>
-                      <div className="t-meta-value" style={{ color: 'var(--cyan)' }}>{entry.sources.join(', ')}</div>
+                    <div style={{ background: 'var(--surface3)', padding: '12px 16px', borderRadius: 8 }}>
+                      <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', marginBottom: 0 }}>Sources</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--cyan)' }}>{entry.sources.join(', ')}</div>
                     </div>
                   </div>
                 </div>
@@ -9460,9 +9634,17 @@ const TimelineTab = () => {
       </div>
 
       {/* How to Use */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Reference</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#timeline-header</div>
-      <div className="card"><div className="card-title">How to Use This Log</div>
-        <div className="g2" style={{ fontSize: 13 }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>How to Use This Log</span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 13 }}>
           <div>
             <h4 style={{ color: 'var(--cyan)', fontWeight: 500 }}>Categories Explained</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--text2)' }}>
@@ -9484,16 +9666,15 @@ const TimelineTab = () => {
             </ul>
           </div>
         </div>
+        </div>
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
-      <CFANotes title="CFA Level III — Timeline Analysis" items={[
-        { term: 'Audit Trail', def: 'Chronological record of all guidance changes, data updates, and material events. Never delete historical entries.' },
-        { term: 'Category Types', def: 'Guidance (management projections), Data (SEC verified), Event (catalysts). Filter by type for focused analysis.' },
-        { term: 'Impact Assessment', def: 'Tag each update as Positive/Negative/Neutral/Mixed. Track sentiment changes over time.' },
-        { term: 'Source Attribution', def: 'Every entry cites source (10-Q, PR, earnings call). Verify claims against original documents.' },
-        { term: 'Supersession Tracking', def: 'When guidance changes, link new entry to old. Shows management accuracy and conservatism over time.' },
-        { term: 'Correction Protocol', def: 'If data is wrong, add correction entry referencing original. Never modify history — append only.' },
+      <CFANotes title="CFA Level III — SEC Filings" items={[
+        { term: '10-K / 10-Q', def: 'Annual (10-K) and quarterly (10-Q) reports. 10-K is audited and comprehensive; 10-Q is unaudited. Both contain financial statements, MD&A, risk factors.' },
+        { term: '8-K', def: 'Current report for material events (earnings, leadership changes, acquisitions). Filed within 4 business days. Often the first signal of important developments.' },
+        { term: 'S-1 / S-3', def: 'Registration statements for securities offerings. S-1 for IPOs (requires full disclosure); S-3 for seasoned issuers (shelf registration for future offerings).' },
+        { term: 'DEF 14A / DEFA14A', def: 'Proxy statements for shareholder meetings. DEF 14A is the definitive proxy; DEFA14A is additional solicitation material. Contains executive compensation, board nominees, shareholder proposals.' },
       ]} />
     </div>
   );
@@ -9501,7 +9682,8 @@ const TimelineTab = () => {
 
 const CompsTab = ({ calc, currentStockPrice }) => {
   const [competitorFilter, setCompetitorFilter] = useState<CompetitorId | 'all'>('all');
-  const [expandedNews, setExpandedNews] = useState<string | null>(null);
+  const [expandedNews, setExpandedNews] = useState<Set<number>>(new Set());
+  const [newsCategoryFilter, setNewsCategoryFilter] = useState<string>('All');
 
   // ═══════════════════════════════════════════════════════════════════════════
   // VALUATION COMPARABLES - Market metrics comparison
@@ -9622,36 +9804,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     [competitorFilter]
   );
 
-  // Group news by storyId, with ungrouped items in their own "group"
-  const groupedNews = React.useMemo(() => {
-    const groups: Record<string, { title: string; entries: (CompetitorNewsEntry & { originalIdx: number })[] }> = {};
-
-    filteredNews.forEach((news, idx) => {
-      const storyKey = news.storyId || `ungrouped-${news.date}-${news.competitor}-${news.headline.slice(0, 40)}`;
-      if (!groups[storyKey]) {
-        groups[storyKey] = {
-          title: news.storyTitle || news.headline,
-          entries: []
-        };
-      }
-      groups[storyKey].entries.push({ ...news, originalIdx: idx });
-    });
-
-    // Sort entries within each group chronologically (newest first)
-    Object.values(groups).forEach(group => {
-      group.entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    });
-
-    // Convert to array and sort groups by most recent entry (newest story first)
-    return Object.entries(groups)
-      .map(([storyId, group]) => ({
-        storyId,
-        title: group.title,
-        entries: group.entries,
-        latestDate: group.entries[0]?.date || ''  // First entry is newest after sort
-      }))
-      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
-  }, [filteredNews]);
+  // Compute news categories and filtered news by category
+  const newsCategories = ['All', ...Array.from(new Set(COMPETITOR_NEWS.map(n => n.category)))];
+  const filteredCompNews = filteredNews.filter(n => newsCategoryFilter === 'All' || n.category === newsCategoryFilter);
 
   // Get competitor display name
   const getCompetitorName = (id: CompetitorId): string => {
@@ -9660,28 +9815,6 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     return profile?.name || id;
   };
 
-  // Group stories by competitor company for section headers
-  const companySections = React.useMemo(() => {
-    const sections: Record<string, { name: string; stories: typeof groupedNews }> = {};
-
-    groupedNews.forEach(story => {
-      const competitorId = story.entries[0]?.competitor || 'other';
-      const competitorName = getCompetitorName(competitorId);
-      if (!sections[competitorId]) {
-        sections[competitorId] = { name: competitorName, stories: [] };
-      }
-      sections[competitorId].stories.push(story);
-    });
-
-    return Object.entries(sections)
-      .map(([id, section]) => ({
-        competitorId: id,
-        name: section.name,
-        stories: section.stories,
-        latestDate: section.stories[0]?.latestDate || ''
-      }))
-      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
-  }, [groupedNews]);
 
   // Implication styling - using design tokens
   const getImplicationStyle = (impl: ASTSImplication) => {
@@ -9775,70 +9908,78 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h2>
-
-      <div className="highlight"><h3>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></h3><p>Unified view: valuation metrics, qualitative assessment, and D2D capabilities per company. No direct comps — Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p></div>
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#comparables-header</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Comparables & Competitor Intelligence<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Unified view: valuation metrics, qualitative assessment, and D2D capabilities per company. No direct comps — Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p>
+      </div>
 
       {/* Peer Group Selector */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {compCategories.map(cat => (
+        {compCategories.map(cat => {
+          const isActive = selectedCompCategory === cat.key;
+          return (
           <button
             key={cat.key}
             onClick={() => setSelectedCompCategory(cat.key)}
-            className={`filter-btn ${selectedCompCategory === cat.key ? 'active' : ''}`}
+            style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
           >
             {cat.label}
           </button>
-        ))}
+          );
+        })}
       </div>
 
-      <div className="comp-cards-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
         {filteredComps.map((c) => {
           const qual = keyCompMap[c.name];
           const profile = profileMap[c.name];
+          const threatLevel = qual ? qual.threat.toLowerCase() : '';
+          const cardBorderLeft = c.highlight ? '4px solid var(--accent)' : threatLevel === 'high' || threatLevel === 'critical' ? '4px solid var(--coral)' : threatLevel === 'medium' ? '4px solid var(--gold)' : threatLevel === 'low' ? '4px solid var(--mint)' : '4px solid var(--surface3)';
+          const cardBg = c.highlight ? 'linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%)' : 'var(--surface)';
           return (
-            <div key={c.ticker} className={`comp-unified-card ${c.highlight ? 'comp-self' : qual ? `threat-${qual.threat.toLowerCase()}` : ''}`}>
-              <div className="comp-card-header">
-                <div className="comp-card-identity">
-                  <div className="comp-card-name">{c.name}</div>
-                  <div className="comp-card-ticker">{c.ticker} · {getCategoryLabel(c.category)}</div>
+            <div key={c.ticker} style={{ background: cardBg, border: '1px solid var(--border)', borderRadius: 16, padding: 20, borderLeft: cardBorderLeft }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{c.name}</div>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)' }}>{c.ticker} · {getCategoryLabel(c.category)}</div>
                 </div>
-                <div className="comp-card-badges">
-                  {qual && <span className={`comp-card-badge threat-${qual.threat.toLowerCase()}`}>{qual.threat}</span>}
-                  <span className="comp-card-badge type-badge">{getCategoryLabel(c.category)}</span>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+                  {qual && <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: threatLevel === 'high' || threatLevel === 'critical' ? 'rgba(255,123,114,0.15)' : threatLevel === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: threatLevel === 'high' || threatLevel === 'critical' ? 'var(--coral)' : threatLevel === 'medium' ? 'var(--gold)' : 'var(--mint)' }}>{qual.threat}</span>}
+                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{getCategoryLabel(c.category)}</span>
                 </div>
               </div>
-              <div className="comp-card-metrics">
-                <div className="comp-card-metric"><div className="val">${(c.mc / 1000).toFixed(0)}B</div><div className="lbl">Mkt Cap</div></div>
-                <div className="comp-card-metric"><div className="val">{c.evRev.toFixed(1)}x</div><div className="lbl">EV/Rev</div></div>
-                <div className="comp-card-metric"><div className="val">${c.pSub.toLocaleString()}</div><div className="lbl">$/Sub</div></div>
-                <div className="comp-card-metric"><div className="val">{c.subs.toFixed(0)}M</div><div className="lbl">Subs</div></div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 6, padding: 10, background: 'var(--surface2)', borderRadius: 10, marginBottom: 10 }}>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${(c.mc / 1000).toFixed(0)}B</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Mkt Cap</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.evRev.toFixed(1)}x</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>EV/Rev</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${c.pSub.toLocaleString()}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>$/Sub</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.subs.toFixed(0)}M</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Subs</div></div>
               </div>
               {c.highlight && (
-                <div className="comp-card-capabilities">
-                  <span className="comp-cap yes">✓ Voice</span>
-                  <span className="comp-cap yes">✓ Text</span>
-                  <span className="comp-cap yes">✓ Data</span>
-                  <span className="comp-cap yes">✓ Video</span>
-                  <span className="comp-cap yes">✓ Unmod.</span>
-                  <span className="comp-cap no">Building Global</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Voice</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Text</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Data</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Video</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Unmod.</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'var(--surface3)', color: 'var(--text3)', opacity: 0.6 }}>Building Global</span>
                 </div>
               )}
               {!c.highlight && profile && (
-                <div className="comp-card-capabilities">
-                  <span className={`comp-cap ${profile.capabilities.voice ? 'yes' : 'no'}`}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
-                  <span className={`comp-cap ${profile.capabilities.text ? 'yes' : 'no'}`}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
-                  <span className={`comp-cap ${profile.capabilities.data ? 'yes' : 'no'}`}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
-                  <span className={`comp-cap ${profile.capabilities.video ? 'yes' : 'no'}`}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
-                  <span className={`comp-cap ${profile.capabilities.unmodifiedPhones ? 'yes' : 'no'}`}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
-                  <span className={`comp-cap ${profile.capabilities.globalCoverage ? 'yes' : 'no'}`}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.voice ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.voice ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.voice ? undefined : 0.6 }}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.text ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.text ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.text ? undefined : 0.6 }}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.data ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.data ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.data ? undefined : 0.6 }}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.video ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.video ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.video ? undefined : 0.6 }}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.unmodifiedPhones ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.unmodifiedPhones ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.unmodifiedPhones ? undefined : 0.6 }}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.globalCoverage ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.globalCoverage ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.globalCoverage ? undefined : 0.6 }}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
                 </div>
               )}
               {qual && (
                 <>
-                  <div className="comp-card-detail"><strong>Focus:</strong> {qual.focus}</div>
-                  <div className="comp-card-notes">{qual.notes}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {qual.focus}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{qual.notes}</div>
                 </>
               )}
             </div>
@@ -9847,419 +9988,317 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         {/* Extra competitors not in comps (Amazon Leo, Lynk Global) - show when 'all' selected */}
         {selectedCompCategory === 'all' && extraCompetitors.map((kc, i) => {
           const profile = extraProfileMap[kc.name];
+          const extraThreat = kc.threat.toLowerCase();
+          const extraBorderLeft = extraThreat === 'high' || extraThreat === 'critical' ? '4px solid var(--coral)' : extraThreat === 'medium' ? '4px solid var(--gold)' : extraThreat === 'low' ? '4px solid var(--mint)' : '4px solid var(--surface3)';
           return (
-            <div key={`extra-${i}`} className={`comp-unified-card threat-${kc.threat.toLowerCase()}`}>
-              <div className="comp-card-header">
-                <div className="comp-card-identity">
-                  <div className="comp-card-name">{kc.name}</div>
-                  <div className="comp-card-ticker">{kc.type}</div>
+            <div key={`extra-${i}`} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 20, borderLeft: extraBorderLeft }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{kc.name}</div>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)' }}>{kc.type}</div>
                 </div>
-                <div className="comp-card-badges">
-                  <span className={`comp-card-badge threat-${kc.threat.toLowerCase()}`}>{kc.threat}</span>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: extraThreat === 'high' || extraThreat === 'critical' ? 'rgba(255,123,114,0.15)' : extraThreat === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: extraThreat === 'high' || extraThreat === 'critical' ? 'var(--coral)' : extraThreat === 'medium' ? 'var(--gold)' : 'var(--mint)' }}>{kc.threat}</span>
                 </div>
               </div>
               {profile && (
-                <div className="comp-card-capabilities">
-                  <span className={`comp-cap ${profile.capabilities.voice ? 'yes' : 'no'}`}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
-                  <span className={`comp-cap ${profile.capabilities.text ? 'yes' : 'no'}`}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
-                  <span className={`comp-cap ${profile.capabilities.data ? 'yes' : 'no'}`}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
-                  <span className={`comp-cap ${profile.capabilities.video ? 'yes' : 'no'}`}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
-                  <span className={`comp-cap ${profile.capabilities.unmodifiedPhones ? 'yes' : 'no'}`}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
-                  <span className={`comp-cap ${profile.capabilities.globalCoverage ? 'yes' : 'no'}`}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.voice ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.voice ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.voice ? undefined : 0.6 }}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.text ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.text ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.text ? undefined : 0.6 }}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.data ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.data ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.data ? undefined : 0.6 }}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.video ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.video ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.video ? undefined : 0.6 }}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.unmodifiedPhones ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.unmodifiedPhones ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.unmodifiedPhones ? undefined : 0.6 }}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.globalCoverage ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.globalCoverage ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.globalCoverage ? undefined : 0.6 }}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
                 </div>
               )}
-              <div className="comp-card-detail"><strong>Focus:</strong> {kc.focus}</div>
-              <div className="comp-card-notes">{kc.notes}</div>
+              <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {kc.focus}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{kc.notes}</div>
             </div>
           );
         })}
       </div>
 
-      <div className="g2">
-        <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ev-rev-comparison</div>
-          <div className="card">
-            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>EV/Rev Comparison<UpdateIndicators sources="WS" /></div>
-            <ResponsiveContainer width="100%" height={150}>
-              <BarChart data={filteredComps} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
-                <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
-                <Bar dataKey="evRev" fill="var(--accent)">
-                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--accent)' : 'var(--text3)'} />))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#peer-charts</div>
+      <div style={{ padding: '28px 0 12px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Peer Valuation<UpdateIndicators sources="WS" /></div>
+        <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>EV/Revenue & $/Subscriber<span style={{ color: 'var(--accent)' }}>.</span></h3>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 8 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>EV/Rev Comparison</div>
+          <ResponsiveContainer width="100%" height={150}>
+            <BarChart data={filteredComps} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+              <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+              <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
+              <Bar dataKey="evRev" fill="var(--accent)">
+                {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--accent)' : 'var(--text3)'} />))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-        <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#subscriber-comparison</div>
-          <div className="card">
-            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>$/Subscriber Comparison<UpdateIndicators sources="WS" /></div>
-            <ResponsiveContainer width="100%" height={150}>
-              <BarChart data={filteredComps} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
-                <Bar dataKey="pSub" fill="var(--violet)">
-                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--violet)' : 'var(--text3)'} />))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>$/Subscriber Comparison</div>
+          <ResponsiveContainer width="100%" height={150}>
+            <BarChart data={filteredComps} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+              <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+              <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
+              <Bar dataKey="pSub" fill="var(--violet)">
+                {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--violet)' : 'var(--text3)'} />))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
       {/* Advanced Valuation Matrices */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-framework</div>
-      <div className="highlight"><h3>📈 Valuation Framework</h3><p>Multiple methodologies for a pre-revenue, high-growth space company. TAM-based and comparable approaches.</p></div>
+      <div style={{ padding: '28px 0 12px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Analytical Framework</div>
+        <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>Valuation Framework<span style={{ color: 'var(--accent)' }}>.</span></h3>
+      </div>
 
       {/* Valuation Methodology Matrix */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
-        <p style={{ color: 'var(--text3)', fontSize: 13 }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Method</th>
-              <th>Peer Basis</th>
-              <th className="r">Multiple/Metric</th>
-              <th className="r">Implied Value</th>
-              <th className="r">Premium/(Discount)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              { method: '$/Subscriber', basis: 'Starlink', metric: '$43,750/sub', implied: calc.potentialSubs * 43750, premium: ((calc.potentialSubs * 43750) / calc.marketCap - 1) * 100 },
-              { method: '$/Subscriber', basis: 'T-Mobile', metric: '$2,240/sub', implied: calc.potentialSubs * 2240, premium: ((calc.potentialSubs * 2240) / calc.marketCap - 1) * 100 },
-              { method: '$/Subscriber', basis: 'Verizon', metric: '$1,520/sub', implied: calc.potentialSubs * 1520, premium: ((calc.potentialSubs * 1520) / calc.marketCap - 1) * 100 },
-              { method: 'EV/Rev (Fwd)', basis: 'Starlink', metric: '17x', implied: calc.fwdRevenue * 17, premium: ((calc.fwdRevenue * 17) / calc.marketCap - 1) * 100 },
-              { method: 'EV/Rev (Fwd)', basis: 'High-Growth SaaS', metric: '10x', implied: calc.fwdRevenue * 10, premium: ((calc.fwdRevenue * 10) / calc.marketCap - 1) * 100 },
-              { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
-            ].map((v, i) => (
-              <tr key={i}>
-                <td style={{ fontWeight: 500 }}>{v.method}</td>
-                <td>{v.basis}</td>
-                <td className="r">{v.metric}</td>
-                <td className="r mint">${(v.implied / 1000).toFixed(1)}B</td>
-                <td className="r" style={{ color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                  {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
-                </td>
-              </tr>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
+          <p style={{ color: 'var(--text3)', fontSize: 13, margin: '4px 0 0' }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
+        </div>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
+            {['Method', 'Peer Basis', 'Multiple/Metric', 'Implied Value', 'Premium/(Discount)'].map((label, idx) => (
+              <div key={label} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx < 2 ? 'left' : 'right' }}>{label}</div>
             ))}
-          </tbody>
-        </table>
+          </div>
+          {[
+            { method: '$/Subscriber', basis: 'Starlink', metric: '$43,750/sub', implied: calc.potentialSubs * 43750, premium: ((calc.potentialSubs * 43750) / calc.marketCap - 1) * 100 },
+            { method: '$/Subscriber', basis: 'T-Mobile', metric: '$2,240/sub', implied: calc.potentialSubs * 2240, premium: ((calc.potentialSubs * 2240) / calc.marketCap - 1) * 100 },
+            { method: '$/Subscriber', basis: 'Verizon', metric: '$1,520/sub', implied: calc.potentialSubs * 1520, premium: ((calc.potentialSubs * 1520) / calc.marketCap - 1) * 100 },
+            { method: 'EV/Rev (Fwd)', basis: 'Starlink', metric: '17x', implied: calc.fwdRevenue * 17, premium: ((calc.fwdRevenue * 17) / calc.marketCap - 1) * 100 },
+            { method: 'EV/Rev (Fwd)', basis: 'High-Growth SaaS', metric: '10x', implied: calc.fwdRevenue * 10, premium: ((calc.fwdRevenue * 10) / calc.marketCap - 1) * 100 },
+            { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
+          ].map((v, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</div>
+              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</div>
+              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{v.metric}</div>
+              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(v.implied / 1000).toFixed(1)}B</div>
+              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="g2" style={{ }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         {/* SOTP Valuation */}
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sotp</div>
-          <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
-          <p style={{ color: 'var(--text3)', fontSize: 13 }}>Value each business segment separately</p>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Segment</th>
-                <th className="r">Metric</th>
-                <th className="r">Multiple</th>
-                <th className="r">Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { segment: 'US Commercial', basis: 'AT&T/VZ partnership', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$2,000/sub', value: calc.potentialSubs * 0.4 * 2000 },
-                { segment: 'International', basis: 'Global MNO deals', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$1,500/sub', value: calc.potentialSubs * 0.4 * 1500 },
-                { segment: 'Government/Defense', basis: 'DoD contracts', metric: 'Option value', multiple: '—', value: 2000 },
-                { segment: 'Maritime/Aviation', basis: 'Niche verticals', metric: 'Option value', multiple: '—', value: 1000 },
-                { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
-              ].map((s, i) => (
-                <tr key={i}>
-                  <td>
-                    <div style={{ fontWeight: 500 }}>{s.segment}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
-                  </td>
-                  <td className="r">{s.metric}</td>
-                  <td className="r">{s.multiple}</td>
-                  <td className="r mint">${(s.value / 1000).toFixed(1)}B</td>
-                </tr>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
+            <p style={{ color: 'var(--text3)', fontSize: 13, margin: '4px 0 0' }}>Value each business segment separately</p>
+          </div>
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
+              {['Segment', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
+                <div key={label} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
               ))}
-              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-                <td colSpan={3}>SOTP Total</td>
-                <td className="r mint">${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</td>
-              </tr>
-            </tbody>
-          </table>
+            </div>
+            {[
+              { segment: 'US Commercial', basis: 'AT&T/VZ partnership', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$2,000/sub', value: calc.potentialSubs * 0.4 * 2000 },
+              { segment: 'International', basis: 'Global MNO deals', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$1,500/sub', value: calc.potentialSubs * 0.4 * 1500 },
+              { segment: 'Government/Defense', basis: 'DoD contracts', metric: 'Option value', multiple: '—', value: 2000 },
+              { segment: 'Maritime/Aviation', basis: 'Niche verticals', metric: 'Option value', multiple: '—', value: 1000 },
+              { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
+            ].map((s, i) => (
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                  <div style={{ fontWeight: 500 }}>{s.segment}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
+                </div>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.metric}</div>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.multiple}</div>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value / 1000).toFixed(1)}B</div>
+              </div>
+            ))}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
+              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>SOTP Total</div>
+              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</div>
+            </div>
+          </div>
           </div>
         </div>
 
         {/* Risk-Adjusted Scenarios */}
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#risk-adjusted-scenarios</div>
-          <div className="card">
-            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
-          <p style={{ color: 'var(--text3)', fontSize: 13 }}>Probability-weighted valuation outcomes</p>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Scenario</th>
-                <th className="r">Prob.</th>
-                <th className="r">Value</th>
-                <th className="r">Weighted</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { scenario: 'Bull Case', desc: 'Full constellation, global coverage', prob: 25, value: calc.marketCap * 3 },
-                { scenario: 'Base Case', desc: 'Partial success, US + select intl', prob: 45, value: calc.marketCap * 1.5 },
-                { scenario: 'Bear Case', desc: 'Delays, limited commercial traction', prob: 20, value: calc.marketCap * 0.5 },
-                { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
-              ].map((s, i) => (
-                <tr key={i}>
-                  <td>
-                    <div style={{ fontWeight: 500 }}>{s.scenario}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.desc}</div>
-                  </td>
-                  <td className="r">{s.prob}%</td>
-                  <td className="r">${(s.value / 1000).toFixed(1)}B</td>
-                  <td className="r mint">${(s.value * s.prob / 100 / 1000).toFixed(1)}B</td>
-                </tr>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
+              <p style={{ color: 'var(--text3)', fontSize: 13, margin: '4px 0 0' }}>Probability-weighted valuation outcomes</p>
+            </div>
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
+              {['Scenario', 'Prob.', 'Value', 'Weighted'].map((label, idx) => (
+                <div key={label} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
               ))}
-              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-                <td colSpan={3}>Expected Value</td>
-                <td className="r mint">${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</td>
-              </tr>
-            </tbody>
-          </table>
+            </div>
+            {[
+              { scenario: 'Bull Case', desc: 'Full constellation, global coverage', prob: 25, value: calc.marketCap * 3 },
+              { scenario: 'Base Case', desc: 'Partial success, US + select intl', prob: 45, value: calc.marketCap * 1.5 },
+              { scenario: 'Bear Case', desc: 'Delays, limited commercial traction', prob: 20, value: calc.marketCap * 0.5 },
+              { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
+            ].map((s, i) => (
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                  <div style={{ fontWeight: 500 }}>{s.scenario}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.desc}</div>
+                </div>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.prob}%</div>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>${(s.value / 1000).toFixed(1)}B</div>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value * s.prob / 100 / 1000).toFixed(1)}B</div>
+              </div>
+            ))}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
+              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>Expected Value</div>
+              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</div>
+            </div>
+          </div>
           </div>
         </div>
       </div>
 
       {/* Competitor News Intelligence Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
-      <div className="highlight">
-        <h3>📰 Competitor News Intelligence<UpdateIndicators sources="PR" /></h3>
-        <p>Track competitor developments to assess ASTS competitive position</p>
+      <div style={{ padding: '28px 0 12px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Competitive Intelligence<UpdateIndicators sources="PR" /></div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+          <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>Competitor News<span style={{ color: 'var(--accent)' }}>.</span></h3>
+        </div>
       </div>
 
       {/* Filter Bar */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
-      <div className="card" style={{ padding: '12px 16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 28px', marginTop: 8 }}>
+        <p style={{ color: 'var(--text2)', fontSize: 13, lineHeight: 1.6, margin: '0 0 4px' }}>Track developments across D2D satellite and terrestrial competitors impacting ASTS SpaceMobile's market position.</p>
+        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', margin: '0 0 16px' }}>Filter by competitor to focus on specific threat vectors.</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)' }}>Filter by Competitor</span>
+          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} style={{ fontSize: 10, padding: '3px 10px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}>Clear</button>}
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {(() => { const isActive = competitorFilter === 'all'; return (
           <button
             onClick={() => setCompetitorFilter('all')}
-            className={`filter-btn ${competitorFilter === 'all' ? 'active' : ''}`}
+            style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--violet)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'transparent', color: isActive ? 'var(--violet)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
           >
             All ({COMPETITOR_NEWS.length})
           </button>
+          ); })()}
           {COMPETITOR_PROFILES.map(comp => {
             const count = COMPETITOR_NEWS.filter(n => n.competitor === comp.id).length;
             if (count === 0) return null;
+            const isActive = competitorFilter === comp.id;
             return (
               <button
                 key={comp.id}
                 onClick={() => setCompetitorFilter(comp.id)}
-                className={`filter-btn ${competitorFilter === comp.id ? 'active' : ''}`}
+                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--violet)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'transparent', color: isActive ? 'var(--violet)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
               >
                 {comp.name.split('/')[0].trim()} ({count})
               </button>
             );
           })}
-          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (
+          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (() => { const isActive = competitorFilter === 'other'; return (
             <button
               onClick={() => setCompetitorFilter('other')}
-              className={`filter-btn ${competitorFilter === 'other' ? 'active' : ''}`}
+              style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--violet)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'transparent', color: isActive ? 'var(--violet)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
             >
               Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
             </button>
-          )}
+          ); })()}
         </div>
+        {competitorFilter !== 'all' && <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8, fontFamily: 'Space Mono, monospace' }}>{getCompetitorName(competitorFilter)} &rarr; {filteredNews.length} results</div>}
       </div>
 
-      {/* News Timeline - Grouped by Company, then by Story */}
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {companySections.length === 0 ? (
-          <div className="card" style={{ textAlign: 'center', padding: 40 }}>
-            <p style={{ color: 'var(--text3)' }}>No competitor news yet. Add entries to COMPETITOR_NEWS array.</p>
+      {/* Category Filter */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {newsCategories.map(cat => {
+            const isActive = newsCategoryFilter === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setNewsCategoryFilter(cat)}
+                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--sky)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--sky) 15%, transparent)' : 'transparent', color: isActive ? 'var(--sky)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+        <button
+          onClick={() => { if (expandedNews.size > 0) { setExpandedNews(new Set()); } else { setExpandedNews(new Set(filteredCompNews.map((_, i) => i))); } }}
+          style={{ fontSize: 10, padding: '3px 10px', borderRadius: 99, background: 'color-mix(in srgb, var(--violet) 15%, transparent)', color: 'var(--violet)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+        >
+          {expandedNews.size > 0 ? 'Collapse All' : 'Expand All'}
+        </button>
+      </div>
+
+      {/* News Timeline - Flat list */}
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {filteredCompNews.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 40 }}>
+            <p style={{ color: 'var(--text3)' }}>No competitor news matching current filters.</p>
           </div>
         ) : (
-          companySections.map((section) => {
-            const totalEntries = section.stories.reduce((sum, s) => sum + s.entries.length, 0);
-            const oldestDate = section.stories[section.stories.length - 1]?.entries[section.stories[section.stories.length - 1]?.entries.length - 1]?.date || '';
-            const newestDate = section.stories[0]?.entries[0]?.date || '';
+          filteredCompNews.map((news, i) => {
+            const isExpanded = expandedNews.has(i);
+            const accentColor = news.implication === 'positive' ? 'var(--mint)' : news.implication === 'negative' ? 'var(--coral)' : 'var(--sky)';
+            const impLabel = news.implication === 'positive' ? 'Favorable' : news.implication === 'negative' ? 'Threat' : 'Neutral';
+            const competitorName = getCompetitorName(news.competitor);
             return (
-            <details key={section.competitorId} className="comp-panel" open>
-              <summary>
-                <div className="comp-panel-bar">
-                  <div className="comp-panel-info">
-                    <div className="comp-panel-name">{section.name}</div>
-                    <div className="comp-panel-meta">
-                      <span className="comp-panel-count">{totalEntries} {totalEntries === 1 ? 'entry' : 'entries'}</span>
-                      {oldestDate && newestDate && <span className="comp-panel-dates">{newestDate} — {oldestDate}</span>}
+              <div key={i} role="button" tabIndex={0}
+                style={{ padding: '16px 28px', cursor: 'pointer', borderLeft: `3px solid ${accentColor}`, borderBottom: i < filteredCompNews.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                onClick={() => { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); } }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
+                      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)' }}>{news.date}</span>
+                      <span style={{ padding: '1px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--violet) 12%, transparent)', color: 'var(--violet)' }}>{news.category}</span>
+                      <span style={{ padding: '1px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--sky) 12%, transparent)', color: 'var(--sky)' }}>{competitorName}</span>
                     </div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13, lineHeight: 1.4 }}>{news.headline}</div>
                   </div>
-                  <div className="comp-panel-chevron" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" /></svg></div>
+                  <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: accentColor, marginLeft: 12, whiteSpace: 'nowrap' }}>
+                    {news.implication === 'positive' ? '+' : news.implication === 'negative' ? '-' : '~'} {impLabel}
+                  </span>
                 </div>
-              </summary>
-              <div className="comp-panel-body">
-              {section.stories.map((story) => (
-            <div key={story.storyId} className="card" style={{ padding: 0, overflow: 'hidden' }}>
-              {/* Story Header */}
-              <div style={{
-                padding: '16px 20px',
-                background: 'var(--surface2)',
-                borderBottom: '1px solid var(--border)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{story.title}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text3)' }}>
-                    {story.entries.length} update{story.entries.length !== 1 ? 's' : ''} • {story.entries[story.entries.length - 1]?.date} → {story.entries[0]?.date}
-                  </div>
-                </div>
-              </div>
-
-              {/* Story Entries - Chronological */}
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {story.entries.map((news, entryIdx) => {
-                  const implStyle = getImplicationStyle(news.implication);
-                  const catStyle = getCategoryStyle(news.category);
-                  const expandKey = `${story.storyId}-${entryIdx}`;
-                  const isExpanded = expandedNews === expandKey;
-
-                  return (
-                    <div
-                      key={entryIdx}
-                      style={{
-                        borderBottom: entryIdx < story.entries.length - 1 ? '1px solid var(--border)' : 'none',
-                        background: isExpanded ? 'var(--surface2)' : 'transparent',
-                        transition: 'background 0.2s'
-                      }}
-                    >
-                      <div
-                        onClick={() => setExpandedNews(isExpanded ? null : expandKey)}
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: '90px 100px 1fr auto auto',
-                          gap: 12,
-                          padding: '14px 20px',
-                          cursor: 'pointer',
-                          alignItems: 'center'
-                        }}
-                      >
-                        {/* Date */}
-                        <span className="t-date" style={{ fontSize: 12 }}>{news.date}</span>
-
-                        {/* Category */}
-                        <span
-                          style={{
-                            fontSize: '9px',
-                            padding: '3px 8px',
-                            borderRadius: '4px',
-                            background: catStyle.bg,
-                            color: catStyle.color,
-                            fontWeight: 600,
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.5px'
-                          }}
-                        >
-                          {news.category}
-                        </span>
-
-                        {/* Headline */}
-                        <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{news.headline}</span>
-
-                        {/* Implication Badge */}
-                        <span
-                          style={{
-                            fontSize: '9px',
-                            padding: '3px 8px',
-                            borderRadius: '4px',
-                            background: implStyle.bg,
-                            color: implStyle.color,
-                            fontWeight: 600
-                          }}
-                        >
-                          {news.implication === 'positive' ? '✓' : news.implication === 'negative' ? '⚠' : '○'}
-                        </span>
-
-                        {/* Toggle */}
-                        <span style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: 6,
-                          background: isExpanded ? 'var(--accent)' : 'var(--surface3)',
-                          color: isExpanded ? 'var(--bg)' : 'var(--text3)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 14,
-                          transition: 'all 0.2s'
-                        }}>
-                          {isExpanded ? '−' : '+'}
-                        </span>
+                {isExpanded && (
+                  <div style={{ paddingTop: 16, marginTop: 12, borderTop: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+                      {news.details.map((d, j) => <div key={j} style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--accent)', flexShrink: 0 }}>•</span>{d}</div>)}
+                    </div>
+                    {news.astsComparison && (
+                      <div style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 5%, var(--surface))', borderRadius: 12, borderLeft: '3px solid var(--mint)', marginTop: 12 }}>
+                        <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 4 }}>ASTS Comparison</div>
+                        <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.astsComparison}</div>
                       </div>
-
-                      {/* Expanded Details */}
-                      {isExpanded && (
-                        <div style={{ padding: '0 20px 16px 20px' }}>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 20 }}>
-                            <div>
-                              <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
-                                {news.details.map((d, i) => (
-                                  <li key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: 'var(--text2)' }}>
-                                    <span style={{ color: 'var(--accent)' }}>•</span>
-                                    {d}
-                                  </li>
-                                ))}
-                              </ul>
-                              {news.astsComparison && (
-                                <div style={{ padding: '10px 14px', background: 'var(--accent-dim)', borderRadius: 6, borderLeft: '3px solid var(--accent)' }}>
-                                  <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent)' }}>
-                                    ASTS Comparison
-                                  </div>
-                                  <div style={{ fontSize: 13, color: 'var(--text)' }}>{news.astsComparison}</div>
-                                </div>
-                              )}
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 140 }}>
-                              <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
-                                <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Impact</div>
-                                <div style={{ fontSize: 12, fontWeight: 600, color: implStyle.color }}>
-                                  {news.implication === 'positive' ? 'Favorable' : news.implication === 'negative' ? 'Threat' : 'Neutral'}
-                                </div>
-                              </div>
-                              {news.source && (
-                                <div style={{ background: 'var(--surface3)', padding: '8px 12px', borderRadius: 6 }}>
-                                  <div style={{ fontSize: 9, textTransform: 'uppercase', color: 'var(--text3)' }}>Source</div>
-                                  <div style={{ fontSize: 11 }}>
-                                    {news.sourceUrl ? (
-                                      <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
-                                        {news.source} ↗
-                                      </a>
-                                    ) : news.source}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                    )}
+                    {news.source && <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: 'Space Mono, monospace', marginTop: 8 }}>Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>{news.source} ↗</a> : news.source}</div>}
+                  </div>
+                )}
               </div>
-            </div>
-              ))}
-              </div>
-            </details>
             );
           })
         )}
@@ -10267,8 +10306,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Competitor Profiles (Collapsible) */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-profiles</div>
-      <div className="card">
-        <div className="card-title">📋 Competitor Profiles</div>
+      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Competitor Profiles</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {COMPETITOR_PROFILES.map(comp => (
             <div key={comp.id} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
@@ -10607,19 +10646,19 @@ const InvestmentTab = () => {
 
   // Collapsible section component
   const CollapsibleSection = ({ id, title, children, sources }: { id: string; title: string; children: React.ReactNode; sources?: UpdateSource | UpdateSource[] }) => (
-    <div className="card" style={{ }}>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
       <div
         onClick={() => toggleSection(id)}
-        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+        style={{ padding: '20px 28px', borderBottom: investmentSections.has(id) ? '1px solid var(--border)' : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
         role="button"
         tabIndex={0}
         aria-expanded={investmentSections.has(id)}
         onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
       >
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>{title}{sources && <UpdateIndicators sources={sources} />}</div>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>{title}{sources && <UpdateIndicators sources={sources} />}</span>
         <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
-      {investmentSections.has(id) && <div style={{ }}>{children}</div>}
+      {investmentSections.has(id) && <div style={{ padding: '24px 28px' }}>{children}</div>}
     </div>
   );
 
@@ -10635,12 +10674,14 @@ const InvestmentTab = () => {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Controls */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-header</div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Investment Analysis<UpdateIndicators sources={['PR', 'SEC']} /></h2>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
-          <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
-        </div>
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Due Diligence<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Investment Analysis<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Multi-perspective due diligence analysis with CFA, hedge fund, and institutional frameworks. Scoring, risk assessment, and historical perspective tracking.</p>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, alignItems: 'center', paddingTop: 12 }}>
+        <button onClick={expandAll} style={{ padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 500, border: '1px solid var(--border)', cursor: 'pointer', background: 'transparent', color: 'var(--text3)', transition: 'all 0.2s' }}>Expand All</button>
+        <button onClick={collapseAll} style={{ padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 500, border: '1px solid var(--border)', cursor: 'pointer', background: 'transparent', color: 'var(--text3)', transition: 'all 0.2s' }}>Collapse All</button>
       </div>
 
       {/* Data Refresh Indicator */}
@@ -10651,12 +10692,17 @@ const InvestmentTab = () => {
       </div>
 
       {/* Rating Header */}
-      <div className="card" style={{ borderLeft: '4px solid var(--mint)' }}>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Current Assessment</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', borderLeft: '4px solid var(--mint)' }}>
+        <div style={{ padding: '24px 28px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 6, fontWeight: 700, fontSize: 18 }}>CONSTRUCTIVE</span>
-              <span style={{ background: 'rgba(126,231,135,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>TECHNOLOGY PROVEN</span>
+              <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontWeight: 700, fontSize: 18 }}>CONSTRUCTIVE</span>
+              <span style={{ background: 'rgba(126,231,135,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600 }}>TECHNOLOGY PROVEN</span>
             </div>
             <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>
               {current.executiveSummary.thesis}
@@ -10683,6 +10729,7 @@ const InvestmentTab = () => {
             </div>
           </div>
         </div>
+        </div>
       </div>
 
       {/* Investment Scorecard */}
@@ -10690,7 +10737,9 @@ const InvestmentTab = () => {
       <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
           {current.scorecard.map((item, i) => (
-            <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div key={i} style={{ transition: 'background 0.15s', background: 'var(--surface2)', padding: '12px 16px', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface2)')}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{item.category}</div>
                 <div style={{ fontSize: 11, color: 'var(--text3)' }}>{item.detail}</div>
@@ -10704,7 +10753,7 @@ const InvestmentTab = () => {
       {/* Summary */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-summary</div>
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
-        <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
           <div style={{ fontWeight: 600, color: 'var(--mint)' }}>What's New ({current.source})</div>
           <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
             {current.executiveSummary.whatsNew.map((item, i) => (
@@ -10730,7 +10779,9 @@ const InvestmentTab = () => {
       <CollapsibleSection id="growth" title="Growth Drivers" sources="PR">
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {current.growthDrivers.map((d, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
+            <div key={i} style={{ transition: 'background 0.15s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 6 }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface2)')}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{d.driver}</div>
                 <div style={{ fontSize: 12, color: 'var(--text3)' }}>{d.description}</div>
@@ -10744,11 +10795,13 @@ const InvestmentTab = () => {
       {/* Competitive Moat */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-moat</div>
       <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
-        <div className="g2">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div>
-            <h4 style={{ color: 'var(--mint)' }}>Moat Sources</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--mint)', display: 'block', marginBottom: 8 }}>Moat Sources</span>
             {current.moatSources.map((m, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
+              <div key={i} style={{ transition: 'background 0.15s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 6 }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                 <div>
                   <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{m.source}</div>
                   <div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.detail}</div>
@@ -10758,9 +10811,11 @@ const InvestmentTab = () => {
             ))}
           </div>
           <div>
-            <h4 style={{ color: 'var(--coral)' }}>Competitive Threats</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--coral)', display: 'block', marginBottom: 8 }}>Competitive Threats</span>
             {current.moatThreats.map((t, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
+              <div key={i} style={{ transition: 'background 0.15s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 6 }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                 <div>
                   <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{t.threat}</div>
                   <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.detail}</div>
@@ -10770,7 +10825,7 @@ const InvestmentTab = () => {
             ))}
           </div>
         </div>
-        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 13, color: 'var(--text2)' }}>
+        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 12, fontSize: 13, color: 'var(--text2)' }}>
           <strong>Moat Durability:</strong> A- (Strong). Spectrum + patents + manufacturing scale create defensible position. 4+ year technology lead is substantial. Key risk is well-funded competitors (Starlink) accelerating D2D efforts.
         </div>
       </CollapsibleSection>
@@ -10780,12 +10835,14 @@ const InvestmentTab = () => {
       <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {current.risks.map((r, i) => (
-            <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
+            <div key={i} style={{ transition: 'background 0.15s', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface2)')}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text)' }}>{r.risk}</span>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: r.severity === 'Critical' ? 'rgba(255,107,107,0.2)' : r.severity === 'High' ? 'rgba(210,153,34,0.2)' : 'rgba(100,149,237,0.2)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
-                  <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
+                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: r.severity === 'Critical' ? 'color-mix(in srgb, var(--coral) 20%, transparent)' : r.severity === 'High' ? 'color-mix(in srgb, var(--gold) 20%, transparent)' : 'color-mix(in srgb, var(--sky) 20%, transparent)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
+                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
                 </div>
               </div>
               <div style={{ fontSize: 13, color: 'var(--text2)' }}>{r.detail}</div>
@@ -10804,12 +10861,12 @@ const InvestmentTab = () => {
         </div>
 
         {/* Part 1: Multi-Perspective Risk Evaluation */}
-        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Four Perspectives</h4>
-        
+        <div style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', marginBottom: 8 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text)' }}>Risk Evaluation — Four Perspectives</span></div>
+
         {/* CFA Level III Perspective */}
-        <div style={{ background: 'rgba(6,182,212,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(6,182,212,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--cyan) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--cyan) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--cyan)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
+            <span style={{ background: 'var(--cyan)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Portfolio Construction & Factor Analysis</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -10826,9 +10883,9 @@ const InvestmentTab = () => {
         </div>
 
         {/* Hedge Fund Manager Perspective */}
-        <div style={{ background: 'rgba(234,179,8,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(234,179,8,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--gold) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
+            <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Alpha Generation & Event Catalysts</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -10845,9 +10902,9 @@ const InvestmentTab = () => {
         </div>
 
         {/* CIO/CIS Institutional Perspective */}
-        <div style={{ background: 'rgba(100,149,237,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(100,149,237,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--sky) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
+            <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Strategic Allocation & Fiduciary Considerations</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -10864,9 +10921,9 @@ const InvestmentTab = () => {
         </div>
 
         {/* Technical Analyst Perspective */}
-        <div style={{ background: 'rgba(52,211,153,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(52,211,153,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
+            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Chart Patterns & Price Action</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -10879,20 +10936,22 @@ const InvestmentTab = () => {
             <p style={{ }}>
               <strong>Catalyst Trading:</strong> Satellite launch dates provide predictable volatility windows. Build position 2-3 weeks before scheduled launches. Take partial profits into strength post-launch. Use RSI divergence to identify exhaustion after catalyst-driven rallies. Relative strength vs NASDAQ positive — outperforming growth cohort.
             </p>
-            <p style={{ padding: 10, background: 'rgba(52,211,153,0.1)', borderRadius: 6, borderLeft: '3px solid #34d399' }}>
-              <strong style={{ color: '#34d399' }}>📊 Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
+            <p style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 10%, transparent)', borderRadius: 6, borderLeft: '3px solid #34d399' }}>
+              <strong style={{ color: '#34d399' }}>Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
             </p>
           </div>
         </div>
 
         {/* Part 2: Key Strategic Questions */}
-        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Key Strategic Questions</h4>
+        <div style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', marginBottom: 8 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text)' }}>Key Strategic Questions</span></div>
 
         {/* Would I Buy Now? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+        <div style={{ transition: 'background 0.15s', background: 'var(--surface2)', padding: '12px 16px', borderRadius: 12 }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface2)')}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>Would I Buy Now?</span>
-            <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '6px 16px', borderRadius: 6, fontWeight: 700, fontSize: 13 }}>YES — HIGH CONVICTION</span>
+            <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '6px 16px', borderRadius: 99, fontWeight: 700, fontSize: 13 }}>YES — HIGH CONVICTION</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
             <p style={{ }}>
@@ -10908,22 +10967,24 @@ const InvestmentTab = () => {
         </div>
 
         {/* What Can I Expect? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+        <div style={{ transition: 'background 0.15s', background: 'var(--surface2)', padding: '12px 16px', borderRadius: 12 }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface2)')}>
           <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>What Can I Expect?</div>
-          <div className="g3" style={{ }}>
-            <div style={{ background: 'rgba(234,179,8,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(234,179,8,0.2)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+            <div style={{ background: 'color-mix(in srgb, var(--gold) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--gold)', fontSize: 13 }}>Short-Term (0-6 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 Catalyst-rich period: BB7-13 launches, US commercial service initiation, Q4 earnings. Expect 30-50% swings around events. Successful launches = 10-20% pops, then consolidation. Trading range likely $20-45 depending on execution. Volatility is your friend if sized correctly.
               </div>
             </div>
-            <div style={{ background: 'rgba(100,149,237,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(100,149,237,0.2)' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--sky) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13 }}>Mid-Term (6-18 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 Revenue recognition begins — first real P&L validation. If penetration tracks to 1%+, narrative shifts from "will it work?" to "how big can it get?" Multiple expansion potential. Target range: $50-100 if execution continues. This is where the thesis gets proven or broken.
               </div>
             </div>
-            <div style={{ background: 'rgba(6,182,212,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(6,182,212,0.2)' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--cyan) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--cyan)', fontSize: 13 }}>Long-Term (3-5 years)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 At scale (2%+ penetration, 60M+ subs), ASTS could generate $5-10B revenue at 50%+ EBITDA margins. At telco multiples (8-12x EBITDA), that's $40-120B EV vs ~$12B today. 3-10x return potential. But crypto-like volatility along the way — expect multiple 40%+ drawdowns.
@@ -10933,7 +10994,9 @@ const InvestmentTab = () => {
         </div>
 
         {/* What's My Strategy? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+        <div style={{ transition: 'background 0.15s', background: 'var(--surface2)', padding: '12px 16px', borderRadius: 12 }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface2)')}>
           <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>What's My Strategy?</div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
             <p style={{ }}>
@@ -10955,12 +11018,14 @@ const InvestmentTab = () => {
       {/* Position Sizing */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-position</div>
       <CollapsibleSection id="position" title="Position Sizing & Price Targets" sources="WS">
-        <div className="g2" style={{ }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div>
-            <h4 style={{ color: 'var(--text)', fontSize: 14 }}>Recommended Allocation</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text)', display: 'block', marginBottom: 8 }}>Recommended Allocation</span>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {Object.entries(current.positionSizing).map(([key, val]) => (
-                <div key={key} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}>
+                <div key={key} style={{ transition: 'background 0.15s', display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                   <span style={{ color: 'var(--text2)', textTransform: 'capitalize' }}>{key}</span>
                   <span style={{ color: key === 'aggressive' ? 'var(--mint)' : key === 'growth' ? 'var(--sky)' : key === 'balanced' ? 'var(--gold)' : 'var(--coral)', fontWeight: 500 }}>{val.range}</span>
                 </div>
@@ -10968,10 +11033,12 @@ const InvestmentTab = () => {
             </div>
           </div>
           <div>
-            <h4 style={{ color: 'var(--text)', fontSize: 14 }}>Price Targets by Timeframe</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text)', display: 'block', marginBottom: 8 }}>Price Targets by Timeframe</span>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {current.priceTargets.map((t, i) => (
-                <div key={i} style={{ padding: '8px 12px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}>
+                <div key={i} style={{ transition: 'background 0.15s', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: 'var(--text2)' }}>{t.period}</span>
                     <span style={{ color: 'var(--mint)', fontWeight: 600 }}>{t.range}</span>
@@ -10984,10 +11051,10 @@ const InvestmentTab = () => {
         </div>
 
         {/* Portfolio Context — Unified framework for multi-asset allocation */}
-        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(100,149,237,0.08))', borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
+        <div style={{ padding: 16, background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
           <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 14 }}>Portfolio Construction Context</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>For multi-asset portfolios holding ASTS alongside other positions</div>
-          <div className="g3" style={{ marginTop: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, marginTop: 12 }}>
             <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>Asset Class Bucket</div>
               <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Growth / Technology</div>
@@ -11016,11 +11083,13 @@ const InvestmentTab = () => {
         <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full record of all investment thesis updates. Never deleted. Tracking since Q3 2022.</div>
         <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
-            <div key={i} style={{ background: i === 0 ? 'rgba(126,231,135,0.05)' : 'var(--surface2)', padding: 16, borderRadius: 8, border: i === 0 ? '1px solid rgba(126,231,135,0.2)' : '1px solid var(--border)' }}>
+            <div key={i} style={{ transition: 'background 0.15s', background: i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)', padding: '12px 16px', borderRadius: 12, border: i === 0 ? '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' : '1px solid var(--border)' }}
+              onMouseEnter={e => (e.currentTarget.style.background = i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)')}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontWeight: 600, color: 'var(--text)' }}>{a.date}</span>
-                  {i === 0 && <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600 }}>CURRENT</span>}
+                  {i === 0 && <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '2px 8px', borderRadius: 99, fontSize: 10, fontWeight: 600 }}>CURRENT</span>}
                 </div>
                 <span style={{ color: getVerdictColor(a.verdict), fontWeight: 600, fontSize: 13 }}>{a.verdict}</span>
               </div>
@@ -11038,12 +11107,12 @@ const InvestmentTab = () => {
                       ))}
                     </div>
                   </div>
-                  <div className="g2" style={{ }}>
-                    <div style={{ padding: 12, background: 'rgba(126,231,135,0.1)', borderRadius: 6 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+                    <div style={{ padding: 12, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', borderRadius: 6 }}>
                       <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 11 }}>Why It Mattered</div>
                       <div style={{ fontSize: 12, color: 'var(--text2)' }}>{a.whyItMatters}</div>
                     </div>
-                    <div style={{ padding: 12, background: 'rgba(139,92,246,0.1)', borderRadius: 6 }}>
+                    <div style={{ padding: 12, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', borderRadius: 6 }}>
                       <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 11 }}>Looking Ahead (at the time)</div>
                       <div style={{ fontSize: 12, color: 'var(--text2)' }}>{a.lookingAhead}</div>
                     </div>
@@ -11063,13 +11132,11 @@ const InvestmentTab = () => {
       </CollapsibleSection>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
-      <CFANotes title="CFA Level III — Investment Framework" items={[
-        { term: 'Letter Grade Scorecard', def: 'A-F ratings across dimensions: Growth (revenue trajectory), Profitability (margin path), Moat (competitive position), Execution (management track record), Valuation (vs DCF and peers).' },
-        { term: 'Three Perspectives', def: 'CFA Analyst (fundamentals), Hedge Fund (catalysts/technicals), CIO (portfolio construction). Different horizons and risk tolerances.' },
-        { term: 'Growth Drivers', def: 'Key operational milestones that drive value: constellation deployment, service launches, subscriber acquisition, revenue recognition.' },
-        { term: 'Risk Assessment', def: 'Probability × Impact matrix. Regulatory, technical, competitive, financial risks. Quantify where possible.' },
-        { term: 'Archive Discipline', def: 'All prior analyses preserved permanently. Track prediction accuracy over time. Never delete, only append.' },
-        { term: 'Position Sizing', def: 'Conviction level × risk tolerance = position size. Higher conviction warrants larger allocation within portfolio limits.' },
+      <CFANotes title="CFA Level III — Investment Analysis" items={[
+        { term: 'Multi-Perspective Analysis', def: 'Evaluating investments through different lenses (CFA fundamentals, hedge fund catalysts, institutional risk). Each perspective reveals blind spots the others miss.' },
+        { term: 'Conviction Score', def: 'Aggregate rating combining fundamental analysis, technical positioning, catalyst proximity, and risk/reward asymmetry. Higher scores indicate stronger investment thesis.' },
+        { term: 'Position Sizing', def: 'Determining allocation size based on conviction, volatility, correlation to existing holdings, and maximum drawdown tolerance. Higher conviction allows larger positions.' },
+        { term: 'Catalyst Calendar', def: 'Timeline of upcoming events that could move the stock (earnings, FDA decisions, product launches). Catalysts create asymmetric risk/reward opportunities.' },
       ]} />
     </div>
   );
@@ -13527,35 +13594,42 @@ const FinancialsTab = () => {
       {/* SECTION 1: HEADER                                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#financials-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Financials<UpdateIndicators sources="SEC" /></h2>
-
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 2: HIGHLIGHT BOX                                            */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#financials-overview</div>
-      <div className="highlight">
-        <h3 style={{ display: 'flex', alignItems: 'center' }}>{config.highlightTitle}<UpdateIndicators sources="SEC" /></h3>
-        <p style={{ fontSize: 14, color: 'var(--text2)' }}>{config.highlightText}</p>
+      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Quarterly Data<UpdateIndicators sources="SEC" /></div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Financials<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Quarterly financial statements, key metrics, and trend analysis. Pre-revenue stage with focus on cash position, burn rate, and path to commercial service.</p>
       </div>
-      
+
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 3: KEY METRICS EVOLUTION                                    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Quarterly Metrics</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
       <QuarterlyMetricsPanel />
-      
+
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Key Financial Milestones</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-financial-milestones</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></div>
-        <div className="g4">
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 8 }}>Key Financial Milestones<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
           {config.milestones.map((m, i) => (
-            <div key={i} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+            <div key={i} style={{ padding: 12, background: 'var(--surface)', borderRadius: 0 }}>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div>
               <div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div>
             </div>
           ))}
+        </div>
         </div>
       </div>
       
@@ -13563,7 +13637,12 @@ const FinancialsTab = () => {
       {/* SECTION 9: CFA NOTES                                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
-      <CFANotes title="CFA Level III — Financial Analysis" items={config.cfaNotes} />
+      <CFANotes title="CFA Level III — Financial Analysis" items={[
+        { term: 'Pre-Revenue Valuation', def: 'Companies with no revenue are valued on TAM, technology readiness, and cash runway. Focus on burn rate, cash position, and path to first revenue rather than traditional multiples.' },
+        { term: 'Cash Burn Rate', def: 'Quarterly operating cash outflow. Critical metric for pre-revenue companies. Divide cash on hand by quarterly burn to get runway in quarters.' },
+        { term: 'SBC vs Cash Expenses', def: 'Stock-based compensation is a real expense but non-cash. Adjusted EBITDA adds back SBC, but GAAP net income includes it. Use both views for complete picture.' },
+        { term: 'Operating Leverage', def: 'High fixed costs + low variable costs = operating leverage. Once revenue exceeds fixed costs, incremental margins are very high. Space/tech companies typically have extreme operating leverage.' },
+      ]} />
     </div>
   );
 };
