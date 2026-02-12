@@ -1173,8 +1173,8 @@ const CRCLParameterCard = ({
   };
 
   return (
-    <div className="card">
-      <div className="card-title">{title}</div>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>{title}</span></div>
       <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
         {explanation}
       </p>
@@ -1857,13 +1857,13 @@ const ScenariosTab = () => {
   return (
     <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenarios-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Scenario Simulation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}><span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Scenario Simulation</span><UpdateIndicators sources={['PR', 'SEC']} /></div>
 
       {/* Highlight Box */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenarios-intro</div>
-      <div className="highlight">
+      <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--sky) 5%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 16, padding: '24px 28px' }}>
         <h3>Multi-Year Projections</h3>
-        <p className="text-sm">
+        <p style={{ fontSize: 14 }}>
           Model different growth trajectories based on USDC adoption, rate environment, and margin evolution.
           Bear case assumes rate cuts and competition pressure. Bull case models stablecoin dominance with
           expanding platform margins. Probability-weight for expected value.
@@ -1872,10 +1872,10 @@ const ScenariosTab = () => {
 
       {/* Controls */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-controls</div>
-      <div className="g2" style={{ }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         {/* Target Year Selector */}
-        <div className="card">
-          <div className="card-title">Target Year</div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Target Year</span></div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {TARGET_YEARS.map(year => (
               <button
@@ -1900,8 +1900,8 @@ const ScenariosTab = () => {
         </div>
 
         {/* Scenario Selector */}
-        <div className="card">
-          <div className="card-title">Scenario</div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Scenario</span></div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {SCENARIO_KEYS.map(key => {
               const s = SCENARIO_SIMULATIONS[key];
@@ -1940,7 +1940,7 @@ const ScenariosTab = () => {
         return (
           <>
             {/* Scenario Header */}
-            <div className="card" style={{ borderLeft: `4px solid ${selected.color}` }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', borderLeft: `4px solid ${selected.color}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                 <div>
                   <h3 style={{ color: selected.color }}>
@@ -1959,43 +1959,43 @@ const ScenariosTab = () => {
 
             {/* Key Metrics */}
             <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-metrics</div>
-            <div className="g4" style={{ }}>
-              <div className="big-stat">
-                <div className="num" style={{ color: selected.color }}>${projection.sharePrice.toLocaleString()}</div>
-                <div className="lbl">Share Price</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: selected.color }}>${projection.sharePrice.toLocaleString()}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Share Price</div>
                 <div style={{ fontSize: 12, color: priceReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {priceReturn >= 0 ? '+' : ''}{priceReturn.toFixed(0)}% from today
                 </div>
               </div>
-              <div className="big-stat">
-                <div className="num">${projection.equityValue}B</div>
-                <div className="lbl">Equity Value</div>
+              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>${projection.equityValue}B</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Equity Value</div>
               </div>
-              <div className="big-stat">
-                <div className="num">${projection.usdc}B</div>
-                <div className="lbl">USDC Circulation</div>
+              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>${projection.usdc}B</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>USDC Circulation</div>
                 <div style={{ fontSize: 12, color: 'var(--sky)' }}>
                   +{usdcGrowth.toFixed(0)}% growth
                 </div>
               </div>
-              <div className="big-stat">
-                <div className="num">{projection.marketShare}%</div>
-                <div className="lbl">Market Share</div>
+              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>{projection.marketShare}%</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Market Share</div>
               </div>
             </div>
 
             {/* Financial Projections Table */}
             <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-projections</div>
-            <div className="card" style={{ }}>
-              <div className="card-title">Financial Projections — {selected.name} Scenario</div>
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+              <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Financial Projections — {selected.name} Scenario</span></div>
               <div style={{ overflowX: 'auto' }}>
-                <table className="tbl">
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr>
                       <th>Metric</th>
-                      <th className="r">Today</th>
+                      <th style={{ textAlign: 'right' }}>Today</th>
                       {selected.projections.map(p => (
-                        <th key={p.year} className="r">
+                        <th key={p.year} style={{ textAlign: 'right' }}>
                           {p.year}
                         </th>
                       ))}
@@ -2004,117 +2004,117 @@ const ScenariosTab = () => {
                   <tbody>
                     <tr>
                       <td>USDC Circulation ($B)</td>
-                      <td className="r">{CURRENT_METRICS.usdc}</td>
+                      <td style={{ textAlign: 'right' }}>{CURRENT_METRICS.usdc}</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
+                        <td key={p.year} style={{ textAlign: 'right', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.usdc}
                         </td>
                       ))}
                     </tr>
                     <tr>
                       <td>Market Share (%)</td>
-                      <td className="r">29%</td>
+                      <td style={{ textAlign: 'right' }}>29%</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
+                        <td key={p.year} style={{ textAlign: 'right', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.marketShare}%
                         </td>
                       ))}
                     </tr>
                     <tr>
                       <td>Reserve Yield (%)</td>
-                      <td className="r">4.33%</td>
+                      <td style={{ textAlign: 'right' }}>4.33%</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
+                        <td key={p.year} style={{ textAlign: 'right', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.reserveRate}%
                         </td>
                       ))}
                     </tr>
                     <tr>
                       <td>Gross Revenue ($B)</td>
-                      <td className="r">$2.96</td>
+                      <td style={{ textAlign: 'right' }}>$2.96</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
+                        <td key={p.year} style={{ textAlign: 'right', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           ${p.grossRevenue.toFixed(2)}
                         </td>
                       ))}
                     </tr>
                     <tr>
                       <td>Distribution Costs ($B)</td>
-                      <td className="r">($1.15)</td>
+                      <td style={{ textAlign: 'right' }}>($1.15)</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
+                        <td key={p.year} style={{ textAlign: 'right', color: 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           (${p.distributionCost.toFixed(2)})
                         </td>
                       ))}
                     </tr>
                     <tr>
                       <td>Net Revenue ($B)</td>
-                      <td className="r mint">$1.81</td>
+                      <td style={{ textAlign: 'right', color: 'var(--mint)' }}>$1.81</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r mint" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
+                        <td key={p.year} style={{ textAlign: 'right', color: 'var(--mint)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           ${p.netRevenue.toFixed(2)}
                         </td>
                       ))}
                     </tr>
                     <tr>
                       <td>RLDC Margin (%)</td>
-                      <td className="r">39%</td>
+                      <td style={{ textAlign: 'right' }}>39%</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
+                        <td key={p.year} style={{ textAlign: 'right', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.rldcMargin}%
                         </td>
                       ))}
                     </tr>
                     <tr>
                       <td>EBITDA ($B)</td>
-                      <td className="r">$0.29</td>
+                      <td style={{ textAlign: 'right' }}>$0.29</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: p.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
+                        <td key={p.year} style={{ textAlign: 'right', color: p.ebitda >= 0 ? 'var(--mint)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.ebitda >= 0 ? '$' : '($'}{Math.abs(p.ebitda).toFixed(2)}{p.ebitda < 0 ? ')' : ''}
                         </td>
                       ))}
                     </tr>
                     <tr>
                       <td>Net Income ($B)</td>
-                      <td className="r">$0.16</td>
+                      <td style={{ textAlign: 'right' }}>$0.16</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: p.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
+                        <td key={p.year} style={{ textAlign: 'right', color: p.netIncome >= 0 ? 'var(--mint)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.netIncome >= 0 ? '$' : '($'}{Math.abs(p.netIncome).toFixed(2)}{p.netIncome < 0 ? ')' : ''}
                         </td>
                       ))}
                     </tr>
                     <tr>
                       <td>Free Cash Flow ($B)</td>
-                      <td className="r">$0.14</td>
+                      <td style={{ textAlign: 'right' }}>$0.14</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: p.fcf >= 0 ? 'var(--sky)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
+                        <td key={p.year} style={{ textAlign: 'right', color: p.fcf >= 0 ? 'var(--sky)' : 'var(--coral)', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.fcf >= 0 ? '$' : '($'}{Math.abs(p.fcf).toFixed(2)}{p.fcf < 0 ? ')' : ''}
                         </td>
                       ))}
                     </tr>
                     <tr style={{ fontWeight: 600 }}>
                       <td>Exit P/S Multiple</td>
-                      <td className="r">6.4x</td>
+                      <td style={{ textAlign: 'right' }}>6.4x</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
+                        <td key={p.year} style={{ textAlign: 'right', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           {p.exitMultiple}x
                         </td>
                       ))}
                     </tr>
                     <tr style={{ fontWeight: 600 }}>
                       <td>Implied EV ($B)</td>
-                      <td className="r">$18.9</td>
+                      <td style={{ textAlign: 'right' }}>$18.9</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={p.year === targetYear ? { background: 'var(--accent-dim)' } : undefined}>
+                        <td key={p.year} style={{ textAlign: 'right', ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           ${p.evImplied.toFixed(1)}
                         </td>
                       ))}
                     </tr>
                     <tr style={{ fontWeight: 700 }}>
                       <td>Share Price ($)</td>
-                      <td className="r">${CURRENT_METRICS.sharePrice}</td>
+                      <td style={{ textAlign: 'right' }}>${CURRENT_METRICS.sharePrice}</td>
                       {selected.projections.map(p => (
-                        <td key={p.year} className="r" style={{ color: selected.color, ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
+                        <td key={p.year} style={{ textAlign: 'right', color: selected.color, ...(p.year === targetYear ? { background: 'var(--accent-dim)' } : {}) }}>
                           ${p.sharePrice.toLocaleString()}
                         </td>
                       ))}
@@ -2126,17 +2126,17 @@ const ScenariosTab = () => {
 
             {/* Assumptions & Catalysts */}
             <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-assumptions</div>
-            <div className="g2" style={{ }}>
-              <div className="card">
-                <div className="card-title">Key Assumptions</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Key Assumptions</span></div>
                 <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
                   {selected.assumptions.map((a, i) => (
                     <li key={i} style={{ lineHeight: 1.5 }}>{a}</li>
                   ))}
                 </ul>
               </div>
-              <div className="card">
-                <div className="card-title">{selected.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</div>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>{selected.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</span></div>
                 <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
                   {(selected.catalysts.length > 0 ? selected.catalysts : selected.risks).map((item, i) => (
                     <li key={i} style={{ lineHeight: 1.5 }}>{item}</li>
@@ -2144,7 +2144,7 @@ const ScenariosTab = () => {
                 </ul>
                 {selected.catalysts.length > 0 && selected.risks.length > 0 && (
                   <>
-                    <div className="card-title" style={{ }}>Risks</div>
+                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Risks</span></div>
                     <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
                       {selected.risks.map((r, i) => (
                         <li key={i} style={{ lineHeight: 1.5 }}>{r}</li>
@@ -2160,7 +2160,7 @@ const ScenariosTab = () => {
 
       {/* Probability-Weighted Expected Value */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#expected-value</div>
-      <div className="highlight" style={{ }}>
+      <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--sky) 5%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 16, padding: '24px 28px' }}>
         <h3>Probability-Weighted Expected Value — {targetYear}</h3>
         <p style={{ color: 'var(--text2)' }}>
           Weighted average across all scenarios based on assigned probabilities
@@ -2184,35 +2184,35 @@ const ScenariosTab = () => {
 
           return (
             <>
-              <div className="g4">
-                <div className="big-stat">
-                  <div className="num mint">${pwev.sharePrice.toFixed(0)}</div>
-                  <div className="lbl">Expected Share Price</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--mint)' }}>${pwev.sharePrice.toFixed(0)}</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Expected Share Price</div>
                 </div>
-                <div className="big-stat">
-                  <div className="num">${pwev.equityValue.toFixed(1)}B</div>
-                  <div className="lbl">Expected Equity Value</div>
+                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>${pwev.equityValue.toFixed(1)}B</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Expected Equity Value</div>
                 </div>
-                <div className="big-stat">
-                  <div className="num sky">{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</div>
-                  <div className="lbl">Expected Return</div>
+                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--sky)' }}>{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Expected Return</div>
                 </div>
-                <div className="big-stat">
-                  <div className="num">{cagr.toFixed(1)}%</div>
-                  <div className="lbl">Implied CAGR</div>
+                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>{cagr.toFixed(1)}%</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Implied CAGR</div>
                 </div>
               </div>
 
               {/* Scenario Breakdown */}
               <div style={{ }}>
-                <table className="tbl">
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr>
                       <th>Scenario</th>
-                      <th className="r">Probability</th>
-                      <th className="r">Share Price</th>
-                      <th className="r">Return</th>
-                      <th className="r">Weighted Contribution</th>
+                      <th style={{ textAlign: 'right' }}>Probability</th>
+                      <th style={{ textAlign: 'right' }}>Share Price</th>
+                      <th style={{ textAlign: 'right' }}>Return</th>
+                      <th style={{ textAlign: 'right' }}>Weighted Contribution</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2228,21 +2228,21 @@ const ScenariosTab = () => {
                             <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
                             {s.name}
                           </td>
-                          <td className="r">{s.prob}%</td>
-                          <td className="r">${p.sharePrice.toLocaleString()}</td>
-                          <td className="r" style={{ color: ret >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                          <td style={{ textAlign: 'right' }}>{s.prob}%</td>
+                          <td style={{ textAlign: 'right' }}>${p.sharePrice.toLocaleString()}</td>
+                          <td style={{ textAlign: 'right', color: ret >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                             {ret >= 0 ? '+' : ''}{ret.toFixed(0)}%
                           </td>
-                          <td className="r" style={{ color: 'var(--sky)' }}>${contribution.toFixed(0)}</td>
+                          <td style={{ textAlign: 'right', color: 'var(--sky)' }}>${contribution.toFixed(0)}</td>
                         </tr>
                       );
                     })}
                     <tr style={{ fontWeight: 700 }}>
                       <td>Expected Value</td>
-                      <td className="r">100%</td>
-                      <td className="r mint">${pwev.sharePrice.toFixed(0)}</td>
-                      <td className="r mint">{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</td>
-                      <td className="r mint">${pwev.sharePrice.toFixed(0)}</td>
+                      <td style={{ textAlign: 'right' }}>100%</td>
+                      <td style={{ textAlign: 'right', color: 'var(--mint)' }}>${pwev.sharePrice.toFixed(0)}</td>
+                      <td style={{ textAlign: 'right', color: 'var(--mint)' }}>{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</td>
+                      <td style={{ textAlign: 'right', color: 'var(--mint)' }}>${pwev.sharePrice.toFixed(0)}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -2253,16 +2253,16 @@ const ScenariosTab = () => {
       </div>
 
       {/* All Scenarios Comparison */}
-      <div className="card" style={{ }}>
-        <div className="card-title">All Scenarios — {targetYear} Comparison</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>All Scenarios — {targetYear} Comparison</span></div>
         <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
                 <th>Metric</th>
                 {SCENARIO_KEYS.map(key => {
                   const s = SCENARIO_SIMULATIONS[key];
-                  return <th key={key} className="r">{s.name}</th>;
+                  return <th key={key} style={{ textAlign: 'right' }}>{s.name}</th>;
                 })}
               </tr>
             </thead>
@@ -2275,32 +2275,32 @@ const ScenariosTab = () => {
                   <>
                     <tr>
                       <td>USDC ($B)</td>
-                      {projections.map((p, i) => <td key={i} className="r">{p?.usdc || '—'}</td>)}
+                      {projections.map((p, i) => <td key={i} style={{ textAlign: 'right' }}>{p?.usdc || '—'}</td>)}
                     </tr>
                     <tr>
                       <td>Gross Revenue ($B)</td>
-                      {projections.map((p, i) => <td key={i} className="r">${p?.grossRevenue.toFixed(1) || '—'}</td>)}
+                      {projections.map((p, i) => <td key={i} style={{ textAlign: 'right' }}>${p?.grossRevenue.toFixed(1) || '—'}</td>)}
                     </tr>
                     <tr>
                       <td>Net Income ($B)</td>
                       {projections.map((p, i) => (
-                        <td key={i} className="r" style={{ color: (p?.netIncome || 0) >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                        <td key={i} style={{ textAlign: 'right', color: (p?.netIncome || 0) >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                           {p ? (p.netIncome >= 0 ? `$${p.netIncome.toFixed(2)}` : `($${Math.abs(p.netIncome).toFixed(2)})`) : '—'}
                         </td>
                       ))}
                     </tr>
                     <tr>
                       <td>Exit Multiple (P/S)</td>
-                      {projections.map((p, i) => <td key={i} className="r">{p?.exitMultiple}x</td>)}
+                      {projections.map((p, i) => <td key={i} style={{ textAlign: 'right' }}>{p?.exitMultiple}x</td>)}
                     </tr>
                     <tr>
                       <td>Equity Value ($B)</td>
-                      {projections.map((p, i) => <td key={i} className="r">${p?.equityValue || '—'}</td>)}
+                      {projections.map((p, i) => <td key={i} style={{ textAlign: 'right' }}>${p?.equityValue || '—'}</td>)}
                     </tr>
                     <tr style={{ fontWeight: 700 }}>
                       <td>Share Price</td>
                       {projections.map((p, i) => (
-                        <td key={i} className="r" style={{ color: SCENARIO_SIMULATIONS[SCENARIO_KEYS[i]].color }}>
+                        <td key={i} style={{ textAlign: 'right', color: SCENARIO_SIMULATIONS[SCENARIO_KEYS[i]].color }}>
                           ${p?.sharePrice.toLocaleString() || '—'}
                         </td>
                       ))}
@@ -2310,7 +2310,7 @@ const ScenariosTab = () => {
                       {projections.map((p, i) => {
                         const ret = p ? ((p.sharePrice / CURRENT_METRICS.sharePrice) - 1) * 100 : 0;
                         return (
-                          <td key={i} className="r" style={{ color: ret >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                          <td key={i} style={{ textAlign: 'right', color: ret >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                             {ret >= 0 ? '+' : ''}{ret.toFixed(0)}%
                           </td>
                         );
@@ -2325,31 +2325,31 @@ const ScenariosTab = () => {
       </div>
 
       {/* Key Insights */}
-      <div className="card" style={{ }}><div className="card-title">Key Insights</div>
-        <div className="grid md:grid-cols-2 gap-4 text-sm">
-          <div className="bg-slate-900/50 rounded-lg p-4">
-            <h4 className="font-semibold text-mint-400 mb-2">Interest Rate Sensitivity</h4>
-            <p className="text-slate-300">Reserve income is directly tied to Fed rates. Each 100bp rate cut reduces gross revenue by ~$737M annually at current circulation. Rate cuts are the primary bear case risk.</p>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}><div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Key Insights</span></div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, padding: '20px 28px', fontSize: 14 }}>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 16 }}>
+            <h4 style={{ fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>Interest Rate Sensitivity</h4>
+            <p style={{ color: 'var(--text2)' }}>Reserve income is directly tied to Fed rates. Each 100bp rate cut reduces gross revenue by ~$737M annually at current circulation. Rate cuts are the primary bear case risk.</p>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-4">
-            <h4 className="font-semibold text-mint-400 mb-2">Coinbase Dependency</h4>
-            <p className="text-slate-300">~54% of gross revenue goes to Coinbase as distribution cost. Renegotiating this agreement or diversifying distribution (CPN, direct bank partnerships) is key to margin expansion.</p>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 16 }}>
+            <h4 style={{ fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>Coinbase Dependency</h4>
+            <p style={{ color: 'var(--text2)' }}>~54% of gross revenue goes to Coinbase as distribution cost. Renegotiating this agreement or diversifying distribution (CPN, direct bank partnerships) is key to margin expansion.</p>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-4">
-            <h4 className="font-semibold text-mint-400 mb-2">Regulatory Moat</h4>
-            <p className="text-slate-300">Circle's regulatory-first approach (state licenses, MiCA compliance, OCC charter) creates barriers to entry. GENIUS Act could cement USDC as the preferred regulated stablecoin for TradFi.</p>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 16 }}>
+            <h4 style={{ fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>Regulatory Moat</h4>
+            <p style={{ color: 'var(--text2)' }}>Circle's regulatory-first approach (state licenses, MiCA compliance, OCC charter) creates barriers to entry. GENIUS Act could cement USDC as the preferred regulated stablecoin for TradFi.</p>
           </div>
-          <div className="bg-slate-900/50 rounded-lg p-4">
-            <h4 className="font-semibold text-mint-400 mb-2">Risk/Reward</h4>
-            <p className="text-slate-300">Bear case scenarios model rate cuts + market share loss. Bull cases require continued USDC growth + multiple expansion to payment network peers. Asymmetric if stablecoin adoption accelerates.</p>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 16 }}>
+            <h4 style={{ fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>Risk/Reward</h4>
+            <p style={{ color: 'var(--text2)' }}>Bear case scenarios model rate cuts + market share loss. Bull cases require continued USDC growth + multiple expansion to payment network peers. Asymmetric if stablecoin adoption accelerates.</p>
           </div>
         </div>
       </div>
 
       {/* Methodology & Assumptions */}
-      <div className="card" style={{ }}>
-        <div className="card-title">Methodology & Assumptions</div>
-        <div className="g2">
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Methodology & Assumptions</span></div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div>
             <h4 style={{ color: 'var(--mint)' }}>Valuation Framework</h4>
             <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
@@ -3616,15 +3616,15 @@ function CRCLModel() {
                   <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Revenue Progression</span>
                   <UpdateIndicators sources="SEC" />
                 </div>
-                <div className="bars" style={{ padding: '24px 28px 0' }}>
+                <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                   {(() => {
                     const chronological = [...DATA].reverse();  // Oldest first for left-to-right progression
                     const maxRevenue = Math.max(...chronological.map(d => d.totalRevenue));
                     return chronological.map((d, i) => (
-                      <div key={i} className="bar-col">
-                        <div className="bar-val">${d.totalRevenue}M</div>
-                        <div className="bar" style={{ height: `${maxRevenue > 0 ? (d.totalRevenue / maxRevenue) * 150 : 0}px` }} />
-                        <div className="bar-label">{d.quarter}</div>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', flex: 1 }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: "'Space Mono', monospace", color: 'var(--text)', marginBottom: 4 }}>${d.totalRevenue}M</div>
+                        <div style={{ height: `${maxRevenue > 0 ? (d.totalRevenue / maxRevenue) * 150 : 0}px`, width: '100%', background: 'var(--accent)', borderRadius: '4px 4px 0 0', minHeight: 2 }} />
+                        <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' as const }}>{d.quarter}</div>
                       </div>
                     ));
                   })()}
@@ -4950,12 +4950,12 @@ function CRCLModel() {
                   <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Circulation Growth</span>
                   <UpdateIndicators sources="SEC" />
                 </div>
-                <div className="bars" style={{ padding: '24px 28px 0' }}>
+                <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
                   {DATA.map((d, i) => (
-                    <div key={i} className="bar-col">
-                      <div className="bar-val">${d.usdcCirculation.toFixed(1)}B</div>
-                      <div className="bar" style={{ height: `${(d.usdcCirculation / 80) * 180}px` }} />
-                      <div className="bar-label">{d.quarter}</div>
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', flex: 1 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, fontFamily: "'Space Mono', monospace", color: 'var(--text)', marginBottom: 4 }}>${d.usdcCirculation.toFixed(1)}B</div>
+                      <div style={{ height: `${(d.usdcCirculation / 80) * 180}px`, width: '100%', background: 'var(--accent)', borderRadius: '4px 4px 0 0', minHeight: 2 }} />
+                      <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' as const }}>{d.quarter}</div>
                     </div>
                   ))}
                 </div>

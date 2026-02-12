@@ -2537,7 +2537,7 @@ const CompetitorsTab = () => {
 
       {/* Key Competitors Overview */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-overview</div>
-      <h2 className="section-head">Key Competitors</h2>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}><span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Key Competitors</span><span style={{ flex: 1, height: 1, background: 'var(--border)' }} /></div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
         {keyCompetitors.map((comp, i) => (
           <div key={i} className={`competitor-card threat-${comp.threat.toLowerCase()}`}>
@@ -2555,9 +2555,7 @@ const CompetitorsTab = () => {
 
       {/* Competitor News Timeline */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-timeline</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span>Competitor Intelligence ({filteredCompetitorNews.length} events)</span>
-      </h2>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}><span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Competitor Intelligence ({filteredCompetitorNews.length} events)</span></div>
 
       {/* Competitor Filter */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
@@ -2667,7 +2665,7 @@ const CompetitorsTab = () => {
 
       {/* Competitive Moat Summary */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#competitive-moat</div>
-      <h2 className="section-head">ASTS Competitive Advantages</h2>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}><span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>ASTS Competitive Advantages</span><span style={{ flex: 1, height: 1, background: 'var(--border)' }} /></div>
       <div className="competitor-card" style={{ borderLeft: '3px solid var(--mint)' }}>
         <div style={{ display: 'grid', gap: 12 }}>
           <div className="competitor-detail"><strong>🛰️ True D2D Broadband:</strong> Only solution offering full mobile broadband (voice, data, video) to unmodified smartphones. Starlink D2D is text/voice only.</div>
@@ -4894,8 +4892,8 @@ const SECFilingTracker = () => {
   };
 
   return (
-    <div className="card"><div className="card-title">📁 SEC Filing Tracker</div>
-      <div className="g2">
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}><div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>SEC Filing Tracker</span></div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, padding: '24px 28px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing History</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -4924,7 +4922,7 @@ const SECFilingTracker = () => {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Latest Filings by Type</div>
-          <div className="g2" style={{ fontSize: 13 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 13 }}>
             {Object.entries(filingData.filings).map(([type, info]) => {
               const style = colorStyles[info.color] || colorStyles.cyan;
               return (
@@ -5727,7 +5725,7 @@ const QuarterlyMetricsPanel = () => {
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Latest Quarter Summary (Q3 2025)<UpdateIndicators sources="SEC" /></span>
         </div>
         <div style={{ padding: '24px 28px' }}>
-        <div className="g2">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 12 }}>
             <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing Source</div>
             <div style={{ fontSize: 13, color: 'var(--text2)' }}>{quarterlyData['Q3 2025'].filing}</div>

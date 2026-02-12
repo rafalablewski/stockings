@@ -1097,12 +1097,12 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
   return (
     <>
-    <div className="card">
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
       {/* Header - responsive stacking */}
       <div style={{ marginBottom: 12 }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
           <div style={{ minWidth: 200 }}>
-            <div className="card-title" style={{ marginBottom: 4 }}>{symbol}</div>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{symbol}</span></div>
             {data && (
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 24, fontWeight: 600, fontFamily: 'Space Mono' }}>
@@ -2046,7 +2046,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       {!loading && !error && chartData.length > 0 && (
         <>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-guide</div>
-        <div className="card">
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
           <div
             onClick={() => setShowChartGuide(!showChartGuide)}
             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -2056,7 +2056,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
             aria-label="Toggle Chart Guide"
             onKeyDown={(e) => e.key === 'Enter' && setShowChartGuide(!showChartGuide)}
           >
-            <div className="card-title">Chart Guide</div>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Chart Guide</span></div>
             <span style={{ color: 'var(--text3)', fontSize: 18 }}>{showChartGuide ? '−' : '+'}</span>
           </div>
           {showChartGuide && (
