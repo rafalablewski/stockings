@@ -117,7 +117,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-consensus</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Consensus Snapshot<UpdateIndicators sources="WS" /></span>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Consensus Snapshot<UpdateIndicators sources="WS" /></span>
         </div>
         <div style={{ padding: '24px 28px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           {/* Price Target Summary */}
@@ -174,12 +174,12 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
       {/* Coverage by Firm - Grouped Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-coverage</div>
       <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Coverage by Firm</span>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Coverage by Firm</span>
         <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>{totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''} Covering<UpdateIndicators sources="WS" /></span>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>{totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''} Covering<UpdateIndicators sources="WS" /></span>
         </div>
         <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {coverage.map((cov) => {
@@ -191,9 +191,9 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
               <div
                 key={cov.firm}
                 style={{
-                  background: 'var(--surface2)',
-                  borderRadius: 12,
+                  background: 'var(--surface)',
                   border: isExpanded ? '1px solid var(--violet)' : '1px solid var(--border)',
+                  borderRadius: 16,
                   overflow: 'hidden'
                 }}
               >
@@ -201,7 +201,8 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                 <div
                   onClick={() => setExpandedFirm(isExpanded ? null : cov.firm)}
                   style={{
-                    padding: 16,
+                    padding: '20px 28px',
+                    borderBottom: isExpanded ? '1px solid var(--border)' : 'none',
                     cursor: 'pointer',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -229,7 +230,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                     </div>
 
                     {/* Current PT */}
-                    <div style={{ fontFamily: 'Space Mono', textAlign: 'right', minWidth: 60 }}>
+                    <div style={{ fontFamily: 'Space Mono, monospace', textAlign: 'right', minWidth: 60 }}>
                       <span style={{ color: 'var(--text)', fontSize: 16, fontWeight: 600 }}>
                         {cov.currentPT ? `$${cov.currentPT}` : '—'}
                       </span>
@@ -256,7 +257,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
                 {/* Expanded History */}
                 {isExpanded && (
-                  <div style={{ borderTop: '1px solid var(--border)', padding: 16, background: 'var(--surface)' }}>
+                  <div style={{ padding: '24px 28px', background: 'var(--surface)' }}>
                     <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 12 }}>
                       COVERAGE HISTORY ({cov.reports.length} entr{cov.reports.length !== 1 ? 'ies' : 'y'})
                     </div>
@@ -269,11 +270,15 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                           <div
                             key={idx}
                             style={{
-                              padding: 12,
-                              background: report.isFullReport ? 'var(--surface2)' : 'var(--surface)',
-                              borderRadius: 12,
-                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions)) ? '3px solid var(--violet)' : 'none'
+                              padding: '12px 16px',
+                              background: report.isFullReport ? 'var(--surface2)' : 'transparent',
+                              borderRadius: 8,
+                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions)) ? '3px solid var(--violet)' : 'none',
+                              transition: 'background 0.15s',
+                              cursor: 'default'
                             }}
+                            onMouseEnter={ev => { if (!report.isFullReport) ev.currentTarget.style.background = 'var(--surface2)'; }}
+                            onMouseLeave={ev => { if (!report.isFullReport) ev.currentTarget.style.background = 'transparent'; }}
                           >
                             {/* Report Header */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -296,7 +301,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                 </span>
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <span style={{ fontFamily: 'Space Mono', color: 'var(--text)', fontSize: 14 }}>
+                                <span style={{ fontFamily: 'Space Mono, monospace', color: 'var(--text)', fontSize: 14 }}>
                                   {report.priceTarget ? `$${report.priceTarget}` : '—'}
                                   {report.previousTarget && (
                                     <span style={{ color: 'var(--text3)', fontSize: 11 }}> ← ${report.previousTarget}</span>
@@ -355,7 +360,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                       <div style={{
                                         background: 'var(--surface)',
                                         padding: 12,
-                                        borderRadius: 12,
+                                        borderRadius: 8,
                                         fontSize: 12,
                                         color: 'var(--text2)',
                                         lineHeight: 1.6,
@@ -413,7 +418,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                     {report.estimates && report.estimates.length > 0 && (
                                       <div style={{ marginBottom: 12 }}>
                                         <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 6 }}>ESTIMATES</div>
-                                        <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                                        <div style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
                                           <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 80px)', borderBottom: '1px solid var(--border)' }}>
                                             {['Metric', 'FY24', 'FY25', 'FY26', 'FY27', 'FY28'].map(h => (
                                               <span key={h} style={{ padding: '10px 12px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: h === 'Metric' ? 'left' : 'right' }}>{h}</span>

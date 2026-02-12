@@ -3191,10 +3191,10 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div style={{ padding: '24px 28px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-            <Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="violet" updateSource="SEC" />
-            <Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="blue" updateSource="SEC" />
-            <Card label="Basic Mkt Cap" value={`$${((currentShares * 1e6 * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Outstanding × Price" color="green" updateSource={['SEC', 'MARKET']} />
-            <Card label="FD Mkt Cap" value={`$${((totalFD * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Fully diluted" color="yellow" updateSource={['SEC', 'MARKET']} />
+            <div style={{ background: 'var(--surface)', padding: 16 }}><Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="violet" updateSource="SEC" /></div>
+            <div style={{ background: 'var(--surface)', padding: 16 }}><Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="blue" updateSource="SEC" /></div>
+            <div style={{ background: 'var(--surface)', padding: 16 }}><Card label="Basic Mkt Cap" value={`$${((currentShares * 1e6 * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Outstanding × Price" color="green" updateSource={['SEC', 'MARKET']} /></div>
+            <div style={{ background: 'var(--surface)', padding: 16 }}><Card label="FD Mkt Cap" value={`$${((totalFD * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Fully diluted" color="yellow" updateSource={['SEC', 'MARKET']} /></div>
           </div>
         </div>
       </div>
@@ -7716,7 +7716,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
         
         {/* Ecosystem Health Rating */}
-        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(0,212,170,0.08))', borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
+        <div style={{ padding: 16, background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Ecosystem Health</div>
@@ -7748,7 +7748,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       {/* Summary */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-summary</div>
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
-        <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 12, border: '1px solid rgba(126,231,135,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
           <div style={{ fontWeight: 600, color: 'var(--mint)' }}>What's New ({current.source})</div>
           <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
             {current.executiveSummary.whatsNew.map((item, i) => (
@@ -7791,8 +7791,8 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
         
         {/* Ethereum Ecosystem Catalyst */}
-        <div style={{ padding: 12, background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,212,170,0.1))', border: '1px solid var(--border)', borderRadius: 12, fontSize: 13, color: 'var(--text2)' }}>
-          <div style={{ fontWeight: 600, color: 'var(--violet)' }}>🔗 Ethereum Ecosystem Catalyst</div>
+        <div style={{ padding: 12, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', border: '1px solid var(--border)', borderRadius: 12, fontSize: 13, color: 'var(--text2)' }}>
+          <div style={{ fontWeight: 600, color: 'var(--violet)' }}>Ethereum Ecosystem Catalyst</div>
           <p style={{ }}>
             <strong style={{ color: 'var(--mint)' }}>Adoption Thesis:</strong> As more companies build on Ethereum (DeFi protocols, tokenized assets, on-chain payments, gaming), network activity and transaction fees increase. Greater Ethereum utility drives fundamental demand for ETH, directly benefiting BMNR's treasury holdings.
           </p>
@@ -7807,7 +7807,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div>
-            <h4 style={{ color: 'var(--mint)' }}>Moat Sources</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--mint)', display: 'block', marginBottom: 8 }}>Moat Sources</span>
             {current.moatSources.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
                 <div>
@@ -7819,7 +7819,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             ))}
           </div>
           <div>
-            <h4 style={{ color: 'var(--coral)' }}>Competitive Threats</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--coral)', display: 'block', marginBottom: 8 }}>Competitive Threats</span>
             {current.moatThreats.map((t, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
                 <div>
@@ -7851,7 +7851,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text)' }}>{r.risk}</span>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: r.severity === 'Critical' ? 'rgba(255,107,107,0.2)' : r.severity === 'High' ? 'rgba(210,153,34,0.2)' : 'rgba(100,149,237,0.2)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
+                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: r.severity === 'Critical' ? 'color-mix(in srgb, var(--coral) 20%, transparent)' : r.severity === 'High' ? 'color-mix(in srgb, var(--gold) 20%, transparent)' : 'color-mix(in srgb, var(--sky) 20%, transparent)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
                   <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
                 </div>
               </div>
@@ -7871,10 +7871,10 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* Part 1: Multi-Perspective Risk Evaluation */}
-        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Four Perspectives</h4>
-        
+        <div style={{ paddingBottom: 8, borderBottom: '1px solid var(--border)', marginBottom: 8 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text)' }}>Risk Evaluation — Four Perspectives</span></div>
+
         {/* CFA Level III Perspective */}
-        <div style={{ background: 'rgba(139,92,246,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--violet) 5%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--violet)', color: 'white', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Portfolio Construction & Factor Analysis</span>
@@ -7889,14 +7889,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             <p style={{ }}>
               <strong>Governance & ESG:</strong> Founder-controlled via Class B shares. Management pivoted successfully from BTC mining — demonstrates adaptability but also thesis drift risk. ESG profile mixed: PoS staking is energy-efficient, but crypto association carries headline risk. No dividend history despite recent announcement — track record TBD.
             </p>
-            <p style={{ padding: 10, background: 'rgba(139,92,246,0.1)', borderRadius: 6, borderLeft: '3px solid var(--violet)' }}>
-              <strong style={{ color: 'var(--violet)' }}>📊 Ecosystem Assessment:</strong> {current.perspectives.cfa.ecosystemView}
+            <p style={{ padding: 10, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', borderRadius: 6, borderLeft: '3px solid var(--violet)' }}>
+              <strong style={{ color: 'var(--violet)' }}>Ecosystem Assessment:</strong> {current.perspectives.cfa.ecosystemView}
             </p>
           </div>
         </div>
 
         {/* Hedge Fund Manager Perspective */}
-        <div style={{ background: 'rgba(210,153,34,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(210,153,34,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--gold) 5%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Alpha Generation & Event Catalysts</span>
@@ -7911,14 +7911,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             <p style={{ }}>
               <strong>Cycle Positioning:</strong> ETH treasury equities are leveraged bets on crypto cycles. In bull markets, NAV premiums expand and stock outperforms ETH. In bear markets, premiums compress and stock underperforms ETH. We're in early-to-mid cycle based on halving timing. Aggressive accumulation phase, but maintain stop-losses for cycle turn protection.
             </p>
-            <p style={{ padding: 10, background: 'rgba(210,153,34,0.1)', borderRadius: 6, borderLeft: '3px solid var(--gold)' }}>
-              <strong style={{ color: 'var(--gold)' }}>📊 Ecosystem Assessment:</strong> {current.perspectives.hedgeFund.ecosystemView}
+            <p style={{ padding: 10, background: 'color-mix(in srgb, var(--gold) 10%, transparent)', borderRadius: 6, borderLeft: '3px solid var(--gold)' }}>
+              <strong style={{ color: 'var(--gold)' }}>Ecosystem Assessment:</strong> {current.perspectives.hedgeFund.ecosystemView}
             </p>
           </div>
         </div>
 
         {/* CIO/CIS Institutional Perspective */}
-        <div style={{ background: 'rgba(100,149,237,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(100,149,237,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--sky) 5%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Strategic Allocation & Fiduciary Considerations</span>
@@ -7933,14 +7933,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             <p style={{ }}>
               <strong>Reputational Risk:</strong> Small-cap crypto equity carries headline risk. However, the pivot from BTC mining to ETH treasury is defensible ("we followed the yield opportunity"). If questioned: "It's a regulated equity providing exposure to Ethereum staking infrastructure, not speculative tokens." The yield narrative differentiates from pure crypto speculation.
             </p>
-            <p style={{ padding: 10, background: 'rgba(100,149,237,0.1)', borderRadius: 6, borderLeft: '3px solid var(--sky)' }}>
-              <strong style={{ color: 'var(--sky)' }}>📊 Ecosystem Assessment:</strong> {current.perspectives.cio.ecosystemView}
+            <p style={{ padding: 10, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', borderRadius: 6, borderLeft: '3px solid var(--sky)' }}>
+              <strong style={{ color: 'var(--sky)' }}>Ecosystem Assessment:</strong> {current.perspectives.cio.ecosystemView}
             </p>
           </div>
         </div>
 
         {/* Technical Analyst Perspective */}
-        <div style={{ background: 'rgba(52,211,153,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(52,211,153,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Chart Patterns & Price Action</span>
@@ -7955,14 +7955,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             <p style={{ }}>
               <strong>NAV Premium Cycles:</strong> NAV premium/discount provides tactical entry/exit signals independent of price. Accumulate aggressively below 1.0x NAV (discount = free money). Trim 20-30% above 1.5x NAV. Current Bollinger Band squeeze on weekly suggests imminent volatility expansion — prepare for directional move.
             </p>
-            <p style={{ padding: 10, background: 'rgba(52,211,153,0.1)', borderRadius: 6, borderLeft: '3px solid #34d399' }}>
-              <strong style={{ color: '#34d399' }}>📊 Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
+            <p style={{ padding: 10, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', borderRadius: 6, borderLeft: '3px solid #34d399' }}>
+              <strong style={{ color: '#34d399' }}>Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
             </p>
           </div>
         </div>
 
         {/* Part 2: Key Strategic Questions */}
-        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Key Strategic Questions</h4>
+        <div style={{ paddingBottom: 8, borderBottom: '1px solid var(--border)', marginBottom: 8 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text)' }}>Key Strategic Questions</span></div>
 
         {/* Would I Buy Now? */}
         <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12 }}>
@@ -7987,19 +7987,19 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12 }}>
           <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>What Can I Expect?</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
-            <div style={{ background: 'rgba(255,193,7,0.1)', padding: 12, borderRadius: 12, border: '1px solid rgba(255,193,7,0.2)' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--gold) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--gold)', fontSize: 13 }}>Short-Term (0-6 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 Expect ETH-correlated volatility ±30-50%. NAV premium will fluctuate with sentiment. Key catalysts: MAVAN progress, ETH accumulation PRs, staking deployment updates. Trading range tied to ETH — if ETH $3-5K, expect BMNR $3-8 range (rough).
               </div>
             </div>
-            <div style={{ background: 'rgba(100,149,237,0.1)', padding: 12, borderRadius: 12, border: '1px solid rgba(100,149,237,0.2)' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--sky) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13 }}>Mid-Term (6-18 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 If ETH cycle continues upward, NAV premium expansion drives outsized returns. Target: 2-4x from entry if ETH doubles and premium expands. Risk: cycle reversal could mean 60-80% drawdown. MAVAN fully operational should validate yield thesis.
               </div>
             </div>
-            <div style={{ background: 'rgba(139,92,246,0.1)', padding: 12, borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--violet) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 13 }}>Long-Term (3-5 years)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 If ETH reaches $10-20K cycle highs and BMNR executes on accumulation, this could be a 5-10x from current levels. But crypto cycles are brutal — expect at least one 70%+ drawdown along the way. Diamond hands required. Position size must allow holding through drawdowns.
@@ -8028,14 +8028,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
         
         {/* Ecosystem-Based Triggers */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(0,212,170,0.08))', padding: 16, borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
-          <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 15 }}>📊 Ecosystem-Based Triggers</div>
+        <div style={{ background: 'color-mix(in srgb, var(--violet) 8%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
+          <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 15 }}>Ecosystem-Based Triggers</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>Monitor these Ethereum ecosystem signals (see Ethereum tab) alongside BMNR-specific metrics</div>
-          
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {/* Entry Signals */}
             <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 12 }}>
-              <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 13 }}>✅ Entry Signals (Consider Adding)</div>
+              <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 13 }}>Entry Signals (Consider Adding)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {[
                   'ETF net flows positive 3+ weeks',
@@ -8053,7 +8053,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             
             {/* Exit Signals */}
             <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 12 }}>
-              <div style={{ fontWeight: 600, color: 'var(--coral)', fontSize: 13 }}>⚠️ Exit Signals (Consider Reducing)</div>
+              <div style={{ fontWeight: 600, color: 'var(--coral)', fontSize: 13 }}>Exit Signals (Consider Reducing)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {[
                   'ETF outflows >$500M for 2+ weeks',
@@ -8071,7 +8071,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             
             {/* Hold Signals */}
             <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 12 }}>
-              <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13 }}>⏸️ Hold Signals (Stay Course)</div>
+              <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13 }}>Hold Signals (Stay Course)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {[
                   'Mixed or flat ETF flows',
@@ -8095,7 +8095,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       <CollapsibleSection id="position" title="Position Sizing" sources="WS">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div>
-            <h4 style={{ color: 'var(--text)', fontSize: 14 }}>Recommended Allocation</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text)', display: 'block', marginBottom: 8 }}>Recommended Allocation</span>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {Object.entries(current.positionSizing).map(([key, val]) => (
                 <div key={key} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}>
@@ -8106,7 +8106,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             </div>
           </div>
           <div>
-            <h4 style={{ color: 'var(--text)', fontSize: 14 }}>Accumulation Zones</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text)', display: 'block', marginBottom: 8 }}>Accumulation Zones</span>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {current.accumulation.map((z, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}>
@@ -8119,7 +8119,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* Portfolio Context — Unified framework for multi-asset allocation */}
-        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(100,149,237,0.08))', borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
+        <div style={{ padding: 16, background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
           <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 14 }}>Portfolio Construction Context</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>For multi-asset portfolios holding BMNR alongside other positions</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, marginTop: 12 }}>
@@ -8157,7 +8157,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full record of all investment thesis updates. Never deleted.</div>
         <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
-            <div key={i} style={{ background: i === 0 ? 'rgba(126,231,135,0.05)' : 'var(--surface2)', padding: 16, borderRadius: 12, border: i === 0 ? '1px solid rgba(126,231,135,0.2)' : '1px solid var(--border)' }}>
+            <div key={i} style={{ background: i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)', padding: 16, borderRadius: 12, border: i === 0 ? '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' : '1px solid var(--border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontWeight: 600, color: 'var(--text)' }}>{a.date}</span>

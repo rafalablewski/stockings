@@ -5768,7 +5768,7 @@ const QuarterlyMetricsPanel = () => {
       {/* Historical Trend Charts */}
       {/* ROW 1: Cash Position & OpEx */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-1</div>
-      <div className="g2">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--cyan)', display: 'flex', alignItems: 'center', gap: 8 }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></span>
@@ -5827,7 +5827,7 @@ const QuarterlyMetricsPanel = () => {
               </div>
               {quarterlyData[opExQuarter]?.opExEngineering && (
                 <>
-                  <div className="g2" style={{ fontSize: 11 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 11 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'var(--text3)' }}>Engineering:</span>
                       <span style={{ color: 'var(--violet)' }}>${quarterlyData[opExQuarter].opExEngineering}M</span>
@@ -5887,7 +5887,7 @@ const QuarterlyMetricsPanel = () => {
 
       {/* ROW 2: Share Count & Market Cap */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-2</div>
-      <div className="g2">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></span>
@@ -5945,7 +5945,7 @@ const QuarterlyMetricsPanel = () => {
 
       {/* ROW 3: Company-Specific (Satellites) */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-3</div>
-      <div className="g2">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--cyan)', display: 'flex', alignItems: 'center', gap: 8 }}>Satellites Deployed<UpdateIndicators sources="PR" /></span>
@@ -10565,7 +10565,7 @@ const InvestmentTab = () => {
       {/* Summary */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-summary</div>
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
-        <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 12, border: '1px solid rgba(126,231,135,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
           <div style={{ fontWeight: 600, color: 'var(--mint)' }}>What's New ({current.source})</div>
           <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
             {current.executiveSummary.whatsNew.map((item, i) => (
@@ -10607,7 +10607,7 @@ const InvestmentTab = () => {
       <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div>
-            <h4 style={{ color: 'var(--mint)' }}>Moat Sources</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--mint)', display: 'block', marginBottom: 8 }}>Moat Sources</span>
             {current.moatSources.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
                 <div>
@@ -10619,7 +10619,7 @@ const InvestmentTab = () => {
             ))}
           </div>
           <div>
-            <h4 style={{ color: 'var(--coral)' }}>Competitive Threats</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--coral)', display: 'block', marginBottom: 8 }}>Competitive Threats</span>
             {current.moatThreats.map((t, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 6 }}>
                 <div>
@@ -10645,7 +10645,7 @@ const InvestmentTab = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text)' }}>{r.risk}</span>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: r.severity === 'Critical' ? 'rgba(255,107,107,0.2)' : r.severity === 'High' ? 'rgba(210,153,34,0.2)' : 'rgba(100,149,237,0.2)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
+                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: r.severity === 'Critical' ? 'color-mix(in srgb, var(--coral) 20%, transparent)' : r.severity === 'High' ? 'color-mix(in srgb, var(--gold) 20%, transparent)' : 'color-mix(in srgb, var(--sky) 20%, transparent)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
                   <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
                 </div>
               </div>
@@ -10665,10 +10665,10 @@ const InvestmentTab = () => {
         </div>
 
         {/* Part 1: Multi-Perspective Risk Evaluation */}
-        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Four Perspectives</h4>
-        
+        <div style={{ paddingBottom: 8, borderBottom: '1px solid var(--border)', marginBottom: 8 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text)' }}>Risk Evaluation — Four Perspectives</span></div>
+
         {/* CFA Level III Perspective */}
-        <div style={{ background: 'rgba(6,182,212,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(6,182,212,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--cyan) 5%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--cyan) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--cyan)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Portfolio Construction & Factor Analysis</span>
@@ -10687,7 +10687,7 @@ const InvestmentTab = () => {
         </div>
 
         {/* Hedge Fund Manager Perspective */}
-        <div style={{ background: 'rgba(234,179,8,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(234,179,8,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--gold) 5%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Alpha Generation & Event Catalysts</span>
@@ -10706,7 +10706,7 @@ const InvestmentTab = () => {
         </div>
 
         {/* CIO/CIS Institutional Perspective */}
-        <div style={{ background: 'rgba(100,149,237,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(100,149,237,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--sky) 5%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Strategic Allocation & Fiduciary Considerations</span>
@@ -10725,7 +10725,7 @@ const InvestmentTab = () => {
         </div>
 
         {/* Technical Analyst Perspective */}
-        <div style={{ background: 'rgba(52,211,153,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(52,211,153,0.2)' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Chart Patterns & Price Action</span>
@@ -10740,14 +10740,14 @@ const InvestmentTab = () => {
             <p style={{ }}>
               <strong>Catalyst Trading:</strong> Satellite launch dates provide predictable volatility windows. Build position 2-3 weeks before scheduled launches. Take partial profits into strength post-launch. Use RSI divergence to identify exhaustion after catalyst-driven rallies. Relative strength vs NASDAQ positive — outperforming growth cohort.
             </p>
-            <p style={{ padding: 10, background: 'rgba(52,211,153,0.1)', borderRadius: 6, borderLeft: '3px solid #34d399' }}>
-              <strong style={{ color: '#34d399' }}>📊 Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
+            <p style={{ padding: 10, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', borderRadius: 6, borderLeft: '3px solid #34d399' }}>
+              <strong style={{ color: '#34d399' }}>Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
             </p>
           </div>
         </div>
 
         {/* Part 2: Key Strategic Questions */}
-        <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Key Strategic Questions</h4>
+        <div style={{ paddingBottom: 8, borderBottom: '1px solid var(--border)', marginBottom: 8 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text)' }}>Key Strategic Questions</span></div>
 
         {/* Would I Buy Now? */}
         <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12 }}>
@@ -10772,19 +10772,19 @@ const InvestmentTab = () => {
         <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12 }}>
           <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>What Can I Expect?</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
-            <div style={{ background: 'rgba(234,179,8,0.1)', padding: 12, borderRadius: 12, border: '1px solid rgba(234,179,8,0.2)' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--gold) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--gold)', fontSize: 13 }}>Short-Term (0-6 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 Catalyst-rich period: BB7-13 launches, US commercial service initiation, Q4 earnings. Expect 30-50% swings around events. Successful launches = 10-20% pops, then consolidation. Trading range likely $20-45 depending on execution. Volatility is your friend if sized correctly.
               </div>
             </div>
-            <div style={{ background: 'rgba(100,149,237,0.1)', padding: 12, borderRadius: 12, border: '1px solid rgba(100,149,237,0.2)' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--sky) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13 }}>Mid-Term (6-18 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 Revenue recognition begins — first real P&L validation. If penetration tracks to 1%+, narrative shifts from "will it work?" to "how big can it get?" Multiple expansion potential. Target range: $50-100 if execution continues. This is where the thesis gets proven or broken.
               </div>
             </div>
-            <div style={{ background: 'rgba(6,182,212,0.1)', padding: 12, borderRadius: 12, border: '1px solid rgba(6,182,212,0.2)' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--cyan) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--cyan)', fontSize: 13 }}>Long-Term (3-5 years)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 At scale (2%+ penetration, 60M+ subs), ASTS could generate $5-10B revenue at 50%+ EBITDA margins. At telco multiples (8-12x EBITDA), that's $40-120B EV vs ~$12B today. 3-10x return potential. But crypto-like volatility along the way — expect multiple 40%+ drawdowns.
@@ -10818,7 +10818,7 @@ const InvestmentTab = () => {
       <CollapsibleSection id="position" title="Position Sizing & Price Targets" sources="WS">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div>
-            <h4 style={{ color: 'var(--text)', fontSize: 14 }}>Recommended Allocation</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text)', display: 'block', marginBottom: 8 }}>Recommended Allocation</span>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {Object.entries(current.positionSizing).map(([key, val]) => (
                 <div key={key} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}>
@@ -10829,7 +10829,7 @@ const InvestmentTab = () => {
             </div>
           </div>
           <div>
-            <h4 style={{ color: 'var(--text)', fontSize: 14 }}>Price Targets by Timeframe</h4>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text)', display: 'block', marginBottom: 8 }}>Price Targets by Timeframe</span>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {current.priceTargets.map((t, i) => (
                 <div key={i} style={{ padding: '8px 12px', background: 'var(--surface2)', borderRadius: 6, fontSize: 13 }}>
@@ -10845,7 +10845,7 @@ const InvestmentTab = () => {
         </div>
 
         {/* Portfolio Context — Unified framework for multi-asset allocation */}
-        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(100,149,237,0.08))', borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
+        <div style={{ padding: 16, background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
           <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 14 }}>Portfolio Construction Context</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>For multi-asset portfolios holding ASTS alongside other positions</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, marginTop: 12 }}>
@@ -10877,7 +10877,7 @@ const InvestmentTab = () => {
         <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full record of all investment thesis updates. Never deleted. Tracking since Q3 2022.</div>
         <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
-            <div key={i} style={{ background: i === 0 ? 'rgba(126,231,135,0.05)' : 'var(--surface2)', padding: 16, borderRadius: 12, border: i === 0 ? '1px solid rgba(126,231,135,0.2)' : '1px solid var(--border)' }}>
+            <div key={i} style={{ background: i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)', padding: 16, borderRadius: 12, border: i === 0 ? '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' : '1px solid var(--border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontWeight: 600, color: 'var(--text)' }}>{a.date}</span>
@@ -10900,11 +10900,11 @@ const InvestmentTab = () => {
                     </div>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-                    <div style={{ padding: 12, background: 'rgba(126,231,135,0.1)', borderRadius: 6 }}>
+                    <div style={{ padding: 12, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', borderRadius: 6 }}>
                       <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 11 }}>Why It Mattered</div>
                       <div style={{ fontSize: 12, color: 'var(--text2)' }}>{a.whyItMatters}</div>
                     </div>
-                    <div style={{ padding: 12, background: 'rgba(139,92,246,0.1)', borderRadius: 6 }}>
+                    <div style={{ padding: 12, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', borderRadius: 6 }}>
                       <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 11 }}>Looking Ahead (at the time)</div>
                       <div style={{ fontSize: 12, color: 'var(--text2)' }}>{a.lookingAhead}</div>
                     </div>
