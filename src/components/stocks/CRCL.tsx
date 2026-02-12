@@ -2591,63 +2591,66 @@ const CRCLQuarterlyMetricsPanel = () => {
     <>
       {/* #quarterly-metrics */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#quarterly-metrics</div>
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
         {/* Summary Badges - ASTS pattern */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          <span className="pill" style={{ background: 'color-mix(in srgb, var(--cyan) 15%, transparent)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
+          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--cyan) 15%, transparent)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
             {quarterlyData.length} quarters of data ({quarterlyData[0].quarter} - {quarterlyData[quarterlyData.length-1].quarter})
           </span>
-          <span className="pill" style={{ background: 'color-mix(in srgb, var(--mint) 15%, transparent)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
+          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--mint) 15%, transparent)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
             Revenue: ${quarterlyData[0].totalRevenue}M → ${quarterlyData[quarterlyData.length-1].totalRevenue}M
           </span>
-          <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 15%, transparent)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>
+          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--gold) 15%, transparent)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>
             Cash: ${(quarterlyData[0].cashPosition/1000).toFixed(2)}B → ${(quarterlyData[quarterlyData.length-1].cashPosition/1000).toFixed(2)}B
           </span>
-          <span className="pill" style={{ background: 'color-mix(in srgb, var(--violet) 15%, transparent)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
+          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--violet) 15%, transparent)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
             USDC: ${quarterlyData[0].usdcCirculation.toFixed(1)}B → ${quarterlyData[quarterlyData.length-1].usdcCirculation.toFixed(1)}B
           </span>
         </div>
 
         {/* Quarterly Table - ASTS dynamic pattern */}
         <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
-                {quarterlyData.map((d, idx) => (
-                  <th key={d.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === 0 ? { background: 'var(--accent-dim)' } : {}) }}>
-                    {d.quarter.replace('Q', '').replace(' ', "'")}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {metrics.map(metric => (
-                <tr key={metric.label}>
-                  <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
-                    {metric.label}
-                  </td>
-                  {quarterlyData.map((d, idx) => {
-                    const val = d[metric.key as keyof typeof d] as number;
-                    const cellColor = metric.color(val);
-                    const isLatestQuarter = idx === 0;
-                    return (
-                      <td
-                        key={d.quarter}
-                        className="r"
-                        style={{
-                          ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
-                          ...(cellColor ? { color: cellColor } : {})
-                        }}
-                      >
-                        {metric.format(val)}
-                      </td>
-                    );
-                  })}
-                </tr>
+          <div>
+            {/* Header row */}
+            <div style={{ display: 'grid', gridTemplateColumns: `minmax(100px, 1.5fr) repeat(${quarterlyData.length}, minmax(70px, 1fr))`, borderBottom: '1px solid var(--border)' }}>
+              <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', position: 'sticky', left: 0 }}>Metric</span>
+              {quarterlyData.map((d, idx) => (
+                <span key={d.quarter} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: idx === 0 ? 'var(--accent-dim)' : 'var(--surface2)', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                  {d.quarter.replace('Q', '').replace(' ', "'")}
+                </span>
               ))}
-            </tbody>
-          </table>
+            </div>
+            {/* Data rows */}
+            {metrics.map(metric => (
+              <div key={metric.label} style={{ display: 'grid', gridTemplateColumns: `minmax(100px, 1.5fr) repeat(${quarterlyData.length}, minmax(70px, 1fr))`, borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <span style={{ padding: '12px 16px', fontWeight: 500, position: 'sticky', left: 0, background: 'var(--bg1)' }}>
+                  {metric.label}
+                </span>
+                {quarterlyData.map((d, idx) => {
+                  const val = d[metric.key as keyof typeof d] as number;
+                  const cellColor = metric.color(val);
+                  const isLatestQuarter = idx === 0;
+                  return (
+                    <span
+                      key={d.quarter}
+                      style={{
+                        padding: '12px 16px',
+                        textAlign: 'right',
+                        ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
+                        ...(cellColor ? { color: cellColor } : {})
+                      }}
+                    >
+                      {metric.format(val)}
+                    </span>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Footnotes - ASTS pattern */}
@@ -2660,8 +2663,12 @@ const CRCLQuarterlyMetricsPanel = () => {
         {/* Latest Quarter Summary - ASTS pattern */}
         <div style={{ }}>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#latest-quarter-summary</div>
-          <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary ({latestQuarter.quarter})<UpdateIndicators sources="SEC" /></div>
-            <div className="g2">
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Latest Quarter Summary ({latestQuarter.quarter})<UpdateIndicators sources="SEC" /></span>
+            </div>
+            <div style={{ padding: '24px 28px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
               <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
                 <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing Source</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.filing}</div>
@@ -2687,11 +2694,13 @@ const CRCLQuarterlyMetricsPanel = () => {
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>${latestQuarter.adjustedEbitda}M</div>
               </div>
             </div>
+            </div>
           </div>
         </div>
 
         <div style={{ fontSize: 11, color: 'var(--text3)' }}>
           Data sourced from SEC filings (10-K, 10-Q). Latest filing: {latestQuarter.filing}.
+        </div>
         </div>
       </div>
 

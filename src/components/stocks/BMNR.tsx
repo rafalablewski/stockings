@@ -7694,6 +7694,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
       </div>
 
+      {/* Section Divider: Ratings & Scoring */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Ratings & Scoring</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+
       {/* Investment Scorecard */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-scorecard</div>
       <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
@@ -7733,6 +7739,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
       </CollapsibleSection>
 
+      {/* Section Divider: Investment Thesis */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Investment Thesis</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+
       {/* Summary */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-summary</div>
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
@@ -7756,6 +7768,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
           </p>
         </div>
       </CollapsibleSection>
+
+      {/* Section Divider: Growth Drivers */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Growth Drivers</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
 
       {/* Growth Drivers */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-growth</div>
@@ -7817,6 +7835,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
           <strong>Moat Durability:</strong> A- (Strong). Scale advantage is nearly unassailable — would take years and billions for competitors to catch up. Yield advantage over BTC treasuries is permanent. Key risk is ETH price, not competitive dynamics.
         </div>
       </CollapsibleSection>
+
+      {/* Section Divider: Risk Assessment */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Risk Assessment</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
 
       {/* Risk Matrix */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-risks</div>
@@ -8120,6 +8144,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
           </div>
         </div>
       </CollapsibleSection>
+
+      {/* Section Divider: Historical Analysis */}
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Historical Analysis</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
 
       {/* Analysis Archive */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-archive</div>

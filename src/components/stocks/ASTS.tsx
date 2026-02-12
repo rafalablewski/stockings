@@ -9209,16 +9209,15 @@ const TimelineTab = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Topic</span>
           {selectedTopics.length > 0 && (
-            <button 
+            <button
               onClick={() => setSelectedTopics([])}
-              className="pill"
-              style={{ fontSize: 11 }}
+              style={{ padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }}
             >
               Clear ({selectedTopics.length})
             </button>
           )}
         </div>
-        <div className="pills">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 0 }}>
           {Object.entries(topicTags).map(([topic, style]) => {
             const isSelected = selectedTopics.includes(topic);
             const count = timelineEvents.filter(p => detectTopics(p).includes(topic)).length;
@@ -9226,8 +9225,10 @@ const TimelineTab = () => {
               <button
                 key={topic}
                 onClick={() => toggleTopic(topic)}
-                className={`pill ${isSelected ? 'active' : ''}`}
-                style={isSelected ? { background: style.color, borderColor: style.color } : {}}
+                style={isSelected
+                  ? { padding: '4px 12px', fontSize: 11, fontWeight: 500, border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", background: style.color, borderColor: style.color, color: 'var(--accent)' }
+                  : { padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }
+                }
               >
                 {style.label} ({count})
               </button>
@@ -9242,18 +9243,23 @@ const TimelineTab = () => {
       </div>
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="pills" style={{ }}>
-          <button className={`pill ${filterCategory === 'ALL' ? 'active' : ''}`} onClick={() => setFilterCategory('ALL')}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 0 }}>
+          <button style={filterCategory === 'ALL'
+            ? { padding: '4px 12px', fontSize: 11, fontWeight: 500, border: '1px solid var(--accent)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)' }
+            : { padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }
+          } onClick={() => setFilterCategory('ALL')}>
             All ({timelineEvents.length})
           </button>
           {Object.entries(categoryColors).map(([cat, style]) => (
-            <button key={cat} className={`pill ${filterCategory === cat ? 'active' : ''}`} onClick={() => setFilterCategory(cat)}>
+            <button key={cat} style={filterCategory === cat
+              ? { padding: '4px 12px', fontSize: 11, fontWeight: 500, border: '1px solid var(--accent)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)' }
+              : { padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }
+            } onClick={() => setFilterCategory(cat)}>
               {style.label} ({timelineEvents.filter(p => p.category === cat).length})
             </button>
           ))}
         </div>
-        <button 
-          className="pill"
+        <button
           onClick={() => {
             if (expanded.size === filteredEntries.length) {
               setExpanded(new Set());
@@ -9261,7 +9267,7 @@ const TimelineTab = () => {
               setExpanded(new Set(filteredEntries.map((_, i) => i)));
             }
           }}
-          style={{ whiteSpace: 'nowrap' }}
+          style={{ padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
         >
           {expanded.size === filteredEntries.length ? '⊟ Collapse All' : '⊞ Expand All'}
         </button>
@@ -9276,37 +9282,119 @@ const TimelineTab = () => {
             else next.add(i);
             setExpanded(next);
           };
-          const catClass = entry.category.toLowerCase();
-          const verdictClass = entry.impact === 'Positive' ? 'positive' : entry.impact === 'Negative' ? 'negative' : 'neutral';
-          
+          const catColorMap: Record<string, { bg: string; color: string }> = {
+            guidance: { bg: 'rgba(168,85,247,0.15)', color: '#c084fc' },
+            data: { bg: 'rgba(59,130,246,0.15)', color: '#60a5fa' },
+            event: { bg: 'rgba(234,179,8,0.15)', color: '#facc15' },
+            launch: { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
+          };
+          const catKey = entry.category.toLowerCase();
+          const catStyle = catColorMap[catKey] || { bg: 'var(--surface3)', color: 'var(--text3)' };
+
+          const verdictStyleMap: Record<string, { bg: string; color: string }> = {
+            Positive: { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
+            Negative: { bg: 'rgba(239,68,68,0.15)', color: '#f87171' },
+            Neutral: { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8' },
+          };
+          const vStyle = verdictStyleMap[entry.impact] || verdictStyleMap.Neutral;
+
+          const metaValueColor = entry.impact === 'Positive' ? '#4ade80' : entry.impact === 'Negative' ? '#f87171' : 'var(--text)';
+
           return (
-            <div key={i} className={`timeline-item ${isExpanded ? 'expanded' : ''}`}>
-              <div className="timeline-header" onClick={toggleExpand}>
-                <div className="t-date">{entry.date}</div>
-                <div className={`t-cat ${catClass}`}>{entry.category}</div>
-                <div className="t-event">{entry.title}</div>
-                <div className={`t-verdict ${verdictClass}`}>
+            <div key={i} style={{
+              border: isExpanded ? '1px solid var(--accent)' : '1px solid var(--border)',
+              borderRadius: 12,
+              marginBottom: 0,
+              overflow: 'hidden',
+              transition: 'all 0.2s',
+              background: isExpanded ? 'var(--surface2)' : 'var(--surface)',
+            }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '100px 100px 1fr auto auto',
+                gap: 16,
+                padding: '18px 20px',
+                cursor: 'pointer',
+                alignItems: 'center',
+                transition: 'background 0.2s',
+              }} onClick={toggleExpand}>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: 'var(--accent)', fontWeight: 600 }}>{entry.date}</div>
+                <div style={{
+                  fontSize: 10,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.8px',
+                  padding: '5px 10px',
+                  borderRadius: 5,
+                  fontWeight: 600,
+                  background: catStyle.bg,
+                  color: catStyle.color,
+                  width: 'fit-content',
+                }}>{entry.category}</div>
+                <div style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500, lineHeight: 1.5 }}>{entry.title}</div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  background: vStyle.bg,
+                  color: vStyle.color,
+                }}>
                   {entry.impact === 'Positive' && '↑'}
                   {entry.impact === 'Negative' && '↓'}
                   {entry.impact === 'Neutral' && '→'}
                   {entry.impact?.toLowerCase() || 'neutral'}
                 </div>
-                <div className="t-toggle">▼</div>
+                <div style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
+                  background: isExpanded ? 'var(--accent)' : 'var(--surface3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 18,
+                  color: isExpanded ? 'var(--bg)' : 'var(--text3)',
+                  transition: 'all 0.2s',
+                  transform: isExpanded ? 'rotate(180deg)' : 'none',
+                }}>▼</div>
               </div>
-              <div className="timeline-details">
-                <div className="t-details-content">
-                  <div className="t-details-text">
+              <div style={{
+                maxHeight: isExpanded ? 2000 : 0,
+                overflow: 'hidden',
+                transition: 'max-height 0.3s ease, padding 0.3s ease',
+                background: 'var(--surface2)',
+                borderTop: '1px solid var(--border)',
+                padding: isExpanded ? 20 : 0,
+              }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24 }}>
+                  <div style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text2)' }}>
                     <p style={{ color: 'var(--text2)' }}>{entry.summary}</p>
-                    <ul>
+                    <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
                       {entry.details.map((detail, j) => (
-                        <li key={j}>{detail}</li>
+                        <li key={j} style={{ display: 'flex', gap: 8, marginBottom: 0 }}>
+                          <span style={{ color: 'var(--accent)', fontWeight: 'bold' }}>•</span>
+                          {detail}
+                        </li>
                       ))}
                     </ul>
                     {/* Topic Tags */}
                     {detectTopics(entry).length > 0 && (
-                      <div className="t-topic-tags">
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
                         {detectTopics(entry).filter(topic => topicTags[topic]).map(topic => (
-                          <span key={topic} className="t-topic-tag" style={{ background: topicTags[topic].color }}>
+                          <span key={topic} style={{
+                            fontSize: 10,
+                            padding: '3px 8px',
+                            borderRadius: 4,
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            background: topicTags[topic].color,
+                          }}>
                             {topicTags[topic].label}
                           </span>
                         ))}
@@ -9321,19 +9409,19 @@ const TimelineTab = () => {
                       </div>
                     )}
                   </div>
-                  <div className="t-details-meta">
-                    <div className="t-meta-item">
-                      <div className="t-meta-label">Impact</div>
-                      <div className={`t-meta-value ${verdictClass === 'positive' ? 'green' : verdictClass === 'negative' ? 'red' : ''}`}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 180 }}>
+                    <div style={{ background: 'var(--surface3)', padding: '12px 16px', borderRadius: 8 }}>
+                      <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', marginBottom: 0 }}>Impact</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: metaValueColor }}>
                         {entry.impact === 'Positive' && '● Bullish'}
                         {entry.impact === 'Negative' && '● Bearish'}
                         {entry.impact === 'Neutral' && '● Neutral'}
                         {!entry.impact && '● Unknown'}
                       </div>
                     </div>
-                    <div className="t-meta-item">
-                      <div className="t-meta-label">Sources</div>
-                      <div className="t-meta-value" style={{ color: 'var(--cyan)' }}>{entry.sources.join(', ')}</div>
+                    <div style={{ background: 'var(--surface3)', padding: '12px 16px', borderRadius: 8 }}>
+                      <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', marginBottom: 0 }}>Sources</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--cyan)' }}>{entry.sources.join(', ')}</div>
                     </div>
                   </div>
                 </div>
