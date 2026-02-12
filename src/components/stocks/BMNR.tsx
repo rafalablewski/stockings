@@ -3189,19 +3189,23 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Summary Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-metrics</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics<UpdateIndicators sources={['SEC', 'MARKET']} /></div>
-        <div className="g4">
-          <Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="violet" updateSource="SEC" />
-          <Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="blue" updateSource="SEC" />
-          <Card label="Basic Mkt Cap" value={`$${((currentShares * 1e6 * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Outstanding × Price" color="green" updateSource={['SEC', 'MARKET']} />
-          <Card label="FD Mkt Cap" value={`$${((totalFD * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Fully diluted" color="yellow" updateSource={['SEC', 'MARKET']} />
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Key Metrics<UpdateIndicators sources={['SEC', 'MARKET']} /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <Card label="Shares Outstanding" value={`${currentShares}M`} sub="Common stock" color="violet" updateSource="SEC" />
+            <Card label="Fully Diluted" value={`${(totalFD / 1e6).toFixed(1)}M`} sub={`+${dilutionPct.toFixed(1)}% dilution`} color="blue" updateSource="SEC" />
+            <Card label="Basic Mkt Cap" value={`$${((currentShares * 1e6 * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Outstanding × Price" color="green" updateSource={['SEC', 'MARKET']} />
+            <Card label="FD Mkt Cap" value={`$${((totalFD * currentStockPrice) / 1e9).toFixed(2)}B`} sub="Fully diluted" color="yellow" updateSource={['SEC', 'MARKET']} />
+          </div>
         </div>
       </div>
 
       {/* Navigation Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-navigation</div>
-      <div className="g5">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Common + converted preferred' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Bill Miller + institutions' },
@@ -3212,8 +3216,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <div
             key={nav.id}
             onClick={() => setCapitalView(nav.id)}
-            className="card"
             style={{
+              background: 'var(--surface)',
+              padding: '20px 28px',
               cursor: 'pointer',
               borderLeft: capitalView === nav.id ? '4px solid var(--violet)' : '4px solid transparent',
               transition: 'border-color 0.2s',
@@ -3230,32 +3235,36 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'structure' && (
       <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#share-classes</div>
-      <div className="card">
-        <div className="card-title">Share Class Structure</div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Class</th>
-              <th className="r">Authorized</th>
-              <th className="r">Outstanding</th>
-              <th>Voting</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {shareClasses.map((sc, i) => (
-              <tr key={i}>
-                <td style={{ fontWeight: 600 }}>{sc.class}</td>
-                <td className="r">{(sc.authorized / 1e6).toFixed(0)}M</td>
-                <td className="r violet">{(sc.outstanding / 1e6).toFixed(1)}M</td>
-                <td style={{ color: 'var(--text2)', fontSize: 13 }}>{sc.voting}</td>
-                <td><span style={{ color: statusColor(sc.status) }}>{sc.status}</span></td>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure</span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Class</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Authorized</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Outstanding</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Voting</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <div style={{ fontSize: 13, color: 'var(--text3)' }}>
-          Par value: $0.0001. Preferred shares converted to common. NYSE American: BMNR.
+            </thead>
+            <tbody>
+              {shareClasses.map((sc, i) => (
+                <tr key={i} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 600 }}>{sc.class}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(sc.authorized / 1e6).toFixed(0)}M</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r violet">{(sc.outstanding / 1e6).toFixed(1)}M</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', color: 'var(--text2)', fontSize: 13 }}>{sc.voting}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span style={{ color: statusColor(sc.status) }}>{sc.status}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={{ fontSize: 13, color: 'var(--text3)' }}>
+            Par value: $0.0001. Preferred shares converted to common. NYSE American: BMNR.
+          </div>
         </div>
       </div>
       </>
@@ -3265,32 +3274,36 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'shareholders' && (
       <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#major-shareholders</div>
-      <div className="card">
-        <div className="card-title">Major Shareholders</div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Shareholder</th>
-              <th className="r">Shares (M)</th>
-              <th className="r">%</th>
-              <th>Type</th>
-              <th>Source</th>
-            </tr>
-          </thead>
-          <tbody>
-            {majorShareholders.map((sh, i) => (
-              <tr key={i}>
-                <td style={{ fontWeight: 500 }}>{sh.name}</td>
-                <td className="r">{sh.shares ? (sh.shares / 1e6).toFixed(2) : '—'}</td>
-                <td className="r violet">{sh.percent ? `${sh.percent.toFixed(2)}%` : '—'}</td>
-                <td style={{ color: 'var(--text2)' }}>{sh.type}</td>
-                <td><span style={{ color: 'var(--gold)' }}>{sh.source}</span></td>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Major Shareholders</span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Shareholder</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Shares (M)</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">%</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Type</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Source</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <div style={{ fontSize: 13, color: 'var(--text3)' }}>
-          Update from 13F (institutional) and DEF 14A (insiders) when available.
+            </thead>
+            <tbody>
+              {majorShareholders.map((sh, i) => (
+                <tr key={i} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 500 }}>{sh.name}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{sh.shares ? (sh.shares / 1e6).toFixed(2) : '—'}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r violet">{sh.percent ? `${sh.percent.toFixed(2)}%` : '—'}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', color: 'var(--text2)' }}>{sh.type}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span style={{ color: 'var(--gold)' }}>{sh.source}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={{ fontSize: 13, color: 'var(--text3)' }}>
+            Update from 13F (institutional) and DEF 14A (insiders) when available.
+          </div>
         </div>
       </div>
       </>
@@ -3300,62 +3313,70 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'offerings' && (
       <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#equity-offerings</div>
-      <div className="card">
-        <div className="card-title">Equity Offerings</div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th className="r">Amount</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {equityOfferings.map((off, i) => (
-              <tr key={i}>
-                <td>{off.date}</td>
-                <td style={{ fontWeight: 600 }}>{off.type}</td>
-                <td className="r mint">${off.amount}B</td>
-                <td><span style={{ color: statusColor(off.status) }}>{off.status}</span></td>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Equity Offerings</span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Date</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Type</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Amount</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Status</th>
               </tr>
-            ))}
-            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td colSpan={2}>Total Shelf Capacity</td>
-              <td className="r mint">$31.4B</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {equityOfferings.map((off, i) => (
+                <tr key={i} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>{off.date}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 600 }}>{off.type}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r mint">${off.amount}B</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span style={{ color: statusColor(off.status) }}>{off.status}</span></td>
+                </tr>
+              ))}
+              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                <td style={{ padding: '14px 16px' }} colSpan={2}>Total Shelf Capacity</td>
+                <td style={{ padding: '14px 16px' }} className="r mint">$31.4B</td>
+                <td style={{ padding: '14px 16px' }}></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div className="card" style={{ }}>
-        <div className="card-title">Warrants Outstanding</div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th className="r">Shares</th>
-              <th className="r">Strike</th>
-              <th>Source</th>
-            </tr>
-          </thead>
-          <tbody>
-            {warrants.map((w, i) => (
-              <tr key={i}>
-                <td style={{ fontWeight: 500 }}>{w.type}</td>
-                <td className="r">{(w.shares / 1e6).toFixed(2)}M</td>
-                <td className="r violet">${w.strike < 1 ? w.strike.toFixed(4) : w.strike.toFixed(2)}</td>
-                <td style={{ color: 'var(--text2)' }}>{w.source}</td>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Warrants Outstanding</span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Type</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Shares</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Strike</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Source</th>
               </tr>
-            ))}
-            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td>Total</td>
-              <td className="r">{((warrants[0].shares + warrants[1].shares) / 1e6).toFixed(2)}M</td>
-              <td colSpan={2}></td>
-            </tr>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {warrants.map((w, i) => (
+                <tr key={i} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 500 }}>{w.type}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(w.shares / 1e6).toFixed(2)}M</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r violet">${w.strike < 1 ? w.strike.toFixed(4) : w.strike.toFixed(2)}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', color: 'var(--text2)' }}>{w.source}</td>
+                </tr>
+              ))}
+              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                <td style={{ padding: '14px 16px' }}>Total</td>
+                <td style={{ padding: '14px 16px' }} className="r">{((warrants[0].shares + warrants[1].shares) / 1e6).toFixed(2)}M</td>
+                <td style={{ padding: '14px 16px' }} colSpan={2}></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       </>
       )}
@@ -3364,31 +3385,35 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'plans' && (
       <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#equity-plans</div>
-      <div className="card">
-        <div className="card-title">Equity Incentive Plans</div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Plan</th>
-              <th className="r">Reserved</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2024 Equity Incentive Plan</td>
-              <td className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
-              <td><span style={{ color: 'var(--gold)' }}>Pending 10-K</span></td>
-            </tr>
-            <tr>
-              <td>Employee Stock Purchase Plan</td>
-              <td className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
-              <td><span style={{ color: 'var(--gold)' }}>Pending 10-K</span></td>
-            </tr>
-          </tbody>
-        </table>
-        <div style={{ fontSize: 13, color: 'var(--text3)' }}>
-          Data pending from 10-K or DEF 14A proxy filing.
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Equity Incentive Plans</span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Plan</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Reserved</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>2024 Equity Incentive Plan</td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span style={{ color: 'var(--gold)' }}>Pending 10-K</span></td>
+              </tr>
+              <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Employee Stock Purchase Plan</td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span style={{ color: 'var(--gold)' }}>Pending 10-K</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style={{ fontSize: 13, color: 'var(--text3)' }}>
+            Data pending from 10-K or DEF 14A proxy filing.
+          </div>
         </div>
       </div>
       </>
@@ -3398,52 +3423,56 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'dilution' && (
       <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-analysis</div>
-      <div className="card">
-        <div className="card-title">Fully Diluted Share Count</div>
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>Component</th>
-              <th className="r">Shares (M)</th>
-              <th className="r">% of Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Common Outstanding</td>
-              <td className="r">{(fdShares.common / 1e6).toFixed(1)}</td>
-              <td className="r">{((fdShares.common / totalFD) * 100).toFixed(1)}%</td>
-            </tr>
-            <tr>
-              <td>Pre-Funded Warrants</td>
-              <td className="r">{(fdShares.prefunded / 1e6).toFixed(1)}</td>
-              <td className="r">{((fdShares.prefunded / totalFD) * 100).toFixed(1)}%</td>
-            </tr>
-            <tr>
-              <td>Advisor Warrants</td>
-              <td className="r">{(fdShares.advisor / 1e6).toFixed(1)}</td>
-              <td className="r">{((fdShares.advisor / totalFD) * 100).toFixed(1)}%</td>
-            </tr>
-            <tr>
-              <td>Stock Options</td>
-              <td className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
-              <td className="r">—</td>
-            </tr>
-            <tr>
-              <td>RSUs</td>
-              <td className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
-              <td className="r">—</td>
-            </tr>
-            <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-              <td>Fully Diluted Total</td>
-              <td className="r violet">{(totalFD / 1e6).toFixed(1)}</td>
-              <td className="r">100%</td>
-            </tr>
-          </tbody>
-        </table>
-        <div style={{ fontSize: 13, color: 'var(--text3)' }}>
-          Note: Jul 29, 2025 PR reported 121.7M fully diluted. Current calc uses known warrants only.
-          Dilution impact: +{dilutionPct.toFixed(1)}% if all securities exercised.
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Fully Diluted Share Count</span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Component</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Shares (M)</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">% of Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Common Outstanding</td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(fdShares.common / 1e6).toFixed(1)}</td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{((fdShares.common / totalFD) * 100).toFixed(1)}%</td>
+              </tr>
+              <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Pre-Funded Warrants</td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(fdShares.prefunded / 1e6).toFixed(1)}</td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{((fdShares.prefunded / totalFD) * 100).toFixed(1)}%</td>
+              </tr>
+              <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Advisor Warrants</td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(fdShares.advisor / 1e6).toFixed(1)}</td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{((fdShares.advisor / totalFD) * 100).toFixed(1)}%</td>
+              </tr>
+              <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Stock Options</td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">—</td>
+              </tr>
+              <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>RSUs</td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r"><span style={{ color: 'var(--gold)' }}>TBD</span></td>
+                <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">—</td>
+              </tr>
+              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
+                <td style={{ padding: '14px 16px' }}>Fully Diluted Total</td>
+                <td style={{ padding: '14px 16px' }} className="r violet">{(totalFD / 1e6).toFixed(1)}</td>
+                <td style={{ padding: '14px 16px' }} className="r">100%</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style={{ fontSize: 13, color: 'var(--text3)' }}>
+            Note: Jul 29, 2025 PR reported 121.7M fully diluted. Current calc uses known warrants only.
+            Dilution impact: +{dilutionPct.toFixed(1)}% if all securities exercised.
+          </div>
         </div>
       </div>
       </>
@@ -7586,22 +7615,22 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
   // Collapsible section component — Unified pattern (matches ASTS/CRCL)
   const CollapsibleSection = ({ id, title, children, sources }: { id: string; title: string; children: React.ReactNode; sources?: UpdateSource | UpdateSource[] }) => (
-    <div className="card" style={{ }}>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
       <div
         onClick={() => toggleSection(id)}
-        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+        style={{ padding: '20px 28px', borderBottom: investmentSections.has(id) ? '1px solid var(--border)' : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
         role="button"
         tabIndex={0}
         aria-expanded={investmentSections.has(id)}
         onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
       >
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>
           {title}
           {sources && <UpdateIndicators sources={sources} />}
-        </div>
+        </span>
         <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
-      {investmentSections.has(id) && <div style={{ }}>{children}</div>}
+      {investmentSections.has(id) && <div style={{ padding: '24px 28px' }}>{children}</div>}
     </div>
   );
 
@@ -7628,12 +7657,13 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </div>
 
       {/* Rating Header */}
-      <div className="card" style={{ borderLeft: '4px solid var(--mint)' }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderLeft: '4px solid var(--mint)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '24px 28px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 6, fontWeight: 700, fontSize: 18 }}>BUY</span>
-              <span style={{ background: 'rgba(126,231,135,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>HIGH CONVICTION</span>
+              <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontWeight: 700, fontSize: 18 }}>BUY</span>
+              <span style={{ background: 'rgba(126,231,135,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600 }}>HIGH CONVICTION</span>
               <UpdateIndicators sources={['PR', 'SEC']} />
             </div>
             <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>
@@ -7662,6 +7692,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             </div>
           </div>
         </div>
+        </div>
       </div>
 
       {/* Investment Scorecard */}
@@ -7669,7 +7700,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
           {current.scorecard.map((item, i) => (
-            <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{item.category}</div>
                 <div style={{ fontSize: 11, color: 'var(--text3)' }}>{item.detail}</div>
@@ -7692,7 +7723,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
             {current.ecosystemHealth.metrics.map((m, i) => (
-              <div key={i} style={{ background: 'var(--surface)', padding: 10, borderRadius: 8, textAlign: 'center' }}>
+              <div key={i} style={{ background: 'var(--surface)', padding: 10, borderRadius: 12, textAlign: 'center' }}>
                 <div style={{ fontSize: 10, color: 'var(--text3)' }}>{m.metric}</div>
                 <div style={{ fontSize: 13, fontFamily: 'Space Mono', color: m.color, fontWeight: 600 }}>{m.value}</div>
                 <div style={{ fontSize: 10, color: m.color }}>✓ {m.signal}</div>
@@ -7706,7 +7737,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       {/* Summary */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-summary</div>
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
-        <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)' }}>
+        <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 12, border: '1px solid rgba(126,231,135,0.2)' }}>
           <div style={{ fontWeight: 600, color: 'var(--mint)' }}>What's New ({current.source})</div>
           <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
             {current.executiveSummary.whatsNew.map((item, i) => (
@@ -7743,7 +7774,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
         
         {/* Ethereum Ecosystem Catalyst */}
-        <div style={{ padding: 12, background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,212,170,0.1))', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13, color: 'var(--text2)' }}>
+        <div style={{ padding: 12, background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,212,170,0.1))', border: '1px solid var(--border)', borderRadius: 12, fontSize: 13, color: 'var(--text2)' }}>
           <div style={{ fontWeight: 600, color: 'var(--violet)' }}>🔗 Ethereum Ecosystem Catalyst</div>
           <p style={{ }}>
             <strong style={{ color: 'var(--mint)' }}>Adoption Thesis:</strong> As more companies build on Ethereum (DeFi protocols, tokenized assets, on-chain payments, gaming), network activity and transaction fees increase. Greater Ethereum utility drives fundamental demand for ETH, directly benefiting BMNR's treasury holdings.
@@ -7783,7 +7814,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             ))}
           </div>
         </div>
-        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 13, color: 'var(--text2)' }}>
+        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 12, fontSize: 13, color: 'var(--text2)' }}>
           <strong>Moat Durability:</strong> A- (Strong). Scale advantage is nearly unassailable — would take years and billions for competitors to catch up. Yield advantage over BTC treasuries is permanent. Key risk is ETH price, not competitive dynamics.
         </div>
       </CollapsibleSection>
@@ -7793,12 +7824,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {current.risks.map((r, i) => (
-            <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
+            <div key={i} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 12, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text)' }}>{r.risk}</span>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: r.severity === 'Critical' ? 'rgba(255,107,107,0.2)' : r.severity === 'High' ? 'rgba(210,153,34,0.2)' : 'rgba(100,149,237,0.2)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
-                  <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
+                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: r.severity === 'Critical' ? 'rgba(255,107,107,0.2)' : r.severity === 'High' ? 'rgba(210,153,34,0.2)' : 'rgba(100,149,237,0.2)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
+                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
                 </div>
               </div>
               <div style={{ fontSize: 13, color: 'var(--text2)' }}>{r.detail}</div>
@@ -7820,9 +7851,9 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Risk Evaluation — Four Perspectives</h4>
         
         {/* CFA Level III Perspective */}
-        <div style={{ background: 'rgba(139,92,246,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
+        <div style={{ background: 'rgba(139,92,246,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--violet)', color: 'white', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
+            <span style={{ background: 'var(--violet)', color: 'white', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Portfolio Construction & Factor Analysis</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -7842,9 +7873,9 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* Hedge Fund Manager Perspective */}
-        <div style={{ background: 'rgba(210,153,34,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(210,153,34,0.2)' }}>
+        <div style={{ background: 'rgba(210,153,34,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(210,153,34,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
+            <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Alpha Generation & Event Catalysts</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -7864,9 +7895,9 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* CIO/CIS Institutional Perspective */}
-        <div style={{ background: 'rgba(100,149,237,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(100,149,237,0.2)' }}>
+        <div style={{ background: 'rgba(100,149,237,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(100,149,237,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
+            <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Strategic Allocation & Fiduciary Considerations</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -7886,9 +7917,9 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* Technical Analyst Perspective */}
-        <div style={{ background: 'rgba(52,211,153,0.05)', padding: 16, borderRadius: 8, border: '1px solid rgba(52,211,153,0.2)' }}>
+        <div style={{ background: 'rgba(52,211,153,0.05)', padding: 16, borderRadius: 12, border: '1px solid rgba(52,211,153,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
+            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Chart Patterns & Price Action</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -7911,10 +7942,10 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         <h4 style={{ color: 'var(--text)', fontSize: 15, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>Key Strategic Questions</h4>
 
         {/* Would I Buy Now? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>Would I Buy Now?</span>
-            <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '6px 16px', borderRadius: 6, fontWeight: 700, fontSize: 13 }}>YES — ACCUMULATE ON DIPS</span>
+            <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '6px 16px', borderRadius: 99, fontWeight: 700, fontSize: 13 }}>YES — ACCUMULATE ON DIPS</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
             <p style={{ }}>
@@ -7930,22 +7961,22 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* What Can I Expect? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12 }}>
           <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>What Can I Expect?</div>
           <div className="g3" style={{ }}>
-            <div style={{ background: 'rgba(255,193,7,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(255,193,7,0.2)' }}>
+            <div style={{ background: 'rgba(255,193,7,0.1)', padding: 12, borderRadius: 12, border: '1px solid rgba(255,193,7,0.2)' }}>
               <div style={{ fontWeight: 600, color: 'var(--gold)', fontSize: 13 }}>Short-Term (0-6 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 Expect ETH-correlated volatility ±30-50%. NAV premium will fluctuate with sentiment. Key catalysts: MAVAN progress, ETH accumulation PRs, staking deployment updates. Trading range tied to ETH — if ETH $3-5K, expect BMNR $3-8 range (rough).
               </div>
             </div>
-            <div style={{ background: 'rgba(100,149,237,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(100,149,237,0.2)' }}>
+            <div style={{ background: 'rgba(100,149,237,0.1)', padding: 12, borderRadius: 12, border: '1px solid rgba(100,149,237,0.2)' }}>
               <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13 }}>Mid-Term (6-18 months)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 If ETH cycle continues upward, NAV premium expansion drives outsized returns. Target: 2-4x from entry if ETH doubles and premium expands. Risk: cycle reversal could mean 60-80% drawdown. MAVAN fully operational should validate yield thesis.
               </div>
             </div>
-            <div style={{ background: 'rgba(139,92,246,0.1)', padding: 12, borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
+            <div style={{ background: 'rgba(139,92,246,0.1)', padding: 12, borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
               <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 13 }}>Long-Term (3-5 years)</div>
               <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                 If ETH reaches $10-20K cycle highs and BMNR executes on accumulation, this could be a 5-10x from current levels. But crypto cycles are brutal — expect at least one 70%+ drawdown along the way. Diamond hands required. Position size must allow holding through drawdowns.
@@ -7955,7 +7986,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* What's My Strategy? */}
-        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+        <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12 }}>
           <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>What's My Strategy?</div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
             <p style={{ }}>
@@ -7974,13 +8005,13 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
         
         {/* Ecosystem-Based Triggers */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(0,212,170,0.08))', padding: 16, borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
+        <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(0,212,170,0.08))', padding: 16, borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
           <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 15 }}>📊 Ecosystem-Based Triggers</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>Monitor these Ethereum ecosystem signals (see Ethereum tab) alongside BMNR-specific metrics</div>
           
           <div className="g3">
             {/* Entry Signals */}
-            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 8 }}>
+            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 12 }}>
               <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 13 }}>✅ Entry Signals (Consider Adding)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {[
@@ -7998,7 +8029,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             </div>
             
             {/* Exit Signals */}
-            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 8 }}>
+            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 12 }}>
               <div style={{ fontWeight: 600, color: 'var(--coral)', fontSize: 13 }}>⚠️ Exit Signals (Consider Reducing)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {[
@@ -8016,7 +8047,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             </div>
             
             {/* Hold Signals */}
-            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 8 }}>
+            <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 12 }}>
               <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13 }}>⏸️ Hold Signals (Stay Course)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {[
@@ -8065,7 +8096,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* Portfolio Context — Unified framework for multi-asset allocation */}
-        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(100,149,237,0.08))', borderRadius: 8, border: '1px solid rgba(139,92,246,0.2)' }}>
+        <div style={{ padding: 16, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(100,149,237,0.08))', borderRadius: 12, border: '1px solid rgba(139,92,246,0.2)' }}>
           <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 14 }}>Portfolio Construction Context</div>
           <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>For multi-asset portfolios holding BMNR alongside other positions</div>
           <div className="g3" style={{ marginTop: 12 }}>
@@ -8097,11 +8128,11 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full record of all investment thesis updates. Never deleted.</div>
         <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
-            <div key={i} style={{ background: i === 0 ? 'rgba(126,231,135,0.05)' : 'var(--surface2)', padding: 16, borderRadius: 8, border: i === 0 ? '1px solid rgba(126,231,135,0.2)' : '1px solid var(--border)' }}>
+            <div key={i} style={{ background: i === 0 ? 'rgba(126,231,135,0.05)' : 'var(--surface2)', padding: 16, borderRadius: 12, border: i === 0 ? '1px solid rgba(126,231,135,0.2)' : '1px solid var(--border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontWeight: 600, color: 'var(--text)' }}>{a.date}</span>
-                  {i === 0 && <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600 }}>CURRENT</span>}
+                  {i === 0 && <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '2px 8px', borderRadius: 99, fontSize: 10, fontWeight: 600 }}>CURRENT</span>}
                 </div>
                 <span style={{ color: a.verdictColor === 'green' ? 'var(--mint)' : a.verdictColor === 'yellow' ? 'var(--gold)' : 'var(--coral)', fontWeight: 600, fontSize: 13 }}>{a.verdict}</span>
               </div>
@@ -8113,7 +8144,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
                   <div style={{ fontSize: 13, color: 'var(--text2)' }}>{a.fullAnalysis.context}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {a.fullAnalysis.keyHighlights.map((h, j) => (
-                      <span key={j} style={{ padding: '4px 8px', background: 'var(--surface)', borderRadius: 4, fontSize: 11, color: 'var(--text3)' }}>• {h}</span>
+                      <span key={j} style={{ padding: '4px 8px', background: 'var(--surface)', borderRadius: 99, fontSize: 11, color: 'var(--text3)' }}>• {h}</span>
                     ))}
                   </div>
                 </div>
@@ -8179,7 +8210,11 @@ const BMNRQuarterlyMetricsPanel = () => {
     <>
       {/* #quarterly-metrics */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#quarterly-metrics</div>
-      <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
         {/* Summary Badges - ASTS pattern */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           <span className="pill" style={{ background: 'rgba(34,211,238,0.15)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
@@ -8198,12 +8233,12 @@ const BMNRQuarterlyMetricsPanel = () => {
 
         {/* Quarterly Table - ASTS dynamic pattern */}
         <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th style={{ position: 'sticky', left: 0, background: 'var(--bg1)', minWidth: 100 }}>Metric</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', position: 'sticky', left: 0, minWidth: 100 }}>Metric</th>
                 {quarterlyData.map((q, idx) => (
-                  <th key={q.quarter} className="r" style={{ minWidth: 70, whiteSpace: 'nowrap', ...(idx === 0 ? { background: 'var(--accent-dim)' } : {}) }}>
+                  <th key={q.quarter} className="r" style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: idx === 0 ? 'var(--accent-dim)' : 'var(--surface2)', minWidth: 70, whiteSpace: 'nowrap' }}>
                     {q.quarter.replace('Q', '').replace(' ', "'")}
                   </th>
                 ))}
@@ -8211,8 +8246,8 @@ const BMNRQuarterlyMetricsPanel = () => {
             </thead>
             <tbody>
               {metrics.map(metric => (
-                <tr key={metric.label}>
-                  <td style={{ position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
+                <tr key={metric.label} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', position: 'sticky', left: 0, background: 'var(--bg1)', fontWeight: 500 }}>
                     {metric.label}
                   </td>
                   {quarterlyData.map((q, idx) => {
@@ -8224,6 +8259,8 @@ const BMNRQuarterlyMetricsPanel = () => {
                         key={q.quarter}
                         className="r"
                         style={{
+                          padding: '14px 16px',
+                          borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)',
                           ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
                           ...(cellColor ? { color: cellColor } : {})
                         }}
@@ -8248,32 +8285,37 @@ const BMNRQuarterlyMetricsPanel = () => {
         {/* Latest Quarter Summary - ASTS pattern */}
         <div style={{ }}>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#latest-quarter-summary</div>
-          <div className="card"><div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Latest Quarter Summary ({latestQuarter.quarter})<UpdateIndicators sources="SEC" /></div>
-            <div className="g2">
-              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Latest Quarter Summary ({latestQuarter.quarter})<UpdateIndicators sources="SEC" /></span>
+            </div>
+            <div style={{ padding: '24px 28px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+              <div style={{ background: 'var(--surface2)', padding: 12 }}>
                 <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing Source</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.filing}</div>
               </div>
-              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+              <div style={{ background: 'var(--surface2)', padding: 12 }}>
                 <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ETH Holdings</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.ethHoldings?.toLocaleString() || '—'} ETH</div>
               </div>
-              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+              <div style={{ background: 'var(--surface2)', padding: 12 }}>
                 <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Staking Deployed</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>{latestQuarter.stakingDeployed?.toLocaleString() || '—'} ETH ({latestQuarter.stakingYield}% yield)</div>
               </div>
-              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+              <div style={{ background: 'var(--surface2)', padding: 12 }}>
                 <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Treasury Value</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>${(latestQuarter.crypto/1000).toFixed(2)}B</div>
               </div>
-              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+              <div style={{ background: 'var(--surface2)', padding: 12 }}>
                 <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cash Position</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>${latestQuarter.cash}M</div>
               </div>
-              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
+              <div style={{ background: 'var(--surface2)', padding: 12 }}>
                 <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Assets</div>
                 <div style={{ fontSize: 13, color: 'var(--text2)' }}>${(latestQuarter.assets/1000).toFixed(2)}B</div>
               </div>
+            </div>
             </div>
           </div>
         </div>
@@ -8281,13 +8323,17 @@ const BMNRQuarterlyMetricsPanel = () => {
         <div style={{ fontSize: 11, color: 'var(--text3)' }}>
           Data sourced from SEC filings (10-K, 10-Q). Latest filing: {latestQuarter.filing}.
         </div>
+        </div>
       </div>
 
       {/* ROW 1: Cash Position & OpEx - ASTS pattern */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-1</div>
       <div className="g2">
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--cyan)', display: 'flex', alignItems: 'center', gap: 8 }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></span>
+          </div>
+          <div style={{ padding: '24px 28px' }}>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={quarterlyData.slice().reverse().map(q => ({ quarter: q.quarter, cash: q.cash }))}>
               <defs>
@@ -8307,10 +8353,14 @@ const BMNRQuarterlyMetricsPanel = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Cash & Equivalents</span></div>
           </div>
           <div style={{ fontSize: 11, color: 'var(--text3)' }}>Post-pivot: $250M PIPE + subsequent ATM raises</div>
+          </div>
         </div>
 
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--violet)', display: 'flex', alignItems: 'center', gap: 8 }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></span>
+          </div>
+          <div style={{ padding: '24px 28px' }}>
           <ResponsiveContainer width="100%" height={150}>
             <LineChart data={quarterlyData.slice().reverse().filter(q => q.opEx).map(q => ({ quarter: q.quarter, opEx: q.opEx }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -8327,7 +8377,7 @@ const BMNRQuarterlyMetricsPanel = () => {
               <select
                 value={opExQuarter}
                 onChange={(e) => setOpExQuarter(e.target.value)}
-                style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 4, padding: '2px 8px', fontSize: 11, color: 'var(--text1)' }}
+                style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 99, padding: '2px 8px', fontSize: 11, color: 'var(--text1)' }}
               >
                 {opExQuarters.map(q => (
                   <option key={q} value={q}>{q}</option>
@@ -8365,14 +8415,18 @@ const BMNRQuarterlyMetricsPanel = () => {
               );
             })()}
           </div>
+          </div>
         </div>
       </div>
 
       {/* ROW 2: Share Count & Market Cap - ASTS pattern */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-2</div>
       <div className="g2">
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>Share Count (Outstanding)<UpdateIndicators sources="SEC" /></div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Count (Outstanding)<UpdateIndicators sources="SEC" /></span>
+          </div>
+          <div style={{ padding: '24px 28px' }}>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={quarterlyData.slice().reverse().map(q => ({ quarter: q.quarter, shares: q.shares }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -8385,10 +8439,14 @@ const BMNRQuarterlyMetricsPanel = () => {
           <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--coral)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Outstanding Shares</span></div>
           </div>
+          </div>
         </div>
 
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--sky)' }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--sky)', display: 'flex', alignItems: 'center', gap: 8 }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></span>
+          </div>
+          <div style={{ padding: '24px 28px' }}>
           <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={[
               { quarter: 'Q1 2025', mktCap: 40 },
@@ -8413,14 +8471,18 @@ const BMNRQuarterlyMetricsPanel = () => {
           <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Market Cap</span></div>
           </div>
+          </div>
         </div>
       </div>
 
       {/* ROW 3: Company Specific (Crypto Holdings & NI) - ASTS pattern */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-3</div>
       <div className="g2">
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--violet)' }}>Crypto Holdings Evolution<UpdateIndicators sources="SEC" /></div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--violet)', display: 'flex', alignItems: 'center', gap: 8 }}>Crypto Holdings Evolution<UpdateIndicators sources="SEC" /></span>
+          </div>
+          <div style={{ padding: '24px 28px' }}>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={quarterlyData.slice().reverse().map(q => ({ quarter: q.quarter, crypto: q.crypto }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -8434,10 +8496,14 @@ const BMNRQuarterlyMetricsPanel = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--gold)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Pre-pivot: BTC</span></div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--violet)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Post-pivot: ETH</span></div>
           </div>
+          </div>
         </div>
 
-        <div className="card">
-          <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--mint)' }}>Net Income/(Loss)<UpdateIndicators sources="SEC" /></div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--mint)', display: 'flex', alignItems: 'center', gap: 8 }}>Net Income/(Loss)<UpdateIndicators sources="SEC" /></span>
+          </div>
+          <div style={{ padding: '24px 28px' }}>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={quarterlyData.slice().reverse().map(q => ({ quarter: q.quarter, income: q.netIncome }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -8450,6 +8516,7 @@ const BMNRQuarterlyMetricsPanel = () => {
           <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--mint)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Net Income</span></div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><div style={{ width: 12, height: 12, background: 'var(--coral)', borderRadius: 2 }}></div><span style={{ color: 'var(--text3)' }}>Net Loss</span></div>
+          </div>
           </div>
         </div>
       </div>
@@ -8517,15 +8584,19 @@ const FinancialsTab = () => {
       {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-financial-milestones</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center', color: 'var(--gold)' }}>📅 Key Financial Milestones<UpdateIndicators sources="SEC" /></div>
-        <div className="g4">
-          {config.milestones.map((m, i) => (
-            <div key={i} style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
-              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div>
-              <div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div>
-            </div>
-          ))}
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 8 }}>Key Financial Milestones<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            {config.milestones.map((m, i) => (
+              <div key={i} style={{ padding: 12, background: 'var(--surface2)' }}>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.date}</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       
@@ -12202,8 +12273,11 @@ const TimelineTab = () => {
 
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sec-filings</div>
-      <div className="card" style={{ }}>
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>📁 SEC Filings<UpdateIndicators sources="SEC" /></div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>SEC Filings<UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
         
         {/* Filter Buttons */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -12231,39 +12305,39 @@ const TimelineTab = () => {
         
         {/* Filings Table */}
         <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>Period</th>
-                <th className="r">Link</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Date</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Type</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Description</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Period</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Link</th>
               </tr>
             </thead>
             <tbody>
               {displayedFilings.map((filing, idx) => (
-                <tr key={idx}>
-                  <td style={{ whiteSpace: 'nowrap' }}>{filing.date}</td>
-                  <td>
-                    <span style={{ 
-                      background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)', 
-                      color: secTypeColors[filing.type]?.text || 'var(--text2)', 
-                      padding: '2px 8px', 
-                      borderRadius: 4, 
-                      fontSize: 11, 
-                      fontWeight: 600 
+                <tr key={idx} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', whiteSpace: 'nowrap' }}>{filing.date}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+                    <span style={{
+                      background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)',
+                      color: secTypeColors[filing.type]?.text || 'var(--text2)',
+                      padding: '2px 8px',
+                      borderRadius: 99,
+                      fontSize: 11,
+                      fontWeight: 600
                     }}>
                       {filing.type}
                     </span>
                   </td>
-                  <td>{filing.description}</td>
-                  <td>{filing.period}</td>
-                  <td className="r">
-                    <a 
-                      href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type.replace('S-3', 'S-3').replace('S-1', 'S-1').replace('S-8', 'S-8')}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>{filing.description}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>{filing.period}</td>
+                  <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">
+                    <a
+                      href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type.replace('S-3', 'S-3').replace('S-1', 'S-1').replace('S-8', 'S-8')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       style={{ color: 'var(--violet)' }}
                     >
                       SEC →
@@ -12284,7 +12358,7 @@ const TimelineTab = () => {
               padding: '8px',
               background: 'var(--surface2)',
               border: '1px solid var(--border)',
-              borderRadius: 6,
+              borderRadius: 99,
               color: 'var(--text2)',
               fontSize: 12,
               cursor: 'pointer',
@@ -12324,16 +12398,20 @@ const TimelineTab = () => {
             <span style={{ display: 'flex', alignItems: 'center' }}>Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}<UpdateIndicators sources="PR" /></span>
           </div>
         </div>
+        </div>
       </div>
 
       {/* Upcoming Events + Recent Press Releases */}
       <div className="g2" style={{ }}>
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#upcoming-events</div>
-          <div className="card">
-            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Upcoming Events<UpdateIndicators sources="PR" /></div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Upcoming Events<UpdateIndicators sources="PR" /></span>
+            </div>
+            <div style={{ padding: '24px 28px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(74,222,128,0.1)', borderRadius: 8, border: '1px solid rgba(74,222,128,0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(74,222,128,0.1)', borderRadius: 12, border: '1px solid rgba(74,222,128,0.4)' }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>✓ Annual Stockholder Meeting</div>
                 <div style={{ fontSize: 12, color: 'var(--text3)' }}>Wynn Las Vegas · Prop 2 passed</div>
@@ -12343,7 +12421,7 @@ const TimelineTab = () => {
                 <div style={{ fontSize: 11, color: '#4ade80' }}>Completed</div>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>Q1 2026 Earnings</div>
                 <div style={{ fontSize: 12, color: 'var(--text3)' }}>10-Q Quarterly Report</div>
@@ -12353,7 +12431,7 @@ const TimelineTab = () => {
                 <div style={{ fontSize: 11, color: 'var(--text3)' }}>Est.</div>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>Dividend Ex-Date</div>
                 <div style={{ fontSize: 12, color: 'var(--text3)' }}>$0.01/share quarterly</div>
@@ -12363,7 +12441,7 @@ const TimelineTab = () => {
                 <div style={{ fontSize: 11, color: 'var(--text3)' }}>First payout</div>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>5% ETH Supply Target</div>
                 <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.55% (~6.04M ETH needed)</div>
@@ -12374,72 +12452,76 @@ const TimelineTab = () => {
               </div>
             </div>
           </div>
+            </div>
           </div>
         </div>
 
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#recent-press-releases</div>
-          <div className="card">
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
             {/* [PR_CHECKLIST_RECENT_PRESS_RELEASES] - Add new PR at top! */}
-            <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>Recent Press Releases<UpdateIndicators sources="PR" /></div>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Recent Press Releases<UpdateIndicators sources="PR" /></span>
+            </div>
+            <div style={{ padding: '24px 28px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Feb 9, 2026</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,325,738 — 3.58% of Supply, $10.0B, ETH -62% V-Recovery</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Feb 2, 2026</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,285,125 — 3.55% of Supply, $10.7B, Staking 67.6%</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 26, 2026</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,243,338 — 3.52% of Supply, $12.8B, Davos 2026</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 20, 2026</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,203,036 — 3.48% of Supply, $14.5B, 81% YES Vote</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 12, 2026</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,167,768 — 3.45% of Total Supply, $14.0B</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 9, 2026</span>
                 <span style={{ fontSize: 11, color: 'var(--mint)' }}>Leadership</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>CFO/COO Appointed: Young Kim (MIT/HBS, Columbia Threadneedle)</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 2, 2026</span>
                 <span style={{ fontSize: 11, color: 'var(--gold)' }}>Proxy</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Chairman's Message: Vote YES on Auth Shares (500M→50B)</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Dec 29, 2025</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,110,525 — 3.41% of Total Supply</div>
             </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 8 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Nov 21, 2025</span>
                 <span style={{ fontSize: 11, color: 'var(--violet)' }}>SEC Filing</span>
@@ -12447,6 +12529,7 @@ const TimelineTab = () => {
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>10-K Annual Report: $805M Unrealized Gain, $349M Net Income</div>
             </div>
           </div>
+            </div>
           </div>
         </div>
       </div>
@@ -12548,28 +12631,28 @@ const TimelineTab = () => {
                 <div className="t-details-content">
                   <div className="t-details-text">
                     {/* Changes Table */}
-                    <table className="tbl">
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                       <thead>
                         <tr>
-                          <th>Metric</th>
-                          <th className="r">Previous</th>
-                          <th className="r">New</th>
-                          <th className="r">Change</th>
+                          <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Metric</th>
+                          <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Previous</th>
+                          <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">New</th>
+                          <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Change</th>
                         </tr>
                       </thead>
                       <tbody>
                         {entry.changes.map((c, cidx) => (
-                          <tr key={cidx}>
-                            <td>{c.metric}</td>
-                            <td className="r">{c.previous}</td>
-                            <td className="r">{c.new}</td>
-                            <td className="r" style={{ color: c.change.startsWith('+') ? 'var(--mint)' : c.change.startsWith('-') ? 'var(--coral)' : undefined }}>{c.change}</td>
+                          <tr key={cidx} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>{c.metric}</td>
+                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{c.previous}</td>
+                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{c.new}</td>
+                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', color: c.change.startsWith('+') ? 'var(--mint)' : c.change.startsWith('-') ? 'var(--coral)' : undefined }} className="r">{c.change}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                     {/* Notes */}
-                    <div style={{ padding: 12, background: 'var(--surface3)', borderRadius: 8, fontStyle: 'italic', color: 'var(--text3)' }}>
+                    <div style={{ padding: 12, background: 'var(--surface3)', borderRadius: 12, fontStyle: 'italic', color: 'var(--text3)' }}>
                       💡 {entry.notes}
                     </div>
                   </div>
@@ -12602,7 +12685,11 @@ const TimelineTab = () => {
 
       {/* How to Use - Unified styling */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#timeline-header</div>
-      <div className="card"><div className="card-title">How to Use This Log</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>How to Use This Log</span>
+        </div>
+        <div style={{ padding: '24px 28px' }}>
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div>
             <h4 className="text-violet-400 font-medium mb-2">Categories Explained</h4>
@@ -12623,6 +12710,7 @@ const TimelineTab = () => {
               <li>• Tag impact: positive/negative/neutral</li>
             </ul>
           </div>
+        </div>
         </div>
       </div>
 
