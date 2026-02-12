@@ -29,10 +29,10 @@ import type { PressRelease, DataMetadata } from '../shared/types';
 // ============================================================================
 
 export const PRESS_RELEASES_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-10',
-  source: 'AST SpaceMobile Investor Relations, PR Newswire, Business Wire',
+  lastUpdated: '2026-02-12',
+  source: 'AST SpaceMobile Investor Relations, PR Newswire, Business Wire, SEC EDGAR',
   nextExpectedUpdate: 'After new press releases',
-  notes: 'Latest company press releases with tracking status for database integration',
+  notes: 'Feb 2026: BB6 unfolding, $1B converts, registered directs, 8-K financials, Mikitani resignation',
 };
 
 // ============================================================================
@@ -40,6 +40,30 @@ export const PRESS_RELEASES_METADATA: DataMetadata = {
 // ============================================================================
 
 export const PRESS_RELEASES: PressRelease[] = [
+  {
+    date: '2026-02-11',
+    headline: 'AST SpaceMobile Announces Offering of $1.0 Billion Convertible Senior Notes Due 2036 and Concurrent Registered Direct Offerings',
+    url: 'https://investors.ast-science.com',
+    tracked: true,
+  },
+  {
+    date: '2026-02-11',
+    headline: 'AST SpaceMobile Reports Preliminary FY 2025 Results: Revenue $63-71M, Cash $2.78B, Debt $2.26B (8-K)',
+    url: 'https://investors.ast-science.com',
+    tracked: true,
+  },
+  {
+    date: '2026-02-10',
+    headline: 'AST SpaceMobile Successfully Unfolds BlueBird 6 Satellite — Largest Commercial LEO Array (~2,400 sq ft)',
+    url: 'https://investors.ast-science.com',
+    tracked: true,
+  },
+  {
+    date: '2026-01-13',
+    headline: 'Hiroshi Mikitani Resigns from Board of Directors (Rakuten Designee) — Board Reduced to 11 (8-K)',
+    url: 'https://investors.ast-science.com',
+    tracked: true,
+  },
   {
     date: '2025-06-13',
     headline: 'AST SpaceMobile Announces Settlement Term Sheet for 45 MHz L-Band Spectrum from Ligado — $550M Deal',

@@ -27,10 +27,10 @@ import type { Partner, RevenueSource, DataMetadata, PartnerNewsEntry } from '../
 // ============================================================================
 
 export const PARTNERS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-10',
-  source: 'Q3 2025 10-Q and press releases',
+  lastUpdated: '2026-02-12',
+  source: 'Q3 2025 10-Q, press releases, Jan 2026 8-K (Mikitani resignation)',
   nextExpectedUpdate: 'After new partnership announcements',
-  notes: 'Verizon definitive Oct 2025, stc $1.8B agreement Q3 2025',
+  notes: 'Verizon definitive Oct 2025, stc $1.8B agreement Q3 2025. Mikitani resigned from board Jan 13, 2026 (dilution); Rakuten retains observer.',
 };
 
 // ============================================================================
@@ -93,7 +93,7 @@ export const PARTNERS: Partner[] = [
     status: 'Definitive',
     prepay: 0,
     spectrum: 'LTE',
-    notes: 'Video calls demonstrated. PIPE investor.',
+    notes: 'Video calls demonstrated. PIPE investor. Mikitani resigned from board Jan 13, 2026 (Rakuten diluted below designation threshold). Rakuten retains board observer. Not a disagreement per 8-K.',
   },
   {
     name: 'stc Group',
