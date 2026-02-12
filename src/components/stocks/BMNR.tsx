@@ -596,8 +596,8 @@ const Guide = React.memo<GuideProps>(({ title, children }) => (
 Guide.displayName = 'Guide';
 
 const Panel = React.memo<PanelProps>(({ title, children }) => (
-  <div className="card">
-    {title && <div className="card-title">{title}</div>}
+  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
+    {title && <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>}
     {children}
   </div>
 ));
@@ -1253,8 +1253,8 @@ const BMNRParameterCard = ({
   };
 
   return (
-    <div className="card" style={{ opacity: disabled ? 0.6 : 1 }}>
-      <div className="card-title">{title}</div>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12, opacity: disabled ? 0.6 : 1 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>
       <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
         {explanation}
       </p>
@@ -1516,8 +1516,9 @@ const ModelTab = ({
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Calculation Mode</span>
           <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
         </div>
-        <div className="card">
-          <div className="card-title">Data Source</div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Data Source</span></div>
+          <div style={{ padding: '24px 28px' }}>
           <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5, marginBottom: 12 }}>
             Choose how to calculate valuation. "Use Parameters" takes current ETH holdings and price from Overview tab. "Use Growth Projection" projects future value using growth rate.
           </p>
@@ -1562,6 +1563,7 @@ const ModelTab = ({
                 {ethGrowthRate > 0 ? '+' : ''}{ethGrowthRate}% annual ETH growth
               </div>
             </div>
+          </div>
           </div>
         </div>
 
@@ -1841,8 +1843,9 @@ const OverviewParameterCard = ({
   };
 
   return (
-    <div className="card">
-      <div className="card-title">{title}</div>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{title}</span></div>
+      <div style={{ padding: '24px 28px' }}>
       <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
         {explanation}
       </p>
@@ -1953,6 +1956,7 @@ const OverviewParameterCard = ({
       <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 8 }}>
         ← Bearish | Bullish →
       </div>
+      </div>
     </div>
   );
 };
@@ -2029,12 +2033,12 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>ETH Holdings Growth</span>
         <UpdateIndicators sources="PR" />
       </div>
-      <div className="bars" style={{ padding: '24px 28px 0' }}>
+      <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
         {holdingsData.map((d, i) => (
-          <div key={i} className="bar-col">
-            <div className="bar-val">{d.display}</div>
-            <div className="bar" style={{ height: `${maxValue > 0 ? (d.value / maxValue) * 150 : 0}px` }} />
-            <div className="bar-label">{d.label}</div>
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
+            <div style={{ width: '100%', background: 'var(--accent)', borderRadius: '4px 4px 0 0', height: `${maxValue > 0 ? (d.value / maxValue) * 100 : 0}%`, transition: 'height 0.3s' }} />
+            <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
           </div>
         ))}
       </div>
@@ -2343,7 +2347,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
 
   return (
     <>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>Scenario Simulation<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Scenario Simulation</span><UpdateIndicators sources={['PR', 'SEC']} /><span style={{ flex: 1, height: 1, background: 'var(--border)' }} /></div>
 
       <div className="highlight">
         <h3>Multi-Year Projections</h3>
@@ -2355,9 +2359,10 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       </div>
 
       {/* Controls - Target Year and Scenario Selector */}
-      <div className="g2" style={{ }}>
-        <div className="card">
-          <div className="card-title">Target Year</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Target Year</span></div>
+          <div style={{ padding: '24px 28px' }}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {TARGET_YEARS.map(year => (
               <button
@@ -2379,10 +2384,12 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
               </button>
             ))}
           </div>
+          </div>
         </div>
 
-        <div className="card">
-          <div className="card-title">Scenario</div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Scenario</span></div>
+          <div style={{ padding: '24px 28px' }}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {scenarios.map(s => (
               <button
@@ -2403,6 +2410,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
               </button>
             ))}
           </div>
+          </div>
         </div>
       </div>
 
@@ -2418,7 +2426,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         return (
           <>
             {/* Scenario Header */}
-            <div className="card" style={{ borderLeft: `4px solid ${selected.color}` }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', borderLeft: `4px solid ${selected.color}`, padding: '24px 28px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                 <div>
                   <h3 style={{ color: selected.color }}>
@@ -2436,7 +2444,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             </div>
 
             {/* Key Metrics */}
-            <div className="g4" style={{ }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
               <div className="big-stat">
                 <div className="num" style={{ color: selected.color }}>${targetProjection.stockPrice.toFixed(0)}</div>
                 <div className="lbl">Stock Price</div>
@@ -2470,96 +2478,101 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             </div>
 
             {/* Financial Projections Table */}
-            <div className="card" style={{ }}>
-              <div className="card-title">Financial Projections — {selected.name} Scenario</div>
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+              <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Financial Projections — {selected.name} Scenario</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <div style={{ overflowX: 'auto' }}>
-              <table className="tbl">
-                <thead>
-                  <tr>
-                    <th>Metric</th>
-                    <th className="r">Today</th>
-                    {selected.projections.map(p => (
-                      <th key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                        {p.year}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>ETH Price</td>
-                    <td className="r">${ethPrice.toLocaleString()}</td>
-                    {selected.projections.map(p => (
-                      <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                        ${p.ethPrice.toLocaleString()}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td>ETH Holdings (M)</td>
-                    <td className="r">{(currentETH / 1e6).toFixed(3)}</td>
-                    {selected.projections.map(p => (
-                      <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                        {(p.ethHoldings / 1e6).toFixed(3)}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td>Shares (M)</td>
-                    <td className="r">{currentShares.toFixed(0)}</td>
-                    {selected.projections.map(p => (
-                      <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                        {p.shares.toFixed(0)}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr style={{ borderTop: '1px solid var(--border)' }}>
-                    <td>NAV/Share</td>
-                    <td className="r">${calc.currentNAV.toFixed(2)}</td>
-                    {selected.projections.map(p => (
-                      <td key={p.year} className="r" style={{ background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                        ${p.nav.toFixed(2)}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td>Stock Price</td>
-                    <td className="r">${currentStockPrice.toFixed(2)}</td>
-                    {selected.projections.map(p => (
-                      <td key={p.year} className="r" style={{ fontWeight: 700, color: selected.color, background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                        ${p.stockPrice.toFixed(2)}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td>Cum. Dividends</td>
-                    <td className="r">$0.00</td>
-                    {selected.projections.map(p => (
-                      <td key={p.year} className="r" style={{ color: 'var(--mint)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                        ${p.cumDividends.toFixed(2)}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr style={{ borderTop: '1px solid var(--border)' }}>
-                    <td>Price Return</td>
-                    <td className="r">—</td>
-                    {selected.projections.map(p => (
-                      <td key={p.year} className="r" style={{ color: p.priceReturn >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                        {p.priceReturn >= 0 ? '+' : ''}{p.priceReturn.toFixed(0)}%
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td>Total Return</td>
-                    <td className="r">—</td>
-                    {selected.projections.map(p => (
-                      <td key={p.year} className="r" style={{ fontWeight: 700, color: p.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
-                        {p.totalReturn >= 0 ? '+' : ''}{p.totalReturn.toFixed(0)}%
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
+              {/* Table header */}
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid var(--border)' }}>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', padding: '12px 16px' }}>Metric</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', padding: '12px 16px', textAlign: 'right' }}>Today</span>
+                {selected.projections.map(p => (
+                  <span key={p.year} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'var(--surface2)', padding: '12px 16px', textAlign: 'right' }}>
+                    {p.year}
+                  </span>
+                ))}
+              </div>
+              {/* ETH Price row */}
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                <span style={{ padding: '12px 16px', fontSize: 13 }}>ETH Price</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right' }}>${ethPrice.toLocaleString()}</span>
+                {selected.projections.map(p => (
+                  <span key={p.year} style={{ padding: '12px 16px', textAlign: 'right', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    ${p.ethPrice.toLocaleString()}
+                  </span>
+                ))}
+              </div>
+              {/* ETH Holdings row */}
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                <span style={{ padding: '12px 16px', fontSize: 13 }}>ETH Holdings (M)</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right' }}>{(currentETH / 1e6).toFixed(3)}</span>
+                {selected.projections.map(p => (
+                  <span key={p.year} style={{ padding: '12px 16px', textAlign: 'right', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {(p.ethHoldings / 1e6).toFixed(3)}
+                  </span>
+                ))}
+              </div>
+              {/* Shares row */}
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                <span style={{ padding: '12px 16px', fontSize: 13 }}>Shares (M)</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right' }}>{currentShares.toFixed(0)}</span>
+                {selected.projections.map(p => (
+                  <span key={p.year} style={{ padding: '12px 16px', textAlign: 'right', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.shares.toFixed(0)}
+                  </span>
+                ))}
+              </div>
+              {/* NAV/Share row */}
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderTop: '1px solid var(--border)', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                <span style={{ padding: '12px 16px', fontSize: 13 }}>NAV/Share</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right' }}>${calc.currentNAV.toFixed(2)}</span>
+                {selected.projections.map(p => (
+                  <span key={p.year} style={{ padding: '12px 16px', textAlign: 'right', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    ${p.nav.toFixed(2)}
+                  </span>
+                ))}
+              </div>
+              {/* Stock Price row */}
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                <span style={{ padding: '12px 16px', fontSize: 13 }}>Stock Price</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right' }}>${currentStockPrice.toFixed(2)}</span>
+                {selected.projections.map(p => (
+                  <span key={p.year} style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: selected.color, background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    ${p.stockPrice.toFixed(2)}
+                  </span>
+                ))}
+              </div>
+              {/* Cum. Dividends row */}
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                <span style={{ padding: '12px 16px', fontSize: 13 }}>Cum. Dividends</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right' }}>$0.00</span>
+                {selected.projections.map(p => (
+                  <span key={p.year} style={{ padding: '12px 16px', textAlign: 'right', color: 'var(--mint)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    ${p.cumDividends.toFixed(2)}
+                  </span>
+                ))}
+              </div>
+              {/* Price Return row */}
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderTop: '1px solid var(--border)', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                <span style={{ padding: '12px 16px', fontSize: 13 }}>Price Return</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right' }}>—</span>
+                {selected.projections.map(p => (
+                  <span key={p.year} style={{ padding: '12px 16px', textAlign: 'right', color: p.priceReturn >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.priceReturn >= 0 ? '+' : ''}{p.priceReturn.toFixed(0)}%
+                  </span>
+                ))}
+              </div>
+              {/* Total Return row */}
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)` }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                <span style={{ padding: '12px 16px', fontSize: 13 }}>Total Return</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right' }}>—</span>
+                {selected.projections.map(p => (
+                  <span key={p.year} style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: p.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)', background: p.year === targetYear ? 'rgba(0,212,170,0.1)' : 'transparent' }}>
+                    {p.totalReturn >= 0 ? '+' : ''}{p.totalReturn.toFixed(0)}%
+                  </span>
+                ))}
+              </div>
+            </div>
             </div>
           </div>
           </>
@@ -2567,17 +2580,20 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
       })()}
 
       {/* KEY ASSUMPTIONS & CATALYSTS */}
-      <div className="g2" style={{ }}>
-        <div className="card">
-          <div className="card-title">Key Assumptions</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Key Assumptions</span></div>
+          <div style={{ padding: '24px 28px' }}>
           <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
             {scenarios.find(s => s.id === selectedScenario)?.assumptions.map((a, i) => (
               <li key={i} style={{ lineHeight: 1.5 }}>{a}</li>
             ))}
           </ul>
+          </div>
         </div>
-        <div className="card">
-          <div className="card-title">{scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</span></div>
+          <div style={{ padding: '24px 28px' }}>
           <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
             {(scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 ? scenarios.find(s => s.id === selectedScenario)?.catalysts : scenarios.find(s => s.id === selectedScenario)?.risks)?.map((item, i) => (
               <li key={i} style={{ lineHeight: 1.5 }}>{item}</li>
@@ -2585,7 +2601,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
           </ul>
           {scenarios.find(s => s.id === selectedScenario)?.catalysts.length > 0 && scenarios.find(s => s.id === selectedScenario)?.risks.length > 0 && (
             <>
-              <div className="card-title" style={{ }}>Risks</div>
+              <div style={{ padding: '20px 0 12px', borderTop: '1px solid var(--border)', marginTop: 16 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Risks</span></div>
               <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
                 {scenarios.find(s => s.id === selectedScenario)?.risks.map((r, i) => (
                   <li key={i} style={{ lineHeight: 1.5 }}>{r}</li>
@@ -2593,6 +2609,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
               </ul>
             </>
           )}
+          </div>
         </div>
       </div>
 
@@ -2613,7 +2630,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
 
           return (
             <>
-              <div className="g4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
                 <div className="big-stat">
                   <div className="num mint">${pwev.stockPrice.toFixed(2)}</div>
                   <div className="lbl">Expected Stock Price</div>
@@ -2631,121 +2648,94 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                   <div className="lbl">Current Price</div>
                 </div>
               </div>
-              <table className="tbl" style={{ }}>
-                <thead>
-                  <tr>
-                    <th>Scenario</th>
-                    <th className="r">Probability</th>
-                    <th className="r">Stock Price</th>
-                    <th className="r">Return</th>
-                    <th className="r">Weighted Contribution</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scenarios.map(s => {
-                    const contribution = s.finalStockPrice * (s.prob / 100);
-                    return (
-                      <tr key={s.id} style={{ background: selectedScenario === s.id ? `${s.color}11` : 'transparent' }}>
-                        <td>
-                          <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
-                          {s.name}
-                        </td>
-                        <td className="r">{s.prob}%</td>
-                        <td className="r" style={{ fontFamily: 'Space Mono' }}>${s.finalStockPrice.toFixed(2)}</td>
-                        <td className="r" style={{ color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                          {s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%
-                        </td>
-                        <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>${contribution.toFixed(2)}</td>
-                      </tr>
-                    );
-                  })}
-                  <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
-                    <td>Expected Value</td>
-                    <td className="r">100%</td>
-                    <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.stockPrice.toFixed(2)}</td>
-                    <td className="r mint">{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</td>
-                    <td className="r mint" style={{ fontFamily: 'Space Mono' }}>${pwev.stockPrice.toFixed(2)}</td>
-                  </tr>
-                </tbody>
-              </table>
+              {/* PWEV Table header */}
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1.5fr', borderBottom: '1px solid var(--border)' }}>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', padding: '12px 16px' }}>Scenario</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', padding: '12px 16px', textAlign: 'right' }}>Probability</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', padding: '12px 16px', textAlign: 'right' }}>Stock Price</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', padding: '12px 16px', textAlign: 'right' }}>Return</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', padding: '12px 16px', textAlign: 'right' }}>Weighted Contribution</span>
+              </div>
+              {scenarios.map(s => {
+                const contribution = s.finalStockPrice * (s.prob / 100);
+                return (
+                  <div key={s.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1.5fr', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: selectedScenario === s.id ? `${s.color}11` : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = selectedScenario === s.id ? `${s.color}11` : 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = selectedScenario === s.id ? `${s.color}11` : 'transparent'}>
+                    <span style={{ padding: '12px 16px', display: 'flex', alignItems: 'center' }}>
+                      <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
+                      {s.name}
+                    </span>
+                    <span style={{ padding: '12px 16px', textAlign: 'right' }}>{s.prob}%</span>
+                    <span style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'Space Mono' }}>${s.finalStockPrice.toFixed(2)}</span>
+                    <span style={{ padding: '12px 16px', textAlign: 'right', color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                      {s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%
+                    </span>
+                    <span style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--sky)' }}>${contribution.toFixed(2)}</span>
+                  </div>
+                );
+              })}
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1.5fr', borderTop: '2px solid var(--border)', fontWeight: 700 }}>
+                <span style={{ padding: '12px 16px' }}>Expected Value</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right' }}>100%</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--mint)' }}>${pwev.stockPrice.toFixed(2)}</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right', color: 'var(--mint)' }}>{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</span>
+                <span style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--mint)' }}>${pwev.stockPrice.toFixed(2)}</span>
+              </div>
             </>
           );
         })()}
       </div>
 
       {/* Comparison Table */}
-      <div className="card" style={{ }}>
-        <div className="card-title">All Scenarios — {targetYear} Comparison</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>All Scenarios — {targetYear} Comparison</span></div>
+        <div style={{ padding: '24px 28px' }}>
         <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Metric</th>
-                {scenarios.map(s => (
-                  <th key={s.id} className="r" style={{ color: s.color }}>{s.name}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>ETH Price ($)</td>
-                {scenarios.map(s => <td key={s.id} className="r">${s.ethPrice.toLocaleString()}</td>)}
-              </tr>
-              <tr>
-                <td>ETH Holdings (M)</td>
-                {scenarios.map(s => <td key={s.id} className="r">{(s.futureETH / 1e6).toFixed(2)}</td>)}
-              </tr>
-              <tr>
-                <td>NAV/Share ($)</td>
-                {scenarios.map(s => <td key={s.id} className="r">${s.finalNAV.toFixed(2)}</td>)}
-              </tr>
-              <tr style={{ fontWeight: 700 }}>
-                <td>Stock Price ($)</td>
-                {scenarios.map(s => (
-                  <td key={s.id} className="r" style={{ color: s.color }}>
-                    ${s.finalStockPrice.toFixed(2)}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td>Cum. Dividends ($)</td>
-                {scenarios.map(s => (
-                  <td key={s.id} className="r" style={{ color: 'var(--mint)' }}>
-                    ${s.totalDividends.toFixed(2)}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td>Price Return (%)</td>
-                {scenarios.map(s => (
-                  <td key={s.id} className="r" style={{ color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                    {s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%
-                  </td>
-                ))}
-              </tr>
-              <tr style={{ fontWeight: 700 }}>
-                <td>Total Return (%)</td>
-                {scenarios.map(s => (
-                  <td key={s.id} className="r" style={{ color: s.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                    {s.totalReturn >= 0 ? '+' : ''}{s.totalReturn.toFixed(0)}%
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td>Total IRR (%)</td>
-                {scenarios.map(s => (
-                  <td key={s.id} className="r" style={{ color: s.totalIRR >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                    {s.totalIRR >= 0 ? '+' : ''}{s.totalIRR.toFixed(1)}%
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid var(--border)' }}>
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', padding: '12px 16px' }}>Metric</span>
+            {scenarios.map(s => (
+              <span key={s.id} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: s.color, background: 'var(--surface2)', padding: '12px 16px', textAlign: 'right' }}>{s.name}</span>
+            ))}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+            <span style={{ padding: '12px 16px', fontSize: 13 }}>ETH Price ($)</span>
+            {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right' }}>${s.ethPrice.toLocaleString()}</span>)}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+            <span style={{ padding: '12px 16px', fontSize: 13 }}>ETH Holdings (M)</span>
+            {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right' }}>{(s.futureETH / 1e6).toFixed(2)}</span>)}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+            <span style={{ padding: '12px 16px', fontSize: 13 }}>NAV/Share ($)</span>
+            {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right' }}>${s.finalNAV.toFixed(2)}</span>)}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 700 }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+            <span style={{ padding: '12px 16px', fontSize: 13 }}>Stock Price ($)</span>
+            {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right', color: s.color }}>${s.finalStockPrice.toFixed(2)}</span>)}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+            <span style={{ padding: '12px 16px', fontSize: 13 }}>Cum. Dividends ($)</span>
+            {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right', color: 'var(--mint)' }}>${s.totalDividends.toFixed(2)}</span>)}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+            <span style={{ padding: '12px 16px', fontSize: 13 }}>Price Return (%)</span>
+            {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right', color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%</span>)}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 700 }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+            <span style={{ padding: '12px 16px', fontSize: 13 }}>Total Return (%)</span>
+            {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right', color: s.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalReturn >= 0 ? '+' : ''}{s.totalReturn.toFixed(0)}%</span>)}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)` }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+            <span style={{ padding: '12px 16px', fontSize: 13 }}>Total IRR (%)</span>
+            {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right', color: s.totalIRR >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalIRR >= 0 ? '+' : ''}{s.totalIRR.toFixed(1)}%</span>)}
+          </div>
+        </div>
         </div>
       </div>
 
       {/* Key Insights */}
-      <div className="card" style={{ }}><div className="card-title">Key Insights</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Key Insights</span></div>
+        <div style={{ padding: '24px 28px' }}>
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div className="bg-slate-900/50 rounded-lg p-4">
             <h4 className="font-semibold text-violet-400 mb-2">Leverage Effect</h4>
@@ -2764,12 +2754,14 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             <p className="text-slate-300">Worst case: -{Math.abs(scenarios[0].stockReturn).toFixed(0)}%. Super bull: +{scenarios[5].stockReturn.toFixed(0)}%. Asymmetric if you believe in long-term ETH appreciation.</p>
           </div>
         </div>
+        </div>
       </div>
 
       {/* METHODOLOGY & ASSUMPTIONS */}
-      <div className="card" style={{ }}>
-        <div className="card-title">Methodology & Assumptions</div>
-        <div className="g2">
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Methodology & Assumptions</span></div>
+        <div style={{ padding: '24px 28px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div>
             <h4 style={{ color: 'var(--mint)' }}>Valuation Framework</h4>
             <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
@@ -2803,6 +2795,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             <li>Staking yields may decrease as more ETH is staked network-wide.</li>
             <li>Management strategy execution (Alchemy of 5%) is uncertain and may not be achieved.</li>
           </ul>
+        </div>
         </div>
       </div>
 
@@ -5627,42 +5620,36 @@ const CompsTab = ({ comparables, ethPrice }) => {
       <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>BMNR value under different NAV multiples (current: ${(compsData[0]?.marketCap / 1e9).toFixed(2)}B)</p>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Method</th>
-              <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Peer Basis</th>
-              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
-              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Implied Value</th>
-              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>vs Current</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(() => {
-              const bmnr = compsData.find(c => c.name === 'BMNR');
-              const currentMC = bmnr?.marketCap || 0;
-              const nav = bmnr?.navPerShare * (comparables[0]?.shares || 1);
-              return [
-                { method: 'NAV Multiple', basis: 'MSTR Premium', multiple: '2.0x', implied: nav * 2.0, vs: ((nav * 2.0) / currentMC - 1) * 100 },
-                { method: 'NAV Multiple', basis: 'Market Average', multiple: '1.5x', implied: nav * 1.5, vs: ((nav * 1.5) / currentMC - 1) * 100 },
-                { method: 'NAV Multiple', basis: 'Fair Value', multiple: '1.0x', implied: nav * 1.0, vs: ((nav * 1.0) / currentMC - 1) * 100 },
-                { method: 'NAV Multiple', basis: 'Discount', multiple: '0.75x', implied: nav * 0.75, vs: ((nav * 0.75) / currentMC - 1) * 100 },
-                { method: 'Yield-Adjusted', basis: 'ETH Yield Premium', multiple: '1.3x', implied: nav * 1.3, vs: ((nav * 1.3) / currentMC - 1) * 100 },
-                { method: 'Yield-Adjusted', basis: '5yr Compound', multiple: '1.15x', implied: nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5), vs: ((nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5)) / currentMC - 1) * 100 },
-              ].map((v, i) => (
-                <tr key={i}>
-                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.multiple}</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${(v.implied / 1e9).toFixed(2)}B</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                    {v.vs >= 0 ? '+' : ''}{v.vs.toFixed(0)}%
-                  </td>
-                </tr>
-              ));
-            })()}
-          </tbody>
-        </table>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)', borderRadius: '10px 10px 0 0' }}>
+            {['Method', 'Peer Basis', 'Multiple', 'Implied Value', 'vs Current'].map((label, idx) => (
+              <div key={label} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx < 2 ? 'left' : 'right' }}>{label}</div>
+            ))}
+          </div>
+          {(() => {
+            const bmnr = compsData.find(c => c.name === 'BMNR');
+            const currentMC = bmnr?.marketCap || 0;
+            const nav = bmnr?.navPerShare * (comparables[0]?.shares || 1);
+            return [
+              { method: 'NAV Multiple', basis: 'MSTR Premium', multiple: '2.0x', implied: nav * 2.0, vs: ((nav * 2.0) / currentMC - 1) * 100 },
+              { method: 'NAV Multiple', basis: 'Market Average', multiple: '1.5x', implied: nav * 1.5, vs: ((nav * 1.5) / currentMC - 1) * 100 },
+              { method: 'NAV Multiple', basis: 'Fair Value', multiple: '1.0x', implied: nav * 1.0, vs: ((nav * 1.0) / currentMC - 1) * 100 },
+              { method: 'NAV Multiple', basis: 'Discount', multiple: '0.75x', implied: nav * 0.75, vs: ((nav * 0.75) / currentMC - 1) * 100 },
+              { method: 'Yield-Adjusted', basis: 'ETH Yield Premium', multiple: '1.3x', implied: nav * 1.3, vs: ((nav * 1.3) / currentMC - 1) * 100 },
+              { method: 'Yield-Adjusted', basis: '5yr Compound', multiple: '1.15x', implied: nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5), vs: ((nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5)) / currentMC - 1) * 100 },
+            ].map((v, i) => (
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</div>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</div>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{v.multiple}</div>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(v.implied / 1e9).toFixed(2)}B</div>
+                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  {v.vs >= 0 ? '+' : ''}{v.vs.toFixed(0)}%
+                </div>
+              </div>
+            ));
+          })()}
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -5674,48 +5661,42 @@ const CompsTab = ({ comparables, ethPrice }) => {
             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
             <p style={{ color: 'var(--text3)', fontSize: 13, margin: 0 }}>Value each component separately</p>
           </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Component</th>
-                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Metric</th>
-                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
-                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(() => {
-                const bmnr = compsData.find(c => c.name === 'BMNR');
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
+              {['Component', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
+                <div key={label} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
+              ))}
+            </div>
+            {(() => {
+              const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
+              const ethValue = ethHoldings * ethPrice;
+              return [
+                { segment: 'ETH Holdings', basis: 'Spot value', metric: `${(ethHoldings / 1e6).toFixed(2)}M ETH`, multiple: '1.0x', value: ethValue },
+                { segment: 'Staking Yield', basis: '5yr NPV @ 10%', metric: `${comparables[0]?.yield || 0}% APY`, multiple: 'NPV', value: ethValue * (comparables[0]?.yield || 0) / 100 * 3.79 },
+                { segment: 'Operational Premium', basis: 'Management + infrastructure', metric: 'Strategic', multiple: '—', value: ethValue * 0.05 },
+                { segment: 'Growth Optionality', basis: 'Acquisition capacity', metric: 'Option value', multiple: '—', value: ethValue * 0.03 },
+              ].map((s, i) => (
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                    <div style={{ fontWeight: 500 }}>{s.segment}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
+                  </div>
+                  <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.metric}</div>
+                  <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.multiple}</div>
+                  <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value / 1e9).toFixed(2)}B</div>
+                </div>
+              ));
+            })()}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
+              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>SOTP Total</div>
+              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((() => {
                 const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
                 const ethValue = ethHoldings * ethPrice;
-                return [
-                  { segment: 'ETH Holdings', basis: 'Spot value', metric: `${(ethHoldings / 1e6).toFixed(2)}M ETH`, multiple: '1.0x', value: ethValue },
-                  { segment: 'Staking Yield', basis: '5yr NPV @ 10%', metric: `${comparables[0]?.yield || 0}% APY`, multiple: 'NPV', value: ethValue * (comparables[0]?.yield || 0) / 100 * 3.79 },
-                  { segment: 'Operational Premium', basis: 'Management + infrastructure', metric: 'Strategic', multiple: '—', value: ethValue * 0.05 },
-                  { segment: 'Growth Optionality', basis: 'Acquisition capacity', metric: 'Option value', multiple: '—', value: ethValue * 0.03 },
-                ].map((s, i) => (
-                  <tr key={i}>
-                    <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
-                      <div style={{ fontWeight: 500 }}>{s.segment}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
-                    </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.metric}</td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.multiple}</td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${(s.value / 1e9).toFixed(2)}B</td>
-                  </tr>
-                ));
-              })()}
-              <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-                <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }} colSpan={3}>SOTP Total</td>
-                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${((() => {
-                  const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
-                  const ethValue = ethHoldings * ethPrice;
-                  const yieldNPV = ethValue * (comparables[0]?.yield || 0) / 100 * 3.79;
-                  return (ethValue + yieldNPV + ethValue * 0.08) / 1e9;
-                })()).toFixed(2)}B</td>
-              </tr>
-            </tbody>
-          </table>
+                const yieldNPV = ethValue * (comparables[0]?.yield || 0) / 100 * 3.79;
+                return (ethValue + yieldNPV + ethValue * 0.08) / 1e9;
+              })()).toFixed(2)}B</div>
+            </div>
+          </div>
           </div>
         </div>
 
@@ -5726,40 +5707,38 @@ const CompsTab = ({ comparables, ethPrice }) => {
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>NAV Premium Sensitivity<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13 }}>Stock price at different ETH prices × NAV multiples</p>
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>ETH ↓ / NAV → </th>
-                  {[0.75, 1.0, 1.25, 1.5, 2.0].map((m, idx) => <th key={m} style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', ...(idx === 4 ? { borderRadius: '0 10px 0 0' } : {}) }}>{m}x</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(ethMult => {
-                  const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
-                  const shares = comparables[0]?.shares || 1;
-                  const baseNAV = (ethHoldings * ethPrice) / shares;
-                  const currentPrice = comparables[0]?.price || 0;
-                  return (
-                    <tr key={ethMult}>
-                      <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</td>
-                      {[0.75, 1.0, 1.25, 1.5, 2.0].map(navMult => {
-                        const price = baseNAV * ethMult * navMult;
-                        const isNear = ethMult === 1.0 && navMult === 1.0;
-                        return (
-                          <td key={navMult} style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, ...(isNear ? {
-                            background: 'var(--accent-dim)',
-                            fontWeight: 600,
-                            color: 'var(--accent)'
-                          } : { color: price >= currentPrice ? 'var(--mint)' : 'var(--coral)' }) }}>
-                            ${price.toFixed(2)}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 1fr)', background: 'var(--surface2)', borderBottom: '1px solid var(--border)', borderRadius: '10px 10px 0 0' }}>
+                <div style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600 }}>ETH / NAV</div>
+                {[0.75, 1.0, 1.25, 1.5, 2.0].map(m => (
+                  <div key={m} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: 'right' }}>{m}x</div>
+                ))}
+              </div>
+              {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(ethMult => {
+                const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
+                const shares = comparables[0]?.shares || 1;
+                const baseNAV = (ethHoldings * ethPrice) / shares;
+                const currentPrice = comparables[0]?.price || 0;
+                return (
+                  <div key={ethMult} style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 1fr)', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                    <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</div>
+                    {[0.75, 1.0, 1.25, 1.5, 2.0].map(navMult => {
+                      const price = baseNAV * ethMult * navMult;
+                      const isNear = ethMult === 1.0 && navMult === 1.0;
+                      return (
+                        <div key={navMult} style={{ padding: '14px 16px', textAlign: 'right', fontFamily: "'Space Mono', monospace", fontSize: 14, ...(isNear ? {
+                          background: 'var(--accent-dim)',
+                          fontWeight: 600,
+                          color: 'var(--accent)'
+                        } : { color: price >= currentPrice ? 'var(--mint)' : 'var(--coral)' }) }}>
+                          ${price.toFixed(2)}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
           </div>
           </div>
         </div>
@@ -6243,13 +6222,20 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>DCF<UpdateIndicators sources={['PR', 'SEC']} /></h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 28, fontWeight: 700, letterSpacing: -0.5 }}>
+        <div style={{ width: 6, height: 32, background: 'var(--accent)', borderRadius: 3 }} />
+        DCF<UpdateIndicators sources={['PR', 'SEC']} />
+      </div>
       <div className="highlight"><h3>DCF Valuation</h3>
         <p className="text-sm">DCF valuation with three methods: terminal NAV only, with staking cash flows, or with declared dividends. Adjust growth and discount rate.</p>
       </div>
       
       {/* DCF Method Selector */}
-      <div className="card"><div className="card-title">DCF Method</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DCF Method</span>
+        </div>
+        <div style={{ padding: 28 }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           <button
             onClick={() => setDcfMethod('terminal')}
@@ -6298,7 +6284,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
           </button>
         </div>
         {dcfMethod === 'intermediate' && (
-          <div style={{ background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.3)', borderRadius: 8, padding: 12 }}>
+          <div style={{ background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.3)', borderRadius: 8, padding: 12, marginTop: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <span style={{ fontSize: 14, color: 'var(--sky)' }}>Yield Payout Ratio:</span>
               <input
@@ -6315,7 +6301,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
           </div>
         )}
         {dcfMethod === 'dividend' && (
-          <div style={{ background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.3)', borderRadius: 8, padding: 12 }}>
+          <div style={{ background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.3)', borderRadius: 8, padding: 12, marginTop: 16 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, fontSize: 14 }}>
               <div>
                 <span style={{ color: 'var(--mint)' }}>Current Quarterly Dividend:</span>
@@ -6337,122 +6323,126 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
             <p style={{ fontSize: 12, color: 'var(--text3)' }}>Based on declared $0.01/qtr dividend (first payment Dec 29, 2025). Adjust growth rate in Overview tab.</p>
           </div>
         )}
+        </div>
       </div>
-      
-      <div className="g2">
-        <div className="card">
-          <div className="card-title">Model Inputs</div>
-          <div className="g2">
-            <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
-            <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} />
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Model Inputs</span>
           </div>
-          <div className="g2" style={{ }}>
-            <Input label="Terminal Multiple" value={terminalMult} onChange={setTerminalMult} step={0.1} />
-            <Input label="Years" value={years} onChange={setYears} min={1} max={10} />
+          <div style={{ padding: 28 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+              <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
+              <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+              <Input label="Terminal Multiple" value={terminalMult} onChange={setTerminalMult} step={0.1} />
+              <Input label="Years" value={years} onChange={setYears} min={1} max={10} />
+            </div>
           </div>
         </div>
-        <div className="card">
-          <div className="card-title">Valuation Output</div>
-          <div className="g2">
-            <Card label="Implied Value" value={`$${dcf.impliedValue.toFixed(2)}`} sub={dcfMethod === 'intermediate' ? 'CFs + Terminal' : dcfMethod === 'dividend' ? 'Divs + Terminal' : 'Terminal only'} color="mint" />
-            <Card label="Current NAV" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value" />
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Output</span>
           </div>
-          <div className="g2" style={{ }}>
-            <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs NAV" color={dcf.upside >= 0 ? 'green' : 'red'} />
-            <Card label="Implied IRR" value={`${irr.toFixed(1)}%`} sub="Annualized" />
+          <div style={{ padding: 28 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+              <Card label="Implied Value" value={`$${dcf.impliedValue.toFixed(2)}`} sub={dcfMethod === 'intermediate' ? 'CFs + Terminal' : dcfMethod === 'dividend' ? 'Divs + Terminal' : 'Terminal only'} color="mint" />
+              <Card label="Current NAV" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value" />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+              <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs NAV" color={dcf.upside >= 0 ? 'green' : 'red'} />
+              <Card label="Implied IRR" value={`${irr.toFixed(1)}%`} sub="Annualized" />
+            </div>
+            {dcfMethod === 'intermediate' && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+                <Card label="PV of Cash Flows" value={`$${dcf.sumIntermediatePV.toFixed(2)}`} sub={`${years}yr yield @ ${yieldPayout}% payout`} color="cyan" />
+                <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
+              </div>
+            )}
+            {dcfMethod === 'dividend' && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+                <Card label="PV of Dividends" value={`$${dcf.sumDividendPV.toFixed(2)}`} sub={`${years}yr @ ${dividendGrowthRate}% growth`} color="mint" />
+                <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
+              </div>
+            )}
           </div>
+        </div>
+      </div>
+
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Projections</span>
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          {/* Header */}
+          <div style={{ display: 'grid', gridTemplateColumns: dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+            {['Year', 'ETH', 'ETH Price', 'NAV',
+              ...(dcfMethod === 'intermediate' ? ['Yield ETH', 'CF/Share', 'CF PV'] : []),
+              ...(dcfMethod === 'dividend' ? ['Dividend', 'Div PV'] : []),
+              'NAV PV'
+            ].map((h, i) => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i === 0 ? 'left' : 'right' }}>{h}</span>
+            ))}
+          </div>
+          {/* Data rows */}
+          {dcf.projections.map((p, i) => (
+            <div key={p.year} style={{ display: 'grid', gridTemplateColumns: dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: i < dcf.projections.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : '1px solid var(--border)', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500 }}>{p.year}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right' }}>{(p.eth / 1e6).toFixed(2)}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right' }}>${p.ethPrice.toFixed(0)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right' }}>${p.nav.toFixed(2)}</span>
+              {dcfMethod === 'intermediate' && (
+                <>
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', color: 'var(--mint)' }}>+{Math.round(p.yieldETH).toLocaleString()}</span>
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', color: 'var(--sky)' }}>${p.cfPerShare.toFixed(2)}</span>
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', color: 'var(--sky)' }}>${p.cfPV.toFixed(2)}</span>
+                </>
+              )}
+              {dcfMethod === 'dividend' && (
+                <>
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', color: 'var(--mint)' }}>${p.yearDiv.toFixed(2)}</span>
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', color: 'var(--mint)' }}>${p.divPV.toFixed(2)}</span>
+                </>
+              )}
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', fontWeight: 500 }}>${p.pv.toFixed(2)}</span>
+            </div>
+          ))}
+          {/* Summary rows */}
           {dcfMethod === 'intermediate' && (
-            <div className="g2" style={{ }}>
-              <Card label="PV of Cash Flows" value={`$${dcf.sumIntermediatePV.toFixed(2)}`} sub={`${years}yr yield @ ${yieldPayout}% payout`} color="cyan" />
-              <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
+            <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500 }}>Sum CFs</span>
+              <span /><span /><span /><span /><span />
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', fontWeight: 500, color: 'var(--cyan)' }}>${dcf.sumIntermediatePV.toFixed(2)}</span>
+              <span />
             </div>
           )}
           {dcfMethod === 'dividend' && (
-            <div className="g2" style={{ }}>
-              <Card label="PV of Dividends" value={`$${dcf.sumDividendPV.toFixed(2)}`} sub={`${years}yr @ ${dividendGrowthRate}% growth`} color="mint" />
-              <Card label="PV of Terminal" value={`$${dcf.terminalPV.toFixed(2)}`} sub={`Year ${years} exit`} color="violet" />
+            <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500 }}>Sum Dividends</span>
+              <span /><span /><span />
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', fontWeight: 500, color: 'var(--mint)', gridColumn: 'span 2' }}>${dcf.sumDividendPV.toFixed(2)}</span>
+              <span />
             </div>
           )}
-        </div>
-      </div>
-      
-      <div className="card"><div className="card-title">Projections</div>
-        <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Year</th>
-                <th className="r">ETH</th>
-                <th className="r">ETH Price</th>
-                <th className="r">NAV</th>
-                {dcfMethod === 'intermediate' && (
-                  <>
-                    <th className="r">Yield ETH</th>
-                    <th className="r">CF/Share</th>
-                    <th className="r">CF PV</th>
-                  </>
-                )}
-                {dcfMethod === 'dividend' && (
-                  <>
-                    <th className="r">Dividend</th>
-                    <th className="r">Div PV</th>
-                  </>
-                )}
-                <th className="r">NAV PV</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dcf.projections.map(p => (
-                <tr key={p.year}>
-                  <td style={{ fontWeight: 500 }}>{p.year}</td>
-                  <td className="r">{(p.eth / 1e6).toFixed(2)}M</td>
-                  <td className="r">${p.ethPrice.toFixed(0)}</td>
-                  <td className="r">${p.nav.toFixed(2)}</td>
-                  {dcfMethod === 'intermediate' && (
-                    <>
-                      <td className="r" style={{ color: 'var(--mint)' }}>+{Math.round(p.yieldETH).toLocaleString()}</td>
-                      <td className="r" style={{ color: 'var(--sky)' }}>${p.cfPerShare.toFixed(2)}</td>
-                      <td className="r" style={{ color: 'var(--sky)' }}>${p.cfPV.toFixed(2)}</td>
-                    </>
-                  )}
-                  {dcfMethod === 'dividend' && (
-                    <>
-                      <td className="r" style={{ color: 'var(--mint)' }}>${p.yearDiv.toFixed(2)}</td>
-                      <td className="r" style={{ color: 'var(--mint)' }}>${p.divPV.toFixed(2)}</td>
-                    </>
-                  )}
-                  <td className="r" style={{ fontWeight: 500 }}>${p.pv.toFixed(2)}</td>
-                </tr>
-              ))}
-              {dcfMethod === 'intermediate' && (
-                <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
-                  <td style={{ fontWeight: 500 }}>Sum CFs</td>
-                  <td colSpan={5}></td>
-                  <td className="r" style={{ fontWeight: 500, color: 'var(--cyan)' }}>${dcf.sumIntermediatePV.toFixed(2)}</td>
-                  <td></td>
-                </tr>
-              )}
-              {dcfMethod === 'dividend' && (
-                <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--surface2)' }}>
-                  <td style={{ fontWeight: 500 }}>Sum Dividends</td>
-                  <td colSpan={3}></td>
-                  <td colSpan={2} className="r" style={{ fontWeight: 500, color: 'var(--mint)' }}>${dcf.sumDividendPV.toFixed(2)}</td>
-                  <td></td>
-                </tr>
-              )}
-              <tr style={{ background: 'var(--surface2)' }}>
-                <td style={{ fontWeight: 500 }}>Terminal</td>
-                <td colSpan={dcfMethod === 'terminal' ? 2 : dcfMethod === 'intermediate' ? 5 : 4}></td>
-                <td className="r">${dcf.terminalNAV.toFixed(2)}</td>
-                <td className="r" style={{ fontWeight: 500 }}>${dcf.terminalPV.toFixed(2)}</td>
-              </tr>
-              <tr style={{ background: 'rgba(0,212,170,0.1)' }}>
-                <td style={{ fontWeight: 700 }}>TOTAL</td>
-                <td colSpan={dcfMethod === 'terminal' ? 3 : dcfMethod === 'intermediate' ? 6 : 5}></td>
-                <td className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${dcf.impliedValue.toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div style={{ display: 'grid', gridTemplateColumns: dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500 }}>Terminal</span>
+            {dcfMethod === 'terminal' && <><span /><span /></>}
+            {dcfMethod === 'intermediate' && <><span /><span /><span /><span /><span /></>}
+            {dcfMethod === 'dividend' && <><span /><span /><span /><span /></>}
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right' }}>${dcf.terminalNAV.toFixed(2)}</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', fontWeight: 500 }}>${dcf.terminalPV.toFixed(2)}</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr', padding: '12px 28px', background: 'rgba(0,212,170,0.1)' }}>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700 }}>TOTAL</span>
+            {dcfMethod === 'terminal' && <><span /><span /><span /></>}
+            {dcfMethod === 'intermediate' && <><span /><span /><span /><span /><span /><span /></>}
+            {dcfMethod === 'dividend' && <><span /><span /><span /><span /><span /></>}
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', fontWeight: 700, color: 'var(--mint)' }}>${dcf.impliedValue.toFixed(2)}</span>
+          </div>
         </div>
       </div>
       
@@ -6652,8 +6642,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mc-controls</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-          <div className="card" style={{ }}>
-            <div className="card-title">Time Horizon</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>TIME HORIZON</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <div style={{ display: 'flex', gap: 8 }}>
               {[3, 5, 7].map(yr => (
                 <button
@@ -6677,9 +6668,11 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 </button>
               ))}
             </div>
+            </div>
           </div>
-          <div className="card" style={{ }}>
-            <div className="card-title">Simulations</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>SIMULATIONS</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <div style={{ display: 'flex', gap: 8 }}>
               {[1000, 2000, 5000].map(simCount => (
                 <button
@@ -6703,6 +6696,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 </button>
               ))}
             </div>
+            </div>
           </div>
         </div>
       </div>
@@ -6715,8 +6709,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-          <div className="card" style={{ }}>
-            <div className="card-title">ETH Drift (%)</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>ETH DRIFT (%)</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Expected annual ETH price appreciation. Negative = bear, positive = bull.
             </p>
@@ -6743,9 +6738,11 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 );
               })}
             </div>
+            </div>
           </div>
-          <div className="card" style={{ }}>
-            <div className="card-title">ETH Volatility (%)</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>ETH VOLATILITY (%)</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Annual volatility. Crypto typically 50-80%. Higher = wider outcomes.
             </p>
@@ -6772,6 +6769,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 );
               })}
             </div>
+            </div>
           </div>
         </div>
 
@@ -6780,8 +6778,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-          <div className="card" style={{ }}>
-            <div className="card-title">Multiple Volatility (%)</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>MULTIPLE VOLATILITY (%)</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               How much the NAV multiple (mNAV) varies. Higher = more premium/discount swings.
             </p>
@@ -6808,9 +6807,11 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 );
               })}
             </div>
+            </div>
           </div>
-          <div className="card" style={{ }}>
-            <div className="card-title">ETH-Multiple Correlation</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>ETH-MULTIPLE CORRELATION</span></div>
+            <div style={{ padding: '24px 28px' }}>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               How NAV multiple moves with ETH. Higher = more correlated swings.
             </p>
@@ -6837,6 +6838,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 );
               })}
             </div>
+            </div>
           </div>
         </div>
 
@@ -6855,94 +6857,71 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       {/* Percentile Distribution */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mc-percentiles</div>
-        <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Percentile Distribution</div>
-        <table className="tbl" style={{ width: '100%' }}>
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'left' }}>Percentile</th>
-              <th className="r">Price Target</th>
-              <th className="r">vs Current</th>
-              <th className="r">Implied Return</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              { label: 'P5 (Bear Case)', value: sim.p5 },
-              { label: 'P25', value: sim.p25 },
-              { label: 'P50 (Median)', value: sim.p50, highlight: true },
-              { label: 'P75', value: sim.p75 },
-              { label: 'P95 (Bull Case)', value: sim.p95 },
-            ].map((row, i) => {
-              const pctChange = ((row.value / currentNAV - 1) * 100);
-              return (
-                <tr key={i} style={row.highlight ? { background: 'var(--accent-dim)' } : {}}>
-                  <td style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--text2)' }}>${(row.value - currentNAV).toFixed(2)}</td>
-                  <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '14px 28px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+            <span style={{ textAlign: 'left' }}>Percentile</span>
+            <span style={{ textAlign: 'right' }}>Price Target</span>
+            <span style={{ textAlign: 'right' }}>vs Current</span>
+            <span style={{ textAlign: 'right' }}>Implied Return</span>
+          </div>
+          {[
+            { label: 'P5 (Bear Case)', value: sim.p5 },
+            { label: 'P25', value: sim.p25 },
+            { label: 'P50 (Median)', value: sim.p50, highlight: true },
+            { label: 'P75', value: sim.p75 },
+            { label: 'P95 (Bull Case)', value: sim.p95 },
+          ].map((row, i) => {
+            const pctChange = ((row.value / currentNAV - 1) * 100);
+            return (
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: row.highlight ? 'var(--accent-dim)' : 'transparent', transition: 'background 0.15s', cursor: 'default' }}
+                onMouseEnter={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
+                onMouseLeave={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
+              >
+                <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
+                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
+                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>${(row.value - currentNAV).toFixed(2)}</span>
+                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* Risk Metrics */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mc-risk-metrics</div>
-        <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Risk Metrics</div>
-        <table className="tbl" style={{ width: '100%' }}>
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'left' }}>Risk Metric</th>
-              <th className="r">Value</th>
-              <th style={{ textAlign: 'left' }}>Interpretation</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Win Probability</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.winProb > 50 ? 'var(--mint)' : 'var(--red)' }}>{sim.winProb.toFixed(1)}%</td>
-              <td style={{ color: 'var(--text3)' }}>Prob. of exceeding current NAV</td>
-            </tr>
-            <tr>
-              <td>Expected Value</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${sim.mean.toFixed(2)}</td>
-              <td style={{ color: 'var(--text3)' }}>Mean simulated fair value</td>
-            </tr>
-            <tr>
-              <td>Sharpe Ratio</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sharpe > 1 ? 'var(--mint)' : sim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sharpe.toFixed(2)}</td>
-              <td style={{ color: 'var(--text3)' }}>{sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return'}</td>
-            </tr>
-            <tr>
-              <td>Sortino Ratio</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sortino > 1 ? 'var(--mint)' : sim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sortino.toFixed(2)}</td>
-              <td style={{ color: 'var(--text3)' }}>Downside-adjusted return</td>
-            </tr>
-            <tr>
-              <td>VaR (5%)</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</td>
-              <td style={{ color: 'var(--text3)' }}>95% confidence floor</td>
-            </tr>
-            <tr>
-              <td>CVaR (5%)</td>
-              <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.cvar5Pct.toFixed(1)}%</td>
-              <td style={{ color: 'var(--text3)' }}>Expected tail loss</td>
-            </tr>
-          </tbody>
-        </table>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '14px 28px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+            <span style={{ textAlign: 'left' }}>Risk Metric</span>
+            <span style={{ textAlign: 'right' }}>Value</span>
+            <span style={{ textAlign: 'left' }}>Interpretation</span>
+          </div>
+          {[
+            { label: 'Win Probability', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.winProb > 50 ? 'var(--mint)' : 'var(--red)' }}>{sim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current NAV' },
+            { label: 'Expected Value', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${sim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
+            { label: 'Sharpe Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sharpe > 1 ? 'var(--mint)' : sim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sharpe.toFixed(2)}</span>, interp: sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
+            { label: 'Sortino Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sortino > 1 ? 'var(--mint)' : sim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
+            { label: 'VaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
+            { label: 'CVaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.cvar5Pct.toFixed(1)}%</span>, interp: 'Expected tail loss' },
+          ].map((row, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', transition: 'background 0.15s', cursor: 'default' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
+            >
+              <span style={{ color: 'var(--text2)' }}>{row.label}</span>
+              <span style={{ textAlign: 'right' }}>{row.value}</span>
+              <span style={{ color: 'var(--text3)' }}>{row.interp}</span>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Distribution Chart */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mc-distribution</div>
-        <div className="card" style={{ }}>
-          <div className="card-title">Fair Value Distribution</div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>FAIR VALUE DISTRIBUTION</span></div>
+          <div style={{ padding: '24px 28px' }}>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={sim.histogram}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -6960,6 +6939,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)' }}>
             <span>White line = current NAV (${currentNAV.toFixed(0)})</span>
             <span>Simulations: {sims.toLocaleString()}</span>
+          </div>
           </div>
         </div>
       </div>
@@ -7026,48 +7006,59 @@ const SECFilingTracker = () => {
   };
 
   return (
-    <div className="card"><div className="card-title">📁 SEC Filing Tracker</div>
-      <div className="g2">
-        <div className="space-y-3">
-          <div className="text-xs text-slate-500 uppercase tracking-wide">Filing History</div>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center p-2 bg-slate-900/50 rounded">
-              <span className="text-sm text-slate-400">First SEC Filing</span>
-              <div className="text-right">
-                <span className="text-sm text-violet-400">{filingData.firstFiling}</span>
-                <div className="text-xs text-slate-500">{filingData.firstFilingNote}</div>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}><div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>SEC Filing Tracker</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing History</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 8, background: 'var(--surface2)', borderRadius: 4 }}>
+              <span style={{ fontSize: 13, color: 'var(--text3)' }}>First SEC Filing</span>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: 13, color: 'var(--violet)' }}>{filingData.firstFiling}</span>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>{filingData.firstFilingNote}</div>
               </div>
             </div>
-            <div className="flex justify-between items-center p-2 bg-slate-900/50 rounded">
-              <span className="text-sm text-slate-400">Latest Event</span>
-              <div className="text-right">
-                <span className="text-sm text-yellow-400">{filingData.latestEvent}</span>
-                <div className="text-xs text-slate-500">{filingData.latestEventDate}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 8, background: 'var(--surface2)', borderRadius: 4 }}>
+              <span style={{ fontSize: 13, color: 'var(--text3)' }}>Latest Event</span>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: 13, color: 'var(--gold)' }}>{filingData.latestEvent}</span>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>{filingData.latestEventDate}</div>
               </div>
             </div>
-            <div className="flex justify-between items-center p-2 bg-green-900/30 border border-green-800/50 rounded">
-              <span className="text-sm text-slate-400">Last PR Processed</span>
-              <div className="text-right">
-                <span className="text-sm text-green-400">{filingData.lastPressRelease}</span>
-                <div className="text-xs text-slate-500">{filingData.lastPressReleaseTitle}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 8, background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: 4 }}>
+              <span style={{ fontSize: 13, color: 'var(--text3)' }}>Last PR Processed</span>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: 13, color: 'var(--mint)' }}>{filingData.lastPressRelease}</span>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>{filingData.lastPressReleaseTitle}</div>
               </div>
             </div>
           </div>
         </div>
-        <div className="space-y-3">
-          <div className="text-xs text-slate-500 uppercase tracking-wide">Latest Filings by Type</div>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            {Object.entries(filingData.filings).map(([type, info]) => (
-              <div key={type} className={`p-2 border rounded ${colorClasses[info.color]}`}>
-                <div className="font-medium">{type}</div>
-                <div className="text-slate-400">{info.date}</div>
-                <div className="text-xs text-slate-500">{info.description}</div>
-              </div>
-            ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Latest Filings by Type</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 13 }}>
+            {Object.entries(filingData.filings).map(([type, info]) => {
+              const colorMap: Record<string, { bg: string; border: string; text: string }> = {
+                blue: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', text: '#60a5fa' },
+                purple: { bg: 'rgba(168,85,247,0.15)', border: 'rgba(168,85,247,0.3)', text: '#c084fc' },
+                yellow: { bg: 'rgba(234,179,8,0.15)', border: 'rgba(234,179,8,0.3)', text: '#facc15' },
+                green: { bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' },
+                orange: { bg: 'rgba(249,115,22,0.15)', border: 'rgba(249,115,22,0.3)', text: '#fb923c' },
+                cyan: { bg: 'rgba(34,211,238,0.15)', border: 'rgba(34,211,238,0.3)', text: '#22d3ee' },
+              };
+              const cs = colorMap[info.color] || colorMap.cyan;
+              return (
+                <div key={type} style={{ padding: 8, border: `1px solid ${cs.border}`, borderRadius: 4, background: cs.bg }}>
+                  <div style={{ fontWeight: 500, color: cs.text }}>{type}</div>
+                  <div style={{ color: 'var(--text3)' }}>{info.date}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{info.description}</div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
-      <div className="mt-3 text-xs text-slate-500">
+      <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
         CIK: {filingData.cik} | EIN: {filingData.ein} | SIC: {filingData.sic} ({filingData.sicDescription}) | {filingData.exchange}: {filingData.ticker} | FYE: {filingData.fiscalYearEnd}
       </div>
     </div>

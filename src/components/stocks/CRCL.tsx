@@ -864,8 +864,8 @@ const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) 
 Card.displayName = 'Card';
 
 const Panel = React.memo<PanelProps>(({ title, children }) => (
-  <div className="card">
-    {title && <div className="card-title">{title}</div>}
+  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
+    {title && <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>}
     {children}
   </div>
 ));
@@ -1316,8 +1316,8 @@ const OverviewParameterCard = ({
   };
 
   return (
-    <div className="card">
-      <div className="card-title">{title}</div>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>
       <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
         {explanation}
       </p>
@@ -1650,9 +1650,9 @@ const CRCLModelTab = ({
             onChange={v => { setOperatingMargin(v); setSelectedScenario('custom'); }}
             format="%"
           />
-          <div className="card">
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
             <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#current-position</div>
-            <div className="card-title">Current Position</div>
+            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>Current Position</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
               Live data from Circle financials. Used as starting point for projections.
             </p>
@@ -2432,7 +2432,10 @@ const DCFTab = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-header</div>
-      <h2 className="section-head" style={{ display: 'flex', alignItems: 'center' }}>DCF<UpdateIndicators sources="SEC" /></h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 28, fontWeight: 700, letterSpacing: -0.5 }}>
+        <div style={{ width: 6, height: 32, background: 'var(--accent)', borderRadius: 3 }} />
+        DCF<UpdateIndicators sources="SEC" />
+      </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-intro</div>
       <div className="highlight">
@@ -2445,7 +2448,7 @@ const DCFTab = () => {
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-scenarios</div>
-      <div className="g3" style={{ }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
         {SCENARIOS.map(sc => (
           <div
             key={sc.name}
@@ -2462,82 +2465,100 @@ const DCFTab = () => {
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-inputs</div>
-      <div className="g2">
-        <div className="card">
-          <div className="card-title">Model Inputs</div>
-          <Input label="Discount Rate (WACC) %" value={discount} onChange={setDiscount} min={5} max={20} />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Model Inputs</span>
+          </div>
+          <div style={{ padding: 28 }}>
+            <Input label="Discount Rate (WACC) %" value={discount} onChange={setDiscount} min={5} max={20} />
+          </div>
         </div>
-        <div className="card">
-          <div className="card-title">Valuation Output</div>
-          <div className="g2">
-            <Card label="Price Target" value={`$${dcf.pt.toFixed(0)}`} sub={`Based on ${scenario} scenario`} color="mint" />
-            <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs current price" color={dcf.upside >= 0 ? 'green' : 'red'} />
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Output</span>
+          </div>
+          <div style={{ padding: 28 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+              <Card label="Price Target" value={`$${dcf.pt.toFixed(0)}`} sub={`Based on ${scenario} scenario`} color="mint" />
+              <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs current price" color={dcf.upside >= 0 ? 'green' : 'red'} />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Financial Projections Table */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-projections</div>
-      <div className="card">
-        <div className="card-title">Projections</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Projections</span>
+        </div>
         <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Metric</th>
-                <th className="r">Today</th>
-                {dcf.projections.map(p => (
-                  <th key={p.year} className="r">{p.year}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>USDC Circulation ($B)</td>
-                <td className="r">{CURRENT_METRICS.usdc.toFixed(1)}</td>
-                {dcf.projections.map(p => (
-                  <td key={p.year} className="r">{p.usdc.toFixed(1)}</td>
-                ))}
-              </tr>
-              <tr>
-                <td>Reserve Revenue ($B)</td>
-                <td className="r">—</td>
-                {dcf.projections.map(p => (
-                  <td key={p.year} className="r">${p.rev.toFixed(2)}</td>
-                ))}
-              </tr>
-              <tr>
-                <td>Net FCF ($B)</td>
-                <td className="r">—</td>
-                {dcf.projections.map(p => (
-                  <td key={p.year} className="r" style={{ color: 'var(--mint)' }}>${p.fcf.toFixed(2)}</td>
-                ))}
-              </tr>
-              <tr>
-                <td>PV of FCF ($B)</td>
-                <td className="r">—</td>
-                {dcf.projections.map(p => (
-                  <td key={p.year} className="r" style={{ color: 'var(--cyan)' }}>${p.pv.toFixed(2)}</td>
-                ))}
-              </tr>
-              <tr style={{ background: 'var(--surface2)' }}>
-                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>Sum PV(FCF)</td>
-                <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.pvFCF.toFixed(2)}B</td>
-              </tr>
-              <tr style={{ background: 'var(--surface2)' }}>
-                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>Terminal Value ({s.multiple}x FCF)</td>
-                <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.tv.toFixed(1)}B</td>
-              </tr>
-              <tr style={{ background: 'var(--surface2)' }}>
-                <td colSpan={2} className="r" style={{ fontWeight: 500 }}>PV(Terminal Value)</td>
-                <td colSpan={5} className="r" style={{ fontWeight: 500 }}>${dcf.pvTV.toFixed(2)}B</td>
-              </tr>
-              <tr style={{ background: 'var(--accent-dim)' }}>
-                <td colSpan={2} className="r" style={{ fontWeight: 700 }}>Equity Value</td>
-                <td colSpan={5} className="r" style={{ fontWeight: 700, color: 'var(--mint)' }}>${(dcf.equity / 1000).toFixed(1)}B</td>
-              </tr>
-            </tbody>
-          </table>
+          {/* Header */}
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>Metric</span>
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: 'right' }}>Today</span>
+            {dcf.projections.map(p => (
+              <span key={p.year} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: 'right' }}>{p.year}</span>
+            ))}
+          </div>
+          {/* USDC Circulation */}
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <span style={{ fontSize: 12 }}>USDC Circulation ($B)</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right' }}>{CURRENT_METRICS.usdc.toFixed(1)}</span>
+            {dcf.projections.map(p => (
+              <span key={p.year} style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right' }}>{p.usdc.toFixed(1)}</span>
+            ))}
+          </div>
+          {/* Reserve Revenue */}
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <span style={{ fontSize: 12 }}>Reserve Revenue ($B)</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right' }}>—</span>
+            {dcf.projections.map(p => (
+              <span key={p.year} style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right' }}>${p.rev.toFixed(2)}</span>
+            ))}
+          </div>
+          {/* Net FCF */}
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <span style={{ fontSize: 12 }}>Net FCF ($B)</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right' }}>—</span>
+            {dcf.projections.map(p => (
+              <span key={p.year} style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', color: 'var(--mint)' }}>${p.fcf.toFixed(2)}</span>
+            ))}
+          </div>
+          {/* PV of FCF */}
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 28px', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <span style={{ fontSize: 12 }}>PV of FCF ($B)</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right' }}>—</span>
+            {dcf.projections.map(p => (
+              <span key={p.year} style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', color: 'var(--cyan)' }}>${p.pv.toFixed(2)}</span>
+            ))}
+          </div>
+          {/* Summary rows */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--surface2)' }}>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>Sum PV(FCF)</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>${dcf.pvFCF.toFixed(2)}B</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--surface2)' }}>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>Terminal Value ({s.multiple}x FCF)</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>${dcf.tv.toFixed(1)}B</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--surface2)' }}>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>PV(Terminal Value)</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>${dcf.pvTV.toFixed(2)}B</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 28px', background: 'var(--accent-dim)' }}>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700, textAlign: 'right' }}>Equity Value</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700, textAlign: 'right', color: 'var(--mint)' }}>${(dcf.equity / 1000).toFixed(1)}B</span>
+          </div>
         </div>
       </div>
 
@@ -5420,8 +5441,9 @@ function CRCLModel() {
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-controls</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <div className="card" style={{ }}>
-                    <div className="card-title">Time Horizon</div>
+                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>TIME HORIZON</span></div>
+                    <div style={{ padding: '24px 28px' }}>
                     <div style={{ display: 'flex', gap: 8 }}>
                       {[3, 5, 7].map(yr => (
                         <button
@@ -5445,9 +5467,11 @@ function CRCLModel() {
                         </button>
                       ))}
                     </div>
+                    </div>
                   </div>
-                  <div className="card" style={{ }}>
-                    <div className="card-title">Simulations</div>
+                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>SIMULATIONS</span></div>
+                    <div style={{ padding: '24px 28px' }}>
                     <div style={{ display: 'flex', gap: 8 }}>
                       {[1000, 2000, 5000].map(simCount => (
                         <button
@@ -5471,6 +5495,7 @@ function CRCLModel() {
                         </button>
                       ))}
                     </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -5483,8 +5508,9 @@ function CRCLModel() {
                   <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <div className="card" style={{ }}>
-                    <div className="card-title">Revenue Growth Min (%)</div>
+                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>REVENUE GROWTH MIN (%)</span></div>
+                    <div style={{ padding: '24px 28px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Lower bound for annual USDC revenue growth in simulation.
                     </p>
@@ -5512,9 +5538,11 @@ function CRCLModel() {
                         );
                       })}
                     </div>
+                    </div>
                   </div>
-                  <div className="card" style={{ }}>
-                    <div className="card-title">Revenue Growth Max (%)</div>
+                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>REVENUE GROWTH MAX (%)</span></div>
+                    <div style={{ padding: '24px 28px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Upper bound for annual USDC revenue growth in simulation.
                     </p>
@@ -5542,6 +5570,7 @@ function CRCLModel() {
                         );
                       })}
                     </div>
+                    </div>
                   </div>
                 </div>
 
@@ -5550,8 +5579,9 @@ function CRCLModel() {
                   <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <div className="card" style={{ }}>
-                    <div className="card-title">Margin Min (%)</div>
+                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>MARGIN MIN (%)</span></div>
+                    <div style={{ padding: '24px 28px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Lower bound for EBITDA margin assumption in DCF model.
                     </p>
@@ -5579,9 +5609,11 @@ function CRCLModel() {
                         );
                       })}
                     </div>
+                    </div>
                   </div>
-                  <div className="card" style={{ }}>
-                    <div className="card-title">Margin Max (%)</div>
+                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>MARGIN MAX (%)</span></div>
+                    <div style={{ padding: '24px 28px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Upper bound for EBITDA margin assumption in DCF model.
                     </p>
@@ -5609,6 +5641,7 @@ function CRCLModel() {
                         );
                       })}
                     </div>
+                    </div>
                   </div>
                 </div>
 
@@ -5617,8 +5650,9 @@ function CRCLModel() {
                   <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <div className="card" style={{ }}>
-                    <div className="card-title">Discount Rate Min (%)</div>
+                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DISCOUNT RATE MIN (%)</span></div>
+                    <div style={{ padding: '24px 28px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Lower bound for WACC / required return in DCF model.
                     </p>
@@ -5646,9 +5680,11 @@ function CRCLModel() {
                         );
                       })}
                     </div>
+                    </div>
                   </div>
-                  <div className="card" style={{ }}>
-                    <div className="card-title">Discount Rate Max (%)</div>
+                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DISCOUNT RATE MAX (%)</span></div>
+                    <div style={{ padding: '24px 28px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Upper bound for WACC / required return in DCF model.
                     </p>
@@ -5676,11 +5712,13 @@ function CRCLModel() {
                         );
                       })}
                     </div>
+                    </div>
                   </div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <div className="card" style={{ }}>
-                    <div className="card-title">Terminal Multiple Min</div>
+                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>TERMINAL MULTIPLE MIN</span></div>
+                    <div style={{ padding: '24px 28px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Lower bound for exit EV/EBITDA multiple in DCF terminal value.
                     </p>
@@ -5708,9 +5746,11 @@ function CRCLModel() {
                         );
                       })}
                     </div>
+                    </div>
                   </div>
-                  <div className="card" style={{ }}>
-                    <div className="card-title">Terminal Multiple Max</div>
+                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>TERMINAL MULTIPLE MAX</span></div>
+                    <div style={{ padding: '24px 28px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Upper bound for exit EV/EBITDA multiple in DCF terminal value.
                     </p>
@@ -5738,6 +5778,7 @@ function CRCLModel() {
                         );
                       })}
                     </div>
+                    </div>
                   </div>
                 </div>
 
@@ -5751,94 +5792,71 @@ function CRCLModel() {
               {/* Percentile Distribution */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-percentiles</div>
-                <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Percentile Distribution</div>
-                <table className="tbl" style={{ width: '100%' }}>
-                  <thead>
-                    <tr>
-                      <th style={{ textAlign: 'left' }}>Percentile</th>
-                      <th className="r">Price Target</th>
-                      <th className="r">vs Current</th>
-                      <th className="r">Implied Return</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { label: 'P5 (Bear Case)', value: mcSim.p5 },
-                      { label: 'P25', value: mcSim.p25 },
-                      { label: 'P50 (Median)', value: mcSim.p50, highlight: true },
-                      { label: 'P75', value: mcSim.p75 },
-                      { label: 'P95 (Bull Case)', value: mcSim.p95 },
-                    ].map((row, i) => {
-                      const pctChange = ((row.value / MARKET.price - 1) * 100);
-                      return (
-                        <tr key={i} style={row.highlight ? { background: 'var(--accent-dim)' } : {}}>
-                          <td style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</td>
-                          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</td>
-                          <td className="r" style={{ fontFamily: 'Space Mono', color: 'var(--text2)' }}>${(row.value - MARKET.price).toFixed(2)}</td>
-                          <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '14px 28px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+                    <span style={{ textAlign: 'left' }}>Percentile</span>
+                    <span style={{ textAlign: 'right' }}>Price Target</span>
+                    <span style={{ textAlign: 'right' }}>vs Current</span>
+                    <span style={{ textAlign: 'right' }}>Implied Return</span>
+                  </div>
+                  {[
+                    { label: 'P5 (Bear Case)', value: mcSim.p5 },
+                    { label: 'P25', value: mcSim.p25 },
+                    { label: 'P50 (Median)', value: mcSim.p50, highlight: true },
+                    { label: 'P75', value: mcSim.p75 },
+                    { label: 'P95 (Bull Case)', value: mcSim.p95 },
+                  ].map((row, i) => {
+                    const pctChange = ((row.value / MARKET.price - 1) * 100);
+                    return (
+                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: row.highlight ? 'var(--accent-dim)' : 'transparent', transition: 'background 0.15s', cursor: 'default' }}
+                        onMouseEnter={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
+                        onMouseLeave={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
+                      >
+                        <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
+                        <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
+                        <span style={{ textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>${(row.value - MARKET.price).toFixed(2)}</span>
+                        <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Risk Metrics */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
-                <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Risk Metrics</div>
-                <table className="tbl" style={{ width: '100%' }}>
-                  <thead>
-                    <tr>
-                      <th style={{ textAlign: 'left' }}>Risk Metric</th>
-                      <th className="r">Value</th>
-                      <th style={{ textAlign: 'left' }}>Interpretation</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Win Probability</td>
-                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.winProb > 50 ? 'var(--mint)' : 'var(--red)' }}>{mcSim.winProb.toFixed(1)}%</td>
-                      <td style={{ color: 'var(--text3)' }}>Prob. of exceeding current price</td>
-                    </tr>
-                    <tr>
-                      <td>Expected Value</td>
-                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${mcSim.mean.toFixed(2)}</td>
-                      <td style={{ color: 'var(--text3)' }}>Mean simulated fair value</td>
-                    </tr>
-                    <tr>
-                      <td>Sharpe Ratio</td>
-                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.sharpe > 1 ? 'var(--mint)' : mcSim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sharpe.toFixed(2)}</td>
-                      <td style={{ color: 'var(--text3)' }}>{mcSim.sharpe > 1 ? 'Excellent risk-adj return' : mcSim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return'}</td>
-                    </tr>
-                    <tr>
-                      <td>Sortino Ratio</td>
-                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.sortino > 1 ? 'var(--mint)' : mcSim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sortino.toFixed(2)}</td>
-                      <td style={{ color: 'var(--text3)' }}>Downside-adjusted return</td>
-                    </tr>
-                    <tr>
-                      <td>VaR (5%)</td>
-                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{mcSim.var5.toFixed(1)}%</td>
-                      <td style={{ color: 'var(--text3)' }}>95% confidence floor</td>
-                    </tr>
-                    <tr>
-                      <td>CVaR (5%)</td>
-                      <td className="r" style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{mcSim.cvar5.toFixed(1)}%</td>
-                      <td style={{ color: 'var(--text3)' }}>Expected tail loss</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '14px 28px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+                    <span style={{ textAlign: 'left' }}>Risk Metric</span>
+                    <span style={{ textAlign: 'right' }}>Value</span>
+                    <span style={{ textAlign: 'left' }}>Interpretation</span>
+                  </div>
+                  {[
+                    { label: 'Win Probability', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.winProb > 50 ? 'var(--mint)' : 'var(--red)' }}>{mcSim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current price' },
+                    { label: 'Expected Value', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${mcSim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
+                    { label: 'Sharpe Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.sharpe > 1 ? 'var(--mint)' : mcSim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sharpe.toFixed(2)}</span>, interp: mcSim.sharpe > 1 ? 'Excellent risk-adj return' : mcSim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
+                    { label: 'Sortino Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.sortino > 1 ? 'var(--mint)' : mcSim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
+                    { label: 'VaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{mcSim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
+                    { label: 'CVaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{mcSim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
+                  ].map((row, i) => (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', transition: 'background 0.15s', cursor: 'default' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
+                    >
+                      <span style={{ color: 'var(--text2)' }}>{row.label}</span>
+                      <span style={{ textAlign: 'right' }}>{row.value}</span>
+                      <span style={{ color: 'var(--text3)' }}>{row.interp}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               {/* Distribution Chart */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-distribution</div>
-                <div className="card" style={{ }}>
-                  <div className="card-title">Fair Value Distribution</div>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>FAIR VALUE DISTRIBUTION</span></div>
+                  <div style={{ padding: '24px 28px' }}>
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={mcSim.histogram}>
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5856,6 +5874,7 @@ function CRCLModel() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)' }}>
                     <span>White line = current price (${MARKET.price.toFixed(0)})</span>
                     <span>Simulations: {mcSim.n.toLocaleString()}</span>
+                  </div>
                   </div>
                 </div>
               </div>
