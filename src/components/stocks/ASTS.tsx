@@ -2693,25 +2693,31 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
   const proj = useMemo(() => { let c = cashOnHand; return Array.from({ length: 13 }, (_, q) => { const r = { q: `Q${((3 + q) % 4) + 1}'${25 + Math.floor((3 + q) / 4)}`, cash: c }; c = Math.max(0, c - quarterlyBurn); return r; }); }, [cashOnHand, quarterlyBurn]);
   const dilution = [250, 500, 750, 1000].map(r => ({ r, new: r / currentStockPrice, dil: (r / currentStockPrice) / (currentShares + r / currentStockPrice) * 100, runway: (cashOnHand + r) / quarterlyBurn }));
   
-  // Q3 2025 Actuals from earnings
+  // FY 2025 Preliminary + Feb 2026 Pro Forma
   const financials = {
-    cashQ3: 1200, // Actual cash on hand Q3 (before pro forma)
-    cashProForma: 3200, // Pro forma including convertible + ATM
-    q3Revenue: 14.7,
-    h2Guidance: '50-75',
-    q3AdjOpex: 67.7,
-    q3Capex: 259,
-    q4CapexGuide: '275-325',
-    q4OpexGuide: '~65',
+    cashFY2025: 2780, // Per 8-K as of Dec 31, 2025
+    cashProForma: 3760, // ~$2,780M + $984M converts - $180.5M repurchase - $433.7M repurchase + $180M RD1 + $433M RD2
+    fyRevenue: '63-71',
+    fyAdjOpex: '257-263',
+    fySBCandDA: '98-100',
+    q4Revenue: '~50',
+    q4CapexEst: '~300',
     satCost: '21-23',
-    employees: null, // TODO: verify with SeekingAlpha
-    // Q3 10-Q Debt (Net Carrying Values):
-    debtJan2032: 49, // Remaining from Jan 2025 converts (net)
-    debtJul2032: 530, // Jul 2025 converts (net of $45M discount)
-    debtOct2036: 119, // Oct 2025 converts (net of $881M discount - partial Q3)
-    totalDebtNet: 698, // $697.6M net long-term debt per balance sheet
-    totalDebtGross: 724, // ~$724M total gross indebtedness
-    totalDebtPrincipal: 1625, // Face value: $50M + $575M + $1,000M
+    employees: '~1,800',
+    // Dec 31, 2025 Debt (per 8-K):
+    debt425: 50, // $50M 4.25% (pre-Feb repurchase)
+    debt2375: 575, // $575M 2.375% (pre-Feb repurchase)
+    debt200: 1150, // $1.15B 2.00%
+    debtUBS: 420, // $420M UBS cash-collateralized loan
+    debtSecured: 69, // ~$69M senior secured
+    totalDebt8K: 2264, // Per 8-K
+    // Feb 2026 Pro Forma Debt:
+    debt425PostRepurchase: 3.5, // $50M - $46.5M repurchased
+    debt2375PostRepurchase: 325, // $575M - $250M repurchased
+    newConvert225: 1000, // $1B 2.25% due 2036
+    totalDebtProForma: 2968, // $2,264 - $46.5 - $250 + $1,000
+    grossPPE: 1600, // ~$1.6B per 8-K
+    accumDA: 174, // ~$174M per 8-K
   };
 
   return (
@@ -2721,15 +2727,15 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Capital Position</div>
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Cash Runway<span style={{ color: 'var(--gold)' }}>.</span></h2>
-        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Q3 GAAP cash $1.2B. ~4 quarters at current burn. $1.625B convertible debt outstanding. CapEx guidance $275-325M/Q, satellite cost $21-23M avg.</p>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>FY 2025 cash $2.78B (8-K). Pro forma post-Feb 2026 raises: ~$3.76B. ~$2.97B pro forma debt. ~{calc.cashRunwayQuarters.toFixed(0)}Q runway at $300M/Q burn. Satellite cost $21-23M avg.</p>
       </div>
 
       {/* Treasury Dashboard — Glass grid */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-metrics</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
         {[
-          { label: 'Q3 GAAP Cash', value: `$${(cashOnHand / 1000).toFixed(1)}B`, sub: '~4Q at $300M/Q', color: 'var(--mint)' },
-          { label: 'Q4 Burn Est.', value: `$${quarterlyBurn}M`, sub: 'CapEx + OpEx', color: 'var(--coral)' },
+          { label: 'Cash (8-K)', value: `$${(cashOnHand / 1000).toFixed(1)}B`, sub: `~${calc.cashRunwayQuarters.toFixed(0)}Q at $${quarterlyBurn}M/Q`, color: 'var(--mint)' },
+          { label: 'Quarterly Burn', value: `$${quarterlyBurn}M`, sub: 'CapEx + OpEx', color: 'var(--coral)' },
           { label: 'Runway', value: `${calc.cashRunwayQuarters.toFixed(1)}Q`, sub: `~${(calc.cashRunwayQuarters / 4).toFixed(1)} years`, color: 'var(--gold)' },
           { label: 'Debt', value: `$${(totalDebt/1000).toFixed(1)}B`, sub: `${debtRate}% blended`, color: 'var(--sky)' },
           { label: 'Employees', value: '~1,800', sub: 'Global workforce', color: 'var(--violet)' },
@@ -2742,19 +2748,19 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         ))}
       </div>
 
-      {/* Q3 2025 Financial Summary — Glass panel side-by-side */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#q3-financials</div>
+      {/* FY 2025 Preliminary Financial Summary — Glass panel side-by-side */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#fy2025-financials</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
         <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Income Statement</span>
+            <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>FY 2025 (8-K Preliminary)</span>
             <UpdateIndicators sources="SEC" />
           </div>
           {[
-            { l: 'Q3 Revenue', v: `$${financials.q3Revenue}M`, hl: true },
-            { l: 'H2 2025 Guidance', v: `$${financials.h2Guidance}M` },
-            { l: 'Q3 Adj. OpEx', v: `$${financials.q3AdjOpex}M` },
-            { l: 'Q4 OpEx Guidance', v: financials.q4OpexGuide },
+            { l: 'FY Revenue', v: `$${financials.fyRevenue}M`, hl: true },
+            { l: 'Q4 Est. Revenue', v: `$${financials.q4Revenue}M` },
+            { l: 'FY Adj. OpEx', v: `$${financials.fyAdjOpex}M` },
+            { l: 'FY SBC + D&A', v: `$${financials.fySBCandDA}M` },
           ].map(r => (
             <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
               <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
@@ -2763,12 +2769,12 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
           ))}
         </div>
         <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
-          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Capital Expenditures</div>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Assets & CapEx</div>
           {[
-            { l: 'Q3 CapEx', v: `$${financials.q3Capex}M` },
-            { l: 'Q4 CapEx Guidance', v: `$${financials.q4CapexGuide}M` },
-            { l: 'Satellite Cost (avg)', v: `$${financials.satCost}M`, hl: true },
-            { l: 'Manufacturing', v: '6 sats/month by Dec' },
+            { l: 'Gross PP&E', v: `$${(financials.grossPPE / 1000).toFixed(1)}B`, hl: true },
+            { l: 'Accumulated D&A', v: `$${financials.accumDA}M` },
+            { l: 'Satellite Cost (avg)', v: `$${financials.satCost}M` },
+            { l: 'Employees', v: financials.employees },
           ].map(r => (
             <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
               <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
@@ -2778,23 +2784,23 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         </div>
       </div>
 
-      {/* Convertible Debt — Glass grid */}
+      {/* Convertible Debt — Glass grid (Pro Forma post-Feb 2026) */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#convertible-debt</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
         <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Convertible Debt Outstanding (Q3 2025)</span>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Debt Outstanding (Pro Forma Feb 2026)</span>
           <UpdateIndicators sources="SEC" />
         </div>
         <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', fontSize: 11, color: 'var(--text3)', lineHeight: 1.6 }}>
-          <strong style={{ color: 'var(--cyan)' }}>Balance Sheet vs Principal:</strong> Net carrying value ($697.6M) reflects accounting discounts. Principal ($1.625B) is the amount that must eventually be repaid or converted.
+          <strong style={{ color: 'var(--cyan)' }}>Feb 2026 Capital Activity:</strong> $1B new 2.25% converts issued. $46.5M of 4.25% and $250M of 2.375% notes repurchased via registered directs. $420M UBS cash-collateralized loan for Ligado.
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)' }}>
           {[
-            { value: '$49M', label: 'Jan 2025 (4.25%)', sub: 'Net carrying', sub2: 'Principal: $50M', color: 'var(--gold)' },
-            { value: '$530M', label: 'Jul 2025 (4.25%)', sub: 'Net carrying', sub2: 'Principal: $575M', color: 'var(--coral)' },
-            { value: '$119M', label: 'Oct 2025 (2.0%)', sub: 'Net carrying (Q3)', sub2: 'Principal: $1,000M', color: 'var(--cyan)' },
-            { value: '$698M', label: 'Balance Sheet', sub: 'Net long-term debt', sub2: 'Gross: ~$724M', color: 'var(--mint)' },
-            { value: '$1,625M', label: 'Principal Value', sub: 'Total outstanding', sub2: '~2.8% blended', color: 'var(--violet)' },
+            { value: `$${financials.debt425PostRepurchase}M`, label: '4.25% (2032)', sub: 'Was $50M', sub2: '$46.5M repurchased', color: 'var(--gold)' },
+            { value: `$${financials.debt2375PostRepurchase}M`, label: '2.375% (2032)', sub: 'Was $575M', sub2: '$250M repurchased', color: 'var(--coral)' },
+            { value: '$1,150M', label: '2.00% (2036)', sub: 'Oct 2025 issue', sub2: '$96.30 conversion', color: 'var(--cyan)' },
+            { value: '$1,000M', label: '2.25% (2036)', sub: 'NEW Feb 2026', sub2: '$116.30 conversion', color: 'var(--mint)' },
+            { value: `$${financials.debtUBS + financials.debtSecured}M`, label: 'Secured + UBS', sub: `UBS: $${financials.debtUBS}M`, sub2: `Secured: ~$${financials.debtSecured}M`, color: 'var(--violet)' },
           ].map(d => (
             <div key={d.label} style={{ background: 'var(--surface)', padding: '20px 12px', textAlign: 'center' }}>
               <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: d.color }}>{d.value}</div>
@@ -2805,7 +2811,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
           ))}
         </div>
         <div style={{ padding: '12px 28px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
-          Jan 2025: $410M converted to equity (17.3M shares). Oct 2025 at best terms ($96.30 strike, 2% coupon).
+          Pro forma total: ~$2,968M. Blended rate ~2.15%. Jul 2025 capped calls ($120.12 cap) remain outstanding. Sound Point $550M facility available for Ligado closing.
         </div>
       </div>
 
@@ -2827,7 +2833,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
             </AreaChart>
           </ResponsiveContainer>
           <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
-            Does not include H2 revenue ($50-75M guidance) or future prepayments (stc $175M due YE 2025).
+            Based on slider cash value. Does not include future revenue ramp, Ligado payments ($100M Mar 2026 + $15M at closing), or Sound Point $550M drawdown.
           </div>
         </div>
       </div>
@@ -2836,24 +2842,45 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-raises</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
         <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Capital Raises History (2021-2025)</span>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Capital Raises History (2021-2026)</span>
           <UpdateIndicators sources={['PR', 'SEC']} />
         </div>
         <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
-          <strong style={{ color: 'var(--cyan)' }}>Financing Overview:</strong> SPAC, convertibles, equity offerings, and strategic investments. $3.6B+ total raised. Convertible notes convert to equity at specified prices.
+          <strong style={{ color: 'var(--cyan)' }}>Financing Overview:</strong> SPAC, convertibles, equity offerings, and strategic investments. $5B+ total raised. Feb 2026: $1B new converts + ~$614M registered directs.
+        </div>
+
+        {/* 2026 */}
+        <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--coral)', marginBottom: 12 }}>2026 Capital Activity (Feb)</div>
+          {[
+            { s: 'Feb 2026 Convertible', a: '$1,000M', t: '2.25%, 2036', n: 'Rule 144A. $116.30 conversion. UBS lead. $150M greenshoe' },
+            { s: 'Registered Direct #1', a: '$180M', t: '$96.92/sh', n: '1.86M shares. Cross-conditional with $46.5M 4.25% repurchase' },
+            { s: 'Registered Direct #2', a: '$433M', t: '$96.92/sh', n: '4.48M shares. Cross-conditional with $250M 2.375% repurchase' },
+            { s: '4.25% Notes Repurchased', a: '-$180M', t: 'Repurchase', n: '$46.5M principal retired for ~$180.5M cash' },
+            { s: '2.375% Notes Repurchased', a: '-$434M', t: 'Repurchase', n: '$250M principal retired for ~$433.7M cash' },
+          ].map((r, i) => (
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.a.startsWith('-') ? 'var(--coral)' : 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.n}</span>
+            </div>
+          ))}
         </div>
 
         {/* 2025 */}
         <div style={{ padding: '16px 28px', borderBottom: '1px solid var(--border)' }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 12 }}>2025 Capital Raises</div>
           {[
-            { s: 'Jan 2025 Convertible', a: '$460M', t: '4.25%, 2032', n: '$410M repurchased for equity; $50M remains' },
-            { s: 'Jul 2025 Convertible', a: '$575M', t: '4.25%, 2032', n: '$120.12 effective strike via capped call' },
-            { s: 'Oct 2025 Convertible', a: '$1,000M', t: '2%, 2036', n: '$96.30 strike; 10-year term' },
-            { s: 'ATM Facility (Q3)', a: '$389M', t: 'ATM', n: 'Shares sold at market; facility terminated' },
-            { s: 'Capped Call Unwind', a: '$74.5M', t: '—', n: 'Hedge monetized when Jan converts repurchased' },
+            { s: 'Jan 2025 Convertible', a: '$460M', t: '4.25%, 2032', n: '$410M repurchased for equity; $50M remained → $46.5M repurchased Feb 2026' },
+            { s: 'Jul 2025 Convertible', a: '$575M', t: '2.375%, 2032', n: '$120.12 effective strike via capped call. $250M repurchased Feb 2026' },
+            { s: 'Oct 2025 Convertible', a: '$1,150M', t: '2%, 2036', n: '$96.30 strike; 10-year term. $150M greenshoe exercised' },
+            { s: 'Oct 2025 ATM Program', a: '$706M', t: 'ATM', n: '$800M capacity. ~10.1M shares sold thru Feb 10. ~$80M remaining' },
+            { s: 'Oct 2025 Registered Direct', a: '$161M', t: '$78.61/sh', n: '2.0M shares. Funded $50M 4.25% notes repurchase' },
+            { s: 'Q3 ATM Facility', a: '$389M', t: 'ATM', n: 'Prior facility; terminated. Replaced by Oct 2025 program' },
+            { s: 'Capped Call Unwind', a: '$74.5M', t: '—', n: 'Jan 2025 capped calls terminated Nov 4, 2025' },
           ].map((r, i) => (
-            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 6 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
               <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
               <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
@@ -2900,12 +2927,14 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
 
         {/* Debt Resolution */}
         <div style={{ padding: '16px 28px', borderLeft: '3px solid var(--mint)' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 12 }}>Debt Resolution Summary</div>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 12 }}>Debt Resolution Summary (Post-Feb 2026)</div>
           {[
             '2034 Strategic ($148.5M): Force-converted to equity Jan 2025. 25.8M shares issued.',
-            'Jan 2025 ($460M): $410M repurchased via equity. $50M outstanding as 4.25% notes due 2032.',
-            'Jul/Oct 2025 ($1,575M): Outstanding as debt. Convert at $120.12 / $96.30 strike prices.',
-            'Atlas/Lone Star: Partially repaid; minimal remaining balance.',
+            '4.25% Notes ($460M): $410M repurchased 2025. $46.5M repurchased Feb 2026. ~$3.5M remains.',
+            '2.375% Notes ($575M): $250M repurchased Feb 2026. $325M outstanding. Capped call to $120.12 remains.',
+            '2.00% Notes ($1,150M): Outstanding. $96.30 conversion. Due Jan 2036.',
+            '2.25% Notes ($1,000M): NEW Feb 2026. $116.30 conversion. Due 2036. UBS lead.',
+            'UBS Loan ($420M): Cash-collateralized for Ligado first payment. Sound Point $550M available.',
           ].map((item, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '6px 0' }}>
               <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--mint)', flexShrink: 0, marginTop: 5 }} />
@@ -2951,22 +2980,22 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <OverviewParameterCard title="Pro Forma Cash ($M)" explanation="Total cash and equivalents. More cash = longer runway before additional financing needed." options={[500, 750, 1000, 1220, 1500, 2000]} value={cashOnHand} onChange={setCashOnHand} format="$" currentValue={1220} />
-        <OverviewParameterCard title="Q4 Burn Est. ($M)" explanation="Quarterly cash burn rate. Lower burn = longer runway. Driven by satellite production and R&D spend." options={[500, 400, 350, 300, 200, 150]} value={quarterlyBurn} onChange={setQuarterlyBurn} format="$" currentValue={300} />
+        <OverviewParameterCard title="Cash Position ($M)" explanation="Total cash and equivalents per 8-K. Pro forma post-Feb raises: ~$3,760M." options={[1500, 2000, 2500, 2780, 3500, 3760]} value={cashOnHand} onChange={setCashOnHand} format="$" currentValue={2780} />
+        <OverviewParameterCard title="Quarterly Burn ($M)" explanation="Quarterly cash consumption (CapEx + OpEx). Driven by satellite production ramp." options={[500, 400, 350, 300, 200, 150]} value={quarterlyBurn} onChange={setQuarterlyBurn} format="$" currentValue={300} />
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
-        <OverviewParameterCard title="Remaining Debt ($M)" explanation="Total outstanding debt obligations. Lower debt = less interest expense and financial risk." options={[1200, 1000, 800, 698, 500, 300]} value={totalDebt} onChange={setTotalDebt} format="$" currentValue={698} />
-        <OverviewParameterCard title="Debt Rate (%)" explanation="Weighted average interest rate on debt. Lower rate = cheaper cost of capital." options={[7, 6, 5, 4.25, 3.5, 2.5]} value={debtRate} onChange={setDebtRate} format="%" currentValue={4.25} />
+        <OverviewParameterCard title="Total Debt ($M)" explanation="All debt obligations including converts + UBS loan + secured. Pro forma ~$2,968M post-Feb 2026." options={[3500, 3000, 2968, 2264, 2000, 1500]} value={totalDebt} onChange={setTotalDebt} format="$" currentValue={2264} />
+        <OverviewParameterCard title="Debt Rate (%)" explanation="Weighted average interest rate. Post-Feb 2026 blended ~2.15% across all converts." options={[5, 4, 3, 2.15, 2, 1.5]} value={debtRate} onChange={setDebtRate} format="%" currentValue={2.15} />
       </div>
       
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
       <CFANotes title="CFA Level III — Cash Runway Analysis" items={[
         { term: 'Runway Calculation', def: 'Cash ÷ Quarterly Burn = Quarters of funding. Pre-revenue companies need sufficient runway to reach profitability.' },
-        { term: 'Pro Forma vs GAAP Cash', def: 'GAAP = actual cash on balance sheet. Pro forma includes committed financing not yet closed. Use GAAP for conservative analysis.' },
-        { term: 'Convertible Debt', def: 'Bonds that convert to equity at holder option. Face value ($1.625B) vs net carrying value ($698M due to discounts).' },
-        { term: 'Dilution Scenarios', def: 'If more capital needed, new shares reduce ownership %. ATM and converts are primary dilution sources.' },
-        { term: 'Capital Intensity', def: 'CapEx requirements for satellite constellation. ASTS guiding $275-325M Q4, $21-23M per satellite.' },
-        { term: 'Path to Cash Flow Positive', def: 'When revenue exceeds burn, runway becomes infinite. Track constellation deployment → service launch → revenue ramp.' },
+        { term: 'Pro Forma vs GAAP Cash', def: '8-K cash ($2,780M) is as of Dec 31, 2025. Pro forma includes Feb 2026 net raises (~$3,760M). Use 8-K for conservative analysis.' },
+        { term: 'Convertible Debt', def: 'Four series outstanding: 4.25% (~$3.5M), 2.375% ($325M), 2.00% ($1,150M), 2.25% ($1,000M). Plus $420M UBS loan and ~$69M secured.' },
+        { term: 'Dilution Scenarios', def: 'If more capital needed, new shares reduce ownership %. ATM (~$80M remaining) and future converts are primary sources.' },
+        { term: 'Capital Intensity', def: 'Gross PP&E ~$1.6B (Dec 2025). Satellite cost $21-23M avg. 45-60 sats targeted by end 2026.' },
+        { term: 'Path to Cash Flow Positive', def: 'When revenue exceeds burn, runway becomes infinite. FY 2025 rev $63-71M. Track constellation → service launch → revenue ramp.' },
       ]} />
     </div>
   );
@@ -2996,9 +3025,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <div className="highlight">
         <h3>Share Classes, Offerings & Dilution</h3>
         <p style={{ fontSize: 13, color: 'var(--text2)' }}>
-          Three-class structure with Abel Avellan controlling ~73% of voting power via Class C (10x votes).
-          ~$3.6B total raised since SPAC (equity + converts). Fully funded for 100+ satellites.
-          Class A shares grew from 5.75M (SPAC) to 279M (Nov 2025).
+          Three-class structure with Abel Avellan controlling ~65% of voting power via Class C (10x votes).
+          ~$5B+ total raised since SPAC (equity + converts). Fully funded for 100+ satellites.
+          Class A shares grew from 5.75M (SPAC) to ~290M (Feb 2026).
         </p>
       </div>
 
