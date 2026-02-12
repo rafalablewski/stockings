@@ -9318,7 +9318,8 @@ const TimelineTab = () => {
 
 const CompsTab = ({ calc, currentStockPrice }) => {
   const [competitorFilter, setCompetitorFilter] = useState<CompetitorId | 'all'>('all');
-  const [expandedNews, setExpandedNews] = useState<string | null>(null);
+  const [expandedNews, setExpandedNews] = useState<Set<number>>(new Set());
+  const [newsCategoryFilter, setNewsCategoryFilter] = useState<string>('All');
 
   // ═══════════════════════════════════════════════════════════════════════════
   // VALUATION COMPARABLES - Market metrics comparison
@@ -9439,36 +9440,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     [competitorFilter]
   );
 
-  // Group news by storyId, with ungrouped items in their own "group"
-  const groupedNews = React.useMemo(() => {
-    const groups: Record<string, { title: string; entries: (CompetitorNewsEntry & { originalIdx: number })[] }> = {};
-
-    filteredNews.forEach((news, idx) => {
-      const storyKey = news.storyId || `ungrouped-${news.date}-${news.competitor}-${news.headline.slice(0, 40)}`;
-      if (!groups[storyKey]) {
-        groups[storyKey] = {
-          title: news.storyTitle || news.headline,
-          entries: []
-        };
-      }
-      groups[storyKey].entries.push({ ...news, originalIdx: idx });
-    });
-
-    // Sort entries within each group chronologically (newest first)
-    Object.values(groups).forEach(group => {
-      group.entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    });
-
-    // Convert to array and sort groups by most recent entry (newest story first)
-    return Object.entries(groups)
-      .map(([storyId, group]) => ({
-        storyId,
-        title: group.title,
-        entries: group.entries,
-        latestDate: group.entries[0]?.date || ''  // First entry is newest after sort
-      }))
-      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
-  }, [filteredNews]);
+  // Compute news categories and filtered news by category
+  const newsCategories = ['All', ...Array.from(new Set(COMPETITOR_NEWS.map(n => n.category)))];
+  const filteredCompNews = filteredNews.filter(n => newsCategoryFilter === 'All' || n.category === newsCategoryFilter);
 
   // Get competitor display name
   const getCompetitorName = (id: CompetitorId): string => {
@@ -9477,31 +9451,6 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     return profile?.name || id;
   };
 
-  // Group stories by competitor company for section headers
-  const companySections = React.useMemo(() => {
-    const sections: Record<string, { name: string; stories: typeof groupedNews }> = {};
-
-    groupedNews.forEach(story => {
-      const competitorId = story.entries[0]?.competitor || 'other';
-      const competitorName = getCompetitorName(competitorId);
-      if (!sections[competitorId]) {
-        sections[competitorId] = { name: competitorName, stories: [] };
-      }
-      sections[competitorId].stories.push(story);
-    });
-
-    return Object.entries(sections)
-      .map(([id, section]) => ({
-        competitorId: id,
-        name: section.name,
-        stories: section.stories,
-        latestDate: section.stories[0]?.latestDate || ''
-      }))
-      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
-  }, [groupedNews]);
-
-  const [openPanels, setOpenPanels] = useState<Set<string>>(new Set(companySections.map(s => s.competitorId)));
-  const togglePanel = (id: string) => setOpenPanels(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
 
   // Implication styling - using design tokens
   const getImplicationStyle = (impl: ASTSImplication) => {
@@ -9705,48 +9654,47 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         })}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ev-rev-comparison</div>
-          <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>EV/Rev Comparison<UpdateIndicators sources="WS" /></div>
-            <ResponsiveContainer width="100%" height={150}>
-              <BarChart data={filteredComps} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
-                <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
-                <Bar dataKey="evRev" fill="var(--accent)">
-                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--accent)' : 'var(--text3)'} />))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#peer-charts</div>
+      <div style={{ padding: '28px 0 12px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Peer Valuation<UpdateIndicators sources="WS" /></div>
+        <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>EV/Revenue & $/Subscriber<span style={{ color: 'var(--accent)' }}>.</span></h3>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 8 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>EV/Rev Comparison</div>
+          <ResponsiveContainer width="100%" height={150}>
+            <BarChart data={filteredComps} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+              <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+              <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
+              <Bar dataKey="evRev" fill="var(--accent)">
+                {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--accent)' : 'var(--text3)'} />))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-        <div>
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#subscriber-comparison</div>
-          <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>$/Subscriber Comparison<UpdateIndicators sources="WS" /></div>
-            <ResponsiveContainer width="100%" height={150}>
-              <BarChart data={filteredComps} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
-                <Bar dataKey="pSub" fill="var(--violet)">
-                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--violet)' : 'var(--text3)'} />))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>$/Subscriber Comparison</div>
+          <ResponsiveContainer width="100%" height={150}>
+            <BarChart data={filteredComps} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+              <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={60} tick={{ fill: 'var(--text3)', fontSize: 11 }} />
+              <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} />
+              <Bar dataKey="pSub" fill="var(--violet)">
+                {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--violet)' : 'var(--text3)'} />))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
       {/* Advanced Valuation Matrices */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-framework</div>
-      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Framework</span>
-        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      <div style={{ padding: '28px 0 12px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Analytical Framework</div>
+        <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>Valuation Framework<span style={{ color: 'var(--accent)' }}>.</span></h3>
       </div>
 
       {/* Valuation Methodology Matrix */}

@@ -6357,11 +6357,8 @@ const CompsTab = () => {
 
   // Competitor intelligence state
   const [competitorFilter, setCompetitorFilter] = useState<CRCLCompetitorId | 'all'>('all');
-  const [expandedNews, setExpandedNews] = useState<string | null>(null);
-
-  // Panel expand/collapse state for competitor news sections
-  const [openPanels, setOpenPanels] = useState<Set<string>>(new Set());
-  const [openPanelsInitialized, setOpenPanelsInitialized] = useState(false);
+  const [expandedNews, setExpandedNews] = useState<Set<number>>(new Set());
+  const [newsCategoryFilter, setNewsCategoryFilter] = useState<string>('All');
 
   // Key competitors with threat levels for colored borders
   const keyCompetitors = [
@@ -7066,36 +7063,9 @@ const CompsTab = () => {
     [competitorFilter]
   );
 
-  // Group news by storyId, with ungrouped items in their own "group"
-  const groupedNews = React.useMemo(() => {
-    const groups: Record<string, { title: string; entries: (CRCLCompetitorNewsEntry & { originalIdx: number })[] }> = {};
-
-    filteredNews.forEach((news, idx) => {
-      const storyKey = news.storyId || `ungrouped-${news.date}-${news.competitor}-${news.headline.slice(0, 40)}`;
-      if (!groups[storyKey]) {
-        groups[storyKey] = {
-          title: news.storyTitle || news.headline,
-          entries: []
-        };
-      }
-      groups[storyKey].entries.push({ ...news, originalIdx: idx });
-    });
-
-    // Sort entries within each group by date (newest first)
-    Object.values(groups).forEach(group => {
-      group.entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    });
-
-    // Convert to array and sort groups by most recent entry (newest story first)
-    return Object.entries(groups)
-      .map(([storyId, group]) => ({
-        storyId,
-        title: group.title,
-        entries: group.entries,
-        latestDate: group.entries[0]?.date || ''
-      }))
-      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
-  }, [filteredNews]);
+  // Compute news categories and apply category filter
+  const newsCategories = ['All', ...Array.from(new Set(COMPETITOR_NEWS.map(n => n.category)))];
+  const filteredCompNews = filteredNews.filter(n => newsCategoryFilter === 'All' || n.category === newsCategoryFilter);
 
   // Get competitor display name
   const getCompetitorName = (id: CRCLCompetitorId): string => {
@@ -7103,39 +7073,6 @@ const CompsTab = () => {
     const profile = COMPETITOR_PROFILES.find(p => p.id === id);
     return profile?.name || id;
   };
-
-  // Group stories by competitor company for section headers
-  const companySections = React.useMemo(() => {
-    const sections: Record<string, { name: string; stories: typeof groupedNews }> = {};
-
-    groupedNews.forEach(story => {
-      const competitorId = story.entries[0]?.competitor || 'other';
-      const competitorName = getCompetitorName(competitorId);
-      if (!sections[competitorId]) {
-        sections[competitorId] = { name: competitorName, stories: [] };
-      }
-      sections[competitorId].stories.push(story);
-    });
-
-    return Object.entries(sections)
-      .map(([id, section]) => ({
-        competitorId: id,
-        name: section.name,
-        stories: section.stories,
-        latestDate: section.stories[0]?.latestDate || ''
-      }))
-      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
-  }, [groupedNews]);
-
-  // Initialize openPanels once companySections are available (all open by default)
-  React.useEffect(() => {
-    if (!openPanelsInitialized && companySections.length > 0) {
-      setOpenPanels(new Set(companySections.map(s => s.competitorId)));
-      setOpenPanelsInitialized(true);
-    }
-  }, [companySections, openPanelsInitialized]);
-
-  const togglePanel = (id: string) => setOpenPanels(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
 
   // Implication styling - using design tokens
   const getImplicationStyle = (impl: CRCLImplication) => {

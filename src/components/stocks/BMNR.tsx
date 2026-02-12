@@ -3463,8 +3463,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
   const btcPrice = 100000;
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [competitorFilter, setCompetitorFilter] = useState<BMNRCompetitorId | 'all'>('all');
-  const [expandedNews, setExpandedNews] = useState<string | null>(null);
-  const [openPanels, setOpenPanels] = useState<Set<string>>(new Set());
+  const [expandedNews, setExpandedNews] = useState<Set<number>>(new Set());
+  const [newsCategoryFilter, setNewsCategoryFilter] = useState<string>('All');
 
   // ═══════════════════════════════════════════════════════════════════════════
   // COMPETITOR PROFILES - Crypto Treasury Competitors
@@ -5374,36 +5374,9 @@ const CompsTab = ({ comparables, ethPrice }) => {
     [competitorFilter]
   );
 
-  // Group news by storyId, with ungrouped items in their own "group"
-  const groupedNews = React.useMemo(() => {
-    const groups: Record<string, { title: string; entries: (BMNRCompetitorNewsEntry & { originalIdx: number })[] }> = {};
-
-    filteredNews.forEach((news, idx) => {
-      const storyKey = news.storyId || `ungrouped-${news.date}-${news.competitor}-${news.headline.slice(0, 40)}`;
-      if (!groups[storyKey]) {
-        groups[storyKey] = {
-          title: news.storyTitle || news.headline,
-          entries: []
-        };
-      }
-      groups[storyKey].entries.push({ ...news, originalIdx: idx });
-    });
-
-    // Sort entries within each group by date (newest first)
-    Object.values(groups).forEach(group => {
-      group.entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    });
-
-    // Convert to array and sort groups by most recent entry (newest story first)
-    return Object.entries(groups)
-      .map(([storyId, group]) => ({
-        storyId,
-        title: group.title,
-        entries: group.entries,
-        latestDate: group.entries[0]?.date || ''
-      }))
-      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
-  }, [filteredNews]);
+  // Compute news categories and category-filtered news
+  const newsCategories = ['All', ...Array.from(new Set(COMPETITOR_NEWS.map(n => n.category)))];
+  const filteredCompNews = filteredNews.filter(n => newsCategoryFilter === 'All' || n.category === newsCategoryFilter);
 
   // Get competitor display name
   const getCompetitorName = (id: BMNRCompetitorId): string => {
@@ -5411,36 +5384,6 @@ const CompsTab = ({ comparables, ethPrice }) => {
     const profile = COMPETITOR_PROFILES.find(p => p.id === id);
     return profile?.name || id;
   };
-
-  // Group stories by competitor company for section headers
-  const companySections = React.useMemo(() => {
-    const sections: Record<string, { name: string; stories: typeof groupedNews }> = {};
-
-    groupedNews.forEach(story => {
-      const competitorId = story.entries[0]?.competitor || 'other';
-      const competitorName = getCompetitorName(competitorId);
-      if (!sections[competitorId]) {
-        sections[competitorId] = { name: competitorName, stories: [] };
-      }
-      sections[competitorId].stories.push(story);
-    });
-
-    return Object.entries(sections)
-      .map(([id, section]) => ({
-        competitorId: id,
-        name: section.name,
-        stories: section.stories,
-        latestDate: section.stories[0]?.latestDate || ''
-      }))
-      .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
-  }, [groupedNews]);
-
-  // Initialize open panels when companySections changes
-  React.useEffect(() => {
-    setOpenPanels(new Set(companySections.map(s => s.competitorId)));
-  }, [companySections]);
-
-  const togglePanel = (id: string) => setOpenPanels(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
 
   const getCardStyle = (isSelf: boolean, threat?: string): React.CSSProperties => ({
     background: isSelf ? 'linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%)' : 'var(--surface)',
@@ -5792,12 +5735,13 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
       {/* Competitor News Intelligence Section */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
-      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Competitor News Intelligence</span>
-        <UpdateIndicators sources="PR" />
-        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      <div style={{ padding: '28px 0 12px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Competitive Intelligence<UpdateIndicators sources="PR" /></div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+          <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>Competitor News<span style={{ color: 'var(--mint)' }}>.</span></h3>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text3)' }}>{filteredCompNews.length} events</span>
+        </div>
       </div>
-      <p style={{ fontSize: 13, color: 'var(--text3)', marginBottom: 12, fontWeight: 300 }}>Track what peer companies are doing — treasury purchases, financing activities, strategic moves by crypto treasury competitors.</p>
 
       {/* Filter Bar */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
