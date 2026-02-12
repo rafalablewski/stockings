@@ -110,46 +110,36 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
       <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Analyst Research<UpdateIndicators sources="WS" /></div>
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Wall Street Coverage<span style={{ color: 'var(--accent)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Consensus price targets, analyst ratings, and detailed research reports from covering firms. Track rating changes and methodology over time.</p>
       </div>
 
       {/* Consensus Snapshot */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-consensus</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
-          Consensus Snapshot
-          <UpdateIndicators sources="WS" />
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Consensus Snapshot<UpdateIndicators sources="WS" /></span>
         </div>
-        <div className="g2">
+        <div style={{ padding: '24px 28px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           {/* Price Target Summary */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>AVG PT</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--violet)', fontFamily: 'Space Mono' }}>
-                  {avgPT ? `$${avgPT.toFixed(0)}` : '—'}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+              {[
+                { label: 'AVG PT', value: avgPT ? `$${avgPT.toFixed(0)}` : '—', color: 'var(--violet)' },
+                { label: 'MEDIAN PT', value: medianPT ? `$${medianPT.toFixed(0)}` : '—', color: 'var(--sky)' },
+                { label: 'HIGH PT', value: highPT ? `$${highPT}` : '—', color: 'var(--mint)' },
+                { label: 'ANALYSTS', value: `${totalAnalysts}`, color: 'var(--text)' },
+              ].map(kpi => (
+                <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
                 </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>MEDIAN PT</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--sky)', fontFamily: 'Space Mono' }}>
-                  {medianPT ? `$${medianPT.toFixed(0)}` : '—'}
-                </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>HIGH / LOW</div>
-                <div style={{ fontSize: 18, fontWeight: 700, fontFamily: 'Space Mono' }}>
-                  <span style={{ color: 'var(--mint)' }}>{highPT ? `$${highPT}` : '—'}</span>
-                  <span style={{ color: 'var(--text3)' }}> / </span>
-                  <span style={{ color: 'var(--coral)' }}>{lowPT ? `$${lowPT}` : '—'}</span>
-                </div>
-              </div>
-              <div style={{ background: 'var(--surface2)', padding: 16, borderRadius: 12, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>ANALYSTS</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text)', fontFamily: 'Space Mono' }}>
-                  {totalAnalysts}
-                </div>
-              </div>
+              ))}
             </div>
+            {lowPT && highPT && (
+              <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8 }}>
+                Range: <span style={{ fontFamily: 'Space Mono, monospace', color: 'var(--coral)' }}>${lowPT}</span> — <span style={{ fontFamily: 'Space Mono, monospace', color: 'var(--mint)' }}>${highPT}</span>
+              </div>
+            )}
           </div>
 
           {/* Ratings Distribution */}
@@ -183,12 +173,15 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
       {/* Coverage by Firm - Grouped Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-coverage</div>
-      <div className="card">
-        <div className="card-title" style={{ display: 'flex', alignItems: 'center' }}>
-          Coverage by Firm ({totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''})
-          <UpdateIndicators sources="WS" />
+      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Coverage by Firm</span>
+        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>{totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''} Covering<UpdateIndicators sources="WS" /></span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {coverage.map((cov) => {
             const isExpanded = expandedFirm === cov.firm;
             const fullReportCount = cov.reports.filter(r => r.isFullReport).length;
@@ -199,7 +192,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                 key={cov.firm}
                 style={{
                   background: 'var(--surface2)',
-                  borderRadius: 8,
+                  borderRadius: 12,
                   border: isExpanded ? '1px solid var(--violet)' : '1px solid var(--border)',
                   overflow: 'hidden'
                 }}
@@ -278,7 +271,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                             style={{
                               padding: 12,
                               background: report.isFullReport ? 'var(--surface2)' : 'var(--surface)',
-                              borderRadius: 6,
+                              borderRadius: 12,
                               borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions)) ? '3px solid var(--violet)' : 'none'
                             }}
                           >
@@ -362,7 +355,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                       <div style={{
                                         background: 'var(--surface)',
                                         padding: 12,
-                                        borderRadius: 6,
+                                        borderRadius: 12,
                                         fontSize: 12,
                                         color: 'var(--text2)',
                                         lineHeight: 1.6,
@@ -391,7 +384,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                         <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 6 }}>KEY ASSUMPTIONS</div>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                                           {report.assumptions.map((a, i) => (
-                                            <span key={i} style={{ padding: '3px 8px', background: 'var(--surface)', borderRadius: 4, fontSize: 11, color: 'var(--text2)' }}>
+                                            <span key={i} style={{ padding: '3px 8px', background: 'var(--surface)', borderRadius: 99, fontSize: 11, color: 'var(--text2)' }}>
                                               {a.label}: <span style={{ color: 'var(--violet)' }}>{a.value}</span>
                                             </span>
                                           ))}
@@ -420,30 +413,25 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                     {report.estimates && report.estimates.length > 0 && (
                                       <div style={{ marginBottom: 12 }}>
                                         <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 6 }}>ESTIMATES</div>
-                                        <table className="tbl">
-                                          <thead>
-                                            <tr>
-                                              <th>Metric</th>
-                                              <th className="r">FY24</th>
-                                              <th className="r">FY25</th>
-                                              <th className="r">FY26</th>
-                                              <th className="r">FY27</th>
-                                              <th className="r">FY28</th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            {report.estimates.map((e, i) => (
-                                              <tr key={i}>
-                                                <td>{e.metric}</td>
-                                                <td className="r">{e.fy24 || '—'}</td>
-                                                <td className="r">{e.fy25 || '—'}</td>
-                                                <td className="r">{e.fy26 || '—'}</td>
-                                                <td className="r">{e.fy27 || '—'}</td>
-                                                <td className="r">{e.fy28 || '—'}</td>
-                                              </tr>
+                                        <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                                          <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 80px)', borderBottom: '1px solid var(--border)' }}>
+                                            {['Metric', 'FY24', 'FY25', 'FY26', 'FY27', 'FY28'].map(h => (
+                                              <span key={h} style={{ padding: '10px 12px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: h === 'Metric' ? 'left' : 'right' }}>{h}</span>
                                             ))}
-                                          </tbody>
-                                        </table>
+                                          </div>
+                                          {report.estimates.map((e, i) => (
+                                            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 80px)', borderBottom: i < report.estimates.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                                              onMouseEnter={ev => (ev.currentTarget.style.background = 'var(--surface2)')}
+                                              onMouseLeave={ev => (ev.currentTarget.style.background = 'transparent')}>
+                                              <span style={{ padding: '10px 12px', fontSize: 12, color: 'var(--text)' }}>{e.metric}</span>
+                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy24 || '—'}</span>
+                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy25 || '—'}</span>
+                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy26 || '—'}</span>
+                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy27 || '—'}</span>
+                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy28 || '—'}</span>
+                                            </div>
+                                          ))}
+                                        </div>
                                       </div>
                                     )}
 
@@ -472,6 +460,20 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* CFA Notes */}
+      <div style={{ paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 12, opacity: 0.7 }}>📚</span>
+          <h4 style={{ margin: 0, fontSize: 11, fontWeight: 500, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>CFA Level III — Sell-Side Research</h4>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11, lineHeight: 1.5, color: 'var(--text3)' }}>
+          <p style={{ margin: 0 }}><strong style={{ color: 'var(--text2)' }}>Consensus Price Target:</strong> Average of all covering analysts' PTs. Useful as a reference point but not a forecast — PTs are backward-looking and often anchored to current price. Median PT is more robust to outliers.</p>
+          <p style={{ margin: 0 }}><strong style={{ color: 'var(--text2)' }}>Initiation vs Reiterate:</strong> Initiations carry more weight — the analyst performed full due diligence. Reiterations often just update the model after earnings. Watch for rating changes (upgrades/downgrades) as stronger signals.</p>
+          <p style={{ margin: 0 }}><strong style={{ color: 'var(--text2)' }}>Buy/Hold/Sell Distribution:</strong> Sell-side has structural bullish bias (~50% Buy, ~45% Hold, ~5% Sell industry-wide). A "Hold" often means "Sell" in practice. Heavy Buy consensus can indicate crowding risk.</p>
+          <p style={{ margin: 0 }}><strong style={{ color: 'var(--text2)' }}>Price Target Methodology:</strong> Most analysts use DCF, comparable multiples, or sum-of-parts. Understanding the methodology reveals which assumptions drive the PT — useful for assessing whether you agree with inputs.</p>
         </div>
       </div>
     </div>

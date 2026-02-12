@@ -3705,15 +3705,16 @@ function CRCLModel() {
               <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Quarterly Data<UpdateIndicators sources="SEC" /></div>
                 <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Financials<span style={{ color: 'var(--accent)' }}>.</span></h2>
+                <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Revenue composition, USDC metrics, quarterly trends, and profitability analysis. Focus on interest income, USDC circulation, and margin expansion.</p>
               </div>
 
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 2: HIGHLIGHT BOX                                            */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#financials-overview</div>
-              <div className="highlight">
-                <h3 style={{ display: 'flex', alignItems: 'center' }}>Revenue Growth Story<UpdateIndicators sources="SEC" /></h3>
-                <p style={{ fontSize: 14, color: 'var(--text2)' }}>
+              <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--surface)) 0%, var(--surface) 100%)', border: '1px solid var(--border)', borderRadius: 16, padding: '24px 28px' }}>
+                <h3 style={{ display: 'flex', alignItems: 'center', margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>Revenue Growth Story<UpdateIndicators sources="SEC" /></h3>
+                <p style={{ fontSize: 14, color: 'var(--text2)', margin: '8px 0 0' }}>
                   Circle's revenue is driven by reserve income (96%) from USDC holdings invested in T-bills and repos.
                   Distribution costs (~54%) go to Coinbase under the USDC consortium agreement. RLDC (Revenue Less
                   Distribution Costs) represents true gross profit. Watch for margin expansion as Platform % grows.
@@ -3728,6 +3729,10 @@ function CRCLModel() {
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
+              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Key Milestones</span>
+                <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+              </div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-financial-milestones</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                 <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -3759,12 +3764,9 @@ function CRCLModel() {
               {/* ═══════════════════════════════════════════════════════════════════ */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — Financial Analysis" items={[
-                { term: 'Revenue Growth', def: 'Track YoY and QoQ trends. High growth justifies premium multiples. Deceleration is a key risk signal.' },
-                { term: 'Gross Margin', def: 'Revenue minus direct costs. Circle\'s stablecoin business has near-100% gross margin on interest income.' },
-                { term: 'Adjusted EBITDA', def: 'Operating profitability excluding non-cash items. Key metric for pre-IPO companies. Compare to peers.' },
-                { term: 'Operating Leverage', def: 'Fixed costs spread over growing revenue = expanding margins. Circle showing strong leverage as USDC scales.' },
-                { term: 'Unit Economics', def: 'Revenue per wallet, cost per transaction. Improving unit economics indicate sustainable growth.' },
-                { term: 'Cash Flow', def: 'Ultimately matters more than accounting profit. Track operating cash flow and capital intensity.' },
+                { term: 'Interest Income', def: 'Revenue from investing USDC reserves in US Treasuries. Highly correlated with Fed Funds rate and USDC circulation volume.' },
+                { term: 'Take Rate', def: 'Revenue as percentage of USDC circulation. Measures monetization efficiency. Higher take rate = better unit economics per dollar of USDC.' },
+                { term: 'Adjusted EBITDA', def: 'Earnings before interest, taxes, depreciation, amortization, and stock-based compensation. Preferred metric for SaaS/fintech companies to show operating profitability.' },
               ]} />
             </div>
           )}
@@ -3777,10 +3779,11 @@ function CRCLModel() {
                 <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
                   <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Due Diligence<UpdateIndicators sources={['PR', 'SEC']} /></div>
                   <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Investment Analysis<span style={{ color: 'var(--accent)' }}>.</span></h2>
+                  <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Multi-perspective due diligence with CFA, hedge fund, and institutional frameworks. Stablecoin infrastructure thesis scoring and risk assessment.</p>
                 </div>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                  <button onClick={expandAll} className="pill" style={{ fontSize: 11 }}>⊞ Expand All</button>
-                  <button onClick={collapseAll} className="pill" style={{ fontSize: 11 }}>⊟ Collapse All</button>
+                  <button onClick={expandAll} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', cursor: 'pointer' }}>⊞ Expand All</button>
+                  <button onClick={collapseAll} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', cursor: 'pointer' }}>⊟ Collapse All</button>
                 </div>
               </div>
 
@@ -3827,6 +3830,10 @@ function CRCLModel() {
               </div>
 
                   {/* Investment Scorecard */}
+                  <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Due Diligence Sections</span>
+                    <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+                  </div>
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-scorecard</div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
@@ -4836,12 +4843,10 @@ function CRCLModel() {
                   </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
-              <CFANotes title="CFA Level III — Investment Framework" items={[
-                { term: 'Letter Grade Scorecard', def: 'A-F ratings across dimensions: Growth (revenue trajectory), Profitability (margins), Moat (competitive position), Execution (management track record), Valuation (vs peers and DCF).' },
-                { term: 'Three Perspectives', def: 'CFA Analyst (fundamentals focus), Hedge Fund (catalysts and technicals), CIO (portfolio fit and risk). Different time horizons and priorities.' },
-                { term: 'Risk Assessment', def: 'Regulatory, competitive, macro (interest rates), execution risks. Weight by probability × impact.' },
-                { term: 'Position Sizing', def: 'Based on conviction level, risk tolerance, portfolio construction rules. Higher conviction = larger position, within limits.' },
-                { term: 'Archive History', def: 'All prior analyses preserved. Track how views evolved and whether predictions proved accurate.' },
+              <CFANotes title="CFA Level III — Stablecoin Analysis" items={[
+                { term: 'Stablecoin Reserve Yield', def: 'Income from investing stablecoin reserves (primarily US Treasuries). Circle earns yield on USDC reserves — this is the primary revenue driver.' },
+                { term: 'USDC Circulation', def: 'Total USDC in circulation, analogous to deposits for a bank. Higher circulation = more reserve assets = more interest income.' },
+                { term: 'Network Effects', def: 'USDC adoption creates self-reinforcing cycles: more integrations attract more users, which attract more integrations. Critical competitive moat.' },
               ]} />
             </>
           )}
@@ -4978,13 +4983,14 @@ function CRCLModel() {
               <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Financial Position<UpdateIndicators sources="SEC" /></div>
                 <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Capital Structure<span style={{ color: 'var(--accent)' }}>.</span></h2>
+                <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Share structure, institutional ownership, capital raises, and treasury management. Circle's path from private to public company via SPAC merger.</p>
               </div>
 
               {/* Highlight Box */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-strategy</div>
-              <div className="highlight">
-                <h3>Dual-Class Structure</h3>
-                <p className="text-sm">
+              <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--surface)) 0%, var(--surface) 100%)', border: '1px solid var(--border)', borderRadius: 16, padding: '24px 28px' }}>
+                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>Dual-Class Structure</h3>
+                <p style={{ fontSize: 13, color: 'var(--text2)', margin: '8px 0 0', lineHeight: 1.6 }}>
                   Circle has a dual-class share structure with Class A (1 vote) and Class B (5 votes). Jeremy Allaire
                   and insiders control significant voting power through Class B shares. Class B voting is capped at
                   30% aggregate and sunsets in June 2030 or upon CEO departure.
@@ -4992,6 +4998,10 @@ function CRCLModel() {
               </div>
 
               {/* Key Metrics */}
+              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Overview</span>
+                <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+              </div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-metrics</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                 <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -5050,29 +5060,23 @@ function CRCLModel() {
                 <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure<UpdateIndicators sources="SEC" /></span>
                 </div>
-                <div style={{ padding: '24px 28px' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr>
-                        <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Class</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Authorized</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Outstanding</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Votes/Share</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Description</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {SHARE_CLASSES.map((s, i) => (
-                        <tr key={s.class} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 600 }}>{s.class}</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(s.authorized / 1000).toLocaleString()}M</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r mint">{s.outstanding > 0 ? `${(s.outstanding / 1000).toFixed(1)}M` : '—'}</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{s.votes}</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>{s.description}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div style={{ padding: 0 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 1fr 1fr 2fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                    {['Class', 'Authorized', 'Outstanding', 'Votes/Share', 'Description'].map((h, i) => (
+                      <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 && i <= 3 ? 'right' : 'left' }}>{h}</span>
+                    ))}
+                  </div>
+                  {SHARE_CLASSES.map((s, i) => (
+                    <div key={s.class} style={{ display: 'grid', gridTemplateColumns: '100px 1fr 1fr 1fr 2fr', padding: '12px 28px', borderBottom: i < SHARE_CLASSES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                      <span style={{ fontWeight: 600, color: 'var(--text)' }}>{s.class}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(s.authorized / 1000).toLocaleString()}M</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>{s.outstanding > 0 ? `${(s.outstanding / 1000).toFixed(1)}M` : '—'}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{s.votes}</span>
+                      <span style={{ fontSize: 12, color: 'var(--text2)' }}>{s.description}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
               </>
@@ -5086,30 +5090,24 @@ function CRCLModel() {
                 <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Major Shareholders (from Aug 2025 S-1)<UpdateIndicators sources="SEC" /></span>
                 </div>
-                <div style={{ padding: '24px 28px' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr>
-                        <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Shareholder</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Class A (K)</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Class B (K)</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Voting %</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Type</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {MAJOR_SHAREHOLDERS.map((s, i) => (
-                        <tr key={i} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 500 }}>{s.name}</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{s.classA > 0 ? `${(s.classA / 1000).toFixed(1)}M` : '—'}</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r sky">{s.classB > 0 ? `${(s.classB / 1000).toFixed(1)}M` : '—'}</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r mint">{s.pctVoting}%</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span style={{ color: s.type === 'Insider' ? 'var(--gold)' : s.type === 'Strategic' ? 'var(--violet)' : 'var(--text2)' }}>{s.type}</span></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <div style={{ fontSize: 13, color: 'var(--text3)' }}>
+                <div style={{ padding: 0 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                    {['Shareholder', 'Class A (K)', 'Class B (K)', 'Voting %', 'Type'].map((h, i) => (
+                      <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 && i <= 3 ? 'right' : 'left' }}>{h}</span>
+                    ))}
+                  </div>
+                  {MAJOR_SHAREHOLDERS.map((s, i) => (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: i < MAJOR_SHAREHOLDERS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                      <span style={{ fontWeight: 500, color: 'var(--text)' }}>{s.name}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{s.classA > 0 ? `${(s.classA / 1000).toFixed(1)}M` : '—'}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--sky)' }}>{s.classB > 0 ? `${(s.classB / 1000).toFixed(1)}M` : '—'}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>{s.pctVoting}%</span>
+                      <span style={{ color: s.type === 'Insider' ? 'var(--gold)' : s.type === 'Strategic' ? 'var(--violet)' : 'var(--text2)', fontSize: 12 }}>{s.type}</span>
+                    </div>
+                  ))}
+                  <div style={{ padding: '12px 28px', fontSize: 13, color: 'var(--text3)' }}>
                     Note: Class B voting capped at 30% aggregate. Founder shares sunset June 2030 or upon Allaire departure from CEO/Chair.
                   </div>
                 </div>
@@ -5127,34 +5125,28 @@ function CRCLModel() {
                   <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Equity Offerings<UpdateIndicators sources="SEC" /></span>
                   </div>
-                  <div style={{ padding: '24px 28px' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr>
-                          <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Date</th>
-                          <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Type</th>
-                          <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Shares</th>
-                          <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Price</th>
-                          <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Proceeds</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {EQUITY_OFFERINGS.map((o, i) => (
-                          <tr key={i} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>{o.date}</td>
-                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 600 }}>{o.type}</td>
-                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(o.shares / 1000).toFixed(1)}M</td>
-                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">${o.price.toFixed(2)}</td>
-                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r mint">${o.grossProceeds >= 1000 ? `${(o.grossProceeds / 1000).toFixed(2)}B` : `${o.grossProceeds}M`}</td>
-                          </tr>
-                        ))}
-                        <tr style={{ fontWeight: 600 }}>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} colSpan={4}>Total Raised</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r mint">$2.5B</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <div style={{ fontSize: 12, color: 'var(--text3)' }}>
+                  <div style={{ padding: 0 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                      {['Date', 'Type', 'Shares', 'Price', 'Proceeds'].map((h, i) => (
+                        <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
+                      ))}
+                    </div>
+                    {EQUITY_OFFERINGS.map((o, i) => (
+                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                        <span style={{ fontSize: 12, color: 'var(--text2)' }}>{o.date}</span>
+                        <span style={{ fontWeight: 600, fontSize: 12, color: 'var(--text)' }}>{o.type}</span>
+                        <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(o.shares / 1000).toFixed(1)}M</span>
+                        <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>${o.price.toFixed(2)}</span>
+                        <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>${o.grossProceeds >= 1000 ? `${(o.grossProceeds / 1000).toFixed(2)}B` : `${o.grossProceeds}M`}</span>
+                      </div>
+                    ))}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', fontWeight: 600, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+                      <span style={{ gridColumn: '1 / 5', color: 'var(--text)' }}>Total Raised</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>$2.5B</span>
+                    </div>
+                    <div style={{ padding: '12px 28px', fontSize: 12, color: 'var(--text3)' }}>
                       IPO: {EQUITY_OFFERINGS[0].underwriters}<br/>
                       Follow-on: {EQUITY_OFFERINGS[1].underwriters}
                     </div>
@@ -5166,38 +5158,35 @@ function CRCLModel() {
                   <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Outstanding Equity Awards (Jun 30, 2025)<UpdateIndicators sources="SEC" /></span>
                   </div>
-                  <div style={{ padding: '24px 28px' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr>
-                          <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Award Type</th>
-                          <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Class A</th>
-                          <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Class B</th>
-                          <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Stock Options</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(EQUITY_AWARDS.options.classA / 1000).toFixed(1)}M</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(EQUITY_AWARDS.options.classB / 1000).toFixed(1)}M</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r mint">{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.options.classB) / 1000).toFixed(1)}M</td>
-                        </tr>
-                        <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>RSUs</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(EQUITY_AWARDS.rsus.classA / 1000).toFixed(1)}M</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(EQUITY_AWARDS.rsus.classB / 1000).toFixed(1)}M</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r mint">{((EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</td>
-                        </tr>
-                        <tr style={{ fontWeight: 600 }}>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Total Outstanding</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.rsus.classA) / 1000).toFixed(1)}M</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{((EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r mint">{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <div style={{ fontSize: 13, color: 'var(--text3)' }}>
+                  <div style={{ padding: 0 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                      {['Award Type', 'Class A', 'Class B', 'Total'].map((h, i) => (
+                        <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 ? 'right' : 'left' }}>{h}</span>
+                      ))}
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                      <span style={{ color: 'var(--text)' }}>Stock Options</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(EQUITY_AWARDS.options.classA / 1000).toFixed(1)}M</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(EQUITY_AWARDS.options.classB / 1000).toFixed(1)}M</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.options.classB) / 1000).toFixed(1)}M</span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                      <span style={{ color: 'var(--text)' }}>RSUs</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(EQUITY_AWARDS.rsus.classA / 1000).toFixed(1)}M</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(EQUITY_AWARDS.rsus.classB / 1000).toFixed(1)}M</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>{((EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 28px', fontWeight: 600 }}>
+                      <span style={{ color: 'var(--text)' }}>Total Outstanding</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.rsus.classA) / 1000).toFixed(1)}M</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{((EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
+                    </div>
+                    <div style={{ padding: '12px 28px', fontSize: 13, color: 'var(--text3)' }}>
                       Wtd-avg option exercise price: ${EQUITY_AWARDS.options.weightedAvgPrice.toFixed(2)}
                     </div>
                   </div>
@@ -5209,40 +5198,32 @@ function CRCLModel() {
                 <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Outstanding Warrants (Black-Scholes Valuation)<UpdateIndicators sources="SEC" /></span>
                 </div>
-                <div style={{ padding: '24px 28px' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr>
-                        <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Grant</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Shares (K)</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Strike</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Fair Value</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Vol</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Expiry</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {WARRANTS.map((w, i) => (
-                        <tr key={i} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>{w.date}</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(w.shares / 1000).toFixed(1)}M</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">${w.exercisePrice}</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r sky">${w.fairValue}M</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{w.volatility}%</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>{w.expiry}</td>
-                          <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span style={{ color: 'var(--gold)' }}>{w.status}</span></td>
-                        </tr>
-                      ))}
-                      <tr style={{ fontWeight: 600 }}>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Total</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(WARRANTS.reduce((a, w) => a + w.shares, 0) / 1000).toFixed(1)}M</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}></td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r sky">${WARRANTS.reduce((a, w) => a + w.fairValue, 0).toFixed(1)}M</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} colSpan={3}></td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div style={{ padding: 0 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                    {['Grant', 'Shares (K)', 'Strike', 'Fair Value', 'Vol', 'Expiry', 'Status'].map((h, i) => (
+                      <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 && i <= 4 ? 'right' : 'left' }}>{h}</span>
+                    ))}
+                  </div>
+                  {WARRANTS.map((w, i) => (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                      <span style={{ fontSize: 12, color: 'var(--text)' }}>{w.date}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(w.shares / 1000).toFixed(1)}M</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>${w.exercisePrice}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--sky)' }}>${w.fairValue}M</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{w.volatility}%</span>
+                      <span style={{ fontSize: 12, color: 'var(--text2)' }}>{w.expiry}</span>
+                      <span style={{ fontSize: 12, color: 'var(--gold)' }}>{w.status}</span>
+                    </div>
+                  ))}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', fontWeight: 600 }}>
+                    <span style={{ color: 'var(--text)' }}>Total</span>
+                    <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(WARRANTS.reduce((a, w) => a + w.shares, 0) / 1000).toFixed(1)}M</span>
+                    <span />
+                    <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--sky)' }}>${WARRANTS.reduce((a, w) => a + w.fairValue, 0).toFixed(1)}M</span>
+                    <span /><span /><span />
+                  </div>
                 </div>
               </div>
               </>
@@ -5273,37 +5254,35 @@ function CRCLModel() {
               </div>
 
               {/* Pre-IPO Preferred (Historical) */}
-              <div className="highlight" style={{ }}>
-                <h3>Pre-IPO Capital Structure (Converted at IPO)</h3>
-                <p style={{ }}>All preferred shares converted to Class A common stock at IPO. Historical liquidation preferences totaled $1.14B across six series.</p>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr>
-                      <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Series</th>
-                      <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Year</th>
-                      <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Shares (K)</th>
-                      <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Liq. Pref</th>
-                      <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Price/Share</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {PREFERRED_STOCK.map((p, i) => (
-                      <tr key={i} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>{p.series}</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{p.year}</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{p.shares.toLocaleString()}</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">${(p.liquidation / 1000).toFixed(1)}M</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r sky">${p.pricePerShare.toFixed(2)}</td>
-                      </tr>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Pre-IPO Capital Structure (Converted at IPO)</span>
+                </div>
+                <div style={{ padding: 0 }}>
+                  <div style={{ padding: '12px 28px', fontSize: 13, color: 'var(--text2)' }}>All preferred shares converted to Class A common stock at IPO. Historical liquidation preferences totaled $1.14B across six series.</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                    {['Series', 'Year', 'Shares (K)', 'Liq. Pref', 'Price/Share'].map((h, i) => (
+                      <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 ? 'right' : 'left' }}>{h}</span>
                     ))}
-                    <tr style={{ fontWeight: 600 }}>
-                      <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} colSpan={2}>Total</td>
-                      <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">{(PREFERRED_STOCK.reduce((a, p) => a + p.shares, 0) / 1000).toFixed(1)}M</td>
-                      <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">${(PREFERRED_STOCK.reduce((a, p) => a + p.liquidation, 0) / 1000000).toFixed(2)}B</td>
-                      <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}></td>
-                    </tr>
-                  </tbody>
-                </table>
+                  </div>
+                  {PREFERRED_STOCK.map((p, i) => (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                      <span style={{ fontSize: 12, color: 'var(--text)' }}>{p.series}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{p.year}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{p.shares.toLocaleString()}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>${(p.liquidation / 1000).toFixed(1)}M</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--sky)' }}>${p.pricePerShare.toFixed(2)}</span>
+                    </div>
+                  ))}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', padding: '12px 28px', fontWeight: 600 }}>
+                    <span style={{ gridColumn: '1 / 3', color: 'var(--text)' }}>Total</span>
+                    <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(PREFERRED_STOCK.reduce((a, p) => a + p.shares, 0) / 1000).toFixed(1)}M</span>
+                    <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>${(PREFERRED_STOCK.reduce((a, p) => a + p.liquidation, 0) / 1000000).toFixed(2)}B</span>
+                    <span />
+                  </div>
+                </div>
               </div>
               </>
               )}
@@ -5316,54 +5295,34 @@ function CRCLModel() {
                 <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Fully Diluted Share Count<UpdateIndicators sources="SEC" /></span>
                 </div>
-                <div style={{ padding: '24px 28px' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr>
-                        <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Component</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Shares (M)</th>
-                        <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">% of Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Class A Outstanding</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">209.0</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">75.6%</td>
-                      </tr>
-                      <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Class B Outstanding</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">19.6</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">7.1%</td>
-                      </tr>
-                      <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Options Outstanding</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">20.7</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">7.5%</td>
-                      </tr>
-                      <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>RSUs Outstanding</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">25.2</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">9.1%</td>
-                      </tr>
-                      <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Warrants (unvested)</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">11.0</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">4.0%</td>
-                      </tr>
-                      <tr style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Convertible Notes</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">~1.0</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">0.4%</td>
-                      </tr>
-                      <tr style={{ fontWeight: 600 }}>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>Fully Diluted</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r mint">~276.5</td>
-                        <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">100%</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div style={{ fontSize: 13, color: 'var(--text3)' }}>
+                <div style={{ padding: 0 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                    {['Component', 'Shares (M)', '% of Total'].map((h, i) => (
+                      <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 ? 'right' : 'left' }}>{h}</span>
+                    ))}
+                  </div>
+                  {[
+                    { label: 'Class A Outstanding', shares: '209.0', pct: '75.6%' },
+                    { label: 'Class B Outstanding', shares: '19.6', pct: '7.1%' },
+                    { label: 'Options Outstanding', shares: '20.7', pct: '7.5%' },
+                    { label: 'RSUs Outstanding', shares: '25.2', pct: '9.1%' },
+                    { label: 'Warrants (unvested)', shares: '11.0', pct: '4.0%' },
+                    { label: 'Convertible Notes', shares: '~1.0', pct: '0.4%' },
+                  ].map((row, i) => (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                      <span style={{ color: 'var(--text)' }}>{row.label}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{row.shares}</span>
+                      <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{row.pct}</span>
+                    </div>
+                  ))}
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '12px 28px', fontWeight: 600 }}>
+                    <span style={{ color: 'var(--text)' }}>Fully Diluted</span>
+                    <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>~276.5</span>
+                    <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>100%</span>
+                  </div>
+                  <div style={{ padding: '12px 28px', fontSize: 13, color: 'var(--text3)' }}>
                     Note: Excludes 33.9M shares reserved under Omnibus/ESPP plans not yet granted. Lock-up: ~198M shares restricted until Q3 2025 earnings or 180 days post-IPO.
                   </div>
                 </div>
@@ -5373,11 +5332,9 @@ function CRCLModel() {
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
               <CFANotes title="CFA Level III — Capital Structure" items={[
-                { term: 'Share Classes', def: 'Class A (1 vote), Class B (5 votes). Dual-class structure gives founders control. Class B converts to A on transfer.' },
-                { term: 'Convertible Notes', def: 'Debt that converts to equity at holder option. Creates potential dilution. Track conversion price vs stock price.' },
-                { term: 'Fully Diluted Shares', def: 'Outstanding + options + warrants + convertibles. Use for per-share metrics to avoid overstating value.' },
-                { term: 'Lock-up Expiration', def: 'Insider selling restriction expires ~180 days post-IPO. Watch for selling pressure at unlock.' },
-                { term: 'Share Repurchases', def: 'Company buying back stock reduces shares, increases EPS. Signal of management confidence and capital return.' },
+                { term: 'SPAC Merger', def: 'Special Purpose Acquisition Company merger allows private companies to go public without traditional IPO. Circle merged with Concord Acquisition Corp.' },
+                { term: 'Share Authorization', def: 'Maximum shares a company can issue, set in charter. Circle authorized additional shares to support growth and potential acquisitions.' },
+                { term: 'Institutional Ownership', def: 'Percentage of shares held by institutional investors (mutual funds, pension funds, etc.). High institutional ownership signals professional conviction.' },
               ]} />
             </>
           )}
@@ -5888,6 +5845,7 @@ function CRCLModel() {
               <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Corporate Events<UpdateIndicators sources="PR" /></div>
                 <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Timeline<span style={{ color: 'var(--accent)' }}>.</span></h2>
+                <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>SEC filings, press releases, partnerships, and corporate milestones. Chronological record of Circle's evolution as the USDC issuer.</p>
               </div>
 
               {/* Latest SEC Filings - Enhanced with filtering and pagination */}
@@ -5921,50 +5879,44 @@ function CRCLModel() {
                     ))}
                   </div>
 
-                  {/* Filings Table */}
+                  {/* Filings Grid */}
                   <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr>
-                          <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Date</th>
-                          <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Type</th>
-                          <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Description</th>
-                          <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Period</th>
-                          <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }} className="r">Link</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {displayedFilings.map((filing, idx) => (
-                          <tr key={idx} style={{ transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', whiteSpace: 'nowrap' }}>{filing.date}</td>
-                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
-                              <span style={{
-                                background: secTypeColors[filing.type]?.bg || 'color-mix(in srgb, var(--text3) 20%, transparent)',
-                                color: secTypeColors[filing.type]?.text || 'var(--text2)',
-                                padding: '2px 8px',
-                                borderRadius: 99,
-                                fontSize: 11,
-                                fontWeight: 600
-                              }}>
-                                {filing.type}
-                              </span>
-                            </td>
-                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>{filing.description}</td>
-                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>{filing.period}</td>
-                            <td style={{ padding: '14px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} className="r">
-                              <a
-                                href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{ color: 'var(--mint)' }}
-                              >
-                                SEC →
-                              </a>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    <div style={{ display: 'grid', gridTemplateColumns: '100px 80px 2fr 1fr 60px', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                      {['Date', 'Type', 'Description', 'Period', 'Link'].map((h, i) => (
+                        <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i === 4 ? 'right' : 'left' }}>{h}</span>
+                      ))}
+                    </div>
+                    {displayedFilings.map((filing, idx) => (
+                      <div key={idx} style={{ display: 'grid', gridTemplateColumns: '100px 80px 2fr 1fr 60px', padding: '12px 28px', borderBottom: idx < displayedFilings.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s', alignItems: 'center' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                        <span style={{ fontSize: 12, color: 'var(--text)', whiteSpace: 'nowrap' }}>{filing.date}</span>
+                        <span>
+                          <span style={{
+                            background: secTypeColors[filing.type]?.bg || 'color-mix(in srgb, var(--text3) 20%, transparent)',
+                            color: secTypeColors[filing.type]?.text || 'var(--text2)',
+                            padding: '2px 8px',
+                            borderRadius: 99,
+                            fontSize: 11,
+                            fontWeight: 600
+                          }}>
+                            {filing.type}
+                          </span>
+                        </span>
+                        <span style={{ fontSize: 12, color: 'var(--text2)' }}>{filing.description}</span>
+                        <span style={{ fontSize: 12, color: 'var(--text2)' }}>{filing.period}</span>
+                        <span style={{ textAlign: 'right' }}>
+                          <a
+                            href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: 'var(--mint)', fontSize: 12 }}
+                          >
+                            SEC
+                          </a>
+                        </span>
+                      </div>
+                    ))}
                   </div>
 
                   {/* Show More/Less Button */}
@@ -6020,6 +5972,10 @@ function CRCLModel() {
               </div>
 
               {/* Upcoming Events */}
+              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Upcoming & Press Releases</span>
+                <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+              </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
                 <div>
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#upcoming-events</div>
@@ -6107,28 +6063,31 @@ function CRCLModel() {
               </div>
 
               {/* Event Timeline Section */}
+              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Event Timeline</span>
+                <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+              </div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#event-timeline</div>
-              <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 12, margin: 0 }}>
                 <span>Event Timeline</span>
                 <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text3)' }}>({filteredEvents.length} events)</span>
                 <UpdateIndicators sources="PR" />
               </h3>
 
               {/* Topic Filters (AND logic multi-select) */}
-              <div className="highlight" style={{ padding: 16 }}>
+              <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--surface)) 0%, var(--surface) 100%)', border: '1px solid var(--border)', borderRadius: 16, padding: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Topic</span>
                   {selectedTopics.length > 0 && (
-                    <button 
+                    <button
                       onClick={() => setSelectedTopics([])}
-                      className="pill"
-                      style={{ fontSize: 11 }}
+                      style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', cursor: 'pointer' }}
                     >
                       Clear ({selectedTopics.length})
                     </button>
                   )}
                 </div>
-                <div className="pills">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
                   {Object.entries(topicTags).map(([topic, style]) => {
                     const isSelected = selectedTopics.includes(topic);
                     const count = TIMELINE.filter(p => detectTopics(p).includes(topic)).length;
@@ -6136,8 +6095,17 @@ function CRCLModel() {
                       <button
                         key={topic}
                         onClick={() => toggleTopic(topic)}
-                        className={`pill ${isSelected ? 'active' : ''}`}
-                        style={isSelected ? { background: style.color, borderColor: style.color } : {}}
+                        style={{
+                          fontSize: 11,
+                          padding: '4px 12px',
+                          borderRadius: 99,
+                          border: '1px solid',
+                          borderColor: isSelected ? style.color : 'var(--border)',
+                          background: isSelected ? style.color : 'transparent',
+                          color: isSelected ? 'white' : 'var(--text2)',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s'
+                        }}
                       >
                         {style.label} ({count})
                       </button>
@@ -6145,22 +6113,34 @@ function CRCLModel() {
                   })}
                 </div>
                 {selectedTopics.length > 0 && (
-                  <div style={{ fontSize: 12, color: 'var(--text3)' }}>
+                  <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8 }}>
                     {selectedTopics.map(t => topicTags[t].label).join(' + ')} → {filteredEvents.length} results
                   </div>
                 )}
               </div>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div className="pills" style={{ }}>
-                  {cats.map(c => (
-                    <button key={c} className={`pill ${timelineCat === c ? 'active' : ''}`} onClick={() => setTimelineCat(c)}>
-                      {c === 'All' ? `All (${TIMELINE.length})` : `${c} (${TIMELINE.filter(p => p.category === c).length})`}
-                    </button>
-                  ))}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {cats.map(c => {
+                    const isActive = timelineCat === c;
+                    return (
+                      <button key={c} onClick={() => setTimelineCat(c)} style={{
+                        fontSize: 11,
+                        padding: '4px 12px',
+                        borderRadius: 99,
+                        border: '1px solid',
+                        borderColor: isActive ? 'var(--accent)' : 'var(--border)',
+                        background: isActive ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
+                        color: isActive ? 'var(--accent)' : 'var(--text2)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s'
+                      }}>
+                        {c === 'All' ? `All (${TIMELINE.length})` : `${c} (${TIMELINE.filter(p => p.category === c).length})`}
+                      </button>
+                    );
+                  })}
                 </div>
-                <button 
-                  className="pill"
+                <button
                   onClick={() => {
                     if (expanded.size === filteredEvents.length) {
                       setExpanded(new Set());
@@ -6168,7 +6148,7 @@ function CRCLModel() {
                       setExpanded(new Set(filteredEvents.map(p => TIMELINE.indexOf(p))));
                     }
                   }}
-                  style={{ whiteSpace: 'nowrap' }}
+                  style={{ whiteSpace: 'nowrap', fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', cursor: 'pointer' }}
                 >
                   {expanded.size === filteredEvents.length ? '⊟ Collapse All' : '⊞ Expand All'}
                 </button>
@@ -6184,44 +6164,49 @@ function CRCLModel() {
                     else next.add(idx);
                     setExpanded(next);
                   };
-                  
+                  const verdictColor = p.verdict === 'positive' ? 'var(--mint)' : p.verdict === 'negative' ? 'var(--coral)' : 'var(--sky)';
+
                   return (
-                    <div key={idx} className={`timeline-item ${isExpanded ? 'expanded' : ''}`}>
-                      <div className="timeline-header" onClick={toggleExpand}>
-                        <div className="t-date">{p.date}</div>
-                        <div className="t-cat">{p.category}</div>
-                        <div className="t-event">{p.event}</div>
-                        <div className={`t-verdict ${p.verdict}`}>
-                          {p.verdict === 'positive' && '↑'}
-                          {p.verdict === 'negative' && '↓'}
-                          {p.verdict === 'mixed' && '↔'}
+                    <div key={idx} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, marginBottom: 4, overflow: 'hidden' }}>
+                      <div onClick={toggleExpand} style={{ display: 'grid', gridTemplateColumns: '90px 100px 1fr auto 24px', padding: '12px 20px', alignItems: 'center', gap: 12, cursor: 'pointer', transition: 'background 0.15s' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                        <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>{p.date}</span>
+                        <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text2)' }}>{p.category}</span>
+                        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{p.event}</span>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: verdictColor, textTransform: 'capitalize' }}>
+                          {p.verdict === 'positive' && '↑ '}
+                          {p.verdict === 'negative' && '↓ '}
+                          {p.verdict === 'mixed' && '↔ '}
                           {p.verdict}
-                        </div>
-                        <div className="t-toggle">▼</div>
+                        </span>
+                        <span style={{ fontSize: 11, color: 'var(--text3)', transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
                       </div>
-                      <div className="timeline-details">
-                        <div className="t-details-content">
-                          <div className="t-details-text">{p.details}</div>
-                          <div className="t-details-meta">
-                            <div className="t-meta-item">
-                              <div className="t-meta-label">Impact</div>
-                              <div className="t-meta-value">{p.impact}</div>
-                            </div>
-                            <div className="t-meta-item">
-                              <div className="t-meta-label">Source</div>
-                              <div className="t-meta-value mint">{p.source}</div>
-                            </div>
-                            <div className="t-meta-item">
-                              <div className="t-meta-label">Verdict</div>
-                              <div className={`t-meta-value ${p.verdict === 'positive' ? 'mint' : p.verdict === 'negative' ? 'coral' : 'sky'}`}>
-                                {p.verdict === 'positive' && '● Bullish'}
-                                {p.verdict === 'negative' && '● Bearish'}
-                                {p.verdict === 'mixed' && '● Neutral'}
+                      {isExpanded && (
+                        <div style={{ padding: '0 20px 16px', borderTop: '1px solid var(--border)' }}>
+                          <div style={{ padding: '12px 0' }}>
+                            <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>{p.details}</div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
+                              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: '8px 12px' }}>
+                                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>Impact</div>
+                                <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 2 }}>{p.impact}</div>
+                              </div>
+                              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: '8px 12px' }}>
+                                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>Source</div>
+                                <div style={{ fontSize: 12, color: 'var(--mint)', marginTop: 2 }}>{p.source}</div>
+                              </div>
+                              <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: '8px 12px' }}>
+                                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>Verdict</div>
+                                <div style={{ fontSize: 12, color: verdictColor, marginTop: 2 }}>
+                                  {p.verdict === 'positive' && '● Bullish'}
+                                  {p.verdict === 'negative' && '● Bearish'}
+                                  {p.verdict === 'mixed' && '● Neutral'}
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   );
                 })}
@@ -6234,23 +6219,23 @@ function CRCLModel() {
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>How to Use This Log</span>
                 </div>
                 <div style={{ padding: '24px 28px' }}>
-                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
                     <div>
-                      <h4 className="text-mint font-medium mb-2">Categories Explained</h4>
-                      <ul className="space-y-2 text-slate-300">
-                        <li><span className="text-orange-400">Partnership:</span> Commercial integrations, strategic alliances</li>
-                        <li><span className="text-blue-400">Product:</span> USDC features, protocol upgrades, launches</li>
-                        <li><span className="text-pink-400">Regulatory:</span> Licenses, compliance, legal milestones</li>
-                        <li><span className="text-emerald-400">Corporate:</span> Leadership, financing, M&A, governance</li>
+                      <h4 style={{ color: 'var(--mint)', fontWeight: 500, marginBottom: 8, fontSize: 14, marginTop: 0 }}>Categories Explained</h4>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: 'var(--text2)' }}>
+                        <li><span style={{ color: 'var(--gold)' }}>Partnership:</span> Commercial integrations, strategic alliances</li>
+                        <li><span style={{ color: 'var(--sky)' }}>Product:</span> USDC features, protocol upgrades, launches</li>
+                        <li><span style={{ color: 'var(--violet)' }}>Regulatory:</span> Licenses, compliance, legal milestones</li>
+                        <li><span style={{ color: 'var(--mint)' }}>Corporate:</span> Leadership, financing, M&A, governance</li>
                       </ul>
                     </div>
                     <div>
-                      <h4 className="text-mint font-medium mb-2">Updating This Log</h4>
-                      <ul className="space-y-1 text-slate-300">
-                        <li>• Add new entries chronologically at the top</li>
-                        <li>• Include sources for traceability</li>
-                        <li>• Tag verdict: Positive/Negative/Neutral</li>
-                        <li>• Add context in details field</li>
+                      <h4 style={{ color: 'var(--mint)', fontWeight: 500, marginBottom: 8, fontSize: 14, marginTop: 0 }}>Updating This Log</h4>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: 'var(--text2)' }}>
+                        <li>Add new entries chronologically at the top</li>
+                        <li>Include sources for traceability</li>
+                        <li>Tag verdict: Positive/Negative/Neutral</li>
+                        <li>Add context in details field</li>
                       </ul>
                     </div>
                   </div>
@@ -6258,12 +6243,10 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#cfa-notes</div>
-              <CFANotes title="CFA Level III — Timeline Analysis" items={[
-                { term: 'SEC Filing Types', def: '10-K (annual), 10-Q (quarterly), 8-K (material events), S-1 (IPO registration), S-3 (shelf registration). Each serves different disclosure purpose.' },
-                { term: 'Material Events', def: 'Earnings, major contracts, management changes, M&A. 8-K filings required within 4 business days.' },
-                { term: 'Guidance vs Actuals', def: 'Track management forecasts against results. Pattern reveals management credibility and conservatism.' },
-                { term: 'Milestone Tracking', def: 'Key business achievements over time. Helps assess execution quality and pace of progress.' },
-                { term: 'Category Filtering', def: 'Sort events by type (regulatory, product, financial, etc.) to focus on specific thesis elements.' },
+              <CFANotes title="CFA Level III — Corporate Events" items={[
+                { term: '10-K / 10-Q', def: 'Annual and quarterly SEC filings. 10-K is audited; 10-Q is unaudited. Both contain financial statements and management discussion.' },
+                { term: 'S-1 Registration', def: 'IPO registration statement filed with SEC. Contains comprehensive company information, financials, and risk factors.' },
+                { term: 'MiCA Compliance', def: 'Markets in Crypto-Assets regulation in EU. Circle obtained MiCA license, allowing USDC/EURC operations across EU member states.' },
               ]} />
             </>
           )}
