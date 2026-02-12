@@ -9500,6 +9500,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
   }, [groupedNews]);
 
+  const [openPanels, setOpenPanels] = useState<Set<string>>(new Set(companySections.map(s => s.competitorId)));
+  const togglePanel = (id: string) => setOpenPanels(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+
   // Implication styling - using design tokens
   const getImplicationStyle = (impl: ASTSImplication) => {
     switch (impl) {
@@ -9601,63 +9604,69 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Peer Group Selector */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {compCategories.map(cat => (
+        {compCategories.map(cat => {
+          const isActive = selectedCompCategory === cat.key;
+          return (
           <button
             key={cat.key}
             onClick={() => setSelectedCompCategory(cat.key)}
-            className={`filter-btn ${selectedCompCategory === cat.key ? 'active' : ''}`}
+            style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
           >
             {cat.label}
           </button>
-        ))}
+          );
+        })}
       </div>
 
-      <div className="comp-cards-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
         {filteredComps.map((c) => {
           const qual = keyCompMap[c.name];
           const profile = profileMap[c.name];
+          const threatLevel = qual ? qual.threat.toLowerCase() : '';
+          const cardBorderLeft = c.highlight ? '4px solid var(--accent)' : threatLevel === 'high' || threatLevel === 'critical' ? '4px solid var(--coral)' : threatLevel === 'medium' ? '4px solid var(--gold)' : threatLevel === 'low' ? '4px solid var(--mint)' : '4px solid var(--surface3)';
+          const cardBg = c.highlight ? 'linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%)' : 'var(--surface)';
           return (
-            <div key={c.ticker} className={`comp-unified-card ${c.highlight ? 'comp-self' : qual ? `threat-${qual.threat.toLowerCase()}` : ''}`}>
-              <div className="comp-card-header">
-                <div className="comp-card-identity">
-                  <div className="comp-card-name">{c.name}</div>
-                  <div className="comp-card-ticker">{c.ticker} · {getCategoryLabel(c.category)}</div>
+            <div key={c.ticker} style={{ background: cardBg, border: '1px solid var(--border)', borderRadius: 16, padding: 20, borderLeft: cardBorderLeft }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{c.name}</div>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)' }}>{c.ticker} · {getCategoryLabel(c.category)}</div>
                 </div>
-                <div className="comp-card-badges">
-                  {qual && <span className={`comp-card-badge threat-${qual.threat.toLowerCase()}`}>{qual.threat}</span>}
-                  <span className="comp-card-badge type-badge">{getCategoryLabel(c.category)}</span>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+                  {qual && <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: threatLevel === 'high' || threatLevel === 'critical' ? 'rgba(255,123,114,0.15)' : threatLevel === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: threatLevel === 'high' || threatLevel === 'critical' ? 'var(--coral)' : threatLevel === 'medium' ? 'var(--gold)' : 'var(--mint)' }}>{qual.threat}</span>}
+                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{getCategoryLabel(c.category)}</span>
                 </div>
               </div>
-              <div className="comp-card-metrics">
-                <div className="comp-card-metric"><div className="val">${(c.mc / 1000).toFixed(0)}B</div><div className="lbl">Mkt Cap</div></div>
-                <div className="comp-card-metric"><div className="val">{c.evRev.toFixed(1)}x</div><div className="lbl">EV/Rev</div></div>
-                <div className="comp-card-metric"><div className="val">${c.pSub.toLocaleString()}</div><div className="lbl">$/Sub</div></div>
-                <div className="comp-card-metric"><div className="val">{c.subs.toFixed(0)}M</div><div className="lbl">Subs</div></div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 6, padding: 10, background: 'var(--surface2)', borderRadius: 10, marginBottom: 10 }}>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${(c.mc / 1000).toFixed(0)}B</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Mkt Cap</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.evRev.toFixed(1)}x</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>EV/Rev</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${c.pSub.toLocaleString()}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>$/Sub</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.subs.toFixed(0)}M</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Subs</div></div>
               </div>
               {c.highlight && (
-                <div className="comp-card-capabilities">
-                  <span className="comp-cap yes">✓ Voice</span>
-                  <span className="comp-cap yes">✓ Text</span>
-                  <span className="comp-cap yes">✓ Data</span>
-                  <span className="comp-cap yes">✓ Video</span>
-                  <span className="comp-cap yes">✓ Unmod.</span>
-                  <span className="comp-cap no">Building Global</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Voice</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Text</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Data</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Video</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Unmod.</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'var(--surface3)', color: 'var(--text3)', opacity: 0.6 }}>Building Global</span>
                 </div>
               )}
               {!c.highlight && profile && (
-                <div className="comp-card-capabilities">
-                  <span className={`comp-cap ${profile.capabilities.voice ? 'yes' : 'no'}`}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
-                  <span className={`comp-cap ${profile.capabilities.text ? 'yes' : 'no'}`}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
-                  <span className={`comp-cap ${profile.capabilities.data ? 'yes' : 'no'}`}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
-                  <span className={`comp-cap ${profile.capabilities.video ? 'yes' : 'no'}`}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
-                  <span className={`comp-cap ${profile.capabilities.unmodifiedPhones ? 'yes' : 'no'}`}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
-                  <span className={`comp-cap ${profile.capabilities.globalCoverage ? 'yes' : 'no'}`}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.voice ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.voice ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.voice ? undefined : 0.6 }}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.text ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.text ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.text ? undefined : 0.6 }}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.data ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.data ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.data ? undefined : 0.6 }}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.video ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.video ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.video ? undefined : 0.6 }}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.unmodifiedPhones ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.unmodifiedPhones ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.unmodifiedPhones ? undefined : 0.6 }}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.globalCoverage ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.globalCoverage ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.globalCoverage ? undefined : 0.6 }}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
                 </div>
               )}
               {qual && (
                 <>
-                  <div className="comp-card-detail"><strong>Focus:</strong> {qual.focus}</div>
-                  <div className="comp-card-notes">{qual.notes}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {qual.focus}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{qual.notes}</div>
                 </>
               )}
             </div>
@@ -9666,29 +9675,31 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         {/* Extra competitors not in comps (Amazon Leo, Lynk Global) - show when 'all' selected */}
         {selectedCompCategory === 'all' && extraCompetitors.map((kc, i) => {
           const profile = extraProfileMap[kc.name];
+          const extraThreat = kc.threat.toLowerCase();
+          const extraBorderLeft = extraThreat === 'high' || extraThreat === 'critical' ? '4px solid var(--coral)' : extraThreat === 'medium' ? '4px solid var(--gold)' : extraThreat === 'low' ? '4px solid var(--mint)' : '4px solid var(--surface3)';
           return (
-            <div key={`extra-${i}`} className={`comp-unified-card threat-${kc.threat.toLowerCase()}`}>
-              <div className="comp-card-header">
-                <div className="comp-card-identity">
-                  <div className="comp-card-name">{kc.name}</div>
-                  <div className="comp-card-ticker">{kc.type}</div>
+            <div key={`extra-${i}`} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 20, borderLeft: extraBorderLeft }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{kc.name}</div>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)' }}>{kc.type}</div>
                 </div>
-                <div className="comp-card-badges">
-                  <span className={`comp-card-badge threat-${kc.threat.toLowerCase()}`}>{kc.threat}</span>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: extraThreat === 'high' || extraThreat === 'critical' ? 'rgba(255,123,114,0.15)' : extraThreat === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: extraThreat === 'high' || extraThreat === 'critical' ? 'var(--coral)' : extraThreat === 'medium' ? 'var(--gold)' : 'var(--mint)' }}>{kc.threat}</span>
                 </div>
               </div>
               {profile && (
-                <div className="comp-card-capabilities">
-                  <span className={`comp-cap ${profile.capabilities.voice ? 'yes' : 'no'}`}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
-                  <span className={`comp-cap ${profile.capabilities.text ? 'yes' : 'no'}`}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
-                  <span className={`comp-cap ${profile.capabilities.data ? 'yes' : 'no'}`}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
-                  <span className={`comp-cap ${profile.capabilities.video ? 'yes' : 'no'}`}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
-                  <span className={`comp-cap ${profile.capabilities.unmodifiedPhones ? 'yes' : 'no'}`}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
-                  <span className={`comp-cap ${profile.capabilities.globalCoverage ? 'yes' : 'no'}`}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.voice ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.voice ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.voice ? undefined : 0.6 }}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.text ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.text ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.text ? undefined : 0.6 }}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.data ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.data ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.data ? undefined : 0.6 }}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.video ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.video ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.video ? undefined : 0.6 }}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.unmodifiedPhones ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.unmodifiedPhones ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.unmodifiedPhones ? undefined : 0.6 }}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.globalCoverage ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.globalCoverage ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.globalCoverage ? undefined : 0.6 }}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
                 </div>
               )}
-              <div className="comp-card-detail"><strong>Focus:</strong> {kc.focus}</div>
-              <div className="comp-card-notes">{kc.notes}</div>
+              <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {kc.focus}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{kc.notes}</div>
             </div>
           );
         })}
@@ -9745,14 +9756,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13, margin: '4px 0 0' }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
         </div>
-        <table className="tbl">
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th>Method</th>
-              <th>Peer Basis</th>
-              <th className="r">Multiple/Metric</th>
-              <th className="r">Implied Value</th>
-              <th className="r">Premium/(Discount)</th>
+              <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Method</th>
+              <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Peer Basis</th>
+              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple/Metric</th>
+              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Implied Value</th>
+              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Premium/(Discount)</th>
             </tr>
           </thead>
           <tbody>
@@ -9765,11 +9776,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
             ].map((v, i) => (
               <tr key={i}>
-                <td style={{ fontWeight: 500 }}>{v.method}</td>
-                <td>{v.basis}</td>
-                <td className="r">{v.metric}</td>
-                <td className="r mint">${(v.implied / 1000).toFixed(1)}B</td>
-                <td className="r" style={{ color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</td>
+                <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.metric}</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${(v.implied / 1000).toFixed(1)}B</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
                 </td>
               </tr>
@@ -9785,13 +9796,13 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13 }}>Value each business segment separately</p>
-          <table className="tbl">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th>Segment</th>
-                <th className="r">Metric</th>
-                <th className="r">Multiple</th>
-                <th className="r">Value</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Segment</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Metric</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Value</th>
               </tr>
             </thead>
             <tbody>
@@ -9803,18 +9814,18 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
               ].map((s, i) => (
                 <tr key={i}>
-                  <td>
+                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
                     <div style={{ fontWeight: 500 }}>{s.segment}</div>
                     <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
                   </td>
-                  <td className="r">{s.metric}</td>
-                  <td className="r">{s.multiple}</td>
-                  <td className="r mint">${(s.value / 1000).toFixed(1)}B</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.metric}</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.multiple}</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${(s.value / 1000).toFixed(1)}B</td>
                 </tr>
               ))}
               <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-                <td colSpan={3}>SOTP Total</td>
-                <td className="r mint">${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</td>
+                <td colSpan={3} style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>SOTP Total</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</td>
               </tr>
             </tbody>
           </table>
@@ -9827,13 +9838,13 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13 }}>Probability-weighted valuation outcomes</p>
-          <table className="tbl">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th>Scenario</th>
-                <th className="r">Prob.</th>
-                <th className="r">Value</th>
-                <th className="r">Weighted</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Scenario</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Prob.</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Value</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Weighted</th>
               </tr>
             </thead>
             <tbody>
@@ -9844,18 +9855,18 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
               ].map((s, i) => (
                 <tr key={i}>
-                  <td>
+                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
                     <div style={{ fontWeight: 500 }}>{s.scenario}</div>
                     <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.desc}</div>
                   </td>
-                  <td className="r">{s.prob}%</td>
-                  <td className="r">${(s.value / 1000).toFixed(1)}B</td>
-                  <td className="r mint">${(s.value * s.prob / 100 / 1000).toFixed(1)}B</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.prob}%</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>${(s.value / 1000).toFixed(1)}B</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${(s.value * s.prob / 100 / 1000).toFixed(1)}B</td>
                 </tr>
               ))}
               <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-                <td colSpan={3}>Expected Value</td>
-                <td className="r mint">${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</td>
+                <td colSpan={3} style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>Expected Value</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</td>
               </tr>
             </tbody>
           </table>
@@ -9876,33 +9887,36 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: '12px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
+          {(() => { const isActive = competitorFilter === 'all'; return (
           <button
             onClick={() => setCompetitorFilter('all')}
-            className={`filter-btn ${competitorFilter === 'all' ? 'active' : ''}`}
+            style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
           >
             All ({COMPETITOR_NEWS.length})
           </button>
+          ); })()}
           {COMPETITOR_PROFILES.map(comp => {
             const count = COMPETITOR_NEWS.filter(n => n.competitor === comp.id).length;
             if (count === 0) return null;
+            const isActive = competitorFilter === comp.id;
             return (
               <button
                 key={comp.id}
                 onClick={() => setCompetitorFilter(comp.id)}
-                className={`filter-btn ${competitorFilter === comp.id ? 'active' : ''}`}
+                style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
               >
                 {comp.name.split('/')[0].trim()} ({count})
               </button>
             );
           })}
-          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (
+          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (() => { const isActive = competitorFilter === 'other'; return (
             <button
               onClick={() => setCompetitorFilter('other')}
-              className={`filter-btn ${competitorFilter === 'other' ? 'active' : ''}`}
+              style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
             >
               Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
             </button>
-          )}
+          ); })()}
         </div>
       </div>
 
@@ -9918,20 +9932,18 @@ const CompsTab = ({ calc, currentStockPrice }) => {
             const oldestDate = section.stories[section.stories.length - 1]?.entries[section.stories[section.stories.length - 1]?.entries.length - 1]?.date || '';
             const newestDate = section.stories[0]?.entries[0]?.date || '';
             return (
-            <details key={section.competitorId} className="comp-panel" open>
-              <summary>
-                <div className="comp-panel-bar">
-                  <div className="comp-panel-info">
-                    <div className="comp-panel-name">{section.name}</div>
-                    <div className="comp-panel-meta">
-                      <span className="comp-panel-count">{totalEntries} {totalEntries === 1 ? 'entry' : 'entries'}</span>
-                      {oldestDate && newestDate && <span className="comp-panel-dates">{newestDate} — {oldestDate}</span>}
+            <div key={section.competitorId} style={{ border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginTop: 16, background: 'var(--surface)' }}>
+                <div onClick={() => togglePanel(section.competitorId)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 20px', cursor: 'pointer', userSelect: 'none' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1 }}>{section.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
+                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{totalEntries} {totalEntries === 1 ? 'entry' : 'entries'}</span>
+                      {oldestDate && newestDate && <span style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.6 }}>{newestDate} — {oldestDate}</span>}
                     </div>
                   </div>
-                  <div className="comp-panel-chevron" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" /></svg></div>
+                  <div style={{ flexShrink: 0, transition: 'transform 0.25s ease', transform: openPanels.has(section.competitorId) ? 'rotate(180deg)' : 'rotate(0deg)' }} aria-hidden="true"><svg viewBox="0 0 24 24" style={{ width: 16, height: 16, stroke: 'var(--text3)', strokeWidth: 2, fill: 'none' }}><polyline points="6 9 12 15 18 9" /></svg></div>
                 </div>
-              </summary>
-              <div className="comp-panel-body">
+              {openPanels.has(section.competitorId) && <div style={{ borderTop: '1px solid var(--border)' }}>
               {section.stories.map((story) => (
             <div key={story.storyId} style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 0, overflow: 'hidden' }}>
               {/* Story Header */}
@@ -9980,7 +9992,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                         }}
                       >
                         {/* Date */}
-                        <span className="t-date" style={{ fontSize: 12 }}>{news.date}</span>
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>{news.date}</span>
 
                         {/* Category */}
                         <span
@@ -10083,8 +10095,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               </div>
             </div>
               ))}
-              </div>
-            </details>
+              </div>}
+            </div>
             );
           })
         )}

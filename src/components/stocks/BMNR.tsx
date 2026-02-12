@@ -3464,6 +3464,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [competitorFilter, setCompetitorFilter] = useState<BMNRCompetitorId | 'all'>('all');
   const [expandedNews, setExpandedNews] = useState<string | null>(null);
+  const [openPanels, setOpenPanels] = useState<Set<string>>(new Set());
 
   // ═══════════════════════════════════════════════════════════════════════════
   // COMPETITOR PROFILES - Crypto Treasury Competitors
@@ -5434,6 +5435,21 @@ const CompsTab = ({ comparables, ethPrice }) => {
       .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
   }, [groupedNews]);
 
+  // Initialize open panels when companySections changes
+  React.useEffect(() => {
+    setOpenPanels(new Set(companySections.map(s => s.competitorId)));
+  }, [companySections]);
+
+  const togglePanel = (id: string) => setOpenPanels(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+
+  const getCardStyle = (isSelf: boolean, threat?: string): React.CSSProperties => ({
+    background: isSelf ? 'linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%)' : 'var(--surface)',
+    border: '1px solid var(--border)',
+    borderRadius: 16,
+    padding: 20,
+    borderLeft: isSelf ? '4px solid var(--accent)' : threat === 'High' ? '4px solid var(--coral)' : threat === 'Medium' ? '4px solid var(--gold)' : threat === 'Low' ? '4px solid var(--mint)' : '4px solid var(--surface3)'
+  });
+
   // Implication styling - using design tokens
   const getImplicationStyle = (impl: BMNRImplication) => {
     switch (impl) {
@@ -5544,45 +5560,49 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
       {/* Peer Group Selector */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {categories.map(cat => (
+        {categories.map(cat => {
+          const isActive = selectedCategory === cat.key;
+          return (
           <button
             key={cat.key}
             onClick={() => setSelectedCategory(cat.key)}
-            className={`filter-btn ${selectedCategory === cat.key ? 'active' : ''}`}
+            style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
           >
             {cat.label}
           </button>
-        ))}
+          );
+        })}
       </div>
 
-      <div className="comp-cards-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
         {filteredComps.map(c => {
           const qual = keyCompLookup[c.name];
+          const isSelf = c.name === 'BMNR';
           return (
-            <div key={c.name} className={`comp-unified-card ${c.name === 'BMNR' ? 'comp-self' : qual ? `threat-${qual.threat.toLowerCase()}` : ''}`}>
-              <div className="comp-card-header">
-                <div className="comp-card-identity">
-                  <div className="comp-card-name">{c.fullName || c.name}</div>
-                  <div className="comp-card-ticker">{c.name} · {c.crypto}</div>
+            <div key={c.name} style={getCardStyle(isSelf, qual?.threat)}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{c.fullName || c.name}</div>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)' }}>{c.name} · {c.crypto}</div>
                 </div>
-                <div className="comp-card-badges">
-                  {qual && <span className={`comp-card-badge threat-${qual.threat.toLowerCase()}`}>{qual.threat}</span>}
-                  <span className="comp-card-badge type-badge">{qual?.type || c.category}</span>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+                  {qual && <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: qual.threat === 'High' ? 'rgba(255,123,114,0.15)' : qual.threat === 'Medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: qual.threat === 'High' ? 'var(--coral)' : qual.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{qual.threat}</span>}
+                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{qual?.type || c.category}</span>
                 </div>
               </div>
-              <div className="comp-card-metrics">
-                <div className="comp-card-metric"><div className="val">{typeof c.holdings === 'number' ? c.holdings.toLocaleString() : c.holdings}</div><div className="lbl">Holdings</div></div>
-                <div className="comp-card-metric"><div className="val">{c.navPerShare > 0 ? `$${c.navPerShare.toFixed(2)}` : '—'}</div><div className="lbl">NAV/Share</div></div>
-                <div className="comp-card-metric"><div className="val">${c.price}</div><div className="lbl">Price</div></div>
-                <div className="comp-card-metric"><div className={`val ${c.premium >= 0 ? 'mint' : 'coral'}`}>{c.navPerShare > 0 ? `${c.premium >= 0 ? '+' : ''}${c.premium.toFixed(0)}%` : '—'}</div><div className="lbl">Premium</div></div>
-                <div className="comp-card-metric"><div className={`val ${c.yield > 0 ? 'mint' : ''}`}>{c.yield > 0 ? `${c.yield}%` : '—'}</div><div className="lbl">Yield</div></div>
-                <div className="comp-card-metric"><div className="val">${(c.marketCap / 1e9).toFixed(1)}B</div><div className="lbl">Mkt Cap</div></div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 6, padding: 10, background: 'var(--surface2)', borderRadius: 10, marginBottom: 10 }}>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{typeof c.holdings === 'number' ? c.holdings.toLocaleString() : c.holdings}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Holdings</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.navPerShare > 0 ? `$${c.navPerShare.toFixed(2)}` : '—'}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>NAV/Share</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${c.price}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Price</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: c.premium >= 0 ? 'var(--mint)' : 'var(--coral)', lineHeight: 1.2 }}>{c.navPerShare > 0 ? `${c.premium >= 0 ? '+' : ''}${c.premium.toFixed(0)}%` : '—'}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Premium</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: c.yield > 0 ? 'var(--mint)' : 'var(--text)', lineHeight: 1.2 }}>{c.yield > 0 ? `${c.yield}%` : '—'}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Yield</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${(c.marketCap / 1e9).toFixed(1)}B</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Mkt Cap</div></div>
               </div>
               {qual && (
                 <>
-                  <div className="comp-card-detail"><strong>Status:</strong> {qual.status}</div>
-                  <div className="comp-card-detail"><strong>Focus:</strong> {qual.focus}</div>
-                  <div className="comp-card-notes">{qual.notes}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Status:</strong> {qual.status}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {qual.focus}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{qual.notes}</div>
                 </>
               )}
             </div>
@@ -5592,20 +5612,20 @@ const CompsTab = ({ comparables, ethPrice }) => {
           const ticker = k.name.match(/\(([A-Z]+)\)/)?.[1];
           return ticker && !compsData.find(c => c.name === ticker);
         }).filter(() => selectedCategory === 'all').map((k, i) => (
-          <div key={`qual-${i}`} className={`comp-unified-card threat-${k.threat.toLowerCase()}`}>
-            <div className="comp-card-header">
-              <div className="comp-card-identity">
-                <div className="comp-card-name">{k.name}</div>
-                <div className="comp-card-ticker">{k.name.match(/\(([A-Z]+)\)/)?.[1] || ''}</div>
+          <div key={`qual-${i}`} style={getCardStyle(false, k.threat)}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{k.name}</div>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)' }}>{k.name.match(/\(([A-Z]+)\)/)?.[1] || ''}</div>
               </div>
-              <div className="comp-card-badges">
-                <span className={`comp-card-badge threat-${k.threat.toLowerCase()}`}>{k.threat}</span>
-                <span className="comp-card-badge type-badge">{k.type}</span>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: k.threat === 'High' ? 'rgba(255,123,114,0.15)' : k.threat === 'Medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: k.threat === 'High' ? 'var(--coral)' : k.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{k.threat}</span>
+                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{k.type}</span>
               </div>
             </div>
-            <div className="comp-card-detail"><strong>Status:</strong> {k.status}</div>
-            <div className="comp-card-detail"><strong>Focus:</strong> {k.focus}</div>
-            <div className="comp-card-notes">{k.notes}</div>
+            <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Status:</strong> {k.status}</div>
+            <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {k.focus}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{k.notes}</div>
           </div>
         ))}
       </div>
@@ -5614,9 +5634,9 @@ const CompsTab = ({ comparables, ethPrice }) => {
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Yield Advantage<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>ETH staking generates yield vs BTC's 0% — structural advantage</p>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <div className="big-stat">
-            <div className="num mint">+{comparables[0].yield}%</div>
-            <div className="lbl">Annual staking yield vs BTC (0%)</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: 'var(--mint)' }}>+{comparables[0].yield}%</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Annual staking yield vs BTC (0%)</div>
           </div>
         </div>
       </div>
@@ -5634,14 +5654,14 @@ const CompsTab = ({ comparables, ethPrice }) => {
       <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>BMNR value under different NAV multiples (current: ${(compsData[0]?.marketCap / 1e9).toFixed(2)}B)</p>
-        <table className="tbl">
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th>Method</th>
-              <th>Peer Basis</th>
-              <th className="r">Multiple</th>
-              <th className="r">Implied Value</th>
-              <th className="r">vs Current</th>
+              <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Method</th>
+              <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Peer Basis</th>
+              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
+              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Implied Value</th>
+              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>vs Current</th>
             </tr>
           </thead>
           <tbody>
@@ -5658,11 +5678,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 { method: 'Yield-Adjusted', basis: '5yr Compound', multiple: '1.15x', implied: nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5), vs: ((nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5)) / currentMC - 1) * 100 },
               ].map((v, i) => (
                 <tr key={i}>
-                  <td style={{ fontWeight: 500 }}>{v.method}</td>
-                  <td>{v.basis}</td>
-                  <td className="r">{v.multiple}</td>
-                  <td className="r mint">${(v.implied / 1e9).toFixed(2)}B</td>
-                  <td className="r" style={{ color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.multiple}</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${(v.implied / 1e9).toFixed(2)}B</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                     {v.vs >= 0 ? '+' : ''}{v.vs.toFixed(0)}%
                   </td>
                 </tr>
@@ -5679,13 +5699,13 @@ const CompsTab = ({ comparables, ethPrice }) => {
           <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13 }}>Value each component separately</p>
-          <table className="tbl">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th>Component</th>
-                <th className="r">Metric</th>
-                <th className="r">Multiple</th>
-                <th className="r">Value</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Component</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Metric</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Value</th>
               </tr>
             </thead>
             <tbody>
@@ -5700,19 +5720,19 @@ const CompsTab = ({ comparables, ethPrice }) => {
                   { segment: 'Growth Optionality', basis: 'Acquisition capacity', metric: 'Option value', multiple: '—', value: ethValue * 0.03 },
                 ].map((s, i) => (
                   <tr key={i}>
-                    <td>
+                    <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
                       <div style={{ fontWeight: 500 }}>{s.segment}</div>
                       <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
                     </td>
-                    <td className="r">{s.metric}</td>
-                    <td className="r">{s.multiple}</td>
-                    <td className="r mint">${(s.value / 1e9).toFixed(2)}B</td>
+                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.metric}</td>
+                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.multiple}</td>
+                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${(s.value / 1e9).toFixed(2)}B</td>
                   </tr>
                 ));
               })()}
               <tr style={{ fontWeight: 600, borderTop: '2px solid var(--border)' }}>
-                <td colSpan={3}>SOTP Total</td>
-                <td className="r mint">${((() => {
+                <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }} colSpan={3}>SOTP Total</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${((() => {
                   const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
                   const ethValue = ethHoldings * ethPrice;
                   const yieldNPV = ethValue * (comparables[0]?.yield || 0) / 100 * 3.79;
@@ -5731,11 +5751,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>NAV Premium Sensitivity<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13 }}>Stock price at different ETH prices × NAV multiples</p>
           <div style={{ overflowX: 'auto' }}>
-            <table className="tbl">
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  <th>ETH ↓ / NAV → </th>
-                  {[0.75, 1.0, 1.25, 1.5, 2.0].map(m => <th key={m} className="r">{m}x</th>)}
+                  <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>ETH ↓ / NAV → </th>
+                  {[0.75, 1.0, 1.25, 1.5, 2.0].map((m, idx) => <th key={m} style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', ...(idx === 4 ? { borderRadius: '0 10px 0 0' } : {}) }}>{m}x</th>)}
                 </tr>
               </thead>
               <tbody>
@@ -5746,16 +5766,16 @@ const CompsTab = ({ comparables, ethPrice }) => {
                   const currentPrice = comparables[0]?.price || 0;
                   return (
                     <tr key={ethMult}>
-                      <td style={{ fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</td>
+                      <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</td>
                       {[0.75, 1.0, 1.25, 1.5, 2.0].map(navMult => {
                         const price = baseNAV * ethMult * navMult;
                         const isNear = ethMult === 1.0 && navMult === 1.0;
                         return (
-                          <td key={navMult} className="r" style={isNear ? {
+                          <td key={navMult} style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, ...(isNear ? {
                             background: 'var(--accent-dim)',
                             fontWeight: 600,
                             color: 'var(--accent)'
-                          } : { color: price >= currentPrice ? 'var(--mint)' : 'var(--coral)' }}>
+                          } : { color: price >= currentPrice ? 'var(--mint)' : 'var(--coral)' }) }}>
                             ${price.toFixed(2)}
                           </td>
                         );
@@ -5784,33 +5804,36 @@ const CompsTab = ({ comparables, ethPrice }) => {
       <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: '12px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
+          {(() => { const isActive = competitorFilter === 'all'; return (
           <button
             onClick={() => setCompetitorFilter('all')}
-            className={`filter-btn ${competitorFilter === 'all' ? 'active' : ''}`}
+            style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
           >
             All ({COMPETITOR_NEWS.length})
           </button>
+          ); })()}
           {COMPETITOR_PROFILES.map(comp => {
             const count = COMPETITOR_NEWS.filter(n => n.competitor === comp.id).length;
             if (count === 0) return null;
+            const isActive = competitorFilter === comp.id;
             return (
               <button
                 key={comp.id}
                 onClick={() => setCompetitorFilter(comp.id)}
-                className={`filter-btn ${competitorFilter === comp.id ? 'active' : ''}`}
+                style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
               >
                 {comp.name.split(' ')[0]} ({count})
               </button>
             );
           })}
-          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (
+          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (() => { const isActive = competitorFilter === 'other'; return (
             <button
               onClick={() => setCompetitorFilter('other')}
-              className={`filter-btn ${competitorFilter === 'other' ? 'active' : ''}`}
+              style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
             >
               Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
             </button>
-          )}
+          ); })()}
         </div>
       </div>
 
@@ -5826,20 +5849,18 @@ const CompsTab = ({ comparables, ethPrice }) => {
             const oldestDate = section.stories[section.stories.length - 1]?.entries[section.stories[section.stories.length - 1]?.entries.length - 1]?.date || '';
             const newestDate = section.stories[0]?.entries[0]?.date || '';
             return (
-            <details key={section.competitorId} className="comp-panel" open>
-              <summary>
-                <div className="comp-panel-bar">
-                  <div className="comp-panel-info">
-                    <div className="comp-panel-name">{section.name}</div>
-                    <div className="comp-panel-meta">
-                      <span className="comp-panel-count">{totalEntries} {totalEntries === 1 ? 'entry' : 'entries'}</span>
-                      {oldestDate && newestDate && <span className="comp-panel-dates">{newestDate} — {oldestDate}</span>}
+            <div key={section.competitorId} style={{ border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginTop: 16, background: 'var(--surface)' }}>
+              <div onClick={() => togglePanel(section.competitorId)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 20px', cursor: 'pointer', userSelect: 'none' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1 }}>{section.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
+                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{totalEntries} {totalEntries === 1 ? 'entry' : 'entries'}</span>
+                      {oldestDate && newestDate && <span style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.6 }}>{newestDate} — {oldestDate}</span>}
                     </div>
                   </div>
-                  <div className="comp-panel-chevron" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" /></svg></div>
-                </div>
-              </summary>
-              <div className="comp-panel-body">
+                  <div style={{ flexShrink: 0, transition: 'transform 0.25s ease', transform: openPanels.has(section.competitorId) ? 'rotate(180deg)' : 'rotate(0deg)' }} aria-hidden="true"><svg viewBox="0 0 24 24" style={{ width: 16, height: 16, stroke: 'var(--text3)', strokeWidth: 2, fill: 'none' }}><polyline points="6 9 12 15 18 9" /></svg></div>
+              </div>
+              {openPanels.has(section.competitorId) && <div style={{ borderTop: '1px solid var(--border)' }}>
               {section.stories.map((story) => (
             <div key={story.storyId} style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 0, overflow: 'hidden' }}>
               {/* Story Header */}
@@ -5888,7 +5909,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                         }}
                       >
                         {/* Date */}
-                        <span className="t-date" style={{ fontSize: 12 }}>{news.date}</span>
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>{news.date}</span>
 
                         {/* Category */}
                         <span
@@ -5991,8 +6012,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
               </div>
             </div>
               ))}
-              </div>
-            </details>
+              </div>}
+            </div>
             );
           })
         )}

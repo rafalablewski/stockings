@@ -6359,6 +6359,10 @@ const CompsTab = () => {
   const [competitorFilter, setCompetitorFilter] = useState<CRCLCompetitorId | 'all'>('all');
   const [expandedNews, setExpandedNews] = useState<string | null>(null);
 
+  // Panel expand/collapse state for competitor news sections
+  const [openPanels, setOpenPanels] = useState<Set<string>>(new Set());
+  const [openPanelsInitialized, setOpenPanelsInitialized] = useState(false);
+
   // Key competitors with threat levels for colored borders
   const keyCompetitors = [
     {
@@ -7123,6 +7127,16 @@ const CompsTab = () => {
       .sort((a, b) => new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime());
   }, [groupedNews]);
 
+  // Initialize openPanels once companySections are available (all open by default)
+  React.useEffect(() => {
+    if (!openPanelsInitialized && companySections.length > 0) {
+      setOpenPanels(new Set(companySections.map(s => s.competitorId)));
+      setOpenPanelsInitialized(true);
+    }
+  }, [companySections, openPanelsInitialized]);
+
+  const togglePanel = (id: string) => setOpenPanels(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+
   // Implication styling - using design tokens
   const getImplicationStyle = (impl: CRCLImplication) => {
     switch (impl) {
@@ -7157,47 +7171,54 @@ const CompsTab = () => {
 
       {/* Peer Group Selector */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {Object.entries(PEER_GROUPS).map(([key, group]) => (
-          <button
-            key={key}
-            onClick={() => setSelectedPeerGroup(key)}
-            className={`filter-btn ${selectedPeerGroup === key ? 'active' : ''}`}
-          >
-            {group.name}
-          </button>
-        ))}
+        {Object.entries(PEER_GROUPS).map(([key, group]) => {
+          const isActive = selectedPeerGroup === key;
+          return (
+            <button
+              key={key}
+              onClick={() => setSelectedPeerGroup(key)}
+              style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
+            >
+              {group.name}
+            </button>
+          );
+        })}
       </div>
 
       {/* Unified Peer Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#peer-group</div>
-      <div className="comp-cards-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
         {currentPeers.peers.map((p, i) => {
           const qual = keyCompLookup[p.name.split(' (')[0]] || keyCompLookup[p.name];
           const isSelf = p.highlight;
+          const cardBorderLeft = isSelf ? '4px solid var(--accent)' : qual ? `4px solid ${qual.threat.toLowerCase() === 'high' || qual.threat.toLowerCase() === 'critical' ? 'var(--coral)' : qual.threat.toLowerCase() === 'medium' ? 'var(--gold)' : 'var(--mint)'}` : '4px solid var(--surface3)';
+          const cardBg = isSelf ? 'linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%)' : 'var(--surface)';
+          const threatBadgeBg = qual ? (qual.threat.toLowerCase() === 'high' ? 'rgba(255,123,114,0.15)' : qual.threat.toLowerCase() === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)') : '';
+          const threatBadgeColor = qual ? (qual.threat.toLowerCase() === 'high' ? 'var(--coral)' : qual.threat.toLowerCase() === 'medium' ? 'var(--gold)' : 'var(--mint)') : '';
           return (
-            <div key={i} className={`comp-unified-card ${isSelf ? 'comp-self' : qual ? `threat-${qual.threat.toLowerCase()}` : ''}`}>
-              <div className="comp-card-header">
-                <div className="comp-card-identity">
-                  <div className="comp-card-name">{p.name}</div>
-                  <div className="comp-card-ticker">{p.ticker}</div>
+            <div key={i} style={{ background: cardBg, border: '1px solid var(--border)', borderRadius: 16, padding: 20, borderLeft: cardBorderLeft }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{p.name}</div>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)' }}>{p.ticker}</div>
                 </div>
-                <div className="comp-card-badges">
-                  {qual && <span className={`comp-card-badge threat-${qual.threat.toLowerCase()}`}>{qual.threat}</span>}
-                  <span className="comp-card-badge type-badge">{currentPeers.name}</span>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+                  {qual && <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: threatBadgeBg, color: threatBadgeColor }}>{qual.threat}</span>}
+                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{currentPeers.name}</span>
                 </div>
               </div>
-              <div className="comp-card-metrics">
-                <div className="comp-card-metric"><div className="val">{p.cap ? `$${p.cap}B` : 'Private'}</div><div className="lbl">Mkt Cap</div></div>
-                <div className="comp-card-metric"><div className="val">${p.rev}B</div><div className="lbl">Revenue</div></div>
-                <div className="comp-card-metric"><div className="val">{p.ebitda > 0 ? `$${p.ebitda}B` : p.ebitda < 0 ? `($${Math.abs(p.ebitda)}B)` : '—'}</div><div className="lbl">EBITDA</div></div>
-                <div className="comp-card-metric"><div className={`val ${p.margin >= 30 ? 'mint' : p.margin < 0 ? 'coral' : ''}`}>{p.margin}%</div><div className="lbl">Margin</div></div>
-                <div className="comp-card-metric"><div className={`val ${p.growth >= 30 ? 'mint' : ''}`}>{p.growth}%</div><div className="lbl">Growth</div></div>
-                <div className="comp-card-metric"><div className="val accent">{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</div><div className="lbl">P/S</div></div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 6, padding: 10, background: 'var(--surface2)', borderRadius: 10, marginBottom: 10 }}>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{p.cap ? `$${p.cap}B` : 'Private'}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Mkt Cap</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${p.rev}B</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Revenue</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{p.ebitda > 0 ? `$${p.ebitda}B` : p.ebitda < 0 ? `($${Math.abs(p.ebitda)}B)` : '—'}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>EBITDA</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: p.margin >= 30 ? 'var(--mint)' : p.margin < 0 ? 'var(--coral)' : 'var(--text)', lineHeight: 1.2 }}>{p.margin}%</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Margin</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: p.growth >= 30 ? 'var(--mint)' : 'var(--text)', lineHeight: 1.2 }}>{p.growth}%</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Growth</div></div>
+                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--accent)', lineHeight: 1.2 }}>{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>P/S</div></div>
               </div>
               {qual && (
                 <>
-                  <div className="comp-card-detail"><strong>Focus:</strong> {qual.focus}</div>
-                  <div className="comp-card-notes">{qual.notes}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {qual.focus}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{qual.notes}</div>
                 </>
               )}
             </div>
@@ -7206,23 +7227,29 @@ const CompsTab = () => {
         {/* Show keyCompetitors not in current peer group when viewing crypto */}
         {selectedPeerGroup === 'crypto' && keyCompetitors
           .filter(k => !currentPeers.peers.find(p => p.name.includes(k.name.split(' (')[0])))
-          .map((k, i) => (
-            <div key={`extra-${i}`} className={`comp-unified-card threat-${k.threat.toLowerCase()}`}>
-              <div className="comp-card-header">
-                <div className="comp-card-identity">
-                  <div className="comp-card-name">{k.name}</div>
-                  <div className="comp-card-ticker">{k.type}</div>
+          .map((k, i) => {
+            const threatLevel = k.threat.toLowerCase();
+            const borderLeftColor = threatLevel === 'high' || threatLevel === 'critical' ? 'var(--coral)' : threatLevel === 'medium' ? 'var(--gold)' : 'var(--mint)';
+            const tBadgeBg = threatLevel === 'high' ? 'rgba(255,123,114,0.15)' : threatLevel === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)';
+            const tBadgeColor = threatLevel === 'high' ? 'var(--coral)' : threatLevel === 'medium' ? 'var(--gold)' : 'var(--mint)';
+            return (
+            <div key={`extra-${i}`} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 20, borderLeft: `4px solid ${borderLeftColor}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{k.name}</div>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)' }}>{k.type}</div>
                 </div>
-                <div className="comp-card-badges">
-                  <span className={`comp-card-badge threat-${k.threat.toLowerCase()}`}>{k.threat}</span>
-                  <span className="comp-card-badge type-badge">{k.type}</span>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: tBadgeBg, color: tBadgeColor }}>{k.threat}</span>
+                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{k.type}</span>
                 </div>
               </div>
-              <div className="comp-card-detail"><strong>Status:</strong> {k.status}</div>
-              <div className="comp-card-detail"><strong>Focus:</strong> {k.focus}</div>
-              <div className="comp-card-notes">{k.notes}</div>
+              <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Status:</strong> {k.status}</div>
+              <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {k.focus}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{k.notes}</div>
             </div>
-          ))
+            );
+          })
         }
       </div>
 
@@ -7231,22 +7258,22 @@ const CompsTab = () => {
       <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Circle Business Model Metrics<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Unique metrics for stablecoin issuers — monetization of reserves</p>
-        <div className="g4">
-          <div className="big-stat">
-            <div className="num">{CIRCLE_METRICS.revenuePerUSDC}¢</div>
-            <div className="lbl">Rev per $1 USDC</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: 'var(--accent)' }}>{CIRCLE_METRICS.revenuePerUSDC}¢</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Rev per $1 USDC</div>
           </div>
-          <div className="big-stat">
-            <div className="num">{CIRCLE_METRICS.grossTakeRate}%</div>
-            <div className="lbl">Gross Take Rate</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: 'var(--accent)' }}>{CIRCLE_METRICS.grossTakeRate}%</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Gross Take Rate</div>
           </div>
-          <div className="big-stat">
-            <div className="num">{CIRCLE_METRICS.distributionCostPct}%</div>
-            <div className="lbl">Coinbase Share</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: 'var(--accent)' }}>{CIRCLE_METRICS.distributionCostPct}%</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Coinbase Share</div>
           </div>
-          <div className="big-stat">
-            <div className="num">{CIRCLE_METRICS.netTakeRate}%</div>
-            <div className="lbl">Net Take Rate</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: 'var(--accent)' }}>{CIRCLE_METRICS.netTakeRate}%</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Net Take Rate</div>
           </div>
         </div>
         <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
@@ -7276,24 +7303,24 @@ const CompsTab = () => {
       <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Circle's value under different peer multiples (current: $18.9B)</p>
-        <table className="tbl">
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th>Method</th>
-              <th>Peer Basis</th>
-              <th className="r">Multiple</th>
-              <th className="r">Implied Value</th>
-              <th className="r">Premium/(Discount)</th>
+              <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Method</th>
+              <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Peer Basis</th>
+              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
+              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Implied Value</th>
+              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Premium/(Discount)</th>
             </tr>
           </thead>
           <tbody>
             {VALUATION_MATRIX.map((v, i) => (
               <tr key={i}>
-                <td style={{ fontWeight: 500 }}>{v.method}</td>
-                <td>{v.basis}</td>
-                <td className="r">{v.multiple}x</td>
-                <td className="r mint">${v.implied.toFixed(1)}B</td>
-                <td className="r" style={{ color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</td>
+                <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.multiple}x</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${v.implied.toFixed(1)}B</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
                 </td>
               </tr>
@@ -7368,32 +7395,32 @@ const CompsTab = () => {
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sotp</div>
           <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
-          <table className="tbl">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th>Segment</th>
-                <th className="r">Metric</th>
-                <th className="r">Multiple</th>
-                <th className="r">Value</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Segment</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Metric</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Value</th>
               </tr>
             </thead>
             <tbody>
               {SOTP.map((s, i) => (
                 <tr key={i}>
-                  <td>
+                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
                     <div style={{ fontWeight: 500 }}>{s.segment}</div>
                     <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
                   </td>
-                  <td className="r">{s.metric}</td>
-                  <td className="r">{s.multiple}</td>
-                  <td className="r mint">
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.metric}</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.multiple}</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>
                     {s.value ? `$${s.value}B` : s.valueLow && s.valueHigh ? `$${s.valueLow}-${s.valueHigh}B` : '—'}
                   </td>
                 </tr>
               ))}
               <tr style={{ fontWeight: 600 }}>
-                <td colSpan={3}>SOTP Range</td>
-                <td className="r mint">$15.5-17.5B</td>
+                <td colSpan={3} style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>SOTP Range</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>$15.5-17.5B</td>
               </tr>
             </tbody>
           </table>
@@ -7408,25 +7435,25 @@ const CompsTab = () => {
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#transaction-comps</div>
           <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Transaction Comps<UpdateIndicators sources={['WS']} /></div>
-          <table className="tbl">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Target</th>
-                <th className="r">Value</th>
-                <th>Type</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Date</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Target</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Value</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Type</th>
               </tr>
             </thead>
             <tbody>
               {TRANSACTIONS.map((t, i) => (
                 <tr key={i}>
-                  <td>{t.date}</td>
-                  <td>
+                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{t.date}</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
                     <div style={{ fontWeight: 500 }}>{t.target}</div>
                     {t.notes && <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.notes}</div>}
                   </td>
-                  <td className="r">{t.value ? `$${t.value}B` : '—'}</td>
-                  <td><span style={{
+                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{t.value ? `$${t.value}B` : '—'}</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}><span style={{
                     fontSize: 10,
                     padding: '3px 8px',
                     borderRadius: 4,
@@ -7450,26 +7477,22 @@ const CompsTab = () => {
         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Valuation Sensitivity: USDC × Interest Rates<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Implied enterprise value at Coinbase P/S multiple (13x net revenue)</p>
         <div style={{ overflowX: 'auto' }}>
-          <table className="tbl">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th>USDC ($B) ↓ / Rate → </th>
-                {SENSITIVITY_RATES.map(r => <th key={r} className="r">{r}%</th>)}
+                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>USDC ($B) ↓ / Rate → </th>
+                {SENSITIVITY_RATES.map((r, idx) => <th key={r} style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', ...(idx === SENSITIVITY_RATES.length - 1 ? { borderRadius: '0 10px 0 0' } : {}) }}>{r}%</th>)}
               </tr>
             </thead>
             <tbody>
               {SENSITIVITY_USDC.map(usdc => (
                 <tr key={usdc}>
-                  <td style={{ fontWeight: 600 }}>${usdc}B</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 600 }}>${usdc}B</td>
                   {SENSITIVITY_RATES.map(rate => {
                     const val = calcSensitivity(usdc, rate, 13);
                     const isNear = Math.abs(usdc - 73.7) < 15 && Math.abs(rate - 4.0) < 0.5;
                     return (
-                      <td key={rate} className="r" style={isNear ? {
-                        background: 'var(--accent-dim)',
-                        fontWeight: 600,
-                        color: 'var(--accent)'
-                      } : undefined}>
+                      <td key={rate} style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, ...(isNear ? { background: 'var(--accent-dim)', fontWeight: 600, color: 'var(--accent)' } : {}) }}>
                         ${val.toFixed(1)}B
                       </td>
                     );
@@ -7515,22 +7538,22 @@ const CompsTab = () => {
       <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Rule of 40 Analysis</div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Growth Rate + Profit Margin &ge; 40% indicates healthy SaaS/fintech</p>
-        <div className="g4">
-          <div className="big-stat">
-            <div className="num mint">105</div>
-            <div className="lbl">Circle (66% + 39%)</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: 'var(--mint)' }}>105</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Circle (66% + 39%)</div>
           </div>
-          <div className="big-stat">
-            <div className="num">55</div>
-            <div className="lbl">Coinbase (30% + 25%)</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: 'var(--accent)' }}>55</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Coinbase (30% + 25%)</div>
           </div>
-          <div className="big-stat">
-            <div className="num">26</div>
-            <div className="lbl">PayPal (8% + 18%)</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: 'var(--accent)' }}>26</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>PayPal (8% + 18%)</div>
           </div>
-          <div className="big-stat">
-            <div className="num">77</div>
-            <div className="lbl">Visa (10% + 67%)</div>
+          <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: 'var(--accent)' }}>77</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>Visa (10% + 67%)</div>
           </div>
         </div>
       </div>
@@ -7548,33 +7571,36 @@ const CompsTab = () => {
       <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: '12px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 4 }}>Filter:</span>
-          <button
-            onClick={() => setCompetitorFilter('all')}
-            className={`filter-btn ${competitorFilter === 'all' ? 'active' : ''}`}
-          >
-            All ({COMPETITOR_NEWS.length})
-          </button>
+          {(() => { const isActive = competitorFilter === 'all'; return (
+            <button
+              onClick={() => setCompetitorFilter('all')}
+              style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
+            >
+              All ({COMPETITOR_NEWS.length})
+            </button>
+          ); })()}
           {COMPETITOR_PROFILES.map(comp => {
             const count = COMPETITOR_NEWS.filter(n => n.competitor === comp.id).length;
             if (count === 0) return null;
+            const isActive = competitorFilter === comp.id;
             return (
               <button
                 key={comp.id}
                 onClick={() => setCompetitorFilter(comp.id)}
-                className={`filter-btn ${competitorFilter === comp.id ? 'active' : ''}`}
+                style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
               >
                 {comp.name} ({count})
               </button>
             );
           })}
-          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (
+          {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (() => { const isActive = competitorFilter === 'other'; return (
             <button
               onClick={() => setCompetitorFilter('other')}
-              className={`filter-btn ${competitorFilter === 'other' ? 'active' : ''}`}
+              style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
             >
               Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
             </button>
-          )}
+          ); })()}
         </div>
       </div>
 
@@ -7590,20 +7616,18 @@ const CompsTab = () => {
             const oldestDate = section.stories[section.stories.length - 1]?.entries[section.stories[section.stories.length - 1]?.entries.length - 1]?.date || '';
             const newestDate = section.stories[0]?.entries[0]?.date || '';
             return (
-            <details key={section.competitorId} className="comp-panel" open>
-              <summary>
-                <div className="comp-panel-bar">
-                  <div className="comp-panel-info">
-                    <div className="comp-panel-name">{section.name}</div>
-                    <div className="comp-panel-meta">
-                      <span className="comp-panel-count">{totalEntries} {totalEntries === 1 ? 'entry' : 'entries'}</span>
-                      {oldestDate && newestDate && <span className="comp-panel-dates">{newestDate} — {oldestDate}</span>}
+            <div key={section.competitorId} style={{ border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginTop: 16, background: 'var(--surface)' }}>
+              <div onClick={() => togglePanel(section.competitorId)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 20px', cursor: 'pointer', userSelect: 'none' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1 }}>{section.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
+                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{totalEntries} {totalEntries === 1 ? 'entry' : 'entries'}</span>
+                      {oldestDate && newestDate && <span style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.6 }}>{newestDate} — {oldestDate}</span>}
                     </div>
                   </div>
-                  <div className="comp-panel-chevron" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" /></svg></div>
-                </div>
-              </summary>
-              <div className="comp-panel-body">
+                  <div style={{ flexShrink: 0, transition: 'transform 0.25s ease', transform: openPanels.has(section.competitorId) ? 'rotate(180deg)' : 'rotate(0deg)' }} aria-hidden="true"><svg viewBox="0 0 24 24" style={{ width: 16, height: 16, stroke: 'var(--text3)', strokeWidth: 2, fill: 'none' }}><polyline points="6 9 12 15 18 9" /></svg></div>
+              </div>
+              {openPanels.has(section.competitorId) && <div style={{ borderTop: '1px solid var(--border)' }}>
               {section.stories.map((story) => (
             <div key={story.storyId} style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 0, overflow: 'hidden' }}>
               {/* Story Header */}
@@ -7658,7 +7682,7 @@ const CompsTab = () => {
                         }}
                       >
                         {/* Date */}
-                        <span className="t-date" style={{ fontSize: 12 }}>{news.date}</span>
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>{news.date}</span>
 
                         {/* Category */}
                         <span
@@ -7761,8 +7785,8 @@ const CompsTab = () => {
               </div>
             </div>
               ))}
-              </div>
-            </details>
+              </div>}
+            </div>
             );
           })
         )}
