@@ -5964,6 +5964,12 @@ const TimelineTab = () => {
   
   // SEC Filings data - update when new filings are processed
   const secFilings = [
+    { date: 'Feb 11, 2026', type: '8-K', description: 'Preliminary FY 2025 Results + Convertible Notes Offering + Registered Directs', period: '—', color: 'yellow' },
+    { date: 'Feb 11, 2026', type: '424B5', description: 'Registered Direct Offering #1 (1.86M shares @ $96.92)', period: '—', color: 'orange' },
+    { date: 'Feb 11, 2026', type: '424B5', description: 'Registered Direct Offering #2 (4.48M shares @ $96.92)', period: '—', color: 'orange' },
+    { date: 'Jan 30, 2026', type: 'SC 13G', description: 'Vanguard Group 7.68% Ownership (21.5M shares)', period: '—', color: 'green' },
+    { date: 'Jan 26, 2026', type: 'Form 4', description: 'Shanti Gupta (COO) RSU Vesting Tax Withholding Amendment', period: '—', color: 'green' },
+    { date: 'Jan 16, 2026', type: '8-K', description: 'Mikitani Board Resignation (Rakuten Designee)', period: '—', color: 'yellow' },
     { date: 'Dec 24, 2025', type: '8-K', description: 'BlueBird 6 Launch (First Block 2)', period: '—', color: 'yellow' },
     { date: 'Nov 10, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q3 2025', color: 'purple' },
     { date: 'Aug 7, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q2 2025', color: 'purple' },
@@ -5982,7 +5988,7 @@ const TimelineTab = () => {
     cik: '0001780312',
     ticker: 'ASTS',
     exchange: 'NASDAQ',
-    lastPR: { date: 'January 22, 2026', title: 'BlueBird 7 Launch Timing (New Glenn)' }
+    lastPR: { date: 'February 11, 2026', title: '$1B Converts + Registered Directs + Preliminary FY 2025 Results' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {
@@ -5992,13 +5998,16 @@ const TimelineTab = () => {
     'S-1': { bg: 'rgba(168,85,247,0.2)', text: 'var(--violet)' },
     'S-3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
     '424B5': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
+    'SC 13G': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+    'Form 4': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   };
-  
-  const secFilterTypes = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5'];
+
+  const secFilterTypes = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5', 'Other'];
   
   const filteredFilings = secFilings.filter(f => {
     if (secFilter === 'All') return true;
     if (secFilter === 'S-1/S-3') return f.type === 'S-1' || f.type === 'S-3';
+    if (secFilter === 'Other') return !['10-K', '10-Q', '8-K', 'S-1', 'S-3', '424B5'].includes(f.type);
     return f.type === secFilter;
   });
   
@@ -6025,12 +6034,123 @@ const TimelineTab = () => {
   // which is essential for understanding thesis development and management credibility.
   //
   // Data Sources: SEC EDGAR (10-K, 10-Q, 8-K, S-1), Press Releases, Earnings Calls
-  // Last comprehensive PR review: December 2025 (PRs from 2020-2025 added)
+  // Last comprehensive PR review: February 2026 (PRs from 2020-2026 added)
   // ============================================================================
   
   // Timeline log - chronological record of ACTUAL COMPANY changes (not model creation notes)
   // Categories: GUIDANCE (mgmt projections), DATA (SEC filings, actuals), EVENT (catalysts/news), LAUNCH (orbital launches)
   const timelineEvents = [
+    {
+      date: '2026-02-11',
+      category: 'Capital',
+      title: '$1B 2.25% Convertible Notes Due 2036 + Concurrent Registered Direct Offerings',
+      summary: '$1B new converts at 2.25%, two registered directs totaling ~$614M, repurchasing $296.5M of older converts',
+      details: [
+        'New 2.25% Convertible Senior Notes due 2036: $1,000M aggregate principal (Rule 144A)',
+        'Conversion rate: 8.5982 shares per $1,000 (initial conversion price ~$116.30)',
+        '$150M greenshoe option available through Feb 20, 2026',
+        'UBS Securities LLC: joint book-running manager and initial purchaser',
+        'Settlement: Feb 17, 2026. Interest: semi-annually Apr 15 & Oct 15, starting Oct 15, 2026',
+        'Net proceeds: ~$983.7M (base), ~$1,131.4M if greenshoe fully exercised',
+        'Registered Direct #1: 1,862,741 shares at $96.92 (~$180.2M net) → repurchasing $46.5M of 4.25% notes for ~$180.5M',
+        'Registered Direct #2: 4,475,223 shares at $96.92 (~$433.3M net) → repurchasing $250M of 2.375% notes for ~$433.7M',
+        'Both registered directs cross-conditional with respective notes repurchases',
+        'After repurchase: ~$3.5M of 4.25% notes remain (from $50M), $325M of 2.375% notes remain (from $575M)',
+        'July 2025 Capped Calls ($54M cost, $120.12 cap) remain outstanding',
+        'January 2025 Capped Calls fully terminated Nov 4, 2025 (~$74.5M net proceeds)',
+        'Use of proceeds: spectrum deployment, AI/commercial opportunities, government space, debt reduction',
+      ],
+      sources: ['8-K Feb 11, 2026', 'Pricing Term Sheet (Rule 433)', '424(b)(5) Prospectus Supplements'],
+      prevValue: '$50M 4.25% + $575M 2.375% + $1.15B 2.00% outstanding',
+      newValue: '$3.5M 4.25% + $325M 2.375% + $1.15B 2.00% + $1B 2.25%. Total debt: ~$2,968M pro forma',
+      impact: 'Positive',
+    },
+    {
+      date: '2026-02-11',
+      category: 'Earnings',
+      title: 'Preliminary FY 2025 Results (8-K)',
+      summary: 'Revenue $63-71M, cash $2,780M, total debt $2,264M, gross PP&E ~$1.6B',
+      details: [
+        'FY 2025 revenue: approximately $63M to $71M',
+        'FY 2025 operating expenses: approximately $355M to $363M',
+        'SBC + D&A: approximately $98M to $100M',
+        'Adjusted operating expenses (non-GAAP): approximately $257M to $263M',
+        'Total cash, restricted cash: approximately $2,780M as of Dec 31, 2025',
+        'Gross capitalized PP&E: approximately $1.6B',
+        'Accumulated depreciation & amortization: approximately $174M',
+        'Total consolidated indebtedness: approximately $2,264M',
+        'Debt breakdown: $50M 4.25%, $575M 2.375%, $1.15B 2.00% converts, $420M UBS cash-collateralized loan, ~$69M senior secured',
+        'UBS loan: $420M term loan at Backstop Co, LLC (Oct 31, 2025) for Ligado $420M first payment',
+        'Sound Point Credit Facility: $550M non-recourse delayed-draw for Ligado closing',
+        'Oct 2025 ATM Program: ~10.1M shares sold through Feb 10 for ~$706.3M net (~$80M remaining)',
+      ],
+      sources: ['8-K Feb 11, 2026'],
+      prevValue: '$1,220M cash (Q3 2025), $698M debt (Q3 2025)',
+      newValue: '$2,780M cash, $2,264M debt, $63-71M FY rev',
+      impact: 'Positive',
+    },
+    {
+      date: '2026-02-10',
+      category: 'Product',
+      title: 'BlueBird 6 Phased Array Successfully Unfolded',
+      summary: 'Largest commercial LEO array (~2,400 sq ft), up to 120 Mbps, 10x Block 1 capacity',
+      details: [
+        'BB6 phased array antenna successfully unfolded (~2,400 sq ft)',
+        'Largest commercial communications array antenna ever deployed in Low Earth Orbit',
+        'Peak data speeds up to 120 Mbps to standard unmodified smartphones',
+        'Plans to deliver up to 10x bandwidth capacity of BB1-5 series',
+        'Full 4G and 5G cellular broadband: voice, data, and video',
+        'Highly precise beamforming with narrower, more focused coverage areas',
+        'BB6 launched Dec 23, 2025 from Satish Dhawan Space Centre, India',
+        '3,800+ patent and patent-pending claims',
+        'Nearly 500,000 sq ft of facilities, ~1,800 employees, 95% vertically integrated',
+        'On track to launch 45-60 satellites by end of 2026',
+      ],
+      sources: ['Press release Feb 10, 2026'],
+      prevValue: 'BB6 in orbit, array folded',
+      newValue: 'BB6 unfolded: 2,400 sq ft, 120 Mbps, 10x capacity',
+      impact: 'Positive',
+    },
+    {
+      date: '2026-01-30',
+      category: 'Corporate',
+      title: 'Vanguard Group 13G: 7.68% Class A Ownership',
+      summary: 'Vanguard holds 21.49M shares of Class A as of Dec 31, 2025',
+      details: [
+        'Schedule 13G/A (Amendment No. 2) filed Jan 30, 2026',
+        'Aggregate beneficial ownership: 21,488,180 shares of Class A',
+        'Percent of class: 7.68%',
+        'Sole voting power: 0; Shared voting power: 1,832,650 shares',
+        'Sole dispositive power: 0; Shared dispositive power: 21,488,180 shares',
+        'Event date: December 31, 2025',
+        'Vanguard internal realignment Jan 12, 2026: no longer performs portfolio management directly',
+        'Type of reporting person: IA (Investment Adviser)',
+      ],
+      sources: ['Schedule 13G/A filed Jan 30, 2026'],
+      prevValue: 'No major institutional 13G on file',
+      newValue: 'Vanguard 7.68% (21.5M Class A shares)',
+      impact: 'Positive',
+    },
+    {
+      date: '2026-01-13',
+      category: 'Corporate',
+      title: 'Hiroshi Mikitani Resigns from Board (Rakuten Designee)',
+      summary: 'Rakuten diluted below board designation threshold; retains observer rights',
+      details: [
+        'Mikitani resigned from Board effective Jan 13, 2026',
+        'Previously appointed as Rakuten Group designee under Stockholders Agreement',
+        'Due to subsequent Class A issuances, Rakuten no longer holds sufficient % for board designation',
+        'Rakuten retains right to appoint one board observer',
+        'Network Planning & Spectrum Committee member',
+        '"Not a result of any disagreement with the Company" per 8-K',
+        'Board reduced from 12 to 11 directors on Jan 16, 2026',
+        'Signed by Andrew M. Johnson, EVP/CFO/CLO',
+      ],
+      sources: ['8-K filed Feb 11, 2026 (event date Jan 13, 2026)'],
+      prevValue: '12 directors, Mikitani (Rakuten) on board',
+      newValue: '11 directors, Rakuten observer only',
+      impact: 'Neutral',
+    },
     {
       date: '2026-01-22',
       category: 'Guidance',
