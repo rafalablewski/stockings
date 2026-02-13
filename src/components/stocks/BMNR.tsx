@@ -4688,10 +4688,10 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
   // Scenario presets for ETH/mNAV dynamics
   const presets = {
-    bear: { drift: -5, vol: 80, multVol: 30, corr: 0.5, label: '🐻 Bear', desc: 'ETH decline, high volatility, mNAV compression' },
-    base: { drift: 12, vol: 65, multVol: 20, corr: 0.3, label: '📊 Base', desc: 'Moderate ETH growth, historical volatility' },
-    bull: { drift: 30, vol: 55, multVol: 15, corr: 0.2, label: '🐂 Bull', desc: 'Strong ETH rally, lower vol, mNAV expansion' },
-    custom: { drift, vol, multVol, corr, label: '⚙️ Custom', desc: 'Your custom parameters' }
+    bear: { drift: -5, vol: 80, multVol: 30, corr: 0.5, label: '🐻 Bear', color: '#f97316', desc: 'ETH decline, high volatility, mNAV compression' },
+    base: { drift: 12, vol: 65, multVol: 20, corr: 0.3, label: '📊 Base', color: '#eab308', desc: 'Moderate ETH growth, historical volatility' },
+    bull: { drift: 30, vol: 55, multVol: 15, corr: 0.2, label: '🐂 Bull', color: '#06b6d4', desc: 'Strong ETH rally, lower vol, mNAV expansion' },
+    custom: { drift, vol, multVol, corr, label: '⚙️ Custom', color: '#8b5cf6', desc: 'Your custom parameters' }
   };
 
   const loadPreset = (key: string) => {
@@ -4798,29 +4798,32 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       {/* Scenario Presets */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mc-scenarios</div>
-        <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Select Scenario</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-            {Object.entries(presets).map(([key, p]) => (
-              <button
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+          {Object.entries(presets).map(([key, p]) => {
+            const isActive = activePreset === key;
+            return (
+              <div
                 key={key}
                 onClick={() => loadPreset(key)}
                 style={{
-                  padding: '12px 16px',
-                  borderRadius: 8,
-                  textAlign: 'left',
-                  border: `2px solid ${activePreset === key ? 'var(--accent)' : 'transparent'}`,
-                  background: activePreset === key ? 'var(--accent-dim)' : 'var(--surface2)',
-                  color: activePreset === key ? 'var(--accent)' : 'var(--text)',
+                  padding: '16px 8px',
+                  background: isActive ? `${p.color}15` : 'var(--surface)',
                   cursor: 'pointer',
-                  transition: 'all 0.15s'
+                  transition: 'all 0.15s',
+                  textAlign: 'center',
+                  borderBottom: isActive ? `2px solid ${p.color}` : '2px solid transparent',
                 }}
               >
-                <div style={{ fontWeight: 600 }}>{p.label}</div>
-                <div style={{ fontSize: 11, opacity: 0.7 }}>{p.desc}</div>
-              </button>
-            ))}
-          </div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{p.label}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: isActive ? p.color : 'var(--text)', margin: '4px 0 2px' }}>
+                  {p.drift > 0 ? '+' : ''}{p.drift}%
+                </div>
+                <div style={{ fontSize: 10, color: 'var(--text3)' }}>
+                  {p.vol}% vol
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

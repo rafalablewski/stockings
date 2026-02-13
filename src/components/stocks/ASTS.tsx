@@ -4269,27 +4269,27 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
   const presets = {
     bear: { 
       ...scalePreset(anchor.bear),
-      label: '🐻 Bear', color: 'bg-orange-600',
+      label: '🐻 Bear', color: '#f97316',
       desc: `Major delays, 1% penetration. ${hc.label}: $${scalePreset(anchor.bear).baseRev}B revenue.`
     },
     base: { 
       ...scalePreset(anchor.base),
-      label: '📊 Base', color: 'bg-yellow-600',
+      label: '📊 Base', color: '#eab308',
       desc: `Plan execution, 2.5% penetration. ${hc.label}: $${scalePreset(anchor.base).baseRev}B revenue.`
     },
     mgmt: { 
       ...scalePreset(anchor.mgmt),
-      label: '🎯 Mgmt', color: 'bg-purple-600',
+      label: '🎯 Mgmt', color: '#22c55e',
       desc: `Management targets, 3.5% penetration. ${hc.label}: $${scalePreset(anchor.mgmt).baseRev}B revenue.`
     },
     bull: { 
       ...scalePreset(anchor.bull),
-      label: '🐂 Bull', color: 'bg-blue-600',
+      label: '🐂 Bull', color: '#06b6d4',
       desc: `Outperformance, 5% penetration. ${hc.label}: $${scalePreset(anchor.bull).baseRev}B revenue.`
     },
     custom: { 
       baseRev: baseRev, margin: margin, mult: mult, revVol: revVol, launchRisk: launchRisk, regRisk: regRisk, 
-      label: '⚙️ Custom', color: 'bg-slate-600',
+      label: '⚙️ Custom', color: '#8b5cf6',
       desc: 'Your custom parameters. Adjust inputs below to model specific assumptions.'
     },
   };
@@ -4498,29 +4498,32 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Scenario Presets */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mc-scenarios</div>
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '12px 16px', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', borderBottom: '1px solid var(--border)' }}>Select Scenario</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
-            {Object.entries(presets).filter(([key]) => key !== 'mgmt').map(([key, p]) => (
-              <button
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+          {Object.entries(presets).filter(([key]) => key !== 'mgmt').map(([key, p]) => {
+            const isActive = activePreset === key;
+            return (
+              <div
                 key={key}
                 onClick={() => loadPreset(key)}
                 style={{
-                  padding: '12px 16px',
-                  textAlign: 'left',
-                  border: 'none',
-                  borderBottom: activePreset === key ? '2px solid var(--accent)' : '2px solid transparent',
-                  background: activePreset === key ? 'var(--accent-dim)' : 'var(--surface)',
-                  color: activePreset === key ? 'var(--accent)' : 'var(--text)',
+                  padding: '16px 8px',
+                  background: isActive ? `${p.color}15` : 'var(--surface)',
                   cursor: 'pointer',
-                  transition: 'all 0.15s'
+                  transition: 'all 0.15s',
+                  textAlign: 'center',
+                  borderBottom: isActive ? `2px solid ${p.color}` : '2px solid transparent',
                 }}
               >
-                <div style={{ fontWeight: 600 }}>{p.label}</div>
-                <div style={{ fontSize: 11, opacity: 0.7 }}>{p.desc}</div>
-              </button>
-            ))}
-          </div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{p.label}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: isActive ? p.color : 'var(--text)', margin: '4px 0 2px' }}>
+                  ${p.baseRev}B
+                </div>
+                <div style={{ fontSize: 10, color: 'var(--text3)' }}>
+                  {p.margin}% margin
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

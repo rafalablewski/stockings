@@ -2938,10 +2938,10 @@ function CRCLModel() {
   
   // Monte Carlo Scenario Presets
   const mcPresets = {
-    bear: { revMin: 5, revMax: 12, marginMin: 40, marginMax: 55, discMin: 13, discMax: 18, termMin: 8, termMax: 12, label: '🐻 Bear', desc: 'Low growth, margin pressure' },
-    base: { revMin: 8, revMax: 25, marginMin: 50, marginMax: 70, discMin: 10, discMax: 15, termMin: 10, termMax: 18, label: '📊 Base', desc: 'Consensus assumptions' },
-    bull: { revMin: 15, revMax: 35, marginMin: 60, marginMax: 80, discMin: 8, discMax: 12, termMin: 15, termMax: 25, label: '🐂 Bull', desc: 'Stablecoin dominance' },
-    custom: { revMin: mcRevenueGrowthMin, revMax: mcRevenueGrowthMax, marginMin: mcMarginMin, marginMax: mcMarginMax, discMin: mcDiscountMin, discMax: mcDiscountMax, termMin: mcTerminalMultMin, termMax: mcTerminalMultMax, label: '⚙️ Custom', desc: 'Your parameters' }
+    bear: { revMin: 5, revMax: 12, marginMin: 40, marginMax: 55, discMin: 13, discMax: 18, termMin: 8, termMax: 12, label: '🐻 Bear', color: '#f97316', desc: 'Low growth, margin pressure' },
+    base: { revMin: 8, revMax: 25, marginMin: 50, marginMax: 70, discMin: 10, discMax: 15, termMin: 10, termMax: 18, label: '📊 Base', color: '#eab308', desc: 'Consensus assumptions' },
+    bull: { revMin: 15, revMax: 35, marginMin: 60, marginMax: 80, discMin: 8, discMax: 12, termMin: 15, termMax: 25, label: '🐂 Bull', color: '#06b6d4', desc: 'Stablecoin dominance' },
+    custom: { revMin: mcRevenueGrowthMin, revMax: mcRevenueGrowthMax, marginMin: mcMarginMin, marginMax: mcMarginMax, discMin: mcDiscountMin, discMax: mcDiscountMax, termMin: mcTerminalMultMin, termMax: mcTerminalMultMax, label: '⚙️ Custom', color: '#8b5cf6', desc: 'Your parameters' }
   };
   const [mcPreset, setMcPreset] = useState<'bear' | 'base' | 'bull' | 'custom'>('base');
   
@@ -5422,33 +5422,33 @@ function CRCLModel() {
               {/* Scenario Presets */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mc-scenarios</div>
-                <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 24 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Select Scenario</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 10, overflow: 'hidden' }}>
-                    {(['bear', 'base', 'bull', 'custom'] as const).map(key => {
-                      const p = mcPresets[key];
-                      const isActive = mcPreset === key;
-                      return (
-                        <button
-                          key={key}
-                          onClick={() => applyMcPreset(key)}
-                          style={{
-                            padding: '12px 16px',
-                            textAlign: 'left',
-                            border: 'none',
-                            borderBottom: isActive ? '2px solid var(--accent)' : '2px solid transparent',
-                            background: isActive ? 'var(--accent-dim)' : 'var(--surface)',
-                            color: isActive ? 'var(--accent)' : 'var(--text)',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s'
-                          }}
-                        >
-                          <div style={{ fontWeight: 600 }}>{p.label}</div>
-                          <div style={{ fontSize: 11, opacity: 0.7 }}>{p.desc}</div>
-                        </button>
-                      );
-                    })}
-                  </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+                  {(['bear', 'base', 'bull', 'custom'] as const).map(key => {
+                    const p = mcPresets[key];
+                    const isActive = mcPreset === key;
+                    return (
+                      <div
+                        key={key}
+                        onClick={() => applyMcPreset(key)}
+                        style={{
+                          padding: '16px 8px',
+                          background: isActive ? `${p.color}15` : 'var(--surface)',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                          textAlign: 'center',
+                          borderBottom: isActive ? `2px solid ${p.color}` : '2px solid transparent',
+                        }}
+                      >
+                        <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{p.label}</div>
+                        <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: isActive ? p.color : 'var(--text)', margin: '4px 0 2px' }}>
+                          {p.revMin}–{p.revMax}%
+                        </div>
+                        <div style={{ fontSize: 10, color: 'var(--text3)' }}>
+                          rev growth
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
