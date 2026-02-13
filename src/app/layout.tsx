@@ -7,6 +7,12 @@ export const metadata: Metadata = {
   description: "ABISON investment research - comprehensive stock analysis platform",
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 function Navigation() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl">

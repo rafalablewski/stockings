@@ -85,3 +85,46 @@ a, a:visited {
 .stock-model-app .gap-2 { gap: 0.5rem; }
 .stock-model-app .gap-3 { gap: 0.75rem; }
 .stock-model-app .gap-4 { gap: 1rem; }
+
+/* ═══ MOBILE RESPONSIVE OVERRIDES ═══ */
+
+@media (max-width: 768px) {
+  /* Force single-column grids on mobile */
+  .stock-model-app [style*="grid-template-columns: repeat(7"],
+  .stock-model-app [style*="grid-template-columns: repeat(5"],
+  .stock-model-app [style*="grid-template-columns: repeat(4"],
+  .stock-model-app [style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Reduce oversized padding */
+  .stock-model-app [style*="padding: 40px"],
+  .stock-model-app [style*="padding: 48px"] {
+    padding: 16px !important;
+  }
+
+  /* Enforce minimum font size for readability */
+  .stock-model-app button {
+    min-height: 44px;
+    min-width: 44px;
+    font-size: max(12px, inherit) !important;
+  }
+
+  /* Allow horizontal scroll tables to shrink */
+  .stock-model-app [style*="min-width: 700"],
+  .stock-model-app [style*="minWidth: 700"] {
+    min-width: 100% !important;
+  }
+
+  /* Tighten nav padding on mobile */
+  nav .max-w-7xl { padding-left: 1rem; padding-right: 1rem; }
+}
+
+@media (max-width: 480px) {
+  /* Stack all grids to single column on small phones */
+  .stock-model-app [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  nav .max-w-7xl { padding-left: 0.75rem; padding-right: 0.75rem; }
+}

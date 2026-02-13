@@ -13,7 +13,7 @@
 
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 
 export interface SourceGroup {
   category: string;
@@ -49,6 +49,44 @@ interface CardData {
   activeTab: 'pr' | 'news';
   pressReleases: ArticleItem[];
   news: ArticleItem[];
+}
+
+// ── Session cache helpers (10-min TTL) ──────────────────────────────────────
+const CACHE_TTL_MS = 10 * 60 * 1000;
+
+interface CachedFeed {
+  pressReleases: ArticleItem[];
+  news: ArticleItem[];
+  fetchedAt: number; // Date.now()
+}
+
+function getCachedFeed(ticker: string): CachedFeed | null {
+  try {
+    const raw = sessionStorage.getItem(`sources_${ticker}`);
+    if (!raw) return null;
+    const parsed: CachedFeed = JSON.parse(raw);
+    if (Date.now() - parsed.fetchedAt > CACHE_TTL_MS) {
+      sessionStorage.removeItem(`sources_${ticker}`);
+      return null;
+    }
+    return parsed;
+  } catch { return null; }
+}
+
+function setCachedFeed(ticker: string, prs: ArticleItem[], news: ArticleItem[]) {
+  try {
+    const entry: CachedFeed = { pressReleases: prs, news, fetchedAt: Date.now() };
+    sessionStorage.setItem(`sources_${ticker}`, JSON.stringify(entry));
+  } catch { /* quota exceeded — ignore */ }
+}
+
+function formatTimeAgo(ts: number): string {
+  const seconds = Math.floor((Date.now() - ts) / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  return `${hours}h ago`;
 }
 
 // ── Status dot ──────────────────────────────────────────────────────────────
@@ -198,9 +236,10 @@ const CompanyFeedCard: React.FC<{
   showAnalysis?: boolean;
   aiChecking?: boolean;
   isPrimary?: boolean;
+  fetchedAt?: number | null;
   onLoad: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, onLoad }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, onLoad }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -283,6 +322,12 @@ const CompanyFeedCard: React.FC<{
               </span>
             </div>
           )}
+          {/* Freshness indicator */}
+          {data.loaded && !isActive && fetchedAt && (
+            <span style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.6, fontFamily: 'Space Mono, monospace', marginLeft: 4 }}>
+              {formatTimeAgo(fetchedAt)}
+            </span>
+          )}
         </div>
         <button
           ref={buttonRef}
@@ -330,10 +375,13 @@ const CompanyFeedCard: React.FC<{
 
         {!data.loaded && !data.loading && !data.error && (
           <div style={{
-            fontSize: 13, color: 'var(--text3)', lineHeight: 1.6,
-            padding: '4px 0 4px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+            padding: '20px 0', color: 'var(--text3)',
           }}>
-            Press <strong style={{ color: 'var(--text2)', fontWeight: 500 }}>Load</strong> to fetch latest wire releases and news coverage.
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
+              <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+            <span style={{ fontSize: 12 }}>Loading feeds...</span>
           </div>
         )}
 
@@ -381,6 +429,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [compCards, setCompCards] = useState<Record<string, CardData>>({});
   const [compAiChecking, setCompAiChecking] = useState<Record<string, boolean>>({});
   const [loadingAll, setLoadingAll] = useState(false);
+  const [lastFetchedAt, setLastFetchedAt] = useState<number | null>(null);
 
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
@@ -409,14 +458,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       fetch(`/api/press-releases/${ticker}`).then(async res => {
         if (!res.ok) throw new Error('Failed');
         const d = await res.json();
-        return (d.releases || []).slice(0, 5).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
+        return (d.releases || []).slice(0, 10).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
           headline: r.headline, date: r.date, url: r.url, source: r.source, items: r.items, analyzed: null as boolean | null,
         }));
       }),
       fetch(`/api/news/${ticker}`).then(async res => {
         if (!res.ok) throw new Error('Failed');
         const d = await res.json();
-        return (d.articles || []).slice(0, 5).map((a: { title: string; date: string; url: string; source: string }) => ({
+        return (d.articles || []).slice(0, 10).map((a: { title: string; date: string; url: string; source: string }) => ({
           headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null,
         }));
       }),
@@ -427,6 +476,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     const error = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
 
     setMainCard(prev => ({ ...prev, loading: false, loaded: true, error, pressReleases: prs, news }));
+    const now = Date.now();
+    setLastFetchedAt(now);
+    setCachedFeed(ticker, prs, news);
 
     const all = [...prs, ...news];
     if (all.length > 0) {
@@ -468,6 +520,21 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     await Promise.allSettled(promises);
     setLoadingAll(false);
   }, [mainCard.loaded, mainCard.loading, loadMainCard, competitors, loadCompetitor]);
+
+  // Auto-load on mount: use sessionStorage cache if fresh, otherwise fetch
+  useEffect(() => {
+    const cached = getCachedFeed(ticker);
+    if (cached) {
+      setMainCard(prev => ({
+        ...prev, loaded: true, loading: false,
+        pressReleases: cached.pressReleases, news: cached.news,
+      }));
+      setLastFetchedAt(cached.fetchedAt);
+    } else {
+      loadMainCard();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticker]);
 
   const setCompTab = (name: string, tab: 'pr' | 'news') => {
     setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { loading: false, loaded: false, error: null, pressReleases: [], news: [] }), activeTab: tab } }));
@@ -568,6 +635,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           showAnalysis
           aiChecking={aiChecking}
           isPrimary
+          fetchedAt={lastFetchedAt}
           onLoad={loadMainCard}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
         />
