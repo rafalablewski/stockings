@@ -687,7 +687,7 @@ const IndicatorToggle = ({
     aria-pressed={active}
     aria-label={`${label} indicator ${active ? 'enabled' : 'disabled'}`}
     style={{
-      padding: '5px 10px',
+      padding: '4px 12px',
       fontSize: 10,
       fontWeight: active ? 600 : 400,
       letterSpacing: '0.3px',
@@ -1097,12 +1097,12 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
   return (
     <>
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', paddingBottom: 16 }}>
       {/* Header - responsive stacking */}
-      <div style={{ marginBottom: 12 }}>
+      <div style={{ marginBottom: 12, padding: '0 24px' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
           <div style={{ minWidth: 200 }}>
-            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{symbol}</span></div>
+            <div style={{ padding: '24px 0', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{symbol}</span></div>
             {data && (
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 24, fontWeight: 600, fontFamily: 'Space Mono' }}>
@@ -1202,7 +1202,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
             disabled={loading}
             aria-label="Refresh chart data"
             style={{
-              padding: '6px 10px',
+              padding: '8px 12px',
               fontSize: 12,
               fontWeight: 400,
               borderRadius: 6,
@@ -1223,7 +1223,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       </div>
 
       {/* Indicator Controls */}
-      <div style={{ borderTop: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', paddingTop: 6 }}>
+      <div style={{ borderTop: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', paddingTop: 6, padding: '6px 28px 0' }}>
         {/* Indicators Section */}
         <ToggleSection
           label="Indicators"
@@ -1843,8 +1843,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       {/* Range High/Low */}
       {!loading && !error && chartData.length > 0 && rangeHigh && rangeLow && (
         <div style={{
-          marginTop: 12,
-          padding: '10px 14px',
+          margin: '12px 28px 0',
+          padding: '12px 16px',
           background: 'var(--surface2)',
           borderRadius: 8,
           fontSize: 11,
@@ -1879,16 +1879,16 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       {/* Risk Metrics Panel */}
       {!loading && !error && chartData.length > 0 && showRiskMetrics && (
         <div style={{
-          marginTop: 12,
+          margin: '12px 28px 0',
           padding: '12px 14px',
           background: 'var(--surface2)',
           borderRadius: 8,
           fontSize: 11,
         }}>
-          <div style={{ color: 'var(--text)', marginBottom: 10, fontWeight: 600 }}>Risk & Performance Metrics</div>
+          <div style={{ color: 'var(--text)', marginBottom: 12, fontWeight: 600 }}>Risk & Performance Metrics</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
             {/* Sharpe Ratio */}
-            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
               <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Sharpe Ratio (Ann.)</div>
               <div style={{ color: sharpeRatio !== null && sharpeRatio > 1 ? '#22c55e' : sharpeRatio !== null && sharpeRatio < 0 ? '#ef4444' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
                 {sharpeRatio !== null ? sharpeRatio.toFixed(2) : '—'}
@@ -1896,7 +1896,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
               <div style={{ color: 'var(--text3)', fontSize: 9 }}>{sharpeRatio !== null && sharpeRatio > 1 ? 'Good' : sharpeRatio !== null && sharpeRatio > 0 ? 'Moderate' : sharpeRatio !== null ? 'Negative' : ''}</div>
             </div>
             {/* Sortino Ratio */}
-            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
               <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Sortino Ratio (Ann.)</div>
               <div style={{ color: sortinoRatio !== null && sortinoRatio > 1.5 ? '#22c55e' : sortinoRatio !== null && sortinoRatio < 0 ? '#ef4444' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
                 {sortinoRatio !== null ? sortinoRatio.toFixed(2) : '—'}
@@ -1904,7 +1904,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
               <div style={{ color: 'var(--text3)', fontSize: 9 }}>Downside risk-adjusted</div>
             </div>
             {/* Max Drawdown */}
-            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
               <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Max Drawdown</div>
               <div style={{ color: '#ef4444', fontWeight: 600, fontSize: 14 }}>
                 {maxDrawdown ? `-${(maxDrawdown.maxDrawdown * 100).toFixed(1)}%` : '—'}
@@ -1914,7 +1914,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
               </div>
             </div>
             {/* VaR */}
-            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
               <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Value at Risk (95%)</div>
               <div style={{ color: '#ef4444', fontWeight: 600, fontSize: 14 }}>
                 {valueAtRisk !== null ? `${valueAtRisk.toFixed(2)}%` : '—'}
@@ -1922,7 +1922,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
               <div style={{ color: 'var(--text3)', fontSize: 9 }}>Daily worst case</div>
             </div>
             {/* Beta */}
-            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
               <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Beta vs SPY</div>
               <div style={{ color: betaVsSPY !== null && Math.abs(betaVsSPY) > 1.5 ? '#f59e0b' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
                 {betaVsSPY !== null ? betaVsSPY.toFixed(2) : '—'}
@@ -1932,7 +1932,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
               </div>
             </div>
             {/* Rolling Volatility */}
-            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 6 }}>
+            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
               <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Volatility (Ann.)</div>
               <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>
                 {volatility30d[volatility30d.length - 1] !== null ? `${volatility30d[volatility30d.length - 1]!.toFixed(1)}%` : '—'}
@@ -1946,13 +1946,13 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       {/* Correlation Matrix */}
       {!loading && !error && chartData.length > 0 && showCorrelation && (
         <div style={{
-          marginTop: 12,
+          margin: '12px 28px 0',
           padding: '12px 14px',
           background: 'var(--surface2)',
           borderRadius: 8,
           fontSize: 11,
         }}>
-          <div style={{ color: 'var(--text)', marginBottom: 10, fontWeight: 600 }}>Correlation Matrix</div>
+          <div style={{ color: 'var(--text)', marginBottom: 12, fontWeight: 600 }}>Correlation Matrix</div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             {correlations.spy !== null && (
               <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
@@ -2012,13 +2012,13 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       {/* Volume Profile */}
       {!loading && !error && chartData.length > 0 && showVolumeProfile && volumeProfile.length > 0 && (
         <div style={{
-          marginTop: 12,
+          margin: '12px 28px 0',
           padding: '12px 14px',
           background: 'var(--surface2)',
           borderRadius: 8,
           fontSize: 11,
         }}>
-          <div style={{ color: 'var(--text)', marginBottom: 10, fontWeight: 600 }}>Volume Profile (Top Price Levels)</div>
+          <div style={{ color: 'var(--text)', marginBottom: 12, fontWeight: 600 }}>Volume Profile (Top Price Levels)</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {volumeProfile.slice(0, 5).map((level, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -2049,14 +2049,14 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
           <div
             onClick={() => setShowChartGuide(!showChartGuide)}
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
             role="button"
             tabIndex={0}
             aria-expanded={showChartGuide}
             aria-label="Toggle Chart Guide"
             onKeyDown={(e) => e.key === 'Enter' && setShowChartGuide(!showChartGuide)}
           >
-            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Chart Guide</span></div>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Chart Guide</span>
             <span style={{ color: 'var(--text3)', fontSize: 18 }}>{showChartGuide ? '−' : '+'}</span>
           </div>
           {showChartGuide && (
@@ -2064,6 +2064,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
               gap: 32,
+              padding: '24px 24px',
               fontSize: 11,
               lineHeight: 1.8,
               color: 'var(--text3)',
@@ -2086,7 +2087,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                 }}>
                   Indicators
                 </div>
-                <div style={{ display: 'grid', gap: 20 }}>
+                <div style={{ display: 'grid', gap: 24 }}>
 
                   {/* SMA 20/50/200 */}
                   <div>
@@ -2281,7 +2282,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                 }}>
                   Compare
                 </div>
-                <div style={{ display: 'grid', gap: 20 }}>
+                <div style={{ display: 'grid', gap: 24 }}>
                   <div style={{ color: 'var(--text3)', marginBottom: 4 }}>
                     <strong>Relative performance analysis</strong> overlays benchmark returns (normalized to 0% at period start) against the stock. This reveals alpha generation, correlation patterns, and relative strength regimes. Outperformance vs. relevant benchmark is the fundamental measure of active management value.
                   </div>
@@ -2354,7 +2355,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                 }}>
                   Professional Tools
                 </div>
-                <div style={{ display: 'grid', gap: 20 }}>
+                <div style={{ display: 'grid', gap: 24 }}>
 
                   <div>
                     <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>

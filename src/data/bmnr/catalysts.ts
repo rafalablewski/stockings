@@ -30,8 +30,8 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-10',
-  source: 'Press releases, 8-K filings, Kraken blog',
+  lastUpdated: '2026-02-12',
+  source: 'Press releases, 8-K filings, Kraken blog, CoinDesk',
   nextExpectedUpdate: 'After next 8-K or earnings release',
   notes: 'Includes ETH ecosystem catalysts relevant to BMNR treasury thesis',
 };
@@ -149,6 +149,12 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
  */
 export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   // === 2026 ===
+  { event: 'Tom Lee presented at CoinDesk Consensus 2026 in Hong Kong; 8-K filed with presentation as Exhibit 99.1', date: 'Feb 11, 2026', category: 'Corporate' },
+  { event: 'Polygon Labs, Ethena ($10B TVL USDe), and Nethermind join Enterprise Ethereum Alliance as institutional coordination body', date: 'Feb 11, 2026', category: 'Ecosystem' },
+  { event: 'Beast Industries (MrBeast) acquires Step banking app (7M+ users, ~$500M raised); BMNR $200M investment now includes fintech platform', date: 'Feb 10, 2026', category: 'Corporate' },
+  { event: 'ETHZilla launches Eurus Aero Token I: first tokenized aviation assets ($12.2M jet engines) on Ethereum L2 via ERC-20 tokens', date: 'Feb 12, 2026', category: 'Ecosystem' },
+  { event: 'S-8 filed for 2025 Omnibus Incentive Plan; signed by full board including Chi Tsang, Young Kim, Tom Lee', date: 'Feb 9, 2026', category: 'Corporate' },
+  { event: 'Erik Nelson terminated as President without cause (effective Jan 22); $605K total severance ($20K + $585K lump sum); non-compete waived', date: 'Jan 28, 2026', category: 'Corporate' },
   { event: 'HTX launched USDe minting and redemption service; USDe is backed by BTC and ETH via delta-neutral hedging strategy by Ethena Labs', date: 'Feb 9, 2026', category: 'Ecosystem' },
   { event: 'Arowana gold tokenization platform launching on Arbitrum (Ethereum L2) in March 2026; backed by Hancom Group ($600M gold trading volume)', date: 'Feb 9, 2026', category: 'Ecosystem' },
   { event: 'Sushi DEX launches on Solana with Jupiter Ultra API integration; extends multi-chain trading to 4M+ users', date: 'Feb 9, 2026', category: 'Ecosystem' },

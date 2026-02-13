@@ -6,6 +6,7 @@ type RouteParams = Promise<{ symbol: string }>;
 // IR page URLs per ticker (direct press release pages)
 const IR_URLS: Record<string, string> = {
   ASTS: 'https://investors.ast-science.com/press-releases',
+  BMNR: 'https://www.bitminetech.io/investor-relations',
   CRCL: 'https://investors.circle.com/press-releases',
 };
 
@@ -14,6 +15,7 @@ const WIRE_SERVICES = [
   'prnewswire.com',
   'businesswire.com',
   'globenewswire.com',
+  'accessnewswire.com',
 ];
 
 function decodeHTMLEntities(text: string): string {
@@ -249,8 +251,8 @@ export async function GET(
     // Sort by date descending (newest first)
     unique.sort((a, b) => b.date.localeCompare(a.date));
 
-    // Return top 5
-    const releases = unique.slice(0, 5).map(a => ({
+    // Return top 10
+    const releases = unique.slice(0, 10).map(a => ({
       date: a.date,
       headline: a.title,
       url: a.url,

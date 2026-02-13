@@ -67,7 +67,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 /* Hero Header */
 .hero {
   position: relative;
-  padding: 48px 64px 40px;
+  padding: 48px 64px 48px;
   background: linear-gradient(180deg, #0D1117 0%, var(--bg) 100%);
   border-bottom: 1px solid var(--border);
   overflow: hidden;
@@ -366,7 +366,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 28px;
+  padding: 24px;
   margin-bottom: 0;
 }
 
@@ -390,7 +390,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 100%);
   border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
   border-radius: 16px;
-  padding: 28px;
+  padding: 24px;
   margin-bottom: 0;
 }
 
@@ -409,7 +409,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 
 /* Thesis Cards */
 .thesis {
-  padding: 28px;
+  padding: 24px;
   border-radius: 16px;
 }
 
@@ -645,7 +645,7 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: flex-end;
   gap: 2px;
   height: 280px;
-  padding: 20px 0;
+  padding: 24px 0;
 }
 
 .mc-bar {
@@ -858,7 +858,7 @@ input[type="range"]::-webkit-slider-thumb {
   /* Cards - Clean mobile design */
   .card {
     padding: 16px;
-    border-radius: 14px;
+    border-radius: 16px;
     margin-bottom: 0;
   }
   .card-title {
@@ -870,7 +870,7 @@ input[type="range"]::-webkit-slider-thumb {
   /* Highlight boxes */
   .highlight {
     padding: 16px;
-    border-radius: 14px;
+    border-radius: 16px;
     margin-bottom: 0;
   }
   .highlight h3 {
@@ -907,7 +907,7 @@ input[type="range"]::-webkit-slider-thumb {
   /* Thesis Cards */
   .thesis {
     padding: 16px;
-    border-radius: 14px;
+    border-radius: 16px;
   }
   .thesis h4 {
     font-size: 15px;
@@ -923,8 +923,8 @@ input[type="range"]::-webkit-slider-thumb {
 
   /* Big Stats */
   .big-stat {
-    padding: 20px;
-    border-radius: 14px;
+    padding: 16px;
+    border-radius: 16px;
   }
   .big-stat .num {
     font-size: 28px;
@@ -986,7 +986,7 @@ input[type="range"]::-webkit-slider-thumb {
   /* Input rows */
   .input-row {
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
   .input-row label {
     font-size: 13px;
@@ -1018,8 +1018,8 @@ input[type="range"]::-webkit-slider-thumb {
 
   /* Stats Row */
   .stats-row {
-    padding: 14px 12px;
-    gap: 20px;
+    padding: 16px 12px;
+    gap: 16px;
   }
   .stat-item .val {
     font-size: 18px;
@@ -1055,7 +1055,7 @@ input[type="range"]::-webkit-slider-thumb {
 
   /* Cards */
   .card, .highlight {
-    padding: 14px;
+    padding: 16px;
     border-radius: 12px;
   }
   .card-title {
@@ -1079,7 +1079,7 @@ input[type="range"]::-webkit-slider-thumb {
   }
 
   /* Grids */
-  .g2, .g3, .g4, .g5 { gap: 10px; }
+  .g2, .g3, .g4, .g5 { gap: 12px; }
 
   /* Big Stats */
   .big-stat .num {
@@ -1091,7 +1091,7 @@ input[type="range"]::-webkit-slider-thumb {
 
   /* Thesis */
   .thesis {
-    padding: 14px;
+    padding: 16px;
   }
   .thesis h4 {
     font-size: 14px;
@@ -1109,18 +1109,18 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* ═══ RESPONSIVE - EXTRA SMALL (360px) ═══ */
 @media (max-width: 360px) {
-  .hero { padding: 12px 10px; }
+  .hero { padding: 12px 12px; }
   .price-big { font-size: 32px; }
   .brand-block h1 { font-size: 20px; }
   .brand-block .desc { font-size: 12px; }
 
-  .stats-row { padding: 12px 10px; gap: 16px; }
+  .stats-row { padding: 12px 12px; gap: 16px; }
   .stat-item .val { font-size: 16px; }
 
-  .nav { padding: 8px 10px; }
-  .nav-btn { padding: 6px 10px; font-size: 11px; }
+  .nav { padding: 8px 12px; }
+  .nav-btn { padding: 6px 12px; font-size: 11px; }
 
-  .main { padding: 14px 10px; }
+  .main { padding: 16px 12px; }
   .card, .highlight { padding: 12px; }
   .section-head { font-size: 18px; }
 
@@ -1190,7 +1190,7 @@ input[type="range"]::-webkit-slider-thumb {
   display: grid;
   grid-template-columns: 100px 100px 1fr auto auto;
   gap: 16px;
-  padding: 18px 20px;
+  padding: 16px 24px;
   cursor: pointer;
   align-items: center;
   transition: background 0.2s;
@@ -1265,7 +1265,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .timeline-item.expanded .timeline-details {
   max-height: 2000px;
-  padding: 20px;
+  padding: 24px;
 }
 .t-details-content {
   display: grid;
@@ -1403,8 +1403,8 @@ input[type="range"]::-webkit-slider-thumb {
 .update-legend {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 10px 16px;
+  gap: 24px;
+  padding: 12px 16px;
   background: rgba(255,255,255,0.02);
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 8px;
@@ -1444,7 +1444,7 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 20px;
+  padding: 24px;
   transition: border-color 0.2s;
   border-left: 4px solid var(--surface3);
 }
@@ -1517,11 +1517,11 @@ input[type="range"]::-webkit-slider-thumb {
 .comp-card-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 6px;
-  padding: 10px;
+  gap: 8px;
+  padding: 12px;
   background: var(--surface2);
   border-radius: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .comp-card-metric {
   text-align: center;
@@ -1634,7 +1634,7 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 20px;
+  padding: 16px 24px;
 }
 
 .comp-panel-info { flex: 1; min-width: 0; }
@@ -1647,7 +1647,7 @@ input[type="range"]::-webkit-slider-thumb {
 .comp-panel-meta {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-top: 4px;
 }
 .comp-panel-count {

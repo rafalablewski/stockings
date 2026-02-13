@@ -116,10 +116,10 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
       {/* Consensus Snapshot */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-consensus</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Consensus Snapshot<UpdateIndicators sources="WS" /></span>
         </div>
-        <div style={{ padding: '24px 28px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <div style={{ padding: '24px 24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           {/* Price Target Summary */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
@@ -173,15 +173,15 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
       {/* Coverage by Firm - Grouped Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-coverage</div>
-      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Coverage by Firm</span>
         <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>{totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''} Covering<UpdateIndicators sources="WS" /></span>
         </div>
-        <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ padding: '24px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {coverage.map((cov) => {
             const isExpanded = expandedFirm === cov.firm;
             const fullReportCount = cov.reports.filter(r => r.isFullReport).length;
@@ -201,7 +201,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                 <div
                   onClick={() => setExpandedFirm(isExpanded ? null : cov.firm)}
                   style={{
-                    padding: '20px 28px',
+                    padding: '24px 24px',
                     borderBottom: isExpanded ? '1px solid var(--border)' : 'none',
                     cursor: 'pointer',
                     display: 'flex',
@@ -257,8 +257,8 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
                 {/* Metrics Grid Summary */}
                 {!isExpanded && (
-                  <div style={{ padding: '0 28px 16px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 6, padding: 10, background: 'var(--surface2)', borderRadius: 10 }}>
+                  <div style={{ padding: '0 24px 16px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10 }}>
                       <div style={{ textAlign: 'center', padding: '4px 0' }}>
                         <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{cov.currentPT ? `$${cov.currentPT}` : '\u2014'}</div>
                         <div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Price Target</div>
@@ -281,7 +281,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
                 {/* Firm Notes */}
                 {cov.notes && (
-                  <div style={{ padding: '0 28px 16px' }}>
+                  <div style={{ padding: '0 24px 16px' }}>
                     <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
                       {cov.notes}
                     </div>
@@ -290,7 +290,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
                 {/* Expanded History */}
                 {isExpanded && (
-                  <div style={{ padding: '24px 28px', background: 'var(--surface)' }}>
+                  <div style={{ padding: '24px 24px', background: 'var(--surface)' }}>
                     <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 12 }}>
                       COVERAGE HISTORY ({cov.reports.length} entr{cov.reports.length !== 1 ? 'ies' : 'y'})
                     </div>
@@ -454,19 +454,19 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                         <div style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
                                           <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 80px)', borderBottom: '1px solid var(--border)' }}>
                                             {['Metric', 'FY24', 'FY25', 'FY26', 'FY27', 'FY28'].map(h => (
-                                              <span key={h} style={{ padding: '10px 12px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: h === 'Metric' ? 'left' : 'right' }}>{h}</span>
+                                              <span key={h} style={{ padding: '12px 12px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: h === 'Metric' ? 'left' : 'right' }}>{h}</span>
                                             ))}
                                           </div>
                                           {report.estimates.map((e, i) => (
                                             <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 80px)', borderBottom: i < report.estimates.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
                                               onMouseEnter={ev => (ev.currentTarget.style.background = 'var(--surface2)')}
                                               onMouseLeave={ev => (ev.currentTarget.style.background = 'transparent')}>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, color: 'var(--text)' }}>{e.metric}</span>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy24 || '—'}</span>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy25 || '—'}</span>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy26 || '—'}</span>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy27 || '—'}</span>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy28 || '—'}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, color: 'var(--text)' }}>{e.metric}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy24 || '—'}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy25 || '—'}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy26 || '—'}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy27 || '—'}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy28 || '—'}</span>
                                             </div>
                                           ))}
                                         </div>

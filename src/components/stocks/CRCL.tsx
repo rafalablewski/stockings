@@ -131,6 +131,9 @@ import {
   SEC_FILINGS,
   TIMELINE,
 } from '@/data/crcl';
+import { CRCL_COMPETITOR_NEWS, CRCL_COMPETITOR_PROFILES, type CRCLCompetitorNewsEntry, type CRCLCompetitorId, type CRCLCompetitorNewsCategory, type CRCLImplication, type CRCLCompetitorProfile } from '@/data/crcl/competitor-news';
+import { CRCL_ANALYST_COVERAGE } from '@/data/crcl/analyst-coverage';
+import { CRCL_RESEARCH_SOURCES } from '@/data/crcl/research-sources';
 
 // ============================================================================
 // CRCL - Circle Internet Group Financial Model
@@ -203,37 +206,7 @@ interface PanelProps {
 // COMPETITOR INTELLIGENCE TYPES (CRCL-specific)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-/** Competitor identifiers for CRCL competitive landscape */
-type CRCLCompetitorId = 'kraken' | 'tether' | 'coinbase' | 'paypal' | 'fdusd' | 'other';
-
-/** News category types for stablecoin/payments competitors */
-type CRCLCompetitorNewsCategory = 'Partnership' | 'Product' | 'Regulatory' | 'Technology' | 'Financial' | 'Strategy' | 'Distribution';
-
-/** Implication for CRCL competitive position */
-type CRCLImplication = 'positive' | 'neutral' | 'negative';
-
-/** Individual competitor news entry */
-interface CRCLCompetitorNewsEntry {
-  date: string;
-  competitor: CRCLCompetitorId;
-  category: CRCLCompetitorNewsCategory;
-  headline: string;
-  details: string[];
-  implication: CRCLImplication;
-  crclComparison?: string;
-  source?: string;
-  sourceUrl?: string;
-  storyId?: string;
-  storyTitle?: string;
-}
-
-/** Competitor profile */
-interface CRCLCompetitorProfile {
-  id: CRCLCompetitorId;
-  name: string;
-  description: string;
-  currentStatus: string;
-}
+// Types imported from '@/data/crcl/competitor-news': CRCLCompetitorId, CRCLCompetitorNewsCategory, CRCLImplication, CRCLCompetitorNewsEntry, CRCLCompetitorProfile
 
 interface GuideProps {
   title: string;
@@ -324,12 +297,12 @@ class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, ErrorBou
     if (this.state.hasError) {
       return (
         <div style={{
-          padding: '40px',
+          padding: '48px',
           background: 'linear-gradient(135deg, color-mix(in srgb, var(--coral) 10%, transparent) 0%, color-mix(in srgb, var(--coral) 5%, transparent) 100%)',
           border: '1px solid color-mix(in srgb, var(--coral) 30%, transparent)',
           borderRadius: '16px',
           textAlign: 'center',
-          margin: '20px'
+          margin: '24px'
         }}>
           <div style={{ fontSize: '48px' }}>⚠️</div>
           <h2 style={{ color: '#FF7B72', fontFamily: 'Outfit, sans-serif' }}>
@@ -734,72 +707,7 @@ const crclCompetitors: Competitor[] = [
   { name: 'Ripple RLUSD', url: 'https://ripple.com' },
 ];
 
-const crclResearchSources: SourceGroup[] = [
-  { category: 'Company / IR', sources: [
-    { name: 'Circle — Official Website', url: 'https://circle.com' },
-    { name: 'Circle — Blog & Announcements', url: 'https://www.circle.com/blog' },
-    { name: 'Circle — Press Releases', url: 'https://www.circle.com/pressroom' },
-    { name: 'Circle — USDC Transparency', url: 'https://www.circle.com/usdc' },
-    { name: 'Circle — Developer Docs', url: 'https://developers.circle.com' },
-    { name: 'SEC EDGAR — Circle Internet Group (CRCL)', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=circle+internet&CIK=&type=&dateb=&owner=include&count=40&search_text=&action=getcompany' },
-  ]},
-  { category: 'Stablecoin Competitors', sources: [
-    { name: 'Tether — Transparency Reports', url: 'https://tether.to/en/transparency/' },
-    { name: 'PayPal — PYUSD', url: 'https://www.paypal.com/pyusd' },
-    { name: 'Paxos — USDP / BUSD', url: 'https://paxos.com' },
-    { name: 'MakerDAO — DAI', url: 'https://makerdao.com' },
-    { name: 'Ripple — RLUSD', url: 'https://ripple.com' },
-    { name: 'DefiLlama — Stablecoins Dashboard', url: 'https://defillama.com/stablecoins' },
-  ]},
-  { category: 'TradFi / Institutional Partners', sources: [
-    { name: 'BlackRock — Digital Assets', url: 'https://www.blackrock.com/us/individual/investment-ideas/digital-assets' },
-    { name: 'Coinbase — Institutional', url: 'https://www.coinbase.com/institutional' },
-    { name: 'Binance — Research', url: 'https://www.binance.com/en/research' },
-    { name: 'ICE / NYSE — Newsroom', url: 'https://ir.theice.com/press/news-details' },
-    { name: 'Visa — Crypto Solutions', url: 'https://usa.visa.com/solutions/crypto.html' },
-    { name: 'Fidelity Digital Assets', url: 'https://www.fidelitydigitalassets.com' },
-  ]},
-  { category: 'Blockchain / Protocol', sources: [
-    { name: 'Ethereum Foundation — Blog', url: 'https://blog.ethereum.org' },
-    { name: 'Solana Foundation', url: 'https://solana.com' },
-    { name: 'Avalanche', url: 'https://www.avax.network' },
-    { name: 'Etherscan — USDC Contract', url: 'https://etherscan.io/token/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' },
-    { name: 'CoinGecko — USDC', url: 'https://www.coingecko.com/en/coins/usd-coin' },
-    { name: 'CoinMarketCap — USDC', url: 'https://coinmarketcap.com/currencies/usd-coin/' },
-  ]},
-  { category: 'Regulatory', sources: [
-    { name: 'SEC — EDGAR Full-Text Search', url: 'https://efts.sec.gov/LATEST/search-index?q=%22circle%22&dateRange=custom&startdt=2024-01-01' },
-    { name: 'OCC — News Releases', url: 'https://www.occ.gov/news-issuances/news-releases/index-news-releases.html' },
-    { name: 'U.S. Senate Banking Committee', url: 'https://www.banking.senate.gov' },
-    { name: 'CFTC — Newsroom', url: 'https://www.cftc.gov/PressRoom/PressReleases' },
-    { name: 'FCA (UK) — Register', url: 'https://register.fca.org.uk' },
-    { name: 'ESMA — MiCA', url: 'https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica' },
-    { name: 'Japan FSA', url: 'https://www.fsa.go.jp/en/' },
-  ]},
-  { category: 'Crypto News / Data', sources: [
-    { name: 'CoinDesk', url: 'https://www.coindesk.com' },
-    { name: 'The Block', url: 'https://www.theblock.co' },
-    { name: 'Decrypt', url: 'https://decrypt.co' },
-    { name: 'Blockworks', url: 'https://blockworks.co' },
-    { name: 'DL News', url: 'https://www.dlnews.com' },
-    { name: 'Messari', url: 'https://messari.io' },
-    { name: 'rwa.xyz — Tokenized Assets', url: 'https://www.rwa.xyz' },
-  ]},
-  { category: 'Financial / Analyst', sources: [
-    { name: 'TipRanks — CRCL', url: 'https://www.tipranks.com/stocks/crcl' },
-    { name: 'Seeking Alpha — CRCL', url: 'https://seekingalpha.com/symbol/CRCL' },
-    { name: 'Yahoo Finance — CRCL', url: 'https://finance.yahoo.com/quote/CRCL' },
-    { name: 'MarketWatch — CRCL', url: 'https://www.marketwatch.com/investing/stock/crcl' },
-    { name: 'Finviz — CRCL', url: 'https://finviz.com/quote.ashx?t=CRCL' },
-  ]},
-  { category: 'Press / News Wires', sources: [
-    { name: 'PR Newswire', url: 'https://www.prnewswire.com' },
-    { name: 'GlobeNewsWire', url: 'https://www.globenewswire.com' },
-    { name: 'Business Wire', url: 'https://www.businesswire.com' },
-    { name: 'Reuters', url: 'https://www.reuters.com' },
-    { name: 'Bloomberg', url: 'https://www.bloomberg.com' },
-  ]},
-];
+const crclResearchSources = CRCL_RESEARCH_SOURCES;
 
 // CSS is now imported from shared styles (Golden Standard: ASTS)
 // To modify styles, edit: ./stock-model-styles.ts
@@ -849,7 +757,7 @@ const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) 
       background: c.bg,
       border: `1px solid ${c.border}`,
       borderRadius: '16px',
-      padding: '20px',
+      padding: '24px',
       backdropFilter: 'blur(8px)'
     }}>
       <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
@@ -864,7 +772,7 @@ const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) 
 Card.displayName = 'Card';
 
 const Panel = React.memo<PanelProps>(({ title, children }) => (
-  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
+  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '24px 24px', marginBottom: 12 }}>
     {title && <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>}
     {children}
   </div>
@@ -887,7 +795,7 @@ const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, m
         background: 'var(--surface2)',
         border: '1px solid var(--border)',
         borderRadius: '8px',
-        padding: '10px 14px',
+        padding: '12px 16px',
         fontSize: '14px',
         fontFamily: "'Space Mono', monospace",
         color: 'var(--text)',
@@ -952,7 +860,7 @@ const UpdateLegend = React.memo(() => {
         onClick={() => setShowIndicators(!showIndicators)}
         style={{
           marginLeft: 'auto',
-          padding: '4px 10px',
+          padding: '4px 12px',
           fontSize: '10px',
           fontWeight: 500,
           color: showIndicators ? 'var(--text)' : 'var(--text3)',
@@ -1174,7 +1082,7 @@ const CRCLParameterCard = ({
 
   return (
     <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-      <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>{title}</span></div>
+      <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>{title}</span></div>
       <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
         {explanation}
       </p>
@@ -1190,7 +1098,7 @@ const CRCLParameterCard = ({
               tabIndex={0}
               onKeyDown={(e) => e.key === 'Enter' && (() => { onChange(opt); setCustomMode(false); })()}
               style={{
-                padding: '10px 4px',
+                padding: '12px 4px',
                 borderRadius: 8,
                 border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                 background: isActive ? colors.bg : 'var(--surface2)',
@@ -1244,7 +1152,7 @@ const CRCLParameterCard = ({
             aria-label="Enter custom value"
             onKeyDown={(e) => e.key === 'Enter' && setCustomMode(true)}
             style={{
-              padding: '10px 4px',
+              padding: '12px 4px',
               borderRadius: 8,
               border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
               background: isCustomValue ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'var(--surface2)',
@@ -1316,7 +1224,7 @@ const OverviewParameterCard = ({
   };
 
   return (
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '24px 24px', marginBottom: 12 }}>
       <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>
       <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
         {explanation}
@@ -1334,7 +1242,7 @@ const OverviewParameterCard = ({
               tabIndex={0}
               onKeyDown={(e) => e.key === 'Enter' && (() => { onChange(opt); setCustomMode(false); })()}
               style={{
-                padding: '10px 4px',
+                padding: '12px 4px',
                 borderRadius: 8,
                 border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                 background: isActive ? colors.bg : 'var(--surface2)',
@@ -1348,18 +1256,6 @@ const OverviewParameterCard = ({
                 overflow: 'hidden',
               }}
             >
-              {isCurrent && (
-                <div style={{
-                  position: 'absolute',
-                  top: 4,
-                  right: 4,
-                  width: 4,
-                  height: 4,
-                  borderRadius: '50%',
-                  background: 'var(--text3)',
-                  opacity: 0.4,
-                }} />
-              )}
               {formatValue(opt)}
             </div>
           );
@@ -1402,7 +1298,7 @@ const OverviewParameterCard = ({
             aria-label="Enter custom value"
             onKeyDown={(e) => e.key === 'Enter' && setCustomMode(true)}
             style={{
-              padding: '10px 4px',
+              padding: '12px 4px',
               borderRadius: 8,
               border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
               background: isCustomValue ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'var(--surface2)',
@@ -1548,7 +1444,7 @@ const CRCLModelTab = ({
 
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-presets</div>
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
-        <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+        <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 24 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Scenario Presets</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 10, overflow: 'hidden' }}>
             {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
@@ -1590,7 +1486,7 @@ const CRCLModelTab = ({
 
         {/* USDC & REVENUE PARAMETERS */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#revenue-model</div>
-        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>USDC & Revenue Model</span>
           <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
         </div>
@@ -1636,7 +1532,7 @@ const CRCLModelTab = ({
 
         {/* OPERATING PARAMETERS */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#operating-model</div>
-        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Operating Model</span>
           <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
         </div>
@@ -1650,7 +1546,7 @@ const CRCLModelTab = ({
             onChange={v => { setOperatingMargin(v); setSelectedScenario('custom'); }}
             format="%"
           />
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '24px 24px', marginBottom: 12 }}>
             <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#current-position</div>
             <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>Current Position</div>
             <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
@@ -1667,7 +1563,7 @@ const CRCLModelTab = ({
 
         {/* VALUATION PARAMETERS */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-params</div>
-        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Parameters</span>
           <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
         </div>
@@ -1694,7 +1590,7 @@ const CRCLModelTab = ({
 
         {/* RISK PARAMETERS */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#risk-factors</div>
-        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Risk Probability Factors</span>
           <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
         </div>
@@ -1734,7 +1630,7 @@ const CRCLModelTab = ({
 
         {/* DCF VALUATION OUTPUT */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-output</div>
-        <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DCF Valuation Output (5-Year Terminal)</span>
           <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
         </div>
@@ -1776,71 +1672,70 @@ const CRCLModelTab = ({
         </div>
 
         {/* CALCULATION METHODOLOGY */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#methodology</div>
-        <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20, marginTop: 16 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Calculation Methodology</div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
-            <p style={{ }}>
-              This DCF model calculates Circle intrinsic value using a <strong>revenue-based terminal value approach</strong>,
-              incorporating USDC growth, reserve yield, distribution costs, and risk-adjusted discounting.
+        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 32 }}>#methodology</div>
+        <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Methodology</span>
+          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Stablecoin DCF — Revenue-Based Terminal Value</div>
+            <p style={{ fontSize: 13, color: 'var(--text3)', margin: 0, lineHeight: 1.7 }}>
+              Revenue-based terminal value approach incorporating USDC growth, reserve yield, distribution costs, and risk-adjusted discounting.
             </p>
-
+          </div>
+          <div style={{ padding: '24px 24px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 1-3: Terminal Year Revenue</div>
-                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
-                  Terminal USDC = ${currentUSDC}B × (1 + {usdcGrowthRate}%)^5<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalUSDC.toFixed(0)}B</strong><br/><br/>
-                  Gross Revenue = ${terminalUSDC.toFixed(0)}B × {reserveYield}%<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${terminalGrossRevenue.toFixed(2)}B</strong><br/><br/>
-                  Net Revenue = ${terminalGrossRevenue.toFixed(2)}B × (1 - {distributionCost}%)<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${terminalNetRevenue.toFixed(2)}B</strong>
+              {[
+                { step: '1-3', title: 'Terminal Year Revenue', color: 'var(--accent)', items: [
+                  { label: 'Terminal USDC', formula: `$${currentUSDC}B × (1+${usdcGrowthRate}%)^5`, result: `$${terminalUSDC.toFixed(0)}B` },
+                  { label: 'Gross Revenue', formula: `$${terminalUSDC.toFixed(0)}B × ${reserveYield}%`, result: `$${terminalGrossRevenue.toFixed(2)}B` },
+                  { label: 'Net Revenue', formula: `$${terminalGrossRevenue.toFixed(2)}B × (1-${distributionCost}%)`, result: `$${terminalNetRevenue.toFixed(2)}B` },
+                ]},
+                { step: '4-5', title: 'Terminal Value', color: 'var(--sky)', items: [
+                  { label: 'EBITDA', formula: `$${terminalNetRevenue.toFixed(2)}B × ${operatingMargin}%`, result: `$${terminalEBITDA.toFixed(2)}B` },
+                  { label: 'FCF', formula: `$${terminalEBITDA.toFixed(2)}B × ${(fcfConversion * 100).toFixed(0)}%`, result: `$${terminalFCF.toFixed(3)}B` },
+                  { label: 'Gordon Growth TV', formula: `FCF ÷ (${discountRate}% - ${terminalGrowth}%)`, result: `$${terminalEV.toFixed(1)}B` },
+                ]},
+                { step: '6-8', title: 'Risk Adjustment', color: 'var(--gold)', items: [
+                  { label: 'Present Value', formula: `$${terminalEV.toFixed(1)}B ÷ (1+${discountRate}%)^5`, result: `$${presentValueEV.toFixed(1)}B` },
+                  { label: 'Risk Factor', formula: `(1-${regulatoryRisk}%) × (1-${competitionRisk}%) × (1-${rateRisk}%)`, result: `${(riskFactor * 100).toFixed(1)}%` },
+                  { label: 'Risk-Adj EV', formula: `$${presentValueEV.toFixed(1)}B × ${(riskFactor * 100).toFixed(1)}%`, result: `$${riskAdjustedEV.toFixed(1)}B` },
+                ]},
+                { step: '9-11', title: 'Target Price', color: 'var(--mint)', items: [
+                  { label: 'Equity Value', formula: `$${riskAdjustedEV.toFixed(1)}B - $${netDebt}B debt`, result: `$${equityValue.toFixed(1)}B` },
+                  { label: 'Diluted Shares', formula: `${currentShares}M × (1+${dilutionRate}%)^5`, result: `${terminalShares.toFixed(0)}M` },
+                  { label: 'Target Price', formula: `$${equityValue.toFixed(1)}B ÷ ${terminalShares.toFixed(0)}M`, result: `$${targetStockPrice.toFixed(0)}` },
+                ]},
+              ].map((section, si) => (
+                <div key={si} style={{ background: 'var(--surface2)', borderRadius: 12, overflow: 'hidden' }}>
+                  <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ background: section.color, color: 'var(--bg)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono' }}>Step {section.step}</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>{section.title}</span>
+                  </div>
+                  <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {section.items.map((item, ii) => (
+                      <div key={ii} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text2)' }}>{item.label}</div>
+                          <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: 'Space Mono', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.formula}</div>
+                        </div>
+                        <div style={{ fontFamily: 'Space Mono', fontSize: 13, fontWeight: 700, color: section.color, flexShrink: 0 }}>{item.result}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 4-5: Terminal Value</div>
-                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
-                  EBITDA = ${terminalNetRevenue.toFixed(2)}B × {operatingMargin}%<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${terminalEBITDA.toFixed(2)}B</strong><br/><br/>
-                  FCF = ${terminalEBITDA.toFixed(2)}B × {(fcfConversion * 100).toFixed(0)}%<br/>
-                  &nbsp;&nbsp;&nbsp;= <strong>${terminalFCF.toFixed(3)}B</strong><br/><br/>
-                  Gordon Growth: TV = FCF ÷ ({discountRate}% - {terminalGrowth}%)<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${terminalEV.toFixed(1)}B</strong>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 6-8: Risk Adjustment</div>
-                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
-                  Present Value = ${terminalEV.toFixed(1)}B ÷ (1 + {discountRate}%)^5<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${terminalEV.toFixed(1)}B ÷ {discountFactor.toFixed(3)}<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${presentValueEV.toFixed(1)}B</strong><br/><br/>
-                  Risk Factor = (1-{regulatoryRisk}%) × (1-{competitionRisk}%) × (1-{rateRisk}%)<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{(riskFactor * 100).toFixed(1)}%</strong><br/><br/>
-                  Risk-Adj EV = ${presentValueEV.toFixed(1)}B × {(riskFactor * 100).toFixed(1)}%<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${riskAdjustedEV.toFixed(1)}B</strong>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)' }}>Step 9-11: Target Price</div>
-                <div style={{ fontFamily: 'monospace', fontSize: 11, background: 'var(--surface2)', padding: 8, borderRadius: 6 }}>
-                  Equity Value = ${riskAdjustedEV.toFixed(1)}B - ${netDebt}B debt<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${equityValue.toFixed(1)}B</strong><br/><br/>
-                  Diluted Shares = {currentShares}M × (1 + {dilutionRate}%)^5<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>{terminalShares.toFixed(0)}M</strong><br/><br/>
-                  Target Price = ${equityValue.toFixed(1)}B ÷ {terminalShares.toFixed(0)}M<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>${targetStockPrice.toFixed(0)}</strong>
-                </div>
-              </div>
+              ))}
             </div>
 
-            <div style={{ padding: 10, background: 'var(--accent-dim)', borderRadius: 6, fontSize: 11 }}>
-              <strong>Key Assumptions:</strong> Terminal year is {new Date().getFullYear() + 5} (5 years out).
-              FCF conversion = 85% of EBITDA (asset-light model).
-              Coinbase distribution cost is applied to gross yield revenue.
-              Risk factors are multiplicative (independent events).
+            <div style={{ padding: '16px 16px', background: 'color-mix(in srgb, var(--accent) 6%, transparent)', borderRadius: 10, fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginTop: 16, border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' }}>
+              <div style={{ fontWeight: 600, color: 'var(--text2)', marginBottom: 4 }}>Key Assumptions</div>
+              <ul style={{ margin: 0, paddingLeft: 16 }}>
+                <li>Terminal year: {new Date().getFullYear() + 5} (5 years out)</li>
+                <li>FCF conversion = 85% of EBITDA (asset-light model)</li>
+                <li>Coinbase distribution cost applied to gross yield revenue</li>
+                <li>Risk factors are multiplicative (independent events)</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -1857,11 +1752,11 @@ const ScenariosTab = () => {
   return (
     <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenarios-header</div>
-      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}><span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Scenario Simulation</span><UpdateIndicators sources={['PR', 'SEC']} /></div>
+      <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}><span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Scenario Simulation</span><UpdateIndicators sources={['PR', 'SEC']} /></div>
 
       {/* Highlight Box */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenarios-intro</div>
-      <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--sky) 5%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 16, padding: '24px 28px' }}>
+      <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--sky) 5%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 16, padding: '24px 24px' }}>
         <h3>Multi-Year Projections</h3>
         <p style={{ fontSize: 14 }}>
           Model different growth trajectories based on USDC adoption, rate environment, and margin evolution.
@@ -1875,7 +1770,7 @@ const ScenariosTab = () => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         {/* Target Year Selector */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Target Year</span></div>
+          <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Target Year</span></div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {TARGET_YEARS.map(year => (
               <button
@@ -1901,7 +1796,7 @@ const ScenariosTab = () => {
 
         {/* Scenario Selector */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Scenario</span></div>
+          <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Scenario</span></div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {SCENARIO_KEYS.map(key => {
               const s = SCENARIO_SIMULATIONS[key];
@@ -1960,25 +1855,25 @@ const ScenariosTab = () => {
             {/* Key Metrics */}
             <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-metrics</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
-              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 24px', textAlign: 'center' }}>
                 <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: selected.color }}>${projection.sharePrice.toLocaleString()}</div>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Share Price</div>
                 <div style={{ fontSize: 12, color: priceReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {priceReturn >= 0 ? '+' : ''}{priceReturn.toFixed(0)}% from today
                 </div>
               </div>
-              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 24px', textAlign: 'center' }}>
                 <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>${projection.equityValue}B</div>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Equity Value</div>
               </div>
-              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 24px', textAlign: 'center' }}>
                 <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>${projection.usdc}B</div>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>USDC Circulation</div>
                 <div style={{ fontSize: 12, color: 'var(--sky)' }}>
                   +{usdcGrowth.toFixed(0)}% growth
                 </div>
               </div>
-              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 24px', textAlign: 'center' }}>
                 <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>{projection.marketShare}%</div>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Market Share</div>
               </div>
@@ -1987,7 +1882,7 @@ const ScenariosTab = () => {
             {/* Financial Projections Table */}
             <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-projections</div>
             <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-              <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Financial Projections — {selected.name} Scenario</span></div>
+              <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Financial Projections — {selected.name} Scenario</span></div>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
@@ -2128,7 +2023,7 @@ const ScenariosTab = () => {
             <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#scenario-assumptions</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Key Assumptions</span></div>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Key Assumptions</span></div>
                 <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
                   {selected.assumptions.map((a, i) => (
                     <li key={i} style={{ lineHeight: 1.5 }}>{a}</li>
@@ -2136,7 +2031,7 @@ const ScenariosTab = () => {
                 </ul>
               </div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>{selected.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</span></div>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>{selected.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</span></div>
                 <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
                   {(selected.catalysts.length > 0 ? selected.catalysts : selected.risks).map((item, i) => (
                     <li key={i} style={{ lineHeight: 1.5 }}>{item}</li>
@@ -2144,7 +2039,7 @@ const ScenariosTab = () => {
                 </ul>
                 {selected.catalysts.length > 0 && selected.risks.length > 0 && (
                   <>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Risks</span></div>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Risks</span></div>
                     <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
                       {selected.risks.map((r, i) => (
                         <li key={i} style={{ lineHeight: 1.5 }}>{r}</li>
@@ -2160,7 +2055,7 @@ const ScenariosTab = () => {
 
       {/* Probability-Weighted Expected Value */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#expected-value</div>
-      <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--sky) 5%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 16, padding: '24px 28px' }}>
+      <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--sky) 5%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 16, padding: '24px 24px' }}>
         <h3>Probability-Weighted Expected Value — {targetYear}</h3>
         <p style={{ color: 'var(--text2)' }}>
           Weighted average across all scenarios based on assigned probabilities
@@ -2185,19 +2080,19 @@ const ScenariosTab = () => {
           return (
             <>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
-                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 24px', textAlign: 'center' }}>
                   <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--mint)' }}>${pwev.sharePrice.toFixed(0)}</div>
                   <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Expected Share Price</div>
                 </div>
-                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 24px', textAlign: 'center' }}>
                   <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>${pwev.equityValue.toFixed(1)}B</div>
                   <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Expected Equity Value</div>
                 </div>
-                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 24px', textAlign: 'center' }}>
                   <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--sky)' }}>{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</div>
                   <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Expected Return</div>
                 </div>
-                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
+                <div style={{ background: 'var(--surface)', borderRadius: 16, padding: '24px 24px', textAlign: 'center' }}>
                   <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>{cagr.toFixed(1)}%</div>
                   <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' as const, color: 'var(--text3)', marginTop: 8 }}>Implied CAGR</div>
                 </div>
@@ -2254,7 +2149,7 @@ const ScenariosTab = () => {
 
       {/* All Scenarios Comparison */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>All Scenarios — {targetYear} Comparison</span></div>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>All Scenarios — {targetYear} Comparison</span></div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
@@ -2325,8 +2220,8 @@ const ScenariosTab = () => {
       </div>
 
       {/* Key Insights */}
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}><div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Key Insights</span></div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, padding: '20px 28px', fontSize: 14 }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}><div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Key Insights</span></div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, padding: '24px 24px', fontSize: 14 }}>
           <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 16 }}>
             <h4 style={{ fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>Interest Rate Sensitivity</h4>
             <p style={{ color: 'var(--text2)' }}>Reserve income is directly tied to Fed rates. Each 100bp rate cut reduces gross revenue by ~$737M annually at current circulation. Rate cuts are the primary bear case risk.</p>
@@ -2348,7 +2243,7 @@ const ScenariosTab = () => {
 
       {/* Methodology & Assumptions */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Methodology & Assumptions</span></div>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase' as const, color: 'var(--text3)' }}>Methodology & Assumptions</span></div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div>
             <h4 style={{ color: 'var(--mint)' }}>Valuation Framework</h4>
@@ -2467,18 +2362,18 @@ const DCFTab = () => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-inputs</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Model Inputs</span>
           </div>
-          <div style={{ padding: 28 }}>
+          <div style={{ padding: 24 }}>
             <Input label="Discount Rate (WACC) %" value={discount} onChange={setDiscount} min={5} max={20} />
           </div>
         </div>
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Output</span>
           </div>
-          <div style={{ padding: 28 }}>
+          <div style={{ padding: 24 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
               <Card label="Price Target" value={`$${dcf.pt.toFixed(0)}`} sub={`Based on ${scenario} scenario`} color="mint" />
               <Card label="Upside" value={`${dcf.upside >= 0 ? '+' : ''}${dcf.upside.toFixed(0)}%`} sub="vs current price" color={dcf.upside >= 0 ? 'green' : 'red'} />
@@ -2490,12 +2385,12 @@ const DCFTab = () => {
       {/* Financial Projections Table */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dcf-projections</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Projections</span>
         </div>
         <div style={{ overflowX: 'auto' }}>
           {/* Header */}
-          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
             <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>Metric</span>
             <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: 'right' }}>Today</span>
             {dcf.projections.map(p => (
@@ -2503,7 +2398,7 @@ const DCFTab = () => {
             ))}
           </div>
           {/* USDC Circulation */}
-          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
             <span style={{ fontSize: 12 }}>USDC Circulation ($B)</span>
@@ -2513,7 +2408,7 @@ const DCFTab = () => {
             ))}
           </div>
           {/* Reserve Revenue */}
-          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
             <span style={{ fontSize: 12 }}>Reserve Revenue ($B)</span>
@@ -2523,7 +2418,7 @@ const DCFTab = () => {
             ))}
           </div>
           {/* Net FCF */}
-          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
             <span style={{ fontSize: 12 }}>Net FCF ($B)</span>
@@ -2533,7 +2428,7 @@ const DCFTab = () => {
             ))}
           </div>
           {/* PV of FCF */}
-          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 28px', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))`, padding: '12px 24px', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
             <span style={{ fontSize: 12 }}>PV of FCF ($B)</span>
@@ -2543,19 +2438,19 @@ const DCFTab = () => {
             ))}
           </div>
           {/* Summary rows */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--surface2)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--surface2)' }}>
             <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>Sum PV(FCF)</span>
             <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>${dcf.pvFCF.toFixed(2)}B</span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--surface2)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--surface2)' }}>
             <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>Terminal Value ({s.multiple}x FCF)</span>
             <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>${dcf.tv.toFixed(1)}B</span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--surface2)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--surface2)' }}>
             <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>PV(Terminal Value)</span>
             <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 500, textAlign: 'right' }}>${dcf.pvTV.toFixed(2)}B</span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 28px', background: 'var(--accent-dim)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 2fr) 1fr', padding: '12px 24px', background: 'var(--accent-dim)' }}>
             <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700, textAlign: 'right' }}>Equity Value</span>
             <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700, textAlign: 'right', color: 'var(--mint)' }}>${(dcf.equity / 1000).toFixed(1)}B</span>
           </div>
@@ -2613,10 +2508,10 @@ const CRCLQuarterlyMetricsPanel = () => {
       {/* #quarterly-metrics */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#quarterly-metrics</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Key Metrics Evolution<UpdateIndicators sources="SEC" /></span>
         </div>
-        <div style={{ padding: '24px 28px' }}>
+        <div style={{ padding: '24px 24px' }}>
         {/* Summary Badges - ASTS pattern */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--cyan) 15%, transparent)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
@@ -2685,10 +2580,10 @@ const CRCLQuarterlyMetricsPanel = () => {
         <div style={{ }}>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#latest-quarter-summary</div>
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Latest Quarter Summary ({latestQuarter.quarter})<UpdateIndicators sources="SEC" /></span>
             </div>
-            <div style={{ padding: '24px 28px' }}>
+            <div style={{ padding: '24px 24px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
               <div style={{ background: 'var(--surface2)', borderRadius: 8, padding: 12 }}>
                 <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing Source</div>
@@ -2729,7 +2624,7 @@ const CRCLQuarterlyMetricsPanel = () => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-1</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--cyan)', display: 'flex', alignItems: 'center', gap: 8 }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
@@ -2741,26 +2636,28 @@ const CRCLQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+                <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                       <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                       <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                       <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                     </div>
                   ))}
+                  </div>
                 </div>
-                <div style={{ padding: '0 28px 24px', fontSize: 11, color: 'var(--text3)' }}>Strong cash position from IPO proceeds ($500M+ raised Q2 2025). Includes treasury, short-term investments, and money market funds.</div>
+                <div style={{ padding: '0 24px 24px', fontSize: 11, color: 'var(--text3)' }}>Strong cash position from IPO proceeds ($500M+ raised Q2 2025). Includes treasury, short-term investments, and money market funds.</div>
               </>
             );
           })()}
         </div>
 
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--violet)', display: 'flex', alignItems: 'center', gap: 8 }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></span>
           </div>
-          <div style={{ padding: '24px 28px' }}>
+          <div style={{ padding: '24px 24px' }}>
           {(() => {
             const data = quarterlyData.slice().reverse().map(d => ({
               label: d.quarter,
@@ -2769,14 +2666,16 @@ const CRCLQuarterlyMetricsPanel = () => {
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+              <div style={{ overflowX: 'auto' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                     <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
+                </div>
               </div>
             );
           })()}
@@ -2835,7 +2734,7 @@ const CRCLQuarterlyMetricsPanel = () => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-2</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Count (Outstanding)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
@@ -2850,21 +2749,23 @@ const CRCLQuarterlyMetricsPanel = () => {
             ];
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
-              <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+              <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                     <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
+                </div>
               </div>
             );
           })()}
         </div>
 
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--sky)', display: 'flex', alignItems: 'center', gap: 8 }}>Market Cap Evolution ($B)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
@@ -2879,14 +2780,16 @@ const CRCLQuarterlyMetricsPanel = () => {
             ];
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
-              <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+              <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                     <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
+                </div>
               </div>
             );
           })()}
@@ -2897,7 +2800,7 @@ const CRCLQuarterlyMetricsPanel = () => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#charts-row-3</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--violet)', display: 'flex', alignItems: 'center', gap: 8 }}>USDC Circulation ($B)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
@@ -2908,21 +2811,23 @@ const CRCLQuarterlyMetricsPanel = () => {
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
-              <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+              <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                     <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
+                </div>
               </div>
             );
           })()}
         </div>
 
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--cyan)', display: 'flex', alignItems: 'center', gap: 8 }}>Adjusted EBITDA ($M)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
@@ -2933,14 +2838,16 @@ const CRCLQuarterlyMetricsPanel = () => {
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
-              <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+              <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                     <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
                   </div>
                 ))}
+                </div>
               </div>
             );
           })()}
@@ -2966,7 +2873,17 @@ function CRCLModel() {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [secFilter, setSecFilter] = useState('All');
   const [showAllFilings, setShowAllFilings] = useState(false);
+  const [showAllPR, setShowAllPR] = useState(false);
   const [capitalView, setCapitalView] = useState('structure');
+
+  const pressReleases = [
+    { date: 'Dec 12, 2025', category: 'Regulatory', color: 'var(--gold)', title: 'OCC Grants Preliminary Approval for National Bank Charter' },
+    { date: 'Nov 12, 2025', category: 'Earnings', color: 'var(--mint)', title: 'Circle Reports Q3 2025 Results: $740M Revenue, USDC at $73.7B' },
+    { date: 'Oct 29, 2025', category: 'Partnership', color: 'var(--sky)', title: 'Binance to Adopt USYC for Yield-Bearing Treasury Holdings' },
+    { date: 'Aug 12, 2025', category: 'Corporate', color: 'var(--violet)', title: 'Circle Launches Follow-on Offering (10M shares)' },
+  ];
+  const displayedPR = showAllPR ? pressReleases : pressReleases.slice(0, 5);
+  const hiddenPRCount = pressReleases.length - 5;
 
   // Use imported SEC filings from @/data/crcl
   const secFilings = SEC_FILINGS;
@@ -3433,7 +3350,7 @@ function CRCLModel() {
                 background: 'color-mix(in srgb, var(--mint) 10%, transparent)',
                 border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)',
                 borderRadius: 6,
-                padding: '4px 10px',
+                padding: '4px 12px',
                 fontSize: 11,
                 color: '#34d399',
               }}>
@@ -3579,7 +3496,7 @@ function CRCLModel() {
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#opportunity</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-                <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+                <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginBottom: 8 }}>#thesis-bull</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--mint)' }}>Bull Case</span>
@@ -3599,7 +3516,7 @@ function CRCLModel() {
                     </div>
                   ))}
                 </div>
-                <div style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+                <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginBottom: 8 }}>#thesis-bear</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--coral)' }}>Bear Case</span>
@@ -3623,28 +3540,30 @@ function CRCLModel() {
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Revenue Progression</span>
                   <UpdateIndicators sources="SEC" />
                 </div>
-                <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+                <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: DATA.length * 64 }}>
                   {(() => {
                     const chronological = [...DATA].reverse();  // Oldest first for left-to-right progression
                     const maxRevenue = Math.max(...chronological.map(d => d.totalRevenue));
                     return chronological.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', flex: 1 }}>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', flex: 1, minWidth: 56 }}>
                         <div style={{ fontSize: 11, fontWeight: 600, fontFamily: "'Space Mono', monospace", color: 'var(--text)', marginBottom: 4 }}>${d.totalRevenue}M</div>
                         <div style={{ height: `${maxRevenue > 0 ? (d.totalRevenue / maxRevenue) * 150 : 0}px`, width: '100%', background: 'var(--accent)', borderRadius: '4px 4px 0 0', minHeight: 2 }} />
                         <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' as const }}>{d.quarter}</div>
                       </div>
                     ));
                   })()}
+                  </div>
                 </div>
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-metrics</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
                   {['Metric', 'Value', 'Description'].map(h => (
                     <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Value' ? 'right' : 'left' }}>{h}</span>
                   ))}
@@ -3655,7 +3574,7 @@ function CRCLModel() {
                   { metric: 'Active Wallets', value: `${latest.meaningfulWallets}M`, desc: 'Meaningful wallets', color: 'var(--text)' },
                   { metric: 'Arc Partners', value: '100+', desc: 'Platform integrations', color: 'var(--text)' },
                 ].map((row, i, arr) => (
-                  <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 28px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                  <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 24px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                     <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.metric}</span>
@@ -3692,7 +3611,7 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#parameters</div>
-              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
                 <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
               </div>
@@ -3738,7 +3657,7 @@ function CRCLModel() {
               </div>
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-header</div>
-              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Stock Chart</span>
                 <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
               </div>
@@ -3777,7 +3696,7 @@ function CRCLModel() {
               {/* SECTION 2: HIGHLIGHT BOX                                            */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#financials-overview</div>
-              <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--surface)) 0%, var(--surface) 100%)', border: '1px solid var(--border)', borderRadius: 16, padding: '24px 28px' }}>
+              <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--surface)) 0%, var(--surface) 100%)', border: '1px solid var(--border)', borderRadius: 16, padding: '24px 24px' }}>
                 <h3 style={{ display: 'flex', alignItems: 'center', margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>Revenue Growth Story<UpdateIndicators sources="SEC" /></h3>
                 <p style={{ fontSize: 14, color: 'var(--text2)', margin: '8px 0 0' }}>
                   Circle's revenue is driven by reserve income (96%) from USDC holdings invested in T-bills and repos.
@@ -3794,16 +3713,16 @@ function CRCLModel() {
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
               {/* ═══════════════════════════════════════════════════════════════════ */}
-              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Key Milestones</span>
                 <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
               </div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#key-financial-milestones</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Key Financial Milestones<UpdateIndicators sources="SEC" /></span>
                 </div>
-                <div style={{ padding: '24px 28px' }}>
+                <div style={{ padding: '24px 24px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     {[
                       { date: 'Jul 2021', event: 'SPAC Announced' },
@@ -3861,7 +3780,7 @@ function CRCLModel() {
 
               {/* Rating Header */}
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', borderLeft: `4px solid var(--${investmentCurrent.verdictColor})` }}>
-                <div style={{ padding: '24px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+                <div style={{ padding: '24px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                       <span style={{ background: `var(--${investmentCurrent.verdictColor})`, color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontWeight: 700, fontSize: 18 }}>{investmentCurrent.verdict}</span>
@@ -3894,16 +3813,16 @@ function CRCLModel() {
                 </div>
               </div>
 
-                  {/* Investment Scorecard */}
-                  <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Due Diligence Sections</span>
+                  {/* Section Divider: Ratings & Scoring */}
+                  <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Ratings & Scoring</span>
                     <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
                   </div>
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-scorecard</div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('scorecard')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('scorecard')}
@@ -3914,7 +3833,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('scorecard') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('scorecard') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
                           {investmentCurrent.scorecard.map((item, i) => (
                             <div key={i} style={{ transition: 'background 0.15s', background: 'var(--surface2)', padding: '12px 16px', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
@@ -3932,12 +3851,18 @@ function CRCLModel() {
                     )}
                   </div>
 
+                  {/* Section Divider: Investment Thesis */}
+                  <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Investment Thesis</span>
+                    <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+                  </div>
+
                   {/* Investment Summary */}
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-summary</div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('summary')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('summary')}
@@ -3948,7 +3873,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('summary') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('summary') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
                           <div style={{ fontWeight: 600, color: 'var(--mint)' }}>What's New ({investmentCurrent.source})</div>
                           <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
@@ -3977,7 +3902,7 @@ function CRCLModel() {
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('financial')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('financial')}
@@ -3988,7 +3913,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('financial') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('financial') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         {/* Quick Stats */}
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                           <div style={{ background: 'var(--surface2)', padding: 12, textAlign: 'center' }}>
@@ -4041,7 +3966,7 @@ function CRCLModel() {
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('unit-economics')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('unit-economics')}
@@ -4052,7 +3977,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('unit-economics') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('unit-economics') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         {/* Key Metrics Row */}
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                           <div style={{ background: 'var(--surface2)', padding: 12, textAlign: 'center' }}>
@@ -4099,12 +4024,18 @@ function CRCLModel() {
                     )}
                   </div>
 
+                  {/* Section Divider: Growth Drivers */}
+                  <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Growth Drivers</span>
+                    <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+                  </div>
+
                   {/* Growth Drivers */}
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-growth</div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('growth')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('growth')}
@@ -4115,7 +4046,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('growth') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('growth') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         {/* Summary */}
                         <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
                           <p style={{ }}>
@@ -4189,7 +4120,7 @@ function CRCLModel() {
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('valuation')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('valuation')}
@@ -4200,7 +4131,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('valuation') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('valuation') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         {/* Key Metrics */}
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                           <div style={{ background: 'var(--surface2)', padding: 12, textAlign: 'center' }}>
@@ -4250,7 +4181,7 @@ function CRCLModel() {
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('sensitivity')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('sensitivity')}
@@ -4261,7 +4192,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('sensitivity') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('sensitivity') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>
                           Adjust assumptions to see implied financial impact. Calculations based on current model structure.
                         </div>
@@ -4391,7 +4322,7 @@ function CRCLModel() {
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('moat')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('moat')}
@@ -4402,7 +4333,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('moat') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('moat') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
                           <div>
                             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--mint)', display: 'block', marginBottom: 8 }}>Moat Sources</span>
@@ -4452,12 +4383,18 @@ function CRCLModel() {
                     )}
                   </div>
 
+                  {/* Section Divider: Risk Assessment */}
+                  <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Risk Assessment</span>
+                    <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+                  </div>
+
                   {/* Risk Matrix */}
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#investment-risks</div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('risks')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('risks')}
@@ -4468,7 +4405,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('risks') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('risks') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         {/* Summary */}
                         <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
                           <p style={{ }}>
@@ -4500,7 +4437,7 @@ function CRCLModel() {
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('catalysts')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('catalysts')}
@@ -4511,7 +4448,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('catalysts') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('catalysts') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         {/* Summary */}
                         <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
                           <p style={{ }}>
@@ -4552,7 +4489,7 @@ function CRCLModel() {
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('position')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('position')}
@@ -4563,7 +4500,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('position') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('position') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                           <div style={{ background: 'color-mix(in srgb, var(--mint) 10%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
                             <div style={{ fontWeight: 600, color: 'var(--mint)' }}>Entry Zones</div>
@@ -4634,7 +4571,7 @@ function CRCLModel() {
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('archive')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('archive')}
@@ -4645,7 +4582,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('archive') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('archive') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full record of all investment thesis updates. Never deleted.</div>
                         <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 500, overflowY: 'auto' }}>
                           {/* Current */}
@@ -4696,7 +4633,7 @@ function CRCLModel() {
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('strategic-assessment')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('strategic-assessment')}
@@ -4707,7 +4644,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('strategic-assessment') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('strategic-assessment') && (
-                      <div style={{ padding: '24px 28px' }}>
+                      <div style={{ padding: '24px 24px' }}>
                         {/* Section Header */}
                         <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>
                           Multi-perspective risk evaluation and strategic decision framework
@@ -4719,7 +4656,7 @@ function CRCLModel() {
                         {/* CFA Level III Perspective */}
                         <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
+                            <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
                             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Portfolio Construction & Factor Analysis</span>
                           </div>
                           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -4738,7 +4675,7 @@ function CRCLModel() {
                         {/* Hedge Fund Manager Perspective */}
                         <div style={{ background: 'color-mix(in srgb, var(--violet) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ background: 'var(--violet)', color: 'white', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
+                            <span style={{ background: 'var(--violet)', color: 'white', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
                             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Alpha Generation & Event Catalysts</span>
                           </div>
                           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -4757,7 +4694,7 @@ function CRCLModel() {
                         {/* CIO/CIS Institutional Perspective */}
                         <div style={{ background: 'color-mix(in srgb, var(--sky) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
+                            <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
                             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Strategic Allocation & Fiduciary Considerations</span>
                           </div>
                           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -4776,7 +4713,7 @@ function CRCLModel() {
                         {/* Technical Analyst Perspective */}
                         <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
+                            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
                             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Chart Patterns & Price Action</span>
                           </div>
                           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -4873,7 +4810,7 @@ function CRCLModel() {
                         {/* Part 3: Final Verdict */}
                         <div style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', marginBottom: 8 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text)' }}>Final Verdict</span></div>
 
-                        <div style={{ background: 'color-mix(in srgb, var(--mint) 10%, transparent)', padding: 20, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)' }}>
+                        <div style={{ background: 'color-mix(in srgb, var(--mint) 10%, transparent)', padding: 24, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                               <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontWeight: 700, fontSize: 16 }}>OVERWEIGHT</span>
@@ -4904,7 +4841,7 @@ function CRCLModel() {
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={() => toggleSection('methodology')}
-                      style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                      style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('methodology')}
@@ -4915,7 +4852,7 @@ function CRCLModel() {
                       <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has('methodology') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('methodology') && (
-                      <div style={{ padding: '24px 28px', fontSize: 13, color: 'var(--text2)', lineHeight: 1.8 }}>
+                      <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)', lineHeight: 1.8 }}>
                         <p><strong>Data Sources:</strong> SEC EDGAR filings (10-K, 10-Q, 8-K, S-1, S-3), company press releases, earnings call transcripts, third-party research.</p>
                         <p><strong>Valuation:</strong> Primary method is P/S multiples with peer comparison. Secondary: DCF (12% WACC, 3% terminal growth), SOTP for platform optionality.</p>
                         <p><strong>Ratings Scale:</strong> OVERWEIGHT (expected 20%+ outperformance), NEUTRAL (market perform ±10%), UNDERWEIGHT (expected 20%+ underperformance), MONITORING (not yet rated).</p>
@@ -4975,18 +4912,20 @@ function CRCLModel() {
 
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#usdc-circulation</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Circulation Growth</span>
                   <UpdateIndicators sources="SEC" />
                 </div>
-                <div style={{ padding: '24px 28px 0', display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
+                <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: DATA.length * 64 }}>
                   {DATA.map((d, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', flex: 1 }}>
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', flex: 1, minWidth: 56 }}>
                       <div style={{ fontSize: 11, fontWeight: 600, fontFamily: "'Space Mono', monospace", color: 'var(--text)', marginBottom: 4 }}>${d.usdcCirculation.toFixed(1)}B</div>
                       <div style={{ height: `${(d.usdcCirculation / 80) * 180}px`, width: '100%', background: 'var(--accent)', borderRadius: '4px 4px 0 0', minHeight: 2 }} />
                       <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' as const }}>{d.quarter}</div>
                     </div>
                   ))}
+                  </div>
                 </div>
               </div>
 
@@ -4994,12 +4933,12 @@ function CRCLModel() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 8 }}>
                 {/* Mint / Redeem Activity */}
                 <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                  <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Mint / Redeem Activity ($B)</span>
                     <UpdateIndicators sources="SEC" />
                   </div>
                   <div style={{ padding: 0 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
                       {['Quarter', 'Minted', 'Redeemed', 'Net'].map(h => (
                         <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Quarter' ? 'left' : 'right' }}>{h}</span>
                       ))}
@@ -5007,7 +4946,7 @@ function CRCLModel() {
                     {DATA.map((d, i) => {
                       const net = d.usdcMinted - d.usdcRedeemed;
                       return (
-                        <div key={d.quarter} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '12px 28px', borderBottom: i < DATA.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                        <div key={d.quarter} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', padding: '12px 24px', borderBottom: i < DATA.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
                           onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                           <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text)' }}>{d.quarter}</span>
@@ -5022,19 +4961,19 @@ function CRCLModel() {
 
                 {/* Rate Sensitivity Matrix */}
                 <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                  <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Rate Sensitivity Matrix ($B Annual)</span>
                     <UpdateIndicators sources="SEC" />
                   </div>
                   <div style={{ padding: 0, overflowX: 'auto' }} aria-label="Rate sensitivity matrix">
-                    <div style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', padding: '12px 28px', borderBottom: '1px solid var(--border)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
                       <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>USDC \ Rate</span>
                       {[3.0, 3.5, 4.0, 4.5, 5.0].map(r => (
                         <span key={r} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: 'center' }}>{r}%</span>
                       ))}
                     </div>
                     {[50, 75, 100, 125, 150].map((c, ri) => (
-                      <div key={c} style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', padding: '12px 28px', borderBottom: ri < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: c === 75 ? 'color-mix(in srgb, var(--cyan) 3%, transparent)' : 'transparent', transition: 'background 0.15s' }}
+                      <div key={c} style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', padding: '12px 24px', borderBottom: ri < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: c === 75 ? 'color-mix(in srgb, var(--cyan) 3%, transparent)' : 'transparent', transition: 'background 0.15s' }}
                         onMouseEnter={e => { if (c !== 75) e.currentTarget.style.background = 'var(--surface2)'; }}
                         onMouseLeave={e => { if (c !== 75) e.currentTarget.style.background = 'transparent'; }}>
                         <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: c === 75 ? 'var(--cyan)' : 'var(--text)', fontWeight: 500 }}>${c}B</span>
@@ -5071,7 +5010,7 @@ function CRCLModel() {
 
               {/* Highlight Box */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-strategy</div>
-              <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--surface)) 0%, var(--surface) 100%)', border: '1px solid var(--border)', borderRadius: 16, padding: '24px 28px' }}>
+              <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--surface)) 0%, var(--surface) 100%)', border: '1px solid var(--border)', borderRadius: 16, padding: '24px 24px' }}>
                 <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>Dual-Class Structure</h3>
                 <p style={{ fontSize: 13, color: 'var(--text2)', margin: '8px 0 0', lineHeight: 1.6 }}>
                   Circle has a dual-class share structure with Class A (1 vote) and Class B (5 votes). Jeremy Allaire
@@ -5081,13 +5020,13 @@ function CRCLModel() {
               </div>
 
               {/* Key Metrics */}
-              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Overview</span>
                 <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
               </div>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#capital-metrics</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
                   <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Key Metrics</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
@@ -5104,7 +5043,7 @@ function CRCLModel() {
                   ))}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)' }}>
-                  <div style={{ background: 'var(--surface)', padding: '16px 28px' }}>
+                  <div style={{ background: 'var(--surface)', padding: '16px 24px' }}>
                     {[
                       { label: 'Stock Price', value: `$${MARKET.price}`, color: 'var(--text)' },
                       { label: 'EV/Revenue', value: `${(MARKET.marketCap / (1.68 * 1000)).toFixed(1)}x`, color: 'var(--text)' },
@@ -5116,7 +5055,7 @@ function CRCLModel() {
                       </div>
                     ))}
                   </div>
-                  <div style={{ background: 'var(--surface)', padding: '16px 28px' }}>
+                  <div style={{ background: 'var(--surface)', padding: '16px 24px' }}>
                     {[
                       { label: 'USDC Circulation', value: '$44B+', color: 'var(--violet)' },
                       { label: 'Revenue Growth', value: '+16% YoY', color: 'var(--mint)' },
@@ -5129,7 +5068,7 @@ function CRCLModel() {
                     ))}
                   </div>
                 </div>
-                <div style={{ padding: '16px 28px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--mint) 8%, var(--surface)), color-mix(in srgb, var(--violet) 8%, var(--surface)))', borderTop: '1px solid var(--border)' }}>
+                <div style={{ padding: '16px 24px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--mint) 8%, var(--surface)), color-mix(in srgb, var(--violet) 8%, var(--surface)))', borderTop: '1px solid var(--border)' }}>
                   <div style={{ fontSize: 11, color: 'var(--mint)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Stablecoin Economics</div>
                   <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginTop: 4 }}>
                     Revenue driven by USDC reserve interest income. Higher interest rates = higher revenue, making Circle uniquely positioned in crypto.
@@ -5159,7 +5098,7 @@ function CRCLModel() {
                       border: '1px solid var(--border)',
                       borderRadius: 16,
                       overflow: 'hidden',
-                      padding: '20px 28px',
+                      padding: '24px 24px',
                       cursor: 'pointer',
                       borderLeft: capitalView === nav.id ? '4px solid var(--mint)' : '4px solid transparent',
                       transition: 'border-color 0.2s',
@@ -5177,17 +5116,17 @@ function CRCLModel() {
               <>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#share-classes</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure<UpdateIndicators sources="SEC" /></span>
                 </div>
                 <div style={{ padding: 0 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 1fr 1fr 2fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 1fr 1fr 2fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
                     {['Class', 'Authorized', 'Outstanding', 'Votes/Share', 'Description'].map((h, i) => (
                       <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 && i <= 3 ? 'right' : 'left' }}>{h}</span>
                     ))}
                   </div>
                   {SHARE_CLASSES.map((s, i) => (
-                    <div key={s.class} style={{ display: 'grid', gridTemplateColumns: '100px 1fr 1fr 1fr 2fr', padding: '12px 28px', borderBottom: i < SHARE_CLASSES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                    <div key={s.class} style={{ display: 'grid', gridTemplateColumns: '100px 1fr 1fr 1fr 2fr', padding: '12px 24px', borderBottom: i < SHARE_CLASSES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <span style={{ fontWeight: 600, color: 'var(--text)' }}>{s.class}</span>
@@ -5207,17 +5146,17 @@ function CRCLModel() {
               <>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#major-shareholders</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Major Shareholders (from Aug 2025 S-1)<UpdateIndicators sources="SEC" /></span>
                 </div>
                 <div style={{ padding: 0 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
                     {['Shareholder', 'Class A (K)', 'Class B (K)', 'Voting %', 'Type'].map((h, i) => (
                       <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 && i <= 3 ? 'right' : 'left' }}>{h}</span>
                     ))}
                   </div>
                   {MAJOR_SHAREHOLDERS.map((s, i) => (
-                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: i < MAJOR_SHAREHOLDERS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: i < MAJOR_SHAREHOLDERS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <span style={{ fontWeight: 500, color: 'var(--text)' }}>{s.name}</span>
@@ -5227,7 +5166,7 @@ function CRCLModel() {
                       <span style={{ color: s.type === 'Insider' ? 'var(--gold)' : s.type === 'Strategic' ? 'var(--violet)' : 'var(--text2)', fontSize: 12 }}>{s.type}</span>
                     </div>
                   ))}
-                  <div style={{ padding: '12px 28px', fontSize: 13, color: 'var(--text3)' }}>
+                  <div style={{ padding: '12px 24px', fontSize: 13, color: 'var(--text3)' }}>
                     Note: Class B voting capped at 30% aggregate. Founder shares sunset June 2030 or upon Allaire departure from CEO/Chair.
                   </div>
                 </div>
@@ -5242,17 +5181,17 @@ function CRCLModel() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
                 {/* Equity Offerings */}
                 <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                  <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Equity Offerings<UpdateIndicators sources="SEC" /></span>
                   </div>
                   <div style={{ padding: 0 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
                       {['Date', 'Type', 'Shares', 'Price', 'Proceeds'].map((h, i) => (
                         <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
                       ))}
                     </div>
                     {EQUITY_OFFERINGS.map((o, i) => (
-                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
                         onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                         <span style={{ fontSize: 12, color: 'var(--text2)' }}>{o.date}</span>
@@ -5262,11 +5201,11 @@ function CRCLModel() {
                         <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>${o.grossProceeds >= 1000 ? `${(o.grossProceeds / 1000).toFixed(2)}B` : `${o.grossProceeds}M`}</span>
                       </div>
                     ))}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', fontWeight: 600, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', fontWeight: 600, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
                       <span style={{ gridColumn: '1 / 5', color: 'var(--text)' }}>Total Raised</span>
                       <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>$2.5B</span>
                     </div>
-                    <div style={{ padding: '12px 28px', fontSize: 12, color: 'var(--text3)' }}>
+                    <div style={{ padding: '12px 24px', fontSize: 12, color: 'var(--text3)' }}>
                       IPO: {EQUITY_OFFERINGS[0].underwriters}<br/>
                       Follow-on: {EQUITY_OFFERINGS[1].underwriters}
                     </div>
@@ -5275,16 +5214,16 @@ function CRCLModel() {
 
                 {/* Outstanding Equity Awards */}
                 <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                  <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Outstanding Equity Awards (Jun 30, 2025)<UpdateIndicators sources="SEC" /></span>
                   </div>
                   <div style={{ padding: 0 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
                       {['Award Type', 'Class A', 'Class B', 'Total'].map((h, i) => (
                         <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 ? 'right' : 'left' }}>{h}</span>
                       ))}
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <span style={{ color: 'var(--text)' }}>Stock Options</span>
@@ -5292,7 +5231,7 @@ function CRCLModel() {
                       <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(EQUITY_AWARDS.options.classB / 1000).toFixed(1)}M</span>
                       <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.options.classB) / 1000).toFixed(1)}M</span>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <span style={{ color: 'var(--text)' }}>RSUs</span>
@@ -5300,13 +5239,13 @@ function CRCLModel() {
                       <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(EQUITY_AWARDS.rsus.classB / 1000).toFixed(1)}M</span>
                       <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>{((EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 28px', fontWeight: 600 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 24px', fontWeight: 600 }}>
                       <span style={{ color: 'var(--text)' }}>Total Outstanding</span>
                       <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.rsus.classA) / 1000).toFixed(1)}M</span>
                       <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{((EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
                       <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
                     </div>
-                    <div style={{ padding: '12px 28px', fontSize: 13, color: 'var(--text3)' }}>
+                    <div style={{ padding: '12px 24px', fontSize: 13, color: 'var(--text3)' }}>
                       Wtd-avg option exercise price: ${EQUITY_AWARDS.options.weightedAvgPrice.toFixed(2)}
                     </div>
                   </div>
@@ -5315,17 +5254,17 @@ function CRCLModel() {
 
               {/* Warrants */}
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Outstanding Warrants (Black-Scholes Valuation)<UpdateIndicators sources="SEC" /></span>
                 </div>
                 <div style={{ padding: 0 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
                     {['Grant', 'Shares (K)', 'Strike', 'Fair Value', 'Vol', 'Expiry', 'Status'].map((h, i) => (
                       <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 && i <= 4 ? 'right' : 'left' }}>{h}</span>
                     ))}
                   </div>
                   {WARRANTS.map((w, i) => (
-                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <span style={{ fontSize: 12, color: 'var(--text)' }}>{w.date}</span>
@@ -5337,7 +5276,7 @@ function CRCLModel() {
                       <span style={{ fontSize: 12, color: 'var(--gold)' }}>{w.status}</span>
                     </div>
                   ))}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 28px', fontWeight: 600 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', fontWeight: 600 }}>
                     <span style={{ color: 'var(--text)' }}>Total</span>
                     <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(WARRANTS.reduce((a, w) => a + w.shares, 0) / 1000).toFixed(1)}M</span>
                     <span />
@@ -5354,13 +5293,13 @@ function CRCLModel() {
               <>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#equity-plans</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Equity Incentive Plans (Reserved Shares)<UpdateIndicators sources="SEC" /></span>
                 </div>
-                <div style={{ padding: '24px 28px' }}>
+                <div style={{ padding: '24px 24px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                     {EQUITY_PLANS.map((p, i) => (
-                      <div key={i} style={{ background: 'var(--surface2)', padding: 20, borderRadius: 12 }}>
+                      <div key={i} style={{ background: 'var(--surface2)', padding: 24, borderRadius: 12 }}>
                       <div style={{ fontSize: 13, color: 'var(--text3)' }}>{p.plan}</div>
                       <div style={{ fontFamily: 'Space Mono', fontSize: 24, fontWeight: 700, color: 'var(--mint)' }}>
                         {(p.reserved / 1000).toFixed(1)}M
@@ -5375,18 +5314,18 @@ function CRCLModel() {
 
               {/* Pre-IPO Preferred (Historical) */}
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Pre-IPO Capital Structure (Converted at IPO)</span>
                 </div>
                 <div style={{ padding: 0 }}>
-                  <div style={{ padding: '12px 28px', fontSize: 13, color: 'var(--text2)' }}>All preferred shares converted to Class A common stock at IPO. Historical liquidation preferences totaled $1.14B across six series.</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                  <div style={{ padding: '12px 24px', fontSize: 13, color: 'var(--text2)' }}>All preferred shares converted to Class A common stock at IPO. Historical liquidation preferences totaled $1.14B across six series.</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
                     {['Series', 'Year', 'Shares (K)', 'Liq. Pref', 'Price/Share'].map((h, i) => (
                       <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 ? 'right' : 'left' }}>{h}</span>
                     ))}
                   </div>
                   {PREFERRED_STOCK.map((p, i) => (
-                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <span style={{ fontSize: 12, color: 'var(--text)' }}>{p.series}</span>
@@ -5396,7 +5335,7 @@ function CRCLModel() {
                       <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--sky)' }}>${p.pricePerShare.toFixed(2)}</span>
                     </div>
                   ))}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', padding: '12px 28px', fontWeight: 600 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', padding: '12px 24px', fontWeight: 600 }}>
                     <span style={{ gridColumn: '1 / 3', color: 'var(--text)' }}>Total</span>
                     <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{(PREFERRED_STOCK.reduce((a, p) => a + p.shares, 0) / 1000).toFixed(1)}M</span>
                     <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>${(PREFERRED_STOCK.reduce((a, p) => a + p.liquidation, 0) / 1000000).toFixed(2)}B</span>
@@ -5412,11 +5351,11 @@ function CRCLModel() {
               <>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dilution-analysis</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Fully Diluted Share Count<UpdateIndicators sources="SEC" /></span>
                 </div>
                 <div style={{ padding: 0 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
                     {['Component', 'Shares (M)', '% of Total'].map((h, i) => (
                       <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 ? 'right' : 'left' }}>{h}</span>
                     ))}
@@ -5429,7 +5368,7 @@ function CRCLModel() {
                     { label: 'Warrants (unvested)', shares: '11.0', pct: '4.0%' },
                     { label: 'Convertible Notes', shares: '~1.0', pct: '0.4%' },
                   ].map((row, i) => (
-                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <span style={{ color: 'var(--text)' }}>{row.label}</span>
@@ -5437,12 +5376,12 @@ function CRCLModel() {
                       <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>{row.pct}</span>
                     </div>
                   ))}
-                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '12px 28px', fontWeight: 600 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '12px 24px', fontWeight: 600 }}>
                     <span style={{ color: 'var(--text)' }}>Fully Diluted</span>
                     <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)' }}>~276.5</span>
                     <span style={{ textAlign: 'right', fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)' }}>100%</span>
                   </div>
-                  <div style={{ padding: '12px 28px', fontSize: 13, color: 'var(--text3)' }}>
+                  <div style={{ padding: '12px 24px', fontSize: 13, color: 'var(--text3)' }}>
                     Note: Excludes 33.9M shares reserved under Omnibus/ESPP plans not yet granted. Lock-up: ~198M shares restricted until Q3 2025 earnings or 180 days post-IPO.
                   </div>
                 </div>
@@ -5473,7 +5412,7 @@ function CRCLModel() {
               {/* Scenario Presets */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-scenarios</div>
-                <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+                <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 24 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Select Scenario</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 10, overflow: 'hidden' }}>
                     {(['bear', 'base', 'bull', 'custom'] as const).map(key => {
@@ -5508,8 +5447,8 @@ function CRCLModel() {
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-controls</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>TIME HORIZON</span></div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>TIME HORIZON</span></div>
+                    <div style={{ padding: '24px 24px' }}>
                     <div style={{ display: 'flex', gap: 8 }}>
                       {[3, 5, 7].map(yr => (
                         <button
@@ -5536,8 +5475,8 @@ function CRCLModel() {
                     </div>
                   </div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>SIMULATIONS</span></div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>SIMULATIONS</span></div>
+                    <div style={{ padding: '24px 24px' }}>
                     <div style={{ display: 'flex', gap: 8 }}>
                       {[1000, 2000, 5000].map(simCount => (
                         <button
@@ -5569,14 +5508,14 @@ function CRCLModel() {
               {/* Parameters - Model Tab Style */}
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-parameters</div>
-                <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>USDC Growth Parameters</span>
                   <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>REVENUE GROWTH MIN (%)</span></div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>REVENUE GROWTH MIN (%)</span></div>
+                    <div style={{ padding: '24px 24px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Lower bound for annual USDC revenue growth in simulation.
                     </p>
@@ -5594,7 +5533,7 @@ function CRCLModel() {
                         ][idx];
                         return (
                           <div key={opt} onClick={() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); })()} style={{
-                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
                             fontWeight: isActive ? 600 : 400,
@@ -5607,8 +5546,8 @@ function CRCLModel() {
                     </div>
                   </div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>REVENUE GROWTH MAX (%)</span></div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>REVENUE GROWTH MAX (%)</span></div>
+                    <div style={{ padding: '24px 24px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Upper bound for annual USDC revenue growth in simulation.
                     </p>
@@ -5626,7 +5565,7 @@ function CRCLModel() {
                         ][idx];
                         return (
                           <div key={opt} onClick={() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); })()} style={{
-                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
                             fontWeight: isActive ? 600 : 400,
@@ -5640,14 +5579,14 @@ function CRCLModel() {
                   </div>
                 </div>
 
-                <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Profitability Parameters</span>
                   <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>MARGIN MIN (%)</span></div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>MARGIN MIN (%)</span></div>
+                    <div style={{ padding: '24px 24px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Lower bound for EBITDA margin assumption in DCF model.
                     </p>
@@ -5665,7 +5604,7 @@ function CRCLModel() {
                         ][idx];
                         return (
                           <div key={opt} onClick={() => { setMcMarginMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMin(opt); setMcPreset('custom'); })()} style={{
-                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
                             fontWeight: isActive ? 600 : 400,
@@ -5678,8 +5617,8 @@ function CRCLModel() {
                     </div>
                   </div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>MARGIN MAX (%)</span></div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>MARGIN MAX (%)</span></div>
+                    <div style={{ padding: '24px 24px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Upper bound for EBITDA margin assumption in DCF model.
                     </p>
@@ -5697,7 +5636,7 @@ function CRCLModel() {
                         ][idx];
                         return (
                           <div key={opt} onClick={() => { setMcMarginMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMax(opt); setMcPreset('custom'); })()} style={{
-                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
                             fontWeight: isActive ? 600 : 400,
@@ -5711,14 +5650,14 @@ function CRCLModel() {
                   </div>
                 </div>
 
-                <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Parameters</span>
                   <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DISCOUNT RATE MIN (%)</span></div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DISCOUNT RATE MIN (%)</span></div>
+                    <div style={{ padding: '24px 24px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Lower bound for WACC / required return in DCF model.
                     </p>
@@ -5736,7 +5675,7 @@ function CRCLModel() {
                         ][idx];
                         return (
                           <div key={opt} onClick={() => { setMcDiscountMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMin(opt); setMcPreset('custom'); })()} style={{
-                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
                             fontWeight: isActive ? 600 : 400,
@@ -5749,8 +5688,8 @@ function CRCLModel() {
                     </div>
                   </div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DISCOUNT RATE MAX (%)</span></div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DISCOUNT RATE MAX (%)</span></div>
+                    <div style={{ padding: '24px 24px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Upper bound for WACC / required return in DCF model.
                     </p>
@@ -5768,7 +5707,7 @@ function CRCLModel() {
                         ][idx];
                         return (
                           <div key={opt} onClick={() => { setMcDiscountMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMax(opt); setMcPreset('custom'); })()} style={{
-                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
                             fontWeight: isActive ? 600 : 400,
@@ -5783,8 +5722,8 @@ function CRCLModel() {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>TERMINAL MULTIPLE MIN</span></div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>TERMINAL MULTIPLE MIN</span></div>
+                    <div style={{ padding: '24px 24px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Lower bound for exit EV/EBITDA multiple in DCF terminal value.
                     </p>
@@ -5802,7 +5741,7 @@ function CRCLModel() {
                         ][idx];
                         return (
                           <div key={opt} onClick={() => { setMcTerminalMultMin(opt); setMcPreset('custom'); }} style={{
-                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
                             fontWeight: isActive ? 600 : 400,
@@ -5815,8 +5754,8 @@ function CRCLModel() {
                     </div>
                   </div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>TERMINAL MULTIPLE MAX</span></div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>TERMINAL MULTIPLE MAX</span></div>
+                    <div style={{ padding: '24px 24px' }}>
                     <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
                       Upper bound for exit EV/EBITDA multiple in DCF terminal value.
                     </p>
@@ -5834,7 +5773,7 @@ function CRCLModel() {
                         ][idx];
                         return (
                           <div key={opt} onClick={() => { setMcTerminalMultMax(opt); setMcPreset('custom'); }} style={{
-                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                             border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                             background: isActive ? colors.bg : 'var(--surface2)',
                             fontWeight: isActive ? 600 : 400,
@@ -5859,7 +5798,7 @@ function CRCLModel() {
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-percentiles</div>
                 <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '14px 28px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '16px 24px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
                     <span style={{ textAlign: 'left' }}>Percentile</span>
                     <span style={{ textAlign: 'right' }}>Price Target</span>
                     <span style={{ textAlign: 'right' }}>vs Current</span>
@@ -5874,7 +5813,7 @@ function CRCLModel() {
                   ].map((row, i) => {
                     const pctChange = ((row.value / MARKET.price - 1) * 100);
                     return (
-                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: row.highlight ? 'var(--accent-dim)' : 'transparent', transition: 'background 0.15s', cursor: 'default' }}
+                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: row.highlight ? 'var(--accent-dim)' : 'transparent', transition: 'background 0.15s', cursor: 'default' }}
                         onMouseEnter={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
                         onMouseLeave={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
                       >
@@ -5892,7 +5831,7 @@ function CRCLModel() {
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-risk-metrics</div>
                 <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '14px 28px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '16px 24px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
                     <span style={{ textAlign: 'left' }}>Risk Metric</span>
                     <span style={{ textAlign: 'right' }}>Value</span>
                     <span style={{ textAlign: 'left' }}>Interpretation</span>
@@ -5905,7 +5844,7 @@ function CRCLModel() {
                     { label: 'VaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{mcSim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
                     { label: 'CVaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{mcSim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
                   ].map((row, i) => (
-                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '12px 28px', borderBottom: '1px solid var(--border)', transition: 'background 0.15s', cursor: 'default' }}
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', transition: 'background 0.15s', cursor: 'default' }}
                       onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
                       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
                     >
@@ -5921,8 +5860,8 @@ function CRCLModel() {
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#mc-distribution</div>
                 <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                  <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>FAIR VALUE DISTRIBUTION</span></div>
-                  <div style={{ padding: '24px 28px' }}>
+                  <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>FAIR VALUE DISTRIBUTION</span></div>
+                  <div style={{ padding: '24px 24px' }}>
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={mcSim.histogram}>
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5969,10 +5908,10 @@ function CRCLModel() {
               {/* Latest SEC Filings - Enhanced with filtering and pagination */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#sec-filings</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>SEC Filings<UpdateIndicators sources="SEC" /></span>
                 </div>
-                <div style={{ padding: '24px 28px' }}>
+                <div style={{ padding: '24px 24px' }}>
                   {/* Filter Buttons */}
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     {secFilterTypes.map(type => (
@@ -5999,13 +5938,13 @@ function CRCLModel() {
 
                   {/* Filings Grid */}
                   <div style={{ overflowX: 'auto' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '100px 80px 2fr 1fr 60px', padding: '12px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '100px 80px 2fr 1fr 60px', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
                       {['Date', 'Type', 'Description', 'Period', 'Link'].map((h, i) => (
                         <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i === 4 ? 'right' : 'left' }}>{h}</span>
                       ))}
                     </div>
                     {displayedFilings.map((filing, idx) => (
-                      <div key={idx} style={{ display: 'grid', gridTemplateColumns: '100px 80px 2fr 1fr 60px', padding: '12px 28px', borderBottom: idx < displayedFilings.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s', alignItems: 'center' }}
+                      <div key={idx} style={{ display: 'grid', gridTemplateColumns: '100px 80px 2fr 1fr 60px', padding: '12px 24px', borderBottom: idx < displayedFilings.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s', alignItems: 'center' }}
                         onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                         <span style={{ fontSize: 12, color: 'var(--text)', whiteSpace: 'nowrap' }}>{filing.date}</span>
@@ -6090,7 +6029,7 @@ function CRCLModel() {
               </div>
 
               {/* Upcoming Events */}
-              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Upcoming & Press Releases</span>
                 <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
               </div>
@@ -6098,10 +6037,10 @@ function CRCLModel() {
                 <div>
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#upcoming-events</div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Upcoming Events<UpdateIndicators sources="PR" /></span>
                     </div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
                           <div>
@@ -6141,47 +6080,40 @@ function CRCLModel() {
                 <div>
                   <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#recent-press-releases</div>
                   <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Recent Press Releases<UpdateIndicators sources="PR" /></span>
                     </div>
-                    <div style={{ padding: '24px 28px' }}>
+                    <div style={{ padding: '24px 24px' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: 11, color: 'var(--text3)' }}>Dec 12, 2025</span>
-                            <span style={{ fontSize: 11, color: 'var(--gold)' }}>Regulatory</span>
+                        {displayedPR.map((pr, i) => (
+                          <div key={i} style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date}</span>
+                              <span style={{ fontSize: 11, color: pr.color }}>{pr.category}</span>
+                            </div>
+                            <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>{pr.title}</div>
                           </div>
-                          <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>OCC Grants Preliminary Approval for National Bank Charter</div>
-                        </div>
-                        <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: 11, color: 'var(--text3)' }}>Nov 12, 2025</span>
-                            <span style={{ fontSize: 11, color: 'var(--mint)' }}>Earnings</span>
-                          </div>
-                          <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Circle Reports Q3 2025 Results: $740M Revenue, USDC at $73.7B</div>
-                        </div>
-                        <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: 11, color: 'var(--text3)' }}>Oct 29, 2025</span>
-                            <span style={{ fontSize: 11, color: 'var(--sky)' }}>Partnership</span>
-                          </div>
-                          <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Binance to Adopt USYC for Yield-Bearing Treasury Holdings</div>
-                        </div>
-                        <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: 11, color: 'var(--text3)' }}>Aug 12, 2025</span>
-                            <span style={{ fontSize: 11, color: 'var(--violet)' }}>Corporate</span>
-                          </div>
-                          <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Circle Launches Follow-on Offering (10M shares)</div>
-                        </div>
+                        ))}
                       </div>
+                      {hiddenPRCount > 0 && (
+                        <div style={{ textAlign: 'center', paddingTop: 16 }}>
+                          <button
+                            onClick={() => setShowAllPR(!showAllPR)}
+                            style={{ padding: '8px 24px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer', fontSize: 12, fontWeight: 500, transition: 'all 0.2s' }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface2)'; e.currentTarget.style.color = 'var(--text)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text3)'; }}
+                          >
+                            {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Event Timeline Section */}
-              <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Event Timeline</span>
                 <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
               </div>
@@ -6273,7 +6205,7 @@ function CRCLModel() {
               </div>
 
               <div>
-                {filteredEvents.slice().reverse().map((p, i) => {
+                {filteredEvents.map((p, i) => {
                   const idx = TIMELINE.indexOf(p);
                   const isExpanded = expanded.has(idx);
                   const toggleExpand = () => {
@@ -6333,10 +6265,10 @@ function CRCLModel() {
               {/* How to Use */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#timeline-header</div>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>How to Use This Log</span>
                 </div>
-                <div style={{ padding: '24px 28px' }}>
+                <div style={{ padding: '24px 24px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
                     <div>
                       <h4 style={{ color: 'var(--mint)', fontWeight: 500, marginBottom: 8, fontSize: 14, marginTop: 0 }}>Categories Explained</h4>
@@ -6585,640 +6517,13 @@ const CompsTab = () => {
   // ═══════════════════════════════════════════════════════════════════════════
   // COMPETITOR PROFILES
   // ═══════════════════════════════════════════════════════════════════════════
-  const COMPETITOR_PROFILES: CRCLCompetitorProfile[] = [
-    {
-      id: 'kraken',
-      name: 'Kraken',
-      description: 'Major crypto exchange and USDC/EURC distribution partner with institutional custody, DeFi yield, and tokenized equities products',
-      currentStatus: 'Active USDC/EURC distribution, DeFi Earn (USDC-based yield), xStocks tokenized equities, Ethena USDe custody partner',
-    },
-    {
-      id: 'tether',
-      name: 'Tether',
-      description: 'Largest stablecoin by AUM ($140B+), offshore operations with no US bank relationships',
-      currentStatus: 'Dominant market share but increasing regulatory scrutiny',
-    },
-    {
-      id: 'coinbase',
-      name: 'Coinbase',
-      description: 'Leading US crypto exchange and USDC distribution partner (50% revenue share)',
-      currentStatus: 'Key USDC distribution partner via Coinbase One, expanding institutional services',
-    },
-    {
-      id: 'paypal',
-      name: 'PayPal',
-      description: 'Global payments giant with PYUSD stablecoin (~$1B AUM)',
-      currentStatus: 'Distribution advantage via PayPal ecosystem but limited adoption',
-    },
-  ];
+  const COMPETITOR_PROFILES = CRCL_COMPETITOR_PROFILES;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // COMPETITOR NEWS - Add new entries at TOP (newest first)
   // NEVER delete old entries - this is an audit trail
   // ═══════════════════════════════════════════════════════════════════════════
-  const COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
-    // ═══════════════════════════════════════════════════════════════════════════
-    // ADD NEW COMPETITOR NEWS ENTRIES HERE (newest first)
-    // Format:
-    // {
-    //   date: 'YYYY-MM-DD',
-    //   competitor: 'kraken' | 'tether' | 'coinbase' | 'paypal' | 'fdusd' | 'other',
-    //   category: 'Partnership' | 'Product' | 'Regulatory' | 'Technology' | 'Financial' | 'Strategy' | 'Distribution',
-    //   headline: 'Brief headline',
-    //   details: ['Bullet point 1', 'Bullet point 2'],
-    //   implication: 'positive' | 'neutral' | 'negative',  // for CRCL
-    //   crclComparison: 'How this compares to CRCL position',
-    //   source: 'Source name',
-    //   storyId: 'groups related entries',
-    //   storyTitle: 'Display title for story group'
-    // },
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - INSTITUTIONAL BESPOKE INVESTMENT SOLUTION (Feb 5, 2026)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-02-05',
-      competitor: 'kraken',
-      category: 'Product',
-      headline: 'Kraken Institutional announces first bespoke investment solution with Bitwise Asset Management',
-      details: [
-        'Bitwise Custom Yield Strategy available to eligible institutional clients',
-        'Delivered by Bitwise as external strategy manager within Kraken\'s qualified custody, execution and risk framework',
-        'First of multiple managed strategies planned under Kraken Institutional\'s new offering framework',
-        'Head of Kraken Institutional Gurpreet Oberoi: "expanding beyond custody and execution to professionally managed opportunities"',
-        'All strategies undergo structured internal review and remain subject to ongoing oversight',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken building institutional investment products could eventually incorporate USDC-denominated strategies, expanding institutional demand for Circle\'s stablecoin infrastructure. Institutional yield strategies require stablecoin settlement rails.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-institutional',
-      storyTitle: 'Kraken Institutional Services',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - PROOF OF RESERVES DEC 2025 (Feb 5, 2026)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-02-05',
-      competitor: 'kraken',
-      category: 'Regulatory',
-      headline: 'Kraken releases December 2025 Proof of Reserves confirming 1:1+ client asset backing',
-      details: [
-        'Covers major cryptoassets including BTC, ETH, SOL, USDC, USDT, XRP and ADA',
-        'Uses Merkle tree for cryptographic verification with user-level proof',
-        'Independent third-party accountancy firm attestation',
-        'Pioneered PoR in 2014, publishes quarterly alongside financial disclosures',
-        'Accounts for total client liabilities, not just assets — includes margin, futures, and staked positions',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken\'s PoR covering both USDC and USDT demonstrates both stablecoins have significant exchange custody demand. Circle\'s own reserve transparency (monthly attestations, BlackRock-managed reserves) sets the industry standard that exchanges complement.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-institutional',
-      storyTitle: 'Kraken Institutional Services',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - WILLIAMS F1 PARTNERSHIP RENEWAL (Jan 27, 2026)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-27',
-      competitor: 'kraken',
-      category: 'Partnership',
-      headline: 'Kraken renews long-term partnership with Atlassian Williams F1 Team with front wing branding for 2026',
-      details: [
-        'Partnership since 2023 as Official Crypto and Web3 Partner, now renewed long-term',
-        'Kraken moves to front wing branding on FW48 for 2026 Formula 1 season',
-        'Grid Pass digital collectible program and Presenting Partner of Williams Fan Zones globally',
-        'Annual Rear Wing Takeover fan engagement campaigns',
-        'Part of Williams\' portfolio of major brand renewals (Duracell, Gulf Oil, VAST Data, Keeper Security)',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken\'s F1 sponsorship increases crypto brand awareness and mainstream adoption broadly, which benefits USDC as the leading regulated stablecoin. Larger Kraken user base = larger addressable market for USDC distribution.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-expansion',
-      storyTitle: 'Kraken Global Expansion & Marketing',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - DEFI EARN WITH USDC (Jan 26, 2026)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-26',
-      competitor: 'kraken',
-      category: 'Product',
-      headline: 'Kraken launches DeFi Earn with up to 8% APY on USDC through audited Veda vaults',
-      details: [
-        'Earn up to 8% APY on cash and stablecoins via audited Veda vaults supplying liquidity to onchain lending protocols',
-        'Converts user deposits to USDC, then deploys to Ethereum-based DeFi lending — directly expands USDC circulation',
-        'Three risk-managed vault options: Balanced Yield (Chaos Labs), Boosted Yield (Chaos Labs), Advanced Strategies (Sentora)',
-        'Available in 48 US states (excl. NY, ME), Canada, and European Economic Area',
-        'Withdrawals typically instant with minimal lock-up periods',
-      ],
-      implication: 'positive',
-      crclComparison: 'Directly expands USDC demand and circulation. Kraken converts user cash deposits into USDC for DeFi deployment, creating net new USDC minting pressure. Validates Circle\'s ecosystem and USDC\'s role as DeFi settlement currency.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-usdc',
-      storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - USDC ON ALGORAND (Jan 22, 2026)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-22',
-      competitor: 'kraken',
-      category: 'Distribution',
-      headline: 'Kraken adds USDC deposits and withdrawals on Algorand network',
-      details: [
-        'USDC funding via Algorand now live on Kraken platform',
-        'Expands multi-chain USDC accessibility for Kraken users',
-        'Algorand: Layer-1 with pure proof-of-stake, instant finality, and minimal fees',
-        'Adds another low-cost, fast settlement option for USDC transfers',
-      ],
-      implication: 'positive',
-      crclComparison: 'Every new chain support on major exchanges expands USDC multi-chain reach. Kraken adding Algorand USDC support increases Circle\'s distribution footprint and makes USDC accessible via an additional low-fee, high-speed network.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-usdc',
-      storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - ATLETICO MADRID MEMECOIN SHOWDOWN (Jan 21, 2026)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-21',
-      competitor: 'kraken',
-      category: 'Partnership',
-      headline: 'Kraken announces memecoin showdown with Atletico Madrid jersey sleeve placement as prize',
-      details: [
-        'Memecoins compete by trading volume on Kraken (Jan 22 – Feb 15, 2026)',
-        'Winner replaces Kraken logo on Atletico de Madrid shirt sleeve for Barcelona match (Apr 4-5)',
-        'Participating tokens: BERT, GIGA, PONKE, UFD, USDUC, USELESS',
-        'Kraken is existing Atletico de Madrid partner — extends sports marketing reach',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken\'s sports marketing partnerships drive platform trading activity and user acquisition. Growing exchange volume supports USDC\'s role as a primary funding and trading pair settlement currency.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-expansion',
-      storyTitle: 'Kraken Global Expansion & Marketing',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - CRYPTO 2026 OUTLOOK (Jan 15, 2026)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-15',
-      competitor: 'kraken',
-      category: 'Strategy',
-      headline: 'Kraken economist outlines 2026 outlook: stablecoin liquidity at all-time highs, tokenization growing 3x',
-      details: [
-        'Stablecoin liquidity at all-time highs heading into 2026 — systemic risk indicators contained',
-        'Stablecoin legislation (GENIUS Act) already reshaping onchain dollar liquidity',
-        'Tokenization of real-world assets grew from ~$5.6B to ~$19B in a single year',
-        'CLARITY Act could provide framework for digital commodities and exchanges, accelerating capital formation',
-        'Regulatory clarity shifting from "theoretical tailwind" to "tangible" in 2026',
-        'DeFi tokenomics evolving: Uniswap-style fee sharing could reprice governance tokens toward durable valuation frameworks',
-      ],
-      implication: 'positive',
-      crclComparison: 'Kraken\'s research highlighting stablecoin liquidity at ATH and regulatory clarity as key 2026 themes directly validates Circle\'s growth thesis. GENIUS Act stablecoin legislation benefits USDC as the compliance-first market leader. RWA tokenization growth ($5.6B→$19B) expands use cases for USDC settlement.',
-      source: 'Kraken Blog',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - ETHENA USDE CUSTODY (Jan 6, 2026)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-01-06',
-      competitor: 'kraken',
-      category: 'Product',
-      headline: 'Kraken selected as custody partner for Ethena\'s USDe synthetic dollar stablecoin',
-      details: [
-        'Approved by Ethena Risk Committee (ERC) for custody of USDe backing assets',
-        'Assets held in fully segregated, bankruptcy-remote, cold-storage vaults',
-        'Kraken Custody operated by US state-chartered bank with HSM + MPC security',
-        'Monthly custodian attestations and weekly Proof of Reserves for USDe transparency',
-        'USDe is a synthetic dollar using delta-neutral derivatives strategy — different model than USDC\'s reserve-backed approach',
-      ],
-      implication: 'negative',
-      crclComparison: 'Kraken providing institutional custody for USDe (Ethena) signals exchange willingness to support stablecoin alternatives to USDC. USDe\'s synthetic dollar model competes for the same dollar-denominated DeFi demand that drives USDC circulation growth.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-institutional',
-      storyTitle: 'Kraken Institutional Services',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - EUROPE 2025 EXPANSION (Dec 31, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-31',
-      competitor: 'kraken',
-      category: 'Regulatory',
-      headline: 'Kraken completes pivotal 2025 European expansion with MiCA and MiFID compliance',
-      details: [
-        'Regulatory clarity achieved via MiCA and MiFID frameworks across EU',
-        'Expanded presence across France, Ireland, Germany, Netherlands, Poland, Spain and beyond',
-        'Built local teams and launched new products for European markets',
-        '2025 Celebration Tour connecting with communities in Riga, Lisbon, Dublin, Warsaw, Frankfurt',
-        'Positions Kraken as regulated local crypto partner across the EU',
-      ],
-      implication: 'positive',
-      crclComparison: 'Kraken\'s EU expansion under MiCA directly supports EURC distribution. As Kraken grows its European user base with full regulatory compliance, it creates a larger addressable market for Circle\'s EURC stablecoin and supports the euro-denominated stablecoin ecosystem.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-expansion',
-      storyTitle: 'Kraken Global Expansion & Marketing',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - XSTOCKS ON TON BLOCKCHAIN (Dec 18, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-18',
-      competitor: 'kraken',
-      category: 'Technology',
-      headline: 'Kraken\'s xStocks tokenized equities launch on TON blockchain reaching Telegram\'s 1B users',
-      details: [
-        'Fully collateralized tokenized stocks and ETFs deployed on TON blockchain',
-        'Accessible via non-custodial TON Wallet embedded in Telegram — nearly 100M existing users',
-        'Over $180M in tokenized assets onchain with ~50K unique wallet addresses',
-        'Multichain: now on Solana, Ethereum, and TON (with Mantle and TRON underway)',
-        'Kraken Co-CEO Arjun Sethi: "financial assets move onto open networks as neutral, composable building blocks"',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken\'s xStocks tokenized equities compete in the broader RWA tokenization space alongside Circle\'s vision. However, equity tokenization and stablecoin infrastructure serve different functions — USDC could benefit as the settlement currency of choice for tokenized asset markets.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-xstocks',
-      storyTitle: 'Kraken Tokenized Equities (xStocks)',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - ALPACA XSTOCKS PARTNERSHIP (Dec 17, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-17',
-      competitor: 'kraken',
-      category: 'Partnership',
-      headline: 'Kraken deepens Alpaca partnership as preferred venue for xStocks tokenized equities',
-      details: [
-        'Alpaca becomes preferred venue for sourcing and custodying underlying equities backing xStocks 1:1',
-        'xStocks surpassed $10B in combined transaction volume since June 2025 launch',
-        'Real-time mint and redeem capabilities via Alpaca\'s Instant Tokenization Network (ITN)',
-        'Plans to expand beyond equities to broader suite of tokenized securities and real-world assets',
-        'Kraken recently announced acquisition of Backed Finance to unify xStocks issuance, trading, and settlement',
-      ],
-      implication: 'neutral',
-      crclComparison: 'xStocks\' $10B+ volume demonstrates growing demand for tokenized financial assets onchain. As RWA tokenization scales, USDC could benefit as the primary settlement and liquidity currency for tokenized asset markets. Circle and Kraken could be complementary infrastructure providers.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-xstocks',
-      storyTitle: 'Kraken Tokenized Equities (xStocks)',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - MAKER FEE PROGRAM UPDATE (Dec 17, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-17',
-      competitor: 'kraken',
-      category: 'Financial',
-      headline: 'Kraken optimizes maker fee incentives, graduates 6 high-volume trading pairs',
-      details: [
-        '6 trading pairs moved to regular maker fee schedule after achieving self-sustaining liquidity',
-        'Graduated pairs demonstrated $50M+ 30-day volume with $100K+ market depth',
-        'Maker rebates continue on 425+ other trading pairs to support liquidity development',
-        'Indicates growing platform maturity and organic trading activity',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken\'s liquidity maturation across 425+ trading pairs creates deep markets that benefit USDC-denominated trading. Healthy exchange liquidity supports USDC\'s role as a primary trading settlement and funding currency.',
-      source: 'Kraken Blog',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - MOBILE PERFORMANCE ENGINEERING (Dec 17, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-17',
-      competitor: 'kraken',
-      category: 'Technology',
-      headline: 'Kraken engineering details Maestro-based mobile performance regression prevention system',
-      details: [
-        'App Render Complete and Navigation Total Blocking Time as primary mobile performance vitals',
-        'Automated Maestro benchmarks for every merge with statistical significance testing',
-        'Network traffic recording and replay to isolate mobile code changes from backend variability',
-        'Moving average alerting: fires when metric regresses >10% for 2+ consecutive runs',
-        'React Native New Architecture adoption for baseline performance improvement',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken investing in mobile app performance engineering improves the user experience for USDC trading and transactions. Better app reliability lowers friction for retail users to on/off-ramp into USDC.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-institutional',
-      storyTitle: 'Kraken Institutional Services',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - USDG MARGIN COLLATERAL (Dec 10, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-10',
-      competitor: 'kraken',
-      category: 'Product',
-      headline: 'Kraken adds Global Dollar (USDG) as margin and futures collateral currency with 1% haircut',
-      details: [
-        'USDG (Global Dollar) added to margin and futures collateral lineup — now 50+ options',
-        '1% haircut — same as other stablecoins like USDC and USDT',
-        'Collateral currencies allow margin trading without selling underlying assets',
-        'Both unstaked and Kraken Rewards assets eligible as margin collateral',
-      ],
-      implication: 'negative',
-      crclComparison: 'Kraken adding USDG as collateral alongside USDC increases stablecoin competition for exchange use cases. Each new stablecoin collateral option dilutes USDC\'s share of margin funding. However, USDC\'s regulatory moat and Circle partnership likely maintain preferential positioning.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-usdc',
-      storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - USDT0 ON PLASMA (Dec 10, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-10',
-      competitor: 'kraken',
-      category: 'Distribution',
-      headline: 'Kraken supports USDT0 deposits and withdrawals on Plasma blockchain',
-      details: [
-        'USDT0 funding via Plasma network now live on Kraken',
-        'USDT0 is unified liquidity network for USDT — simplifies cross-chain movement without fragmented pools',
-        'Plasma is purpose-built blockchain for high-volume, low-cost stablecoin activity',
-        'Serves as core settlement layer for instant digital dollar payments',
-      ],
-      implication: 'negative',
-      crclComparison: 'Kraken supporting USDT0 on a stablecoin-optimized chain strengthens Tether\'s cross-chain distribution advantage. USDT0\'s unified liquidity model competes with Circle\'s CCTP for cross-chain USDC interoperability. Plasma as a stablecoin-first chain could favor USDT settlement.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-usdc',
-      storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - AVELACOM ULTRA-LOW-LATENCY (Dec 8, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-08',
-      competitor: 'kraken',
-      category: 'Technology',
-      headline: 'Kraken partners with Avelacom for ultra-low-latency institutional trading connectivity',
-      details: [
-        'Avelacom provides high-performance connectivity to Kraken\'s matching engine',
-        'London-Tokyo route achieves sub-138ms round-trip latency over fiber',
-        'Hybrid fiber/wireless routes reduce latency even further for Tokyo-based exchanges',
-        'Supports cross-venue arbitrage, hedging, and multi-venue liquidity aggregation strategies',
-        '99.9% uptime with dedicated 24/7 support',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken\'s institutional-grade connectivity infrastructure attracts high-frequency and institutional traders who require stablecoin settlement rails. Faster execution and deeper liquidity on Kraken supports USDC trading pair volume.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-institutional',
-      storyTitle: 'Kraken Institutional Services',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - COLOMBIA EXPANSION (Dec 4, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-04',
-      competitor: 'kraken',
-      category: 'Distribution',
-      headline: 'Kraken expands in Colombia with local COP payment rails and auto-conversion to USD',
-      details: [
-        'Colombian clients can deposit COP directly through trusted domestic payment methods',
-        'Deposits automatically converted to USD at competitive, transparent exchange rates',
-        'Eliminates need for international wire transfers',
-        'Access to 500+ digital assets and global liquidity',
-        'Part of broader Latin America strategy including Argentina, Mexico, and Colombia',
-      ],
-      implication: 'positive',
-      crclComparison: 'Kraken\'s Latin America expansion brings new users who need USD-denominated stablecoins for cross-border transactions and savings. Colombia\'s growing remittance and stablecoin demand is a natural fit for USDC adoption through Kraken\'s platform.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-expansion',
-      storyTitle: 'Kraken Global Expansion & Marketing',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - DEUTSCHE BÖRSE PARTNERSHIP (Dec 4, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-04',
-      competitor: 'kraken',
-      category: 'Partnership',
-      headline: 'Kraken and Deutsche Börse announce strategic partnership bridging traditional and digital markets',
-      details: [
-        'Integration with 360T — one of world\'s largest FX trading venues — for bank-grade FX liquidity',
-        'Kraken Embed to expand institutional crypto access across Deutsche Börse Group network',
-        'Plans for Eurex-listed derivatives on Kraken (subject to regulatory approval)',
-        'Integration of xStocks within 360X tokenized asset ecosystem',
-        'Clearstream and Crypto Finance for institutional custody',
-        'Two-way gateway connecting U.S. and European institutional markets',
-      ],
-      implication: 'positive',
-      crclComparison: 'Deutsche Börse partnership massively expands Kraken\'s institutional reach across European TradFi. 360T FX integration improves fiat on-ramp efficiency — potential to streamline USDC minting/redemption for institutions. Eurex derivatives and Clearstream custody create new institutional demand for stablecoin settlement.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-institutional',
-      storyTitle: 'Kraken Institutional Services',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - XSTOCKS 24/7 TRADING (Dec 3, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-03',
-      competitor: 'kraken',
-      category: 'Product',
-      headline: 'Kraken Pro enables 24/7 trading for top 10 xStocks tokenized equities',
-      details: [
-        'Full 24/7 trading coverage for TSLAx, QQQx, SPYx, NVDAx, CRCLx, AAPLx, HOODx, MSTRx, GLDx, GOOGLx',
-        'Previously available 24/5 — now includes weekends and public holidays',
-        'On-chain 24/7 settlement combined with Kraken Pro\'s institutional-grade execution',
-        'Phase one of broader rollout to additional tokenized stocks and ETFs',
-      ],
-      implication: 'neutral',
-      crclComparison: 'CRCLx is among the top 10 xStocks with 24/7 trading — directly increases liquidity and accessibility for tokenized Circle equity exposure. 24/7 tokenized equity markets likely require stablecoin settlement rails, benefiting USDC infrastructure.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-xstocks',
-      storyTitle: 'Kraken Tokenized Equities (xStocks)',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - BACKED ACQUISITION (Dec 2, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-02',
-      competitor: 'kraken',
-      category: 'Strategy',
-      headline: 'Kraken to acquire Backed Finance, unifying xStocks issuance, trading and settlement',
-      details: [
-        'xStocks surpassed $10B combined exchange and onchain volume within 6 months of launch',
-        'Acquisition unifies issuance, trading, and settlement under Kraken',
-        'xStocks live on Solana and Ethereum — TON, Tron, Mantle, BNB Chain integrations coming',
-        'xStocks Alliance ecosystem spans blockchain foundations, trading venues, and consumer apps',
-        'Plans to integrate xStocks into Krak money app for hold-and-spend functionality',
-        'Over 60 tokenized equities and ETFs backed 1:1 by underlying asset',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken vertically integrating tokenized equity infrastructure accelerates RWA tokenization. xStocks on Ethereum and multichain expansion could drive demand for USDC as the primary settlement currency for tokenized asset markets. Circle\'s CCTP could be the cross-chain USDC bridge for xStocks liquidity.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-xstocks',
-      storyTitle: 'Kraken Tokenized Equities (xStocks)',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - MARKET PARTICIPATION PROGRAM (Dec 1, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-12-01',
-      competitor: 'kraken',
-      category: 'Financial',
-      headline: 'Kraken launches Market Participation Program with equity-linked warrant incentives for top traders',
-      details: [
-        'Largest clients by trading volume can qualify for Kraken-equity-linked warrants',
-        'First-of-its-kind equity incentive approach among global Tier 1 crypto exchanges',
-        'Transparent, time-bound, rule-based structure open to qualified participants',
-        'Designed to attract and retain most active trading participants and improve market liquidity',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken incentivizing high-volume market makers with equity warrants should deepen liquidity across trading pairs including USDC pairs. Better market-making improves USDC price stability and reduces spreads for users, supporting USDC\'s utility as a trading settlement currency.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-institutional',
-      storyTitle: 'Kraken Institutional Services',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - EURC MARGIN COLLATERAL (Nov 24, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-11-24',
-      competitor: 'kraken',
-      category: 'Product',
-      headline: 'Kraken adds Circle\'s EURC as margin and futures collateral currency with 1% haircut',
-      details: [
-        'EURC (Euro Finance by Circle) added to margin collateral lineup — now 54 options',
-        '1% haircut — same tier as USDC, USDT, and other major stablecoins',
-        'Enables Euro-denominated margin trading without selling EURC holdings',
-        'Supports hedging, short selling, and leveraged strategies using EURC collateral',
-      ],
-      implication: 'positive',
-      crclComparison: 'Directly bullish for Circle. Kraken adding EURC as margin collateral validates Circle\'s euro stablecoin as institutional-grade collateral alongside USDC. Expands EURC utility beyond simple payments into derivatives and leveraged trading — a significant use case expansion for Circle\'s euro product.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-usdc',
-      storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - RAMP API LAUNCH (Nov 20, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-11-20',
-      competitor: 'kraken',
-      category: 'Distribution',
-      headline: 'Kraken launches Ramp: developer-friendly API for fiat-to-crypto on/off-ramps across 400+ assets',
-      details: [
-        'Single API + SDK for any platform to integrate buy/sell crypto flows',
-        '24+ payment methods: cards, ACH, PIX, SEPA, Apple Pay, Google Pay and more',
-        '400+ assets across 100+ blockchains supported',
-        'Targets fintechs, banks, wallets, protocols, exchanges, GameFi, and developers',
-        'Kraken manages compliance, licensing, fraud prevention, and payment operations',
-      ],
-      implication: 'positive',
-      crclComparison: 'Kraken Ramp as B2B infrastructure for fiat-to-crypto creates a massive new distribution channel for USDC. Every fintech, wallet, or protocol integrating Ramp could offer USDC on/off-ramp to their users. Complementary to Circle Mint — Ramp handles consumer fiat while Circle Mint handles institutional minting.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-expansion',
-      storyTitle: 'Kraken Global Expansion & Marketing',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - CUSTODY EUROPE MICA (Nov 19, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-11-19',
-      competitor: 'kraken',
-      category: 'Regulatory',
-      headline: 'Kraken expands custody to Europe under MiCA via Payward Europe Solutions Limited (Ireland)',
-      details: [
-        'PESL authorized and regulated by Central Bank of Ireland under MiCA',
-        'Client assets fully segregated from PESL\'s and Kraken exchange\'s assets',
-        'Independent audits and transparent reserves with MiCA-compliant governance',
-        'Unified technical architecture with Kraken Financial in the U.S.',
-        'Serves institutional clients: fiduciaries, funds, and corporate treasuries across EEA',
-      ],
-      implication: 'positive',
-      crclComparison: 'MiCA-regulated custody in the EEA creates institutional-grade infrastructure for holding USDC and EURC. As European institutions gain regulated custody access, demand for Circle\'s MiCA-compliant stablecoins (USDC and EURC issued under French EMI license) should grow.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-institutional',
-      storyTitle: 'Kraken Institutional Services',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - XSTOCKS $10B VOLUME (Nov 12, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-11-12',
-      competitor: 'kraken',
-      category: 'Product',
-      headline: 'xStocks surpasses $10B total volume with nearly $2B onchain — 45K+ unique holders in 135 days',
-      details: [
-        '$10B combined centralized and decentralized exchange volume in 135 days since launch',
-        'Nearly $2B in onchain activity across Solana and Ethereum',
-        '45,000+ unique onchain holders with $135M+ aggregated AUM',
-        'Partners include Alchemy Pay, Bybit, Gate.io, Phantom Wallet, Trust Wallet, Wallet in Telegram',
-        'Each xStock fully backed 1:1 by underlying equity in bankruptcy-remote structure',
-      ],
-      implication: 'neutral',
-      crclComparison: 'xStocks\' rapid adoption ($10B in 135 days) validates demand for tokenized real-world assets. As the RWA tokenization ecosystem scales, USDC is positioned to be the primary settlement currency. Circle\'s own RWA partnerships (BlackRock BUIDL, Hashnote USYC) are complementary infrastructure.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-xstocks',
-      storyTitle: 'Kraken Tokenized Equities (xStocks)',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - BSO TOKYO/LONDON CONNECTIVITY (Nov 4, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-11-04',
-      competitor: 'kraken',
-      category: 'Technology',
-      headline: 'Kraken partners with BSO for ultra-low-latency Tokyo/London connectivity under 140ms round-trip',
-      details: [
-        'Purpose-built ultra-low-latency route between Tokyo and London — sub-140ms round-trip',
-        '60-80ms faster than previously available standard routes',
-        'Physical data center access at AT TOKYO CC1/CC2, Equinix TY2/TY3 plus cloud on-ramp via AWS Tokyo',
-        '99.99% uptime with automatic rerouting and SLA-backed performance',
-        'Targets market makers, quant funds, and HFT firms for cross-venue strategies',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken attracting HFT and institutional traders with sub-140ms connectivity improves exchange liquidity. High-frequency trading strategies often use stablecoins for rapid settlement — USDC\'s deep liquidity on Kraken benefits from faster connectivity infrastructure.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-institutional',
-      storyTitle: 'Kraken Institutional Services',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KRAKEN - SEPTEMBER 2025 PROOF OF RESERVES (Oct 22, 2025)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2025-10-22',
-      competitor: 'kraken',
-      category: 'Regulatory',
-      headline: 'Kraken releases September 2025 Proof of Reserves covering BTC, ETH, SOL, USDC, USDT, XRP, ADA',
-      details: [
-        'Attested as of September 30, 2025 — client assets backed 1:1 and beyond',
-        'Covers spot, margin, futures, and staked asset balances',
-        'Merkle tree cryptographic verification with user-level proof tool',
-        'Independent third-party accountancy firm attestation — published quarterly',
-        'Pioneered PoR in 2014 — longest-running transparency program among major exchanges',
-      ],
-      implication: 'neutral',
-      crclComparison: 'Kraken\'s quarterly PoR covering USDC demonstrates exchange commitment to stablecoin reserve transparency. Complements Circle\'s own monthly attestation standard. Exchange-level transparency for USDC holdings reinforces institutional confidence in USDC as a trustworthy reserve asset.',
-      source: 'Kraken Blog',
-      storyId: 'kraken-institutional',
-      storyTitle: 'Kraken Institutional Services',
-    },
-  ];
+  const COMPETITOR_NEWS = CRCL_COMPETITOR_NEWS;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // COMPETITOR NEWS HELPERS
@@ -7303,7 +6608,7 @@ const CompsTab = () => {
           const threatBadgeBg = qual ? (qual.threat.toLowerCase() === 'high' ? 'rgba(255,123,114,0.15)' : qual.threat.toLowerCase() === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)') : '';
           const threatBadgeColor = qual ? (qual.threat.toLowerCase() === 'high' ? 'var(--coral)' : qual.threat.toLowerCase() === 'medium' ? 'var(--gold)' : 'var(--mint)') : '';
           return (
-            <div key={i} style={{ background: cardBg, border: '1px solid var(--border)', borderRadius: 16, padding: 20, borderLeft: cardBorderLeft }}>
+            <div key={i} style={{ background: cardBg, border: '1px solid var(--border)', borderRadius: 16, padding: 24, borderLeft: cardBorderLeft }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{p.name}</div>
@@ -7314,7 +6619,7 @@ const CompsTab = () => {
                   <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{currentPeers.name}</span>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 6, padding: 10, background: 'var(--surface2)', borderRadius: 10, marginBottom: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10, marginBottom: 12 }}>
                 <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{p.cap ? `$${p.cap}B` : 'Private'}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Mkt Cap</div></div>
                 <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${p.rev}B</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Revenue</div></div>
                 <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{p.ebitda > 0 ? `$${p.ebitda}B` : p.ebitda < 0 ? `($${Math.abs(p.ebitda)}B)` : '—'}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>EBITDA</div></div>
@@ -7340,7 +6645,7 @@ const CompsTab = () => {
             const tBadgeBg = threatLevel === 'high' ? 'rgba(255,123,114,0.15)' : threatLevel === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)';
             const tBadgeColor = threatLevel === 'high' ? 'var(--coral)' : threatLevel === 'medium' ? 'var(--gold)' : 'var(--mint)';
             return (
-            <div key={`extra-${i}`} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 20, borderLeft: `4px solid ${borderLeftColor}` }}>
+            <div key={`extra-${i}`} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 24, borderLeft: `4px solid ${borderLeftColor}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{k.name}</div>
@@ -7362,7 +6667,7 @@ const CompsTab = () => {
 
       {/* Circle-Specific Business Model Metrics */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#business-model-metrics</div>
-      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Circle Business Model Metrics<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Unique metrics for stablecoin issuers — monetization of reserves</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
@@ -7407,27 +6712,27 @@ const CompsTab = () => {
 
       {/* Multi-Methodology Valuation Matrix */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
-      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 24 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Circle's value under different peer multiples (current: $18.9B)</p>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Method</th>
-              <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Peer Basis</th>
-              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
-              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Implied Value</th>
-              <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Premium/(Discount)</th>
+              <th style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Method</th>
+              <th style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Peer Basis</th>
+              <th style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
+              <th style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Implied Value</th>
+              <th style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Premium/(Discount)</th>
             </tr>
           </thead>
           <tbody>
             {VALUATION_MATRIX.map((v, i) => (
               <tr key={i}>
-                <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</td>
-                <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</td>
-                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.multiple}x</td>
-                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${v.implied.toFixed(1)}B</td>
-                <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                <td style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</td>
+                <td style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</td>
+                <td style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.multiple}x</td>
+                <td style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>${v.implied.toFixed(1)}B</td>
+                <td style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
                 </td>
               </tr>
@@ -7438,7 +6743,7 @@ const CompsTab = () => {
 
       {/* Growth vs P/S Scatter Plot */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#growth-vs-ps</div>
-      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 24 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Growth vs. P/S Multiple<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Circle's positioning relative to peers (bubble size = market cap)</p>
         <div style={{ height: 300 }}>
@@ -7508,29 +6813,29 @@ const CompsTab = () => {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Segment</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Metric</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Value</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Segment</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Metric</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Multiple</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Value</th>
                 </tr>
               </thead>
               <tbody>
                 {SOTP.map((s, i) => (
                   <tr key={i}>
-                    <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                    <td style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
                       <div style={{ fontWeight: 500 }}>{s.segment}</div>
                       <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
                     </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.metric}</td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.multiple}</td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>
+                    <td style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.metric}</td>
+                    <td style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{s.multiple}</td>
+                    <td style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>
                       {s.value ? `$${s.value}B` : s.valueLow && s.valueHigh ? `$${s.valueLow}-${s.valueHigh}B` : '—'}
                     </td>
                   </tr>
                 ))}
                 <tr style={{ fontWeight: 600 }}>
-                  <td colSpan={3} style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>SOTP Range</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>$15.5-17.5B</td>
+                  <td colSpan={3} style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>SOTP Range</td>
+                  <td style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: 'var(--mint)' }}>$15.5-17.5B</td>
                 </tr>
               </tbody>
             </table>
@@ -7551,22 +6856,22 @@ const CompsTab = () => {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Date</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Target</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Value</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Type</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Date</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Target</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Value</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)' }}>Type</th>
                 </tr>
               </thead>
               <tbody>
                 {TRANSACTIONS.map((t, i) => (
                   <tr key={i}>
-                    <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{t.date}</td>
-                    <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                    <td style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{t.date}</td>
+                    <td style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
                       <div style={{ fontWeight: 500 }}>{t.target}</div>
                       {t.notes && <div style={{ fontSize: 11, color: 'var(--text3)' }}>{t.notes}</div>}
                     </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{t.value ? `$${t.value}B` : '—'}</td>
-                    <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}><span style={{
+                    <td style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{t.value ? `$${t.value}B` : '—'}</td>
+                    <td style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}><span style={{
                       fontSize: 10,
                       padding: '3px 8px',
                       borderRadius: 4,
@@ -7586,26 +6891,26 @@ const CompsTab = () => {
 
       {/* Sensitivity Matrix */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#valuation-sensitivity</div>
-      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 24 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>Valuation Sensitivity: USDC × Interest Rates<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Implied enterprise value at Coinbase P/S multiple (13x net revenue)</p>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>USDC ($B) ↓ / Rate → </th>
-                {SENSITIVITY_RATES.map((r, idx) => <th key={r} style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', ...(idx === SENSITIVITY_RATES.length - 1 ? { borderRadius: '0 10px 0 0' } : {}) }}>{r}%</th>)}
+                <th style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>USDC ($B) ↓ / Rate → </th>
+                {SENSITIVITY_RATES.map((r, idx) => <th key={r} style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', ...(idx === SENSITIVITY_RATES.length - 1 ? { borderRadius: '0 10px 0 0' } : {}) }}>{r}%</th>)}
               </tr>
             </thead>
             <tbody>
               {SENSITIVITY_USDC.map(usdc => (
                 <tr key={usdc}>
-                  <td style={{ padding: '14px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 600 }}>${usdc}B</td>
+                  <td style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 600 }}>${usdc}B</td>
                   {SENSITIVITY_RATES.map(rate => {
                     const val = calcSensitivity(usdc, rate, 13);
                     const isNear = Math.abs(usdc - 73.7) < 15 && Math.abs(rate - 4.0) < 0.5;
                     return (
-                      <td key={rate} style={{ padding: '14px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, ...(isNear ? { background: 'var(--accent-dim)', fontWeight: 600, color: 'var(--accent)' } : {}) }}>
+                      <td key={rate} style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, ...(isNear ? { background: 'var(--accent-dim)', fontWeight: 600, color: 'var(--accent)' } : {}) }}>
                         ${val.toFixed(1)}B
                       </td>
                     );
@@ -7622,7 +6927,7 @@ const CompsTab = () => {
 
       {/* Historical Multiple Tracking */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#ps-multiple-history</div>
-      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 24 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>P/S Multiple Since IPO<UpdateIndicators sources={['WS']} /></div>
         <div style={{ height: 280 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -7648,7 +6953,7 @@ const CompsTab = () => {
       </div>
 
       {/* Rule of 40 Analysis */}
-      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 20 }}>
+      <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: 24 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Rule of 40 Analysis</div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>Growth Rate + Profit Margin &ge; 40% indicates healthy SaaS/fintech</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
@@ -7673,7 +6978,7 @@ const CompsTab = () => {
 
       {/* Competitor News Intelligence Section - Eyebrow + Title + Dot Header */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-news</div>
-      <div style={{ padding: '28px 0 12px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+      <div style={{ padding: '32px 0 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Competitive Intelligence<UpdateIndicators sources="PR" /></div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
           <h3 style={{ fontSize: 24, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.3px' }}>Competitor News<span style={{ color: 'var(--accent)' }}>.</span></h3>
@@ -7682,12 +6987,12 @@ const CompsTab = () => {
 
       {/* Competitor Filter - Card container + pill buttons */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-filter</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 28px', marginTop: 8 }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '24px 24px', marginTop: 8 }}>
         <p style={{ color: 'var(--text2)', fontSize: 13, lineHeight: 1.6, margin: '0 0 4px' }}>Track what peer companies are doing — stablecoins, exchanges, regulatory moves affecting USDC market position.</p>
         <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', margin: '0 0 16px' }}>Company-level news affecting CRCL's competitive positioning</p>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)' }}>Filter by Competitor</span>
-          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} style={{ fontSize: 10, padding: '3px 10px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}>Clear</button>}
+          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} style={{ fontSize: 10, padding: '4px 12px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}>Clear</button>}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {(() => { const isActive = competitorFilter === 'all'; return (
@@ -7756,7 +7061,7 @@ const CompsTab = () => {
       {/* News Timeline - Flat list */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
         {filteredCompNews.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 40 }}>
+          <div style={{ textAlign: 'center', padding: 48 }}>
             <p style={{ color: 'var(--text3)' }}>No competitor news matching current filters.</p>
           </div>
         ) : (
@@ -7768,7 +7073,7 @@ const CompsTab = () => {
             return (
               <div key={i} role="button" tabIndex={0}
                 aria-label={`${news.headline} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                style={{ padding: '16px 28px', cursor: 'pointer', borderLeft: `3px solid ${accentColor}`, borderBottom: i < filteredCompNews.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                style={{ padding: '16px 24px', cursor: 'pointer', borderLeft: `3px solid ${accentColor}`, borderBottom: i < filteredCompNews.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
                 onClick={() => { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); }}
                 onKeyDown={(e) => { if (e.key === 'Enter') { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); } }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
@@ -7809,7 +7114,7 @@ const CompsTab = () => {
 
       {/* Competitor Profiles (Reference) */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-profiles</div>
-      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Competitor Profiles</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {COMPETITOR_PROFILES.map(comp => (
@@ -7857,63 +7162,7 @@ const WallStreetTab = () => {
   // NEVER delete historical reports - this is an audit trail
   // ═══════════════════════════════════════════════════════════════════════════
   
-  const ANALYST_COVERAGE: AnalystCoverage[] = [
-    // ═══════════════════════════════════════════════════════════════════════════
-    // EXAMPLE RESEARCH - Placeholder (Replace with actual coverage when available)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      firm: 'Example Research',
-      analyst: 'Analyst Name',
-      coverageSince: 'December 2025',
-      currentPT: 40,
-      currentRating: 'Buy',
-      currentRatingNormalized: 'bullish',
-      reports: [
-        // === Dec 1, 2025 - Example Initiation (PLACEHOLDER) ===
-        {
-          date: '2025-12-01',
-          action: 'Initiation',
-          priceTarget: 40,
-          previousTarget: null,
-          rating: 'Buy',
-          ratingNormalized: 'bullish',
-          reportTitle: 'Circle Internet Group - Initiation of Coverage (Example)',
-          source: 'Example Source',
-          isFullReport: true,
-          thesis: 'Placeholder entry - replace with actual analyst reports as they become available. Circle is well-positioned to benefit from stablecoin adoption and regulatory clarity.',
-          reportSummary: `**PLACEHOLDER REPORT**
-This is an example entry demonstrating the Wall Street coverage format. Replace with actual analyst reports when available.
-
-**VALUATION**
-Example methodology: P/S Multiple on forward revenue estimates.
-
-**KEY DRIVERS**
-USDC market share growth, reserve yield optimization, GENIUS Act implementation, international expansion.`,
-          assumptions: [
-            { label: 'USDC Market Share', value: '30%' },
-            { label: 'Revenue Multiple', value: '8x' },
-          ],
-          catalysts: [
-            'IPO lockup expiry',
-            'GENIUS Act implementation',
-            'International expansion',
-            'New banking partnerships',
-          ],
-          risks: [
-            'Stablecoin competition from Tether',
-            'Regulatory uncertainty',
-            'Interest rate compression',
-            'Crypto market volatility',
-          ],
-          methodology: 'P/S Multiple on 2026E Revenue',
-          fullNotes: `EXAMPLE NOTES:
-This is placeholder content. Replace with actual analyst report details when coverage begins.
-
-Source: Example Research`
-        },
-      ]
-    },
-  ];
+  const ANALYST_COVERAGE = CRCL_ANALYST_COVERAGE;
 
   return (
     <>

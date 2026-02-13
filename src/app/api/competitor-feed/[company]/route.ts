@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Per-company competitor feed API
- * Fetches 5 press releases + 5 latest news for a given company name.
+ * Fetches 10 press releases + 10 latest news for a given company name.
  *
  * GET /api/competitor-feed/[company]
  * where [company] is URL-encoded company name (e.g. "OQ%20Technology")
@@ -112,8 +112,8 @@ export async function GET(
     const newsQuery = config.news;
 
     const [prResult, newsResult] = await Promise.allSettled([
-      fetchRSS(prQuery, 5),
-      fetchRSS(newsQuery, 5),
+      fetchRSS(prQuery, 10),
+      fetchRSS(newsQuery, 10),
     ]);
 
     const pressReleases = prResult.status === 'fulfilled' ? prResult.value : [];

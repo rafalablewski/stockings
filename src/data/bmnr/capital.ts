@@ -26,10 +26,10 @@ import type { DataMetadata } from '../shared/types';
 // ============================================================================
 
 export const CAPITAL_METADATA: DataMetadata = {
-  lastUpdated: '2026-01-15',
-  source: 'Jan 15, 2026 Annual Meeting 8-K',
+  lastUpdated: '2026-02-09',
+  source: 'Feb 9, 2026 S-8 (2025 Omnibus Incentive Plan)',
   nextExpectedUpdate: 'Q2 FY26 10-Q or DEF 14A proxy',
-  notes: 'Simple single-class structure supports rapid ATM execution',
+  notes: 'Simple single-class structure supports rapid ATM execution. S-8 filed Feb 9 for 2025 Omnibus Incentive Plan.',
 };
 
 // ============================================================================
