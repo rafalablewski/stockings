@@ -9513,6 +9513,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'Securitize / BNY Press Release'
     },
     {
+      date: '2025-10-28',
+      category: 'Enterprise',
+      company: 'Oracle',
+      title: 'Oracle Launches Digital Assets Data Nexus for Banks with Hyperledger Besu (Ethereum) Support',
+      summary: 'Oracle ($300B+ market cap) launches Digital Assets Data Nexus, an enterprise blockchain platform for banks supporting tokenization, AI governance, and digital asset management. Platform supports Hyperledger Besu (Ethereum-compatible) alongside other blockchain protocols. Features include tokenized asset lifecycle management, regulatory compliance automation, and AI-powered risk governance. Designed for institutional banking infrastructure with enterprise-grade security and interoperability.',
+      significance: 'One of world\'s largest enterprise software companies ($300B+ market cap) building blockchain infrastructure for banks on Ethereum-compatible technology (Hyperledger Besu). Oracle\'s banking customer base (top 10 global banks) provides massive distribution for blockchain adoption. Enterprise tokenization + AI governance addresses key institutional requirements.',
+      bmnrImplication: 'Oracle choosing Ethereum-compatible technology (Hyperledger Besu) for bank blockchain infrastructure validates Ethereum ecosystem for enterprise. Oracle\'s banking distribution channel (thousands of banks globally) accelerates institutional blockchain adoption. More enterprise blockchain infrastructure = more Ethereum ecosystem value.',
+      impact: 'Bullish',
+      source: 'Oracle Press Release'
+    },
+    {
       date: '2025-10-27',
       category: 'Enterprise',
       company: 'JPYC',
@@ -9533,6 +9544,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Stripe building stablecoin subscription infrastructure on Base/Polygon expands Ethereum ecosystem utility for recurring commerce. More merchant adoption = more on-chain transaction volume = ETH ecosystem value accrual.',
       impact: 'Bullish',
       source: 'Stripe Blog'
+    },
+    {
+      date: '2025-10-07',
+      category: 'Institutional',
+      company: 'CoinShares',
+      title: 'CoinShares Launches DIME — First US Altcoin ETF Covering 10 L1 Tokens',
+      summary: 'CoinShares launches DIME, the first US altcoin ETF providing exposure to 10 Layer-1 tokens: SOL, DOT, ADA, ATOM, SEI, AVAX, SUI, APT, NEAR, and TON. Notably excludes BTC and ETH as both already have dedicated spot ETFs. The ETF structure provides regulated, traditional-finance-friendly access to a diversified basket of alternative L1 blockchain ecosystems. CoinShares manages $5B+ AUM across digital asset investment products.',
+      significance: 'First US altcoin ETF signals maturing crypto investment product landscape. ETH exclusion is bullish — acknowledges ETH has "graduated" to standalone institutional asset class alongside BTC. Regulated vehicle expands crypto investor base beyond BTC/ETH.',
+      bmnrImplication: 'ETH excluded from altcoin ETF because it already has dedicated spot ETFs — confirms ETH\'s institutional status as standalone asset class alongside BTC. More crypto ETFs = broader market participation = rising tide for all crypto assets including ETH. Institutional product proliferation validates digital asset allocation thesis.',
+      impact: 'Bullish',
+      source: 'CoinShares Press Release'
     },
     {
       date: '2025-10-02',
@@ -9586,12 +9608,23 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'JPMorgan\'s Onyx blockchain platform adds Ethereum settlement option for institutional clients, complementing existing permissioned JPM Coin rails. Onyx processes $1B+ daily in repo transactions and intraday liquidity transfers. Ethereum option targets clients seeking interoperability with public DeFi ecosystem while maintaining JPMorgan custody and compliance. Uses wrapped JPM Coin on Ethereum with atomic settlement.',
       significance: 'JPMorgan bridging private and public blockchain worlds. Signals recognition that public Ethereum liquidity and composability add value even for institutional use cases. Precursor to full MONY fund launch.',
       bmnrImplication: 'JPMorgan\'s gradual Ethereum integration validates the network for traditional finance. Each step builds institutional comfort and infrastructure that benefits all ETH holders.',
-      impact: 'Bullish', 
-      source: 'JPMorgan' 
+      impact: 'Bullish',
+      source: 'JPMorgan'
     },
-    { 
-      date: '2025-11-04', 
-      category: 'Enterprise', 
+    {
+      date: '2025-10-22',
+      category: 'Enterprise',
+      company: 'Goldfish',
+      title: 'Goldfish Launches Gold-Backed Stablecoin (GGBR) with BTC/ETH Reserve Portfolio',
+      summary: 'Goldfish launches GGBR, a gold-backed stablecoin supported by physical gold reserves and a diversified portfolio including BTC and ETH. Partnership with I-ON Digital for custody and tokenization infrastructure. GGBR combines traditional commodity backing with digital asset exposure, creating a hybrid stablecoin model that bridges precious metals and crypto markets.',
+      significance: 'Gold-backed stablecoin incorporating BTC/ETH reserves represents convergence of traditional commodity and digital asset worlds. Hybrid model attracts conservative investors seeking gold stability with crypto upside. Expands stablecoin utility beyond pure fiat-pegged models.',
+      bmnrImplication: 'ETH included as reserve asset for gold-backed stablecoin validates its role as institutional-grade collateral alongside gold and BTC. More stablecoins holding ETH as backing = structural demand for ETH. Convergence of traditional and digital assets supports BMNR\'s ETH treasury thesis.',
+      impact: 'Bullish',
+      source: 'Goldfish / I-ON Digital Press Release'
+    },
+    {
+      date: '2025-11-04',
+      category: 'Enterprise',
       company: 'UBS',
       title: 'UBS Executes First Live Tokenized Fund Transaction with Chainlink DTA Standard', 
       summary: 'UBS announces world\'s first successful completion of an in-production, end-to-end tokenized fund workflow leveraging the Chainlink Digital Transfer Agent (DTA) technical standard. First on-chain subscription and redemption request of uMINT (UBS USD Money Market Investment Fund Token) proves fund operations can be seamlessly automated on-chain. DigiFT functioned as on-chain fund distributor. New workflow covers entire fund lifecycle: order taking, execution, settlement, and data synchronization across on-chain and off-chain systems. UBS Group COTO Mike Dargan: "This transaction represents a key milestone in how smart contract-based technologies and technical standards enhance fund operations and the investor experience." Chainlink\'s Sergey Nazarov: "This enables secure, compliant, and scalable end-to-end workflows for tokenized assets, setting a new benchmark for institutional finance on-chain." UBS manages $6.9T invested assets (Q3 2025).',
@@ -9745,6 +9778,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       source: 'Centrifuge / Janus Henderson Press Release'
     },
     {
+      date: '2025-09-22',
+      category: 'DeFi',
+      company: 'WSPN',
+      title: 'WSPN WUSD Launches Cross-Chain Bridging via Stargate Finance (LayerZero)',
+      summary: 'WSPN enables cross-chain bridging for its WUSD stablecoin via Stargate Finance, powered by LayerZero\'s omnichain interoperability protocol. WUSD now seamlessly bridges across Viction, Ethereum, and Polygon networks. LayerZero\'s messaging protocol ensures secure cross-chain transfers with unified liquidity pools. Integration expands WUSD utility across DeFi ecosystems and enables multi-chain stablecoin deployment.',
+      significance: 'Stablecoin interoperability via LayerZero/Stargate demonstrates maturing cross-chain infrastructure. WUSD expanding from single chain to multi-chain via Ethereum and Polygon validates Ethereum ecosystem as stablecoin hub. Cross-chain bridges critical for unified DeFi liquidity.',
+      bmnrImplication: 'More stablecoins bridging through Ethereum validates network as cross-chain settlement hub. LayerZero/Stargate infrastructure connecting chains through Ethereum increases network centrality. Multi-chain stablecoin expansion drives more on-chain activity across Ethereum ecosystem.',
+      impact: 'Bullish',
+      source: 'WSPN / Stargate Finance'
+    },
+    {
       date: '2025-09-17',
       category: 'Enterprise',
       company: 'Google',
@@ -9765,6 +9809,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       bmnrImplication: 'Bank-integrated crypto trading expands retail investor access to ETH in Europe. MiCA compliance validates regulatory path for European ETH adoption. More accessible ETH = broader investor base = supports ETH ecosystem.',
       impact: 'Bullish',
       source: 'Openbank Press Release'
+    },
+    {
+      date: '2025-09-15',
+      category: 'Enterprise',
+      company: 'PayPal',
+      title: 'PayPal Integrates BTC, ETH, and PYUSD into P2P Payment Links',
+      summary: 'PayPal integrates cryptocurrency — including BTC, ETH, and its own PYUSD stablecoin — into peer-to-peer payment links, enabling 400M+ users to send and receive crypto alongside traditional payments. The integration embeds crypto into PayPal\'s existing P2P flow, making digital asset transfers as simple as sending money to friends. PYUSD (PayPal\'s Ethereum-native stablecoin) is featured alongside BTC and ETH as primary payment options.',
+      significance: 'World\'s largest digital payment platform (400M+ users) embedding crypto into core P2P functionality. Crypto becomes a default option alongside USD, not a separate feature. PYUSD integration promotes Ethereum-native stablecoin adoption at massive scale.',
+      bmnrImplication: 'PayPal embedding ETH into P2P payments exposes 400M+ users to Ethereum-native assets. PYUSD (Ethereum stablecoin) as default option drives on-chain activity. More mainstream crypto usage = more Ethereum ecosystem demand. PayPal\'s scale could significantly expand retail ETH adoption.',
+      impact: 'Bullish',
+      source: 'PayPal Newsroom'
     },
     {
       date: '2025-09-15',
@@ -9841,12 +9896,34 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       summary: 'DBS, Singapore\'s largest bank ("World\'s Best Bank" - Global Finance/Euromoney, "Safest Bank in Asia" 16 consecutive years), announces tokenization of structured notes on public Ethereum blockchain. First product: crypto-linked participation note paying cash on price rises with limited downside. Distribution via ADDX, DigiFT, HydraX digital exchanges — first time offering tokenized products outside own client base. Tokenized into $1,000 units (vs traditional $100,000 minimum), making notes fungible and easier to trade. DBS clients executed $1B+ trades in H1 2025, with 60% volume growth Q1→Q2. Part of DBS Token Services suite: Treasury Tokens (24/7 liquidity, seconds vs days settlement), Conditional Payments (smart contracts), Programmable Rewards (DBS Paylah! integration), Investment Tokens. Future: equity-linked and credit-linked notes. Context: Singapore family offices exceeded 2,000 in 2024 (up 43% YoY). Li Zhen (Head of FX & Digital Assets): "Asset tokenisation is the next frontier of financial markets infrastructure."',
       significance: 'Major Asian bank ($19B market cap, AA-/Aa1 ratings) moving from permissioned to PUBLIC Ethereum blockchain. $1B+ trading volume demonstrates real institutional demand. Fractional $1K units democratize access to complex instruments. Builds on DBS participation in UBS/SBI cross-border repo (Nov 2023) and MAS Project Guardian.',
       bmnrImplication: 'DBS choosing public Ethereum over permissioned chains validates network for institutional structured products. $1B+ volume proves institutional demand for tokenized instruments. Singapore wealth hub growth (2,000+ family offices) creates demand pipeline. More tokenized products = more on-chain settlement = ETH ecosystem value.',
-      impact: 'Bullish', 
-      source: 'DBS Press Release / CoinDesk' 
+      impact: 'Bullish',
+      source: 'DBS Press Release / CoinDesk'
     },
-    { 
-      date: '2025-07-23', 
-      category: 'Institutional', 
+    {
+      date: '2025-08-19',
+      category: 'Institutional',
+      company: 'AMTD Digital',
+      title: 'AMTD/TGE Launch Shares-for-Crypto Exchange Program for NYSE-Listed Companies',
+      summary: 'AMTD Digital (NYSE-listed) and TGE launch a crypto conversion program allowing NYSE-listed companies to exchange shares for major cryptocurrencies including BTC, ETH, USDT, BNB, and USDC. Program enables institutional-grade crypto acquisition through regulated equity-to-crypto pathways. Designed for corporate treasuries seeking crypto exposure without direct market purchases.',
+      significance: 'Novel institutional onramp: publicly traded companies can convert equity directly to crypto holdings. Reduces friction for corporate treasury diversification into digital assets. NYSE-listed entity offering regulated conversion pathway legitimizes institutional crypto adoption.',
+      bmnrImplication: 'Direct equity-to-crypto conversion pathway accelerates corporate treasury adoption of ETH. More companies accumulating ETH through institutional channels = reduced circulating supply and increased demand. Validates BMNR\'s treasury strategy as mainstream corporate approach.',
+      impact: 'Bullish',
+      source: 'AMTD Digital Press Release'
+    },
+    {
+      date: '2025-08-13',
+      category: 'Enterprise',
+      company: 'BitPay',
+      title: 'BitPay Adds Solana Support — Stablecoins Now 40% of Payment Volume',
+      summary: 'BitPay, the world\'s largest crypto payment processor, adds Solana support for USDC, USDT, and SOL payments. Stablecoins now represent 40% of BitPay\'s total payment volume, demonstrating a shift from speculative crypto use to utility-driven commerce. Multi-chain support (Bitcoin, Ethereum, Polygon, Arbitrum, Base, Optimism, now Solana) reflects merchant demand for low-cost settlement.',
+      significance: 'Stablecoins at 40% of payment processor volume signals crypto payment maturation from speculation to commerce. Multi-chain support normalizes blockchain-based payment infrastructure across ecosystems.',
+      bmnrImplication: 'Stablecoin payment adoption growing (40% of BitPay volume) validates Ethereum ecosystem for commerce — USDC and USDT are primarily Ethereum-native. Multi-chain expansion including Ethereum L2s drives overall blockchain adoption. More payment utility = more ecosystem value.',
+      impact: 'Bullish',
+      source: 'BitPay Press Release'
+    },
+    {
+      date: '2025-07-23',
+      category: 'Institutional',
       company: 'Goldman Sachs',
       title: 'Goldman Sachs & BNY Mellon Tokenize Money Market Fund Records on Blockchain', 
       summary: 'Goldman Sachs and BNY Mellon ($50T+ combined AUM/AUC) partner to tokenize ownership records of select money market funds using Goldman\'s GS DAP blockchain infrastructure. Institutional investors can subscribe to fund shares via BNY\'s LiquidityDirect and Digital Assets platforms, with "mirrored" records created on Goldman\'s blockchain. Initial participants include BlackRock, Fidelity, Federated Hermes, Goldman Sachs Asset Management, and BNY\'s Dreyfus unit. BNY maintains official books under existing regulations; tokens enable programmable collateral use and improved fund share transferability. Separately, Bitwise CIO Matt Hougan reports ETH facing "demand shock" — ETFs and corporate treasuries bought 2.83M ETH (~$10B) since mid-May, 32x more than network minted. Hougan projects another $20B in ETH purchases over next year vs. 800K ETH issuance.',
@@ -10738,7 +10815,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   ];
   
   const categories = ['All', 'Enterprise', 'DeFi', 'L2', 'Institutional', 'Protocol', 'Regulatory'];
-  const companies = ['All', 'BlackRock', 'JPMorgan', 'Visa', 'Franklin Templeton', 'Fidelity', 'Coinbase', 'Sony', 'Goldman Sachs', 'State Street', 'Interactive Brokers', 'Societe Generale', 'Deutsche Bank', 'Bit Digital', 'Siemens', 'Telcoin', 'Shift4', 'Sentient Jet', 'GoTyme Bank', 'A+ Protocol', 'Ostium', 'Tetra Digital', 'DAMAC Properties', 'WisdomTree', 'Securitize', 'Paysafe', 'Guggenheim', 'UBS', 'Mastercard', 'DBS', 'HSBC', 'Citi', 'Standard Chartered', 'Santander', 'EIB', 'ANZ', 'ABN AMRO', 'HKMA', 'Other'];
+  const companies = ['All', 'BlackRock', 'JPMorgan', 'Visa', 'Franklin Templeton', 'Fidelity', 'Coinbase', 'Sony', 'Goldman Sachs', 'State Street', 'Interactive Brokers', 'Societe Generale', 'Deutsche Bank', 'Bit Digital', 'Siemens', 'Telcoin', 'Shift4', 'Sentient Jet', 'GoTyme Bank', 'A+ Protocol', 'Ostium', 'Tetra Digital', 'DAMAC Properties', 'WisdomTree', 'Securitize', 'Paysafe', 'Guggenheim', 'UBS', 'Mastercard', 'DBS', 'HSBC', 'Citi', 'Standard Chartered', 'Santander', 'EIB', 'ANZ', 'ABN AMRO', 'HKMA', 'Oracle', 'PayPal', 'CoinShares', 'BitPay', 'Other'];
   
   // Filter by both category and company
   const filteredNews = adoptionTimeline.filter(n => {
