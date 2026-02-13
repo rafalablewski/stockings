@@ -3630,26 +3630,6 @@ const CompsTab = ({ comparables, ethPrice }) => {
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // SUSHI - SOLANA EXPANSION (Feb 9, 2026)
-    // ═══════════════════════════════════════════════════════════════════════════
-    {
-      date: '2026-02-09',
-      competitor: 'other',
-      category: 'Technology',
-      headline: 'Sushi DEX launches on Solana with Jupiter Ultra API integration; extends multi-chain trading to 4M+ users',
-      details: [
-        'Sushi DEX launches on Solana with Jupiter Ultra API integration',
-        'Extends multi-chain trading to 4M+ users',
-        'Sushi originated on Ethereum and maintains Ethereum deployment alongside Solana expansion',
-      ],
-      implication: 'neutral',
-      bmnrComparison: 'Sushi\'s Solana expansion shows continued multi-chain DEX competition. Sushi originated on Ethereum and maintains Ethereum deployment alongside Solana expansion.',
-      source: 'PR Newswire',
-      storyId: 'crypto-ecosystem',
-      storyTitle: 'Crypto Ecosystem',
-    },
-
-    // ═══════════════════════════════════════════════════════════════════════════
     // GLOBALSTAKE - BTC YIELD GATEWAY (Feb 9, 2026)
     // ═══════════════════════════════════════════════════════════════════════════
     {
@@ -8851,6 +8831,17 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       significance: 'Real-world asset tokenization (gold) choosing Arbitrum (Ethereum L2) validates Ethereum ecosystem for commodity tokenization.',
       bmnrImplication: 'Gold tokenization on Arbitrum increases Ethereum L2 ecosystem utility and settles value on Ethereum.',
       impact: 'Bullish',
+      source: 'PR Newswire'
+    },
+    {
+      date: '2026-02-09',
+      category: 'Enterprise',
+      company: 'Sushi',
+      title: 'Sushi DEX Launches on Solana with Jupiter Ultra API — Ethereum-Native DEX Goes Multi-Chain',
+      summary: 'Sushi DEX, which originated on Ethereum, launches on Solana with Jupiter Ultra API integration, extending multi-chain trading to 4M+ users. Sushi maintains its Ethereum deployment alongside the Solana expansion, positioning as a cross-chain liquidity aggregator.',
+      significance: 'Ethereum-native DeFi protocol expanding to Solana demonstrates multi-chain strategy while maintaining Ethereum as home chain. Shows Ethereum DeFi protocols leveraging their brand and liquidity across ecosystems.',
+      bmnrImplication: 'Ethereum-originated DEX expanding to other chains shows Ethereum\'s DeFi ecosystem exporting innovation. Sushi retaining Ethereum deployment means continued ETH-based liquidity. Multi-chain expansion grows the overall DeFi pie.',
+      impact: 'Neutral',
       source: 'PR Newswire'
     },
     {
