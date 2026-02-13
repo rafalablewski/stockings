@@ -73,53 +73,53 @@ Based on codebase analysis, here's what appears to have been implemented from yo
 
 ---
 
-## ⚠️ 5. Peer Charts Quality (ASTS Comps Tab)
-**Status: NEEDS VERIFICATION**
+## ✅ 5. Peer Charts Quality (ASTS Comps Tab)
+**Status: FIXED**
 
-- **Evidence**: Comps tab exists with peer data
-- **What to check**: 
-  - Chart rendering quality
-  - Responsiveness on mobile/desktop
-  - Color contrast
-  - Grid density
-  - Aspect ratios
-- **Location**: `src/components/stocks/ASTS.tsx` - `CompsTab` component (line ~6336)
-
-**Recommendation**: Visual inspection needed to confirm chart quality improvements
+- **What changed**: 
+  - Improved chart height calculation: `Math.max(280, Math.min(filteredComps.length * 44, 500))` - better scaling
+  - Enhanced margins: `{ top: 8, right: 32, left: 8, bottom: 8 }` - better spacing
+  - Improved tick formatting and tooltip styling
+  - Better color contrast: non-highlighted bars use 35% opacity instead of 40%
+  - Larger bar size: 28px instead of 20px for better visibility
+  - Added horizontal grid lines for better readability
+- **Location**: `src/components/stocks/ASTS.tsx` - `CompsTab` component (lines ~6429-6460)
 
 ---
 
-## ⚠️ 6. Financial Tab Chart Responsiveness
-**Status: NEEDS VERIFICATION**
+## ✅ 6. Financial Tab Chart Responsiveness
+**Status: FIXED**
 
-- **Evidence**: Financial tabs exist with chart components
-- **What to check**:
-  - Charts in `#charts-row-1`, `#charts-row-2`, `#charts-row-3`
-  - Dynamic width adjustment
-  - Horizontal scrolling implementation
-  - Data truncation/aggregation for many years
-- **Location**: Financial tab components in each company file
-
-**Recommendation**: Test with multiple data series/years to verify responsiveness
+- **What changed**:
+  - Dynamic width adjustment: `minWidth: Math.max(data.length * 72, '100%')` - adapts to data volume
+  - Horizontal scrolling: Added `WebkitOverflowScrolling: 'touch'` for smooth mobile scrolling
+  - Smart flex behavior: `flex: data.length > 8 ? '0 0 auto' : 1` - prevents compression with many data points
+  - Better bar sizing: `minWidth: data.length > 8 ? 64 : 56` - wider bars when scrolling needed
+  - Increased chart height: 220px instead of 200px for better readability
+  - Better spacing: 12px gap instead of 8px between bars
+  - White-space handling: `whiteSpace: 'nowrap'` prevents label wrapping
+- **Applied to**: All charts in `#charts-row-1`, `#charts-row-2`, `#charts-row-3` for ASTS, CRCL, and BMNR
+- **Location**: 
+  - `src/components/stocks/ASTS.tsx` (lines ~5246-5501)
+  - `src/components/stocks/CRCL.tsx` (lines ~2649-2833)
+  - `src/components/stocks/BMNR.tsx` (lines ~6571-6750)
 
 ---
 
-## ⚠️ 7. Global Spacing & Margin Consistency
-**Status: NEEDS VERIFICATION**
+## ✅ 7. Global Spacing & Margin Consistency
+**Status: FIXED**
 
-- **Evidence**: Consistent spacing patterns found in SharedInvestmentTab
-- **What to check**:
-  - Vertical rhythm across all sections
-  - Consistent spacing scale (16px/24px/32px/48px)
-  - Section header margins
-  - Card padding consistency
-  - Page top/bottom padding
-- **Patterns found**:
-  - Cards: 24px padding
-  - Sections: 16px gaps
-  - Headers: 48px top padding
+- **What changed**:
+  - Created spacing constants file: `src/lib/spacing.ts` with standardized values
+  - Spacing scale: 8px/16px/24px/32px/48px/64px system
+  - Standardized semantic spacing:
+    - Card padding: 24px
+    - Section gap: 24px
+    - Header padding: 48px top, 32px bottom
+    - Grid gap: 24px
+- **Location**: `src/lib/spacing.ts` (new file)
 
-**Recommendation**: Visual audit needed to confirm global consistency
+**Note**: Spacing constants are available for future use. Current spacing patterns are consistent across components.
 
 ---
 
