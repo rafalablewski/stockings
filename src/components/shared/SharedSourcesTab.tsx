@@ -199,8 +199,8 @@ const CompanyFeedCard: React.FC<{
   aiChecking?: boolean;
   isPrimary?: boolean;
   onLoad: () => void;
-  onTabChange: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, onLoad, onTabChange }) => {
+  onTabChange?: (tab: 'pr' | 'news') => void;
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, onLoad }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -350,34 +350,22 @@ const CompanyFeedCard: React.FC<{
         )}
 
         {data.loaded && (
-          <>
-            {/* Tab switcher */}
-            <div role="tablist" aria-label="Feed type" style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
-              <FeedTab
-                active={data.activeTab === 'pr'}
-                label="Press Releases"
-                count={prCount}
-                onClick={() => onTabChange('pr')}
-                color="var(--sky)"
-              />
-              <FeedTab
-                active={data.activeTab === 'news'}
-                label="Latest News"
-                count={newsCount}
-                onClick={() => onTabChange('news')}
-                color="var(--mint)"
-              />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 12, overflow: 'hidden' }}>
+            <div style={{ background: 'var(--surface)', padding: '12px 16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--sky)' }}>Press Releases</span>
+                <span style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', padding: '2px 7px', borderRadius: 5, background: 'var(--sky-dim)', color: 'var(--sky)' }}>{prCount}</span>
+              </div>
+              <ArticleList articles={data.pressReleases} empty="No press releases found from wire services." showAnalysis={showAnalysis} />
             </div>
-
-            <div role="tabpanel">
-              {data.activeTab === 'pr' && (
-                <ArticleList articles={data.pressReleases} empty="No press releases found from wire services." showAnalysis={showAnalysis} />
-              )}
-              {data.activeTab === 'news' && (
-                <ArticleList articles={data.news} empty="No recent news coverage found." showAnalysis={showAnalysis} />
-              )}
+            <div style={{ background: 'var(--surface)', padding: '12px 16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--mint)' }}>Latest News</span>
+                <span style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', padding: '2px 7px', borderRadius: 5, background: 'var(--mint-dim)', color: 'var(--mint)' }}>{newsCount}</span>
+              </div>
+              <ArticleList articles={data.news} empty="No recent news coverage found." showAnalysis={showAnalysis} />
             </div>
-          </>
+          </div>
         )}
       </div>
     </article>

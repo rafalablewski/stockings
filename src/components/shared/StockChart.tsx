@@ -1097,12 +1097,12 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
   return (
     <>
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', paddingBottom: 16 }}>
       {/* Header - responsive stacking */}
-      <div style={{ marginBottom: 12 }}>
+      <div style={{ marginBottom: 12, padding: '0 28px' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
           <div style={{ minWidth: 200 }}>
-            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{symbol}</span></div>
+            <div style={{ padding: '20px 0', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{symbol}</span></div>
             {data && (
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 24, fontWeight: 600, fontFamily: 'Space Mono' }}>
@@ -1223,7 +1223,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       </div>
 
       {/* Indicator Controls */}
-      <div style={{ borderTop: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', paddingTop: 6 }}>
+      <div style={{ borderTop: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', paddingTop: 6, padding: '6px 28px 0' }}>
         {/* Indicators Section */}
         <ToggleSection
           label="Indicators"
@@ -1843,7 +1843,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       {/* Range High/Low */}
       {!loading && !error && chartData.length > 0 && rangeHigh && rangeLow && (
         <div style={{
-          marginTop: 12,
+          margin: '12px 28px 0',
           padding: '10px 14px',
           background: 'var(--surface2)',
           borderRadius: 8,
@@ -1879,7 +1879,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       {/* Risk Metrics Panel */}
       {!loading && !error && chartData.length > 0 && showRiskMetrics && (
         <div style={{
-          marginTop: 12,
+          margin: '12px 28px 0',
           padding: '12px 14px',
           background: 'var(--surface2)',
           borderRadius: 8,
@@ -1946,7 +1946,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       {/* Correlation Matrix */}
       {!loading && !error && chartData.length > 0 && showCorrelation && (
         <div style={{
-          marginTop: 12,
+          margin: '12px 28px 0',
           padding: '12px 14px',
           background: 'var(--surface2)',
           borderRadius: 8,
@@ -2012,7 +2012,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       {/* Volume Profile */}
       {!loading && !error && chartData.length > 0 && showVolumeProfile && volumeProfile.length > 0 && (
         <div style={{
-          marginTop: 12,
+          margin: '12px 28px 0',
           padding: '12px 14px',
           background: 'var(--surface2)',
           borderRadius: 8,
@@ -2049,14 +2049,14 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
           <div
             onClick={() => setShowChartGuide(!showChartGuide)}
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '20px 28px', borderBottom: '1px solid var(--border)' }}
             role="button"
             tabIndex={0}
             aria-expanded={showChartGuide}
             aria-label="Toggle Chart Guide"
             onKeyDown={(e) => e.key === 'Enter' && setShowChartGuide(!showChartGuide)}
           >
-            <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)' }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Chart Guide</span></div>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Chart Guide</span>
             <span style={{ color: 'var(--text3)', fontSize: 18 }}>{showChartGuide ? '−' : '+'}</span>
           </div>
           {showChartGuide && (
@@ -2064,6 +2064,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
               gap: 32,
+              padding: '24px 28px',
               fontSize: 11,
               lineHeight: 1.8,
               color: 'var(--text3)',

@@ -1094,18 +1094,6 @@ const OverviewParameterCard = ({
                 overflow: 'hidden',
               }}
             >
-              {isCurrent && (
-                <div style={{
-                  position: 'absolute',
-                  top: 4,
-                  right: 4,
-                  width: 4,
-                  height: 4,
-                  borderRadius: '50%',
-                  background: 'var(--text3)',
-                  opacity: 0.4,
-                }} />
-              )}
               {formatValue(opt)}
             </div>
           );
@@ -9092,13 +9080,6 @@ const TimelineTab = () => {
     SPECTRUM: { label: 'Spectrum', color: 'bg-violet-600' },
   };
 
-  const impactColors = {
-    Positive: 'text-green-400',
-    Negative: 'text-red-400',
-    Neutral: 'text-slate-400',
-    Mixed: 'text-yellow-400',
-  };
-
   const [expanded, setExpanded] = useState(new Set());
   const [filterCategory, setFilterCategory] = useState('ALL');
   const [selectedTopics, setSelectedTopics] = useState([]);
@@ -9407,57 +9388,65 @@ const TimelineTab = () => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#event-timeline</div>
 
       {/* Topic Filters (AND logic multi-select) */}
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 16 }}>
+      <div style={{ padding: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
-              style={{ padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }}
+              style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer' }}
             >
               Clear ({selectedTopics.length})
             </button>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 0 }}>
-          {Object.entries(topicTags).map(([topic, style]) => {
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+          {Object.entries(topicTags).map(([topic, topicStyle]) => {
             const isSelected = selectedTopics.includes(topic);
             const count = timelineEvents.filter(p => detectTopics(p).includes(topic)).length;
             return (
               <button
                 key={topic}
                 onClick={() => toggleTopic(topic)}
-                style={isSelected
-                  ? { padding: '4px 12px', fontSize: 11, fontWeight: 500, border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", background: style.color, borderColor: style.color, color: 'var(--accent)' }
-                  : { padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }
-                }
+                style={{
+                  fontSize: 11,
+                  padding: '4px 12px',
+                  borderRadius: 99,
+                  border: '1px solid',
+                  borderColor: isSelected ? 'var(--accent)' : 'var(--border)',
+                  background: isSelected ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
+                  color: isSelected ? 'var(--accent)' : 'var(--text3)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
               >
-                {style.label} ({count})
+                {topicStyle.label} ({count})
               </button>
             );
           })}
         </div>
         {selectedTopics.length > 0 && (
-          <div style={{ fontSize: 12, color: 'var(--text3)' }}>
+          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8 }}>
             {selectedTopics.map(t => topicTags[t].label).join(' + ')} → {filteredEntries.length} results
           </div>
         )}
       </div>
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 0 }}>
-          <button style={filterCategory === 'ALL'
-            ? { padding: '4px 12px', fontSize: 11, fontWeight: 500, border: '1px solid var(--accent)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)' }
-            : { padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }
-          } onClick={() => setFilterCategory('ALL')}>
-            All ({timelineEvents.length})
-          </button>
-          {Object.entries(categoryColors).map(([cat, style]) => (
-            <button key={cat} style={filterCategory === cat
-              ? { padding: '4px 12px', fontSize: 11, fontWeight: 500, border: '1px solid var(--accent)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)' }
-              : { padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }
-            } onClick={() => setFilterCategory(cat)}>
-              {style.label} ({timelineEvents.filter(p => p.category === cat).length})
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {['ALL', ...Object.keys(categoryColors)].map(cat => (
+            <button key={cat} onClick={() => setFilterCategory(cat)} style={{
+              fontSize: 11,
+              padding: '4px 12px',
+              borderRadius: 99,
+              border: '1px solid',
+              borderColor: filterCategory === cat ? 'var(--accent)' : 'var(--border)',
+              background: filterCategory === cat ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
+              color: filterCategory === cat ? 'var(--accent)' : 'var(--text3)',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}>
+              {cat === 'ALL' ? `All (${timelineEvents.length})` : `${(categoryColors as Record<string, { label: string }>)[cat]?.label || cat} (${timelineEvents.filter(p => p.category === cat).length})`}
             </button>
           ))}
         </div>
@@ -9469,7 +9458,7 @@ const TimelineTab = () => {
               setExpanded(new Set(filteredEntries.map((_, i) => i)));
             }
           }}
-          style={{ padding: '4px 12px', fontSize: 11, fontWeight: 500, background: 'transparent', border: '1px solid var(--border)', borderRadius: 99, cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text3)', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
+          style={{ whiteSpace: 'nowrap', fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer' }}
         >
           {expanded.size === filteredEntries.length ? '⊟ Collapse All' : '⊞ Expand All'}
         </button>
@@ -9484,160 +9473,75 @@ const TimelineTab = () => {
             else next.add(i);
             setExpanded(next);
           };
-          const catColorMap: Record<string, { bg: string; color: string }> = {
-            guidance: { bg: 'rgba(168,85,247,0.15)', color: '#c084fc' },
-            data: { bg: 'rgba(59,130,246,0.15)', color: '#60a5fa' },
-            event: { bg: 'rgba(234,179,8,0.15)', color: '#facc15' },
-            launch: { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
-          };
-          const catKey = entry.category.toLowerCase();
-          const catStyle = catColorMap[catKey] || { bg: 'var(--surface3)', color: 'var(--text3)' };
-
-          const verdictStyleMap: Record<string, { bg: string; color: string }> = {
-            Positive: { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
-            Negative: { bg: 'rgba(239,68,68,0.15)', color: '#f87171' },
-            Neutral: { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8' },
-          };
-          const vStyle = verdictStyleMap[entry.impact] || verdictStyleMap.Neutral;
-
-          const metaValueColor = entry.impact === 'Positive' ? '#4ade80' : entry.impact === 'Negative' ? '#f87171' : 'var(--text)';
 
           return (
-            <div key={i} style={{
-              border: isExpanded ? '1px solid var(--accent)' : '1px solid var(--border)',
-              borderRadius: 12,
-              marginBottom: 0,
-              overflow: 'hidden',
-              transition: 'all 0.2s',
-              background: isExpanded ? 'var(--surface2)' : 'var(--surface)',
-            }}>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '100px 100px 1fr auto auto',
-                gap: 16,
-                padding: '18px 20px',
-                cursor: 'pointer',
-                alignItems: 'center',
-                transition: 'background 0.2s',
-              }} onClick={toggleExpand}>
-                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: 'var(--accent)', fontWeight: 600 }}>{entry.date}</div>
-                <div style={{
-                  fontSize: 10,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.8px',
-                  padding: '5px 10px',
-                  borderRadius: 5,
-                  fontWeight: 600,
-                  background: catStyle.bg,
-                  color: catStyle.color,
-                  width: 'fit-content',
-                }}>{entry.category}</div>
-                <div style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500, lineHeight: 1.5 }}>{entry.title}</div>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  fontSize: 11,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                  padding: '6px 12px',
-                  borderRadius: 6,
-                  background: vStyle.bg,
-                  color: vStyle.color,
-                }}>
-                  {entry.impact === 'Positive' && '↑'}
-                  {entry.impact === 'Negative' && '↓'}
-                  {entry.impact === 'Neutral' && '→'}
+            <div key={i} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginBottom: 8 }}>
+              <div onClick={toggleExpand} style={{ display: 'grid', gridTemplateColumns: '100px 90px 1fr 80px 30px', alignItems: 'center', padding: '12px 16px', cursor: 'pointer', transition: 'background 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>{entry.date}</span>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>{entry.category}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{entry.title}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'right', color: entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--text3)' }}>
+                  {entry.impact === 'Positive' && '↑ '}
+                  {entry.impact === 'Negative' && '↓ '}
+                  {entry.impact === 'Neutral' && '→ '}
                   {entry.impact?.toLowerCase() || 'neutral'}
-                </div>
-                <div style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 8,
-                  background: isExpanded ? 'var(--accent)' : 'var(--surface3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 18,
-                  color: isExpanded ? 'var(--bg)' : 'var(--text3)',
-                  transition: 'all 0.2s',
-                  transform: isExpanded ? 'rotate(180deg)' : 'none',
-                }}>▼</div>
+                </span>
+                <span style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'center', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>
               </div>
-              <div style={{
-                maxHeight: isExpanded ? 2000 : 0,
-                overflow: 'hidden',
-                transition: 'max-height 0.3s ease, padding 0.3s ease',
-                background: 'var(--surface2)',
-                borderTop: '1px solid var(--border)',
-                padding: isExpanded ? 20 : 0,
-              }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24 }}>
-                  <div style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text2)' }}>
-                    <p style={{ color: 'var(--text2)' }}>{entry.summary}</p>
-                    <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
-                      {entry.details.map((detail, j) => (
-                        <li key={j} style={{ display: 'flex', gap: 8, marginBottom: 0 }}>
-                          <span style={{ color: 'var(--accent)', fontWeight: 'bold' }}>•</span>
-                          {detail}
-                        </li>
-                      ))}
-                    </ul>
-                    {/* Topic Tags */}
-                    {detectTopics(entry).length > 0 && (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
-                        {detectTopics(entry).filter(topic => topicTags[topic]).map(topic => (
-                          <span key={topic} style={{
-                            fontSize: 10,
-                            padding: '3px 8px',
-                            borderRadius: 4,
-                            fontWeight: 600,
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.5px',
-                            background: topicTags[topic].color,
-                          }}>
-                            {topicTags[topic].label}
-                          </span>
-                        ))}
+              {isExpanded && (
+                <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: 24 }}>
+                    <div>
+                      {/* Summary */}
+                      <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 12, fontStyle: 'italic', color: 'var(--text3)', fontSize: 12, lineHeight: 1.6 }}>
+                        {entry.summary}
                       </div>
-                    )}
-                    {/* Change indicator */}
-                    {entry.prevValue && (
-                      <div style={{ fontSize: 13 }}>
-                        <span style={{ color: '#f87171', textDecoration: 'line-through' }}>{entry.prevValue}</span>
-                        <span style={{ color: 'var(--text3)', margin: '0 8px' }}>→</span>
-                        <span style={{ color: '#4ade80' }}>{entry.newValue}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 180 }}>
-                    <div style={{ background: 'var(--surface3)', padding: '12px 16px', borderRadius: 8 }}>
-                      <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', marginBottom: 0 }}>Impact</div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: metaValueColor }}>
-                        {entry.impact === 'Positive' && '● Bullish'}
-                        {entry.impact === 'Negative' && '● Bearish'}
-                        {entry.impact === 'Neutral' && '● Neutral'}
-                        {!entry.impact && '● Unknown'}
-                      </div>
+                      {/* Details */}
+                      {entry.details && entry.details.length > 0 && (
+                        <ul style={{ margin: '12px 0 0', paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          {entry.details.map((detail, j) => (
+                            <li key={j} style={{ display: 'flex', gap: 8, fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+                              <span style={{ color: 'var(--accent)', fontWeight: 'bold' }}>•</span>
+                              {detail}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      {/* Change indicator */}
+                      {entry.prevValue && (
+                        <div style={{ marginTop: 12, fontSize: 13, padding: '8px 12px', background: 'var(--surface2)', borderRadius: 8 }}>
+                          <span style={{ color: '#f87171', textDecoration: 'line-through' }}>{entry.prevValue}</span>
+                          <span style={{ color: 'var(--text3)', margin: '0 8px' }}>→</span>
+                          <span style={{ color: '#4ade80' }}>{entry.newValue}</span>
+                        </div>
+                      )}
                     </div>
-                    <div style={{ background: 'var(--surface3)', padding: '12px 16px', borderRadius: 8 }}>
-                      <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', marginBottom: 0 }}>Sources</div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--cyan)' }}>{entry.sources.join(', ')}</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div>
+                        <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Impact</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--text3)' }}>
+                          {entry.impact === 'Positive' && '● Bullish'}
+                          {entry.impact === 'Negative' && '● Bearish'}
+                          {entry.impact === 'Neutral' && '● Neutral'}
+                          {!entry.impact && '● Unknown'}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Source</div>
+                        <div style={{ fontSize: 13, color: 'var(--cyan)' }}>{entry.sources.join(', ')}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         })}
       </div>
 
-      {/* How to Use */}
-      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Reference</span>
-        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-      </div>
+      {/* How to Use - Unified styling */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#timeline-header</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -9646,8 +9550,8 @@ const TimelineTab = () => {
         <div style={{ padding: '24px 28px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 13 }}>
           <div>
-            <h4 style={{ color: 'var(--cyan)', fontWeight: 500 }}>Categories Explained</h4>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--text2)' }}>
+            <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Categories Explained</h4>
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--text2)', listStyle: 'none', padding: 0, margin: 0 }}>
               <li><span style={{ color: 'var(--gold)' }}>Partnership:</span> Commercial agreements, MNO deals, government contracts</li>
               <li><span style={{ color: 'var(--mint)' }}>Product:</span> Satellite launches, tech milestones, deployments</li>
               <li><span style={{ color: 'var(--pink)' }}>Regulatory:</span> FCC approvals, spectrum licenses, authorizations</li>
@@ -9657,8 +9561,8 @@ const TimelineTab = () => {
             </ul>
           </div>
           <div>
-            <h4 style={{ color: 'var(--cyan)', fontWeight: 500 }}>Updating This Log</h4>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 4, color: 'var(--text2)' }}>
+            <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Updating This Log</h4>
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: 4, color: 'var(--text2)', listStyle: 'none', padding: 0, margin: 0 }}>
               <li>• Add new entries chronologically at the top</li>
               <li>• Include sources for traceability</li>
               <li>• Note prev → new values for comparisons</li>

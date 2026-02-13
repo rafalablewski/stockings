@@ -1348,18 +1348,6 @@ const OverviewParameterCard = ({
                 overflow: 'hidden',
               }}
             >
-              {isCurrent && (
-                <div style={{
-                  position: 'absolute',
-                  top: 4,
-                  right: 4,
-                  width: 4,
-                  height: 4,
-                  borderRadius: '50%',
-                  background: 'var(--text3)',
-                  opacity: 0.4,
-                }} />
-              )}
               {formatValue(opt)}
             </div>
           );

@@ -1800,7 +1800,6 @@ const OverviewParameterCard = ({
   onChange,
   format = '',
   currentValue,
-  showCurrentIndicator = true,
 }: {
   title: string;
   explanation: string;
@@ -1809,7 +1808,6 @@ const OverviewParameterCard = ({
   onChange: (v: number) => void;
   format?: string;
   currentValue?: number;
-  showCurrentIndicator?: boolean;
 }) => {
   const [customMode, setCustomMode] = useState(false);
   const [customInput, setCustomInput] = useState('');
@@ -1873,18 +1871,6 @@ const OverviewParameterCard = ({
                 overflow: 'hidden',
               }}
             >
-              {showCurrentIndicator && isCurrent && (
-                <div style={{
-                  position: 'absolute',
-                  top: 4,
-                  right: 4,
-                  width: 4,
-                  height: 4,
-                  borderRadius: '50%',
-                  background: 'var(--text3)',
-                  opacity: 0.4,
-                }} />
-              )}
               {formatValue(opt)}
             </div>
           );
@@ -1936,19 +1922,6 @@ const OverviewParameterCard = ({
               position: 'relative',
             }}
           >
-            {/* Position indicator dot - shows when current real value is custom (not a preset) */}
-            {showCurrentIndicator && currentValue !== undefined && !options.slice(0, 6).includes(currentValue) && (
-              <div style={{
-                position: 'absolute',
-                top: 4,
-                right: 4,
-                width: 4,
-                height: 4,
-                borderRadius: '50%',
-                background: 'var(--text3)',
-                opacity: 0.4,
-              }} />
-            )}
             {isCustomValue ? formatValue(value) : '...'}
           </div>
         )}
@@ -2134,7 +2107,6 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         onChange={setCurrentStockPrice}
         format="$"
         currentValue={DEFAULTS.currentStockPrice}
-        showCurrentIndicator={false}
       />
     </div>
     <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#dividend-income</div>
