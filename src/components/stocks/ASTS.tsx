@@ -5749,22 +5749,22 @@ const QuarterlyMetricsPanel = () => {
 
       {/* All Quarters Table */}
       <div style={{ overflowX: 'auto' }}>
-        <div style={{ minWidth: `${100 + displayQuarters.length * 70}px` }}>
+        <div style={{ minWidth: `${130 + displayQuarters.length * 90}px` }}>
           {/* Header row */}
-          <div style={{ display: 'grid', gridTemplateColumns: `minmax(100px, 1.5fr) repeat(${displayQuarters.length}, minmax(70px, 1fr))`, background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
-            <div style={{ padding: '14px 16px', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600 }}>Metric</div>
+          <div style={{ display: 'grid', gridTemplateColumns: `minmax(130px, 1fr) ${displayQuarters.map(() => '90px').join(' ')}`, borderBottom: '1px solid var(--border)' }}>
+            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', position: 'sticky', left: 0 }}>Metric</span>
             {displayQuarters.map((q, idx) => (
-              <div key={q} style={{ padding: '14px 16px', textAlign: 'right', fontSize: 10, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, whiteSpace: 'nowrap', background: idx === 0 ? 'var(--accent-dim)' : 'var(--surface2)' }}>
+              <span key={q} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: idx === 0 ? 'var(--accent-dim)' : 'var(--surface2)', textAlign: 'right', whiteSpace: 'nowrap' }}>
                 {q.replace('Q', '').replace(' ', "'")}
-              </div>
+              </span>
             ))}
           </div>
           {/* Data rows */}
-          {metrics.map(metric => (
-            <div key={metric.label} style={{ display: 'grid', gridTemplateColumns: `minmax(100px, 1.5fr) repeat(${displayQuarters.length}, minmax(70px, 1fr))`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <div style={{ fontWeight: 500, padding: '14px 16px' }}>
+          {metrics.map((metric, mi) => (
+            <div key={metric.label} style={{ display: 'grid', gridTemplateColumns: `minmax(130px, 1fr) ${displayQuarters.map(() => '90px').join(' ')}`, borderBottom: mi < metrics.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 500, position: 'sticky', left: 0, background: 'var(--bg1)' }}>
                 {metric.label}
-              </div>
+              </span>
               {displayQuarters.map(q => {
                 const data = quarterlyData[q];
                 const val = getValue(data, metric);
@@ -5774,18 +5774,20 @@ const QuarterlyMetricsPanel = () => {
                 const cellColor = metric.color ? metric.color(val) : undefined;
                 const isLatestQuarter = q === displayQuarters[0];
                 return (
-                  <div
+                  <span
                     key={q}
                     title={tooltip ?? undefined}
                     style={{
-                      padding: '14px 16px',
+                      padding: '12px 16px',
+                      fontSize: 12,
+                      fontFamily: 'Space Mono, monospace',
                       textAlign: 'right',
                       ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
                       ...(cellColor ? { color: cellColor } : {})
                     }}
                   >
                     {metric.format(val)}
-                  </div>
+                  </span>
                 );
               })}
             </div>
@@ -6064,6 +6066,51 @@ const QuarterlyMetricsPanel = () => {
                 </div>
                 <div style={{ padding: '0 28px 24px', fontSize: 11, color: 'var(--text3)' }}>BW3 (test, Sep'22) → BB1-5 (Block 1, Sep'24) → BB6 (Block 2, Dec'25). Target: 168 sats for global coverage.</div>
               </>
+            );
+          })()}
+        </div>
+
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--mint)', display: 'flex', alignItems: 'center', gap: 8 }}>Net Income/(Loss)<UpdateIndicators sources="SEC" /></span>
+          </div>
+          {(() => {
+            const data = Object.values(quarterlyData).filter(q => q.netLoss !== null).reverse().map(q => ({
+              label: q.label,
+              value: q.netLoss,
+              display: q.netLoss >= 0 ? `$${q.netLoss}M` : `($${Math.abs(q.netLoss)}M)`
+            }));
+            const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const hasPositive = data.some(d => d.value >= 0);
+            const hasNegative = data.some(d => d.value < 0);
+            return (
+              <div style={{ padding: '24px 28px 24px' }}>
+                {hasPositive && (
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: hasNegative ? 100 : 200 }}>
+                    {data.map((d, i) => (
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                        {d.value >= 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>}
+                        <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? Math.round((d.value / maxVal) * 80) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: 8, borderTop: '1px solid var(--text3)' }}>
+                  {data.map((d, i) => (
+                    <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 10, color: 'var(--text3)', padding: '4px 0' }}>{d.label}</div>
+                  ))}
+                </div>
+                {hasNegative && (
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, height: hasPositive ? 100 : 200 }}>
+                    {data.map((d, i) => (
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                        <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 80) : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
+                        {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginTop: 4 }}>{d.display}</div>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             );
           })()}
         </div>
