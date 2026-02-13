@@ -364,12 +364,12 @@ class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, ErrorBou
     if (this.state.hasError) {
       return (
         <div style={{
-          padding: '40px',
+          padding: '48px',
           background: 'linear-gradient(135deg, rgba(255,123,114,0.1) 0%, rgba(255,123,114,0.05) 100%)',
           border: '1px solid rgba(255,123,114,0.3)',
           borderRadius: '16px',
           textAlign: 'center',
-          margin: '20px'
+          margin: '24px'
         }}>
           <div style={{ fontSize: '48px' }}>⚠️</div>
           <h2 style={{ color: '#FF7B72', fontFamily: 'Outfit, sans-serif' }}>
@@ -532,7 +532,7 @@ const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, m
         background: 'var(--surface2)',
         border: '1px solid var(--border)',
         borderRadius: '8px',
-        padding: '10px 14px',
+        padding: '12px 16px',
         fontSize: '14px',
         fontFamily: "'Space Mono', monospace",
         color: 'var(--text)',
@@ -597,7 +597,7 @@ const UpdateLegend = React.memo(() => {
         onClick={() => setShowIndicators(!showIndicators)}
         style={{
           marginLeft: 'auto',
-          padding: '4px 10px',
+          padding: '4px 12px',
           fontSize: '10px',
           fontWeight: 500,
           color: showIndicators ? 'var(--text)' : 'var(--text3)',
@@ -875,7 +875,7 @@ const ASTSAnalysis = () => {
                 background: 'rgba(34,211,238,0.1)', 
                 border: '1px solid rgba(34,211,238,0.3)', 
                 borderRadius: 6, 
-                padding: '4px 10px', 
+                padding: '4px 12px', 
                 fontSize: 11, 
                 color: '#22d3ee',
               }}>
@@ -1115,7 +1115,7 @@ const OverviewParameterCard = ({
               key={opt}
               onClick={() => { onChange(opt); setCustomMode(false); }}
               style={{
-                padding: '10px 4px',
+                padding: '12px 4px',
                 borderRadius: 8,
                 border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                 background: isActive ? colors.bg : 'var(--surface2)',
@@ -1167,7 +1167,7 @@ const OverviewParameterCard = ({
           <div
             onClick={() => setCustomMode(true)}
             style={{
-              padding: '10px 4px',
+              padding: '12px 4px',
               borderRadius: 8,
               border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
               background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
@@ -1503,8 +1503,8 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)' }}>{c.timeline}</span>
               <span style={{ fontSize: 13, color: 'var(--text)' }}>{c.event}</span>
-              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: `color-mix(in srgb, ${catColor} 10%, transparent)`, color: catColor }}>{c.category}</span>
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: `color-mix(in srgb, ${impactColor} 12%, transparent)`, color: impactColor, minWidth: 60, textAlign: 'center' }}>{c.impact}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: `color-mix(in srgb, ${catColor} 10%, transparent)`, color: catColor }}>{c.category}</span>
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: `color-mix(in srgb, ${impactColor} 12%, transparent)`, color: impactColor, minWidth: 60, textAlign: 'center' }}>{c.impact}</span>
             </div>
           );
         })}
@@ -1525,7 +1525,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)' }}>{m.date}</span>
               <span style={{ fontSize: 13, color: 'var(--text2)' }}>{m.event}</span>
-              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: `color-mix(in srgb, ${catColor} 10%, transparent)`, color: catColor }}>{m.category}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: `color-mix(in srgb, ${catColor} 10%, transparent)`, color: catColor }}>{m.category}</span>
             </div>
           );
         })}
@@ -1597,7 +1597,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         <div style={{ background: 'var(--surface)', padding: '24px', borderLeft: '3px solid var(--cyan)' }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cyan)', letterSpacing: '-0.2px', marginBottom: 16 }}>Block 1: BW3 + BB1-5</div>
           {['Array size: 693 sq ft each', 'Launched: BW3 Sept 2022, BB1-5 Sept 2024', 'Status: All 6 operational in orbit', 'Purpose: Technology validation, early service'].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
               <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--cyan)', flexShrink: 0 }} />
               <span style={{ fontSize: 13, color: 'var(--text2)' }}>{item}</span>
             </div>
@@ -1606,7 +1606,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         <div style={{ background: 'var(--surface)', padding: '24px', borderLeft: '3px solid var(--gold)' }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)', letterSpacing: '-0.2px', marginBottom: 16 }}>Block 2: BB6 onwards</div>
           {['Array size: ~2,400 sq ft (3.5x larger)', 'AST5000 ASIC: Custom silicon, 120 Mbps peak', 'Capacity: 10x improvement over Block 1', 'BB6 launched Dec 23, 2025 (ISRO)', 'BB7-25: In production, 6/month by Dec 2025'].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
               <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--gold)', flexShrink: 0 }} />
               <span style={{ fontSize: 13, color: 'var(--text2)' }}>{item}</span>
             </div>
@@ -1823,12 +1823,12 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
             <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: i < revenueSources.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', flexShrink: 0 }} />
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{r.source}</span>
                 <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.description}</span>
               </div>
-              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: r.status.includes('Active') ? 'color-mix(in srgb, var(--mint) 10%, transparent)' : 'color-mix(in srgb, var(--text3) 10%, transparent)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)' }}>{r.status}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: r.status.includes('Active') ? 'color-mix(in srgb, var(--mint) 10%, transparent)' : 'color-mix(in srgb, var(--text3) 10%, transparent)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)' }}>{r.status}</span>
             </div>
           ))}
         </div>
@@ -1843,7 +1843,7 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
         </div>
         <div style={{ padding: '24px 24px' }}>
           <ResponsiveContainer width="100%" height={220}><AreaChart data={ramp}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="year" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v}B`} fontSize={11} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} /><Legend wrapperStyle={{ fontSize: 11 }} /><Area type="monotone" dataKey="commercial" stackId="1" stroke="var(--cyan)" fill="var(--cyan)" fillOpacity={0.5} /><Area type="monotone" dataKey="gov" stackId="1" stroke="var(--gold)" fill="var(--gold)" fillOpacity={0.5} /><Area type="monotone" dataKey="gateway" stackId="1" stroke="var(--violet)" fill="var(--violet)" fillOpacity={0.5} /></AreaChart></ResponsiveContainer>
-          <div style={{ display: 'flex', gap: 20, marginTop: 12 }}>
+          <div style={{ display: 'flex', gap: 24, marginTop: 12 }}>
             {[{ label: 'Commercial', color: 'var(--cyan)' }, { label: 'Government', color: 'var(--gold)' }, { label: 'Gateway', color: 'var(--violet)' }].map(l => (
               <span key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text3)' }}>
                 <span style={{ width: 8, height: 3, borderRadius: 1, background: l.color }} />{l.label}
@@ -2101,7 +2101,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{p.partner}</span>
               <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.region}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--cyan)' }}>{p.subs}M</span>
-              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)', display: 'inline-block' }}>{p.spectrum}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)', display: 'inline-block' }}>{p.spectrum}</span>
               <span style={{ fontSize: 12, color: 'var(--text3)' }}>{p.term}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>${p.prepayment}M</span>
               <span style={{ fontSize: 11, color: 'var(--text3)' }}>{p.prepayStatus}</span>
@@ -2138,7 +2138,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
                 <span style={{ fontFamily: row.hl ? 'Space Mono, monospace' : 'inherit', fontSize: 12, color: row.hl ? 'var(--mint)' : 'var(--text2)', fontWeight: row.hl ? 600 : 400 }}>{row.v}</span>
               </div>
             ))}
-            <div style={{ marginTop: 12, padding: '10px 14px', background: 'color-mix(in srgb, var(--border) 30%, transparent)', borderRadius: 8, fontSize: 11, color: 'var(--text3)', lineHeight: 1.5 }}>{p.notes}</div>
+            <div style={{ marginTop: 12, padding: '12px 16px', background: 'color-mix(in srgb, var(--border) 30%, transparent)', borderRadius: 8, fontSize: 11, color: 'var(--text3)', lineHeight: 1.5 }}>{p.notes}</div>
           </div>
         ))}
       </div>
@@ -2157,7 +2157,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{s.name}</span>
-                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', color: 'var(--mint)' }}>{s.status}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', color: 'var(--mint)' }}>{s.status}</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
                 {[{ l: 'Band', v: s.band }, { l: 'Size', v: s.size }, { l: 'Coverage', v: s.coverage }, { l: 'Cost', v: s.cost }].map(d => (
@@ -2187,7 +2187,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             <div key={s.partner} style={{ background: 'var(--surface)', padding: '16px 24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)' }}>{s.partner}</span>
-                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)' }}>{s.band}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)' }}>{s.band}</span>
               </div>
               <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.type} · {s.coverage}</div>
               <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 2 }}>{s.notes}</div>
@@ -2213,7 +2213,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{g.agency}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{g.value}</span>
-              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)' }}>{g.status}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)' }}>{g.status}</span>
               <span style={{ fontSize: 12, color: 'var(--text3)' }}>{g.notes}</span>
             </div>
           ))}
@@ -2243,7 +2243,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{p.partner}</span>
               <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.region}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--cyan)' }}>{p.subs}M</span>
-              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: p.status === 'Definitive' ? 'color-mix(in srgb, var(--mint) 10%, transparent)' : 'color-mix(in srgb, var(--gold) 10%, transparent)', color: p.status === 'Definitive' ? 'var(--mint)' : 'var(--gold)' }}>{p.status}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, background: p.status === 'Definitive' ? 'color-mix(in srgb, var(--mint) 10%, transparent)' : 'color-mix(in srgb, var(--gold) 10%, transparent)', color: p.status === 'Definitive' ? 'var(--mint)' : 'var(--gold)' }}>{p.status}</span>
               <span style={{ fontSize: 11, color: 'var(--text3)' }}>{p.notes}</span>
             </div>
           ))}
@@ -2276,7 +2276,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', marginLeft: 12 }}>{filteredPartnerNews.length} events</span>
             </div>
             {partnerFilter !== 'All' && (
-              <button onClick={() => setPartnerFilter('All')} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '3px 10px', borderRadius: 100, background: 'color-mix(in srgb, var(--coral) 10%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer' }}>Clear Filter</button>
+              <button onClick={() => setPartnerFilter('All')} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, background: 'color-mix(in srgb, var(--coral) 10%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer' }}>Clear Filter</button>
             )}
           </div>
           <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6, margin: 0 }}>Track news about ASTS MNO partners — IoT expansion, connected vehicles, 5G rollouts, coverage expansion</p>
@@ -2681,7 +2681,7 @@ const CompetitorsTab = () => {
       })}
 
       {filteredCompetitorNews.length === 0 && (
-        <div style={{ textAlign: 'center', padding: 40, color: 'var(--text3)' }}>
+        <div style={{ textAlign: 'center', padding: 48, color: 'var(--text3)' }}>
           No competitor news matching current filters
         </div>
       )}
@@ -2872,7 +2872,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
             { s: '4.25% Notes Repurchased', a: '-$180M', t: 'Repurchase', n: '$46.5M principal retired for ~$180.5M cash' },
             { s: '2.375% Notes Repurchased', a: '-$434M', t: 'Repurchase', n: '$250M principal retired for ~$433.7M cash' },
           ].map((r, i) => (
-            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '12px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
               <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.a.startsWith('-') ? 'var(--coral)' : 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
               <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
@@ -2893,7 +2893,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
             { s: 'Q3 ATM Facility', a: '$389M', t: 'ATM', n: 'Prior facility; terminated. Replaced by Oct 2025 program' },
             { s: 'Capped Call Unwind', a: '$74.5M', t: '—', n: 'Jan 2025 capped calls terminated Nov 4, 2025' },
           ].map((r, i) => (
-            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 6 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '12px 0', borderBottom: i < 6 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
               <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
               <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
@@ -2911,7 +2911,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
             { s: 'Verizon Strategic', a: '$100M', t: 'Equity', n: 'May 2024; converted to definitive Oct 2025' },
             { s: 'Google Investment', a: '$100M', t: 'Equity', n: 'May 2024; strategic technology partnership' },
           ].map((r, i) => (
-            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '12px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
               <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
               <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
@@ -2929,7 +2929,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
             { s: 'NanoAvionics Sale', a: '$28M', t: 'Asset sale', n: 'Sold to Kongsberg (July 2022)' },
             { s: 'Atlas Facility', a: '$30M', t: 'Secured', n: 'Equipment-backed; partially repaid' },
           ].map((r, i) => (
-            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '10px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
+            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '12px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
               <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
               <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
@@ -2949,7 +2949,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
             '2.25% Notes ($1,000M): NEW Feb 2026. $116.30 conversion. Due 2036. UBS lead.',
             'UBS Loan ($420M): Cash-collateralized for Ligado first payment. Sound Point $550M available.',
           ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '6px 0' }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '6px 0' }}>
               <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--mint)', flexShrink: 0, marginTop: 5 }} />
               <span style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5 }}>{item}</span>
             </div>
@@ -3673,7 +3673,7 @@ const ParameterCard = ({
               key={opt}
               onClick={() => { onChange(opt); setCustomMode(false); }}
               style={{
-                padding: '10px 4px',
+                padding: '12px 4px',
                 borderRadius: 8,
                 border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                 background: isActive ? colors.bg : 'var(--surface2)',
@@ -3723,7 +3723,7 @@ const ParameterCard = ({
           <div
             onClick={() => setCustomMode(true)}
             style={{
-              padding: '10px 4px',
+              padding: '12px 4px',
               borderRadius: 8,
               border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
               background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
@@ -4198,7 +4198,7 @@ const ModelTab = ({
                 ))}
               </div>
 
-              <div style={{ padding: '14px 16px', background: 'color-mix(in srgb, var(--accent) 6%, transparent)', borderRadius: 10, fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginTop: 16, border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' }}>
+              <div style={{ padding: '16px 16px', background: 'color-mix(in srgb, var(--accent) 6%, transparent)', borderRadius: 10, fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginTop: 16, border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' }}>
                 <div style={{ fontWeight: 600, color: 'var(--text2)', marginBottom: 4 }}>Key Assumptions</div>
                 <ul style={{ margin: 0, paddingLeft: 16 }}>
                   <li>Terminal year: {2025 + discountYears} ({discountYears} years out)</li>
@@ -4606,7 +4606,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 ][idx];
                 return (
                   <div key={opt} onClick={() => updateParam(setBaseRev)(opt)} style={{
-                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                     border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                     background: isActive ? colors.bg : 'var(--surface2)',
                     fontWeight: isActive ? 600 : 400,
@@ -4637,7 +4637,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 ][idx];
                 return (
                   <div key={opt} onClick={() => updateParam(setRevVol)(opt)} style={{
-                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                     border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                     background: isActive ? colors.bg : 'var(--surface2)',
                     fontWeight: isActive ? 600 : 400,
@@ -4675,7 +4675,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 ][idx];
                 return (
                   <div key={opt} onClick={() => updateParam(setMargin)(opt)} style={{
-                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                     border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                     background: isActive ? colors.bg : 'var(--surface2)',
                     fontWeight: isActive ? 600 : 400,
@@ -4706,7 +4706,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 ][idx];
                 return (
                   <div key={opt} onClick={() => updateParam(setMult)(opt)} style={{
-                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                     border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                     background: isActive ? colors.bg : 'var(--surface2)',
                     fontWeight: isActive ? 600 : 400,
@@ -4744,7 +4744,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 ][idx];
                 return (
                   <div key={opt} onClick={() => updateParam(setLaunchRisk)(opt)} style={{
-                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                     border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                     background: isActive ? colors.bg : 'var(--surface2)',
                     fontWeight: isActive ? 600 : 400,
@@ -4775,7 +4775,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 ][idx];
                 return (
                   <div key={opt} onClick={() => updateParam(setRegRisk)(opt)} style={{
-                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                     border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                     background: isActive ? colors.bg : 'var(--surface2)',
                     fontWeight: isActive ? 600 : 400,
@@ -4806,7 +4806,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 ][idx];
                 return (
                   <div key={opt} onClick={() => setDiscountRate(opt)} style={{
-                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                     border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                     background: isActive ? colors.bg : 'var(--surface2)',
                     fontWeight: isActive ? 600 : 400,
@@ -5234,9 +5234,9 @@ const QuarterlyMetricsPanel = () => {
             return (
               <>
                 <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length > 8 ? data.length * 56 : undefined }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                         <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
@@ -5264,9 +5264,9 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ overflowX: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length > 8 ? data.length * 56 : undefined }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                       <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                       <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                       <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
@@ -5368,9 +5368,9 @@ const QuarterlyMetricsPanel = () => {
             return (
               <>
                 <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length > 8 ? data.length * 56 : undefined }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                         <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
@@ -5398,9 +5398,9 @@ const QuarterlyMetricsPanel = () => {
             return (
               <>
                 <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length > 8 ? data.length * 56 : undefined }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                         <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
@@ -5432,9 +5432,9 @@ const QuarterlyMetricsPanel = () => {
             return (
               <>
                 <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length > 8 ? data.length * 56 : undefined }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                         <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
@@ -5501,7 +5501,18 @@ const QuarterlyMetricsPanel = () => {
 const TimelineTab = () => {
   const [secFilter, setSecFilter] = useState('All');
   const [showAllFilings, setShowAllFilings] = useState(false);
-  
+  const [showAllPR, setShowAllPR] = useState(false);
+
+  const pressReleases = [
+    { date: 'Jan 22, 2026', category: 'Launch', color: '#4ade80', title: 'BlueBird 7 Launch Timing — Late Feb on New Glenn' },
+    { date: 'Jan 16, 2026', category: 'Government', color: 'var(--gold)', title: 'MDA SHIELD Prime Contract Award — Golden Dome Program' },
+    { date: 'Dec 24, 2025', category: 'Launch', color: '#4ade80', title: 'BlueBird 6 Successfully Deployed — First Block 2 Satellite in Orbit' },
+    { date: 'Nov 2025', category: 'Earnings', color: 'var(--gold)', title: 'Q3 2025 Results: $1.22B Cash, 6 Satellites Operational' },
+    { date: 'Oct 2025', category: 'Partnership', color: 'var(--cyan)', title: 'Verizon Definitive Agreement — $100M+ Commitment' },
+  ];
+  const displayedPR = showAllPR ? pressReleases : pressReleases.slice(0, 5);
+  const hiddenPRCount = pressReleases.length - 5;
+
   const secFilings = ASTS_SEC_FILINGS;
   const secMeta = ASTS_SEC_META;
   const secTypeColors = ASTS_SEC_TYPE_COLORS;
@@ -5825,43 +5836,29 @@ const TimelineTab = () => {
               <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Recent Press Releases<UpdateIndicators sources="PR" /></span>
             </div>
             <div style={{ padding: '24px 24px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 22, 2026</span>
-                <span style={{ fontSize: 11, color: '#4ade80' }}>Launch</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {displayedPR.map((pr, i) => (
+                  <div key={i} style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{pr.date}</span>
+                      <span style={{ fontSize: 11, color: pr.color }}>{pr.category}</span>
+                    </div>
+                    <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>{pr.title}</div>
+                  </div>
+                ))}
               </div>
-              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>BlueBird 7 Launch Timing — Late Feb on New Glenn</div>
-            </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 16, 2026</span>
-                <span style={{ fontSize: 11, color: 'var(--gold)' }}>Government</span>
-              </div>
-              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>MDA SHIELD Prime Contract Award — Golden Dome Program</div>
-            </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Dec 24, 2025</span>
-                <span style={{ fontSize: 11, color: '#4ade80' }}>Launch</span>
-              </div>
-              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>BlueBird 6 Successfully Deployed — First Block 2 Satellite in Orbit</div>
-            </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Nov 2025</span>
-                <span style={{ fontSize: 11, color: 'var(--gold)' }}>Earnings</span>
-              </div>
-              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Q3 2025 Results: $1.22B Cash, 6 Satellites Operational</div>
-            </div>
-            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Oct 2025</span>
-                <span style={{ fontSize: 11, color: 'var(--cyan)' }}>Partnership</span>
-              </div>
-              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Verizon Definitive Agreement — $100M+ Commitment</div>
-            </div>
-          </div>
+              {hiddenPRCount > 0 && (
+                <div style={{ textAlign: 'center', paddingTop: 16 }}>
+                  <button
+                    onClick={() => setShowAllPR(!showAllPR)}
+                    style={{ padding: '8px 24px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer', fontSize: 12, fontWeight: 500, transition: 'all 0.2s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface2)'; e.currentTarget.style.color = 'var(--text)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text3)'; }}
+                  >
+                    {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -6330,7 +6327,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           const cardBorderLeft = c.highlight ? '4px solid var(--accent)' : threatLevel === 'high' || threatLevel === 'critical' ? '4px solid var(--coral)' : threatLevel === 'medium' ? '4px solid var(--gold)' : threatLevel === 'low' ? '4px solid var(--mint)' : '4px solid var(--surface3)';
           const cardBg = c.highlight ? 'linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%)' : 'var(--surface)';
           return (
-            <div key={c.ticker} style={{ background: cardBg, border: '1px solid var(--border)', borderRadius: 16, padding: 20, borderLeft: cardBorderLeft }}>
+            <div key={c.ticker} style={{ background: cardBg, border: '1px solid var(--border)', borderRadius: 16, padding: 24, borderLeft: cardBorderLeft }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{c.name}</div>
@@ -6341,14 +6338,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                   <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{getCategoryLabel(c.category)}</span>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 6, padding: 10, background: 'var(--surface2)', borderRadius: 10, marginBottom: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10, marginBottom: 12 }}>
                 <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${(c.mc / 1000).toFixed(0)}B</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Mkt Cap</div></div>
                 <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.evRev.toFixed(1)}x</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>EV/Rev</div></div>
                 <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${c.pSub.toLocaleString()}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>$/Sub</div></div>
                 <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.subs.toFixed(0)}M</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Subs</div></div>
               </div>
               {c.highlight && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
                   <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Voice</span>
                   <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Text</span>
                   <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Data</span>
@@ -6358,7 +6355,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 </div>
               )}
               {!c.highlight && profile && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
                   <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.voice ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.voice ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.voice ? undefined : 0.6 }}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
                   <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.text ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.text ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.text ? undefined : 0.6 }}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
                   <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.data ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.data ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.data ? undefined : 0.6 }}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
@@ -6382,7 +6379,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           const extraThreat = kc.threat.toLowerCase();
           const extraBorderLeft = extraThreat === 'high' || extraThreat === 'critical' ? '4px solid var(--coral)' : extraThreat === 'medium' ? '4px solid var(--gold)' : extraThreat === 'low' ? '4px solid var(--mint)' : '4px solid var(--surface3)';
           return (
-            <div key={`extra-${i}`} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 20, borderLeft: extraBorderLeft }}>
+            <div key={`extra-${i}`} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 24, borderLeft: extraBorderLeft }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{kc.name}</div>
@@ -6393,7 +6390,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 </div>
               </div>
               {profile && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
                   <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.voice ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.voice ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.voice ? undefined : 0.6 }}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
                   <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.text ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.text ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.text ? undefined : 0.6 }}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
                   <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.data ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.data ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.data ? undefined : 0.6 }}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
@@ -6470,7 +6467,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         <div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
             {['Method', 'Peer Basis', 'Multiple/Metric', 'Implied Value', 'Premium/(Discount)'].map((label, idx) => (
-              <div key={label} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx < 2 ? 'left' : 'right' }}>{label}</div>
+              <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx < 2 ? 'left' : 'right' }}>{label}</div>
             ))}
           </div>
           {[
@@ -6482,11 +6479,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
             { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
           ].map((v, i) => (
             <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</div>
-              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</div>
-              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{v.metric}</div>
-              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(v.implied / 1000).toFixed(1)}B</div>
-              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</div>
+              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</div>
+              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{v.metric}</div>
+              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(v.implied / 1000).toFixed(1)}B</div>
+              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                 {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
               </div>
             </div>
@@ -6506,7 +6503,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
               {['Segment', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
-                <div key={label} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
+                <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
               ))}
             </div>
             {[
@@ -6517,18 +6514,18 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
             ].map((s, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
                   <div style={{ fontWeight: 500 }}>{s.segment}</div>
                   <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
                 </div>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.metric}</div>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.multiple}</div>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value / 1000).toFixed(1)}B</div>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.metric}</div>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.multiple}</div>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value / 1000).toFixed(1)}B</div>
               </div>
             ))}
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>SOTP Total</div>
-              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</div>
+              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>SOTP Total</div>
+              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</div>
             </div>
           </div>
           </div>
@@ -6545,7 +6542,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
               {['Scenario', 'Prob.', 'Value', 'Weighted'].map((label, idx) => (
-                <div key={label} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
+                <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
               ))}
             </div>
             {[
@@ -6555,18 +6552,18 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
             ].map((s, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
                   <div style={{ fontWeight: 500 }}>{s.scenario}</div>
                   <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.desc}</div>
                 </div>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.prob}%</div>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>${(s.value / 1000).toFixed(1)}B</div>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value * s.prob / 100 / 1000).toFixed(1)}B</div>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.prob}%</div>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>${(s.value / 1000).toFixed(1)}B</div>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value * s.prob / 100 / 1000).toFixed(1)}B</div>
               </div>
             ))}
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>Expected Value</div>
-              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</div>
+              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>Expected Value</div>
+              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</div>
             </div>
           </div>
           </div>
@@ -6589,7 +6586,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', margin: '0 0 16px' }}>Filter by competitor to focus on specific threat vectors.</p>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)' }}>Filter by Competitor</span>
-          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} style={{ fontSize: 10, padding: '3px 10px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}>Clear</button>}
+          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} style={{ fontSize: 10, padding: '4px 12px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}>Clear</button>}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {(() => { const isActive = competitorFilter === 'all'; return (
@@ -6644,7 +6641,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
         <button
           onClick={() => { if (expandedNews.size > 0) { setExpandedNews(new Set()); } else { setExpandedNews(new Set(filteredCompNews.map((_, i) => i))); } }}
-          style={{ fontSize: 10, padding: '3px 10px', borderRadius: 99, background: 'color-mix(in srgb, var(--violet) 15%, transparent)', color: 'var(--violet)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+          style={{ fontSize: 10, padding: '4px 12px', borderRadius: 99, background: 'color-mix(in srgb, var(--violet) 15%, transparent)', color: 'var(--violet)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
         >
           {expandedNews.size > 0 ? 'Collapse All' : 'Expand All'}
         </button>
@@ -6653,7 +6650,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       {/* News Timeline - Flat list */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
         {filteredCompNews.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 40 }}>
+          <div style={{ textAlign: 'center', padding: 48 }}>
             <p style={{ color: 'var(--text3)' }}>No competitor news matching current filters.</p>
           </div>
         ) : (
@@ -6705,7 +6702,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Competitor Profiles (Collapsible) */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-profiles</div>
-      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Competitor Profiles</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {COMPETITOR_PROFILES.map(comp => (
@@ -7289,7 +7286,7 @@ const InvestmentTab = () => {
         {/* CFA Level III Perspective */}
         <div style={{ background: 'color-mix(in srgb, var(--cyan) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--cyan) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--cyan)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
+            <span style={{ background: 'var(--cyan)', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Portfolio Construction & Factor Analysis</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -7308,7 +7305,7 @@ const InvestmentTab = () => {
         {/* Hedge Fund Manager Perspective */}
         <div style={{ background: 'color-mix(in srgb, var(--gold) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
+            <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Alpha Generation & Event Catalysts</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -7327,7 +7324,7 @@ const InvestmentTab = () => {
         {/* CIO/CIS Institutional Perspective */}
         <div style={{ background: 'color-mix(in srgb, var(--sky) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
+            <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Strategic Allocation & Fiduciary Considerations</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -7346,7 +7343,7 @@ const InvestmentTab = () => {
         {/* Technical Analyst Perspective */}
         <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
+            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Chart Patterns & Price Action</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>

@@ -986,7 +986,7 @@ input[type="range"]::-webkit-slider-thumb {
   /* Input rows */
   .input-row {
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
   .input-row label {
     font-size: 13px;
@@ -1018,8 +1018,8 @@ input[type="range"]::-webkit-slider-thumb {
 
   /* Stats Row */
   .stats-row {
-    padding: 14px 12px;
-    gap: 20px;
+    padding: 16px 12px;
+    gap: 16px;
   }
   .stat-item .val {
     font-size: 18px;
@@ -1079,7 +1079,7 @@ input[type="range"]::-webkit-slider-thumb {
   }
 
   /* Grids */
-  .g2, .g3, .g4, .g5 { gap: 10px; }
+  .g2, .g3, .g4, .g5 { gap: 12px; }
 
   /* Big Stats */
   .big-stat .num {
@@ -1403,8 +1403,8 @@ input[type="range"]::-webkit-slider-thumb {
 .update-legend {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 10px 16px;
+  gap: 24px;
+  padding: 12px 16px;
   background: rgba(255,255,255,0.02);
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 8px;
@@ -1647,7 +1647,7 @@ input[type="range"]::-webkit-slider-thumb {
 .comp-panel-meta {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-top: 4px;
 }
 .comp-panel-count {

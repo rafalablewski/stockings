@@ -130,8 +130,8 @@ const ArticleList: React.FC<{
           key={i}
           role="listitem"
           style={{
-            display: 'flex', alignItems: 'flex-start', gap: 10,
-            padding: '10px 12px', borderRadius: 10,
+            display: 'flex', alignItems: 'flex-start', gap: 12,
+            padding: '12px 12px', borderRadius: 10,
             transition: 'background 0.15s',
           }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
@@ -265,7 +265,7 @@ const CompanyFeedCard: React.FC<{
         borderBottom: data.loaded ? '1px solid var(--border)' : 'none',
         background: isPrimary ? 'color-mix(in srgb, var(--accent) 4%, transparent)' : 'transparent',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
           {/* Status indicator */}
           {data.loaded && (
             <span
@@ -365,7 +365,7 @@ const CompanyFeedCard: React.FC<{
         {data.error && (
           <div role="alert" style={{
             fontSize: 12, color: 'var(--coral)', marginBottom: 12,
-            padding: '10px 14px', background: 'var(--coral-dim)', borderRadius: 10,
+            padding: '12px 16px', background: 'var(--coral-dim)', borderRadius: 10,
             display: 'flex', alignItems: 'center', gap: 8,
           }}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
@@ -375,7 +375,7 @@ const CompanyFeedCard: React.FC<{
 
         {!data.loaded && !data.loading && !data.error && (
           <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
             padding: '24px 0', color: 'var(--text3)',
           }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
@@ -387,7 +387,7 @@ const CompanyFeedCard: React.FC<{
 
         {data.loading && (
           <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
             padding: '24px 0', color: 'var(--text3)',
           }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
@@ -559,7 +559,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         padding: '16px 24px', marginTop: 8,
         background: 'var(--surface)', borderRadius: 16, border: '1px solid var(--border)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {/* Progress ring */}
           <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
             <circle cx="14" cy="14" r="12" fill="none" stroke="color-mix(in srgb, var(--border) 60%, transparent)" strokeWidth="2" />
@@ -608,7 +608,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           role="note"
           aria-label="Analysis status legend"
           style={{
-            display: 'flex', alignItems: 'center', gap: 20, padding: '16px 4px 12px',
+            display: 'flex', alignItems: 'center', gap: 24, padding: '16px 4px 12px',
             fontSize: 10, color: 'var(--text3)', letterSpacing: '0.3px',
           }}
         >

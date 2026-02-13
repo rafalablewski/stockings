@@ -258,7 +258,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                 {/* Metrics Grid Summary */}
                 {!isExpanded && (
                   <div style={{ padding: '0 24px 16px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 6, padding: 10, background: 'var(--surface2)', borderRadius: 10 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10 }}>
                       <div style={{ textAlign: 'center', padding: '4px 0' }}>
                         <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{cov.currentPT ? `$${cov.currentPT}` : '\u2014'}</div>
                         <div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Price Target</div>
@@ -454,19 +454,19 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                         <div style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
                                           <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 80px)', borderBottom: '1px solid var(--border)' }}>
                                             {['Metric', 'FY24', 'FY25', 'FY26', 'FY27', 'FY28'].map(h => (
-                                              <span key={h} style={{ padding: '10px 12px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: h === 'Metric' ? 'left' : 'right' }}>{h}</span>
+                                              <span key={h} style={{ padding: '12px 12px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: h === 'Metric' ? 'left' : 'right' }}>{h}</span>
                                             ))}
                                           </div>
                                           {report.estimates.map((e, i) => (
                                             <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 80px)', borderBottom: i < report.estimates.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
                                               onMouseEnter={ev => (ev.currentTarget.style.background = 'var(--surface2)')}
                                               onMouseLeave={ev => (ev.currentTarget.style.background = 'transparent')}>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, color: 'var(--text)' }}>{e.metric}</span>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy24 || '—'}</span>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy25 || '—'}</span>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy26 || '—'}</span>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy27 || '—'}</span>
-                                              <span style={{ padding: '10px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy28 || '—'}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, color: 'var(--text)' }}>{e.metric}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy24 || '—'}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy25 || '—'}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy26 || '—'}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy27 || '—'}</span>
+                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy28 || '—'}</span>
                                             </div>
                                           ))}
                                         </div>

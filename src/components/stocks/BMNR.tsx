@@ -417,12 +417,12 @@ class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, ErrorBou
     if (this.state.hasError) {
       return (
         <div style={{
-          padding: '40px',
+          padding: '48px',
           background: 'linear-gradient(135deg, rgba(255,123,114,0.1) 0%, rgba(255,123,114,0.05) 100%)',
           border: '1px solid rgba(255,123,114,0.3)',
           borderRadius: '16px',
           textAlign: 'center',
-          margin: '20px'
+          margin: '24px'
         }}>
           <div style={{ fontSize: '48px' }}>⚠️</div>
           <h2 style={{ color: '#FF7B72', fontFamily: 'Outfit, sans-serif' }}>
@@ -531,7 +531,7 @@ const UpdateLegend = React.memo(() => {
         onClick={() => setShowIndicators(!showIndicators)}
         style={{
           marginLeft: 'auto',
-          padding: '4px 10px',
+          padding: '4px 12px',
           fontSize: '10px',
           fontWeight: 500,
           color: showIndicators ? 'var(--text)' : 'var(--text3)',
@@ -658,7 +658,7 @@ const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, m
         background: 'var(--surface2)',
         border: '1px solid var(--border)',
         borderRadius: '8px',
-        padding: '10px 14px',
+        padding: '12px 16px',
         fontSize: '14px',
         fontFamily: "'Space Mono', monospace",
         color: 'var(--text)',
@@ -944,7 +944,7 @@ const BMNRDilutionAnalysis = () => {
                 background: 'rgba(167,139,250,0.1)', 
                 border: '1px solid rgba(167,139,250,0.3)', 
                 borderRadius: 6, 
-                padding: '4px 10px', 
+                padding: '4px 12px', 
                 fontSize: 11, 
                 color: '#a78bfa',
               }}>
@@ -1254,7 +1254,7 @@ const BMNRParameterCard = ({
               key={opt}
               onClick={() => { if (!disabled) { onChange(opt); setCustomMode(false); } }}
               style={{
-                padding: '10px 4px',
+                padding: '12px 4px',
                 borderRadius: 8,
                 border: isActive ? `2px solid ${disabled ? 'var(--text3)' : colors.border}` : '1px solid var(--border)',
                 background: isActive ? (disabled ? 'var(--surface2)' : colors.bg) : 'var(--surface2)',
@@ -1304,7 +1304,7 @@ const BMNRParameterCard = ({
           <div
             onClick={() => !disabled && setCustomMode(true)}
             style={{
-              padding: '10px 4px',
+              padding: '12px 4px',
               borderRadius: 8,
               border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
               background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
@@ -1460,7 +1460,7 @@ const ModelTab = ({
 
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#scenario-presets</div>
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
-        <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+        <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Scenario Presets</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
             {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
@@ -1756,7 +1756,7 @@ const ModelTab = ({
               ))}
             </div>
 
-            <div style={{ padding: '14px 16px', background: 'color-mix(in srgb, var(--accent) 6%, transparent)', borderRadius: 10, fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginTop: 16, border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' }}>
+            <div style={{ padding: '16px 16px', background: 'color-mix(in srgb, var(--accent) 6%, transparent)', borderRadius: 10, fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginTop: 16, border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--text2)', marginBottom: 4 }}>Key Assumptions</div>
               <ul style={{ margin: 0, paddingLeft: 16 }}>
                 <li>Terminal year: {new Date().getFullYear() + 5} (5 years out)</li>
@@ -1837,7 +1837,7 @@ const OverviewParameterCard = ({
               key={opt}
               onClick={() => { onChange(opt); setCustomMode(false); }}
               style={{
-                padding: '10px 4px',
+                padding: '12px 4px',
                 borderRadius: 8,
                 border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                 background: isActive ? colors.bg : 'var(--surface2)',
@@ -1889,7 +1889,7 @@ const OverviewParameterCard = ({
           <div
             onClick={() => setCustomMode(true)}
             style={{
-              padding: '10px 4px',
+              padding: '12px 4px',
               borderRadius: 8,
               border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
               background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
@@ -1987,9 +1987,9 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         <UpdateIndicators sources="PR" />
       </div>
       <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: holdingsData.length > 8 ? holdingsData.length * 56 : undefined }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: holdingsData.length * 64 }}>
         {holdingsData.map((d, i) => (
-          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
             <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
             <div style={{ width: '100%', background: 'var(--accent)', borderRadius: '4px 4px 0 0', height: maxValue > 0 ? Math.round((d.value / maxValue) * 150) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
             <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
@@ -2796,7 +2796,7 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
           <div key={s.key} role="button" tabIndex={0} aria-label={`Select ${s.label} strategy`}
             onClick={() => setStakingType(s.key)} onKeyDown={(e) => e.key === 'Enter' && setStakingType(s.key)}
             style={{ background: stakingType === s.key ? 'color-mix(in srgb, var(--violet) 8%, var(--surface))' : 'var(--surface)', padding: '24px 16px', cursor: 'pointer', transition: 'all 0.2s', borderBottom: stakingType === s.key ? '3px solid var(--violet)' : '3px solid transparent' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: stakingType === s.key ? 'var(--text)' : 'var(--text2)' }}>{s.label}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: 'var(--mint)' }}>{s.apy.toFixed(1)}%</span>
             </div>
@@ -3597,7 +3597,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
     background: isSelf ? 'linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%)' : 'var(--surface)',
     border: '1px solid var(--border)',
     borderRadius: 16,
-    padding: 20,
+    padding: 24,
     borderLeft: isSelf ? '4px solid var(--accent)' : threat === 'High' ? '4px solid var(--coral)' : threat === 'Medium' ? '4px solid var(--gold)' : threat === 'Low' ? '4px solid var(--mint)' : '4px solid var(--surface3)'
   });
 
@@ -3741,7 +3741,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                   <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{qual?.type || c.category}</span>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 6, padding: 10, background: 'var(--surface2)', borderRadius: 10, marginBottom: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10, marginBottom: 12 }}>
                 <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{typeof c.holdings === 'number' ? c.holdings.toLocaleString() : c.holdings}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Holdings</div></div>
                 <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.navPerShare > 0 ? `$${c.navPerShare.toFixed(2)}` : '—'}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>NAV/Share</div></div>
                 <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${c.price}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Price</div></div>
@@ -3781,7 +3781,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
         ))}
       </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#yield-advantage</div>
-      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Yield Advantage<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>ETH staking generates yield vs BTC's 0% — structural advantage</p>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -3802,13 +3802,13 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
       {/* Valuation Methodology Matrix */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#implied-valuation-matrix</div>
-      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p style={{ color: 'var(--text3)', fontSize: 13 }}>BMNR value under different NAV multiples (current: ${(compsData[0]?.marketCap / 1e9).toFixed(2)}B)</p>
         <div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)', borderRadius: '10px 10px 0 0' }}>
             {['Method', 'Peer Basis', 'Multiple', 'Implied Value', 'vs Current'].map((label, idx) => (
-              <div key={label} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx < 2 ? 'left' : 'right' }}>{label}</div>
+              <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx < 2 ? 'left' : 'right' }}>{label}</div>
             ))}
           </div>
           {(() => {
@@ -3824,11 +3824,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
               { method: 'Yield-Adjusted', basis: '5yr Compound', multiple: '1.15x', implied: nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5), vs: ((nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5)) / currentMC - 1) * 100 },
             ].map((v, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</div>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</div>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{v.multiple}</div>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(v.implied / 1e9).toFixed(2)}B</div>
-                <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</div>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</div>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{v.multiple}</div>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(v.implied / 1e9).toFixed(2)}B</div>
+                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {v.vs >= 0 ? '+' : ''}{v.vs.toFixed(0)}%
                 </div>
               </div>
@@ -3849,7 +3849,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
               {['Component', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
-                <div key={label} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
+                <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
               ))}
             </div>
             {(() => {
@@ -3862,19 +3862,19 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 { segment: 'Growth Optionality', basis: 'Acquisition capacity', metric: 'Option value', multiple: '—', value: ethValue * 0.03 },
               ].map((s, i) => (
                 <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                  <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                  <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
                     <div style={{ fontWeight: 500 }}>{s.segment}</div>
                     <div style={{ fontSize: 11, color: 'var(--text3)' }}>{s.basis}</div>
                   </div>
-                  <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.metric}</div>
-                  <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.multiple}</div>
-                  <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value / 1e9).toFixed(2)}B</div>
+                  <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.metric}</div>
+                  <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.multiple}</div>
+                  <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value / 1e9).toFixed(2)}B</div>
                 </div>
               ));
             })()}
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>SOTP Total</div>
-              <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((() => {
+              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>SOTP Total</div>
+              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((() => {
                 const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
                 const ethValue = ethHoldings * ethPrice;
                 const yieldNPV = ethValue * (comparables[0]?.yield || 0) / 100 * 3.79;
@@ -3888,15 +3888,15 @@ const CompsTab = ({ comparables, ethPrice }) => {
         {/* NAV Premium Sensitivity */}
         <div>
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#nav-premium-sensitivity</div>
-          <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+          <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>NAV Premium Sensitivity<UpdateIndicators sources={['WS']} /></div>
           <p style={{ color: 'var(--text3)', fontSize: 13 }}>Stock price at different ETH prices × NAV multiples</p>
           <div style={{ overflowX: 'auto' }}>
             <div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 1fr)', background: 'var(--surface2)', borderBottom: '1px solid var(--border)', borderRadius: '10px 10px 0 0' }}>
-                <div style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600 }}>ETH / NAV</div>
+                <div style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600 }}>ETH / NAV</div>
                 {[0.75, 1.0, 1.25, 1.5, 2.0].map(m => (
-                  <div key={m} style={{ padding: '14px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: 'right' }}>{m}x</div>
+                  <div key={m} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: 'right' }}>{m}x</div>
                 ))}
               </div>
               {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(ethMult => {
@@ -3906,12 +3906,12 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 const currentPrice = comparables[0]?.price || 0;
                 return (
                   <div key={ethMult} style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 1fr)', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                    <div style={{ padding: '14px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</div>
+                    <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</div>
                     {[0.75, 1.0, 1.25, 1.5, 2.0].map(navMult => {
                       const price = baseNAV * ethMult * navMult;
                       const isNear = ethMult === 1.0 && navMult === 1.0;
                       return (
-                        <div key={navMult} style={{ padding: '14px 16px', textAlign: 'right', fontFamily: "'Space Mono', monospace", fontSize: 14, ...(isNear ? {
+                        <div key={navMult} style={{ padding: '16px 16px', textAlign: 'right', fontFamily: "'Space Mono', monospace", fontSize: 14, ...(isNear ? {
                           background: 'var(--accent-dim)',
                           fontWeight: 600,
                           color: 'var(--accent)'
@@ -3949,7 +3949,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
           {competitorFilter !== 'all' && (
             <button
               onClick={() => setCompetitorFilter('all')}
-              style={{ fontSize: 10, padding: '3px 10px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ fontSize: 10, padding: '4px 12px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
               aria-label="Clear competitor filter"
             >
               Clear
@@ -4030,7 +4030,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitor-events</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
         {filteredCompNews.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 40 }}>
+          <div style={{ textAlign: 'center', padding: 48 }}>
             <p style={{ color: 'var(--text3)' }}>No competitor news matching current filters.</p>
           </div>
         ) : (
@@ -4115,7 +4115,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                   <div style={{ fontSize: 13, color: 'var(--text2)' }}>{comp.description}</div>
                 </div>
                 <span style={{
-                  padding: '4px 10px',
+                  padding: '4px 12px',
                   borderRadius: 4,
                   fontSize: 11,
                   fontWeight: 600,
@@ -4272,22 +4272,22 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
           <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginBottom: 8 }}>Start Year</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {[2020, 2021, 2022, 2023, 2024].map(y => (
-              <button key={y} onClick={() => setStartYear(y)} aria-label={`Start from ${y}`} style={{ padding: '6px 10px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: startYear === y ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: startYear === y ? 'var(--accent)' : 'var(--surface2)', color: startYear === y ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>{y}</button>
+              <button key={y} onClick={() => setStartYear(y)} aria-label={`Start from ${y}`} style={{ padding: '8px 12px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: startYear === y ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: startYear === y ? 'var(--accent)' : 'var(--surface2)', color: startYear === y ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>{y}</button>
             ))}
           </div>
         </div>
         <div style={{ background: 'var(--surface)', padding: '24px 16px' }}>
           <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginBottom: 8 }}>Staking Yield</div>
           <div style={{ display: 'flex', gap: 4 }}>
-            <button onClick={() => setIncludeYield(true)} aria-pressed={includeYield} style={{ padding: '6px 10px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: includeYield ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: includeYield ? 'var(--accent)' : 'var(--surface2)', color: includeYield ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>On ({baseStakingAPY}%)</button>
-            <button onClick={() => setIncludeYield(false)} aria-pressed={!includeYield} style={{ padding: '6px 10px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: !includeYield ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: !includeYield ? 'var(--accent)' : 'var(--surface2)', color: !includeYield ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>Off</button>
+            <button onClick={() => setIncludeYield(true)} aria-pressed={includeYield} style={{ padding: '8px 12px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: includeYield ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: includeYield ? 'var(--accent)' : 'var(--surface2)', color: includeYield ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>On ({baseStakingAPY}%)</button>
+            <button onClick={() => setIncludeYield(false)} aria-pressed={!includeYield} style={{ padding: '8px 12px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: !includeYield ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: !includeYield ? 'var(--accent)' : 'var(--surface2)', color: !includeYield ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>Off</button>
           </div>
         </div>
         <div style={{ background: 'var(--surface)', padding: '24px 16px' }}>
           <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginBottom: 8 }}>NAV Multiple</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {[0.8, 1.0, 1.2, 1.5, 2.0].map(m => (
-              <button key={m} onClick={() => setAssumedMult(m)} aria-label={`${m}x NAV multiple`} style={{ padding: '6px 10px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: assumedMult === m ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: assumedMult === m ? 'var(--accent)' : 'var(--surface2)', color: assumedMult === m ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>{m.toFixed(1)}x</button>
+              <button key={m} onClick={() => setAssumedMult(m)} aria-label={`${m}x NAV multiple`} style={{ padding: '8px 12px', fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: assumedMult === m ? 600 : 400, borderRadius: 6, border: 'none', cursor: 'pointer', background: assumedMult === m ? 'var(--accent)' : 'var(--surface2)', color: assumedMult === m ? 'white' : 'var(--text3)', transition: 'all 0.15s' }}>{m.toFixed(1)}x</button>
             ))}
           </div>
         </div>
@@ -4318,7 +4318,7 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
         </div>
         <div style={{ padding: '24px 24px' }}>
           <ResponsiveContainer width="100%" height={350}><AreaChart data={data.data}><defs><linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/><stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/></linearGradient><linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" tick={{ fontSize: 10 }} interval="preserveStartEnd" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} fontSize={10} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={(v, name) => [`$${v.toFixed(2)}`, name === 'nav' ? 'NAV' : 'Stock']} /><Area type="monotone" dataKey="nav" stroke="var(--violet)" strokeWidth={2} fill="url(#navGrad)" name="nav" /><Area type="monotone" dataKey="stockPrice" stroke="var(--mint)" strokeWidth={2} fill="url(#priceGrad)" name="stockPrice" /></AreaChart></ResponsiveContainer>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 12 }}>
             {[{ label: 'NAV', color: 'var(--violet)' }, { label: `Stock (${assumedMult.toFixed(1)}x)`, color: 'var(--mint)' }].map(l => (
               <span key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text3)' }}>
                 <span style={{ width: 12, height: 3, borderRadius: 1, background: l.color }} />{l.label}
@@ -4420,12 +4420,12 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
         <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DCF Method</span>
         </div>
-        <div style={{ padding: 28 }}>
+        <div style={{ padding: 24 }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           <button
             onClick={() => setDcfMethod('terminal')}
             style={{
-              padding: '10px 16px',
+              padding: '12px 16px',
               borderRadius: 8,
               fontWeight: 500,
               border: dcfMethod === 'terminal' ? '2px solid var(--violet)' : '1px solid var(--border)',
@@ -4440,7 +4440,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
           <button
             onClick={() => setDcfMethod('intermediate')}
             style={{
-              padding: '10px 16px',
+              padding: '12px 16px',
               borderRadius: 8,
               fontWeight: 500,
               border: dcfMethod === 'intermediate' ? '2px solid var(--sky)' : '1px solid var(--border)',
@@ -4455,7 +4455,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
           <button
             onClick={() => setDcfMethod('dividend')}
             style={{
-              padding: '10px 16px',
+              padding: '12px 16px',
               borderRadius: 8,
               fontWeight: 500,
               border: dcfMethod === 'dividend' ? '2px solid var(--mint)' : '1px solid var(--border)',
@@ -4516,7 +4516,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
           <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Model Inputs</span>
           </div>
-          <div style={{ padding: 28 }}>
+          <div style={{ padding: 24 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
               <Input label="ETH Growth (%/yr)" value={ethGrowth} onChange={setEthGrowth} />
               <Input label="Discount Rate (%)" value={discount} onChange={setDiscount} />
@@ -4531,7 +4531,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
           <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Valuation Output</span>
           </div>
-          <div style={{ padding: 28 }}>
+          <div style={{ padding: 24 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
               <Card label="Implied Value" value={`$${dcf.impliedValue.toFixed(2)}`} sub={dcfMethod === 'intermediate' ? 'CFs + Terminal' : dcfMethod === 'dividend' ? 'Divs + Terminal' : 'Terminal only'} color="mint" />
               <Card label="Current NAV" value={`$${calc.currentNAV.toFixed(2)}`} sub="Book value" />
@@ -4797,7 +4797,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       {/* Scenario Presets */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mc-scenarios</div>
-        <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 20 }}>
+        <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Select Scenario</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {Object.entries(presets).map(([key, p]) => (
@@ -4913,7 +4913,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 ][idx];
                 return (
                   <div key={opt} onClick={() => updateParam(setDrift)(opt)} style={{
-                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                     border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                     background: isActive ? colors.bg : 'var(--surface2)',
                     fontWeight: isActive ? 600 : 400,
@@ -4944,7 +4944,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 ][idx];
                 return (
                   <div key={opt} onClick={() => updateParam(setVol)(opt)} style={{
-                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                     border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                     background: isActive ? colors.bg : 'var(--surface2)',
                     fontWeight: isActive ? 600 : 400,
@@ -4982,7 +4982,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 ][idx];
                 return (
                   <div key={opt} onClick={() => updateParam(setMultVol)(opt)} style={{
-                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                     border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                     background: isActive ? colors.bg : 'var(--surface2)',
                     fontWeight: isActive ? 600 : 400,
@@ -5013,7 +5013,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 ][idx];
                 return (
                   <div key={opt} onClick={() => updateParam(setCorr)(opt)} style={{
-                    padding: '10px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
+                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
                     border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
                     background: isActive ? colors.bg : 'var(--surface2)',
                     fontWeight: isActive ? 600 : 400,
@@ -5908,7 +5908,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
             {current.ecosystemHealth.metrics.map((m, i) => (
-              <div key={i} style={{ background: 'var(--surface)', padding: 10, borderRadius: 12, textAlign: 'center' }}>
+              <div key={i} style={{ background: 'var(--surface)', padding: 12, borderRadius: 12, textAlign: 'center' }}>
                 <div style={{ fontSize: 10, color: 'var(--text3)' }}>{m.metric}</div>
                 <div style={{ fontSize: 13, fontFamily: 'Space Mono', color: m.color, fontWeight: 600 }}>{m.value}</div>
                 <div style={{ fontSize: 10, color: m.color }}>✓ {m.signal}</div>
@@ -6064,7 +6064,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         {/* CFA Level III Perspective */}
         <div style={{ background: 'color-mix(in srgb, var(--violet) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--violet)', color: 'white', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
+            <span style={{ background: 'var(--violet)', color: 'white', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Portfolio Construction & Factor Analysis</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -6086,7 +6086,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         {/* Hedge Fund Manager Perspective */}
         <div style={{ background: 'color-mix(in srgb, var(--gold) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
+            <span style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Alpha Generation & Event Catalysts</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -6108,7 +6108,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         {/* CIO/CIS Institutional Perspective */}
         <div style={{ background: 'color-mix(in srgb, var(--sky) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
+            <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Strategic Allocation & Fiduciary Considerations</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -6130,7 +6130,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         {/* Technical Analyst Perspective */}
         <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
+            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
             <span style={{ color: 'var(--text3)', fontSize: 12 }}>Chart Patterns & Price Action</span>
           </div>
           <div style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
@@ -6566,9 +6566,9 @@ const BMNRQuarterlyMetricsPanel = () => {
             return (
               <>
                 <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length > 8 ? data.length * 56 : undefined }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                       <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                       <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                       <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
@@ -6596,9 +6596,9 @@ const BMNRQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ overflowX: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length > 8 ? data.length * 56 : undefined }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                     <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
@@ -6673,9 +6673,9 @@ const BMNRQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length > 8 ? data.length * 56 : undefined }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                     <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
@@ -6696,9 +6696,9 @@ const BMNRQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length > 8 ? data.length * 56 : undefined }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                     <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
@@ -6727,9 +6727,9 @@ const BMNRQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length > 8 ? data.length * 56 : undefined }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
                     <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
@@ -6756,11 +6756,11 @@ const BMNRQuarterlyMetricsPanel = () => {
             const hasNegative = data.some(d => d.value < 0);
             return (
               <div style={{ padding: '24px 24px 24px', overflowX: 'auto' }}>
-                <div style={{ minWidth: data.length > 8 ? data.length * 56 : undefined }}>
+                <div style={{ minWidth: data.length * 64 }}>
                 {hasPositive && (
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: hasNegative ? 100 : 200 }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                         {d.value >= 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>}
                         <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? Math.round((d.value / maxVal) * 80) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
                       </div>
@@ -6769,13 +6769,13 @@ const BMNRQuarterlyMetricsPanel = () => {
                 )}
                 <div style={{ display: 'flex', gap: 8, borderTop: '1px solid var(--text3)' }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 10, color: 'var(--text3)', padding: '4px 0', minWidth: 44 }}>{d.label}</div>
+                    <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 10, color: 'var(--text3)', padding: '4px 0', minWidth: 56 }}>{d.label}</div>
                   ))}
                 </div>
                 {hasNegative && (
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, height: hasPositive ? 100 : 200 }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 44 }}>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
                         <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 80) : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
                         {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginTop: 4 }}>{d.display}</div>}
                       </div>
@@ -7170,7 +7170,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
               <div>• Global settlement volume addressable: $500T+/year</div>
             </div>
           </div>
-          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+          <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
             <span style={{ color: 'var(--text3)' }}>Settlement Capture Rate = </span>
             <span style={{ color: 'var(--mint)' }}>(ETH L1/L2 Volume ÷ Total Tokenized Volume)</span>
             <span style={{ color: 'var(--text3)' }}> × </span>
@@ -7201,7 +7201,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
               <div>• Net supply change = Issuance − Burn</div>
             </div>
           </div>
-          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+          <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
             <span style={{ color: 'var(--text3)' }}>Supply Impact = </span>
             <span style={{ color: 'var(--coral)' }}>−(Base Fee × Gas Used)</span>
             <span style={{ color: 'var(--text3)' }}> + </span>
@@ -7234,7 +7234,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
               <div>• Key difference: ETH yield + price appreciation</div>
             </div>
           </div>
-          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+          <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
             <span style={{ color: 'var(--text3)' }}>Total Return = </span>
             <span style={{ color: 'var(--sky)' }}>Staking APY</span>
             <span style={{ color: 'var(--text3)' }}> + </span>
@@ -7267,7 +7267,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
               <div>• Security track record (9+ years)</div>
             </div>
           </div>
-          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+          <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
             <span style={{ color: 'var(--text3)' }}>Network Value ∝ </span>
             <span style={{ color: 'var(--gold)' }}>n²</span>
             <span style={{ color: 'var(--text3)' }}> where n = </span>
@@ -7298,7 +7298,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
               <div>• Operating leverage from capital markets access</div>
             </div>
           </div>
-          <div style={{ padding: 10, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
+          <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 6, fontSize: 11, fontFamily: 'Space Mono' }}>
             <span style={{ color: 'var(--text3)' }}>BMNR Return = </span>
             <span style={{ color: 'var(--mint)' }}>(ETH Δ × Holdings)</span>
             <span style={{ color: 'var(--text3)' }}> + </span>
@@ -7361,7 +7361,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
           {companyFilter !== 'All' && (
             <button
               onClick={() => setCompanyFilter('All')}
-              style={{ fontSize: 10, padding: '3px 10px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ fontSize: 10, padding: '4px 12px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
               aria-label="Clear company filter"
             >
               Clear
