@@ -854,10 +854,13 @@ const BMNRDilutionAnalysis = () => {
   ];
 
   const bmnrCompetitors: Competitor[] = [
-    { name: 'MicroStrategy', url: 'https://www.strategy.com/investor-relations' },
-    { name: 'Marathon Digital', url: 'https://ir.mara.com' },
-    { name: 'Riot Platforms', url: 'https://www.riotplatforms.com' },
-    { name: 'CleanSpark', url: 'https://www.cleanspark.com' },
+    { name: 'Strategy (MSTR)', url: 'https://www.strategy.com/investor-relations' },
+    { name: 'Coinbase Blog', url: 'https://www.coinbase.com/blog' },
+    { name: 'Coinbase IR', url: 'https://investor.coinbase.com' },
+    { name: 'Marathon Digital (MARA)', url: 'https://ir.mara.com' },
+    { name: 'Riot Platforms (RIOT)', url: 'https://www.riotplatforms.com' },
+    { name: 'CleanSpark (CLSK)', url: 'https://www.cleanspark.com' },
+    { name: 'ETHZilla (ETHZ)', url: 'https://ir.ethzilla.com' },
   ];
 
   const bmnrResearchSources: SourceGroup[] = [
@@ -1107,7 +1110,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
         {activeTab === 'sources' && (
-          <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="BTC Treasury Peers" competitors={bmnrCompetitors} />
+          <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="Crypto Treasury Peers" competitors={bmnrCompetitors} />
         )}
         </main>
       </div>
