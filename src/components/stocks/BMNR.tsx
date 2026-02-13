@@ -1452,20 +1452,17 @@ const ModelTab = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#model-header</div>
+      {/* Hero — Ive×Tesla */}
       <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>{scenario.icon} {scenario.name} Scenario<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>DCF Valuation<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Model<span style={{ color: 'var(--accent)' }}>.</span></h2>
-        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Configure model assumptions for BMNR's ETH treasury valuation. Changes flow to NAV projections and DCF valuation.</p>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Configure assumptions and scenario presets. All changes flow directly to DCF projections and terminal value calculation.</p>
       </div>
 
       {/* ASSUMPTIONS SECTION */}
       <>
-
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#scenario-presets</div>
-        {/* Scenario Presets - 6 scenarios from Worst to Moon */}
-        <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Scenario Presets</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#scenario-presets</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
             {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
               const preset = BMNR_SCENARIO_PRESETS[s];
               const isActive = selectedScenario === s;
@@ -1474,31 +1471,30 @@ const ModelTab = ({
                   key={s}
                   onClick={() => applyScenario(s)}
                   style={{
-                    padding: 12,
-                    borderRadius: 10,
-                    border: isActive ? `2px solid ${preset.color}` : '1px solid var(--border)',
-                    background: isActive ? `${preset.color}15` : 'var(--surface2)',
+                    padding: '16px 8px',
+                    background: isActive ? `${preset.color}15` : 'var(--surface)',
                     cursor: 'pointer',
-                    transition: 'all 0.2s',
+                    transition: 'all 0.15s',
                     textAlign: 'center',
+                    borderBottom: isActive ? `2px solid ${preset.color}` : '2px solid transparent',
                   }}
                 >
-                  <div style={{ fontSize: 20 }}>{preset.icon}</div>
-                  <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)' }}>
-                    {preset.label}
+                  <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{preset.label}</div>
+                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: isActive ? preset.color : 'var(--text)', margin: '4px 0 2px' }}>
+                    {preset.ethGrowthRate > 0 ? '+' : ''}{preset.ethGrowthRate}%
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
-                    {preset.ethGrowthRate > 0 ? '+' : ''}{preset.ethGrowthRate}% ETH · {preset.navPremium}x
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>
+                    {preset.navPremium}x NAV
                   </div>
                 </div>
               );
             })}
           </div>
-          {/* Always show to prevent layout shift */}
-          <div style={{ padding: 12, background: 'rgba(167,139,250,0.1)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
-            ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
-          </div>
-        </div>
+          {selectedScenario === 'custom' && (
+            <div style={{ padding: '8px 12px', background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 8, fontSize: 11, color: 'var(--violet)', marginTop: 8 }}>
+              Custom scenario — parameters modified from preset
+            </div>
+          )}
 
         {/* CALCULATION MODE TOGGLE */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#calculation-mode</div>
@@ -1663,46 +1659,48 @@ const ModelTab = ({
           />
         </div>
 
-        {/* DCF VALUATION OUTPUT */}
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dcf-output</div>
-        <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DCF Valuation Output (5-Year Terminal)</span>
-          <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-        </div>
-        {/* Hero KPI Row - 2 column */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 14, overflow: 'hidden', marginBottom: 12 }}>
-          <div style={{ background: 'var(--accent-dim)', padding: '24px 24px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Target Stock Price</div>
-            <div style={{ fontSize: 28, fontWeight: 700, fontFamily: 'Space Mono', color: 'var(--accent)', letterSpacing: '-1px' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(2)}` : 'N/A'}</div>
-            <div style={{ fontSize: 12, color: 'var(--text3)' }}>vs ${currentStockPrice.toFixed(2)} current</div>
+          {/* DCF VALUATION OUTPUT */}
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dcf-output</div>
+          <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>DCF Output — 5-Year Terminal Year</span>
+            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
           </div>
-          <div style={{ background: 'var(--accent-dim)', padding: '24px 24px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Implied Upside</div>
-            <div style={{ fontSize: 28, fontWeight: 700, fontFamily: 'Space Mono', color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)', letterSpacing: '-1px' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
-            <div style={{ fontSize: 12, color: 'var(--text3)' }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
-          </div>
-        </div>
-        {/* 4-column metric grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 14, overflow: 'hidden' }}>
-          {[
-            { label: 'Present Value', value: `$${(presentValueEV / 1000).toFixed(2)}B`, detail: `Terminal ÷ ${discountFactor.toFixed(2)}x` },
-            { label: 'Market Cap', value: `$${((currentShares * currentStockPrice) / 1000).toFixed(2)}B`, detail: `${currentPriceToNAV.toFixed(2)}x current NAV` },
-            { label: 'Terminal ETH Price', value: `$${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, detail: ethInputMode === 'current' ? 'current (no growth)' : `${ethGrowthRate > 0 ? '+' : ''}${ethGrowthRate}%/yr × 5yrs` },
-            { label: 'Terminal ETH Holdings', value: `${(terminalETH / 1_000_000).toFixed(2)}M`, detail: `+${((terminalETH / currentETH - 1) * 100).toFixed(1)}% from yield` },
-            { label: 'Terminal NAV', value: `$${(terminalNAV / 1000).toFixed(2)}B`, detail: `${(terminalNAV / currentNAV).toFixed(1)}x current` },
-            { label: 'Terminal Shares', value: `${terminalShares.toFixed(0)}M`, detail: `+${((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution` },
-            { label: 'Current P/NAV', value: `${currentPriceToNAV.toFixed(2)}x`, detail: currentPriceToNAV > 1 ? 'Premium' : 'Discount' },
-            { label: 'Implied Yield', value: `${impliedDividendYield.toFixed(2)}%`, detail: 'Net staking / Mkt Cap' },
-            { label: 'Annual Staking Rev', value: `$${annualStakingRevenue.toFixed(1)}M`, detail: `${stakingYield}% × $${(currentETH * ethPrice / 1_000_000).toFixed(0)}M` },
-            { label: 'Terminal NAV/Share', value: `$${terminalNavPerShare.toFixed(2)}`, detail: `at ${navPremium}x = $${terminalPriceAtNav.toFixed(0)}` },
-          ].map((m, i) => (
-            <div key={i} style={{ background: 'var(--surface2)', padding: '16px 16px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)' }}>{m.label}</div>
-              <div style={{ fontSize: 18, fontWeight: 600, fontFamily: 'Space Mono', color: 'var(--text)' }}>{m.value}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{m.detail}</div>
+
+          {/* Primary Output — Hero KPIs */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'color-mix(in srgb, var(--accent) 30%, var(--border))', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))', padding: '24px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 600 }}>Target Price</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: 'var(--accent)', margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>vs ${currentStockPrice.toFixed(2)} current</div>
             </div>
-          ))}
-        </div>
+            <div style={{ background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))', padding: '24px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 600 }}>Implied Upside</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--coral)', margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
+            </div>
+          </div>
+
+          {/* Valuation Metrics Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 12 }}>
+            {[
+              { label: 'Present Value', value: `$${(presentValueEV / 1000).toFixed(2)}B`, sub: `Terminal ÷ ${discountFactor.toFixed(2)}x`, color: 'var(--text)' },
+              { label: 'Market Cap', value: `$${((currentShares * currentStockPrice) / 1000).toFixed(2)}B`, sub: `${currentPriceToNAV.toFixed(2)}x current NAV`, color: 'var(--text)' },
+              { label: 'Terminal ETH Price', value: `$${terminalEthPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, sub: ethInputMode === 'current' ? 'current (no growth)' : `${ethGrowthRate > 0 ? '+' : ''}${ethGrowthRate}%/yr × 5yrs`, color: 'var(--text)' },
+              { label: 'Terminal ETH Holdings', value: `${(terminalETH / 1_000_000).toFixed(2)}M`, sub: `+${((terminalETH / currentETH - 1) * 100).toFixed(1)}% from yield`, color: 'var(--text)' },
+              { label: 'Terminal NAV', value: `$${(terminalNAV / 1000).toFixed(2)}B`, sub: `${(terminalNAV / currentNAV).toFixed(1)}x current`, color: 'var(--text)' },
+              { label: 'Terminal Shares', value: `${terminalShares.toFixed(0)}M`, sub: `${dilutionRate}%/yr × 5yr`, color: 'var(--text)' },
+              { label: 'Current P/NAV', value: `${currentPriceToNAV.toFixed(2)}x`, sub: currentPriceToNAV > 1 ? 'Premium' : 'Discount', color: 'var(--text)' },
+              { label: 'Implied Yield', value: `${impliedDividendYield.toFixed(2)}%`, sub: 'Net staking / Mkt Cap', color: 'var(--text)' },
+              { label: 'Annual Staking Rev', value: `$${annualStakingRevenue.toFixed(1)}M`, sub: `${stakingYield}% × $${(currentETH * ethPrice / 1_000_000).toFixed(0)}M`, color: 'var(--text)' },
+              { label: 'Terminal NAV/Share', value: `$${terminalNavPerShare.toFixed(2)}`, sub: `at ${navPremium}x = $${terminalPriceAtNav.toFixed(0)}`, color: 'var(--accent)' },
+            ].map(kpi => (
+              <div key={kpi.label} style={{ background: 'var(--surface)', padding: '16px', textAlign: 'center' }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 18, fontWeight: 700, color: kpi.color, margin: '6px 0 4px' }}>{kpi.value}</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+              </div>
+            ))}
+          </div>
 
         {/* CALCULATION METHODOLOGY */}
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 32 }}>#methodology</div>
