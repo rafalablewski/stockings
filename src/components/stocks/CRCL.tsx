@@ -1395,6 +1395,8 @@ const CRCLModelTab = ({
   const discountRateDecimal = discountRate / 100;
   const terminalGrowthDecimal = terminalGrowth / 100;
   const spread = discountRateDecimal - terminalGrowthDecimal;
+  // Gordon Growth Model requires positive spread to avoid division by zero
+  // MIN_SPREAD_FOR_GORDON_GROWTH = 0.01 (1%) threshold prevents invalid calculations
   const terminalEV = spread > 0.01 ? terminalFCF / spread : 0; // $B
 
   // STEP 6: Discount Terminal Value to Present
@@ -1402,20 +1404,28 @@ const CRCLModelTab = ({
   const presentValueEV = terminalEV / discountFactor; // $B
 
   // STEP 7: Risk Factor (probability of success)
+  // Formula: (1 - Risk1) × (1 - Risk2) × (1 - Risk3)
+  // 
+  // ASSUMPTION: Risks are independent. If risks are correlated (e.g., regulatory changes
+  // affect competition), this formula overestimates success probability. For correlated
+  // risks, consider: riskFactor = 1 - max(risk1, risk2, risk3) or a correlation matrix.
   const riskFactor = (1 - regulatoryRisk/100) * (1 - competitionRisk/100) * (1 - rateRisk/100);
 
   // STEP 8: Risk-Adjusted Present Value
   const riskAdjustedEV = presentValueEV * riskFactor; // $B
 
   // STEP 9: Equity Value (assume minimal net debt for CRCL)
-  const netDebt = 0.2; // ~$200M net debt
+  // Net debt in $B: ~$200M = 0.2B
+  // Formula: Equity Value = Enterprise Value - Net Debt
+  const netDebt = 0.2; // ~$200M net debt (in $B units)
   const equityValue = riskAdjustedEV - netDebt; // $B
 
   // STEP 10: Target Stock Price (no significant dilution expected for profitable company)
   const dilutionRate = 2; // 2% annual stock comp dilution
   const terminalShares = currentShares * Math.pow(1 + dilutionRate / 100, terminalYears);
+  // Convert $B to $M: multiply by THOUSAND (1000), then divide by M shares to get $/share
   const targetStockPrice = equityValue > 0 && terminalShares > 0
-    ? (equityValue * 1000) / terminalShares // Convert $B to $M, divide by M shares
+    ? (equityValue * 1000) / terminalShares // Units: $B × 1000 ÷ M shares = $/share
     : 0;
 
   // STEP 11: Implied Upside/Downside
@@ -2636,13 +2646,13 @@ const CRCLQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
+                <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                      <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 6, textAlign: 'center', whiteSpace: 'nowrap' }}>{d.label}</div>
                     </div>
                   ))}
                   </div>
@@ -2666,13 +2676,13 @@ const CRCLQuarterlyMetricsPanel = () => {
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
-              <div style={{ overflowX: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
+              <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                    <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 6, textAlign: 'center', whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
                 </div>
@@ -2749,13 +2759,13 @@ const CRCLQuarterlyMetricsPanel = () => {
             ];
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
-              <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
+              <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                    <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                    <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 6, textAlign: 'center', whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
                 </div>
@@ -2780,13 +2790,13 @@ const CRCLQuarterlyMetricsPanel = () => {
             ];
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
-              <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
+              <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                    <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                    <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 6, textAlign: 'center', whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
                 </div>
@@ -2811,13 +2821,13 @@ const CRCLQuarterlyMetricsPanel = () => {
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
-              <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
+              <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                    <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 6, textAlign: 'center', whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
                 </div>

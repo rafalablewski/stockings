@@ -103,6 +103,8 @@ const calculateRSI = (data: ChartDataPoint[], period: number = 14): (number | nu
   const result: (number | null)[] = [];
   const gains: number[] = [];
   const losses: number[] = [];
+  let prevAvgGain: number | null = null;
+  let prevAvgLoss: number | null = null;
 
   for (let i = 0; i < data.length; i++) {
     if (i === 0) {
@@ -132,12 +134,25 @@ const calculateRSI = (data: ChartDataPoint[], period: number = 14): (number | nu
       }
       avgGain /= period;
       avgLoss /= period;
+      // Store for next iteration
+      prevAvgGain = avgGain;
+      prevAvgLoss = avgLoss;
     } else {
-      // Subsequent RSI uses smoothed average
-      const prevAvgGain = gains.slice(i - period, i).reduce((a, b) => a + b, 0) / period;
-      const prevAvgLoss = losses.slice(i - period, i).reduce((a, b) => a + b, 0) / period;
-      avgGain = (prevAvgGain * (period - 1) + gains[i]) / period;
-      avgLoss = (prevAvgLoss * (period - 1) + losses[i]) / period;
+      // Subsequent RSI uses Wilder's smoothing (exponential moving average)
+      // Formula: EMA = (Previous EMA × (period - 1) + Current Value) / period
+      if (prevAvgGain !== null && prevAvgLoss !== null) {
+        avgGain = (prevAvgGain * (period - 1) + gains[i]) / period;
+        avgLoss = (prevAvgLoss * (period - 1) + losses[i]) / period;
+        // Update for next iteration
+        prevAvgGain = avgGain;
+        prevAvgLoss = avgLoss;
+      } else {
+        // Fallback: recalculate simple average if previous values missing
+        avgGain = gains.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0) / period;
+        avgLoss = losses.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0) / period;
+        prevAvgGain = avgGain;
+        prevAvgLoss = avgLoss;
+      }
     }
 
     if (avgLoss === 0) {
@@ -167,16 +182,30 @@ const calculateBollingerBands = (data: ChartDataPoint[], period: number = 20, st
       continue;
     }
 
-    // Calculate standard deviation
+    // Calculate standard deviation with defensive null check
+    if (middle[i] === null) {
+      upper.push(null);
+      lower.push(null);
+      continue;
+    }
+    
     let sumSquares = 0;
     for (let j = 0; j < period; j++) {
-      const diff = data[i - j].close - middle[i]!;
+      const closePrice = data[i - j]?.close;
+      if (closePrice === null || closePrice === undefined) {
+        upper.push(null);
+        lower.push(null);
+        continue;
+      }
+      const diff = closePrice - middle[i]!;
       sumSquares += diff * diff;
     }
     const std = Math.sqrt(sumSquares / period);
 
-    upper.push(middle[i]! + stdDev * std);
-    lower.push(middle[i]! - stdDev * std);
+    // Type assertion safe here due to null check above
+    const middleValue = middle[i]!;
+    upper.push(middleValue + stdDev * std);
+    lower.push(middleValue - stdDev * std);
   }
 
   return { upper, middle, lower };

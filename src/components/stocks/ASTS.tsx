@@ -3827,6 +3827,8 @@ const ModelTab = ({
   const discountRateDecimal = discountRate / 100;
   const terminalGrowthDecimal = terminalGrowth / 100;
   const spread = discountRateDecimal - terminalGrowthDecimal;
+  // Gordon Growth Model requires positive spread to avoid division by zero
+  // MIN_SPREAD_FOR_GORDON_GROWTH = 0.01 (1%) threshold prevents invalid calculations
   const terminalEV = spread > 0.01 ? terminalFCF / spread : 0;
   // Units: $B
   // Note: This is the Enterprise Value AT 2030, not today
@@ -3842,6 +3844,10 @@ const ModelTab = ({
   // STEP 8: Calculate Risk Factor (probability of success)
   // Formula: (1 - Risk1) × (1 - Risk2) × (1 - Risk3)
   // This represents probability that none of the risks materialize
+  // 
+  // ASSUMPTION: Risks are independent. If risks are correlated (e.g., regulatory delays
+  // cause tech delays), this formula overestimates success probability. For correlated
+  // risks, consider: riskFactor = 1 - max(risk1, risk2, risk3) or a correlation matrix.
   const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
   // Range: 0 to 1
 
@@ -3853,6 +3859,7 @@ const ModelTab = ({
   // STEP 10: Calculate Net Debt
   // Formula: Total Debt - Cash
   // Positive = net debt (reduces equity), Negative = net cash (increases equity)
+  // Convert from $M to $B: divide by THOUSAND (1000)
   const netDebtB = (totalDebt - cashOnHand) / 1000;
   // Units: $B
 
@@ -3869,9 +3876,9 @@ const ModelTab = ({
 
   // STEP 13: Calculate Target Stock Price
   // Formula: Equity Value / Diluted Shares
-  // Convert $B to $M by multiplying by 1000, then divide by M shares = $/share
+  // Convert $B to $M: multiply by THOUSAND (1000), then divide by M shares = $/share
   const targetStockPrice = equityValue > 0 && finalDilutedShares > 0
-    ? (equityValue * 1000) / finalDilutedShares
+    ? (equityValue * 1000) / finalDilutedShares // Units: $B × 1000 ÷ M shares = $/share
     : 0;
   // Units: $/share
 
@@ -4324,6 +4331,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
   };
 
   const sim = useMemo(() => {
+    // Cap simulations for performance: MAX_MONTE_CARLO_SIMULATIONS = 10,000
     const n = Math.min(sims, 10000);
     const netCash = cashOnHand - totalDebt; // Net cash position
     
@@ -4357,14 +4365,16 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       }
       
       // STEP 2: Apply log-normal distribution for revenue uncertainty
-      // Log-normal ensures: (a) revenue stays positive, (b) realistic right-skew
+      // Log-normal distribution ensures: (a) revenue stays positive, (b) realistic right-skew
       // X = exp(μ + σZ) where Z ~ N(0,1)
-      // To ensure E[X] = baseRev, we set μ = ln(baseRev) - σ²/2
+      // We set μ = -σ²/2 so that E[exp(μ + σZ)] = 1 (mean of log-normal factor is 1)
+      // This means: E[baseRev × multiplier × factor] = baseRev × multiplier × 1
+      // Note: The multiplier accounts for binary risk events, so final revenue may differ from baseRev
       const sigma = revVol / 100;
-      const mu = -0.5 * sigma * sigma; // Adjustment so E[exp(μ + σZ)] = 1
+      const mu = -0.5 * sigma * sigma; // LOG_NORMAL_ADJUSTMENT = -0.5 ensures E[exp(μ + σZ)] = 1
       const logNormalFactor = Math.exp(mu + sigma * randn());
       
-      // Final revenue outcome
+      // Final revenue outcome: base revenue × risk multiplier × log-normal volatility factor
       const revenue = baseRev * revenueMultiplier * logNormalFactor;
       revenueOutcomes.push(revenue);
       
@@ -4417,7 +4427,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       : var5;
     
     // Annualized returns for Sharpe/Sortino
-    const riskFreeRate = 0.04; // 4% annual
+    const riskFreeRate = 0.04; // RISK_FREE_RATE = 4% annual (standard risk-free rate assumption)
     const returns = fairValues.map(fv => {
       const totalReturn = fv / currentStockPrice;
       return Math.pow(totalReturn, 1 / years) - 1; // Annualized return
@@ -5233,13 +5243,13 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
+                <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                        <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 6, textAlign: 'center', whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
                     ))}
                   </div>
@@ -5263,13 +5273,13 @@ const QuarterlyMetricsPanel = () => {
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
-              <div style={{ overflowX: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
+              <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                      <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                      <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                      <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 6, textAlign: 'center', whiteSpace: 'nowrap' }}>{d.label}</div>
                     </div>
                   ))}
                 </div>
@@ -5367,13 +5377,13 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
+                <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                        <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 6, textAlign: 'center', whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
                     ))}
                   </div>
@@ -5397,13 +5407,13 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
+                <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                        <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 6, textAlign: 'center', whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
                     ))}
                   </div>
@@ -5431,13 +5441,13 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
+                <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                        <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 6, textAlign: 'center', whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
                     ))}
                   </div>
@@ -5462,28 +5472,28 @@ const QuarterlyMetricsPanel = () => {
             const hasPositive = data.some(d => d.value >= 0);
             const hasNegative = data.some(d => d.value < 0);
             return (
-              <div style={{ padding: '24px 24px 24px' }}>
+              <div style={{ padding: '24px 24px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                 {hasPositive && (
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: hasNegative ? 100 : 200 }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: hasNegative ? 110 : 220, minWidth: Math.max(data.length * 72, '100%') }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
-                        {d.value >= 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 4 }}>{d.display}</div>}
-                        <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? Math.round((d.value / maxVal) * 80) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                        {d.value >= 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>}
+                        <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? Math.round((d.value / maxVal) * (hasNegative ? 90 : 160)) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
                       </div>
                     ))}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: 8, borderTop: '1px solid var(--text3)' }}>
+                <div style={{ display: 'flex', gap: 12, borderTop: '1px solid var(--border)', paddingTop: 8, overflowX: 'auto', minWidth: Math.max(data.length * 72, '100%') }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 10, color: 'var(--text3)', padding: '4px 0' }}>{d.label}</div>
+                    <div key={i} style={{ flex: data.length > 8 ? '0 0 auto' : 1, textAlign: 'center', fontSize: 10, color: 'var(--text3)', padding: '4px 0', minWidth: data.length > 8 ? 64 : 'auto', whiteSpace: 'nowrap' }}>{d.label}</div>
                   ))}
                 </div>
                 {hasNegative && (
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, height: hasPositive ? 100 : 200 }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, height: hasPositive ? 110 : 220, minWidth: Math.max(data.length * 72, '100%') }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
-                        <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 80) : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
-                        {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginTop: 4 }}>{d.display}</div>}
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                        <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * (hasPositive ? 90 : 160)) : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
+                        {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginTop: 6, whiteSpace: 'nowrap' }}>{d.display}</div>}
                       </div>
                     ))}
                   </div>
@@ -6416,15 +6426,34 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>EV/Rev Comparison</div>
           </div>
-          <div style={{ padding: '24px 24px 16px' }}>
-            <ResponsiveContainer width="100%" height={Math.max(220, filteredComps.length * 36)}>
-              <BarChart data={filteredComps} layout="vertical" margin={{ top: 4, right: 24, left: 0, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-                <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} axisLine={{ stroke: 'var(--border)' }} tickLine={{ stroke: 'var(--border)' }} />
-                <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={70} tick={{ fill: 'var(--text2)', fontSize: 12, fontWeight: 500 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }} labelStyle={{ color: 'var(--text)', fontWeight: 600 }} />
-                <Bar dataKey="evRev" fill="var(--accent)" radius={[0, 4, 4, 0]} barSize={20}>
-                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--accent)' : 'color-mix(in srgb, var(--text3) 40%, transparent)'} />))}
+          <div style={{ padding: '24px 24px 16px', minHeight: 280 }}>
+            <ResponsiveContainer width="100%" height={Math.max(280, Math.min(filteredComps.length * 44, 500))}>
+              <BarChart data={filteredComps} layout="vertical" margin={{ top: 8, right: 32, left: 8, bottom: 8 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={true} vertical={false} opacity={0.3} />
+                <XAxis 
+                  type="number" 
+                  stroke="var(--text3)" 
+                  tick={{ fill: 'var(--text2)', fontSize: 11, fontWeight: 500 }} 
+                  axisLine={{ stroke: 'var(--border)', strokeWidth: 1 }} 
+                  tickLine={{ stroke: 'var(--border)' }}
+                  tickFormatter={(v) => `${v.toFixed(1)}x`}
+                />
+                <YAxis 
+                  dataKey="ticker" 
+                  type="category" 
+                  stroke="var(--text3)" 
+                  width={80} 
+                  tick={{ fill: 'var(--text)', fontSize: 12, fontWeight: 600 }} 
+                  axisLine={false} 
+                  tickLine={false}
+                />
+                <Tooltip 
+                  contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12, padding: '8px 12px' }} 
+                  labelStyle={{ color: 'var(--text)', fontWeight: 600, marginBottom: 4 }}
+                  formatter={(value: number) => [`${value.toFixed(2)}x`, 'EV/Rev']}
+                />
+                <Bar dataKey="evRev" fill="var(--accent)" radius={[0, 6, 6, 0]} barSize={28}>
+                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 35%, transparent)'} />))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -6434,15 +6463,34 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>$/Subscriber Comparison</div>
           </div>
-          <div style={{ padding: '24px 24px 16px' }}>
-            <ResponsiveContainer width="100%" height={Math.max(220, filteredComps.length * 36)}>
-              <BarChart data={filteredComps} layout="vertical" margin={{ top: 4, right: 24, left: 0, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-                <XAxis type="number" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} axisLine={{ stroke: 'var(--border)' }} tickLine={{ stroke: 'var(--border)' }} />
-                <YAxis dataKey="ticker" type="category" stroke="var(--text3)" width={70} tick={{ fill: 'var(--text2)', fontSize: 12, fontWeight: 500 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }} labelStyle={{ color: 'var(--text)', fontWeight: 600 }} formatter={(v: number) => [`$${(v/1000).toFixed(1)}k`, '$/Subscriber']} />
-                <Bar dataKey="pSub" fill="var(--violet)" radius={[0, 4, 4, 0]} barSize={20}>
-                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--violet)' : 'color-mix(in srgb, var(--text3) 40%, transparent)'} />))}
+          <div style={{ padding: '24px 24px 16px', minHeight: 280 }}>
+            <ResponsiveContainer width="100%" height={Math.max(280, Math.min(filteredComps.length * 44, 500))}>
+              <BarChart data={filteredComps} layout="vertical" margin={{ top: 8, right: 32, left: 8, bottom: 8 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={true} vertical={false} opacity={0.3} />
+                <XAxis 
+                  type="number" 
+                  stroke="var(--text3)" 
+                  tick={{ fill: 'var(--text2)', fontSize: 11, fontWeight: 500 }} 
+                  tickFormatter={v => `$${(v/1000).toFixed(0)}k`} 
+                  axisLine={{ stroke: 'var(--border)', strokeWidth: 1 }} 
+                  tickLine={{ stroke: 'var(--border)' }}
+                />
+                <YAxis 
+                  dataKey="ticker" 
+                  type="category" 
+                  stroke="var(--text3)" 
+                  width={80} 
+                  tick={{ fill: 'var(--text)', fontSize: 12, fontWeight: 600 }} 
+                  axisLine={false} 
+                  tickLine={false}
+                />
+                <Tooltip 
+                  contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12, padding: '8px 12px' }} 
+                  labelStyle={{ color: 'var(--text)', fontWeight: 600, marginBottom: 4 }}
+                  formatter={(v: number) => [`$${(v/1000).toFixed(1)}k`, '$/Subscriber']}
+                />
+                <Bar dataKey="pSub" fill="var(--violet)" radius={[0, 6, 6, 0]} barSize={28}>
+                  {filteredComps.map((e, i) => (<Cell key={i} fill={e.highlight ? 'var(--violet)' : 'color-mix(in srgb, var(--violet) 35%, transparent)'} />))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
