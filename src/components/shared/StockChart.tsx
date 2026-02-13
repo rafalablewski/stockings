@@ -103,6 +103,8 @@ const calculateRSI = (data: ChartDataPoint[], period: number = 14): (number | nu
   const result: (number | null)[] = [];
   const gains: number[] = [];
   const losses: number[] = [];
+  let prevAvgGain: number | null = null;
+  let prevAvgLoss: number | null = null;
 
   for (let i = 0; i < data.length; i++) {
     if (i === 0) {
@@ -132,12 +134,25 @@ const calculateRSI = (data: ChartDataPoint[], period: number = 14): (number | nu
       }
       avgGain /= period;
       avgLoss /= period;
+      // Store for next iteration
+      prevAvgGain = avgGain;
+      prevAvgLoss = avgLoss;
     } else {
-      // Subsequent RSI uses smoothed average
-      const prevAvgGain = gains.slice(i - period, i).reduce((a, b) => a + b, 0) / period;
-      const prevAvgLoss = losses.slice(i - period, i).reduce((a, b) => a + b, 0) / period;
-      avgGain = (prevAvgGain * (period - 1) + gains[i]) / period;
-      avgLoss = (prevAvgLoss * (period - 1) + losses[i]) / period;
+      // Subsequent RSI uses Wilder's smoothing (exponential moving average)
+      // Formula: EMA = (Previous EMA × (period - 1) + Current Value) / period
+      if (prevAvgGain !== null && prevAvgLoss !== null) {
+        avgGain = (prevAvgGain * (period - 1) + gains[i]) / period;
+        avgLoss = (prevAvgLoss * (period - 1) + losses[i]) / period;
+        // Update for next iteration
+        prevAvgGain = avgGain;
+        prevAvgLoss = avgLoss;
+      } else {
+        // Fallback: recalculate simple average if previous values missing
+        avgGain = gains.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0) / period;
+        avgLoss = losses.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0) / period;
+        prevAvgGain = avgGain;
+        prevAvgLoss = avgLoss;
+      }
     }
 
     if (avgLoss === 0) {

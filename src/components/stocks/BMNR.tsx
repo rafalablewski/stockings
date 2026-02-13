@@ -1397,7 +1397,8 @@ const ModelTab = ({
   const terminalNAV = (terminalETH * terminalEthPrice) / 1_000_000; // $M
 
   // STEP 5: Annual Staking Cash Flow (for dividend/buyback capacity)
-  const annualStakingRevenue = (currentETH * ethPrice * stakingYield / 100) / 1_000_000; // $M/year
+  // Use terminalETH for terminal year projections to reflect compounding growth
+  const annualStakingRevenue = (terminalETH * terminalEthPrice * stakingYield / 100) / 1_000_000; // $M/year
   const annualNetCashFlow = annualStakingRevenue * (1 - operatingCosts / stakingYield);
 
   // STEP 6: Terminal Equity Value = NAV × Premium
