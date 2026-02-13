@@ -1,4 +1,4 @@
-// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // ╔═══════════════════════════════════════════════════════════════════════════════╗
 // ║ 🚨 MUST DO - READ FIRST 🚨                                                    ║
 // ╠═══════════════════════════════════════════════════════════════════════════════╣
@@ -130,6 +130,7 @@ import {
   QUARTERLY_DATA,
   SEC_FILINGS,
   TIMELINE,
+  type TimelineEntry,
 } from '@/data/crcl';
 import { CRCL_COMPETITOR_NEWS, CRCL_COMPETITOR_PROFILES, type CRCLCompetitorNewsEntry, type CRCLCompetitorId, type CRCLCompetitorNewsCategory, type CRCLImplication, type CRCLCompetitorProfile } from '@/data/crcl/competitor-news';
 import { CRCL_ANALYST_COVERAGE } from '@/data/crcl/analyst-coverage';
@@ -377,15 +378,7 @@ interface QuarterlyData {
   sbc: number;            // Stock-based compensation ($M)
 }
 
-interface TimelineEntry {
-  date: string;
-  category: string;
-  event: string;
-  impact: string;
-  source: string;
-  verdict: 'positive' | 'negative' | 'mixed';
-  details: string;
-}
+// TimelineEntry imported from @/data/crcl (shared/types)
 
 // MARKET data imported from @/data/crcl - see src/data/crcl/company.ts for values
 // DATA_FRESHNESS imported from @/data/crcl - see src/data/crcl/company.ts for values
@@ -412,7 +405,9 @@ interface ScenarioProjection {
   grossRevenue: number;   // $B
   distributionCost: number; // $B (Coinbase share)
   netRevenue: number;     // $B
-  rldcMargin: number;     // %
+  rldcMargin: number;     // % — EBITDA margin on net revenue (ebitda / netRevenue * 100 approx.)
+                          // NOTE: This is NOT netRevenue/grossRevenue. It's an estimated
+                          // operating profitability target independent of the other fields.
   ebitda: number;         // $B
   netIncome: number;      // $B
   fcf: number;            // $B Free Cash Flow
@@ -577,7 +572,7 @@ const SCENARIO_SIMULATIONS: Record<string, ScenarioDetail> = {
     name: 'Moon',
     color: '#a855f7',
     prob: 8,
-    description: 'USDC becomes global reserve digital currency, Circle achieves Visa-like network effects',
+    description: 'EXTREME TAIL SCENARIO: USDC becomes global reserve digital currency, Circle achieves Visa-like network effects. This scenario implies a total stablecoin market of ~$5T+ by 2035, exceeding several G7 nations\' M2 money supply. Treat as illustrative upper bound, not a realistic forecast.',
     assumptions: [
       'US dollar stablecoin becomes de facto global digital dollar standard',
       'Fed explicitly endorses USDC as compliant digital dollar',
@@ -587,6 +582,7 @@ const SCENARIO_SIMULATIONS: Record<string, ScenarioDetail> = {
       'USDC used for US government disbursements pilot',
       'Emerging market central banks hold USDC reserves',
       'B2B payments shift 20%+ to stablecoin rails by 2030',
+      'CAVEAT: $2.85T USDC by 2035 requires ~45x growth from current $62.5B — historically unprecedented for any financial instrument',
     ],
     catalysts: [
       'US Treasury designates USDC as qualified digital dollar',
@@ -625,6 +621,10 @@ const CURRENT_METRICS = {
   usdc: 73.7,
   shares: 229, // millions fully diluted
 };
+
+// Balance sheet constants for equity bridge ($M) — update from latest 10-Q
+const CRCL_CASH_M = 1349;   // Cash & equivalents ($M) — Q3 2025 10-Q
+const CRCL_DEBT_M = 149;    // Total debt ($M) — Q3 2025 10-Q
 
 // Capital Structure Data (from S-1, S-8, 10-Q filings)
 const PREFERRED_STOCK = [
@@ -2325,7 +2325,7 @@ const DCFTab = () => {
     const pvFCF = projections.reduce((sum, p) => sum + p.pv, 0);
     const tv = projections[4].fcf * s.multiple;
     const pvTV = tv / Math.pow(1 + discountFactor / 100, 5);
-    const equity = (pvFCF + pvTV) * 1000 + 1349 - 149;
+    const equity = (pvFCF + pvTV) * 1000 + CRCL_CASH_M - CRCL_DEBT_M;
     const pt = MARKET.shares > 0 ? equity / MARKET.shares : 0;
     const upside = MARKET.price > 0 ? (pt / MARKET.price - 1) * 100 : 0;
     return { projections, pvFCF, tv, pvTV, equity, pt, upside };
@@ -2647,7 +2647,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             return (
               <>
                 <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                   {data.map((d, i) => (
                     <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                       <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -2677,7 +2677,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -2760,7 +2760,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -2791,7 +2791,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -2822,7 +2822,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -3277,7 +3277,7 @@ function CRCLModel() {
       const rldcY = revY * m / 100;
       const tv = rldcY * 1000 * x;
       const pv = tv / Math.pow(1 + discountFactor/100, mcYears);
-      res.push(safe((pv + 1349 - 149) / MARKET.shares));
+      res.push(safe((pv + CRCL_CASH_M - CRCL_DEBT_M) / MARKET.shares));
     }
     const sorted = res.sort((a, b) => a - b);
     
@@ -3297,8 +3297,8 @@ function CRCLModel() {
     const stdDev = Math.sqrt(variance);
     const riskFree = 4;
     const sharpe = stdDev > 0 ? (avgReturn - riskFree) / stdDev : 0;
-    const downsideReturns = returns.filter(r => r < 0);
-    const downsideVar = downsideReturns.length > 0 ? downsideReturns.reduce((a, r) => a + r * r, 0) / downsideReturns.length : 0;
+    // Sortino: downside deviation uses ALL n observations but only squares negative returns
+    const downsideVar = returns.reduce((a, r) => a + (r < 0 ? r * r : 0), 0) / n;
     const downsideDev = Math.sqrt(downsideVar);
     const sortino = downsideDev > 0 ? (avgReturn - riskFree) / downsideDev : 0;
     const var5 = ((p5 / MARKET.price) - 1) * 100;
@@ -4737,7 +4737,7 @@ function CRCLModel() {
                               <strong>Lock-up Dynamics:</strong> December 2025 lock-up expiry creates potential supply overhang. Monitor volume patterns carefully around that date. Historical IPO lock-up expirations show initial weakness followed by recovery if fundamentals intact. Use weakness as accumulation opportunity, not exit signal.
                             </p>
                             <p style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 10%, transparent)', borderRadius: 12, borderLeft: '3px solid #34d399' }}>
-                              <strong style={{ color: '#34d399' }}>Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
+                              <strong style={{ color: '#34d399' }}>Technical Outlook:</strong> {investmentCurrent.perspectives.technicalAnalyst.ecosystemView}
                             </p>
                           </div>
                         </div>
@@ -5879,8 +5879,8 @@ function CRCLModel() {
                       <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
                       <RechartsTooltip
                         contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
-                        formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
-                        labelFormatter={(v) => `$${v.toFixed(0)}`}
+                        formatter={(v) => [`${Number(v).toFixed(2)}%`, 'Probability']}
+                        labelFormatter={(v) => `$${Number(v).toFixed(0)}`}
                       />
                       <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
                       <ReferenceLine x={MARKET.price} stroke="#fff" strokeDasharray="5 5" />

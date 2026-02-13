@@ -1,4 +1,4 @@
-// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * ╔═══════════════════════════════════════════════════════════════════════════════╗
  * ║                        🚨 MUST DO - READ FIRST 🚨                             ║
@@ -119,7 +119,7 @@ import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shar
 import SharedSourcesTab from '../shared/SharedSourcesTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
-import type { CompsTimelineEntry } from '@/data/asts/comps-timeline';
+import type { CompsTimelineEntry, ASTSImplication } from '@/data/asts/comps-timeline';
 import { ASTS_SEC_FILINGS, ASTS_SEC_META, ASTS_SEC_TYPE_COLORS, ASTS_SEC_FILTER_TYPES } from '@/data/asts/sec-filings';
 import { ASTS_QUARTERLY_DATA } from '@/data/asts/quarterly-metrics';
 import { ASTS_ANALYST_COVERAGE } from '@/data/asts/analyst-coverage';
@@ -285,7 +285,7 @@ interface CompetitorProfile {
     globalCoverage: boolean;
   };
   keyMetrics?: {
-    satellites?: number;
+    satellites?: number | string;
     coverage?: string;
     subscribers?: string;
     funding?: string;
@@ -2841,7 +2841,7 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="q" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(1)}B`} fontSize={10} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={v => [`$${(v/1000).toFixed(2)}B`, 'Cash']} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={v => [`$${(Number(v)/1000).toFixed(2)}B`, 'Cash']} />
               <Area dataKey="cash" stroke="var(--mint)" fill="var(--mint)" fillOpacity={0.2} strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
@@ -3352,7 +3352,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v) => [`$${v.toFixed(1)}M`]} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v) => [`$${Number(v).toFixed(1)}M`]} />
               <Bar dataKey="engineering" stackId="a" fill="var(--violet)" name="Engineering" />
               <Bar dataKey="gAndA" stackId="a" fill="var(--sky)" name="G&A" />
             </BarChart>
@@ -3426,7 +3426,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `${v}M`} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v) => [`${v.toFixed(1)}M shares`]} />
+              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v) => [`${Number(v).toFixed(1)}M shares`]} />
               <Area type="monotone" dataKey="fullyDiluted" stroke="var(--gold)" fill="url(#fdGrad)" name="Fully Diluted" />
               <Area type="monotone" dataKey="classA" stroke="var(--sky)" fill="url(#classAGrad)" name="Class A" />
             </AreaChart>
@@ -4440,10 +4440,8 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
     const sharpe = stdDev > 0 ? (avgReturn - riskFreeRate) / stdDev : 0;
     
     // Sortino Ratio: Uses only downside deviation
-    const negativeReturns = returns.filter(r => r < riskFreeRate);
-    const downsideVariance = negativeReturns.length > 0 
-      ? negativeReturns.reduce((a, b) => a + Math.pow(b - riskFreeRate, 2), 0) / negativeReturns.length 
-      : 0;
+    // Sortino Ratio: downside deviation uses ALL observations but only squares below-target returns
+    const downsideVariance = returns.reduce((a, r) => a + (r < riskFreeRate ? Math.pow(r - riskFreeRate, 2) : 0), 0) / n;
     const downsideDev = Math.sqrt(downsideVariance);
     const sortino = downsideDev > 0 ? (avgReturn - riskFreeRate) / downsideDev : 0;
     
@@ -4912,8 +4910,8 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
               <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
               <Tooltip
                 contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
-                formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
-                labelFormatter={(v) => `$${v.toFixed(0)}`}
+                formatter={(v) => [`${Number(v).toFixed(2)}%`, 'Probability']}
+                labelFormatter={(v) => `$${Number(v).toFixed(0)}`}
               />
               <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
               <ReferenceLine x={currentStockPrice} stroke="#fff" strokeDasharray="5 5" />
@@ -5244,7 +5242,7 @@ const QuarterlyMetricsPanel = () => {
             return (
               <>
                 <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                         <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -5274,7 +5272,7 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                   {data.map((d, i) => (
                     <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                       <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -5378,7 +5376,7 @@ const QuarterlyMetricsPanel = () => {
             return (
               <>
                 <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                         <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -5408,7 +5406,7 @@ const QuarterlyMetricsPanel = () => {
             return (
               <>
                 <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                         <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -5442,7 +5440,7 @@ const QuarterlyMetricsPanel = () => {
             return (
               <>
                 <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                         <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -5474,7 +5472,7 @@ const QuarterlyMetricsPanel = () => {
             return (
               <div style={{ padding: '24px 24px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                 {hasPositive && (
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: hasNegative ? 110 : 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: hasNegative ? 110 : 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                         {d.value >= 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>}
@@ -5483,13 +5481,13 @@ const QuarterlyMetricsPanel = () => {
                     ))}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: 12, borderTop: '1px solid var(--border)', paddingTop: 8, overflowX: 'auto', minWidth: Math.max(data.length * 72, '100%') }}>
+                <div style={{ display: 'flex', gap: 12, borderTop: '1px solid var(--border)', paddingTop: 8, overflowX: 'auto', minWidth: Math.max(data.length * 72, '100%' as any) }}>
                   {data.map((d, i) => (
                     <div key={i} style={{ flex: data.length > 8 ? '0 0 auto' : 1, textAlign: 'center', fontSize: 10, color: 'var(--text3)', padding: '4px 0', minWidth: data.length > 8 ? 64 : 'auto', whiteSpace: 'nowrap' }}>{d.label}</div>
                   ))}
                 </div>
                 {hasNegative && (
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, height: hasPositive ? 110 : 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, height: hasPositive ? 110 : 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                         <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * (hasPositive ? 90 : 160)) : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
