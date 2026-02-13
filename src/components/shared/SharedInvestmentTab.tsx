@@ -56,7 +56,7 @@ const CollapsibleSection = ({
   onToggle: () => void;
   children: React.ReactNode;
 }) => (
-  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
+  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '24px 24px', marginBottom: 12 }}>
     <div
       onClick={onToggle}
       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -155,7 +155,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       </div>
 
       {/* Rating Header Card */}
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 24px', borderLeft: `4px solid var(--${current.verdictColor})`, marginBottom: 16 }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '24px 24px', borderLeft: `4px solid var(--${current.verdictColor})`, marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
@@ -163,7 +163,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
                 style={{
                   background: `var(--${current.verdictColor})`,
                   color: 'var(--bg)',
-                  padding: '8px 20px',
+                  padding: '8px 24px',
                   borderRadius: 6,
                   fontWeight: 700,
                   fontSize: 18,

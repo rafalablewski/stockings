@@ -261,7 +261,7 @@ const CompanyFeedCard: React.FC<{
       {/* Header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '16px 20px',
+        padding: '16px 24px',
         borderBottom: data.loaded ? '1px solid var(--border)' : 'none',
         background: isPrimary ? 'color-mix(in srgb, var(--accent) 4%, transparent)' : 'transparent',
       }}>
@@ -376,7 +376,7 @@ const CompanyFeedCard: React.FC<{
         {!data.loaded && !data.loading && !data.error && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-            padding: '20px 0', color: 'var(--text3)',
+            padding: '24px 0', color: 'var(--text3)',
           }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
@@ -388,7 +388,7 @@ const CompanyFeedCard: React.FC<{
         {data.loading && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-            padding: '20px 0', color: 'var(--text3)',
+            padding: '24px 0', color: 'var(--text3)',
           }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
@@ -556,7 +556,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#live-feeds</div>
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '16px 28px', marginTop: 8,
+        padding: '16px 24px', marginTop: 8,
         background: 'var(--surface)', borderRadius: 16, border: '1px solid var(--border)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -584,7 +584,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           disabled={loadingAll}
           aria-label={loadedCount > 0 ? 'Refresh all feeds' : 'Load all feeds'}
           style={{
-            padding: '8px 20px', fontSize: 11, fontWeight: 600, letterSpacing: '0.3px',
+            padding: '8px 24px', fontSize: 11, fontWeight: 600, letterSpacing: '0.3px',
             color: loadingAll ? 'var(--text3)' : 'var(--bg)',
             background: loadingAll ? 'var(--surface2)' : 'var(--accent)',
             border: 'none', borderRadius: 99,
@@ -646,7 +646,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#competitors</div>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,
-            padding: '28px 0 12px',
+            padding: '32px 0 16px',
           }}>
             <span style={{
               fontSize: 11, fontWeight: 600, color: 'var(--text3)',
@@ -685,7 +685,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       )}
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#research-sources</div>
-      <div style={{ padding: '28px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{
           fontSize: 11, fontWeight: 600, color: 'var(--text3)',
           textTransform: 'uppercase', letterSpacing: '1.2px',
@@ -699,7 +699,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         {researchSources.map(group => (
           <div key={group.category} style={{
             background: 'var(--surface)',
-            padding: '24px 28px',
+            padding: '24px 24px',
           }}>
             <div style={{
               fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
