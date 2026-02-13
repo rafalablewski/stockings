@@ -111,11 +111,15 @@ const StatusDot: React.FC<{ analyzed: boolean | null | undefined; showAnalysis?:
 };
 
 // ── Article list ────────────────────────────────────────────────────────────
+const ARTICLE_INITIAL_COUNT = 5;
+
 const ArticleList: React.FC<{
   articles: ArticleItem[];
   empty: string;
   showAnalysis?: boolean;
 }> = ({ articles, empty, showAnalysis }) => {
+  const [showAll, setShowAll] = useState(false);
+
   if (articles.length === 0) {
     return (
       <div style={{ fontSize: 13, color: 'var(--text3)', padding: '16px 0 8px', lineHeight: 1.6 }}>
@@ -123,71 +127,95 @@ const ArticleList: React.FC<{
       </div>
     );
   }
+
+  // Sort by date newest-first (ISO date strings sort lexicographically)
+  const sorted = [...articles].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const displayed = showAll ? sorted : sorted.slice(0, ARTICLE_INITIAL_COUNT);
+  const hiddenCount = sorted.length - ARTICLE_INITIAL_COUNT;
+
   return (
-    <ul role="list" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {articles.map((a, i) => (
-        <li
-          key={i}
-          role="listitem"
-          style={{
-            display: 'flex', alignItems: 'flex-start', gap: 12,
-            padding: '12px 12px', borderRadius: 10,
-            transition: 'background 0.15s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-        >
-          <StatusDot analyzed={a.analyzed} showAnalysis={showAnalysis} />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, flex: 1 }}>
-            <a
-              href={a.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontSize: 13, color: 'var(--text)', textDecoration: 'none', lineHeight: 1.5,
-                transition: 'color 0.15s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}
-              onFocus={e => (e.currentTarget.style.color = 'var(--accent)')}
-              onBlur={e => (e.currentTarget.style.color = 'var(--text)')}
-            >
-              {a.headline}
-            </a>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-              {a.date && (
-                <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', letterSpacing: '-0.2px' }}>
-                  {a.date}
-                </span>
-              )}
-              {a.source && (
-                <>
-                  <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                  <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.source}</span>
-                </>
-              )}
-              {a.items && (
-                <>
-                  <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                  <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.items}</span>
-                </>
-              )}
-              {showAnalysis && a.analyzed !== null && a.analyzed !== undefined && (
-                <>
-                  <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                  <span style={{
-                    fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-                    color: a.analyzed ? 'var(--mint)' : 'var(--coral)',
-                  }}>
-                    {a.analyzed ? 'Tracked' : 'New'}
+    <div>
+      <ul role="list" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {displayed.map((a, i) => (
+          <li
+            key={i}
+            role="listitem"
+            style={{
+              display: 'flex', alignItems: 'flex-start', gap: 12,
+              padding: '12px 12px', borderRadius: 10,
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <StatusDot analyzed={a.analyzed} showAnalysis={showAnalysis} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, flex: 1 }}>
+              <a
+                href={a.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: 13, color: 'var(--text)', textDecoration: 'none', lineHeight: 1.5,
+                  transition: 'color 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}
+                onFocus={e => (e.currentTarget.style.color = 'var(--accent)')}
+                onBlur={e => (e.currentTarget.style.color = 'var(--text)')}
+              >
+                {a.headline}
+              </a>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                {a.date && (
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', letterSpacing: '-0.2px' }}>
+                    {a.date}
                   </span>
-                </>
-              )}
+                )}
+                {a.source && (
+                  <>
+                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                    <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.source}</span>
+                  </>
+                )}
+                {a.items && (
+                  <>
+                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                    <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.items}</span>
+                  </>
+                )}
+                {showAnalysis && a.analyzed !== null && a.analyzed !== undefined && (
+                  <>
+                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                    <span style={{
+                      fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+                      color: a.analyzed ? 'var(--mint)' : 'var(--coral)',
+                    }}>
+                      {a.analyzed ? 'Tracked' : 'New'}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        </li>
-      ))}
-    </ul>
+          </li>
+        ))}
+      </ul>
+      {hiddenCount > 0 && (
+        <div style={{ textAlign: 'center', paddingTop: 12 }}>
+          <button
+            onClick={() => setShowAll(!showAll)}
+            style={{
+              padding: '6px 16px', borderRadius: 99, border: '1px solid var(--border)',
+              background: 'transparent', color: 'var(--text3)', cursor: 'pointer',
+              fontSize: 11, fontWeight: 500, transition: 'all 0.2s', fontFamily: 'inherit',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface2)'; e.currentTarget.style.color = 'var(--text)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text3)'; }}
+          >
+            {showAll ? '▲ Show Less' : `▼ Show ${hiddenCount} More`}
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
 
