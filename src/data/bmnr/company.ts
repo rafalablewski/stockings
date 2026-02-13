@@ -28,8 +28,8 @@ import type { DataMetadata, StockDefaults } from '../shared/types';
 // ============================================================================
 
 export const BMNR_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-09',
-  source: 'Feb 9, 2026 Holdings PR + 8-K',
+  lastUpdated: '2026-02-12',
+  source: 'Feb 11, 2026 CoinDesk Consensus 8-K + Feb 9 Holdings PR',
   nextExpectedUpdate: 'Next weekly holdings update (8-K)',
   notes: 'ETH holdings updated weekly via 8-K filings',
 };
@@ -160,8 +160,8 @@ export const DIVIDEND_DATA = {
  * For display in the UI data freshness badge
  */
 export const DATA_FRESHNESS = {
-  dataAsOf: 'Feb 9, 2026',
-  lastFiling: '8-K (Feb 9, 2026) Holdings Update',
-  nextFiling: 'Weekly 8-K',
+  dataAsOf: 'Feb 12, 2026',
+  lastFiling: '8-K (Feb 11, 2026) CoinDesk Consensus Presentation',
+  nextFiling: 'Weekly 8-K Holdings Update',
   priceNote: 'Update prices regularly',
 };

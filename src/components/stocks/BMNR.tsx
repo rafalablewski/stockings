@@ -3567,9 +3567,9 @@ const CompsTab = ({ comparables, ethPrice }) => {
       id: 'ethz',
       name: 'ETHZilla',
       ticker: 'ETHZ',
-      description: 'Ethereum treasury company with DeFi yield and RWA tokenization strategy',
+      description: 'Ethereum treasury company with DeFi yield and RWA tokenization strategy; launched first tokenized aviation assets on Ethereum L2',
       cryptoType: 'ETH',
-      currentStatus: 'ETH accumulation + DeFi restaking + RWA tokenization platform',
+      currentStatus: 'ETH accumulation + DeFi restaking + RWA tokenization (Eurus Aero Token I: $12.2M jet engines on Ethereum L2)',
       capabilities: { stakingYield: true, treasuryFocus: true, miningOperations: false, publicCompany: true, institutionalAccess: true },
       keyMetrics: { holdings: '~102K ETH', marketCap: '~$500M', navPremium: '-13% (mNAV 0.87x)', yieldRate: '3-5%' }
     },
@@ -3605,6 +3605,117 @@ const CompsTab = ({ comparables, ethPrice }) => {
     //   sourceUrl: 'https://...'
     // },
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ETHZILLA - TOKENIZED AVIATION ASSETS (Feb 12, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-12',
+      competitor: 'ethz',
+      category: 'Technology',
+      headline: 'ETHZilla launches Eurus Aero Token I: First tradable tokenized aviation assets on Ethereum L2',
+      details: [
+        'First-of-its-kind tokenized real-world asset: jet engines on lease with leading US air carrier',
+        'Two CFM56 engines acquired for ~$12.2M, tokenized at $100/token with ~11% target return',
+        'ERC-20 tokens on Ethereum L2 with on-chain verification and automated monthly distributions',
+        'Structured through wholly owned SPV ETHZilla Aerospace LLC via Liquidity.io ecosystem',
+        'Leases extend into 2028 with $3M put/call rights and residual distribution to token holders',
+        'Plans to expand tokenization to manufactured home loans and car loans via Zippy and Karus',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'ETHZilla (ETHZ, ~102K ETH, Nasdaq) pivoting from pure ETH treasury to RWA tokenization on Ethereum L2. Creates differentiated use case vs BMNR\'s pure ETH accumulation strategy. BMNR holds 42x more ETH and focuses on scale + staking yield, while ETHZ diversifies into tokenized asset origination. Both strategies validate Ethereum ecosystem but differ in approach: BMNR = concentrated ETH treasury, ETHZ = ETH + RWA tokenization platform.',
+      source: 'PR Newswire',
+      storyId: 'eth-treasury-competitors',
+      storyTitle: 'ETH Treasury Competitors',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SEI / TOKU - STABLECOIN PAYROLL (Feb 12, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-12',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Toku launches Sei-native stablecoin payroll: Instant settlement on fastest EVM L1',
+      details: [
+        'Sei Development Foundation integrates with Toku\'s API-based payroll management system',
+        'Instant payment and settlement of employee payroll and corporate remittances on Sei',
+        'Sei claims: $3B+ stablecoin volume/30 days, 5B+ transactions, 90M+ wallets, 1M+ daily users',
+        'Sei positioned as "fastest EVM L1" — combines Ethereum network effects with Solana performance',
+        'Toku connects employers/payroll providers (Workday, ADP) for USDC stablecoin transactions',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'Sei is an EVM-compatible L1 competing for transaction volume. While Sei draws from Ethereum\'s developer ecosystem (EVM), its independent L1 status means activity doesn\'t directly accrue to ETH. However, Sei\'s USDC stablecoin usage still connects to Ethereum-native assets. Growing stablecoin payroll adoption validates crypto payment infrastructure broadly.',
+      source: 'PR Newswire',
+      storyId: 'crypto-ecosystem',
+      storyTitle: 'Crypto Ecosystem',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // POLYGON / EEA - INSTITUTIONAL ETHEREUM (Feb 11, 2026)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-11',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Polygon, Ethena, and Nethermind join Enterprise Ethereum Alliance as institutional Ethereum takes shape',
+      details: [
+        'Polygon Labs ($7B+ stablecoin volume/month), Ethena ($10B TVL USDe), Nethermind (Ethereum execution client) join EEA',
+        'EEA described as "institutional coordination layer for Ethereum" with IPR, NDA, and antitrust protections',
+        'Polygon: Open Money Stack for instant, compliant money movement; acquired Coinme + Sequence for $250M+',
+        'Ethena USDe: Fastest stablecoin to $10B TVL (500 days), uses ETH+BTC delta-neutral hedging',
+        'Nethermind: Builds execution-layer infrastructure used to run Ethereum in production at institutional scale',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Major Ethereum ecosystem players (Polygon L2, Ethena synthetic dollar, Nethermind execution client) joining the institutional coordination body validates Ethereum as THE institutional blockchain standard. Ethena\'s USDe requires ETH collateral. Polygon settles to Ethereum. Nethermind secures Ethereum execution. All three strengthen the institutional foundation BMNR\'s ETH treasury thesis depends on.',
+      source: 'PR Newswire',
+      storyId: 'ethereum-institutional',
+      storyTitle: 'Ethereum Institutional Adoption',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MANTLE / BYBIT - USDT0 CROSS-CHAIN (Nov 27, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-11-27',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'Mantle and Bybit launch USDT0 omnichain stablecoin on largest exchange-related Ethereum L2',
+      details: [
+        'Mantle (Ethereum L2, $4B+ community assets) supports USDT0 deposits/withdrawals with Bybit (world\'s #2 exchange)',
+        'USDT0: Cross-chain USDT deployment using LayerZero OFT standard with mint-and-burn architecture',
+        'Zero-fee USDT0 withdrawals to Mantle during initial rollout',
+        'Mantle positioned as "core venue for cross-chain stablecoin liquidity"',
+        'Eliminates fragmented bridges — single omnichain representation of USDT',
+      ],
+      implication: 'positive',
+      bmnrComparison: 'Mantle (Ethereum L2) becoming hub for unified stablecoin liquidity with world\'s #2 exchange. More institutional stablecoin infrastructure on Ethereum L2s = more value settling to Ethereum mainnet = stronger ETH ecosystem for BMNR.',
+      source: 'PR Newswire',
+      storyId: 'ethereum-institutional',
+      storyTitle: 'Ethereum Institutional Adoption',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // WSPN - GLOBAL PAYMENT UPGRADE (Dec 4, 2025)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-12-04',
+      competitor: 'other',
+      category: 'Technology',
+      headline: 'WSPN completes global payment upgrade: Multi-currency, multi-chain infrastructure supporting Ethereum',
+      details: [
+        'Supports 5 stablecoins (USDT, USDC, PYUSD, DAI, EURC) across 4 chains including Ethereum and Polygon',
+        'USD via Wire/ACH, EUR via SEPA alongside stablecoin rails',
+        'On-ramp/off-ramp, cross-chain movement, token swapping, AutoRamp automated conversions',
+        'Built-in KYB, compliance verification, enterprise-grade API',
+        'WSPN\'s flagship stablecoin WUSD pegged 1:1 to USD on Ethereum',
+      ],
+      implication: 'neutral',
+      bmnrComparison: 'WSPN building institutional payment orchestration on Ethereum validates network as primary stablecoin settlement layer. Multi-chain support with Ethereum as core chain reinforces ecosystem utility. More payment infrastructure = more stablecoin volume = more Ethereum network activity.',
+      source: 'PR Newswire',
+      storyId: 'crypto-ecosystem',
+      storyTitle: 'Crypto Ecosystem',
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // SUSHI - SOLANA EXPANSION (Feb 9, 2026)
@@ -7109,8 +7220,8 @@ const InvestmentTab = () => {
   
   // Current Investment Summary
   const current = {
-    date: '2026-02-09',
-    source: 'February 9, 2026 — PR: 4.326M ETH Holdings + $10.0B Total',
+    date: '2026-02-12',
+    source: 'February 12, 2026 — Updated: CoinDesk Consensus + Beast/Step + S-8 + Nelson Separation',
     verdict: 'STRONG BUY',
     verdictColor: 'green',
     tagline: 'The ETH Supercycle Play',
@@ -7151,11 +7262,13 @@ They own 3.58% of all Ethereum in existence — 4.326 million tokens. They're ov
 The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset — and paying you to wait. With $595M cash and $24.5B ATM capacity, the accumulation machine keeps running. 2.9M ETH staked (67% of holdings). CESR rate improved to 3.11%. ETH -62% from 2025 highs — Tom Lee: this is the 8th time since 2018 ETH has fallen 50%+ from a high, and V-shaped recoveries follow every time. MAVAN on track Q1 2026.`,
       bottomLine: `If you believe ETH goes higher, BMNR is the trade. If you're wrong, $10.0B in assets, staking income ($202M/yr annualized at 67% staked, $374M at scale), and NAV floor limit your downside. Asymmetric.`,
       whatsNew: [
+        'Tom Lee presented at CoinDesk Consensus 2026 in Hong Kong (Feb 11) — global thought leadership',
+        'Beast Industries acquires Step banking app (7M+ users, ~$500M raised) — BMNR $200M investment now includes fintech platform',
+        'S-8 filed for 2025 Omnibus Incentive Plan (Feb 9) — full board signed',
+        'Nelson separated as President (Jan 22) — $605K severance, non-compete waived',
         'Acquired 40,613 ETH in past week — now 3.58% of supply (72% to 5%)',
         'ETH -62% from 2025 highs, Tom Lee: V-shaped recovery expected (8th 50%+ drop since 2018)',
         'Annualized staking revenue: $202M, up +7% WoW; CESR rate improved to 3.11%',
-        'Ethereum ATH daily txns (2.5M) + ATH active addresses (1M) — fundamentals diverging from price',
-        '#107 most traded US stock ($1.3B/day), MAVAN on track Q1 2026',
       ],
     },
     
@@ -7186,7 +7299,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
     // Catalysts (renamed from predictions)
     catalysts: [
       { event: 'Shareholder Vote', timing: 'Jan 15, 2026 ✅ COMPLETED', impact: '81% YES on Proposal 2 (52.2% turnout) — share authorization approved', color: 'var(--mint)' },
-      { event: 'Beast Industries', timing: 'Jan 17, 2026 ✅ CLOSED', impact: '$200M equity investment in MrBeast\'s company — GenZ/Millennial reach + DeFi integration', color: 'var(--mint)' },
+      { event: 'Beast Industries', timing: 'Jan 17, 2026 ✅ CLOSED', impact: '$200M equity investment in MrBeast\'s company — GenZ/Millennial reach + DeFi integration. Feb 10: Beast acquires Step (7M+ users)', color: 'var(--mint)' },
       { event: 'MAVAN Launch', timing: 'Q1 2026', impact: 'Proprietary staking = margin expansion, largest staking provider in crypto (on track)', color: 'var(--mint)' },
       { event: 'Dividend Increase', timing: 'Q1 2026', impact: 'Likely 2-3x current rate as staking scales (67% now staked, 3.11% CESR)', color: 'var(--sky)' },
       { event: 'Index Inclusion', timing: 'Jun 2026', impact: 'Russell 2000 inclusion forces passive buying', color: 'var(--sky)' },
@@ -8774,6 +8887,39 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   const adoptionTimeline = [
     // === FEBRUARY 2026 ===
     {
+      date: '2026-02-12',
+      category: 'Enterprise',
+      company: 'ETHZilla / Liquidity.io',
+      title: 'ETHZilla Launches First Tokenized Aviation Assets on Ethereum L2 — $12.2M Jet Engines',
+      summary: 'ETHZilla Corporation (Nasdaq: ETHZ) launched Eurus Aero Token I, a first-of-its-kind tokenized real-world asset instrument on Ethereum L2, enabling accredited investors to gain exposure to CFM56 jet engines on lease with a leading US air carrier through ERC-20 tokens. Two engines acquired for ~$12.2M, tokens offered at $100 each with ~11% target return. Monthly on-chain distributions via Ethereum L2 with automated distribution. Leases extend into 2028 with $3M put/call rights. Plans to expand to manufactured home loans and car loans.',
+      significance: 'First tokenized aviation assets on Ethereum L2 by a public company (Nasdaq-listed). Demonstrates real-world asset tokenization at institutional scale on Ethereum infrastructure. ERC-20 token structure enables automated on-chain distributions and secondary market trading.',
+      bmnrImplication: 'ETHZilla (Nasdaq: ETHZ) is BMNR\'s closest competitor as an ETH treasury company. Their RWA tokenization pivot creates a differentiated use case on Ethereum L2, validating the broader Ethereum ecosystem that BMNR depends on. More RWA activity on Ethereum = more network utility.',
+      impact: 'Bullish',
+      source: 'PR Newswire'
+    },
+    {
+      date: '2026-02-11',
+      category: 'Institutional',
+      company: 'Polygon Labs / EEA',
+      title: 'Polygon, Ethena, Nethermind Join Enterprise Ethereum Alliance — Institutional Ethereum Taking Shape',
+      summary: 'Polygon Labs ($7B+ monthly stablecoin volume, acquired Coinme+Sequence for $250M+), Ethena (USDe fastest to $10B TVL in 500 days), and Nethermind (Ethereum execution client builder) join the Enterprise Ethereum Alliance. EEA described as the "institutional coordination layer for Ethereum" with IPR, NDA, and antitrust protections enabling coordination that cannot happen elsewhere. Polygon building Open Money Stack for instant, compliant money movement. Ethena\'s USDe is ETH-backed synthetic dollar. Nethermind secures Ethereum execution layer for institutional deployments.',
+      significance: 'Three major Ethereum infrastructure providers joining the institutional coordination body signals consolidation of Ethereum\'s institutional stack. Polygon ($7B/mo stablecoins), Ethena ($10B TVL), and Nethermind (execution client) represent payments, DeFi, and protocol layers respectively.',
+      bmnrImplication: 'Institutional Ethereum coordination strengthening across all layers: payments (Polygon), synthetic dollars (Ethena requires ETH collateral), and execution infrastructure (Nethermind). All roads lead to more institutional demand for ETH as the settlement layer.',
+      impact: 'Bullish',
+      source: 'PR Newswire'
+    },
+    {
+      date: '2026-02-12',
+      category: 'Enterprise',
+      company: 'Sei / Toku',
+      title: 'Toku Launches Sei-Native Stablecoin Payroll — Competitor EVM L1 Activity',
+      summary: 'Sei Development Foundation integrated with Toku\'s API-based payroll system for instant USDC payroll and remittance settlement. Sei claims $3B+ stablecoin volume over 30 days, 5B+ transactions, 90M+ wallets, 1M+ daily active users. Sei positioned as "fastest EVM L1" combining Ethereum network effects with Solana-like performance. Toku connects employers/payroll providers (Workday, ADP) for stablecoin transactions.',
+      significance: 'Growing stablecoin payroll adoption on an EVM-compatible chain shows real-world enterprise use of blockchain payment rails. Sei is an Ethereum competitor but uses EVM compatibility, demonstrating Ethereum\'s developer ecosystem influence.',
+      bmnrImplication: 'Sei is an EVM L1 that competes with Ethereum for transaction volume. Activity doesn\'t directly accrue to ETH, but EVM compatibility means Ethereum\'s developer standard dominates. Real-world payroll use cases validate crypto payment infrastructure broadly, supporting the macro thesis.',
+      impact: 'Neutral',
+      source: 'PR Newswire'
+    },
+    {
       date: '2026-02-09',
       category: 'Enterprise',
       company: 'HTX / Ethena Labs',
@@ -9270,10 +9416,33 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       impact: 'Bullish', 
       source: 'Ostium Press Release' 
     },
+    // === NOVEMBER/DECEMBER 2025 - STABLECOIN INFRASTRUCTURE ===
+    {
+      date: '2025-12-04',
+      category: 'Enterprise',
+      company: 'WSPN',
+      title: 'WSPN Completes Global Payment Upgrade: Multi-Currency, Multi-Chain Infrastructure on Ethereum',
+      summary: 'Worldwide Stablecoin Payment Network (WSPN) completed its Global Payment infrastructure upgrade supporting multiple currencies, stablecoins, and blockchain networks through unified API. Supports USDT, USDC, PYUSD, DAI, and EURC across Ethereum, Polygon, Solana, and TRON. USD via Wire/ACH, EUR via SEPA alongside stablecoin rails. Features include on-ramp/off-ramp, cross-chain movement, token swapping, and AutoRamp automated conversions. Built-in KYB, compliance verification for institutional use. WSPN\'s flagship stablecoin WUSD is pegged 1:1 to USD.',
+      significance: 'Institutional-grade payment orchestration layer supporting Ethereum as primary stablecoin network. Multi-chain but Ethereum-centric infrastructure. Simplifies enterprise integration with crypto payment rails through single API.',
+      bmnrImplication: 'Payment orchestration built on Ethereum validates network as institutional stablecoin settlement layer. More enterprise payment infrastructure = more stablecoin volume on Ethereum = stronger network effects.',
+      impact: 'Bullish',
+      source: 'PR Newswire'
+    },
+    {
+      date: '2025-11-27',
+      category: 'Enterprise',
+      company: 'Mantle / Bybit / Tether',
+      title: 'Mantle and Bybit Launch USDT0 Omnichain Stablecoin on Ethereum L2',
+      summary: 'Mantle Network (Ethereum L2, $4B+ community assets) and Bybit (world\'s #2 crypto exchange) launched USDT0 deposits and withdrawals, making Mantle the largest exchange-related L2 by TVL. USDT0 is the cross-chain deployment of USDT using LayerZero\'s OFT standard with mint-and-burn architecture maintaining 1:1 backing. Zero-fee withdrawals during initial rollout. Mantle positioned as "core venue for cross-chain stablecoin liquidity and onchain capital markets."',
+      significance: 'World\'s #2 exchange (Bybit) + largest exchange-related Ethereum L2 (Mantle) + Tether launching unified cross-chain USDT standard. Eliminates fragmented bridges. Major step toward institutional-grade stablecoin infrastructure on Ethereum L2.',
+      bmnrImplication: 'Ethereum L2 becoming primary hub for cross-chain stablecoin liquidity with world\'s #2 exchange. More institutional capital flowing through Ethereum L2s = more value settling to Ethereum mainnet. Strengthens BMNR\'s ETH ecosystem thesis.',
+      impact: 'Bullish',
+      source: 'PR Newswire'
+    },
     // === NOVEMBER 2025 ===
-    { 
-      date: '2025-11-28', 
-      category: 'Institutional', 
+    {
+      date: '2025-11-28',
+      category: 'Institutional',
       company: 'BlackRock',
       title: 'ETH ETF Weekly Inflows Hit $500M', 
       summary: 'Spot Ethereum ETFs see largest weekly inflows since launch in July 2024, with $500M net inflows. BlackRock\'s iShares Ethereum Trust (ETHA) leads with $280M, followed by Fidelity\'s FETH ($120M) and Bitwise ETHW ($60M). Grayscale\'s converted ETHE continues to see outflows but at a slowing pace. Total spot ETH ETF AUM reaches $12.4B. Institutional adoption accelerating as advisors and wealth managers add ETH exposure to client portfolios.',
@@ -11235,7 +11404,10 @@ const TimelineTab = () => {
   
   // SEC Filings data - update when new filings are processed
   const secFilings = [
+    { date: 'Feb 11, 2026', type: '8-K', description: 'CoinDesk Consensus 2026 Presentation (Tom Lee, Chairman)', period: '—', color: 'yellow' },
+    { date: 'Feb 9, 2026', type: 'S-8', description: '2025 Omnibus Incentive Plan Registration', period: '—', color: 'cyan' },
     { date: 'Feb 9, 2026', type: '8-K', description: '4.326M ETH Holdings Update ($10.0B Total)', period: '—', color: 'yellow' },
+    { date: 'Jan 28, 2026', type: '8-K', description: 'Nelson Separation Agreement (President Terminated Without Cause)', period: '—', color: 'yellow' },
     { date: 'Jan 15, 2026', type: '8-K', description: '2026 Annual Stockholder Meeting + Investor Presentation', period: '—', color: 'yellow' },
     { date: 'Jan 13, 2026', type: '10-Q', description: 'Quarterly Report (Q1 FY2026) - First Staking Revenue', period: 'Q1 2026', color: 'purple' },
     { date: 'Jan 2, 2026', type: 'DEFA14A', description: 'Proxy Solicitation - Chairman\'s Message', period: '—', color: 'cyan' },
@@ -11256,7 +11428,7 @@ const TimelineTab = () => {
     cik: '0001829311',
     ticker: 'BMNR',
     exchange: 'NYSE American',
-    lastPR: { date: 'February 9, 2026', title: '4.326M ETH Holdings + $10.0B Total + ETH -62% from Highs' }
+    lastPR: { date: 'February 11, 2026', title: 'CoinDesk Consensus 2026 Presentation (Tom Lee, Chairman)' }
   };
   
   const secTypeColors: Record<string, { bg: string; text: string }> = {
@@ -11316,6 +11488,67 @@ const TimelineTab = () => {
   // NEWEST ENTRIES AT TOP - maintain descending chronological order
   const timelineEvents = [
     // [PR_CHECKLIST_EVENT_TIMELINE] - Add new PR entry here at top!
+    // === FEBRUARY 11, 2026 - COINDESK CONSENSUS 2026 PRESENTATION ===
+    {
+      date: '2026-02-11',
+      source: 'SEC Filing (8-K)',
+      category: 'Corporate',
+      title: '🎤 Tom Lee Presents at CoinDesk Consensus 2026 in Hong Kong',
+      changes: [
+        { metric: 'Event', previous: '—', new: 'CoinDesk Consensus 2026', change: 'Hong Kong' },
+        { metric: 'Presenter', previous: '—', new: 'Tom Lee', change: 'Executive Chairman' },
+        { metric: 'Filing', previous: '—', new: '8-K (Reg FD)', change: 'Presentation attached as Ex. 99.1' },
+      ],
+      notes: 'Tom Lee, Executive Chairman, presented at CoinDesk Consensus 2026 Conference in Hong Kong. Presentation filed as Exhibit 99.1 via 8-K (Item 7.01 Regulation FD Disclosure). Major global crypto conference appearance signals continued institutional outreach and thought leadership positioning.',
+      impact: 'positive'
+    },
+    // === FEBRUARY 10, 2026 - BEAST INDUSTRIES ACQUIRES STEP BANKING APP ===
+    {
+      date: '2026-02-10',
+      source: 'CoinDesk / Press Release',
+      category: 'Corporate',
+      title: '🦁 Beast Industries Acquires Step Banking App — BMNR\'s $200M Investment Expands into Fintech',
+      changes: [
+        { metric: 'Acquisition', previous: '—', new: 'Step Banking App', change: 'Beast Industries acquires' },
+        { metric: 'Step Users', previous: '—', new: '7M+', change: 'Mobile-first fintech users' },
+        { metric: 'Step Funding', previous: '—', new: '~$500M raised', change: 'Backers: Curry, D\'Amelio, Timberlake' },
+        { metric: 'BMNR Exposure', previous: '$200M equity', new: '$200M + Step platform', change: 'Expanded fintech reach' },
+        { metric: 'Beast Subscribers', previous: '450M+', new: '460M+', change: 'YouTube subscribers' },
+      ],
+      notes: 'Beast Industries (MrBeast, 460M+ YouTube subscribers, 5B monthly views) acquired Step, a mobile-first financial services app with 7M+ users focused on financial literacy and credit-building for younger generations. Step previously raised ~$500M from Stephen Curry, Charli D\'Amelio, Justin Timberlake. BMNR\'s $200M equity investment in Beast Industries now has exposure to a full fintech platform. Jeff Housenbold (Beast CEO) noted expansion into regulated sectors and financial platforms. The article explicitly mentions: "The transaction follows a $200 million investment in Beast Industries from BitMine Immersion Technologies, the leading Ethereum treasury firm, signaling potential expansion into digital asset offerings alongside traditional financial services." MrBeast: "Nobody taught me about investing, building credit, or managing money when I was growing up. I want to give millions of young people the financial foundation I never had."',
+      impact: 'positive'
+    },
+    // === FEBRUARY 9, 2026 - S-8 2025 OMNIBUS INCENTIVE PLAN ===
+    {
+      date: '2026-02-09',
+      source: 'SEC Filing (S-8)',
+      category: 'SEC Filing',
+      title: '📋 S-8 Filed: 2025 Omnibus Incentive Plan Registration',
+      changes: [
+        { metric: 'Filing', previous: '—', new: 'Form S-8', change: '2025 Omnibus Incentive Plan' },
+        { metric: 'Legal Counsel', previous: '—', new: 'Winston & Strawn LLP', change: 'Houston' },
+        { metric: 'Board Signers', previous: '—', new: '8 directors', change: 'Tsang, Kim, Lee, Maloney, Love, Sharbutt, Edgeworth, Howe, Sechan' },
+      ],
+      notes: 'Bitmine registered shares under the 2025 Omnibus Incentive Plan via Form S-8. Filed by Chi Tsang (CEO) with Winston & Strawn LLP as legal counsel. Signed by full board: Chi Tsang (CEO/Director), Young Kim (CFO/COO/Director), Thomas Lee (Executive Chairman), Michael Maloney, Lori Love, David Sharbutt, Jason Edgeworth, Olivia Howe, Robert Sechan. Incorporates by reference recent 10-K, 10-Q, and 8-K filings. Standard equity compensation registration for employee/director incentive plan.',
+      impact: 'neutral'
+    },
+    // === JANUARY 28, 2026 - NELSON SEPARATION AGREEMENT ===
+    {
+      date: '2026-01-28',
+      source: 'SEC Filing (8-K)',
+      category: 'Corporate',
+      title: '👤 Erik Nelson Separation — President Terminated Without Cause, $605K Severance',
+      changes: [
+        { metric: 'Officer', previous: 'Erik Nelson (President)', new: 'Terminated', change: 'Without Cause, effective Jan 22' },
+        { metric: 'Notice Payment', previous: '—', new: '$20,000', change: '30 days base salary in lieu of notice' },
+        { metric: 'Severance Payment', previous: '—', new: '$585,000', change: 'Lump sum within 30 days' },
+        { metric: 'Total Severance', previous: '—', new: '$605,000', change: '$20K notice + $585K severance' },
+        { metric: 'Non-Compete', previous: 'Active', new: 'Waived', change: 'Released from Sections 6(a)-(c)' },
+        { metric: 'Equity', previous: 'Per company books', new: 'Retained existing shares', change: 'No additional grants' },
+      ],
+      notes: 'Erik Nelson terminated without Cause as President, effective January 22, 2026. Separation Agreement filed as Exhibit 10.1. Total severance: $605K ($20K notice + $585K lump sum). Non-competition and non-solicitation covenants fully waived and released. Nelson retains existing shares per company books but waived all additional equity rights. Confidentiality obligations continue. Employment Agreement dated September 1, 2025. Board noted termination "is not related to a disagreement with the Company on any matter relating to the Company\'s operations, policies, or practices." Board thanked Nelson for "distinguished service and valuable contributions." Compensation Committee and Board approved the separation. Filed January 28, 2026.',
+      impact: 'neutral'
+    },
     // === FEBRUARY 9, 2026 - ETH HOLDINGS + ETH -62% FROM HIGHS ===
     {
       date: '2026-02-09',
@@ -12565,11 +12798,11 @@ const TimelineTab = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>5% ETH Supply Target</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.55% (~6.04M ETH needed)</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)' }}>Currently at 3.58% (~6.04M ETH needed)</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>71%</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~1.75M ETH to go</div>
+                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>72%</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>~1.71M ETH to go</div>
               </div>
             </div>
           </div>
@@ -12588,6 +12821,20 @@ const TimelineTab = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Feb 11, 2026</span>
+                <span style={{ fontSize: 11, color: 'var(--violet)' }}>Conference</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Tom Lee Presents at CoinDesk Consensus 2026 (Hong Kong)</div>
+            </div>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Feb 10, 2026</span>
+                <span style={{ fontSize: 11, color: 'var(--sky)' }}>Strategic</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Beast Industries Acquires Step Banking App (7M+ Users, ~$500M Raised)</div>
+            </div>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Feb 9, 2026</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
               </div>
@@ -12595,10 +12842,24 @@ const TimelineTab = () => {
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Feb 9, 2026</span>
+                <span style={{ fontSize: 11, color: 'var(--cyan)' }}>SEC Filing</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>S-8: 2025 Omnibus Incentive Plan Registration</div>
+            </div>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 11, color: 'var(--text3)' }}>Feb 2, 2026</span>
                 <span style={{ fontSize: 11, color: '#4ade80' }}>Holdings</span>
               </div>
               <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>ETH Holdings Reach 4,285,125 — 3.55% of Supply, $10.7B, Staking 67.6%</div>
+            </div>
+            <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: 'var(--text3)' }}>Jan 28, 2026</span>
+                <span style={{ fontSize: 11, color: 'var(--gold)' }}>Corporate</span>
+              </div>
+              <div style={{ fontWeight: 500, color: 'var(--text)', fontSize: 14 }}>Nelson Separation: President Terminated Without Cause ($605K Severance)</div>
             </div>
             <div style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
