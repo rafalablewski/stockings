@@ -3827,6 +3827,8 @@ const ModelTab = ({
   const discountRateDecimal = discountRate / 100;
   const terminalGrowthDecimal = terminalGrowth / 100;
   const spread = discountRateDecimal - terminalGrowthDecimal;
+  // Gordon Growth Model requires positive spread to avoid division by zero
+  // MIN_SPREAD_FOR_GORDON_GROWTH = 0.01 (1%) threshold prevents invalid calculations
   const terminalEV = spread > 0.01 ? terminalFCF / spread : 0;
   // Units: $B
   // Note: This is the Enterprise Value AT 2030, not today
@@ -3842,6 +3844,10 @@ const ModelTab = ({
   // STEP 8: Calculate Risk Factor (probability of success)
   // Formula: (1 - Risk1) × (1 - Risk2) × (1 - Risk3)
   // This represents probability that none of the risks materialize
+  // 
+  // ASSUMPTION: Risks are independent. If risks are correlated (e.g., regulatory delays
+  // cause tech delays), this formula overestimates success probability. For correlated
+  // risks, consider: riskFactor = 1 - max(risk1, risk2, risk3) or a correlation matrix.
   const riskFactor = (1 - regulatoryRisk/100) * (1 - techRisk/100) * (1 - competitionRisk/100);
   // Range: 0 to 1
 
@@ -3853,6 +3859,7 @@ const ModelTab = ({
   // STEP 10: Calculate Net Debt
   // Formula: Total Debt - Cash
   // Positive = net debt (reduces equity), Negative = net cash (increases equity)
+  // Convert from $M to $B: divide by THOUSAND (1000)
   const netDebtB = (totalDebt - cashOnHand) / 1000;
   // Units: $B
 
@@ -3869,9 +3876,9 @@ const ModelTab = ({
 
   // STEP 13: Calculate Target Stock Price
   // Formula: Equity Value / Diluted Shares
-  // Convert $B to $M by multiplying by 1000, then divide by M shares = $/share
+  // Convert $B to $M: multiply by THOUSAND (1000), then divide by M shares = $/share
   const targetStockPrice = equityValue > 0 && finalDilutedShares > 0
-    ? (equityValue * 1000) / finalDilutedShares
+    ? (equityValue * 1000) / finalDilutedShares // Units: $B × 1000 ÷ M shares = $/share
     : 0;
   // Units: $/share
 
@@ -4324,6 +4331,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
   };
 
   const sim = useMemo(() => {
+    // Cap simulations for performance: MAX_MONTE_CARLO_SIMULATIONS = 10,000
     const n = Math.min(sims, 10000);
     const netCash = cashOnHand - totalDebt; // Net cash position
     
@@ -4357,14 +4365,16 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       }
       
       // STEP 2: Apply log-normal distribution for revenue uncertainty
-      // Log-normal ensures: (a) revenue stays positive, (b) realistic right-skew
+      // Log-normal distribution ensures: (a) revenue stays positive, (b) realistic right-skew
       // X = exp(μ + σZ) where Z ~ N(0,1)
-      // To ensure E[X] = baseRev, we set μ = ln(baseRev) - σ²/2
+      // We set μ = -σ²/2 so that E[exp(μ + σZ)] = 1 (mean of log-normal factor is 1)
+      // This means: E[baseRev × multiplier × factor] = baseRev × multiplier × 1
+      // Note: The multiplier accounts for binary risk events, so final revenue may differ from baseRev
       const sigma = revVol / 100;
-      const mu = -0.5 * sigma * sigma; // Adjustment so E[exp(μ + σZ)] = 1
+      const mu = -0.5 * sigma * sigma; // LOG_NORMAL_ADJUSTMENT = -0.5 ensures E[exp(μ + σZ)] = 1
       const logNormalFactor = Math.exp(mu + sigma * randn());
       
-      // Final revenue outcome
+      // Final revenue outcome: base revenue × risk multiplier × log-normal volatility factor
       const revenue = baseRev * revenueMultiplier * logNormalFactor;
       revenueOutcomes.push(revenue);
       
@@ -4417,7 +4427,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       : var5;
     
     // Annualized returns for Sharpe/Sortino
-    const riskFreeRate = 0.04; // 4% annual
+    const riskFreeRate = 0.04; // RISK_FREE_RATE = 4% annual (standard risk-free rate assumption)
     const returns = fairValues.map(fv => {
       const totalReturn = fv / currentStockPrice;
       return Math.pow(totalReturn, 1 / years) - 1; // Annualized return

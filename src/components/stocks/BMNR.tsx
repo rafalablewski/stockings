@@ -1394,10 +1394,12 @@ const ModelTab = ({
   const terminalETH = currentETH * Math.pow(1 + netYieldRate, terminalYears);
 
   // STEP 4: Terminal Year NAV
+  // Convert ETH value to millions: (ETH × price) / MILLION = $M
   const terminalNAV = (terminalETH * terminalEthPrice) / 1_000_000; // $M
 
   // STEP 5: Annual Staking Cash Flow (for dividend/buyback capacity)
   // Use terminalETH for terminal year projections to reflect compounding growth
+  // Formula: (terminalETH × terminalEthPrice × stakingYield%) / MILLION = $M/year
   const annualStakingRevenue = (terminalETH * terminalEthPrice * stakingYield / 100) / 1_000_000; // $M/year
   const annualNetCashFlow = annualStakingRevenue * (1 - operatingCosts / stakingYield);
 

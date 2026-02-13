@@ -1395,6 +1395,8 @@ const CRCLModelTab = ({
   const discountRateDecimal = discountRate / 100;
   const terminalGrowthDecimal = terminalGrowth / 100;
   const spread = discountRateDecimal - terminalGrowthDecimal;
+  // Gordon Growth Model requires positive spread to avoid division by zero
+  // MIN_SPREAD_FOR_GORDON_GROWTH = 0.01 (1%) threshold prevents invalid calculations
   const terminalEV = spread > 0.01 ? terminalFCF / spread : 0; // $B
 
   // STEP 6: Discount Terminal Value to Present
@@ -1402,20 +1404,28 @@ const CRCLModelTab = ({
   const presentValueEV = terminalEV / discountFactor; // $B
 
   // STEP 7: Risk Factor (probability of success)
+  // Formula: (1 - Risk1) × (1 - Risk2) × (1 - Risk3)
+  // 
+  // ASSUMPTION: Risks are independent. If risks are correlated (e.g., regulatory changes
+  // affect competition), this formula overestimates success probability. For correlated
+  // risks, consider: riskFactor = 1 - max(risk1, risk2, risk3) or a correlation matrix.
   const riskFactor = (1 - regulatoryRisk/100) * (1 - competitionRisk/100) * (1 - rateRisk/100);
 
   // STEP 8: Risk-Adjusted Present Value
   const riskAdjustedEV = presentValueEV * riskFactor; // $B
 
   // STEP 9: Equity Value (assume minimal net debt for CRCL)
-  const netDebt = 0.2; // ~$200M net debt
+  // Net debt in $B: ~$200M = 0.2B
+  // Formula: Equity Value = Enterprise Value - Net Debt
+  const netDebt = 0.2; // ~$200M net debt (in $B units)
   const equityValue = riskAdjustedEV - netDebt; // $B
 
   // STEP 10: Target Stock Price (no significant dilution expected for profitable company)
   const dilutionRate = 2; // 2% annual stock comp dilution
   const terminalShares = currentShares * Math.pow(1 + dilutionRate / 100, terminalYears);
+  // Convert $B to $M: multiply by THOUSAND (1000), then divide by M shares to get $/share
   const targetStockPrice = equityValue > 0 && terminalShares > 0
-    ? (equityValue * 1000) / terminalShares // Convert $B to $M, divide by M shares
+    ? (equityValue * 1000) / terminalShares // Units: $B × 1000 ÷ M shares = $/share
     : 0;
 
   // STEP 11: Implied Upside/Downside

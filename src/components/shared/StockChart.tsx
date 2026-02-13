@@ -182,16 +182,30 @@ const calculateBollingerBands = (data: ChartDataPoint[], period: number = 20, st
       continue;
     }
 
-    // Calculate standard deviation
+    // Calculate standard deviation with defensive null check
+    if (middle[i] === null) {
+      upper.push(null);
+      lower.push(null);
+      continue;
+    }
+    
     let sumSquares = 0;
     for (let j = 0; j < period; j++) {
-      const diff = data[i - j].close - middle[i]!;
+      const closePrice = data[i - j]?.close;
+      if (closePrice === null || closePrice === undefined) {
+        upper.push(null);
+        lower.push(null);
+        continue;
+      }
+      const diff = closePrice - middle[i]!;
       sumSquares += diff * diff;
     }
     const std = Math.sqrt(sumSquares / period);
 
-    upper.push(middle[i]! + stdDev * std);
-    lower.push(middle[i]! - stdDev * std);
+    // Type assertion safe here due to null check above
+    const middleValue = middle[i]!;
+    upper.push(middleValue + stdDev * std);
+    lower.push(middleValue - stdDev * std);
   }
 
   return { upper, middle, lower };
