@@ -2896,7 +2896,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#share-classes</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure<UpdateIndicators sources="SEC" /></span>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure</span>
         </div>
         <div style={{ padding: '24px 24px' }}>
           <div>
@@ -2908,7 +2908,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             </div>
             {/* Rows */}
             {shareClasses.map((sc, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: i < shareClasses.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                 <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>{sc.classType}</span>
@@ -2934,47 +2934,44 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span style={{ padding: '12px 16px', gridColumn: 'span 2', fontSize: 13, color: 'var(--text3)', fontWeight: 400 }}>+{(fullyDiluted - totalBasic).toFixed(1)}M from converts, options, RSUs</span>
             </div>
           </div>
+          <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 12 }}>
+            Multi-class structure with 10x super-voting Class C shares. NASDAQ: ASTS.
+          </div>
+        </div>
+      </div>
 
-        {/* Voting Power Analysis */}
-        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)' }}>Voting Power Analysis</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-            <div>
-              <div style={{ fontSize: 12, color: 'var(--text3)' }}>ECONOMIC OWNERSHIP</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
-                <span style={{ color: 'var(--sky)' }}>{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: 'var(--text2)' }}>Class B (Insiders)</span>
-                <span style={{ color: 'var(--violet)' }}>{(11.2 / totalBasic * 100).toFixed(1)}%</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: 'var(--text2)' }}>Class C (Abel Avellan)</span>
-                <span style={{ color: 'var(--gold)' }}>{(78.2 / totalBasic * 100).toFixed(1)}%</span>
-              </div>
+      {/* Voting Power Analysis */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#voting-power</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Economic Ownership</div>
+          {[
+            { l: 'Class A (Public)', v: `${(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%`, color: 'var(--sky)' },
+            { l: 'Class B (Insiders)', v: `${(11.2 / totalBasic * 100).toFixed(1)}%`, color: 'var(--violet)' },
+            { l: 'Class C (Abel Avellan)', v: `${(78.2 / totalBasic * 100).toFixed(1)}%`, color: 'var(--gold)' },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.color, fontWeight: 600 }}>{r.v}</span>
             </div>
-            <div>
-              <div style={{ fontSize: 12, color: 'var(--text3)' }}>VOTING POWER (C = 10x)</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
-                <span style={{ color: 'var(--sky)' }}>{(shareClasses[0].shares / totalVotingShares * 100).toFixed(1)}%</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: 'var(--text2)' }}>Class B (Insiders)</span>
-                <span style={{ color: 'var(--violet)' }}>{(11.2 / totalVotingShares * 100).toFixed(1)}%</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 600 }}>
-                <span style={{ color: 'var(--text)' }}>Class C (Abel Avellan)</span>
-                <span style={{ color: 'var(--gold)' }}>{(78.2 * 10 / totalVotingShares * 100).toFixed(1)}%</span>
-              </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Voting Power (C = 10x)</div>
+          {[
+            { l: 'Class A (Public)', v: `${(shareClasses[0].shares / totalVotingShares * 100).toFixed(1)}%`, color: 'var(--sky)' },
+            { l: 'Class B (Insiders)', v: `${(11.2 / totalVotingShares * 100).toFixed(1)}%`, color: 'var(--violet)' },
+            { l: 'Class C (Abel Avellan)', v: `${(78.2 * 10 / totalVotingShares * 100).toFixed(1)}%`, color: 'var(--gold)', hl: true },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: r.hl ? 'var(--text)' : 'var(--text3)', fontWeight: r.hl ? 600 : 400 }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.color, fontWeight: 600 }}>{r.v}</span>
             </div>
-          </div>
-          <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)', fontSize: 13, color: 'var(--text3)' }}>
-            <strong style={{ color: 'var(--gold)' }}>Note:</strong> Abel Avellan maintains ~73% voting control despite ~22% economic ownership via Class C super-voting shares.
-          </div>
+          ))}
         </div>
-        </div>
+      </div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8, padding: '12px 24px', fontSize: 11, color: 'var(--text3)' }}>
+        <strong style={{ color: 'var(--gold)' }}>Note:</strong> Abel Avellan maintains ~73% voting control despite ~22% economic ownership via Class C super-voting shares.
       </div>
       </>
       )}
