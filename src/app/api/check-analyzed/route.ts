@@ -11,6 +11,41 @@ interface AnalysisEntry {
   detail?: string; // summary, notes, or other context
 }
 
+// Normalize a headline into a set of significant keywords for local matching
+function extractKeywords(text: string): Set<string> {
+  const stopWords = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','are','was','were','has','have','had','be','been','being','will','would','could','should','may','might','can','do','does','did','not','no','its','it','this','that','these','those','their','our','your','my','we','he','she','they','i','me','us','him','her','them','up','out','over','into','about','after','before','between','through','during','than','more','most','very','also','just','so','if','then','when','where','how','what','which','who','whom','why','all','each','every','any','few','some','new','said','says','according']);
+  return new Set(
+    text.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length > 2 && !stopWords.has(w))
+  );
+}
+
+// Check if an article matches any existing entry using keyword overlap
+function localMatch(articleHeadline: string, analysisData: AnalysisEntry[]): boolean {
+  const articleWords = extractKeywords(articleHeadline);
+  if (articleWords.size === 0) return false;
+
+  for (const entry of analysisData) {
+    const entryText = entry.detail
+      ? `${entry.headline} ${entry.detail}`
+      : entry.headline;
+    const entryWords = extractKeywords(entryText);
+
+    // Count how many article keywords appear in the entry
+    let matches = 0;
+    for (const w of articleWords) {
+      if (entryWords.has(w)) matches++;
+    }
+
+    const overlap = matches / articleWords.size;
+    // If >50% of article keywords found in an entry, consider it tracked
+    if (overlap >= 0.5 && matches >= 3) return true;
+  }
+  return false;
+}
+
 // Dynamically collect all analysis data for a ticker — with full context
 async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
   const entries: AnalysisEntry[] = [];
@@ -149,16 +184,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing ticker or articles' }, { status: 400 });
     }
 
-    if (!ANTHROPIC_API_KEY) {
-      return NextResponse.json({
-        ticker,
-        results: articles.map(a => ({ headline: a.headline, date: a.date, analyzed: null })),
-        error: 'ANTHROPIC_API_KEY not set — add it in Vercel Environment Variables and redeploy',
-      });
-    }
-
     // Gather all existing analysis data for this ticker
     const analysisData = await getAnalysisData(ticker.toUpperCase());
+
+    // Fallback: local keyword matching when no API key is available
+    if (!ANTHROPIC_API_KEY) {
+      const results = articles.map(a => ({
+        headline: a.headline,
+        date: a.date,
+        analyzed: localMatch(a.headline, analysisData),
+      }));
+      return NextResponse.json({ ticker, results });
+    }
 
     // Build context-rich summary: include headline + truncated detail for semantic matching
     const existingSummary = analysisData
