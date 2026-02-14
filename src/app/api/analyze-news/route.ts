@@ -350,6 +350,94 @@ function localMatch(articleHeadline: string, analysisData: AnalysisEntry[]): boo
   return false;
 }
 
+// Heuristic keyword sets for classification when no API key available
+const PARTNER_KEYWORDS = new Set(['partner', 'partnership', 'mno', 'operator', 'carrier', 'vodafone', 'att', 'verizon', 'telefonica', 'rakuten', 'bell', 'telstra', 'orange', 'bharti', 'airtel', 'roaming']);
+const COMPETITOR_KEYWORDS = new Set(['competitor', 'rival', 'iridium', 'starlink', 'spacex', 'lynk', 'skylo', 'kuiper', 'amazon', 'qualcomm', 'globalstar', 'oneplus']);
+const FINANCIAL_KEYWORDS = new Set(['earnings', 'revenue', 'convertible', 'offering', 'dilution', 'shares', 'stock', 'price', 'analyst', 'upgrade', 'downgrade', 'target', 'sec', 'filing', 'debt', 'cash', 'capital', 'raise', 'atm']);
+const HIGH_MAT_KEYWORDS = new Set(['launch', 'fcc', 'fda', 'approval', 'contract', 'earnings', 'revenue', 'satellite', 'constellation', 'commercial', 'offering', 'convertible', 'regulatory', 'milestone']);
+const BULLISH_KEYWORDS = new Set(['launch', 'approval', 'partnership', 'contract', 'milestone', 'expansion', 'growth', 'upgrade', 'commercial', 'record', 'breakthrough']);
+const BEARISH_KEYWORDS = new Set(['delay', 'loss', 'dilution', 'downgrade', 'fail', 'lawsuit', 'warning', 'decline', 'cut']);
+
+function localAnalyze(
+  headline: string,
+  analysisData: AnalysisEntry[],
+  ticker: string,
+): {
+  tracked: boolean;
+  matchedEntry: string | null;
+  category: string;
+  materiality: string;
+  sentiment: string;
+} {
+  const words = extractKeywords(headline);
+  const headlineLower = headline.toLowerCase();
+
+  // Find best matching entry
+  let bestMatch: AnalysisEntry | null = null;
+  let bestScore = 0;
+  for (const entry of analysisData) {
+    const entryText = entry.detail ? `${entry.headline} ${entry.detail}` : entry.headline;
+    const entryWords = extractKeywords(entryText);
+    let matches = 0;
+    for (const w of words) {
+      if (entryWords.has(w)) matches++;
+    }
+    const overlap = words.size > 0 ? matches / words.size : 0;
+    if (overlap >= 0.5 && matches >= 3 && matches > bestScore) {
+      bestScore = matches;
+      bestMatch = entry;
+    }
+  }
+
+  const tracked = bestMatch !== null;
+
+  // Classify category by keyword presence
+  let category = 'company';
+  let partnerHits = 0, competitorHits = 0, financialHits = 0;
+  for (const w of words) {
+    if (PARTNER_KEYWORDS.has(w)) partnerHits++;
+    if (COMPETITOR_KEYWORDS.has(w)) competitorHits++;
+    if (FINANCIAL_KEYWORDS.has(w)) financialHits++;
+  }
+  if (competitorHits > partnerHits && competitorHits > financialHits) category = 'competitor';
+  else if (partnerHits > financialHits) category = 'partner';
+  else if (financialHits > 0) category = 'financial';
+  // Check if it mentions the ticker or company name directly
+  const COMPANY_NAMES: Record<string, string[]> = {
+    ASTS: ['ast spacemobile', 'ast space', 'asts'],
+    BMNR: ['bitmine', 'bitmine immersion', 'bmnr'],
+    CRCL: ['circle', 'crcl'],
+  };
+  const companyAliases = COMPANY_NAMES[ticker] || [ticker.toLowerCase()];
+  const mentionsCompany = companyAliases.some(alias => headlineLower.includes(alias));
+  if (!mentionsCompany && category === 'company') {
+    category = 'industry';
+  }
+
+  // Materiality
+  let highHits = 0;
+  for (const w of words) {
+    if (HIGH_MAT_KEYWORDS.has(w)) highHits++;
+  }
+  const materiality = highHits >= 2 ? 'high' : highHits === 1 ? 'medium' : 'low';
+
+  // Sentiment
+  let bullishHits = 0, bearishHits = 0;
+  for (const w of words) {
+    if (BULLISH_KEYWORDS.has(w)) bullishHits++;
+    if (BEARISH_KEYWORDS.has(w)) bearishHits++;
+  }
+  const sentiment = bullishHits > bearishHits ? 'bullish' : bearishHits > bullishHits ? 'bearish' : 'neutral';
+
+  return {
+    tracked,
+    matchedEntry: bestMatch?.headline || null,
+    category,
+    materiality,
+    sentiment,
+  };
+}
+
 // ── Agentic loop ────────────────────────────────────────────────────────────
 
 const MAX_AGENT_TURNS = 6;
@@ -483,22 +571,28 @@ export async function POST(request: NextRequest) {
 
     const analysisData = await getAnalysisData(ticker.toUpperCase());
 
-    // ── Fallback: no API key → local keyword matching with basic results ──
+    // ── Fallback: no API key → local keyword matching with rich heuristic results ──
     if (!ANTHROPIC_API_KEY) {
-      const results = articles.map((a, i) => ({
-        headline: a.headline,
-        date: a.date,
-        url: a.url,
-        analysis: {
-          tracked: localMatch(a.headline, analysisData),
-          category: 'company' as const,
-          materiality: 'medium' as const,
-          summary: '',
-          matchedEntry: null,
-          sentiment: 'neutral' as const,
-        },
-      }));
-      return NextResponse.json({ ticker, results, proposedEntries: [], agent: false });
+      const results = articles.map((a) => {
+        const { tracked, matchedEntry, category, materiality, sentiment } =
+          localAnalyze(a.headline, analysisData, ticker.toUpperCase());
+        return {
+          headline: a.headline,
+          date: a.date,
+          url: a.url,
+          analysis: {
+            tracked,
+            category,
+            materiality,
+            summary: tracked && matchedEntry
+              ? `Matches existing database entry covering this event.`
+              : `Untracked — no matching entry found in the ${ticker.toUpperCase()} research database.`,
+            matchedEntry,
+            sentiment,
+          },
+        };
+      });
+      return NextResponse.json({ ticker, results, proposedEntries: [], agent: true });
     }
 
     // ── Step 1: Scrape article content in parallel ──
