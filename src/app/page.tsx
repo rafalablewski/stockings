@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { stockList } from "@/lib/stocks";
+import { prompts } from "@/data/prompts";
+import { PromptCard } from "@/components/PromptCard";
 
 export default function HomePage() {
   return (
@@ -66,6 +68,24 @@ export default function HomePage() {
                   </div>
                 </div>
               </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Prompts */}
+      <section className="py-20 px-6">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
+            Prompts
+          </h2>
+          <p className="text-[13px] text-white/40 mb-8">
+            Prompts for working with AI agents.
+          </p>
+
+          <div className="grid gap-4">
+            {prompts.map((prompt) => (
+              <PromptCard key={prompt.name} name={prompt.name} content={prompt.content} />
             ))}
           </div>
         </div>
