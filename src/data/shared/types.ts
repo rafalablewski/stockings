@@ -445,3 +445,49 @@ export interface TabDefinition {
   category: TabCategory;
   description?: string;
 }
+
+// ============================================================================
+// AI AGENT ANALYSIS TYPES
+// ============================================================================
+
+/**
+ * Rich analysis result from the AI agent for a single news article.
+ * Replaces the simple { analyzed: boolean } from check-analyzed.
+ */
+export interface AgentAnalysisResult {
+  /** Whether the article covers an event already tracked in the database */
+  tracked: boolean;
+  /** Article category classification */
+  category: 'company' | 'partner' | 'competitor' | 'industry' | 'financial' | 'market';
+  /** How material is this news to the investment thesis */
+  materiality: 'high' | 'medium' | 'low';
+  /** One-line summary of what the article covers */
+  summary: string;
+  /** Headline of the matched database entry, or null if untracked */
+  matchedEntry: string | null;
+  /** Sentiment assessment for the stock */
+  sentiment: 'bullish' | 'bearish' | 'neutral';
+}
+
+/**
+ * A database entry proposed by the AI agent for review.
+ * Generated when the agent finds untracked, material news.
+ */
+export interface ProposedEntry {
+  /** Index of the source article (0-based) */
+  articleIndex: number;
+  /** Which data file/collection this entry belongs in */
+  entryType: 'timeline' | 'catalyst' | 'partner_news' | 'competitor_news' | 'press_release';
+  /** ISO date (YYYY-MM-DD) */
+  date: string;
+  /** Entry headline */
+  headline: string;
+  /** Detailed summary/description */
+  detail: string;
+  /** Category tag for the entry */
+  category: string;
+  /** Impact assessment */
+  impact: 'Bullish' | 'Bearish' | 'Neutral';
+  /** Agent's reasoning for proposing this entry */
+  reasoning: string;
+}

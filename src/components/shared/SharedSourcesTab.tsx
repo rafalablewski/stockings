@@ -33,6 +33,15 @@ interface SharedSourcesTabProps {
   competitors?: Competitor[];
 }
 
+interface ArticleAnalysis {
+  tracked: boolean;
+  category: string;
+  materiality: string;
+  summary: string;
+  matchedEntry: string | null;
+  sentiment: string;
+}
+
 interface ArticleItem {
   headline: string;
   date: string;
@@ -40,6 +49,18 @@ interface ArticleItem {
   source?: string;
   items?: string;
   analyzed?: boolean | null;
+  analysis?: ArticleAnalysis | null;
+}
+
+interface ProposedEntryItem {
+  articleIndex: number;
+  entryType: string;
+  date: string;
+  headline: string;
+  detail: string;
+  category: string;
+  impact: string;
+  reasoning: string;
 }
 
 interface CardData {
@@ -89,9 +110,51 @@ function formatTimeAgo(ts: number): string {
   return `${hours}h ago`;
 }
 
+// ── Category & materiality colors ───────────────────────────────────────────
+const CATEGORY_COLORS: Record<string, string> = {
+  company: 'var(--sky)',
+  partner: 'var(--mint)',
+  competitor: 'var(--coral)',
+  industry: 'var(--gold)',
+  financial: 'var(--accent)',
+  market: 'var(--text3)',
+};
+
+const MATERIALITY_LABELS: Record<string, string> = {
+  high: 'H',
+  medium: 'M',
+  low: 'L',
+};
+
+const MATERIALITY_COLORS: Record<string, string> = {
+  high: 'var(--coral)',
+  medium: 'var(--gold)',
+  low: 'var(--text3)',
+};
+
 // ── Status dot ──────────────────────────────────────────────────────────────
-const StatusDot: React.FC<{ analyzed: boolean | null | undefined; showAnalysis?: boolean }> = ({ analyzed, showAnalysis }) => {
+const StatusDot: React.FC<{ analyzed: boolean | null | undefined; analysis?: ArticleAnalysis | null; showAnalysis?: boolean }> = ({ analyzed, analysis, showAnalysis }) => {
   if (!showAnalysis) return null;
+
+  // If we have rich analysis, use materiality-based color
+  if (analysis) {
+    const matColor = MATERIALITY_COLORS[analysis.materiality] || 'var(--text3)';
+    const label = `${analysis.category} — ${analysis.materiality} materiality — ${analysis.tracked ? 'tracked' : 'new'}`;
+    return (
+      <span
+        role="img"
+        aria-label={label}
+        title={label}
+        style={{
+          width: 7, height: 7, borderRadius: '50%',
+          background: analysis.tracked ? 'var(--mint)' : matColor,
+          flexShrink: 0, marginTop: 6, opacity: 0.9,
+          transition: 'opacity 0.2s, background 0.2s',
+        }}
+      />
+    );
+  }
+
   const color = analyzed === null || analyzed === undefined
     ? 'var(--text3)' : analyzed ? 'var(--mint)' : 'var(--coral)';
   const label = analyzed === null || analyzed === undefined
@@ -113,12 +176,58 @@ const StatusDot: React.FC<{ analyzed: boolean | null | undefined; showAnalysis?:
 // ── Article list ────────────────────────────────────────────────────────────
 const ARTICLE_INITIAL_COUNT = 5;
 
+const CategoryBadge: React.FC<{ category: string }> = ({ category }) => {
+  const color = CATEGORY_COLORS[category] || 'var(--text3)';
+  return (
+    <span style={{
+      fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px',
+      padding: '1px 6px', borderRadius: 4,
+      background: `color-mix(in srgb, ${color} 12%, transparent)`,
+      color,
+    }}>
+      {category}
+    </span>
+  );
+};
+
+const MaterialityBadge: React.FC<{ materiality: string }> = ({ materiality }) => {
+  const color = MATERIALITY_COLORS[materiality] || 'var(--text3)';
+  const label = MATERIALITY_LABELS[materiality] || '?';
+  return (
+    <span
+      title={`${materiality} materiality`}
+      style={{
+        fontSize: 9, fontWeight: 700, width: 16, height: 16,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        borderRadius: 4, border: `1px solid color-mix(in srgb, ${color} 30%, transparent)`,
+        color, opacity: 0.9,
+      }}
+    >
+      {label}
+    </span>
+  );
+};
+
+const SentimentDot: React.FC<{ sentiment: string }> = ({ sentiment }) => {
+  const color = sentiment === 'bullish' ? 'var(--mint)' : sentiment === 'bearish' ? 'var(--coral)' : 'var(--text3)';
+  return (
+    <span
+      title={sentiment}
+      style={{
+        width: 5, height: 5, borderRadius: '50%', background: color, opacity: 0.7,
+        flexShrink: 0,
+      }}
+    />
+  );
+};
+
 const ArticleList: React.FC<{
   articles: ArticleItem[];
   empty: string;
   showAnalysis?: boolean;
 }> = ({ articles, empty, showAnalysis }) => {
   const [showAll, setShowAll] = useState(false);
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
   if (articles.length === 0) {
     return (
@@ -136,68 +245,109 @@ const ArticleList: React.FC<{
   return (
     <div>
       <ul role="list" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {displayed.map((a, i) => (
-          <li
-            key={i}
-            role="listitem"
-            style={{
-              display: 'flex', alignItems: 'flex-start', gap: 12,
-              padding: '12px 12px', borderRadius: 10,
-              transition: 'background 0.15s',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            <StatusDot analyzed={a.analyzed} showAnalysis={showAnalysis} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, flex: 1 }}>
-              <a
-                href={a.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  fontSize: 13, color: 'var(--text)', textDecoration: 'none', lineHeight: 1.5,
-                  transition: 'color 0.15s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}
-                onFocus={e => (e.currentTarget.style.color = 'var(--accent)')}
-                onBlur={e => (e.currentTarget.style.color = 'var(--text)')}
-              >
-                {a.headline}
-              </a>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                {a.date && (
-                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', letterSpacing: '-0.2px' }}>
-                    {a.date}
-                  </span>
-                )}
-                {a.source && (
-                  <>
-                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                    <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.source}</span>
-                  </>
-                )}
-                {a.items && (
-                  <>
-                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                    <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.items}</span>
-                  </>
-                )}
-                {showAnalysis && a.analyzed !== null && a.analyzed !== undefined && (
-                  <>
-                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                    <span style={{
-                      fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-                      color: a.analyzed ? 'var(--mint)' : 'var(--coral)',
-                    }}>
-                      {a.analyzed ? 'Tracked' : 'New'}
+        {displayed.map((a, i) => {
+          const hasRichAnalysis = !!a.analysis;
+          const isExpanded = expandedIdx === i;
+
+          return (
+            <li
+              key={i}
+              role="listitem"
+              style={{
+                display: 'flex', alignItems: 'flex-start', gap: 12,
+                padding: '12px 12px', borderRadius: 10,
+                transition: 'background 0.15s',
+                cursor: hasRichAnalysis ? 'pointer' : 'default',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              onClick={() => hasRichAnalysis && setExpandedIdx(isExpanded ? null : i)}
+            >
+              <StatusDot analyzed={a.analyzed} analysis={a.analysis} showAnalysis={showAnalysis} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, flex: 1 }}>
+                <a
+                  href={a.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  style={{
+                    fontSize: 13, color: 'var(--text)', textDecoration: 'none', lineHeight: 1.5,
+                    transition: 'color 0.15s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}
+                  onFocus={e => (e.currentTarget.style.color = 'var(--accent)')}
+                  onBlur={e => (e.currentTarget.style.color = 'var(--text)')}
+                >
+                  {a.headline}
+                </a>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  {a.date && (
+                    <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', letterSpacing: '-0.2px' }}>
+                      {a.date}
                     </span>
-                  </>
+                  )}
+                  {a.source && (
+                    <>
+                      <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.source}</span>
+                    </>
+                  )}
+                  {a.items && (
+                    <>
+                      <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.items}</span>
+                    </>
+                  )}
+                  {/* Rich analysis badges */}
+                  {showAnalysis && hasRichAnalysis && a.analysis && (
+                    <>
+                      <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                      <CategoryBadge category={a.analysis.category} />
+                      <MaterialityBadge materiality={a.analysis.materiality} />
+                      <SentimentDot sentiment={a.analysis.sentiment} />
+                      <span style={{
+                        fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+                        color: a.analysis.tracked ? 'var(--mint)' : 'var(--coral)',
+                      }}>
+                        {a.analysis.tracked ? 'Tracked' : 'New'}
+                      </span>
+                    </>
+                  )}
+                  {/* Fallback: simple tracked/new label */}
+                  {showAnalysis && !hasRichAnalysis && a.analyzed !== null && a.analyzed !== undefined && (
+                    <>
+                      <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                      <span style={{
+                        fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+                        color: a.analyzed ? 'var(--mint)' : 'var(--coral)',
+                      }}>
+                        {a.analyzed ? 'Tracked' : 'New'}
+                      </span>
+                    </>
+                  )}
+                </div>
+                {/* Expandable summary */}
+                {isExpanded && a.analysis && (
+                  <div style={{
+                    marginTop: 6, padding: '8px 12px', borderRadius: 8,
+                    background: 'color-mix(in srgb, var(--border) 30%, transparent)',
+                    fontSize: 12, color: 'var(--text2)', lineHeight: 1.6,
+                  }}>
+                    {a.analysis.summary && (
+                      <div style={{ marginBottom: 4 }}>{a.analysis.summary}</div>
+                    )}
+                    {a.analysis.matchedEntry && (
+                      <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>
+                        Matches: {a.analysis.matchedEntry}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
       {hiddenCount > 0 && (
         <div style={{ textAlign: 'center', paddingTop: 12 }}>
@@ -459,20 +609,52 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [loadingAll, setLoadingAll] = useState(false);
   const [lastFetchedAt, setLastFetchedAt] = useState<number | null>(null);
 
+  const [proposedEntries, setProposedEntries] = useState<ProposedEntryItem[]>([]);
+  const [agentMode, setAgentMode] = useState(false);
+
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
     try {
-      const res = await fetch('/api/check-analyzed', {
+      // Try the new agentic endpoint first
+      const res = await fetch('/api/analyze-news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticker,
+          articles: articles.map(a => ({ headline: a.headline, date: a.date, url: a.url })),
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.results) {
+          setAgentMode(!!data.agent);
+          if (data.proposedEntries?.length) {
+            setProposedEntries(prev => [...prev, ...data.proposedEntries]);
+          }
+          return articles.map((article, i) => {
+            const result = data.results?.[i];
+            return {
+              ...article,
+              analyzed: result?.analysis?.tracked ?? null,
+              analysis: result?.analysis ?? null,
+            };
+          });
+        }
+      }
+
+      // Fallback to old endpoint
+      const fallbackRes = await fetch('/api/check-analyzed', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticker, articles: articles.map(a => ({ headline: a.headline, date: a.date })) }),
       });
-      if (!res.ok) throw new Error(`AI check failed: ${res.status}`);
-      const data = await res.json();
-      if (!data.results) throw new Error(data.error || 'No results returned');
-      return articles.map((article, i) => ({ ...article, analyzed: data.results?.[i]?.analyzed ?? null }));
+      if (!fallbackRes.ok) throw new Error(`AI check failed: ${fallbackRes.status}`);
+      const fallbackData = await fallbackRes.json();
+      if (!fallbackData.results) throw new Error(fallbackData.error || 'No results returned');
+      return articles.map((article, i) => ({ ...article, analyzed: fallbackData.results?.[i]?.analyzed ?? null }));
     } catch (err) {
-      console.error('[SharedSourcesTab] AI check error:', err);
+      console.error('[SharedSourcesTab] AI analysis error:', err);
       return articles.map(a => ({ ...a, analyzed: null }));
     }
   }, [ticker]);
@@ -648,8 +830,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           role="note"
           aria-label="Analysis status legend"
           style={{
-            display: 'flex', alignItems: 'center', gap: 24, padding: '16px 4px 12px',
-            fontSize: 10, color: 'var(--text3)', letterSpacing: '0.3px',
+            display: 'flex', alignItems: 'center', gap: 16, padding: '16px 4px 12px',
+            fontSize: 10, color: 'var(--text3)', letterSpacing: '0.3px', flexWrap: 'wrap',
           }}
         >
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -664,6 +846,20 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
             Pending
           </span>
+          {agentMode && (
+            <>
+              <span style={{ width: 1, height: 12, background: 'var(--border)' }} />
+              <span style={{ fontWeight: 600, color: 'var(--accent)', opacity: 0.7 }}>
+                Agent Mode
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ fontSize: 9, fontWeight: 700, padding: '0 4px', borderRadius: 3, border: '1px solid color-mix(in srgb, var(--coral) 30%, transparent)', color: 'var(--coral)' }}>H</span>
+                <span style={{ fontSize: 9, fontWeight: 700, padding: '0 4px', borderRadius: 3, border: '1px solid color-mix(in srgb, var(--gold) 30%, transparent)', color: 'var(--gold)' }}>M</span>
+                <span style={{ fontSize: 9, fontWeight: 700, padding: '0 4px', borderRadius: 3, border: '1px solid color-mix(in srgb, var(--text3) 30%, transparent)', color: 'var(--text3)' }}>L</span>
+                Materiality
+              </span>
+            </>
+          )}
         </div>
       )}
 
@@ -720,6 +916,91 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 />
               );
             })}
+          </div>
+        </>
+      )}
+
+      {/* Proposed entries from the agent */}
+      {proposedEntries.length > 0 && (
+        <>
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#proposed-entries</div>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: '32px 0 16px',
+          }}>
+            <span style={{
+              fontSize: 11, fontWeight: 600, color: 'var(--accent)',
+              textTransform: 'uppercase', letterSpacing: '1.2px',
+            }}>
+              Agent Proposals
+            </span>
+            <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--accent) 25%, transparent)' }} />
+            <span style={{
+              fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--accent)',
+              padding: '2px 8px', borderRadius: 99,
+              background: 'color-mix(in srgb, var(--accent) 10%, transparent)',
+            }}>
+              {proposedEntries.length}
+            </span>
+          </div>
+          <p style={{ fontSize: 12, color: 'var(--text3)', margin: '0 0 12px', lineHeight: 1.6 }}>
+            The AI agent identified these untracked, material news items and proposes adding them to the research database.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {proposedEntries.map((entry, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: '16px 20px', borderRadius: 12,
+                  background: 'var(--surface)',
+                  border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                  <span style={{
+                    fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px',
+                    padding: '2px 8px', borderRadius: 4,
+                    background: 'color-mix(in srgb, var(--accent) 12%, transparent)',
+                    color: 'var(--accent)',
+                  }}>
+                    {entry.entryType.replace('_', ' ')}
+                  </span>
+                  <span style={{
+                    fontSize: 9, fontWeight: 600, textTransform: 'uppercase',
+                    padding: '2px 8px', borderRadius: 4,
+                    background: `color-mix(in srgb, ${
+                      entry.impact === 'Bullish' ? 'var(--mint)' : entry.impact === 'Bearish' ? 'var(--coral)' : 'var(--text3)'
+                    } 12%, transparent)`,
+                    color: entry.impact === 'Bullish' ? 'var(--mint)' : entry.impact === 'Bearish' ? 'var(--coral)' : 'var(--text3)',
+                  }}>
+                    {entry.impact}
+                  </span>
+                  <span style={{
+                    fontSize: 9, padding: '2px 8px', borderRadius: 4,
+                    background: 'color-mix(in srgb, var(--text3) 10%, transparent)',
+                    color: 'var(--text3)',
+                  }}>
+                    {entry.category}
+                  </span>
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)', marginLeft: 'auto' }}>
+                    {entry.date}
+                  </span>
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.4, marginBottom: 6 }}>
+                  {entry.headline}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6, marginBottom: 8 }}>
+                  {entry.detail}
+                </div>
+                <div style={{
+                  fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5,
+                  padding: '8px 12px', borderRadius: 8,
+                  background: 'color-mix(in srgb, var(--border) 30%, transparent)',
+                }}>
+                  {entry.reasoning}
+                </div>
+              </div>
+            ))}
           </div>
         </>
       )}
