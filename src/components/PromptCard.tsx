@@ -38,22 +38,23 @@ export function PromptCard({ name, variants }: PromptCardProps) {
             </span>
           </div>
           {variants.length > 1 && (
-            <div className="flex items-center gap-0" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
               {variants.map((variant, i) => (
                 <span key={variant.label} className="flex items-center">
                   {i > 0 && (
                     <span className="text-[10px] text-white/10 mx-2">·</span>
                   )}
-                  <button
+                  <span
+                    role="button"
                     onClick={() => setActiveVariant(i)}
-                    className={`text-[11px] uppercase tracking-wider transition-colors ${
+                    className={`text-[11px] uppercase tracking-wider cursor-pointer transition-colors ${
                       i === activeVariant
                         ? "text-white/50"
                         : "text-white/15 hover:text-white/30"
                     }`}
                   >
                     {variant.label}
-                  </button>
+                  </span>
                 </span>
               ))}
             </div>
