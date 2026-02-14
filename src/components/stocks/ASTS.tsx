@@ -2863,7 +2863,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-navigation</div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Strategic + founder' },
@@ -2876,7 +2876,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             key={nav.id}
             onClick={() => setCapitalView(nav.id)}
             style={{
-              background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 24,
+              background: 'var(--surface)',
+              padding: '24px 24px',
               cursor: 'pointer',
               borderLeft: capitalView === nav.id ? '4px solid var(--sky)' : '4px solid transparent',
               transition: 'border-color 0.2s',
@@ -2895,63 +2896,44 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#share-classes</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure (Feb 2026)<UpdateIndicators sources="SEC" /></span>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure<UpdateIndicators sources="SEC" /></span>
         </div>
         <div style={{ padding: '24px 24px' }}>
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: '1px solid var(--border)' }}>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Class</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Shares (M)</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>% of Basic</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Voting Rights</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Description</span>
+          <div>
+            {/* Header */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: '1px solid var(--border)' }}>
+              {['Class', 'Shares (M)', '% of Basic', 'Voting', 'Description'].map((h, idx) => (
+                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: [1, 2].includes(idx) ? 'right' : 'left' }}>{h}</span>
+              ))}
+            </div>
+            {/* Rows */}
+            {shareClasses.map((sc, i) => (
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>{sc.classType}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--sky)' }}>{sc.shares}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right' }}>{(sc.shares / totalBasic * 100).toFixed(1)}%</span>
+                <span style={{ padding: '12px 16px', fontSize: 13, color: 'var(--text2)' }}>{sc.votingRights}</span>
+                <span style={{ padding: '12px 16px', fontSize: 13, color: 'var(--text2)' }}>{sc.description}</span>
+              </div>
+            ))}
+            {/* Total Basic */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', background: 'var(--accent-dim)' }}>
+              <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>Total Basic</span>
+              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', fontWeight: 600 }}>{totalBasic.toFixed(1)}</span>
+              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', fontWeight: 600 }}>100%</span>
+              <span style={{ padding: '12px 16px' }}></span>
+              <span style={{ padding: '12px 16px' }}></span>
+            </div>
+            {/* FD Row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
+              <span style={{ padding: '12px 16px', fontSize: 13 }}>Fully Diluted</span>
+              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--sky)' }}>{fullyDiluted.toFixed(1)}</span>
+              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right' }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
+              <span style={{ padding: '12px 16px', gridColumn: 'span 2', fontSize: 13, color: 'var(--text3)', fontWeight: 400 }}>+{(fullyDiluted - totalBasic).toFixed(1)}M from converts, options, RSUs</span>
+            </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <span style={{ fontSize: 13, color: 'var(--text)' }}>Class A</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{shareClasses[0].shares}</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>1 vote/share</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Public trading (NASDAQ: ASTS)</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <span style={{ fontSize: 13, color: 'var(--text)' }}>Class B</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>11.2</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(11.2 / totalBasic * 100).toFixed(1)}%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>1 vote/share</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Founder/insider shares</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <span style={{ fontSize: 13, color: 'var(--text)' }}>Class C</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>78.2</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(78.2 / totalBasic * 100).toFixed(1)}%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>10 votes/share</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Abel Avellan (CEO)</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--accent-dim)' }}>
-            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Total Basic</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>{totalBasic.toFixed(1)}</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>100%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <span style={{ fontSize: 13, color: 'var(--text)' }}>+ Options/RSUs/Converts</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(fullyDiluted - totalBasic).toFixed(1)}</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)', gridColumn: 'span 2' }}>Remaining converts, options, RSUs</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', background: 'var(--accent-dim)' }}>
-            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Fully Diluted</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>{fullyDiluted.toFixed(1)}</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
-          </div>
-        </div>
 
         {/* Voting Power Analysis */}
         <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
@@ -3110,7 +3092,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         {/* SBC Chart */}
         <div style={{ height: 192 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={sbcHistory}>
+            <BarChart data={[...sbcHistory].reverse()}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
@@ -3286,7 +3268,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           </div>
           <div style={{ height: 256, marginTop: 16 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={dilutionHistory}>
+              <AreaChart data={[...dilutionHistory].reverse()}>
                 <defs>
                   <linearGradient id="classAGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="var(--sky)" stopOpacity={0.3}/>

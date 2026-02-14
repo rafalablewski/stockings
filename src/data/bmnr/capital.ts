@@ -108,18 +108,11 @@ export const WARRANTS = [
  */
 export const EQUITY_OFFERINGS = [
   {
-    date: 'Jul 2025',
-    type: 'ATM',
-    amount: 2.0,
-    status: 'exhausted',
-    notes: 'Initial ATM program',
-  },
-  {
-    date: 'Jul 28, 2025',
-    type: 'ATM+',
-    amount: 4.5,
-    status: 'exhausted',
-    notes: 'Exhausted in 5 weeks',
+    date: 'Sep 22, 2025',
+    type: '424B5',
+    amount: 0.365,
+    status: 'completed',
+    notes: 'Prospectus supplement',
   },
   {
     date: 'Aug 12, 2025',
@@ -129,11 +122,18 @@ export const EQUITY_OFFERINGS = [
     notes: '$24.5B shelf active - massive firepower',
   },
   {
-    date: 'Sep 22, 2025',
-    type: '424B5',
-    amount: 0.365,
-    status: 'completed',
-    notes: 'Prospectus supplement',
+    date: 'Jul 28, 2025',
+    type: 'ATM+',
+    amount: 4.5,
+    status: 'exhausted',
+    notes: 'Exhausted in 5 weeks',
+  },
+  {
+    date: 'Jul 2025',
+    type: 'ATM',
+    amount: 2.0,
+    status: 'exhausted',
+    notes: 'Initial ATM program',
   },
 ];
 
