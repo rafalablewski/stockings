@@ -55,6 +55,25 @@ export default function StocksPage() {
             </Link>
           ))}
         </div>
+
+        {/* Prompts */}
+        <div className="mt-20">
+          <h2 className="text-2xl font-semibold text-white mb-3">Prompts</h2>
+          <p className="text-[13px] text-white/40 mb-8">
+            Prompts for working with AI agents.
+          </p>
+
+          <div className="grid gap-4">
+            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+              <h3 className="text-[13px] font-mono font-medium text-white tracking-wide mb-2">
+                Entries, News, Press Releases, SEC Filings
+              </h3>
+              <p className="text-[12px] text-white/30 leading-relaxed">
+                {/* Content to be added */}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
