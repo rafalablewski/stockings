@@ -421,21 +421,29 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
   );
 }
 
-// Section header for agent categories
+// Section header for agent categories — Ive×Tesla divider style
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
-        fontSize: 10,
-        fontWeight: 500,
-        textTransform: "uppercase",
-        letterSpacing: "0.15em",
-        color: "rgba(255,255,255,0.15)",
-        marginBottom: 8,
-        paddingLeft: 2,
+        padding: "32px 0 16px",
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
       }}
     >
-      {children}
+      <span
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          letterSpacing: "2.5px",
+          textTransform: "uppercase",
+          color: "var(--text3)",
+        }}
+      >
+        {children}
+      </span>
+      <span style={{ flex: 1, height: 1, background: "var(--border)" }} />
     </div>
   );
 }
@@ -461,7 +469,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
 
   if (availableWorkflows.length === 0) {
     return (
-      <div style={{ padding: 40, textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 13 }}>
+      <div style={{ padding: 40, textAlign: "center", color: "var(--text3)", fontSize: 13 }}>
         No AI agents available for {ticker.toUpperCase()} yet.
       </div>
     );
@@ -471,27 +479,19 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
   const dataAgents = availableWorkflows.filter((w) => w.requiresUserData);
 
   return (
-    <div style={{ padding: "20px 0" }}>
-      <div style={{ marginBottom: 24 }}>
-        <div
-          style={{
-            fontSize: 11,
-            textTransform: "uppercase",
-            letterSpacing: "0.15em",
-            color: "rgba(255,255,255,0.2)",
-            marginBottom: 8,
-          }}
-        >
-          AI Agents
-        </div>
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
-          Run analysis agents. Some run directly from the database, others accept pasted data.
-        </div>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#ai-agents-header</div>
+      {/* Hero — Ive×Tesla */}
+      <div style={{ padding: "48px 0 32px", borderBottom: "1px solid color-mix(in srgb, var(--border) 40%, transparent)" }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "2.5px", textTransform: "uppercase", color: "var(--text3)", marginBottom: 8 }}>AI Analysis</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: "var(--text)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.5px" }}>AI Agents<span style={{ color: "var(--accent)" }}>.</span></h2>
+        <p style={{ fontSize: 15, color: "var(--text3)", maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Run analysis agents against the database or paste raw data for instant AI-driven research. Each agent streams results in real time.</p>
       </div>
 
       {/* Database-driven agents — one-click run */}
       {dbAgents.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
+        <div>
+          <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#db-agents</div>
           <SectionLabel>Database analysis — run directly</SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {dbAgents.map((wf) => (
@@ -504,6 +504,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
       {/* Data-input agents — require pasted content */}
       {dataAgents.length > 0 && (
         <div>
+          <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#data-agents</div>
           <SectionLabel>Data input — paste &amp; analyze</SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {dataAgents.map((wf) => (
