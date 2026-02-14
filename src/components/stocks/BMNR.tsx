@@ -205,6 +205,7 @@ import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
+import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
@@ -835,6 +836,7 @@ const BMNRDilutionAnalysis = () => {
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
+    { id: 'ai-agents', label: 'AI Agents', type: 'tracking' },
   ];
 
   const bmnrCompetitors: Competitor[] = [
@@ -1093,6 +1095,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'financials' && <FinancialsTab />}
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
+        {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="BMNR" />}
         {activeTab === 'sources' && (
           <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="Crypto Treasury Peers" competitors={bmnrCompetitors} />
         )}

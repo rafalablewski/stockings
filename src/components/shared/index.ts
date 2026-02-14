@@ -12,6 +12,9 @@ export { SharedInvestmentTab } from './SharedInvestmentTab';
 export * from './wallStreetTypes';
 export { SharedWallStreetTab } from './SharedWallStreetTab';
 
+// AI Agents Tab
+export { SharedAIAgentsTab } from './SharedAIAgentsTab';
+
 // Capital Structure Types
 export * from './capitalTypes';
 

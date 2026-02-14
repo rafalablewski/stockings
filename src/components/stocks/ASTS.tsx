@@ -117,6 +117,7 @@ import React, { useState, useMemo, useRef, useEffect, useCallback, Component, Er
 import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
+import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
 import type { CompsTimelineEntry, ASTSImplication } from '@/data/asts/comps-timeline';
@@ -842,6 +843,7 @@ const ASTSAnalysis = () => {
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
+    { id: 'ai-agents', label: 'AI Agents', type: 'tracking' },
   ];
 
   return (
@@ -1042,6 +1044,7 @@ const ASTSAnalysis = () => {
           {activeTab === 'financials' && <FinancialsTab />}
           {activeTab === 'investment' && <InvestmentTab />}
           {activeTab === 'wall-street' && <WallStreetTab />}
+          {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="ASTS" />}
           {activeTab === 'sources' && (
             <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} competitorLabel="Competitors & Partners" competitors={astsCompetitors} />
           )}
