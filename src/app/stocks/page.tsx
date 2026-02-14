@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { stockList } from "@/lib/stocks";
+import { prompts } from "@/data/prompts";
+import { PromptCard } from "@/components/PromptCard";
 
 export const metadata = {
   title: "Research | ABISON",
@@ -54,6 +56,19 @@ export default function StocksPage() {
               </div>
             </Link>
           ))}
+        </div>
+
+        {/* Prompts */}
+        <div className="mt-20">
+          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
+            Prompts
+          </h2>
+
+          <div className="grid gap-4">
+            {prompts.map((prompt) => (
+              <PromptCard key={prompt.name} name={prompt.name} content={prompt.content} />
+            ))}
+          </div>
         </div>
       </div>
     </div>
