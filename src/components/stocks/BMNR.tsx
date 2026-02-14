@@ -823,7 +823,6 @@ const BMNRDilutionAnalysis = () => {
     { id: 'ethereum', label: 'Ethereum', type: 'projection', group: 'BMNR Analysis' },
     { id: 'staking', label: 'Staking', type: 'projection', group: 'BMNR Analysis' },
     { id: 'dilution', label: 'Dilution', type: 'projection', group: 'BMNR Analysis' },
-    { id: 'runway', label: 'Cash Runway', type: 'projection', group: 'BMNR Analysis' },
     { id: 'debt', label: 'Debt', type: 'projection', group: 'BMNR Analysis' },
     { id: 'sensitivity', label: 'Sensitivity', type: 'projection', group: 'BMNR Analysis' },
     { id: 'backtest', label: 'Backtest', type: 'projection', group: 'BMNR Analysis' },
@@ -1087,9 +1086,8 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
         {activeTab === 'staking' && <StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} />}
         {activeTab === 'dilution' && <DilutionTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} tranches={tranches} setTranches={setTranches} dilutionPercent={dilutionPercent} setDilutionPercent={setDilutionPercent} saleDiscount={saleDiscount} setSaleDiscount={setSaleDiscount} navMultiple={navMultiple} setNavMultiple={setNavMultiple} maxAuthorizedShares={maxAuthorizedShares} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} regulatoryRisk={regulatoryRisk} />}
-        {activeTab === 'runway' && <BMNRRunwayTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} />}
         {activeTab === 'debt' && <DebtTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} currentStockPrice={currentStockPrice} useDebt={useDebt} setUseDebt={setUseDebt} debtAmount={debtAmount} setDebtAmount={setDebtAmount} debtRate={debtRate} setDebtRate={setDebtRate} debtMaturity={debtMaturity} setDebtMaturity={setDebtMaturity} conversionPremium={conversionPremium} setConversionPremium={setConversionPremium} debtCovenantLTV={debtCovenantLTV} setDebtCovenantLTV={setDebtCovenantLTV} />}
-        {activeTab === 'capital' && <CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} />}
+        {activeTab === 'capital' && <CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} currentETH={currentETH} ethPrice={ethPrice} />}
         {activeTab === 'comps' && <CompsTab comparables={comparables} ethPrice={ethPrice} />}
         {activeTab === 'sensitivity' && <SensitivityTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} />}
         {activeTab === 'backtest' && <BacktestTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} historicalETH={historicalETH} baseStakingAPY={baseStakingAPY} navMultiple={currentStockPrice / calc.currentNAV} />}
@@ -3267,7 +3265,7 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
 };
 
 // CAPITAL TAB - Share Class Structure, Shareholders, Offerings, Incentive Plans, Fully Diluted Count
-const CapitalTab = ({ currentShares, currentStockPrice }) => {
+const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) => {
   const [capitalView, setCapitalView] = useState('structure');
 
   // Use imported data from @/data/bmnr
@@ -3371,13 +3369,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Navigation Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-navigation</div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Common + converted preferred' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Bill Miller + institutions' },
           { id: 'offerings', value: `${equityOfferings.length}`, label: 'ATM Programs', sub: '$24.5B shelf active' },
           { id: 'plans', value: `${warrants.length}`, label: 'Warrant Types', sub: 'Pre-funded + advisor' },
           { id: 'dilution', value: `${dilutionPct.toFixed(0)}%`, label: 'Total Dilution', sub: `${(totalFD / 1e6).toFixed(1)}M FD shares` },
+          { id: 'liquidity', value: `$${BMNR_LIQUIDITY.cashAndEquiv}M`, label: 'Liquidity', sub: 'Cash + ETH treasury' },
         ].map(nav => (
           <div
             key={nav.id}
@@ -3638,6 +3637,159 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           </div>
         </div>
       </div>
+      </>
+      )}
+
+      {/* Liquidity / Cash Runway View */}
+      {capitalView === 'liquidity' && (
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#liquidity-overview</div>
+      {(() => {
+        const liq = BMNR_LIQUIDITY;
+        const scenarios = BMNR_RUNWAY_SCENARIOS;
+        const factors = ETH_LIQUIDITY_FACTORS;
+        const ethValueB = (currentETH * ethPrice) / 1e9;
+        const totalLiquidityB = ethValueB + liq.cashAndEquiv / 1000;
+        const stakingYieldQ = (currentETH * 0.67 * ethPrice * 0.0311) / 4 / 1e6;
+        const netBurnQ = liq.quarterlyOpEx - stakingYieldQ;
+        const stressScenarios = [
+          { label: 'Current', ethPx: ethPrice, drop: 0 },
+          { label: '-25%', ethPx: ethPrice * 0.75, drop: -25 },
+          { label: '-50%', ethPx: ethPrice * 0.50, drop: -50 },
+          { label: '-75%', ethPx: ethPrice * 0.25, drop: -75 },
+        ].map(s => {
+          const yieldQ = (currentETH * 0.67 * s.ethPx * 0.0311) / 4 / 1e6;
+          const net = liq.quarterlyOpEx - yieldQ;
+          return { ...s, yieldQ, netBurn: net, runway: net <= 0 ? 999 : liq.cashAndEquiv / net, totalLiq: (currentETH * s.ethPx) / 1e9 + liq.cashAndEquiv / 1000 };
+        });
+        return (
+          <>
+          {/* Treasury Dashboard KPIs */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+            {[
+              { label: 'Cash', value: `$${liq.cashAndEquiv}M`, sub: 'Fiat reserves', color: 'var(--mint)' },
+              { label: 'ETH Value', value: `$${ethValueB.toFixed(1)}B`, sub: `${(currentETH / 1e6).toFixed(3)}M ETH`, color: 'var(--violet)' },
+              { label: 'Total Liquidity', value: `$${totalLiquidityB.toFixed(1)}B`, sub: 'Cash + ETH', color: 'var(--sky)' },
+              { label: 'Staking Yield/Q', value: `$${stakingYieldQ.toFixed(0)}M`, sub: '~3.11% APY', color: 'var(--gold)' },
+              { label: 'Net Burn/Q', value: netBurnQ < 0 ? `+$${Math.abs(netBurnQ).toFixed(0)}M` : `$${netBurnQ.toFixed(0)}M`, sub: netBurnQ < 0 ? 'Cash positive' : 'Net outflow', color: netBurnQ < 0 ? 'var(--mint)' : 'var(--coral)' },
+            ].map(kpi => (
+              <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* ETH Price Stress Scenarios */}
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#eth-stress-scenarios</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+            <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Runway Under ETH Price Stress</span>
+              <UpdateIndicators sources="SEC" />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
+              {stressScenarios.map(s => (
+                <div key={s.label} style={{ background: s.runway >= 999 ? 'color-mix(in srgb, var(--mint) 3%, var(--surface))' : s.runway > 12 ? 'var(--surface)' : 'color-mix(in srgb, var(--coral) 3%, var(--surface))', padding: '24px 16px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.5px', textTransform: 'uppercase', fontWeight: 600 }}>{s.label}</div>
+                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', marginTop: 4 }}>ETH ${s.ethPx.toFixed(0)}</div>
+                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 22, fontWeight: 700, color: s.runway >= 999 ? 'var(--mint)' : s.runway > 12 ? 'var(--gold)' : 'var(--coral)', margin: '8px 0 4px' }}>
+                    {s.runway >= 999 ? 'Infinite' : `${s.runway.toFixed(0)}Q`}
+                  </div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>Yield: ${s.yieldQ.toFixed(0)}M/Q</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>Liq: ${s.totalLiq.toFixed(1)}B</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+              Cash runway remains positive even at -75% ETH because staking yield ($20M+/Q) approximately covers operational expenses ($18M/Q). Only total yield collapse threatens runway.
+            </div>
+          </div>
+
+          {/* Runway Scenarios Table */}
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-scenarios</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+            <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
+              <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Forward-Looking Runway Scenarios</span>
+            </div>
+            <div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+                {['Scenario', 'Cash', 'Burn/Q', 'Yield/Q', 'Runway'].map(h => (
+                  <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Scenario' ? 'left' : 'right' }}>{h}</span>
+                ))}
+              </div>
+              {scenarios.map((s, i) => (
+                <div key={s.label} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', padding: '12px 24px', borderBottom: i < scenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <span style={{ fontSize: 12, color: 'var(--text)' }}>{s.label}</span>
+                  <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${s.startingCash}M</span>
+                  <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', textAlign: 'right' }}>${s.quarterlyBurn}M</span>
+                  <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'right' }}>${s.quarterlyRevenue}M</span>
+                  <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: s.runwayQuarters >= 999 ? 'var(--mint)' : 'var(--gold)', textAlign: 'right' }}>{s.runwayQuarters >= 999 ? 'Infinite' : `${s.runwayQuarters.toFixed(0)}Q`}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+              Yield/Q includes staking income as partial burn offset. Only in Crypto Winter (no yield) scenario does cash runway become finite.
+            </div>
+          </div>
+
+          {/* Balance Sheet Liquidity Factors */}
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#liquidity-factors</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+            <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
+              <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>ETH Treasury Liquidity Factors</span>
+            </div>
+            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[
+                { title: 'Unrealized Gains/Losses', desc: factors.unrealizedGainRisk, color: 'var(--gold)' },
+                { title: 'Staking as Revenue Offset', desc: factors.stakingAsRevenueOffset, color: 'var(--mint)' },
+                { title: 'Capital Raises Purpose', desc: factors.raisesPurpose, color: 'var(--violet)' },
+                { title: 'Mining Wind-Down', desc: factors.miningWindDown, color: 'var(--sky)' },
+              ].map(f => (
+                <div key={f.title} style={{ padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', borderLeft: `3px solid ${f.color}` }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: f.color }}>{f.title}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5, marginTop: 4 }}>{f.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Cash vs ETH Position Summary */}
+          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#position-summary</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+            <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+              <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Cash Position</div>
+              {[
+                { l: 'Cash & Equivalents', v: `$${liq.cashAndEquiv}M`, hl: true },
+                { l: 'Total Debt', v: `$${liq.totalDebt}M` },
+                { l: 'ATM Capacity', v: `$${(liq.atmCapacity / 1000).toFixed(1)}B` },
+                { l: 'Quarterly OpEx', v: `$${liq.quarterlyOpEx}M` },
+              ].map(r => (
+                <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+                  <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--mint)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+              <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>ETH Treasury</div>
+              {[
+                { l: 'ETH Holdings', v: `${(currentETH / 1e6).toFixed(3)}M`, hl: true },
+                { l: 'ETH Price', v: `$${ethPrice.toFixed(0)}` },
+                { l: 'ETH Value', v: `$${ethValueB.toFixed(1)}B` },
+                { l: 'Staked', v: `~67% (${(currentETH * 0.67 / 1e6).toFixed(2)}M)` },
+              ].map(r => (
+                <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+                  <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--violet)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          </>
+        );
+      })()}
       </>
       )}
 
