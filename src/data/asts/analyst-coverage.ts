@@ -705,10 +705,11 @@ DISCLOSURE: Barclays Capital Inc. and/or one of its affiliates does and seeks to
     firm: 'B. Riley Securities',
     analyst: 'Mike Crawford',
     coverageSince: 'October 2022',
-    currentPT: 105,
+    currentPT: 95,
     currentRating: 'Neutral',
     currentRatingNormalized: 'neutral',
     reports: [
+      { date: '2026-02-13', action: 'PT Cut', priceTarget: 95, previousTarget: 105, rating: 'Neutral', ratingNormalized: 'neutral', source: 'TheFly / Benzinga', isFullReport: false, reportSummary: 'PT lowered to $95 from $105, Neutral maintained. Shares fell ~15% amid broader sector downturn after ASTS priced a $1B 2.25% convertible note due 2036 and executed a $614M direct offering to retire existing debt, strengthening balance sheet to roughly $2.78B in cash. Preliminary FY25 results show revenue of $63M-$71M and adjusted opex of $257M-$263M. Management highlighted potential new focus areas including monetizing proprietary LEO technology for AI-related opportunities and alternative payloads.' },
       { date: '2026-01-13', action: 'Downgrade', priceTarget: 105, previousTarget: 95, rating: 'Neutral', ratingNormalized: 'neutral', source: 'MT Newswires', isFullReport: false, reportSummary: 'Downgraded to Neutral from Buy. PT raised to $105 from $95. Analyst notes sufficient time to evaluate potential drivers of additional upside in 2026 as company launches and integrates more productive Block 2 BlueBird satellites into its D2D constellation.' },
       { date: '2025-10-23', action: 'PT Raise', priceTarget: 95, previousTarget: 60, rating: 'Buy', ratingNormalized: 'bullish', source: 'GuruFocus', sourceUrl: 'https://www.gurufocus.com/', isFullReport: false },
       { date: '2025-08-01', action: 'PT Raise', priceTarget: 60, previousTarget: 44, rating: 'Buy', ratingNormalized: 'bullish', source: 'Yahoo Finance', sourceUrl: 'https://finance.yahoo.com/', isFullReport: false },
