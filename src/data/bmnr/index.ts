@@ -30,6 +30,9 @@ export {
   WARRANTS,
   EQUITY_OFFERINGS,
   MAJOR_SHAREHOLDERS,
+  LIQUIDITY_POSITION,
+  CASH_RUNWAY_SCENARIOS,
+  ETH_LIQUIDITY_FACTORS,
   getFDShares,
   getTotalFD,
   getDilutionPercent,
@@ -65,4 +68,5 @@ export type {
   DilutionTranche,
   Catalyst,
   CompletedMilestone,
+  CashRunwayScenario,
 } from '../shared/types';

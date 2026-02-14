@@ -375,6 +375,76 @@ export interface RevenueSource {
 }
 
 // ============================================================================
+// CASH RUNWAY & LIQUIDITY TYPES
+// ============================================================================
+
+/**
+ * Convertible note detail for dilution tracking
+ * AI AGENT: Update from 8-K filings and prospectus supplements
+ */
+export interface ConvertibleNoteDetail {
+  /** Note identifier (e.g., "4.25% Notes due 2032") */
+  name: string;
+  /** Original principal amount in millions */
+  originalPrincipal: number;
+  /** Current outstanding principal in millions */
+  outstandingPrincipal: number;
+  /** Coupon rate (%) */
+  couponRate: number;
+  /** Maturity date (YYYY-MM-DD or YYYY) */
+  maturityDate: string;
+  /** Conversion price per share */
+  conversionPrice: number;
+  /** Maximum shares issuable on conversion (millions) */
+  maxSharesOnConversion: number;
+  /** Whether capped call is in place */
+  cappedCall?: boolean;
+  /** Cap price for capped call */
+  capPrice?: number;
+  /** Status: "outstanding", "partially-repurchased", "fully-retired" */
+  status: string;
+  /** Additional notes */
+  notes?: string;
+}
+
+/**
+ * Cash runway scenario for liquidity analysis
+ * AI AGENT: Update quarterly from 10-Q/10-K
+ */
+export interface CashRunwayScenario {
+  /** Scenario label (e.g., "Base Case", "Stress Case") */
+  label: string;
+  /** Starting cash in millions */
+  startingCash: number;
+  /** Quarterly burn rate in millions */
+  quarterlyBurn: number;
+  /** Quarterly revenue offset in millions */
+  quarterlyRevenue: number;
+  /** Runway in quarters */
+  runwayQuarters: number;
+  /** Notes about assumptions */
+  notes?: string;
+}
+
+/**
+ * Dilution scenario for ownership impact modeling
+ */
+export interface DilutionScenario {
+  /** Scenario label */
+  label: string;
+  /** Additional shares issued (millions) */
+  newShares: number;
+  /** Source of dilution */
+  source: string;
+  /** Resulting fully diluted count (millions) */
+  resultingFD: number;
+  /** Dilution percentage to existing holders */
+  dilutionPct: number;
+  /** Whether this is current/projected/stress */
+  type: 'current' | 'base' | 'stress';
+}
+
+// ============================================================================
 // PROJECTION & SCENARIO TYPES
 // ============================================================================
 

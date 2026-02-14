@@ -21,7 +21,7 @@
  * 4. Add new EQUITY_OFFERINGS entries for any capital raises
  */
 
-import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata } from '../shared/types';
+import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, ConvertibleNoteDetail, CashRunwayScenario, DilutionScenario } from '../shared/types';
 
 // ============================================================================
 // METADATA
@@ -396,6 +396,179 @@ export const SBC_HISTORY = [
 ];
 
 // ============================================================================
+// CONVERTIBLE NOTES DETAIL (for Dilution & Share Count tracking)
+// ============================================================================
+
+/**
+ * Detailed convertible note information for dilution analysis
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Update outstandingPrincipal after any repurchase events
+ * - Update status when notes are retired
+ * - Add new entries when new convertible notes are issued
+ * - Recalculate maxSharesOnConversion if conversion terms change
+ */
+export const CONVERTIBLE_NOTES: ConvertibleNoteDetail[] = [
+  {
+    name: '4.25% Notes due 2032',
+    originalPrincipal: 460,
+    outstandingPrincipal: 3.5,
+    couponRate: 4.25,
+    maturityDate: '2032',
+    conversionPrice: 26.58,
+    maxSharesOnConversion: 0.1,
+    status: 'partially-repurchased',
+    notes: '$410M repurchased 2025 for equity. $46.5M repurchased Feb 2026. ~$3.5M remains.',
+  },
+  {
+    name: '2.375% Notes due 2032',
+    originalPrincipal: 575,
+    outstandingPrincipal: 325,
+    couponRate: 2.375,
+    maturityDate: '2032',
+    conversionPrice: 120.12,
+    maxSharesOnConversion: 2.7,
+    cappedCall: true,
+    capPrice: 120.12,
+    status: 'partially-repurchased',
+    notes: '$250M repurchased Feb 2026 via registered direct. Capped call remains.',
+  },
+  {
+    name: '2.00% Notes due 2036',
+    originalPrincipal: 1150,
+    outstandingPrincipal: 1150,
+    couponRate: 2.00,
+    maturityDate: '2036-01',
+    conversionPrice: 96.30,
+    maxSharesOnConversion: 11.9,
+    status: 'outstanding',
+    notes: 'Oct 2025 issue. $150M greenshoe exercised. Best terms at issuance.',
+  },
+  {
+    name: '2.25% Notes due 2036',
+    originalPrincipal: 1000,
+    outstandingPrincipal: 1000,
+    couponRate: 2.25,
+    maturityDate: '2036',
+    conversionPrice: 116.30,
+    maxSharesOnConversion: 8.6,
+    status: 'outstanding',
+    notes: 'Feb 2026 issue. Rule 144A. UBS lead. $150M greenshoe option. Net ~$983.7M.',
+  },
+];
+
+// ============================================================================
+// CASH RUNWAY / LIQUIDITY DATA
+// ============================================================================
+
+/**
+ * Cash runway scenarios for liquidity analysis
+ * Merged from former standalone Cash Runway section
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Update after each 10-Q/10-K filing with new cash balances
+ * - Adjust burn rate from management guidance
+ * - Add new scenarios for material changes in capital structure
+ */
+export const CASH_RUNWAY_SCENARIOS: CashRunwayScenario[] = [
+  {
+    label: 'Base Case (8-K)',
+    startingCash: 2780,
+    quarterlyBurn: 300,
+    quarterlyRevenue: 15,
+    runwayQuarters: 9.8,
+    notes: 'Per 8-K Dec 31, 2025. Burn at $300M/Q guidance. Revenue at Q3 run rate.',
+  },
+  {
+    label: 'Pro Forma (Post-Feb 2026)',
+    startingCash: 3760,
+    quarterlyBurn: 300,
+    quarterlyRevenue: 20,
+    runwayQuarters: 13.4,
+    notes: 'Includes ~$984M new converts, net of repurchases. Revenue ramp assumed.',
+  },
+  {
+    label: 'Revenue Ramp',
+    startingCash: 3760,
+    quarterlyBurn: 300,
+    quarterlyRevenue: 75,
+    runwayQuarters: 16.7,
+    notes: 'H2 2025 rev guidance $50-75M. Assumes $75M/Q steady state by H2 2026.',
+  },
+  {
+    label: 'Stress Case',
+    startingCash: 2780,
+    quarterlyBurn: 400,
+    quarterlyRevenue: 5,
+    runwayQuarters: 7.0,
+    notes: 'Higher burn from accelerated constellation deployment. Minimal revenue.',
+  },
+];
+
+/**
+ * Liquidity position summary
+ * AI AGENT: Update after each filing
+ */
+export const LIQUIDITY_POSITION = {
+  cashAndEquiv: 2780,          // Per 8-K Dec 31, 2025
+  cashProForma: 3760,          // Post-Feb 2026 raises
+  quarterlyBurn: 300,          // CapEx + OpEx guidance
+  totalDebt: 2264,             // Per 8-K
+  totalDebtProForma: 2968,     // Post-Feb 2026
+  atmRemaining: 80,            // ~$80M remaining on $800M ATM
+  soundPointFacility: 550,     // $550M available for Ligado
+  ubsLoan: 420,                // Cash-collateralized for Ligado
+  asOf: '2026-02-12',
+};
+
+// ============================================================================
+// DILUTION SCENARIOS
+// ============================================================================
+
+/**
+ * Fully diluted share count scenarios
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Update when new convertible notes are issued
+ * - Update when ATM shares are sold
+ * - Recalculate stress case for worst-case dilution
+ */
+export const DILUTION_SCENARIOS: DilutionScenario[] = [
+  {
+    label: 'Current (Basic)',
+    newShares: 0,
+    source: 'Class A + B + C outstanding',
+    resultingFD: 379.8,
+    dilutionPct: 0,
+    type: 'current',
+  },
+  {
+    label: 'Current (Fully Diluted)',
+    newShares: 35.2,
+    source: 'Outstanding converts + options/RSUs',
+    resultingFD: 415.0,
+    dilutionPct: 9.3,
+    type: 'current',
+  },
+  {
+    label: 'Base Case',
+    newShares: 10,
+    source: 'ATM remaining (~$80M) + employee equity vesting',
+    resultingFD: 425.0,
+    dilutionPct: 11.9,
+    type: 'base',
+  },
+  {
+    label: 'Stress Case (All Converts)',
+    newShares: 23.3,
+    source: 'All convertible notes convert to equity at strike prices',
+    resultingFD: 438.3,
+    dilutionPct: 15.4,
+    type: 'stress',
+  },
+];
+
+// ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
 
@@ -411,4 +584,18 @@ export const getTotalRaised = (): number => {
  */
 export const getOfferingsByType = (type: string): EquityOffering[] => {
   return EQUITY_OFFERINGS.filter(o => o.type === type);
+};
+
+/**
+ * Calculate total potential dilution from all convertible notes
+ */
+export const getTotalConvertDilution = (): number => {
+  return CONVERTIBLE_NOTES.reduce((sum, n) => sum + n.maxSharesOnConversion, 0);
+};
+
+/**
+ * Get only outstanding (non-retired) convertible notes
+ */
+export const getOutstandingNotes = (): ConvertibleNoteDetail[] => {
+  return CONVERTIBLE_NOTES.filter(n => n.status !== 'fully-retired');
 };

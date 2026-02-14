@@ -19,7 +19,7 @@
  * 3. Update MAJOR_SHAREHOLDERS when 13F/DEF 14A filed
  */
 
-import type { DataMetadata } from '../shared/types';
+import type { DataMetadata, CashRunwayScenario } from '../shared/types';
 
 // ============================================================================
 // METADATA
@@ -223,6 +223,94 @@ export const MAJOR_SHAREHOLDERS = [
     notes: 'Chairman of the Board',
   },
 ];
+
+// ============================================================================
+// CASH RUNWAY / LIQUIDITY DATA
+// ============================================================================
+
+/**
+ * Cash runway and liquidity data customized for BMNR's ETH treasury model
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Update cash position from weekly 8-K filings
+ * - Adjust burn rate for changes in operating model
+ * - Track staking yield income as offset to operational burn
+ * - Note impact of unrealized crypto gains/losses on balance sheet
+ * - Update ETH-adjusted scenarios when ETH price moves significantly
+ */
+
+/**
+ * Liquidity position summary
+ * Key difference from ASTS: ETH treasury is primary asset, not just cash
+ */
+export const LIQUIDITY_POSITION = {
+  cashAndEquiv: 595,            // $595M cash (Feb 9, 2026 PR)
+  ethHoldings: 4325738,         // 4.326M ETH
+  ethPrice: 2125,               // ETH price as of date
+  ethValueUSD: 9192,            // ETH value in $M (~$9.19B)
+  totalLiquidity: 9787,         // Cash + ETH value in $M
+  quarterlyOpEx: 18,            // Q1 FY26 opex $18M
+  stakingYieldQuarterly: 82,    // ~3.11% APY on 2.9M staked ETH × $2,125 / 4 = ~$82M/Q
+  netQuarterlyBurn: -64,        // Negative = net cash generation from staking
+  totalDebt: 0,                 // No debt
+  atmCapacity: 24500,           // $24.5B shelf active
+  asOf: '2026-02-12',
+};
+
+/**
+ * Cash runway scenarios for BMNR
+ * Unlike traditional companies, BMNR's runway is virtually unlimited
+ * due to ETH staking yield exceeding operational costs
+ */
+export const CASH_RUNWAY_SCENARIOS: CashRunwayScenario[] = [
+  {
+    label: 'Base Case (Current)',
+    startingCash: 595,
+    quarterlyBurn: 18,
+    quarterlyRevenue: 82,
+    runwayQuarters: 999,
+    notes: 'Cash-flow positive from staking yield ($82M/Q) vs opex ($18M/Q). Infinite runway.',
+  },
+  {
+    label: 'ETH Price Stress (-50%)',
+    startingCash: 595,
+    quarterlyBurn: 18,
+    quarterlyRevenue: 41,
+    runwayQuarters: 999,
+    notes: 'Even at 50% ETH price decline, staking yield ($41M/Q) exceeds opex. Cash positive.',
+  },
+  {
+    label: 'ETH Price Stress (-75%)',
+    startingCash: 595,
+    quarterlyBurn: 18,
+    quarterlyRevenue: 20,
+    runwayQuarters: 999,
+    notes: 'At 75% decline, staking yield ($20M/Q) still covers opex ($18M/Q). Marginal surplus.',
+  },
+  {
+    label: 'Crypto Winter (No Yield)',
+    startingCash: 595,
+    quarterlyBurn: 18,
+    quarterlyRevenue: 0,
+    runwayQuarters: 33,
+    notes: 'Worst case: zero staking yield (protocol change or regulatory ban). ~33Q cash runway.',
+  },
+];
+
+/**
+ * ETH-specific liquidity factors
+ * These capture the unique aspects of BMNR's treasury model vs traditional companies
+ */
+export const ETH_LIQUIDITY_FACTORS = {
+  /** Unrealized gains on ETH holdings affect GAAP balance sheet but not cash flow */
+  unrealizedGainRisk: 'ETH marked-to-market per ASC 350. Price declines reduce book equity but not cash.',
+  /** Staking yield is real income partially offsetting operational costs */
+  stakingAsRevenueOffset: 'Staking yield (~3.11% APY on 67% of holdings) generates ~$330M/yr revenue.',
+  /** Capital raises tied to ETH accumulation, not burn coverage */
+  raisesPurpose: 'ATM raises fund ETH purchases, not operating losses. Accretive if sold above NAV.',
+  /** Wind-down of proprietary mining reduces future burn */
+  miningWindDown: 'Legacy BTC mining operations wound down. Focus shifted to ETH treasury strategy.',
+};
 
 // ============================================================================
 // FULLY DILUTED CALCULATION
