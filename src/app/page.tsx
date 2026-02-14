@@ -1,9 +1,22 @@
 import Link from "next/link";
 import { stockList } from "@/lib/stocks";
 import { prompts } from "@/data/prompts";
+import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
+import { WorkflowCard } from "@/components/WorkflowCard";
+import { getWorkflowContext } from "@/lib/workflow-context";
 
 export default function HomePage() {
+  const workflowsWithContext = workflows.map((w) => ({
+    ...w,
+    variants: w.variants.map((v) => ({
+      label: v.label,
+      prompt: v.prompt,
+      context: getWorkflowContext(v.ticker, v.contextModules),
+      contextModules: v.contextModules as string[],
+    })),
+  }));
+
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -83,6 +96,29 @@ export default function HomePage() {
           <div className="grid gap-4">
             {prompts.map((prompt) => (
               <PromptCard key={prompt.name} name={prompt.name} description={prompt.description} variants={prompt.variants} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Workflows */}
+      <section className="py-20 px-6">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-3">
+            Workflow
+          </h2>
+          <p className="text-[12px] text-white/20 mb-10">
+            Pre-filled with current database context. Copy into a new chat and paste your content at the end.
+          </p>
+
+          <div className="grid gap-4">
+            {workflowsWithContext.map((workflow) => (
+              <WorkflowCard
+                key={workflow.id}
+                name={workflow.name}
+                description={workflow.description}
+                variants={workflow.variants}
+              />
             ))}
           </div>
         </div>
