@@ -33,7 +33,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   /* Typography */
   --text: #F0F6FC;
   --text2: #8B949E;
-  --text3: #8B949E;
+  --text3: #6E7681;
 
   /* Semantic Colors */
   --cyan: #22D3EE;
@@ -54,7 +54,8 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   --accent-dim: var(--${accent}-dim);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Scoped reset — only applies inside model app to avoid overriding Tailwind :where() selectors */
+.stock-model-app, .stock-model-app * { box-sizing: border-box; margin: 0; padding: 0; }
 
 .stock-model-app {
   font-family: 'Outfit', sans-serif;

@@ -190,17 +190,24 @@ const calculateBollingerBands = (data: ChartDataPoint[], period: number = 20, st
     }
     
     let sumSquares = 0;
+    let validCount = 0;
+    let hasBadData = false;
     for (let j = 0; j < period; j++) {
       const closePrice = data[i - j]?.close;
       if (closePrice === null || closePrice === undefined) {
-        upper.push(null);
-        lower.push(null);
-        continue;
+        hasBadData = true;
+        break;
       }
       const diff = closePrice - middle[i]!;
       sumSquares += diff * diff;
+      validCount++;
     }
-    const std = Math.sqrt(sumSquares / period);
+    if (hasBadData || validCount === 0) {
+      upper.push(null);
+      lower.push(null);
+      continue;
+    }
+    const std = Math.sqrt(sumSquares / validCount);
 
     // Type assertion safe here due to null check above
     const middleValue = middle[i]!;
@@ -250,14 +257,23 @@ const calculateMACD = (data: ChartDataPoint[], fastPeriod: number = 12, slowPeri
     }
   }
 
-  // Calculate signal line (EMA of MACD)
-  const macdValues = macdLine.map(v => v ?? 0);
-  const signalLine = calculateEMA(macdValues, signalPeriod);
+  // Calculate signal line (EMA of MACD) using only valid MACD values.
+  // Extract non-null MACD values, compute their EMA, then map back to full array.
+  const validMacdValues: number[] = [];
+  const validMacdIndices: number[] = [];
+  for (let i = 0; i < macdLine.length; i++) {
+    if (macdLine[i] !== null) {
+      validMacdValues.push(macdLine[i]!);
+      validMacdIndices.push(i);
+    }
+  }
+  const validSignalEMA = calculateEMA(validMacdValues, signalPeriod);
 
-  // Adjust signal line to have nulls where MACD is null
-  const adjustedSignal: (number | null)[] = signalLine.map((v, i) =>
-    macdLine[i] === null ? null : v
-  );
+  // Map signal EMA back to full-length array
+  const adjustedSignal: (number | null)[] = new Array(macdLine.length).fill(null);
+  for (let j = 0; j < validMacdIndices.length; j++) {
+    adjustedSignal[validMacdIndices[j]] = validSignalEMA[j];
+  }
 
   // Calculate histogram
   const histogram: (number | null)[] = [];
@@ -300,9 +316,10 @@ const calculateATR = (data: ChartDataPoint[], period: number = 14): (number | nu
     }
 
     if (i === period) {
-      // First ATR is simple average
-      const sum = trueRanges.slice(0, period + 1).reduce((a, b) => a + b, 0);
-      result.push(sum / (period + 1));
+      // First ATR is simple average of the first `period` true ranges
+      // (indices 1..period, using proper TR formula; index 0 is just high-low)
+      const sum = trueRanges.slice(1, period + 1).reduce((a, b) => a + b, 0);
+      result.push(sum / period);
     } else {
       // Subsequent ATR uses smoothed average
       const prevATR = result[i - 1];

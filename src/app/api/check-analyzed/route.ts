@@ -11,18 +11,54 @@ interface AnalysisEntry {
   detail?: string; // summary, notes, or other context
 }
 
+// Normalize a headline into a set of significant keywords for local matching
+function extractKeywords(text: string): Set<string> {
+  const stopWords = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','are','was','were','has','have','had','be','been','being','will','would','could','should','may','might','can','do','does','did','not','no','its','it','this','that','these','those','their','our','your','my','we','he','she','they','i','me','us','him','her','them','up','out','over','into','about','after','before','between','through','during','than','more','most','very','also','just','so','if','then','when','where','how','what','which','who','whom','why','all','each','every','any','few','some','new','said','says','according']);
+  return new Set(
+    text.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length > 2 && !stopWords.has(w))
+  );
+}
+
+// Check if an article matches any existing entry using keyword overlap
+function localMatch(articleHeadline: string, analysisData: AnalysisEntry[]): boolean {
+  const articleWords = extractKeywords(articleHeadline);
+  if (articleWords.size === 0) return false;
+
+  for (const entry of analysisData) {
+    const entryText = entry.detail
+      ? `${entry.headline} ${entry.detail}`
+      : entry.headline;
+    const entryWords = extractKeywords(entryText);
+
+    // Count how many article keywords appear in the entry
+    let matches = 0;
+    for (const w of articleWords) {
+      if (entryWords.has(w)) matches++;
+    }
+
+    const overlap = matches / articleWords.size;
+    // If >50% of article keywords found in an entry, consider it tracked
+    if (overlap >= 0.5 && matches >= 3) return true;
+  }
+  return false;
+}
+
 // Dynamically collect all analysis data for a ticker — with full context
 async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
   const entries: AnalysisEntry[] = [];
 
   try {
     if (ticker === 'ASTS') {
-      const [partners, competitors, catalysts, pressReleases, compsTimeline] = await Promise.all([
+      const [partners, competitors, catalysts, pressReleases, compsTimeline, timelineEvents] = await Promise.all([
         import('@/data/asts/partners'),
         import('@/data/asts/competitors'),
         import('@/data/asts/catalysts'),
         import('@/data/asts/press-releases'),
         import('@/data/asts/comps-timeline'),
+        import('@/data/asts/timeline-events'),
       ]);
 
       if (partners.PARTNER_NEWS) {
@@ -35,11 +71,16 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
           entries.push({ date: n.date, headline: n.headline, detail: n.summary });
         }
       }
-      // CompsTab competitor timeline — detailed per-company entries with bullet points
       if (compsTimeline.COMPS_TIMELINE) {
         for (const n of compsTimeline.COMPS_TIMELINE) {
           const detail = [n.details?.join('; '), n.astsComparison].filter(Boolean).join(' | ');
           entries.push({ date: n.date, headline: n.headline, detail });
+        }
+      }
+      if (timelineEvents.ASTS_TIMELINE_EVENTS) {
+        for (const e of timelineEvents.ASTS_TIMELINE_EVENTS) {
+          const detail = [e.summary, e.details?.join('; ')].filter(Boolean).join(' | ');
+          entries.push({ date: e.date, headline: e.title, detail });
         }
       }
       if (catalysts.COMPLETED_MILESTONES) {
@@ -58,7 +99,12 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
         }
       }
     } else if (ticker === 'BMNR') {
-      const catalysts = await import('@/data/bmnr/catalysts');
+      const [catalysts, competitorNews, timelineEvents, adoption] = await Promise.all([
+        import('@/data/bmnr/catalysts'),
+        import('@/data/bmnr/competitor-news'),
+        import('@/data/bmnr/timeline-events'),
+        import('@/data/bmnr/ethereum-adoption'),
+      ]);
       if (catalysts.COMPLETED_MILESTONES) {
         for (const m of catalysts.COMPLETED_MILESTONES) {
           entries.push({ date: m.date, headline: m.event });
@@ -69,10 +115,27 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
           entries.push({ date: c.timeline, headline: c.event });
         }
       }
+      if (competitorNews.BMNR_COMPETITOR_NEWS) {
+        for (const n of competitorNews.BMNR_COMPETITOR_NEWS) {
+          entries.push({ date: n.date, headline: n.headline, detail: n.bmnrComparison });
+        }
+      }
+      if (timelineEvents.BMNR_TIMELINE_EVENTS) {
+        for (const e of timelineEvents.BMNR_TIMELINE_EVENTS) {
+          entries.push({ date: e.date, headline: e.title, detail: e.notes });
+        }
+      }
+      if (adoption.BMNR_ADOPTION_TIMELINE) {
+        for (const e of adoption.BMNR_ADOPTION_TIMELINE) {
+          const detail = [e.summary, e.bmnrImplication].filter(Boolean).join(' | ');
+          entries.push({ date: e.date, headline: e.title, detail });
+        }
+      }
     } else if (ticker === 'CRCL') {
-      const [timeline, catalysts] = await Promise.all([
+      const [timeline, catalysts, competitorNews] = await Promise.all([
         import('@/data/crcl/timeline'),
         import('@/data/crcl/catalysts'),
+        import('@/data/crcl/competitor-news'),
       ]);
       if (timeline.TIMELINE) {
         for (const t of timeline.TIMELINE) {
@@ -87,6 +150,11 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
       if (catalysts.UPCOMING_CATALYSTS) {
         for (const c of catalysts.UPCOMING_CATALYSTS) {
           entries.push({ date: c.timeline, headline: c.event });
+        }
+      }
+      if (competitorNews.CRCL_COMPETITOR_NEWS) {
+        for (const n of competitorNews.CRCL_COMPETITOR_NEWS) {
+          entries.push({ date: n.date, headline: n.headline, detail: n.crclComparison });
         }
       }
     }
@@ -116,16 +184,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing ticker or articles' }, { status: 400 });
     }
 
-    if (!ANTHROPIC_API_KEY) {
-      return NextResponse.json({
-        ticker,
-        results: articles.map(a => ({ headline: a.headline, date: a.date, analyzed: null })),
-        error: 'ANTHROPIC_API_KEY not set — add it in Vercel Environment Variables and redeploy',
-      });
-    }
-
     // Gather all existing analysis data for this ticker
     const analysisData = await getAnalysisData(ticker.toUpperCase());
+
+    // Fallback: local keyword matching when no API key is available
+    if (!ANTHROPIC_API_KEY) {
+      const results = articles.map(a => ({
+        headline: a.headline,
+        date: a.date,
+        analyzed: localMatch(a.headline, analysisData),
+      }));
+      return NextResponse.json({ ticker, results });
+    }
 
     // Build context-rich summary: include headline + truncated detail for semantic matching
     const existingSummary = analysisData

@@ -20,3 +20,6 @@ export * from './timelineTypes';
 
 // Live Price Hook and Component
 export { useLiveStockPrice, LivePriceDisplay } from './LivePrice';
+
+// Shared Model Utilities (types, constants, helpers)
+export * from './modelUtils';

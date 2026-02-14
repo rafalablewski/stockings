@@ -1,4 +1,4 @@
-// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /*
  * ╔═══════════════════════════════════════════════════════════════════════════════╗
  * ║                        🚨 MUST DO - READ FIRST 🚨                             ║
@@ -4249,7 +4249,7 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const result = []; let cumYield = 0, startNav = 0;
     Object.entries(historicalETH).forEach(([year, prices]) => {
-      if (parseInt(year) >= startYear) prices.forEach((price, idx) => {
+      if (parseInt(year) >= startYear) (prices as number[]).forEach((price, idx) => {
         if (idx < 12) { cumYield = includeYield ? (1 + cumYield) * (1 + baseStakingAPY / 12 / 100) - 1 : 0; const nav = (currentETH * price * (1 + cumYield)) / (currentShares * 1e6); const stockPrice = nav * assumedMult; if (startNav === 0) startNav = nav; result.push({ date: `${months[idx]} ${year.slice(2)}`, ethPrice: price, nav, stockPrice }); }
       });
     });
@@ -4318,7 +4318,7 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
           <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Historical NAV & Stock Price</span>
         </div>
         <div style={{ padding: '24px 24px' }}>
-          <ResponsiveContainer width="100%" height={350}><AreaChart data={data.data}><defs><linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/><stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/></linearGradient><linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" tick={{ fontSize: 10 }} interval="preserveStartEnd" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} fontSize={10} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={(v, name) => [`$${v.toFixed(2)}`, name === 'nav' ? 'NAV' : 'Stock']} /><Area type="monotone" dataKey="nav" stroke="var(--violet)" strokeWidth={2} fill="url(#navGrad)" name="nav" /><Area type="monotone" dataKey="stockPrice" stroke="var(--mint)" strokeWidth={2} fill="url(#priceGrad)" name="stockPrice" /></AreaChart></ResponsiveContainer>
+          <ResponsiveContainer width="100%" height={350}><AreaChart data={data.data}><defs><linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/><stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/></linearGradient><linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" tick={{ fontSize: 10 }} interval="preserveStartEnd" /><YAxis stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} fontSize={10} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={(v, name) => [`$${Number(v).toFixed(2)}`, name === 'nav' ? 'NAV' : 'Stock']} /><Area type="monotone" dataKey="nav" stroke="var(--violet)" strokeWidth={2} fill="url(#navGrad)" name="nav" /><Area type="monotone" dataKey="stockPrice" stroke="var(--mint)" strokeWidth={2} fill="url(#priceGrad)" name="stockPrice" /></AreaChart></ResponsiveContainer>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 12 }}>
             {[{ label: 'NAV', color: 'var(--violet)' }, { label: `Stock (${assumedMult.toFixed(1)}x)`, color: 'var(--mint)' }].map(l => (
               <span key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text3)' }}>
@@ -4688,10 +4688,10 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 
   // Scenario presets for ETH/mNAV dynamics
   const presets = {
-    bear: { drift: -5, vol: 80, multVol: 30, corr: 0.5, label: '🐻 Bear', desc: 'ETH decline, high volatility, mNAV compression' },
-    base: { drift: 12, vol: 65, multVol: 20, corr: 0.3, label: '📊 Base', desc: 'Moderate ETH growth, historical volatility' },
-    bull: { drift: 30, vol: 55, multVol: 15, corr: 0.2, label: '🐂 Bull', desc: 'Strong ETH rally, lower vol, mNAV expansion' },
-    custom: { drift, vol, multVol, corr, label: '⚙️ Custom', desc: 'Your custom parameters' }
+    bear: { drift: -5, vol: 80, multVol: 30, corr: 0.5, label: '🐻 Bear', color: '#f97316', desc: 'ETH decline, high volatility, mNAV compression' },
+    base: { drift: 12, vol: 65, multVol: 20, corr: 0.3, label: '📊 Base', color: '#eab308', desc: 'Moderate ETH growth, historical volatility' },
+    bull: { drift: 30, vol: 55, multVol: 15, corr: 0.2, label: '🐂 Bull', color: '#06b6d4', desc: 'Strong ETH rally, lower vol, mNAV expansion' },
+    custom: { drift, vol, multVol, corr, label: '⚙️ Custom', color: '#8b5cf6', desc: 'Your custom parameters' }
   };
 
   const loadPreset = (key: string) => {
@@ -4761,8 +4761,8 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
     // N2: Using RISK_FREE_RATE constant for Sharpe ratio
     const sharpe = annualVol > 0 ? (avgRet * 100 - RISK_FREE_RATE) / annualVol : 0;
     const riskFreeDecimal = RISK_FREE_RATE / 100;
-    const downRet = returns.filter(r => r < riskFreeDecimal); 
-    const downVar = downRet.length > 0 ? downRet.reduce((a, b) => a + (b - riskFreeDecimal) ** 2, 0) / downRet.length : 0;
+    // Sortino: downside deviation uses ALL n observations but only squares below-target returns
+    const downVar = returns.reduce((a, r) => a + (r < riskFreeDecimal ? (r - riskFreeDecimal) ** 2 : 0), 0) / n;
     // N2: Using RISK_FREE_RATE constant for Sortino ratio
     const sortino = Math.sqrt(downVar) > 0 ? (avgRet * 100 - RISK_FREE_RATE) / (Math.sqrt(downVar) * 100) : 0;
     const avgMaxDD = maxDDs.reduce((a, b) => a + b, 0) / maxDDs.length * 100;
@@ -4798,29 +4798,32 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       {/* Scenario Presets */}
       <div>
         <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mc-scenarios</div>
-        <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Select Scenario</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-            {Object.entries(presets).map(([key, p]) => (
-              <button
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+          {Object.entries(presets).map(([key, p]) => {
+            const isActive = activePreset === key;
+            return (
+              <div
                 key={key}
                 onClick={() => loadPreset(key)}
                 style={{
-                  padding: '12px 16px',
-                  borderRadius: 8,
-                  textAlign: 'left',
-                  border: `2px solid ${activePreset === key ? 'var(--accent)' : 'transparent'}`,
-                  background: activePreset === key ? 'var(--accent-dim)' : 'var(--surface2)',
-                  color: activePreset === key ? 'var(--accent)' : 'var(--text)',
+                  padding: '16px 8px',
+                  background: isActive ? `${p.color}15` : 'var(--surface)',
                   cursor: 'pointer',
-                  transition: 'all 0.15s'
+                  transition: 'all 0.15s',
+                  textAlign: 'center',
+                  borderBottom: isActive ? `2px solid ${p.color}` : '2px solid transparent',
                 }}
               >
-                <div style={{ fontWeight: 600 }}>{p.label}</div>
-                <div style={{ fontSize: 11, opacity: 0.7 }}>{p.desc}</div>
-              </button>
-            ))}
-          </div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{p.label}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: isActive ? p.color : 'var(--text)', margin: '4px 0 2px' }}>
+                  {p.drift > 0 ? '+' : ''}{p.drift}%
+                </div>
+                <div style={{ fontSize: 10, color: 'var(--text3)' }}>
+                  {p.vol}% vol
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -5115,8 +5118,8 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
               <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
               <Tooltip
                 contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
-                formatter={(v) => [`${v.toFixed(2)}%`, 'Probability']}
-                labelFormatter={(v) => `$${v.toFixed(0)}`}
+                formatter={(v) => [`${Number(v).toFixed(2)}%`, 'Probability']}
+                labelFormatter={(v) => `$${Number(v).toFixed(0)}`}
               />
               <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
               <ReferenceLine x={currentNAV} stroke="#fff" strokeDasharray="5 5" />
@@ -6567,7 +6570,7 @@ const BMNRQuarterlyMetricsPanel = () => {
             return (
               <>
                 <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                   {data.map((d, i) => (
                     <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                       <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -6597,7 +6600,7 @@ const BMNRQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -6674,7 +6677,7 @@ const BMNRQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -6697,7 +6700,7 @@ const BMNRQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
@@ -6728,7 +6731,7 @@ const BMNRQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%') }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                 {data.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
                     <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>

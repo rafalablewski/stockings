@@ -71,17 +71,14 @@ a, a:visited {
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
 /*
- * Fix Tailwind utility specificity inside analysis components.
- * The embedded CSS in ASTS/BMNR/CRCL has "* { margin: 0; padding: 0; }"
- * which overrides Tailwind's :where() selectors (zero specificity).
- * These rules use .stock-model-app prefix for higher specificity.
+ * Tailwind utility overrides inside analysis components.
+ * The model CSS reset is now scoped to .stock-model-app descendants,
+ * so these are kept as safety nets for any edge cases.
  */
 .stock-model-app .space-y-1 > * + * { margin-top: 0.25rem; }
 .stock-model-app .space-y-2 > * + * { margin-top: 0.5rem; }
 .stock-model-app .space-y-3 > * + * { margin-top: 0.75rem; }
 .stock-model-app .space-y-4 > * + * { margin-top: 1rem; }
-
-/* Ensure gap works in flex/grid containers */
 .stock-model-app .gap-2 { gap: 0.5rem; }
 .stock-model-app .gap-3 { gap: 0.75rem; }
 .stock-model-app .gap-4 { gap: 1rem; }

@@ -469,7 +469,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       });
       if (!res.ok) throw new Error(`AI check failed: ${res.status}`);
       const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      if (!data.results) throw new Error(data.error || 'No results returned');
       return articles.map((article, i) => ({ ...article, analyzed: data.results?.[i]?.analyzed ?? null }));
     } catch (err) {
       console.error('[SharedSourcesTab] AI check error:', err);
@@ -558,6 +558,18 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         pressReleases: cached.pressReleases, news: cached.news,
       }));
       setLastFetchedAt(cached.fetchedAt);
+      // Run AI analysis on cached articles (cache stores pre-analysis data)
+      const all = [...cached.pressReleases, ...cached.news];
+      if (all.length > 0) {
+        setAiChecking(true);
+        checkAnalyzed(all).then(checked => {
+          setMainCard(prev => ({
+            ...prev,
+            pressReleases: checked.slice(0, cached.pressReleases.length),
+            news: checked.slice(cached.pressReleases.length),
+          }));
+        }).catch(() => { /* handled */ }).finally(() => setAiChecking(false));
+      }
     } else {
       loadMainCard();
     }
