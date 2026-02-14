@@ -29,6 +29,8 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
   const [copied, setCopied] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
+  const canRun = !workflow.requiresUserData || userData.trim().length > 0;
+
   const handleRun = useCallback(async () => {
     if (workflow.requiresUserData && !userData.trim()) return;
 
@@ -45,7 +47,7 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
         body: JSON.stringify({
           prompt: workflow.prompt,
           context: workflow.context,
-          data: userData,
+          data: userData || undefined,
         }),
         signal: abortRef.current.signal,
       });
@@ -120,28 +122,54 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
       }}
     >
       {/* Header */}
-      <div
+      <button
+        type="button"
         onClick={() => setExpanded(!expanded)}
+        aria-expanded={expanded}
         style={{
+          width: "100%",
           padding: "16px 20px",
           cursor: "pointer",
           display: "flex",
           alignItems: "flex-start",
           justifyContent: "space-between",
           gap: 16,
+          background: "none",
+          border: "none",
+          textAlign: "left",
         }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              fontSize: 13,
-              fontFamily: "var(--font-mono, monospace)",
-              fontWeight: 500,
-              color: "rgba(255,255,255,0.85)",
-              marginBottom: 4,
-            }}
-          >
-            {workflow.name}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+            <span
+              style={{
+                fontSize: 13,
+                fontFamily: "var(--font-mono, monospace)",
+                fontWeight: 500,
+                color: "rgba(255,255,255,0.85)",
+              }}
+            >
+              {workflow.name}
+            </span>
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                padding: "2px 6px",
+                borderRadius: 4,
+                background: workflow.requiresUserData
+                  ? "rgba(255,255,255,0.04)"
+                  : "rgba(255,255,255,0.04)",
+                color: workflow.requiresUserData
+                  ? "rgba(255,255,255,0.2)"
+                  : "rgba(130,200,130,0.5)",
+                border: `1px solid ${workflow.requiresUserData ? "rgba(255,255,255,0.06)" : "rgba(130,200,130,0.15)"}`,
+              }}
+            >
+              {workflow.requiresUserData ? "Paste data" : "Database"}
+            </span>
           </div>
           <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", lineHeight: 1.5 }}>
             {workflow.description}
@@ -165,7 +193,7 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
         >
           <path d="M9 5l7 7-7 7" />
         </svg>
-      </div>
+      </button>
 
       {/* Expanded body */}
       {expanded && (
@@ -186,18 +214,21 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                 {mod}{i < workflow.contextModules.length - 1 ? "," : ""}
               </span>
             ))}
-            <span
-              role="button"
+            <button
+              type="button"
               onClick={() => setShowPrompt(!showPrompt)}
               style={{
                 marginLeft: "auto",
                 fontSize: 10,
                 color: "rgba(255,255,255,0.2)",
                 cursor: "pointer",
+                background: "none",
+                border: "none",
+                padding: 0,
               }}
             >
               {showPrompt ? "Hide prompt" : "View prompt"}
-            </span>
+            </button>
           </div>
 
           {/* Read-only prompt display */}
@@ -237,6 +268,7 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                 onChange={(e) => setUserData(e.target.value)}
                 placeholder="Paste your data here — earnings call transcript, SEC filing, Form 4 filings, news articles..."
                 disabled={running}
+                aria-label={`Data input for ${workflow.name}`}
                 style={{
                   width: "100%",
                   height: 192,
@@ -271,33 +303,42 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
           {/* Run / Stop */}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {!running ? (
-              <span
-                role="button"
-                onClick={() => {
-                  if (workflow.requiresUserData && !userData.trim()) return;
-                  handleRun();
-                }}
+              <button
+                type="button"
+                disabled={!canRun}
+                onClick={handleRun}
                 style={{
                   fontSize: 12,
-                  color: (!workflow.requiresUserData || userData.trim()) ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.1)",
-                  cursor: (!workflow.requiresUserData || userData.trim()) ? "pointer" : "default",
-                  transition: "color 0.2s",
+                  fontFamily: "var(--font-mono, monospace)",
+                  color: canRun ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.1)",
+                  background: canRun ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
+                  border: `1px solid ${canRun ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.04)"}`,
+                  borderRadius: 8,
+                  padding: "8px 16px",
+                  cursor: canRun ? "pointer" : "not-allowed",
+                  transition: "all 0.15s",
                 }}
               >
-                Run Analysis &rarr;
-              </span>
+                Run Analysis
+              </button>
             ) : (
-              <span
-                role="button"
+              <button
+                type="button"
                 onClick={handleStop}
                 style={{
                   fontSize: 12,
-                  color: "rgba(255,100,100,0.5)",
+                  fontFamily: "var(--font-mono, monospace)",
+                  color: "rgba(255,100,100,0.7)",
+                  background: "rgba(255,100,100,0.06)",
+                  border: "1px solid rgba(255,100,100,0.15)",
+                  borderRadius: 8,
+                  padding: "8px 16px",
                   cursor: "pointer",
+                  transition: "all 0.15s",
                 }}
               >
                 Stop
-              </span>
+              </button>
             )}
             {running && (
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -343,17 +384,20 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                 >
                   Analysis Result
                 </span>
-                <span
-                  role="button"
+                <button
+                  type="button"
                   onClick={handleCopy}
                   style={{
                     fontSize: 11,
                     color: "rgba(255,255,255,0.2)",
                     cursor: "pointer",
+                    background: "none",
+                    border: "none",
+                    padding: 0,
                   }}
                 >
                   {copied ? "Copied!" : "Copy"}
-                </span>
+                </button>
               </div>
               <div style={{ maxHeight: 600, overflowY: "auto" }}>
                 <pre
@@ -373,6 +417,25 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+// Section header for agent categories
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        fontSize: 10,
+        fontWeight: 500,
+        textTransform: "uppercase",
+        letterSpacing: "0.15em",
+        color: "rgba(255,255,255,0.15)",
+        marginBottom: 8,
+        paddingLeft: 2,
+      }}
+    >
+      {children}
     </div>
   );
 }
@@ -404,6 +467,9 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
     );
   }
 
+  const dbAgents = availableWorkflows.filter((w) => !w.requiresUserData);
+  const dataAgents = availableWorkflows.filter((w) => w.requiresUserData);
+
   return (
     <div style={{ padding: "20px 0" }}>
       <div style={{ marginBottom: 24 }}>
@@ -423,11 +489,29 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {availableWorkflows.map((wf) => (
-          <AgentRunner key={wf.id} workflow={wf} />
-        ))}
-      </div>
+      {/* Database-driven agents — one-click run */}
+      {dbAgents.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <SectionLabel>Database analysis — run directly</SectionLabel>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {dbAgents.map((wf) => (
+              <AgentRunner key={wf.id} workflow={wf} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Data-input agents — require pasted content */}
+      {dataAgents.length > 0 && (
+        <div>
+          <SectionLabel>Data input — paste &amp; analyze</SectionLabel>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {dataAgents.map((wf) => (
+              <AgentRunner key={wf.id} workflow={wf} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

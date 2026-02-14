@@ -16,22 +16,24 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { prompt, context, data } = body as { prompt: string; context: string; data: string };
 
-    if (!prompt || !data) {
-      return new Response(JSON.stringify({ error: 'Missing prompt or data' }), {
+    if (!prompt) {
+      return new Response(JSON.stringify({ error: 'Missing prompt' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    // Build the full message: prompt + context + user data
-    const separator = '\n\n════════════════════════════════════════════════════════════\nCURRENT DATABASE CONTEXT\nAuto-injected from ABISON database\n════════════════════════════════════════════════════════════\n\n';
+    // Build the full message: prompt + context + optional user data
+    const contextSeparator = '\n\n════════════════════════════════════════════════════════════\nCURRENT DATABASE CONTEXT\nAuto-injected from ABISON database\n════════════════════════════════════════════════════════════\n\n';
     const dataSeparator = '\n\n════════════════════════════════════════════════════════════\nUSER-PROVIDED DATA\n════════════════════════════════════════════════════════════\n\n';
 
     let fullMessage = prompt;
     if (context) {
-      fullMessage += separator + context;
+      fullMessage += contextSeparator + context;
     }
-    fullMessage += dataSeparator + data;
+    if (data) {
+      fullMessage += dataSeparator + data;
+    }
 
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
