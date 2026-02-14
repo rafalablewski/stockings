@@ -725,8 +725,47 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // SES / LYNK GLOBAL - D2D PARTNERSHIP
+    // LYNK GLOBAL - D2D MESSAGING/VOICE (SES-BACKED, MERGED WITH OMNISPACE)
     // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-07-21',
+      competitor: 'lynk',
+      category: 'Financial',
+      headline: 'Lynk terminates SLAM Corp SPAC business combination, settles Delaware litigation',
+      details: [
+        'Mutual termination of Business Combination Agreement with SLAM Corp (publicly traded SPAC)',
+        'BCA originally executed February 2024',
+        'Comprehensive settlement of all pending claims and counterclaims in Delaware Court of Chancery',
+        'CEO Potarazu: "better positioned to pursue broader set of strategic and commercial opportunities"',
+        'Explicitly references partnership with "newly merged SES" for accelerating D2D mission',
+        'Signals private funding path via SES rather than public markets via SPAC'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Lynk\'s failed SPAC deal shows difficulty of D2D companies reaching public markets — validates ASTS\'s unique position as only publicly traded pure-play D2D company. Lynk pivoting to private path via SES backing. Settlement removes legal overhang but also means Lynk remains private with less transparency. ASTS has public market access for capital raises; Lynk dependent on SES/private funding.',
+      source: 'Lynk Global',
+      storyId: 'lynk-omnispace-merger',
+      storyTitle: 'Lynk-Omnispace Merger'
+    },
+    {
+      date: '2025-03-25',
+      competitor: 'lynk',
+      category: 'Technology',
+      headline: 'Lynk and Turkcell successfully demonstrate D2D SMS and voice calls via LEO satellites in Türkiye',
+      details: [
+        'Turkcell: Türkiye\'s largest mobile operator with 40M+ subscribers (NYSE: TKC)',
+        'Tests in rural area near Konya using Turkcell mobile frequencies and Lynk satellites',
+        'Successful SMS exchanges and voice calls on commercial cell phones',
+        'No specialized devices or attachments required — standard unmodified phones',
+        'Voice calling capability notable — moves Lynk beyond messaging-only',
+        'Builds on February 2024 agreement between Lynk and Turkcell',
+        'Lynk claims 50 MNO partners with commercial contracts in ~60 countries'
+      ],
+      implication: 'negative',
+      astsComparison: 'Lynk demonstrating voice calls (not just SMS) with major MNO in Türkiye. Voice capability narrows gap with ASTS on service breadth. However, Lynk voice is narrowband circuit-switched, not broadband data/video like ASTS. Turkcell partnership in Türkiye adds to Lynk\'s MNO count. ASTS differentiator: broadband 4G/5G data speeds enabling video calls, streaming — not just basic voice/text.',
+      source: 'Lynk Global / Turkcell',
+      storyId: 'lynk-turkcell-turkiye',
+      storyTitle: 'Lynk Turkcell Türkiye Demo'
+    },
     {
       date: '2025-03-10',
       competitor: 'lynk',
@@ -749,8 +788,32 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // ECHOSTAR - MDA AURORA D2D LEO CONSTELLATION ($5B PROJECT)
+    // ECHOSTAR - MDA AURORA D2D LEO + SPECTRUM SALE TO SPACEX
     // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2025-09-08',
+      competitor: 'echostar',
+      category: 'Financial',
+      headline: 'EchoStar sells AWS-4 and H-block spectrum to SpaceX for ~$17B — next-gen Starlink DTC constellation',
+      details: [
+        'EchoStar sells full portfolio of AWS-4 and H-block spectrum licenses to SpaceX',
+        'Price: ~$17B total — up to $8.5B cash + up to $8.5B SpaceX stock',
+        'SpaceX also funds ~$2B of EchoStar cash interest payments through November 2027',
+        'SpaceX to develop and deploy NEXT-GENERATION Starlink Direct-to-Cell constellation with dedicated spectrum',
+        'Long-term commercial agreement: Boost Mobile subscribers access SpaceX DTC via cloud-native 5G core',
+        'Shotwell (SpaceX): "first generation Starlink DTC satellites have already connected millions"',
+        'SpaceX current DTC: 650+ LEO satellites',
+        'Akhavan (EchoStar): "combination of AWS-4 and H-block spectrum with rocket launch and satellite capabilities"',
+        'EchoStar anticipates resolving FCC inquiries with this + prior spectrum sales',
+        'DISH TV, Sling, Hughes operations unaffected',
+        'Subject to regulatory approvals'
+      ],
+      implication: 'negative',
+      astsComparison: 'MAJOR competitive event. SpaceX acquiring dedicated D2D spectrum ($17B) transforms Starlink DTC from shared-spectrum SMS service to potentially full broadband D2D competitor with exclusive spectrum. Currently Starlink DTC uses T-Mobile/MNO shared spectrum (limited bandwidth). Dedicated AWS-4/H-block spectrum (up to 40+10 MHz) enables purpose-built next-gen DTC constellation with higher throughput. Key mitigant: next-gen constellation requires years to design/build/deploy. ASTS has operational satellites and AT&T/Vodafone partnerships NOW. But long-term threat from SpaceX with dedicated spectrum is significant.',
+      source: 'EchoStar / SpaceX',
+      storyId: 'echostar-spacex-spectrum',
+      storyTitle: 'EchoStar SpaceX Spectrum Sale'
+    },
     {
       date: '2025-08-01',
       competitor: 'echostar',
@@ -924,6 +987,47 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       storyTitle: 'Amazon Leo Constellation'
     },
     {
+      date: '2023-11-28',
+      competitor: 'amazon-leo',
+      category: 'Partnership',
+      headline: 'Amazon Project Kuiper and NTT/SKY Perfect JSAT form strategic collaboration for Japan',
+      details: [
+        'NTT, NTT DOCOMO (87M+ subscribers), NTT Com, and SKY Perfect JSAT partner with Project Kuiper',
+        'First strategic collaboration for Project Kuiper in Asia-Pacific region',
+        'NTT and SKY Perfect JSAT to distribute Kuiper services to enterprises and government in Japan',
+        'NTT DOCOMO to use Kuiper for rural and hard-to-reach backhaul in Japan',
+        'Japan\'s mountainous terrain and many islands make disaster recovery connectivity critical',
+        'Companies to explore broader collaborations for Earth-to-space communication services',
+        'Beta testing planned with partners in second half of 2024'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon Kuiper targeting Japan for terminal-based broadband distribution via NTT. Not D2D — requires dedicated terminals/dishes. ASTS targets same coverage gaps but via unmodified smartphones. NTT DOCOMO\'s interest in satellite backhaul validates rural connectivity demand in Japan. Different approach: Kuiper = fixed broadband, ASTS = mobile cellular.',
+      source: 'Amazon / NTT / SKY Perfect JSAT',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2022-04-05',
+      competitor: 'amazon-leo',
+      category: 'Launch',
+      headline: 'Amazon secures 83 launches from Arianespace, Blue Origin, and ULA for Project Kuiper constellation',
+      details: [
+        'Largest commercial procurement of launch vehicles in history at time of announcement',
+        'Arianespace: 18 Ariane 6 rockets',
+        'Blue Origin: 12 New Glenn launches + options for 15 additional',
+        'United Launch Alliance: 38 Vulcan Centaur launches (plus existing 9 Atlas V)',
+        'Five-year deployment window for majority of 3,236-satellite constellation',
+        'Beyond Gravity (Switzerland) to build low-cost satellite dispensers, new facility in Sweden',
+        'Suppliers from 49 US states and 13 European countries',
+        'ULA investing in second launch lane for high-cadence operations'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Amazon\'s massive launch procurement demonstrates scale commitment to LEO broadband. However, Project Kuiper is terminal-based (not D2D to phones). Amazon\'s $10B+ investment in LEO broadband validated the space-based connectivity market years before ASTS commercial launch. Different markets: Amazon = fixed broadband terminals, ASTS = unmodified smartphone D2D.',
+      source: 'Amazon',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation'
+    },
+    {
       date: '2021-11-01',
       competitor: 'amazon-leo',
       category: 'Launch',
@@ -946,6 +1050,69 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
     // ═══════════════════════════════════════════════════════════════════════════
     // STARLINK DIRECT-TO-CELL - CORE D2D COMPETITOR
     // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-09',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Globe Telecom partners with Starlink for first Southeast Asia Direct-to-Cell service (Philippines)',
+      details: [
+        'Globe Telecom: Philippines\' leading mobile operator — first in Southeast Asia for Starlink DTC',
+        'Second in Asia (after an undisclosed first) to offer Starlink Direct-to-Cell',
+        'Philippine President Marcos Jr. present at signing ceremony — presidential-level endorsement',
+        'Standard LTE phones: data, voice, and messaging via satellite, no specialized devices',
+        'Philippines: archipelago of 7,600+ islands — ideal D2D market for coverage gaps',
+        'Disaster resilience highlighted: uninterrupted communication during extreme weather/natural disasters',
+        'Starlink: 650+ LEO DTC satellites, "cell tower in space" with seamless terrestrial integration',
+        'Service acts like standard roaming partner for Globe network'
+      ],
+      implication: 'negative',
+      astsComparison: 'Starlink DTC expanding into Southeast Asia — a high-growth mobile market ASTS could target. Globe Telecom (Philippines) joins growing list of Starlink DTC MNO partners. Presidential-level endorsement signals government backing. Philippines\' 7,600+ islands are an ideal D2D market. ASTS needs to secure APAC MNO partnerships to compete. Key ASTS differentiator: broadband voice/video/data vs Starlink\'s current SMS/basic services.',
+      source: 'Globe Telecom',
+      storyId: 'starlink-d2c-global-expansion',
+      storyTitle: 'Starlink DTC Global MNO Expansion'
+    },
+    {
+      date: '2025-11-25',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Proximus Global/BICS becomes Starlink\'s preferred IPX provider in Europe for DTC connectivity',
+      details: [
+        'BICS (Proximus Global) appointed as preferred IPX provider in Europe for Starlink DTC',
+        'IPX network acts as roaming exchange/bridge connecting Starlink to European MNOs',
+        'Kyivstar (Ukraine, 22.5M subs) named as first European MNO to benefit',
+        'Paves way for Starlink\'s next-generation constellation with "harmonized spectrum"',
+        'References optimizing future smartphone performance with next-gen constellation',
+        'Starlink claims: 650+ DTC LEO sats, 8M+ customers across 5 continents',
+        'Starlink described as "world\'s largest 4G coverage provider"',
+        'BICS: 20+ years of IPX connectivity leadership'
+      ],
+      implication: 'negative',
+      astsComparison: 'Starlink building European DTC distribution infrastructure via BICS/Proximus IPX. This is the plumbing layer — makes it easy for European MNOs to connect to Starlink DTC like a standard roaming partner. Reduces integration friction for European operators considering Starlink. Mention of "next-generation constellation" with "harmonized spectrum" hints at post-EchoStar spectrum roadmap. ASTS competing for same European MNOs via Vodafone/SatCo JV but with broadband vs SMS differentiation.',
+      source: 'BICS / Proximus Global',
+      storyId: 'starlink-d2c-global-expansion',
+      storyTitle: 'Starlink DTC Global MNO Expansion'
+    },
+    {
+      date: '2025-11-06',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'VEON/Beeline Kazakhstan partners with Starlink DTC — VEON becomes first multi-country framework operator',
+      details: [
+        'Beeline Kazakhstan (VEON subsidiary): 11.7M mobile + ~1M fixed internet customers',
+        'MOU signed with Kazakhstan Ministry of AI & Digital Development at presidential-level U.S. visit',
+        'VEON signed global framework agreement with Starlink — first multi-country DTC arrangement',
+        'Framework covers all 5 VEON operating markets (~150M+ total subscribers)',
+        'Second VEON market after Ukraine (Kyivstar) to pursue Starlink DTC',
+        'Kazakhstan: 9th largest country by land area — significant coverage gaps',
+        'Messaging launch planned 2026, data connectivity as next phase',
+        'Subject to standard regulatory approvals'
+      ],
+      implication: 'negative',
+      astsComparison: 'VEON\'s multi-country Starlink framework is a competitive precedent — one agreement covering 150M+ subs across 5 countries. Streamlines Starlink DTC adoption vs per-market negotiation. ASTS pursuing similar multi-market MNO deals but through individual partnerships. Kazakhstan\'s vast geography (9th largest country) ideal for D2D. ASTS must counter with broadband superiority and its own multi-market MNO relationships.',
+      source: 'VEON / Beeline Kazakhstan',
+      storyId: 'starlink-d2c-global-expansion',
+      storyTitle: 'Starlink DTC Global MNO Expansion'
+    },
     {
       date: '2024-01-08',
       competitor: 'starlink-tmobile',
@@ -1018,6 +1185,26 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       storyTitle: 'Iridium NTN Direct Testing & Technology'
     },
     {
+      date: '2025-12-09',
+      competitor: 'iridium',
+      category: 'Partnership',
+      headline: 'HD Hyundai Construction Equipment selects Iridium IoT for global fleet management',
+      details: [
+        'HD Hyundai integrates Hi MATE remote fleet management system with Iridium satellite IoT',
+        'Uses Iridium Short Burst Data (SBD) for truly global connectivity',
+        'Hi MATE: location tracking, geofencing, diagnostics for excavators and wheel loaders',
+        'Engine hours, fuel consumption, predictive maintenance, remote troubleshooting',
+        'Extends Hi MATE capabilities to most remote construction sites',
+        'Iridium: only truly global satellite network (pole-to-pole)',
+        'Major equipment OEM validates Iridium for mission-critical industrial IoT'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Traditional Iridium IoT business (SBD for equipment telemetry) — not NTN Direct and not D2D to smartphones. Iridium\'s IoT strength is in asset tracking and machine monitoring, fundamentally different from ASTS\'s consumer smartphone market. Shows Iridium\'s continued revenue diversification in industrial IoT verticals. No direct ASTS overlap.',
+      source: 'Iridium',
+      storyId: 'iridium-iot-verticals',
+      storyTitle: 'Iridium IoT Verticals'
+    },
+    {
       date: '2025-11-04',
       competitor: 'iridium',
       category: 'Partnership',
@@ -1038,6 +1225,27 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       sourceUrl: 'https://www.iridium.com/blog/vodafone-iot-partnership/',
       storyId: 'iridium-ntn-partnerships',
       storyTitle: 'Iridium NTN Direct Partnerships'
+    },
+    {
+      date: '2025-10-14',
+      competitor: 'iridium',
+      category: 'Technology',
+      headline: 'Iridium and Qualcomm integrate satellite data services into Snapdragon Mission Tactical Radio',
+      details: [
+        'Iridium SBD and Burst data integrated into Qualcomm Snapdragon Mission Tactical Radio (MTR)',
+        'Targets U.S. government customers and approved allied partners',
+        'Devices: handheld/mounted radios to autonomous vehicles',
+        'Multiple Iridium services on single chipset: SBD (low-latency messaging) + Burst (broadcast)',
+        'Eligible for EMSS program activation — trusted government satellite access',
+        'Also working on Iridium via Snapdragon X75 5G modem M.2 module for government solutions',
+        'Demonstrated at AUSA convention October 13-15, 2025 in Washington D.C.',
+        'SWaP-C optimized: size, weight, power, and cost constraints for tactical use'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium deepening defense/government moat via Qualcomm chipset integration. Military tactical radio is a niche Iridium excels in — narrowband but truly global, secure, and hardened. ASTS targets commercial MNO subscribers, not military tactical comms. Different markets entirely. However, Qualcomm partnership shows Iridium embedding into next-gen defense platforms for long-term relevance.',
+      source: 'Iridium / Qualcomm',
+      storyId: 'iridium-government-defense',
+      storyTitle: 'Iridium Government & Defense'
     },
     {
       date: '2025-09-16',
@@ -1125,6 +1333,27 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       storyTitle: 'Iridium NTN Direct Partnerships'
     },
     {
+      date: '2024-06-04',
+      competitor: 'iridium',
+      category: 'Financial',
+      headline: 'Iridium awarded $94M five-year EMSS contract by U.S. Space Force Space Systems Command',
+      details: [
+        '$94M base value, up to $103M with future surge requirements — five-year contract',
+        'Enhanced Mobile Satellite Services (EMSS) sustainment and security services (ECS3)',
+        'Ensures continued operations of EMSS Service Center for critical U.S. government applications',
+        'EMSS delivers unlimited secure/standard narrowband voice, broadcast, PTT to DoD subscribers',
+        'Over 20 years of DoD EMSS program partnership',
+        'Previous contract (GMSSA, 2019): $54M for 4.5 years',
+        '2019 DISA airtime contract: $738.5M over 7 years continuing through 2026+',
+        'Aligns with U.S. Space Force Commercial Space Strategy'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Iridium\'s government revenue base ($94M renewal + $738M DISA airtime) provides stable funding for NTN Direct development. Narrowband military voice/PTT is entirely different from ASTS\'s commercial broadband D2D. Government contracts validate Iridium\'s network reliability but do not compete with ASTS\'s consumer smartphone market. Shows Iridium\'s diversified revenue supporting long-term NTN Direct investment.',
+      source: 'Iridium',
+      storyId: 'iridium-government-defense',
+      storyTitle: 'Iridium Government & Defense'
+    },
+    {
       date: '2024-01-10',
       competitor: 'iridium',
       category: 'Technology',
@@ -1173,18 +1402,67 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       storyTitle: 'Skylo Vodafone IoT Partnership'
     },
     {
+      date: '2025-09-03',
+      competitor: 'skylo',
+      category: 'Product',
+      headline: 'Skylo expands collaboration with Garmin — satellite messaging and SOS on fenix 8 Pro smartwatch',
+      details: [
+        'Garmin fenix 8 Pro: satellite-powered messaging and SOS directly from wrist, no phone required',
+        'Two-way text messaging to contacts via watch or paired Garmin Messenger app on smartphone',
+        'Garmin Response: 24/7 emergency coordination center with nearly two decades of experience',
+        'Response center has supported thousands of SOS incidents across every continent',
+        'Coverage: noncontiguous US, Canada, and Europe (36 countries)',
+        'Live GPS coordinate sharing during emergencies',
+        'Open 3GPP standards-based satellite connectivity — shift from proprietary hardware',
+        'Skylo claims 60M sq km coverage area',
+        'Shipping September 8, 2025 — active subscription required'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Skylo expanding wearables footprint beyond Google Pixel Watch. Garmin fenix 8 Pro adopts open standards-based NTN (vs Garmin\'s traditional proprietary satellite devices). Shows Skylo building broad device ecosystem: smartphones + watches + automotive. All NB-NTN narrowband (SOS/messaging only). ASTS broadband D2D remains differentiated for voice/video/data. Wearables market shows D2D demand extending beyond phones.',
+      source: 'Skylo / Garmin',
+      storyId: 'skylo-device-ecosystem',
+      storyTitle: 'Skylo Device Ecosystem'
+    },
+    {
+      date: '2025-08-27',
+      competitor: 'skylo',
+      category: 'Technology',
+      headline: 'Skylo completes first NB-NTN voice calls — launches AI-native Voice Gateway',
+      details: [
+        'First voice calls completed using NB-NTN — industry breakthrough',
+        'Skylo Voice Gateway: AI-native voice codecs for high-quality communication',
+        'Greater than 10x improvement in data usage compared to existing cellular calling',
+        'Capacity: tens of millions of calls monthly per region on existing satellite network',
+        'Regulatory approvals in 36 countries using Mobile Satellite Service (MSS) spectrum',
+        '8M+ activated devices on Skylo NTN (up from 5M in May 2025)',
+        'Voice Gateway translates satellite physical layer to standard SIP/RTP for MNO integration',
+        '3GPP Release 20 work item for NTN native voice formally approved (June 2025)',
+        'Samsung Exynos collaboration exploring Voice over NTN feasibility',
+        'Fraunhofer IIS NESC AI-powered low bit rate speech codec',
+        'Extends Skylo from SOS/SMS to voice calling — new MNO monetization opportunity'
+      ],
+      implication: 'negative',
+      astsComparison: 'Significant Skylo milestone — voice calls over NB-NTN narrows the capability gap with ASTS. Previously Skylo was SMS/SOS only; now adding voice. However, NB-NTN voice is heavily compressed (AI codecs for efficiency), not broadband quality. ASTS offers standard broadband cellular voice (VoLTE quality) plus video and data. Skylo 8M+ devices shows rapid adoption. Key risk: if "good enough" narrowband voice satisfies most D2D demand, it could reduce urgency for ASTS broadband. Key ASTS advantage: data/video/streaming capabilities that NB-NTN cannot deliver.',
+      source: 'Skylo',
+      storyId: 'skylo-voice-technology',
+      storyTitle: 'Skylo Voice Technology'
+    },
+    {
       date: '2025-08-20',
       competitor: 'skylo',
       category: 'Product',
       headline: 'Google/Skylo expand satellite connectivity to Pixel 10 + launch Pixel Watch 4 with satellite SOS',
       details: [
-        'Pixel 10 Series with satellite SOS + first satellite-based location sharing in Android 16',
-        'Pixel Watch 4: world\'s first smartwatch with 2-way satellite emergency messaging',
-        'Qualcomm Snapdragon W5 Gen 2 enables standalone satellite SOS without phone',
-        'Skylo NB-NTN service powers all satellite features',
-        'Pixel 9 won "Best Smartphone" at MWC Barcelona 2025 (satellite cited)',
+        'Pixel 10 Series (Pixel 10, Pixel 10 Pro, Pixel 10 Pro XL) with satellite SOS + location sharing',
+        'First satellite-based location sharing in Android 16 — live location via Google Maps/Find Hub',
+        'Pixel Watch 4: world\'s first smartwatch with 2-way satellite emergency messaging (NB-NTN)',
+        'Qualcomm Snapdragon W5 Gen 2: world\'s first wearable platform with NB-NTN support',
+        'Watch 4 standalone SOS — no phone or cellular plan needed',
+        'Skylo NB-NTN service powers all satellite features across Pixel lineup',
+        'Pixel 9 won "Best Smartphone" Global Mobile Award at MWC Barcelona 2025',
         'Skylo named "Best NTN Provider" at MWC for second consecutive year',
-        'Coverage: US, Canada, Europe, Australia (Watch 4 US first, expanding)',
+        'Coverage: SOS in US, Canada, Europe, Australia; Watch 4 continental US first then expanding',
+        'Pre-order August 20, 2025 at store.google.com and authorized retailers',
         'Features: emergency SOS, location sharing via satellite, SMS (carrier-dependent)'
       ],
       implication: 'neutral',
@@ -1193,6 +1471,29 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       sourceUrl: 'https://www.skylo.tech/blog/google-and-skylo-expand-satellite-connectivity-pixel-10-pixel-watch-4',
       storyId: 'skylo-google-partnership',
       storyTitle: 'Skylo Google Partnership'
+    },
+    {
+      date: '2025-05-13',
+      competitor: 'skylo',
+      category: 'Partnership',
+      headline: 'Skylo drives into automotive with BMW Group, Deutsche Telekom, Qualcomm, HARMAN, and Fraunhofer IIS',
+      details: [
+        'Skylo claims 5M+ commercially activated devices at time of announcement',
+        'Joins 5G Automotive Association (5GAA) — first event at Paris F2F week May 15, 2025',
+        'BMW iX2 demo: connects to Skylo NTN using Deutsche Telekom SIM',
+        'Cubic3: world\'s first unified automotive eSIM for terrestrial + satellite (3GPP Rel-17)',
+        'Qualcomm Snapdragon Auto 5G Modem-RF Gen 2 certified for NB-NTN satellite',
+        'HARMAN (Samsung subsidiary): emergency services via telematics control unit over Skylo',
+        'Fraunhofer IIS: AI-assisted NESC codec for voice over NTN in automotive',
+        'World\'s first showcase of seamless terrestrial-to-satellite switching with single SIM',
+        'Viasat supporting demos as satellite infrastructure partner',
+        'Use cases: real-time messaging, hazard warnings, emergency services, navigation'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Skylo expanding into automotive vertical — a market ASTS hasn\'t directly targeted. Notable: Deutsche Telekom (ASTS shareholder) partnering with Skylo for automotive NTN. Shows DT hedging across multiple satellite approaches for different verticals. Skylo automotive is NB-NTN (narrowband messaging, hazard alerts) — not broadband streaming. ASTS could address automotive via MNO partners for broadband in-vehicle connectivity. Skylo\'s multi-vertical strategy (phones + watches + cars) builds broader ecosystem than single-focus competitors.',
+      source: 'Skylo',
+      storyId: 'skylo-automotive',
+      storyTitle: 'Skylo Automotive'
     },
     {
       date: '2025-04-28',
@@ -1338,6 +1639,47 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       source: 'Skylo / Qualcomm',
       storyId: 'skylo-qualcomm-ntn',
       storyTitle: 'Skylo Qualcomm NB-NTN Ecosystem'
+    },
+    {
+      date: '2024-07-11',
+      competitor: 'skylo',
+      category: 'Partnership',
+      headline: 'Skylo hires Google, Samsung Mobile, and Intel executives to scale go-to-market amid rapid D2D growth',
+      details: [
+        'Paul Hanton (ex-Google, Carrier Partnerships Americas): first VP of Carrier Partnerships',
+        'Pete Saladino (ex-Samsung Mobile, 13 years): first Global Head of Marketing',
+        'Vijay Krishnan (ex-Intel, GM/P&L owner): VP of Strategic Partnerships (chipset/device ecosystem)',
+        'Follows launch of D2D service in North America and "Best NTN Solution" at MWC Barcelona 2024',
+        'CEO Trivedi: "90+ patents beyond the standards, enabling mobile ecosystem to easily plug in"',
+        'Most major modems certified by Skylo; Android incorporated satellite in latest release',
+        'Signals Skylo scaling from technology to commercial execution phase'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Skylo attracting tier-1 tech talent from Google, Samsung, Intel shows industry credibility for NB-NTN D2D. However, Skylo remains focused on narrowband services. ASTS has its own commercial team and MNO partnerships. Skylo\'s GTM investment reflects growing competitive intensity in D2D market. The "90+ patents beyond standards" claim could create IP barriers but NB-NTN is fundamentally different tier from ASTS broadband.',
+      source: 'Skylo',
+      storyId: 'skylo-growth-ecosystem',
+      storyTitle: 'Skylo Growth & Ecosystem'
+    },
+    {
+      date: '2023-01-06',
+      competitor: 'skylo',
+      category: 'Product',
+      headline: 'Bullitt Group selects Skylo for world\'s first 3GPP standards-based D2D satellite smartphone at CES 2023',
+      details: [
+        'Bullitt Group (British smartphone manufacturer) partners with Skylo for satellite messaging smartphone',
+        'World\'s first 3GPP standards-based approach to NTN direct-to-device connectivity',
+        'Device features two-way satellite messaging when cellular/Wi-Fi unavailable',
+        'Developed with MediaTek chipset — 2+ years of joint engineering',
+        'Skylo uses established GEO satellite constellations with existing landing rights and spectrum',
+        'No need to point phone at satellite or remain stationary to connect',
+        'Available Q1 2023 — demonstrated at CES 2023',
+        'Note: Bullitt Group subsequently entered administration in 2024'
+      ],
+      implication: 'neutral',
+      astsComparison: 'Historical milestone: first 3GPP standards-based D2D satellite smartphone, validating the standards-based approach both Skylo and ASTS pursue. Bullitt was a niche rugged phone maker that later collapsed (administration 2024), so commercial impact was limited. Skylo has since moved far beyond this to major OEMs (Google Pixel, Samsung, Garmin). Early proof-of-concept for NB-NTN, but narrowband messaging only vs ASTS broadband.',
+      source: 'Skylo / Bullitt Group',
+      storyId: 'skylo-early-milestones',
+      storyTitle: 'Skylo Early Milestones'
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
