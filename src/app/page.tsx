@@ -108,7 +108,7 @@ export default function HomePage() {
             Workflow
           </h2>
           <p className="text-[12px] text-white/20 mb-10">
-            Pre-filled with current database context. Copy into a new chat and paste your content at the end.
+            Select a workflow, choose a company, paste your data, and run analysis directly. Context is auto-injected from the database.
           </p>
 
           <div className="grid gap-4">
