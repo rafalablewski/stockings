@@ -226,9 +226,8 @@ Paste the transcript below:`,
 
 Your goal is to pressure-test the investment thesis from all angles, identify thesis drift, and output actionable updates to the Investment tab.
 
-INPUT EXPECTED:
-1. Current Investment tab data (scorecard ratings, executive summary, risks, perspectives)
-2. Recent developments since last review (earnings, catalysts, capital events, competitive moves)
+DATA SOURCE:
+The ABISON database context is auto-injected below. It contains the current scorecard ratings, financial metrics, capital structure, catalyst timeline, and recent developments. Use this data as the basis for your review.
 
 REVIEW FRAMEWORK:
 
@@ -301,7 +300,7 @@ Rules — non-negotiable:
 - No confirmation bias. Weight disconfirming evidence equally.
 - Professional, dispassionate tone.
 
-Paste the current Investment tab data and recent developments below:`,
+Analyze the auto-injected database context below:`,
       },
       {
         label: 'BMNR',
@@ -311,9 +310,8 @@ Paste the current Investment tab data and recent developments below:`,
 
 Your goal is to pressure-test the investment thesis from all angles, identify thesis drift, and output actionable updates to the Investment tab.
 
-INPUT EXPECTED:
-1. Current Investment tab data (scorecard ratings, executive summary, risks, perspectives)
-2. Recent developments since last review (treasury updates, capital events, ETH price moves, competitive moves)
+DATA SOURCE:
+The ABISON database context is auto-injected below. It contains the current scorecard ratings, financial metrics, capital structure, catalyst timeline, and recent developments. Use this data as the basis for your review.
 
 REVIEW FRAMEWORK:
 
@@ -388,7 +386,7 @@ Rules — non-negotiable:
 - No confirmation bias. Weight disconfirming evidence equally.
 - Professional, dispassionate tone.
 
-Paste the current Investment tab data and recent developments below:`,
+Analyze the auto-injected database context below:`,
       },
     ],
   },
@@ -587,8 +585,8 @@ Paste Filing A and Filing B below:`,
         contextModules: ['financials', 'catalysts'],
         prompt: `You are the lead analyst on AST SpaceMobile (NASDAQ: ASTS) at a long/short technology hedge fund. You are producing a periodic research digest (weekly or monthly) for the investment committee and portfolio managers.
 
-INPUT EXPECTED:
-Paste all recent updates — new database entries, press releases, SEC filings, analyst notes, catalyst completions, partner news, competitor moves, price action — from the review period.
+DATA SOURCE:
+The ABISON database context is auto-injected below. It contains the current financials, catalyst timeline, and all tracked entries. Synthesize this data into the digest structure.
 
 DIGEST STRUCTURE:
 
@@ -662,11 +660,11 @@ DIGEST STRUCTURE:
 Rules — non-negotiable:
 - This digest must be readable by a PM in under 3 minutes.
 - Lead with what changed, not what stayed the same.
-- Every claim must be traceable to a specific entry in the pasted content.
+- Every claim must be traceable to a specific data point in the provided context.
 - Flag anything that requires immediate attention with a prefix.
 - Professional, institutional tone — ready for IC distribution.
 
-Paste the period's entries and updates below:`,
+Analyze the auto-injected database context below:`,
       },
       {
         label: 'BMNR',
@@ -674,8 +672,8 @@ Paste the period's entries and updates below:`,
         contextModules: ['financials', 'catalysts'],
         prompt: `You are the lead analyst on Bitmine Immersion Technologies (NYSE American: BMNR) at a long/short technology hedge fund. You are producing a periodic research digest (weekly or monthly) for the investment committee and portfolio managers.
 
-INPUT EXPECTED:
-Paste all recent updates — new database entries, press releases, SEC filings, analyst notes, catalyst completions, ETH ecosystem news, competitor moves, price action — from the review period.
+DATA SOURCE:
+The ABISON database context is auto-injected below. It contains the current financials, catalyst timeline, treasury data, and all tracked entries. Synthesize this data into the digest structure.
 
 DIGEST STRUCTURE:
 
@@ -761,11 +759,11 @@ Rules — non-negotiable:
 - This digest must be readable by a PM in under 3 minutes.
 - Lead with what changed, not what stayed the same.
 - Always include NAV/share math — it's the core valuation anchor for treasury plays.
-- Every claim must be traceable to a specific entry in the pasted content.
+- Every claim must be traceable to a specific data point in the provided context.
 - Flag anything that requires immediate attention with a prefix.
 - Professional, institutional tone — ready for IC distribution.
 
-Paste the period's entries and updates below:`,
+Analyze the auto-injected database context below:`,
       },
     ],
   },
@@ -785,8 +783,8 @@ Paste the period's entries and updates below:`,
         contextModules: ['capital', 'financials'],
         prompt: `You are a capital structure specialist at a long/short technology hedge fund analyzing AST SpaceMobile (NASDAQ: ASTS). The company has a complex 3-class share structure with multiple convertible tranches, ATM programs, registered directs, and super-voting founder shares.
 
-INPUT EXPECTED:
-Paste the current Capital tab data: share classes, major shareholders, equity offerings history, dilution history, SBC history. Optionally include the latest 10-Q/10-K balance sheet and debt footnotes.
+DATA SOURCE:
+The ABISON database context is auto-injected below. It contains the current Capital tab data (share classes, major shareholders, equity offerings, dilution history, SBC) and financial metrics. Use this data for the analysis.
 
 ANALYSIS FRAMEWORK:
 
@@ -865,7 +863,7 @@ Rules — non-negotiable:
 - Separate "certain" dilution (RSUs, vested options) from "contingent" dilution (converts, warrants with conditions).
 - Professional, forensic tone — capital structure analysis is precision work.
 
-Paste the Capital tab data (and optionally debt footnotes) below:`,
+Analyze the auto-injected database context below:`,
       },
       {
         label: 'BMNR',
@@ -873,8 +871,8 @@ Paste the Capital tab data (and optionally debt footnotes) below:`,
         contextModules: ['capital', 'financials'],
         prompt: `You are a capital structure specialist at a long/short technology hedge fund analyzing Bitmine Immersion Technologies (NYSE American: BMNR). The company uses aggressive ATM equity issuance to fund ETH treasury accumulation, making dilution analysis central to the thesis.
 
-INPUT EXPECTED:
-Paste the current Capital tab data: share classes, warrants, equity offerings history, major shareholders. Optionally include the latest 10-Q/10-K balance sheet.
+DATA SOURCE:
+The ABISON database context is auto-injected below. It contains the current Capital tab data (share classes, warrants, equity offerings, major shareholders) and financial metrics. Use this data for the analysis.
 
 ANALYSIS FRAMEWORK:
 
@@ -971,7 +969,7 @@ Rules — non-negotiable:
 - Professional, forensic tone.
 - The NAV accretion test is the single most important output — get it right.
 
-Paste the Capital tab data (and optionally balance sheet) below:`,
+Analyze the auto-injected database context below:`,
       },
     ],
   },
