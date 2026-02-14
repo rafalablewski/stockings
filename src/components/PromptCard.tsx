@@ -5,10 +5,11 @@ import type { PromptVariant } from "@/data/prompts";
 
 interface PromptCardProps {
   name: string;
+  description: string;
   variants: PromptVariant[];
 }
 
-export function PromptCard({ name, variants }: PromptCardProps) {
+export function PromptCard({ name, description, variants }: PromptCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [activeVariant, setActiveVariant] = useState(0);
@@ -59,6 +60,9 @@ export function PromptCard({ name, variants }: PromptCardProps) {
               ))}
             </div>
           )}
+          <p className="mt-2 text-[12px] text-white/25 leading-relaxed">
+            {description}
+          </p>
         </div>
 
         <div className="flex items-center gap-3">

@@ -66,7 +66,7 @@ export default function StocksPage() {
 
           <div className="grid gap-4">
             {prompts.map((prompt) => (
-              <PromptCard key={prompt.name} name={prompt.name} variants={prompt.variants} />
+              <PromptCard key={prompt.name} name={prompt.name} description={prompt.description} variants={prompt.variants} />
             ))}
           </div>
         </div>

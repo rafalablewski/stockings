@@ -5,12 +5,14 @@ export interface PromptVariant {
 
 export interface Prompt {
   name: string;
+  description: string;
   variants: PromptVariant[];
 }
 
 export const prompts: Prompt[] = [
   {
     name: "Entries, News, Press Releases, SEC Filings",
+    description: "Paste raw content — articles, press releases, SEC filings, analyst notes — and the prompt classifies each item into the correct database section (Core / Ecosystem / Comps), assesses materiality, and outputs structured entry blocks ready to commit. Select the ticker tab first, then copy the prompt into a new chat, and paste your content at the end.",
     variants: [
       {
         label: "ASTS",
