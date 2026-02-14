@@ -3,8 +3,6 @@ import { stockList } from "@/lib/stocks";
 import { prompts } from "@/data/prompts";
 import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
-import { WorkflowCard } from "@/components/WorkflowCard";
-import { getWorkflowContext } from "@/lib/workflow-context";
 
 export const metadata = {
   title: "Research | ABISON",
@@ -12,13 +10,12 @@ export const metadata = {
 };
 
 export default function StocksPage() {
-  const workflowsWithContext = workflows.map((w) => ({
-    ...w,
+  const workflowPrompts = workflows.map((w) => ({
+    name: w.name,
+    description: w.description,
     variants: w.variants.map((v) => ({
       label: v.label,
-      prompt: v.prompt,
-      context: getWorkflowContext(v.ticker, v.contextModules),
-      contextModules: v.contextModules as string[],
+      content: v.prompt,
     })),
   }));
 
@@ -90,13 +87,13 @@ export default function StocksPage() {
             Workflow
           </h2>
           <p className="text-[12px] text-white/20 mb-10">
-            Select a workflow, choose a company, paste your data, and run analysis directly. Context is auto-injected from the database.
+            AI agent prompts for structured analysis. Run these from the AI Agents tab inside each stock.
           </p>
 
           <div className="grid gap-4">
-            {workflowsWithContext.map((workflow) => (
-              <WorkflowCard
-                key={workflow.id}
+            {workflowPrompts.map((workflow) => (
+              <PromptCard
+                key={workflow.name}
                 name={workflow.name}
                 description={workflow.description}
                 variants={workflow.variants}
