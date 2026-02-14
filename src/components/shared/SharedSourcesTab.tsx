@@ -227,7 +227,6 @@ const ArticleList: React.FC<{
   showAnalysis?: boolean;
 }> = ({ articles, empty, showAnalysis }) => {
   const [showAll, setShowAll] = useState(false);
-  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
   if (articles.length === 0) {
     return (
@@ -244,107 +243,127 @@ const ArticleList: React.FC<{
 
   return (
     <div>
-      <ul role="list" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <ul role="list" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
         {displayed.map((a, i) => {
           const hasRichAnalysis = !!a.analysis;
-          const isExpanded = expandedIdx === i;
+          const sentimentColor = a.analysis?.sentiment === 'bullish' ? 'var(--mint)'
+            : a.analysis?.sentiment === 'bearish' ? 'var(--coral)' : 'var(--text3)';
 
           return (
             <li
               key={i}
               role="listitem"
               style={{
-                display: 'flex', alignItems: 'flex-start', gap: 12,
-                padding: '12px 12px', borderRadius: 10,
+                padding: hasRichAnalysis ? '14px 14px' : '12px 12px',
+                borderRadius: 10,
                 transition: 'background 0.15s',
-                cursor: hasRichAnalysis ? 'pointer' : 'default',
+                border: hasRichAnalysis && !a.analysis?.tracked
+                  ? `1px solid color-mix(in srgb, ${MATERIALITY_COLORS[a.analysis?.materiality || 'low'] || 'var(--text3)'} 20%, transparent)`
+                  : '1px solid transparent',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              onClick={() => hasRichAnalysis && setExpandedIdx(isExpanded ? null : i)}
             >
-              <StatusDot analyzed={a.analyzed} analysis={a.analysis} showAnalysis={showAnalysis} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, flex: 1 }}>
-                <a
-                  href={a.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={e => e.stopPropagation()}
-                  style={{
-                    fontSize: 13, color: 'var(--text)', textDecoration: 'none', lineHeight: 1.5,
-                    transition: 'color 0.15s',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}
-                  onFocus={e => (e.currentTarget.style.color = 'var(--accent)')}
-                  onBlur={e => (e.currentTarget.style.color = 'var(--text)')}
-                >
-                  {a.headline}
-                </a>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                  {a.date && (
-                    <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', letterSpacing: '-0.2px' }}>
-                      {a.date}
-                    </span>
-                  )}
-                  {a.source && (
-                    <>
-                      <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.source}</span>
-                    </>
-                  )}
-                  {a.items && (
-                    <>
-                      <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.items}</span>
-                    </>
-                  )}
-                  {/* Rich analysis badges */}
-                  {showAnalysis && hasRichAnalysis && a.analysis && (
-                    <>
-                      <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                      <CategoryBadge category={a.analysis.category} />
-                      <MaterialityBadge materiality={a.analysis.materiality} />
-                      <SentimentDot sentiment={a.analysis.sentiment} />
-                      <span style={{
-                        fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-                        color: a.analysis.tracked ? 'var(--mint)' : 'var(--coral)',
-                      }}>
-                        {a.analysis.tracked ? 'Tracked' : 'New'}
-                      </span>
-                    </>
-                  )}
-                  {/* Fallback: simple tracked/new label */}
-                  {showAnalysis && !hasRichAnalysis && a.analyzed !== null && a.analyzed !== undefined && (
-                    <>
-                      <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                      <span style={{
-                        fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-                        color: a.analyzed ? 'var(--mint)' : 'var(--coral)',
-                      }}>
-                        {a.analyzed ? 'Tracked' : 'New'}
-                      </span>
-                    </>
-                  )}
+              {/* Row 1: Headline with status badges on the right */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <StatusDot analyzed={a.analyzed} analysis={a.analysis} showAnalysis={showAnalysis} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <a
+                    href={a.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontSize: 13, color: 'var(--text)', textDecoration: 'none', lineHeight: 1.5,
+                      transition: 'color 0.15s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}
+                    onFocus={e => (e.currentTarget.style.color = 'var(--accent)')}
+                    onBlur={e => (e.currentTarget.style.color = 'var(--text)')}
+                  >
+                    {a.headline}
+                  </a>
                 </div>
-                {/* Expandable summary */}
-                {isExpanded && a.analysis && (
-                  <div style={{
-                    marginTop: 6, padding: '8px 12px', borderRadius: 8,
-                    background: 'color-mix(in srgb, var(--border) 30%, transparent)',
-                    fontSize: 12, color: 'var(--text2)', lineHeight: 1.6,
-                  }}>
-                    {a.analysis.summary && (
-                      <div style={{ marginBottom: 4 }}>{a.analysis.summary}</div>
-                    )}
-                    {a.analysis.matchedEntry && (
-                      <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>
-                        Matches: {a.analysis.matchedEntry}
-                      </div>
-                    )}
+                {/* Right-aligned badges for rich analysis */}
+                {showAnalysis && hasRichAnalysis && a.analysis && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0, marginTop: 2 }}>
+                    <CategoryBadge category={a.analysis.category} />
+                    <MaterialityBadge materiality={a.analysis.materiality} />
+                    <span style={{
+                      fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px',
+                      padding: '2px 7px', borderRadius: 4,
+                      background: a.analysis.tracked
+                        ? 'color-mix(in srgb, var(--mint) 15%, transparent)'
+                        : 'color-mix(in srgb, var(--coral) 15%, transparent)',
+                      color: a.analysis.tracked ? 'var(--mint)' : 'var(--coral)',
+                    }}>
+                      {a.analysis.tracked ? 'Tracked' : 'New'}
+                    </span>
                   </div>
                 )}
               </div>
+
+              {/* Row 2: Date, source, metadata */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 4, paddingLeft: 17 }}>
+                {a.date && (
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', letterSpacing: '-0.2px' }}>
+                    {a.date}
+                  </span>
+                )}
+                {a.source && (
+                  <>
+                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                    <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.source}</span>
+                  </>
+                )}
+                {a.items && (
+                  <>
+                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                    <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.items}</span>
+                  </>
+                )}
+                {/* Sentiment indicator with label */}
+                {showAnalysis && hasRichAnalysis && a.analysis && (
+                  <>
+                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: sentimentColor, opacity: 0.8 }} />
+                      <span style={{ fontSize: 10, color: sentimentColor, opacity: 0.8, textTransform: 'capitalize' }}>
+                        {a.analysis.sentiment}
+                      </span>
+                    </span>
+                  </>
+                )}
+                {/* Fallback: simple tracked/new label */}
+                {showAnalysis && !hasRichAnalysis && a.analyzed !== null && a.analyzed !== undefined && (
+                  <>
+                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
+                    <span style={{
+                      fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+                      color: a.analyzed ? 'var(--mint)' : 'var(--coral)',
+                    }}>
+                      {a.analyzed ? 'Tracked' : 'New'}
+                    </span>
+                  </>
+                )}
+              </div>
+
+              {/* Row 3: Always-visible AI summary (the key visual upgrade) */}
+              {showAnalysis && hasRichAnalysis && a.analysis?.summary && (
+                <div style={{
+                  marginTop: 8, marginLeft: 17, padding: '8px 12px', borderRadius: 8,
+                  background: 'color-mix(in srgb, var(--border) 25%, transparent)',
+                  borderLeft: `2px solid ${sentimentColor}`,
+                  fontSize: 12, color: 'var(--text2)', lineHeight: 1.55,
+                }}>
+                  {a.analysis.summary}
+                  {a.analysis.matchedEntry && (
+                    <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4, fontStyle: 'italic' }}>
+                      Matches: {a.analysis.matchedEntry}
+                    </div>
+                  )}
+                </div>
+              )}
             </li>
           );
         })}
@@ -415,9 +434,10 @@ const CompanyFeedCard: React.FC<{
   aiChecking?: boolean;
   isPrimary?: boolean;
   fetchedAt?: number | null;
+  agentActive?: boolean;
   onLoad: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, onLoad }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, agentActive, onLoad }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -572,6 +592,30 @@ const CompanyFeedCard: React.FC<{
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
             <span style={{ fontSize: 12 }}>Fetching press releases & news...</span>
+          </div>
+        )}
+
+        {/* Agent mode banner */}
+        {data.loaded && agentActive && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12,
+            padding: '10px 16px', borderRadius: 10,
+            background: 'color-mix(in srgb, var(--accent) 6%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)',
+          }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+              <circle cx="8" cy="8" r="6" stroke="var(--accent)" strokeWidth="1.5" />
+              <circle cx="8" cy="8" r="2" fill="var(--accent)" />
+              <path d="M8 2V0M8 16V14M2 8H0M16 8H14" stroke="var(--accent)" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+            </svg>
+            <div style={{ flex: 1 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.3px' }}>
+                AI Agent Analysis
+              </span>
+              <span style={{ fontSize: 11, color: 'var(--text3)', marginLeft: 8 }}>
+                Sonnet 4.5 with article scraping, semantic matching, and entry proposals
+              </span>
+            </div>
           </div>
         )}
 
@@ -772,7 +816,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Intelligence</div>
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Sources<span style={{ color: 'var(--accent)' }}>.</span></h2>
-        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Live press releases, news coverage, and competitor intelligence for {companyName}.</p>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Live press releases, news coverage, and competitor intelligence for {companyName}. {agentMode && <span style={{ color: 'var(--accent)' }}>Powered by AI agent analysis.</span>}</p>
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#live-feeds</div>
@@ -872,6 +916,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           aiChecking={aiChecking}
           isPrimary
           fetchedAt={lastFetchedAt}
+          agentActive={agentMode}
           onLoad={loadMainCard}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
         />
