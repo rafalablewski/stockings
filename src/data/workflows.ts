@@ -11,6 +11,7 @@ export interface Workflow {
   id: string;
   name: string;
   description: string;
+  requiresUserData: boolean;
   variants: WorkflowVariant[];
 }
 
@@ -22,6 +23,7 @@ export const workflows: Workflow[] = [
     id: 'earnings-call',
     name: 'Earnings Call Analyzer',
     description: 'Paste an earnings call transcript. Extracts guidance changes, constellation/treasury updates, partner pipeline, management tone, Q&A intelligence, and capital structure implications. Maps each finding to the correct ABISON database tab.',
+    requiresUserData: true,
     variants: [
       {
         label: 'ASTS',
@@ -213,7 +215,8 @@ Paste the transcript below:`,
   {
     id: 'thesis-review',
     name: 'Thesis Review (Bull / Bear / Base)',
-    description: 'Paste the current Investment tab data (scorecard, risks, perspectives) along with recent developments. The prompt stress-tests each scenario, identifies thesis drift, scores conviction changes, and outputs an updated Investment tab block with specific rating adjustments.',
+    description: 'Stress-tests each scenario against the database, identifies thesis drift, scores conviction changes, and outputs an updated Investment tab block with specific rating adjustments.',
+    requiresUserData: false,
     variants: [
       {
         label: 'ASTS',
@@ -397,6 +400,7 @@ Paste the current Investment tab data and recent developments below:`,
     id: 'sec-filing-delta',
     name: 'SEC Filing Delta Analysis',
     description: 'Paste two consecutive SEC filings (or key sections — risk factors, MD&A, footnotes) side by side. The prompt performs a structured diff: new risks added, risks removed, language softened or escalated, financial metric changes, and a hedge-fund-relevant interpretation of what each change signals. Maps directly to the Financials tab quarterly data.',
+    requiresUserData: true,
     variants: [
       {
         label: 'ASTS',
@@ -574,7 +578,8 @@ Paste Filing A and Filing B below:`,
   {
     id: 'weekly-digest',
     name: 'Weekly / Monthly Digest',
-    description: 'Paste a batch of recent entries, news, filings, and catalyst updates from the past 1-4 weeks. The prompt synthesizes everything into a concise stakeholder-ready memo — material changes, thesis momentum, catalyst tracker update, position sizing check, and action items for the next period.',
+    description: 'Synthesizes the database into a concise stakeholder-ready memo — material changes, thesis momentum, catalyst tracker update, position sizing check, and action items for the next period.',
+    requiresUserData: false,
     variants: [
       {
         label: 'ASTS',
@@ -771,7 +776,8 @@ Paste the period's entries and updates below:`,
   {
     id: 'capital-structure',
     name: 'Capital Structure / Dilution Waterfall',
-    description: 'Paste the current Capital tab data (share classes, offerings, converts, warrants, ATM programs). The prompt builds a complete dilution waterfall showing each instrument layer, models fully diluted shares at multiple stock price scenarios, and calculates the dilution cost of capital. Maps directly to the Capital tab — identifies gaps in convert terms, missing warrant schedules, or incomplete ATM tracking.',
+    description: 'Builds a complete dilution waterfall from the database showing each instrument layer, models fully diluted shares at multiple stock price scenarios, and calculates the dilution cost of capital. Identifies gaps in convert terms, missing warrant schedules, or incomplete ATM tracking.',
+    requiresUserData: false,
     variants: [
       {
         label: 'ASTS',
@@ -977,6 +983,7 @@ Paste the Capital tab data (and optionally balance sheet) below:`,
     id: 'insider-activity',
     name: 'Management & Insider Activity Decoder',
     description: 'Paste Form 4 filings, insider transaction data, executive changes, 10b5-1 plan disclosures, or compensation committee reports. The prompt classifies each transaction, identifies accumulation or disposition patterns, assesses insider sentiment, and flags misalignments between insider behavior and the public narrative.',
+    requiresUserData: true,
     variants: [
       {
         label: 'ASTS',

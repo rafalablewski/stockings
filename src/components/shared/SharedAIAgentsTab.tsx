@@ -11,6 +11,7 @@ interface AgentWorkflow {
   prompt: string;
   context: string;
   contextModules: string[];
+  requiresUserData: boolean;
 }
 
 interface SharedAIAgentsTabProps {
@@ -29,7 +30,7 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
   const abortRef = useRef<AbortController | null>(null);
 
   const handleRun = useCallback(async () => {
-    if (!userData.trim()) return;
+    if (workflow.requiresUserData && !userData.trim()) return;
 
     setRunning(true);
     setResult("");
@@ -228,53 +229,58 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
             </div>
           )}
 
-          {/* Textarea */}
-          <div style={{ position: "relative", marginBottom: 12 }}>
-            <textarea
-              value={userData}
-              onChange={(e) => setUserData(e.target.value)}
-              placeholder="Paste your data here — earnings call transcript, SEC filing, Form 4 filings, news articles..."
-              disabled={running}
-              style={{
-                width: "100%",
-                height: 192,
-                borderRadius: 8,
-                background: "transparent",
-                border: "1px solid rgba(255,255,255,0.06)",
-                color: "rgba(255,255,255,0.5)",
-                fontSize: 12,
-                fontFamily: "var(--font-mono, monospace)",
-                padding: 16,
-                resize: "vertical",
-                outline: "none",
-                lineHeight: 1.6,
-              }}
-            />
-            {userData.length > 0 && (
-              <div
+          {/* Textarea — only for workflows that need user-pasted data */}
+          {workflow.requiresUserData && (
+            <div style={{ position: "relative", marginBottom: 12 }}>
+              <textarea
+                value={userData}
+                onChange={(e) => setUserData(e.target.value)}
+                placeholder="Paste your data here — earnings call transcript, SEC filing, Form 4 filings, news articles..."
+                disabled={running}
                 style={{
-                  position: "absolute",
-                  bottom: 12,
-                  right: 12,
-                  fontSize: 10,
-                  color: "rgba(255,255,255,0.15)",
+                  width: "100%",
+                  height: 192,
+                  borderRadius: 8,
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  color: "rgba(255,255,255,0.5)",
+                  fontSize: 12,
+                  fontFamily: "var(--font-mono, monospace)",
+                  padding: 16,
+                  resize: "vertical",
+                  outline: "none",
+                  lineHeight: 1.6,
                 }}
-              >
-                {(userData.length / 1000).toFixed(1)}k chars
-              </div>
-            )}
-          </div>
+              />
+              {userData.length > 0 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 12,
+                    right: 12,
+                    fontSize: 10,
+                    color: "rgba(255,255,255,0.15)",
+                  }}
+                >
+                  {(userData.length / 1000).toFixed(1)}k chars
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Run / Stop */}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {!running ? (
               <span
                 role="button"
-                onClick={() => userData.trim() && handleRun()}
+                onClick={() => {
+                  if (workflow.requiresUserData && !userData.trim()) return;
+                  handleRun();
+                }}
                 style={{
                   fontSize: 12,
-                  color: userData.trim() ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.1)",
-                  cursor: userData.trim() ? "pointer" : "default",
+                  color: (!workflow.requiresUserData || userData.trim()) ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.1)",
+                  cursor: (!workflow.requiresUserData || userData.trim()) ? "pointer" : "default",
                   transition: "color 0.2s",
                 }}
               >
@@ -385,6 +391,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
         prompt: variant.prompt,
         context: getWorkflowContext(tickerLower, variant.contextModules),
         contextModules: variant.contextModules as string[],
+        requiresUserData: w.requiresUserData,
       };
     })
     .filter((w): w is AgentWorkflow => w !== null);
@@ -412,7 +419,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           AI Agents
         </div>
         <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
-          Select an agent, paste your data, and run analysis. Context is auto-injected from the database.
+          Run analysis agents. Some run directly from the database, others accept pasted data.
         </div>
       </div>
 
