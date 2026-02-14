@@ -1,15 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import type { PromptVariant } from "@/data/prompts";
 
 interface PromptCardProps {
   name: string;
-  content: string;
+  variants: PromptVariant[];
 }
 
-export function PromptCard({ name, content }: PromptCardProps) {
+export function PromptCard({ name, variants }: PromptCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [activeVariant, setActiveVariant] = useState(0);
+
+  const content = variants[activeVariant].content;
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -28,9 +32,28 @@ export function PromptCard({ name, content }: PromptCardProps) {
 
       <div className="relative flex items-start justify-between gap-6">
         <div className="flex-1 min-w-0">
-          <span className="text-[13px] font-mono font-medium text-white tracking-wide">
-            {name}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-[13px] font-mono font-medium text-white tracking-wide">
+              {name}
+            </span>
+            {variants.length > 1 && (
+              <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                {variants.map((variant, i) => (
+                  <button
+                    key={variant.label}
+                    onClick={() => setActiveVariant(i)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono tracking-wide transition-colors ${
+                      i === activeVariant
+                        ? "bg-white/10 text-white/70"
+                        : "bg-white/[0.03] text-white/25 hover:text-white/40"
+                    }`}
+                  >
+                    {variant.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-3">

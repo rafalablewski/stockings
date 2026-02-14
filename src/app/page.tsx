@@ -82,7 +82,7 @@ export default function HomePage() {
 
           <div className="grid gap-4">
             {prompts.map((prompt) => (
-              <PromptCard key={prompt.name} name={prompt.name} content={prompt.content} />
+              <PromptCard key={prompt.name} name={prompt.name} variants={prompt.variants} />
             ))}
           </div>
         </div>
