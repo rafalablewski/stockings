@@ -55,8 +55,10 @@ export function PromptCard({ name, content }: PromptCardProps) {
 
       {expanded && (
         <div className="relative mt-4 pt-4 border-t border-white/[0.04]">
-          <div className="text-[12px] text-white/30 leading-relaxed whitespace-pre-wrap">
-            {content}
+          <div className="rounded-lg bg-white/[0.02] border-l-2 border-white/[0.06] p-4 overflow-x-auto">
+            <pre className="text-[11px] font-mono text-white/40 leading-[1.7] whitespace-pre-wrap">
+              {content}
+            </pre>
           </div>
         </div>
       )}
