@@ -60,10 +60,9 @@ export default function StocksPage() {
 
         {/* Prompts */}
         <div className="mt-20">
-          <h2 className="text-2xl font-semibold text-white mb-3">Prompts</h2>
-          <p className="text-[13px] text-white/40 mb-8">
-            Prompts for working with AI agents.
-          </p>
+          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
+            Prompts
+          </h2>
 
           <div className="grid gap-4">
             {prompts.map((prompt) => (

@@ -19,14 +19,20 @@ export function PromptCard({ name, content }: PromptCardProps) {
   };
 
   return (
-    <div className="rounded-2xl bg-white/[0.02] border border-white/[0.06] overflow-hidden">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-6 text-left hover:bg-white/[0.02] transition-colors"
-      >
-        <h3 className="text-[13px] font-mono font-medium text-white tracking-wide">
-          {name}
-        </h3>
+    <div
+      onClick={() => setExpanded(!expanded)}
+      className="group relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300 cursor-pointer overflow-hidden"
+    >
+      {/* Glow effect on hover */}
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+      <div className="relative flex items-start justify-between gap-6">
+        <div className="flex-1 min-w-0">
+          <span className="text-[13px] font-mono font-medium text-white tracking-wide">
+            {name}
+          </span>
+        </div>
+
         <div className="flex items-center gap-3">
           <span
             onClick={handleCopy}
@@ -34,22 +40,24 @@ export function PromptCard({ name, content }: PromptCardProps) {
           >
             {copied ? "Copied!" : "Copy"}
           </span>
-          <svg
-            className={`w-3.5 h-3.5 text-white/30 transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.03] group-hover:bg-white/[0.08] transition-colors">
+            <svg
+              className={`w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-all duration-200 ${expanded ? "rotate-90" : ""}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
         </div>
-      </button>
+      </div>
 
       {expanded && (
-        <div className="px-6 pb-6 border-t border-white/[0.04]">
-          <pre className="mt-4 text-[12px] text-white/30 leading-relaxed whitespace-pre-wrap font-sans">
+        <div className="relative mt-4 pt-4 border-t border-white/[0.04]">
+          <div className="text-[12px] text-white/30 leading-relaxed whitespace-pre-wrap">
             {content}
-          </pre>
+          </div>
         </div>
       )}
     </div>

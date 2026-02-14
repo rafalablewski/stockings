@@ -79,9 +79,6 @@ export default function HomePage() {
           <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
             Prompts
           </h2>
-          <p className="text-[13px] text-white/40 mb-8">
-            Prompts for working with AI agents.
-          </p>
 
           <div className="grid gap-4">
             {prompts.map((prompt) => (
