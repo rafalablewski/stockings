@@ -3330,71 +3330,115 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'liquidity' && (
       <>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#liquidity-overview</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Cash Position & Runway<UpdateIndicators sources="SEC" /></span>
+      {/* Treasury Dashboard KPIs */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Cash (8-K)', value: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, sub: 'Dec 31, 2025', color: 'var(--mint)' },
+          { label: 'Pro Forma Cash', value: `$${(LIQUIDITY_POSITION.cashProForma / 1000).toFixed(1)}B`, sub: 'Post-Feb 2026', color: 'var(--sky)' },
+          { label: 'Quarterly Burn', value: `$${LIQUIDITY_POSITION.quarterlyBurn}M`, sub: 'CapEx + OpEx', color: 'var(--coral)' },
+          { label: 'Runway (8-K)', value: `${(LIQUIDITY_POSITION.cashAndEquiv / LIQUIDITY_POSITION.quarterlyBurn).toFixed(1)}Q`, sub: `~${(LIQUIDITY_POSITION.cashAndEquiv / LIQUIDITY_POSITION.quarterlyBurn / 4).toFixed(1)} years`, color: 'var(--gold)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Cash Runway Scenarios */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-scenarios</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Forward-Looking Runway Scenarios</span>
+          <UpdateIndicators sources="SEC" />
         </div>
-        {/* Treasury Dashboard KPIs */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
-          {[
-            { label: 'Cash (8-K)', value: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, sub: 'Dec 31, 2025', color: 'var(--mint)' },
-            { label: 'Pro Forma Cash', value: `$${(LIQUIDITY_POSITION.cashProForma / 1000).toFixed(1)}B`, sub: 'Post-Feb 2026', color: 'var(--sky)' },
-            { label: 'Quarterly Burn', value: `$${LIQUIDITY_POSITION.quarterlyBurn}M`, sub: 'CapEx + OpEx', color: 'var(--coral)' },
-            { label: 'Runway (8-K)', value: `${(LIQUIDITY_POSITION.cashAndEquiv / LIQUIDITY_POSITION.quarterlyBurn).toFixed(1)}Q`, sub: `~${(LIQUIDITY_POSITION.cashAndEquiv / LIQUIDITY_POSITION.quarterlyBurn / 4).toFixed(1)} years`, color: 'var(--gold)' },
-          ].map(kpi => (
-            <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
-              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Scenario', 'Cash', 'Burn/Q', 'Rev/Q', 'Runway'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Scenario' ? 'left' : 'right' }}>{h}</span>
+            ))}
+          </div>
+          {CASH_RUNWAY_SCENARIOS.map((s, i) => (
+            <div key={s.label} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', padding: '12px 24px', borderBottom: i < CASH_RUNWAY_SCENARIOS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontSize: 12, color: 'var(--text)' }}>{s.label}</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${(s.startingCash / 1000).toFixed(1)}B</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', textAlign: 'right' }}>${s.quarterlyBurn}M</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'right' }}>${s.quarterlyRevenue}M</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--gold)', textAlign: 'right' }}>{s.runwayQuarters.toFixed(1)}Q</span>
             </div>
           ))}
         </div>
-        {/* Cash Runway Scenarios */}
-        <div style={{ padding: '24px 24px' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Runway Scenarios</div>
-          <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', borderBottom: '1px solid var(--border)' }}>
-              {['Scenario', 'Cash', 'Burn/Q', 'Rev/Q', 'Runway'].map(h => (
-                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: h === 'Scenario' ? 'left' : 'right' }}>{h}</span>
-              ))}
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Rev/Q includes projected service revenue as burn offset. Runway extends significantly once commercial service begins generating recurring revenue.
+        </div>
+      </div>
+
+      {/* Debt Outstanding */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#debt-summary</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Debt Outstanding (Pro Forma Feb 2026)</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
+          {[
+            { value: '$1,150M', label: '2.00% (2036)', sub: 'Oct 2025 issue', color: 'var(--cyan)' },
+            { value: '$1,000M', label: '2.25% (2036)', sub: 'Feb 2026 issue', color: 'var(--mint)' },
+            { value: '$325M', label: '2.375% (2032)', sub: 'Post-repurchase', color: 'var(--coral)' },
+            { value: `$${LIQUIDITY_POSITION.ubsLoan}M`, label: 'UBS + Secured', sub: 'Ligado related', color: 'var(--violet)' },
+          ].map(d => (
+            <div key={d.label} style={{ background: 'var(--surface)', padding: '16px 12px', textAlign: 'center' }}>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: d.color }}>{d.value}</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>{d.label}</div>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.6 }}>{d.sub}</div>
             </div>
-            {CASH_RUNWAY_SCENARIOS.map((s, i) => (
-              <div key={s.label} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', padding: '12px 16px', borderBottom: i < CASH_RUNWAY_SCENARIOS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <span style={{ fontSize: 12, color: 'var(--text)' }}>{s.label}</span>
-                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${(s.startingCash / 1000).toFixed(1)}B</span>
-                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', textAlign: 'right' }}>${s.quarterlyBurn}M</span>
-                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'right' }}>${s.quarterlyRevenue}M</span>
-                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--gold)', textAlign: 'right' }}>{s.runwayQuarters.toFixed(1)}Q</span>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
-        {/* Debt Summary */}
-        <div style={{ padding: '24px 24px', borderTop: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Debt Outstanding (Pro Forma Feb 2026)</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 12, overflow: 'hidden' }}>
-            {[
-              { value: '$1,150M', label: '2.00% (2036)', sub: 'Oct 2025 issue', color: 'var(--cyan)' },
-              { value: '$1,000M', label: '2.25% (2036)', sub: 'Feb 2026 issue', color: 'var(--mint)' },
-              { value: '$325M', label: '2.375% (2032)', sub: 'Post-repurchase', color: 'var(--coral)' },
-              { value: `$${LIQUIDITY_POSITION.ubsLoan}M`, label: 'UBS + Secured', sub: 'Ligado related', color: 'var(--violet)' },
-            ].map(d => (
-              <div key={d.label} style={{ background: 'var(--surface)', padding: '16px 12px', textAlign: 'center' }}>
-                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: d.color }}>{d.value}</div>
-                <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>{d.label}</div>
-                <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.6 }}>{d.sub}</div>
-              </div>
-            ))}
-          </div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 12 }}>
-            Total pro forma debt: ~$2,968M. Blended rate ~2.15%. Sound Point $550M facility available for Ligado closing.
-          </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Total pro forma debt: ~$2,968M. Blended rate ~2.15%. Sound Point $550M facility available for Ligado closing.
         </div>
-        {/* Recent Capital Activity */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border)', background: 'linear-gradient(135deg, color-mix(in srgb, var(--mint) 5%, var(--surface)), color-mix(in srgb, var(--sky) 5%, var(--surface)))' }}>
-          <div style={{ fontSize: 11, color: 'var(--mint)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Feb 2026 Capital Activity</div>
-          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6, marginTop: 4 }}>
+      </div>
+
+      {/* Position Summary */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#position-summary</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Cash Position</div>
+          {[
+            { l: 'Cash & Equivalents', v: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, hl: true },
+            { l: 'Pro Forma Cash', v: `$${(LIQUIDITY_POSITION.cashProForma / 1000).toFixed(1)}B` },
+            { l: 'Total Debt', v: `$${(LIQUIDITY_POSITION.totalDebtProForma / 1000).toFixed(1)}B` },
+            { l: 'ATM Remaining', v: `$${LIQUIDITY_POSITION.atmRemaining}M` },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--mint)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Debt Facilities</div>
+          {[
+            { l: 'Sound Point Facility', v: `$${LIQUIDITY_POSITION.soundPointFacility}M`, hl: true },
+            { l: 'UBS Loan', v: `$${LIQUIDITY_POSITION.ubsLoan}M` },
+            { l: 'Quarterly Burn', v: `$${LIQUIDITY_POSITION.quarterlyBurn}M` },
+            { l: 'Blended Rate', v: '~2.15%' },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--violet)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent Capital Activity */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-activity</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--mint) 5%, var(--surface)), color-mix(in srgb, var(--sky) 5%, var(--surface)))' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 8 }}>Feb 2026 Capital Activity</div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
             $1B 2.25% converts issued. $46.5M of 4.25% and $250M of 2.375% repurchased. ~$614M registered directs. Net new cash ~$980M.
           </div>
         </div>
