@@ -160,6 +160,9 @@ import {
   AUG_SEP_2025_RSU_VESTINGS,
   AUG_SEP_2025_INSIDER_SALES,
   APR_MAY_2025_INSIDER_PURCHASES,
+  MAR_2025_INSIDER_SALES,
+  MAR_2025_LIGADO_DEAL,
+  MAR_2025_SHELF_REGISTRATION,
   JUN_2025_CERTIFICATE_AMENDMENT,
   MAY_JUN_2025_RSU_ACTIVITY,
   JUN_2025_INSIDER_PURCHASES,
@@ -3678,6 +3681,89 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
           Cisneros (1K each) + Johnson (500) at $25 dip. Multiple duplicate Form 4 filings corrected via amendments.
+        </div>
+      </div>
+
+      {/* March 2025 Insider Sales */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mar-2025-insider-sales</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>March 2025 — RSU Vesting Sales & Withholdings</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--rose)' }}>~111K shares / $3.4M</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 80px 80px 90px 70px', padding: '8px 24px', borderBottom: '1px solid var(--border)', fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+          <span>Name</span><span>Date</span><span style={{ textAlign: 'right' }}>Shares</span><span style={{ textAlign: 'right' }}>Price</span><span style={{ textAlign: 'right' }}>Proceeds</span><span>Type</span>
+        </div>
+        <div>
+          {MAR_2025_INSIDER_SALES.map((s, i) => (
+            <div key={`mar-sale-${i}`} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 90px 80px 80px 90px 70px', padding: '12px 24px', borderBottom: i < MAR_2025_INSIDER_SALES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{s.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({s.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{s.date.slice(5)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--rose)', textAlign: 'right' }}>{s.shares.toLocaleString()}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${s.price.toFixed(2)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: s.proceeds > 0 ? 'var(--rose)' : 'var(--text3)', textAlign: 'right' }}>{s.proceeds > 0 ? `$${(s.proceeds / 1000).toFixed(0)}K` : '—'}</span>
+              <span style={{ fontSize: 10, color: s.type === 'sale' ? 'var(--rose)' : 'var(--gold)', background: s.type === 'sale' ? 'color-mix(in srgb, var(--rose) 15%, transparent)' : 'color-mix(in srgb, var(--gold) 15%, transparent)', padding: '2px 6px', borderRadius: 4, textTransform: 'uppercase', fontWeight: 600 }}>{s.type === 'withholding' ? 'W/H' : 'Sale'}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          All RSU vesting-related. Stock peaked $35.49 (Mar 6) after +18% Q4 pop, fell to $22.74 EOM. Routine compensation liquidity.
+        </div>
+      </div>
+
+      {/* Ligado Deal */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#ligado-deal</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--gold) 5%, var(--surface)), color-mix(in srgb, var(--violet) 5%, var(--surface)))' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8 }}>Mar 2025 Ligado Material Agreement</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginTop: 12 }}>
+            {[
+              { label: 'Initial Investment', value: `$${MAR_2025_LIGADO_DEAL.initialInvestment}M`, color: 'var(--gold)' },
+              { label: 'Total Consideration', value: `$${MAR_2025_LIGADO_DEAL.totalConsideration}M`, color: 'var(--sky)' },
+              { label: 'Spectrum', value: `${MAR_2025_LIGADO_DEAL.spectrumMHz} MHz`, color: 'var(--mint)' },
+              { label: 'Warrant Dilution', value: `${MAR_2025_LIGADO_DEAL.dilutionPct}%`, color: 'var(--rose)' },
+            ].map(item => (
+              <div key={item.label}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{item.label}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 600, color: item.color, marginTop: 4 }}>{item.value}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
+            <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+              <span style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Bands:</span> {MAR_2025_LIGADO_DEAL.spectrumBands}
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+              <span style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Annual Lease:</span> ${MAR_2025_LIGADO_DEAL.annualLease}M/yr + revenue share
+            </div>
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 12, lineHeight: 1.5 }}>
+            {MAR_2025_LIGADO_DEAL.notes}
+          </div>
+        </div>
+      </div>
+
+      {/* S-3ASR Shelf Registration */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#shelf-registration</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>S-3ASR Shelf Registration (Mar 17, 2025)</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--gold)' }}>~{(MAR_2025_SHELF_REGISTRATION.dilutionPct)}% Dilution Potential</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)' }}>
+          {[
+            { label: 'Total Shares', value: `${(MAR_2025_SHELF_REGISTRATION.totalShares / 1e6).toFixed(1)}M`, color: 'var(--gold)' },
+            { label: 'Aggregate Value', value: `$${(MAR_2025_SHELF_REGISTRATION.aggregateValue / 1e9).toFixed(1)}B`, color: 'var(--sky)' },
+            { label: 'Fee Calc Price', value: `$${MAR_2025_SHELF_REGISTRATION.pricePerShare}`, color: 'var(--text2)' },
+          ].map(item => (
+            <div key={item.label} style={{ background: 'var(--surface)', padding: '16px 24px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{item.label}</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 600, color: item.color, marginTop: 4 }}>{item.value}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          {MAR_2025_SHELF_REGISTRATION.notes}
         </div>
       </div>
 

@@ -30,10 +30,10 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-12',
-  source: 'Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR',
+  lastUpdated: '2026-02-15',
+  source: 'Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR, Mar 2025 8-Ks/Form 4s/S-3ASR/S-8/13D-A',
   nextExpectedUpdate: 'After Q4 2025 earnings (~March 2026)',
-  notes: 'BB6 unfolded Feb 10, 2026. $1B new converts + $614M registered directs announced Feb 11.',
+  notes: 'BB6 unfolded Feb 10, 2026. $1B new converts + $614M registered directs announced Feb 11. Mar 2025: Ligado 8-K ($150M + warrants), S-3ASR (56M shares), Vodafone 6% stable.',
 };
 
 // ============================================================================
@@ -273,6 +273,10 @@ export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   { event: 'BlackRock 13G/A: 5.2% Stake (14.86M shares)', date: 'Apr 28, 2025', category: 'Corporate' },
   { event: 'DEF 14A Proxy Filed (5.4M share incentive plan, annual meeting Jun 6)', date: 'Apr 25, 2025', category: 'Corporate' },
   { event: 'Cisneros (Dir) + Johnson (CFO) Purchases at $25 (Apr 4)', date: 'Apr 4, 2025', category: 'Capital' },
+  { event: 'Ligado Material Agreement ($150M initial + 9.99% warrants; $550M total for 45 MHz L-band)', date: 'Mar 24, 2025', category: 'Spectrum' },
+  { event: 'S-3ASR: 56M Shares Registered for Resale (Rakuten reorg + others)', date: 'Mar 17, 2025', category: 'Financing' },
+  { event: 'Vodafone 13D/A: 6% Ownership Stable (14.5M shares)', date: 'Mar 12, 2025', category: 'Corporate' },
+  { event: 'S-8: 2M Shares Registered (2024 Incentive Plan Annual Increase)', date: 'Mar 5, 2025', category: 'Corporate' },
   { event: 'FirstNet Trial FCC Approval', date: 'Apr 2025', category: 'Regulatory' },
   { event: 'First VoLTE Call', date: '2025', category: 'Technology' },
 

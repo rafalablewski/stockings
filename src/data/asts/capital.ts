@@ -29,9 +29,9 @@ import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, Conver
 
 export const CAPITAL_METADATA: DataMetadata = {
   lastUpdated: '2026-02-15',
-  source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q',
+  source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q, Mar 2025 Form 4s/144/S-3ASR/S-8/13D-A/8-K',
   nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). GREENSHOE DEADLINE: Feb 20, 2026 ($150M convert option).',
-  notes: 'Feb 15 audit: 95 filings cross-referenced (10 Jan-Feb + 13 Dec + 15 Sept-Oct + 12 Aug-Sep + 15 Jun-Aug + 15 May-Jun + 15 Apr-May). BlackRock 13G/A: 5.2% (14.86M shares). $500M ATM launched May 13 (~$287M used). Proxy: 5.4M incentive shares approved. Cisneros bought at $25 on Apr 4, May 7, Jun 9, Jun 24 (4 purchases). Stock Apr-May: $29.50→$32.50.',
+  notes: 'Feb 15 audit: 110 filings cross-referenced (10 Jan-Feb + 13 Dec + 15 Sept-Oct + 12 Aug-Sep + 15 Jun-Aug + 15 May-Jun + 15 Apr-May + 15 Mar). Mar 2025 insider sales: ~111K shares/$3.4M (Rubin, Torres, Wisniewski, Gupta, Bernal). Ligado 8-K Mar 24: $150M initial + 9.99% warrants + $550M total. S-3ASR: 56M shares shelf. S-8: 2M incentive. Vodafone 13D/A: 6% stable.',
 };
 
 // ============================================================================
@@ -722,6 +722,64 @@ export const APR_2025_PROXY = {
   ceoComp: { salary: 1000000, equityGrant: true },
   avellanOwnership: 28,
   notes: 'Annual meeting scheduled Jun 6 (subsequently held Jun 27 per later batch). 5.4M share plan = ~2% dilution potential. ARS filed same day with CEO letter.',
+};
+
+// ============================================================================
+// MARCH 2025 INSIDER SALES & LIGADO DEAL
+// ============================================================================
+
+/**
+ * March 2025 insider sales — all RSU vesting-related (tax withholding + dispositions).
+ * Total: ~111K shares, ~$3.4M proceeds at avg ~$30.60/share.
+ * Context: Stock $24-$35 range. Post-earnings peak $35.49 (Mar 6) then declined to $22.74 EOM.
+ * All sellers retained significant positions. Routine compensation liquidity.
+ */
+export const MAR_2025_INSIDER_SALES = [
+  { name: 'Ronald L. Rubin', role: 'Director', shares: 7000, price: 32.46, date: '2025-03-10', type: 'sale' as const, proceeds: 227220, postHoldings: 65628, note: 'Tax withholding on 2024 RSU vesting. Sold at post-earnings highs.' },
+  { name: 'Julio A. Torres', role: 'Director', shares: 20000, price: 30.73, date: '2025-03-10', type: 'sale' as const, proceeds: 614600, postHoldings: 52628, note: 'Tax on RSU vesting. Weighted avg $30.62-$30.94. Ownership down ~28%.' },
+  { name: 'Scott Wisniewski', role: 'President', shares: 23643, price: 28.15, date: '2025-03-15', type: 'withholding' as const, proceeds: 0, postHoldings: 653146, note: 'Tax withholding on 72,500 RSU vesting (net 48,857 shares).' },
+  { name: 'Scott Wisniewski', role: 'President', shares: 35871, price: 28.35, date: '2025-03-17', type: 'sale' as const, proceeds: 1017143, postHoldings: 653146, note: 'Form 144/A amended acquisition date. Weighted $28.25-$28.50.' },
+  { name: 'Shanti B. Gupta', role: 'COO', shares: 24425, price: 28.00, date: '2025-03-17', type: 'sale' as const, proceeds: 683900, postHoldings: 368807, note: 'Executing Form 144 proposal. Selling amid price dip from $35 peak.' },
+  { name: 'Maya Bernal', role: 'CAO', shares: 3244, price: 25.71, date: '2025-03-21', type: 'withholding' as const, proceeds: 0, postHoldings: 120335, note: 'Tax withholding on 12,500 RSU vesting (net 9,256 shares). Standard.' },
+];
+
+/**
+ * Ligado Material Agreement — 8-K Filed March 24, 2025
+ * Entry into definitive agreement for L-band spectrum access.
+ * Formalizes the RSA announced Jan 6, 2025.
+ * Warrants for 9.99% AST stake (~22M shares) are significant dilution.
+ */
+export const MAR_2025_LIGADO_DEAL = {
+  date: '2025-03-24',
+  type: 'Material Agreement (8-K)',
+  initialInvestment: 150, // $M
+  totalConsideration: 550, // $M
+  annualLease: 80, // $M/year
+  spectrumMHz: 45,
+  spectrumBands: '40 MHz L-band (1525-1559 MHz) + 5 MHz (1670-1675 MHz)',
+  coverage: 'US & Canada',
+  warrants: { pctStake: 9.99, estimatedShares: 22000000, estimatedValue: 120000000 },
+  dilutionPct: 10,
+  notes: 'Tied to Ligado Chapter 11 bankruptcy plan. +10% intraday on announcement. Risk: regulatory approvals, bankruptcy court outcomes. Precedes Jun 2025 term sheet and Oct 2025 closing.',
+};
+
+/**
+ * S-3ASR Automatic Shelf Registration — Filed March 17, 2025
+ * 56M shares for resale (~25% dilution potential). No immediate issuance.
+ */
+export const MAR_2025_SHELF_REGISTRATION = {
+  date: '2025-03-17',
+  type: 'S-3ASR',
+  totalShares: 56071233,
+  components: [
+    { description: 'Rakuten reorganization shares', shares: 28500000 },
+    { description: 'Exchangeable shares + others', shares: 27571233 },
+  ],
+  pricePerShare: 28.62, // for fee calculation
+  aggregateValue: 1600000000, // ~$1.6B
+  fee: 245689,
+  dilutionPct: 25,
+  notes: 'Facilitates secondary sales by existing holders. Overhang risk but enables liquidity. No immediate issuance.',
 };
 
 // ============================================================================

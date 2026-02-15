@@ -54,6 +54,13 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Apr 25, 2025', type: 'ARS', description: '2024 Annual Report to Security Holders (incorporates 10-K; CEO letter on launches/partnerships)', period: 'FY 2024', color: 'blue' },
   { date: 'Apr 14, 2025', type: 'PRE 14A', description: 'Preliminary Proxy Statement (draft; same proposals as DEF 14A)', period: '—', color: 'green' },
   { date: 'Apr 4, 2025', type: 'Form 4', description: 'Cisneros (Dir) purchase 1K at $25 (trust; post: 782,327); Johnson (CFO) purchase 500 at $25 (IRA; Form 4/A Apr 9)', period: '—', color: 'green' },
+  { date: 'Mar 24, 2025', type: '8-K', description: 'Ligado Material Agreement ($150M initial + 9.99% warrants; $550M total; 45 MHz L-band spectrum)', period: '—', color: 'yellow' },
+  { date: 'Mar 24, 2025', type: 'Form 4', description: 'Bernal (CAO) 3,244 shares withheld at $25.71 (RSU tax; net 9,256 vested)', period: '—', color: 'green' },
+  { date: 'Mar 17-18, 2025', type: 'Form 4', description: 'Wisniewski (Pres) 23,643 w/h + 35,871 sold at $28.35; Gupta (COO) 24,425 sold at $28 — RSU vesting sales', period: '—', color: 'green' },
+  { date: 'Mar 17, 2025', type: 'S-3ASR', description: 'Automatic Shelf: 56M shares for resale (28.5M Rakuten reorg + others; ~25% dilution potential)', period: '—', color: 'green' },
+  { date: 'Mar 12, 2025', type: 'SC 13D/A', description: 'Vodafone 6% Ownership (14.5M shares: 1M Class A + 4.47M convert + 9.04M Units/Class B). No change.', period: '—', color: 'green' },
+  { date: 'Mar 10-11, 2025', type: 'Form 4', description: 'Torres (Dir) 20K sold at $30.73; Rubin (Dir) 7K sold at $32.46 — RSU tax withholding sales at post-earnings highs', period: '—', color: 'green' },
+  { date: 'Mar 5, 2025', type: 'S-8', description: '2M shares registered under 2024 Incentive Plan (annual increase; $52.6M aggregate at $26.29)', period: '—', color: 'green' },
   { date: 'Mar 3, 2025', type: '10-K', description: 'Annual Report', period: 'FY 2024', color: 'blue' },
   { date: 'Feb 27, 2025', type: '8-K', description: 'Q4 2024 Earnings Release', period: '—', color: 'yellow' },
   { date: 'Nov 6, 2024', type: '10-Q', description: 'Quarterly Report', period: 'Q3 2024', color: 'purple' },
@@ -72,7 +79,7 @@ export const ASTS_SEC_META = {
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 11, 2026', title: '$1B Converts + Registered Directs + Preliminary FY 2025 Results' },
-  totalFilingsTracked: 69
+  totalFilingsTracked: 76
 };
 
 export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -93,6 +100,9 @@ export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   'PRE 14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'DEFA14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   '10-Q/A': { bg: 'rgba(168,85,247,0.2)', text: 'var(--violet)' },
+  'S-3ASR': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'S-8': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'Form 144/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
 };
 
 export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5', 'Other'];
