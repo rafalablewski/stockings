@@ -197,21 +197,44 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
 
       {/* Expanded body */}
       {expanded && (
-        <div style={{ padding: "0 20px 20px", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+        <div style={{ padding: "0 20px 20px", borderTop: "1px solid var(--border)" }}>
           {/* Context modules + view prompt */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
               gap: 6,
-              paddingTop: 12,
-              marginBottom: 12,
+              paddingTop: 16,
+              marginBottom: 16,
             }}
           >
-            <span style={{ fontSize: 10, color: "rgba(255,255,255,0.15)" }}>Context:</span>
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                color: "var(--text3)",
+              }}
+            >
+              Context:
+            </span>
             {workflow.contextModules.map((mod, i) => (
-              <span key={mod} style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", textTransform: "capitalize" }}>
-                {mod}{i < workflow.contextModules.length - 1 ? "," : ""}
+              <span
+                key={mod}
+                style={{
+                  fontSize: 9,
+                  fontWeight: 500,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  padding: "2px 6px",
+                  borderRadius: 4,
+                  background: "rgba(255,255,255,0.04)",
+                  color: "var(--text3)",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                {mod}
               </span>
             ))}
             <button
@@ -219,12 +242,17 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
               onClick={() => setShowPrompt(!showPrompt)}
               style={{
                 marginLeft: "auto",
-                fontSize: 10,
-                color: "rgba(255,255,255,0.2)",
+                fontSize: 9,
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                padding: "2px 6px",
+                borderRadius: 4,
+                background: "rgba(255,255,255,0.04)",
+                color: "var(--text3)",
+                border: "1px solid var(--border)",
                 cursor: "pointer",
-                background: "none",
-                border: "none",
-                padding: 0,
+                transition: "all 0.15s",
               }}
             >
               {showPrompt ? "Hide prompt" : "View prompt"}
@@ -235,10 +263,10 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
           {showPrompt && (
             <div
               style={{
-                marginBottom: 12,
+                marginBottom: 16,
                 borderRadius: 8,
-                background: "rgba(255,255,255,0.02)",
-                borderLeft: "2px solid rgba(255,255,255,0.06)",
+                background: "var(--surface2)",
+                borderLeft: "2px solid var(--border)",
                 padding: 16,
                 maxHeight: 256,
                 overflowY: "auto",
@@ -249,7 +277,7 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                 style={{
                   fontSize: 11,
                   fontFamily: "var(--font-mono, monospace)",
-                  color: "rgba(255,255,255,0.3)",
+                  color: "var(--text3)",
                   lineHeight: 1.7,
                   whiteSpace: "pre-wrap",
                   margin: 0,
@@ -262,7 +290,7 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
 
           {/* Textarea — only for workflows that need user-pasted data */}
           {workflow.requiresUserData && (
-            <div style={{ position: "relative", marginBottom: 12 }}>
+            <div style={{ position: "relative", marginBottom: 16 }}>
               <textarea
                 value={userData}
                 onChange={(e) => setUserData(e.target.value)}
@@ -274,8 +302,8 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                   height: 192,
                   borderRadius: 8,
                   background: "transparent",
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  color: "rgba(255,255,255,0.5)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text2)",
                   fontSize: 12,
                   fontFamily: "var(--font-mono, monospace)",
                   padding: 16,
@@ -290,8 +318,10 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                     position: "absolute",
                     bottom: 12,
                     right: 12,
-                    fontSize: 10,
-                    color: "rgba(255,255,255,0.15)",
+                    fontSize: 9,
+                    fontWeight: 500,
+                    letterSpacing: "0.08em",
+                    color: "var(--text3)",
                   }}
                 >
                   {(userData.length / 1000).toFixed(1)}k chars
@@ -301,22 +331,25 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
           )}
 
           {/* Run / Stop */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             {!running ? (
               <button
                 type="button"
                 disabled={!canRun}
                 onClick={handleRun}
                 style={{
-                  fontSize: 12,
-                  fontFamily: "var(--font-mono, monospace)",
-                  color: canRun ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.1)",
-                  background: canRun ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
-                  border: `1px solid ${canRun ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.04)"}`,
-                  borderRadius: 8,
-                  padding: "8px 16px",
+                  fontSize: 9,
+                  fontWeight: 500,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  color: canRun ? "rgba(130,200,130,0.5)" : "var(--text3)",
+                  background: "rgba(255,255,255,0.04)",
+                  border: `1px solid ${canRun ? "rgba(130,200,130,0.15)" : "var(--border)"}`,
+                  borderRadius: 4,
+                  padding: "5px 14px",
                   cursor: canRun ? "pointer" : "not-allowed",
                   transition: "all 0.15s",
+                  opacity: canRun ? 1 : 0.4,
                 }}
               >
                 Run Analysis
@@ -326,13 +359,15 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                 type="button"
                 onClick={handleStop}
                 style={{
-                  fontSize: 12,
-                  fontFamily: "var(--font-mono, monospace)",
-                  color: "rgba(255,100,100,0.7)",
-                  background: "rgba(255,100,100,0.06)",
-                  border: "1px solid rgba(255,100,100,0.15)",
-                  borderRadius: 8,
-                  padding: "8px 16px",
+                  fontSize: 9,
+                  fontWeight: 500,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  color: "var(--coral)",
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid color-mix(in srgb, var(--coral) 25%, transparent)",
+                  borderRadius: 4,
+                  padding: "5px 14px",
                   cursor: "pointer",
                   transition: "all 0.15s",
                 }}
@@ -347,11 +382,11 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                     width: 4,
                     height: 4,
                     borderRadius: "50%",
-                    background: "rgba(255,255,255,0.2)",
+                    background: "var(--text3)",
                     animation: "pulse 2s infinite",
                   }}
                 />
-                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.2)" }}>Analyzing...</span>
+                <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text3)" }}>Analyzing...</span>
               </div>
             )}
           </div>
@@ -359,13 +394,13 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
           {/* Error */}
           {error && (
             <div style={{ paddingTop: 8 }}>
-              <p style={{ fontSize: 12, color: "rgba(255,100,100,0.5)", margin: 0 }}>{error}</p>
+              <p style={{ fontSize: 11, color: "var(--coral)", margin: 0 }}>{error}</p>
             </div>
           )}
 
           {/* Result */}
           {result && (
-            <div style={{ paddingTop: 12, marginTop: 12, borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+            <div style={{ paddingTop: 16, marginTop: 16, borderTop: "1px solid var(--border)" }}>
               <div
                 style={{
                   display: "flex",
@@ -376,10 +411,11 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
               >
                 <span
                   style={{
-                    fontSize: 10,
+                    fontSize: 11,
+                    fontWeight: 600,
                     textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    color: "rgba(255,255,255,0.15)",
+                    letterSpacing: "2.5px",
+                    color: "var(--text3)",
                   }}
                 >
                   Analysis Result
@@ -388,15 +424,20 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                   type="button"
                   onClick={handleCopy}
                   style={{
-                    fontSize: 11,
-                    color: "rgba(255,255,255,0.2)",
+                    fontSize: 9,
+                    fontWeight: 500,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    padding: "2px 6px",
+                    borderRadius: 4,
+                    background: "rgba(255,255,255,0.04)",
+                    color: copied ? "var(--mint)" : "var(--text3)",
+                    border: `1px solid ${copied ? "rgba(130,200,130,0.15)" : "var(--border)"}`,
                     cursor: "pointer",
-                    background: "none",
-                    border: "none",
-                    padding: 0,
+                    transition: "all 0.15s",
                   }}
                 >
-                  {copied ? "Copied!" : "Copy"}
+                  {copied ? "Copied" : "Copy"}
                 </button>
               </div>
               <div style={{ maxHeight: 600, overflowY: "auto" }}>
@@ -404,7 +445,7 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                   style={{
                     fontSize: 12,
                     fontFamily: "var(--font-mono, monospace)",
-                    color: "rgba(255,255,255,0.4)",
+                    color: "var(--text2)",
                     lineHeight: 1.8,
                     whiteSpace: "pre-wrap",
                     margin: 0,
