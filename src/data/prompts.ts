@@ -110,8 +110,8 @@ Task: Analyze each pasted item (articles, press releases, SEC excerpts, analyst 
 
 Classification rules:
 - Assign to EXACTLY ONE primary section: BMNR / Ethereum / Comps
-  - BMNR = material events directly about Bitmine Immersion Technologies (treasury updates, financing, operations, leadership, etc.).
-  - Ethereum = primarily ETH-specific developments: treasury holdings/staking, validator network, DeFi/protocol activities, ETH ecosystem deals/RWA where BMNR is named or materially impacted; also includes companies building on Ethereum (or on other blockchains with material Ethereum ties), major Ethereum ecosystem protocols/developers, stablecoin issuers/activities (e.g., launches, integrations, regulatory moves on Ethereum), and related blockchain/DeFi/stablecoin projects with direct relevance to BMNR's ETH treasury/yield strategy.
+  - BMNR = material events directly about Bitmine Immersion Technologies (treasury holdings & staking updates, financing, operations, leadership, etc.). BMNR's own ETH/BTC position changes, ATM-funded purchases, and staking deployments always classify here — never Ethereum.
+  - Ethereum = ETH ecosystem developments NOT specific to BMNR's own holdings: protocol upgrades, network-wide staking yield changes, DeFi/restaking innovations, validator infrastructure trends, ecosystem partnerships/RWA, ETH price drivers; also includes companies building on Ethereum (or on other blockchains with material Ethereum ties), major Ethereum ecosystem protocols/developers, stablecoin issuers/activities (e.g., launches, integrations, regulatory moves on Ethereum), and related blockchain/DeFi/stablecoin projects with relevance to BMNR's strategy.
   - Comps = competitor actions, treasury/mining updates by rivals (even if BMNR is referenced for context).
   - Overlap → choose dominant category.
 
