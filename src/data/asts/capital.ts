@@ -10,8 +10,8 @@
  * - Equity offerings: 8-K filings, press releases
  * - SBC: 10-Q/10-K compensation disclosures
  *
- * LAST UPDATED: 2026-02-12 (Feb 2026 offerings + 13G + Form 4)
- * NEXT UPDATE: After Q4 2025 10-K or new proxy filing
+ * LAST UPDATED: 2026-02-15 (23 filings: Feb offerings + Dec insider + 13G/13D/A + Form 4s)
+ * NEXT UPDATE: After Q4 2025 10-K or new proxy filing. GREENSHOE DEADLINE: Feb 20.
  *
  * AI AGENT INSTRUCTIONS:
  * When updating from new 13D/A or proxy filing:
@@ -29,9 +29,9 @@ import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata } from 
 
 export const CAPITAL_METADATA: DataMetadata = {
   lastUpdated: '2026-02-15',
-  source: 'Feb 13 424B5s, Feb 12 FWPs, Feb 11 8-K, Pricing Term Sheets, 13G (Vanguard), Form 4/A (Gupta)',
+  source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta)',
   nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). GREENSHOE DEADLINE: Feb 20, 2026 ($150M convert option).',
-  notes: 'Feb 15 audit: All 10 Jan-Feb filings cross-referenced. $1B new converts + $614M RDs + $296.5M repurchases. Net dilution from RDs: ~2.51M shares (0.9% of Class A). Interest savings: ~$7.9M/yr ($51.4M NPV). Gupta Form 4/A corrected holdings to 348,232 shares.',
+  notes: 'Feb 15 audit: 23 filings cross-referenced (10 Jan-Feb + 13 Dec). American Tower sold 2.29M shares ($159.8M block); 211K Class A remain. 500K RSU grants to C-suite (Dec 2). Total Dec insider sales: $172.9M / 2.34M shares. Net dilution from Feb RDs: ~2.51M shares (0.9%). Gupta: 348,232 (Sept, corrected) → 382,375 (Dec, post-sale, additional RSU vestings).',
 };
 
 // ============================================================================
@@ -206,11 +206,11 @@ export const MAJOR_SHAREHOLDERS: MajorShareholder[] = [
   {
     name: 'American Tower',
     role: 'Infrastructure Partner',
-    shares: 2.5,
+    shares: 0.2,
     shareClass: 'Class A',
-    pct: '~0.7%',
-    votingPct: '~0.3%',
-    notes: 'PIPE investor. Tower infrastructure.',
+    pct: '<0.1%',
+    votingPct: '<0.1%',
+    notes: 'Per 13D/A filed Dec 11, 2025: Sold 2,288,621 shares at $69.75 via Barclays block trade ($159.8M gross). Direct Class A: 211,379. Retains 2,170,657 LLC Units (redeemable 1:1 for Class A) + matching Class B = ~2.38M economic equiv. PIPE investor.',
   },
 ];
 
@@ -397,7 +397,7 @@ export const DILUTION_HISTORY = [
   { quarter: 'Q1 2025', classA: 220.0, implied: 309.4, fullyDiluted: 350.0, event: 'Jan convert repurchase' },
   { quarter: 'Q2 2025', classA: 245.0, implied: 334.4, fullyDiluted: 380.0, event: 'Jul converts issued' },
   { quarter: 'Q3 2025', classA: 272.0, implied: 361.4, fullyDiluted: 395.0, event: 'Oct converts + ATM' },
-  { quarter: 'Q4 2025', classA: 280.0, implied: 369.4, fullyDiluted: 400.0, event: 'ATM sales + Oct RD. Vanguard 13G: 7.68% (21.5M shares)' },
+  { quarter: 'Q4 2025', classA: 280.0, implied: 369.4, fullyDiluted: 400.0, event: 'ATM sales + Oct RD. AmTower sold 2.29M shares ($159.8M block, 13D/A). 500K RSU grants to C-suite. Vanguard 13G: 7.68%' },
   { quarter: 'Q1 2026', classA: 290.4, implied: 379.8, fullyDiluted: 415.0, event: 'Feb 2026: $1B converts + two RDs (6.3M shares) + ATM continued' },
 ];
 
@@ -421,6 +421,38 @@ export const SBC_HISTORY = [
   { quarter: 'Q1 2025', sbc: 7.8, engineering: 4.0, gAndA: 3.8 },
   { quarter: 'Q2 2025', sbc: 10.5, engineering: 3.3, gAndA: 7.2 },
   { quarter: 'Q3 2025', sbc: 14.0, engineering: 8.0, gAndA: 6.0 },
+];
+
+// ============================================================================
+// DECEMBER 2025 INSIDER ACTIVITY
+// ============================================================================
+
+/**
+ * C-suite RSU grants and insider transactions from Dec 2025 filings.
+ * All sales executed under Rule 10b5-1 plans (adopted June–September 2025).
+ *
+ * Total sales: ~$172.9M (American Tower $159.8M + individuals $13.1M)
+ * Shares sold: 2,344,621 (0.83% of class)
+ * Grants: 500,000 RSUs to C-suite (vest 1/3 annually on May 30 anniversaries starting 2026)
+ * Net: Heavy selling led by 10% holder block trade; offset by grants and small director buys
+ */
+export const DEC_2025_RSU_GRANTS = [
+  { name: 'Abel Avellan', role: 'CEO & Chairman', units: 250000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postGrantHoldings: 78413078, holdingsNote: '78,163,078 Class C + 250,000 RSUs' },
+  { name: 'Andrew M. Johnson', role: 'CFO & CLO', units: 125000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postGrantHoldings: 512485, holdingsNote: 'Direct Class A' },
+  { name: 'Scott Wisniewski', role: 'President', units: 125000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postGrantHoldings: 713681, holdingsNote: 'Direct Class A' },
+];
+
+export const DEC_2025_INSIDER_SALES = [
+  { name: 'American Tower Corp', role: '10% Holder', shares: 2288621, price: 69.75, proceeds: 159757414, date: '2025-12-09', broker: 'Barclays Capital', plan10b5_1: true, planAdopted: null, postSaleClassA: 211379, postSaleLLCUnits: 2170657 },
+  { name: 'Yao Huiwen', role: 'CTO', shares: 40000, price: 73.52, proceeds: 2940752, date: '2025-12-05', broker: 'B. Riley Securities', plan10b5_1: true, planAdopted: '2025-06-12', postSaleClassA: null, postSaleLLCUnits: null },
+  { name: 'Shanti B. Gupta', role: 'COO', shares: 10000, price: 77.34, proceeds: 773400, date: '2025-12-10', broker: 'Fidelity Brokerage', plan10b5_1: true, planAdopted: null, postSaleClassA: 382375, postSaleLLCUnits: null },
+  { name: 'Maya Bernal', role: 'CAO', shares: 6000, price: 73.76, proceeds: 442560, date: '2025-12-05', broker: 'Fidelity Brokerage', plan10b5_1: true, planAdopted: null, postSaleClassA: 122486, postSaleLLCUnits: null },
+];
+
+export const DEC_2025_INSIDER_PURCHASES = [
+  { name: 'Keith R. Larson', role: 'Director', shares: 675, price: 72.71, date: '2025-12-10', account: 'IRA', plan10b5_1: true, planAdopted: '2025-09-08', postPurchaseHoldings: 675 },
+  { name: 'Keith R. Larson', role: 'Director', shares: 715, price: 70.02, date: '2025-12-17', account: 'IRA', plan10b5_1: true, planAdopted: '2025-09-08', postPurchaseHoldings: 1390 },
+  { name: 'Keith R. Larson', role: 'Director', shares: 625, price: 80.00, date: '2025-12-24', account: 'IRA', plan10b5_1: true, planAdopted: '2025-09-08', postPurchaseHoldings: 2015 },
 ];
 
 // ============================================================================

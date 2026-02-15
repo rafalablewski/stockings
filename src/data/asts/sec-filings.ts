@@ -12,6 +12,10 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Jan 26, 2026', type: 'Form 4', description: 'Shanti Gupta (COO) RSU Vesting Tax Withholding Amendment', period: '—', color: 'green' },
   { date: 'Jan 16, 2026', type: '8-K', description: 'Mikitani Board Resignation (Rakuten Designee)', period: '—', color: 'yellow' },
   { date: 'Dec 24, 2025', type: '8-K', description: 'BlueBird 6 Launch (First Block 2)', period: '—', color: 'yellow' },
+  { date: 'Dec 11, 2025', type: 'SC 13D/A', description: 'American Tower 13D/A: Sold 2.29M shares at $69.75 ($159.8M); 211K Class A remain + 2.17M LLC Units', period: '—', color: 'green' },
+  { date: 'Dec 10, 2025', type: 'Form 4', description: 'Multiple: Gupta (COO) sale 10K shares; Larson (Dir) purchase 675 shares', period: '—', color: 'green' },
+  { date: 'Dec 5, 2025', type: 'Form 4', description: 'Multiple: Bernal (CAO) sale 6K shares; Yao (CTO) Form 144 40K shares', period: '—', color: 'green' },
+  { date: 'Dec 2, 2025', type: 'Form 4', description: 'RSU Grants: Avellan (CEO) 250K, Johnson (CFO) 125K, Wisniewski (Pres) 125K — vest 1/3 annually from May 2026', period: '—', color: 'green' },
   { date: 'Nov 10, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q3 2025', color: 'purple' },
   { date: 'Aug 7, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q2 2025', color: 'purple' },
   { date: 'May 8, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q1 2025', color: 'purple' },
@@ -43,7 +47,9 @@ export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   'S-3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   '424B5': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
   'SC 13G': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'SC 13D/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form 4': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'Form 144': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
 };
 
 export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5', 'Other'];
