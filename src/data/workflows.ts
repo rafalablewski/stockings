@@ -107,6 +107,13 @@ SUMMARY OUTPUT:
 3. Key Surprises (things not in consensus)
 4. Suggested commit message
 
+DATABASE CROSS-CHECK (mandatory final section):
+Cross-reference your analysis against the auto-injected database context:
+1. ALREADY INCORPORATED: Data points from the analyzed content that are already reflected in the current database (cite matching fields and values). If fully incorporated: "This content appears fully reflected in the current database as of [date] — no updates needed."
+2. NEW TO DATABASE: Data points NOT yet in the database — these are the actionable updates. List each with the target tab and field.
+3. CONFLICTS: Cases where the analyzed content contradicts current database values (e.g., revised guidance vs. stored figures, updated share counts).
+4. OVERALL RELEVANCE: [Critical — immediate update needed / Important — update at next review / Low — no material database changes / Already Incorporated — no action needed]
+
 Rules — non-negotiable:
 - Quote exact numbers from the transcript. Never round or estimate unless clearly labeled.
 - Flag ambiguous statements separately from confirmed guidance.
@@ -197,6 +204,13 @@ SUMMARY OUTPUT:
    - Net conviction change: [↑ / ↓ / unchanged]
 3. Key Surprises (things not in consensus)
 4. Suggested commit message
+
+DATABASE CROSS-CHECK (mandatory final section):
+Cross-reference your analysis against the auto-injected database context:
+1. ALREADY INCORPORATED: Data points from the analyzed content that are already reflected in the current database (cite matching fields and values). If fully incorporated: "This content appears fully reflected in the current database as of [date] — no updates needed."
+2. NEW TO DATABASE: Data points NOT yet in the database — these are the actionable updates. List each with the target tab and field.
+3. CONFLICTS: Cases where the analyzed content contradicts current database values (e.g., revised guidance vs. stored figures, updated share counts).
+4. OVERALL RELEVANCE: [Critical — immediate update needed / Important — update at next review / Low — no material database changes / Already Incorporated — no action needed]
 
 Rules — non-negotiable:
 - Quote exact numbers from the transcript. Never round or estimate unless clearly labeled.
@@ -294,6 +308,12 @@ OUTPUT:
 5. Suggested commit message for Investment tab update
 6. One-line verdict: [Strong Buy / Buy / Hold / Trim / Sell]
 
+DATA CURRENCY CHECK (mandatory final section):
+Assess the freshness and completeness of the database context used:
+1. STALE DATA: Flag any data points that appear outdated based on date references or internal inconsistencies (e.g., "Cash position is from [quarter] but catalysts reference events past that date").
+2. MISSING DATA: Specific fields or metrics that are absent and would strengthen this analysis.
+3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the database current before acting on this review.
+
 Rules — non-negotiable:
 - Be adversarial. Actively look for reasons the thesis is wrong.
 - Distinguish between "thesis is intact" and "thesis is working" — a stock can go up for wrong reasons.
@@ -379,6 +399,12 @@ OUTPUT:
 4. Updated "What's New" bullets for executiveSummary
 5. Suggested commit message for Investment tab update
 6. One-line verdict: [Strong Buy / Buy / Hold / Trim / Sell]
+
+DATA CURRENCY CHECK (mandatory final section):
+Assess the freshness and completeness of the database context used:
+1. STALE DATA: Flag any data points that appear outdated based on date references or internal inconsistencies (e.g., "ETH holdings from [quarter] but ATM activity has continued since").
+2. MISSING DATA: Specific fields or metrics that are absent and would strengthen this analysis (e.g., missing shareholder counts, cost basis data).
+3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the database current before acting on this review.
 
 Rules — non-negotiable:
 - Be adversarial. Actively look for reasons the thesis is wrong.
@@ -472,6 +498,13 @@ SUMMARY OUTPUT:
 5. Consensus Blind Spots — changes that sell-side likely hasn't incorporated
 6. Suggested commit message
 
+DATABASE CROSS-CHECK (mandatory final section):
+Cross-reference your analysis against the auto-injected database context:
+1. ALREADY INCORPORATED: Data points from these filings that are already reflected in the current database (cite matching fields and values). If fully incorporated: "These filing changes appear fully reflected in the current database as of [date] — no updates needed."
+2. NEW TO DATABASE: Data points NOT yet in the database — these are the actionable updates. List each with the target tab and field.
+3. CONFLICTS: Cases where the filing data contradicts current database values (e.g., share counts, debt balances, cash position differ from what's stored).
+4. OVERALL RELEVANCE: [Critical — immediate update needed / Important — update at next review / Low — no material database changes / Already Incorporated — no action needed]
+
 Rules — non-negotiable:
 - Quote exact filing language. Do not paraphrase risk factors.
 - Every change must be classified as material or immaterial with rationale.
@@ -557,6 +590,13 @@ SUMMARY OUTPUT:
 5. Consensus Blind Spots — changes that sell-side likely hasn't incorporated
 6. NAV Bridge: Filing A NAV/share → Filing B NAV/share (decompose into: ETH price Δ, shares issued Δ, staking income, opex burn)
 7. Suggested commit message
+
+DATABASE CROSS-CHECK (mandatory final section):
+Cross-reference your analysis against the auto-injected database context:
+1. ALREADY INCORPORATED: Data points from these filings that are already reflected in the current database (cite matching fields and values). If fully incorporated: "These filing changes appear fully reflected in the current database as of [date] — no updates needed."
+2. NEW TO DATABASE: Data points NOT yet in the database — these are the actionable updates. List each with the target tab and field.
+3. CONFLICTS: Cases where the filing data contradicts current database values (e.g., ETH holdings, share counts, ATM utilization differ from what's stored).
+4. OVERALL RELEVANCE: [Critical — immediate update needed / Important — update at next review / Low — no material database changes / Already Incorporated — no action needed]
 
 Rules — non-negotiable:
 - Quote exact filing language. Do not paraphrase risk factors.
@@ -657,6 +697,12 @@ DIGEST STRUCTURE:
     Chronological list of all items processed, one line each:
     [Date] | [Source Type] | [Headline] | [Section] | [Materiality]
 
+DATA CURRENCY CHECK (mandatory final section):
+Assess the freshness and completeness of the database context used:
+1. STALE DATA: Flag any data points that appear outdated based on date references or internal inconsistencies (e.g., "Financials are from [quarter] but catalysts reference events past that date").
+2. MISSING DATA: Specific fields or metrics that are absent and would improve the next digest.
+3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the database current for the next period.
+
 Rules — non-negotiable:
 - This digest must be readable by a PM in under 3 minutes.
 - Lead with what changed, not what stayed the same.
@@ -754,6 +800,12 @@ DIGEST STRUCTURE:
 10. APPENDIX: RAW ENTRY LOG
     Chronological list of all items processed, one line each:
     [Date] | [Source Type] | [Headline] | [Section] | [Materiality]
+
+DATA CURRENCY CHECK (mandatory final section):
+Assess the freshness and completeness of the database context used:
+1. STALE DATA: Flag any data points that appear outdated based on date references or internal inconsistencies (e.g., "ETH holdings from [quarter] but ATM activity has continued since").
+2. MISSING DATA: Specific fields or metrics that are absent and would improve the next digest (e.g., missing shareholder counts, cost basis data).
+3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the database current for the next period.
 
 Rules — non-negotiable:
 - This digest must be readable by a PM in under 3 minutes.
@@ -857,6 +909,12 @@ SUMMARY OUTPUT:
 2. Capital Tab Updates — specific fields to add/modify
 3. Risk Assessment: is dilution accelerating, stable, or decelerating?
 4. Suggested commit message
+
+DATA CURRENCY CHECK (mandatory final section):
+Assess the freshness and completeness of the database context used:
+1. STALE DATA: Flag any capital structure data points that appear outdated (e.g., share counts from a prior quarter, ATM utilization not reflecting recent 424B5 filings).
+2. MISSING DATA: Specific fields critical to capital structure analysis that are absent (convert terms, warrant schedules, authorized shares, SBC grants).
+3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the capital data current before acting on this analysis.
 
 Rules — non-negotiable:
 - Use exact figures from filings. Do not estimate conversion rates — use the stated rate per $1,000 principal.
@@ -962,6 +1020,12 @@ SUMMARY OUTPUT:
 2. Capital Tab Updates — specific fields to add/modify
 3. Critical Question: Is dilution creating or destroying value for shareholders?
 4. Suggested commit message
+
+DATA CURRENCY CHECK (mandatory final section):
+Assess the freshness and completeness of the database context used:
+1. STALE DATA: Flag any capital structure data points that appear outdated (e.g., ATM utilization not reflecting recent 424B5 filings, ETH holdings from prior quarter).
+2. MISSING DATA: Specific fields critical to capital structure analysis that are absent (warrant expiration dates, cost basis data, exact staking positions).
+3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the capital data current before acting on this analysis.
 
 Rules — non-negotiable:
 - For treasury plays, dilution is only meaningful in the context of what's acquired — always pair share issuance with ETH accumulation.
@@ -1070,6 +1134,13 @@ SUMMARY OUTPUT:
    [Yes — insiders are putting money where their mouth is / No — disconnect between public optimism and insider selling / Insufficient data]
 5. Suggested commit message
 
+DATABASE CROSS-CHECK (mandatory final section):
+Cross-reference your analysis against the auto-injected database context:
+1. ALREADY INCORPORATED: Insider transactions or ownership data from this filing that are already reflected in the Capital tab MAJOR_SHAREHOLDERS array (cite matching names and share counts). If fully incorporated: "This filing data appears fully reflected in the current database as of [date] — no updates needed."
+2. NEW TO DATABASE: Data points NOT yet in the database — new share counts, ownership changes, or insiders not currently tracked. List each with the target field.
+3. CONFLICTS: Cases where filing data contradicts current database values (e.g., share count differs from stored value, ownership % has changed).
+4. OVERALL RELEVANCE: [Critical — immediate update needed / Important — update at next review / Low — no material database changes / Already Incorporated — no action needed]
+
 Rules — non-negotiable:
 - Distinguish between discretionary and non-discretionary transactions. 10b5-1 sales are not bearish signals on their own.
 - Never infer intent beyond what the filing discloses. "Exercise + sell" may be tax planning, not bearish conviction.
@@ -1171,6 +1242,13 @@ SUMMARY OUTPUT:
 5. Narrative Check: Does insider behavior match the public narrative?
 6. Suggested commit message
 
+DATABASE CROSS-CHECK (mandatory final section):
+Cross-reference your analysis against the auto-injected database context:
+1. ALREADY INCORPORATED: Insider transactions or ownership data from this filing that are already reflected in the Capital tab MAJOR_SHAREHOLDERS array (cite matching names and share counts — many are currently null). If fully incorporated: "This filing data appears fully reflected in the current database as of [date] — no updates needed."
+2. NEW TO DATABASE: Data points NOT yet in the database — especially shareholder counts that fill null values. List each with the target field. This is high priority for BMNR given many holders have unknown share counts.
+3. CONFLICTS: Cases where filing data contradicts current database values (e.g., share count differs, ownership % has changed).
+4. OVERALL RELEVANCE: [Critical — immediate update needed / Important — update at next review / Low — no material database changes / Already Incorporated — no action needed]
+
 Rules — non-negotiable:
 - Distinguish between discretionary and non-discretionary transactions.
 - For BMNR specifically: insider buying alongside ATM dilution is an exceptionally strong signal — flag it prominently.
@@ -1247,6 +1325,11 @@ OUTPUT FORMAT:
 - Follow with supporting detail only if needed
 - Use tables for comparisons, multi-metric answers, or scenario analysis
 - End with: Data Currency note (as-of dates for key figures used) and Next Steps (if any action is recommended)
+- When the user pastes content, always end with a DATABASE CROSS-CHECK:
+  1. ALREADY INCORPORATED: Data from the pasted content already reflected in the database (cite matching fields). If fully incorporated: "This content appears fully reflected in the current database as of [date] — no updates needed."
+  2. NEW TO DATABASE: Data points NOT yet in the database — actionable updates with target tab and field.
+  3. CONFLICTS: Where pasted content contradicts current database values.
+  4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
 
 TONE:
 - Professional, dispassionate, analytical
@@ -1322,6 +1405,11 @@ OUTPUT FORMAT:
 - Follow with supporting detail only if needed
 - Use tables for comparisons, multi-metric answers, or scenario analysis
 - End with: Data Currency note (as-of dates for key figures used) and Next Steps (if any action is recommended)
+- When the user pastes content, always end with a DATABASE CROSS-CHECK:
+  1. ALREADY INCORPORATED: Data from the pasted content already reflected in the database (cite matching fields). If fully incorporated: "This content appears fully reflected in the current database as of [date] — no updates needed."
+  2. NEW TO DATABASE: Data points NOT yet in the database — actionable updates with target tab and field.
+  3. CONFLICTS: Where pasted content contradicts current database values.
+  4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
 
 TONE:
 - Professional, dispassionate, analytical
