@@ -39,6 +39,12 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Jul 3, 2025', type: '8-K', description: 'Annual Meeting Results (Jun 27): Directors, Incentive Plan, Auditors Approved', period: '—', color: 'yellow' },
   { date: 'Jul 1, 2025', type: '8-K', description: 'Legal Opinion (Freshfields) for Share Registration', period: '—', color: 'yellow' },
   { date: 'Jun 26, 2025', type: 'Form 4', description: 'Cisneros (Dir) purchase 1K at $25; Johnson (CFO) purchase 500 at $25 — director confidence at dip', period: '—', color: 'green' },
+  { date: 'Jun 9, 2025', type: '8-K', description: 'Certificate Amendment: Authorized Class A increased to 800M (+100M) for incentives/acquisitions', period: '—', color: 'yellow' },
+  { date: 'Jun 9, 2025', type: 'Form 4', description: 'Cisneros (Dir) purchase 1K at $25 (trust; post: 784,077). Multiple duplicate filings.', period: '—', color: 'green' },
+  { date: 'Jun 9, 2025', type: 'Form 144', description: 'Gupta (COO) proposed sale 10K at ~$25; Wisniewski (Pres) proposed sale 80K at ~$25', period: '—', color: 'green' },
+  { date: 'Jun 3, 2025', type: 'Form 4', description: 'Wisniewski (Pres) 125K RSU grant (vest 1/3 annually May 30 from 2026); Gupta (COO) 50K RSU vesting (20K tax w/h at $22.50)', period: '—', color: 'green' },
+  { date: 'May 19, 2025', type: 'Form 4', description: 'Yao (CTO) option exercise: 40K at $0.06 → LLC Units (May 17 transaction). Post: 240K Units', period: '—', color: 'green' },
+  { date: 'May 16, 2025', type: 'Form 144', description: 'Yao (CTO) proposed sale: 40K shares (~$1M) via Fidelity. 10b5-1 plan Jun 12.', period: '—', color: 'green' },
   { date: 'May 8, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q1 2025', color: 'purple' },
   { date: 'Mar 3, 2025', type: '10-K', description: 'Annual Report', period: 'FY 2024', color: 'blue' },
   { date: 'Feb 27, 2025', type: '8-K', description: 'Q4 2024 Earnings Release', period: '—', color: 'yellow' },
@@ -58,7 +64,7 @@ export const ASTS_SEC_META = {
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 11, 2026', title: '$1B Converts + Registered Directs + Preliminary FY 2025 Results' },
-  totalFilingsTracked: 52
+  totalFilingsTracked: 59
 };
 
 export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> = {

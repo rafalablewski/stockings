@@ -31,7 +31,7 @@ export const CAPITAL_METADATA: DataMetadata = {
   lastUpdated: '2026-02-15',
   source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q',
   nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). GREENSHOE DEADLINE: Feb 20, 2026 ($150M convert option).',
-  notes: 'Feb 15 audit: 65 filings cross-referenced (10 Jan-Feb + 13 Dec + 15 Sept-Oct + 12 Aug-Sep + 15 Jun-Aug). Jun 24: Cisneros/Johnson buys at $25. Jul: $345M UBS credit + $347M RD + $575M converts. Aug 5: EllioSat 581K shares. CEO 750K total RSUs (500K Aug + 250K Dec). Stock Jun-Aug: $46.73→$53.17→$48.94.',
+  notes: 'Feb 15 audit: 80 filings cross-referenced (10 Jan-Feb + 13 Dec + 15 Sept-Oct + 12 Aug-Sep + 15 Jun-Aug + 15 May-Jun). Certificate amendment Jun 6: +100M Class A authorized (to 800M). Wisniewski 125K RSU grant Jun 2 (250K total w/ Dec). Gupta Jun 2 vesting 50K (20K tax). Yao May 17 option exercise 40K at $0.06. Cisneros bought twice at $25 (Jun 9 + Jun 24). Stock May-Jun: $32.50→$46.73.',
 };
 
 // ============================================================================
@@ -679,17 +679,48 @@ export const AUG_SEP_2025_INSIDER_SALES = [
 ];
 
 // ============================================================================
-// JUNE 2025 INSIDER ACTIVITY
+// MAY-JUNE 2025 INSIDER ACTIVITY
 // ============================================================================
 
 /**
- * Jun 24, 2025 insider purchases — director and CFO buying at $25 dip.
- * Filed Jun 26, 2025 (Form 4).
+ * Certificate of Amendment — Jun 6, 2025 (Filed Jun 9, 2025; 8-K)
+ * Increased authorized Class A from 700M to 800M (+100M).
+ * Approved at annual meeting. For incentives, acquisitions, future raises.
+ */
+export const JUN_2025_CERTIFICATE_AMENDMENT = {
+  date: '2025-06-06',
+  filedDate: '2025-06-09',
+  classA: { previous: 700, new: 800, change: 100 },
+  classB: { previous: 100, new: 100, change: 0 },
+  classC: { previous: 800, new: 800, change: 0 },
+  purpose: 'Incentive plan capacity, potential acquisitions, future capital raises',
+  notes: 'Potential dilution ~11% at current outstanding. Approved at Jun 27 annual meeting. No immediate issuance planned.',
+};
+
+/**
+ * May-Jun 2025 RSU vestings, grants, and option exercises.
+ * Filed May 19 - Jun 9, 2025 (Form 4 / Form 144).
  *
- * Total purchases: $37.5K (1,500 shares)
+ * Wisniewski: 125K RSU grant (Jun 2). Separate from Dec 2025 grant of 125K.
+ * Gupta: 50K RSU vesting (Jun 2); 20K tax withhold at $22.50 ($450K).
+ * Yao: 40K option exercise at $0.06 (May 17); proposed 40K sale via Form 144.
+ */
+export const MAY_JUN_2025_RSU_ACTIVITY = [
+  { name: 'Scott Wisniewski', role: 'President', date: '2025-06-02', type: 'RSU Grant', units: 125000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postHoldings: 588681, note: 'Separate from Dec 2, 2025 grant of 125K. Total 250K RSUs across both grants.' },
+  { name: 'Shanti B. Gupta', role: 'COO', date: '2025-06-02', type: 'RSU Vesting', units: 50000, taxWithheld: 20000, taxPrice: 22.50, taxValue: 450000, netAcquired: 30000, postHoldings: 392375, note: 'Jun 2 vesting; 20K tax withhold at $22.50. Proposed 10K sale Jun 9 (Form 144).' },
+  { name: 'Huiwen Yao', role: 'CTO', date: '2025-05-17', type: 'Option Exercise', units: 40000, exercisePrice: 0.06, exerciseValue: 2400, postHoldings: 240000, note: 'Converted to LLC Units. Prep for proposed 40K sale (Form 144 May 16). Executed Sep 3 at $41.58.' },
+];
+
+/**
+ * Jun 2025 insider purchases — director and CFO buying at $25 dip.
+ * Cisneros bought twice: Jun 9 (784,077 post) and Jun 24 (783,327 post).
+ * Johnson bought Jun 24.
+ *
+ * Total purchases: $62.5K (2,500 shares)
  * Context: Stock near 2025 low (~$25). Shows insider confidence.
  */
 export const JUN_2025_INSIDER_PURCHASES = [
+  { name: 'Adriana Cisneros', role: 'Director', shares: 1000, price: 25.00, date: '2025-06-09', account: 'Trust (indirect)', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 784077, note: 'Multiple duplicate Form 4 filings (clerical). Single transaction confirmed.' },
   { name: 'Adriana Cisneros', role: 'Director', shares: 1000, price: 25.00, date: '2025-06-24', account: 'Trust (indirect)', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 783327 },
   { name: 'Andrew M. Johnson', role: 'CFO & CLO', shares: 500, price: 25.00, date: '2025-06-24', account: 'IRA', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 500 },
 ];

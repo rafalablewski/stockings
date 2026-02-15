@@ -159,6 +159,8 @@ import {
   AUG_2025_CEO_RSU_GRANT,
   AUG_SEP_2025_RSU_VESTINGS,
   AUG_SEP_2025_INSIDER_SALES,
+  JUN_2025_CERTIFICATE_AMENDMENT,
+  MAY_JUN_2025_RSU_ACTIVITY,
   JUN_2025_INSIDER_PURCHASES,
   JUL_2025_CREDIT_FACILITY,
 } from '@/data/asts';
@@ -3683,6 +3685,56 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6, marginTop: 8 }}>
             {JUL_2025_CREDIT_FACILITY.notes}
           </div>
+        </div>
+      </div>
+
+      {/* Certificate Amendment */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#certificate-amendment</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Certificate Amendment (Jun 6, 2025)</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--gold)' }}>+100M Authorized</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)' }}>
+          {[
+            { label: 'Class A', prev: JUN_2025_CERTIFICATE_AMENDMENT.classA.previous, now: JUN_2025_CERTIFICATE_AMENDMENT.classA.new, change: JUN_2025_CERTIFICATE_AMENDMENT.classA.change },
+            { label: 'Class B', prev: JUN_2025_CERTIFICATE_AMENDMENT.classB.previous, now: JUN_2025_CERTIFICATE_AMENDMENT.classB.new, change: JUN_2025_CERTIFICATE_AMENDMENT.classB.change },
+            { label: 'Class C', prev: JUN_2025_CERTIFICATE_AMENDMENT.classC.previous, now: JUN_2025_CERTIFICATE_AMENDMENT.classC.new, change: JUN_2025_CERTIFICATE_AMENDMENT.classC.change },
+          ].map(c => (
+            <div key={c.label} style={{ background: 'var(--surface)', padding: '16px 24px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{c.label}</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 600, color: c.change > 0 ? 'var(--gold)' : 'var(--text2)', margin: '4px 0' }}>{c.now}M</div>
+              <div style={{ fontSize: 11, color: c.change > 0 ? 'var(--gold)' : 'var(--text3)' }}>{c.change > 0 ? `+${c.change}M` : 'No change'}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          {JUN_2025_CERTIFICATE_AMENDMENT.notes}
+        </div>
+      </div>
+
+      {/* May-Jun RSU Activity */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#may-jun-rsu-activity</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>May-Jun 2025 RSU &amp; Option Activity</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 90px 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Executive', 'Date', 'Type', 'Units', 'Notes'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Units' ? 'right' : 'left' }}>{h}</span>
+            ))}
+          </div>
+          {MAY_JUN_2025_RSU_ACTIVITY.map((a, i) => (
+            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 90px 1fr', padding: '12px 24px', borderBottom: i < MAY_JUN_2025_RSU_ACTIVITY.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{a.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({a.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{a.date.slice(5)}</span>
+              <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 100, background: a.type === 'RSU Grant' ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : a.type === 'RSU Vesting' ? 'color-mix(in srgb, var(--mint) 15%, transparent)' : 'color-mix(in srgb, var(--sky) 15%, transparent)', color: a.type === 'RSU Grant' ? 'var(--violet)' : a.type === 'RSU Vesting' ? 'var(--mint)' : 'var(--sky)' }}>{a.type}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{(a.units / 1000).toFixed(0)}K</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.note}</span>
+            </div>
+          ))}
         </div>
       </div>
       </>
