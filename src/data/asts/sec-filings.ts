@@ -21,6 +21,11 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Oct 28, 2025', type: 'DEF 14A', description: '2024 Plan Amendment (+10M shares, term extension) — Special Meeting Nov 21', period: '—', color: 'green' },
   { date: 'Oct 23, 2025', type: '424B5', description: 'ATM Prospectus Supplement ($800M capacity via B. Riley, Barclays)', period: '—', color: 'orange' },
   { date: 'Oct 21, 2025', type: '8-K', description: 'Registered Direct (2.05M shares @ $78.61, ~$161M) + ATM Agreement ($800M)', period: '—', color: 'yellow' },
+  { date: 'Sep 26, 2025', type: '424B7', description: 'EllioSat Resale Prospectus (581K shares from S-Band acquisition Aug 5)', period: '—', color: 'orange' },
+  { date: 'Sep 12, 2025', type: '10-Q/A', description: 'Q2 2025 10-Q Amendment (non-cash equity item corrections, no restatement)', period: 'Q2 2025', color: 'purple' },
+  { date: 'Sep 5, 2025', type: '8-K', description: 'Mikitani Board Resignation (personal; event Sep 4). Separate from Jan 2026 Rakuten designee expiration.', period: '—', color: 'yellow' },
+  { date: 'Sep 3-15, 2025', type: 'Form 4', description: 'Yao (CTO) sale 40K shares at $41.58 ($1.66M); Gupta (COO) Sep 15 vesting 50K (25.6K tax withhold)', period: '—', color: 'green' },
+  { date: 'Aug 19, 2025', type: 'Form 4', description: 'Aug 15 RSU Vestings: Yao (50K), Johnson (80K), Gupta (50K) — tax withhold ~$2.6M. Avellan (CEO) 500K RSU grant.', period: '—', color: 'green' },
   { date: 'Aug 7, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q2 2025', color: 'purple' },
   { date: 'May 8, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q1 2025', color: 'purple' },
   { date: 'Mar 3, 2025', type: '10-K', description: 'Annual Report', period: 'FY 2024', color: 'blue' },
@@ -55,6 +60,8 @@ export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   'DEF 14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form 4': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form 144': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  '424B7': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
+  '10-Q/A': { bg: 'rgba(168,85,247,0.2)', text: 'var(--violet)' },
 };
 
 export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5', 'Other'];

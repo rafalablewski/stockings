@@ -243,11 +243,14 @@ export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   { event: 'BB6 Phased Array Unfolded (~2,400 sq ft, largest commercial LEO array)', date: 'Feb 10, 2026', category: 'Constellation' },
   { event: 'FY 2025 Revenue $63-71M (8-K preliminary)', date: 'Feb 11, 2026', category: 'Service' },
   { event: 'Vanguard 13G: 7.68% Ownership (21.5M shares)', date: 'Jan 30, 2026', category: 'Corporate' },
-  { event: 'Mikitani (Rakuten) Resigned from Board (dilution threshold); Rakuten retains observer', date: 'Jan 13, 2026', category: 'Corporate' },
+  { event: 'Rakuten Designee Right Expired (dilution threshold); Rakuten retains board observer', date: 'Jan 13, 2026', category: 'Corporate' },
   { event: 'MDA SHIELD Prime Contract Award', date: 'Jan 16, 2026', category: 'Government' },
 
   // === 2025 ===
   { event: 'BB6 Launched (ISRO)', date: 'Dec 24, 2025', category: 'Constellation' },
+  { event: 'EllioSat Resale Prospectus (424B7): 581K shares registered (~0.2% float)', date: 'Sep 26, 2025', category: 'Corporate' },
+  { event: 'Mikitani Resigned from Board (personal, no disagreement; 8-K Sep 5)', date: 'Sep 4, 2025', category: 'Corporate' },
+  { event: 'Q2 2025 10-Q/A Amendment (non-cash equity corrections, no restatement)', date: 'Sep 12, 2025', category: 'Financing' },
   { event: '$1B+ Contracted Revenue', date: 'Q3 2025', category: 'Commercial' },
   { event: 'Verizon Definitive Agreement', date: 'Oct 2025', category: 'Commercial' },
   { event: 'stc $1.8B Agreement', date: 'Q3 2025', category: 'Commercial' },
