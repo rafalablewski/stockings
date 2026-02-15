@@ -206,6 +206,7 @@ import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shar
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
+import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -824,6 +825,7 @@ const BMNRDilutionAnalysis = () => {
     { id: 'sensitivity', label: 'Sensitivity', type: 'projection', group: 'BMNR Analysis' },
     { id: 'backtest', label: 'Backtest', type: 'projection', group: 'BMNR Analysis' },
     { id: 'sources', label: 'Sources', type: 'tracking', group: 'BMNR Analysis' },
+    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'BMNR Analysis' },
     // Unified valuation model (combines Scenarios + DCF)
     { id: 'model', label: 'Model', type: 'projection' },
     // Other projections
@@ -1095,6 +1097,9 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'wall-street' && <WallStreetTab />}
         {activeTab === 'sources' && (
           <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="Crypto Treasury Peers" competitors={bmnrCompetitors} />
+        )}
+        {activeTab === 'edgar' && (
+          <SharedEdgarTab ticker="BMNR" companyName="BitMine Immersion Technologies" localFilings={BMNR_SEC_FILINGS} cik={BMNR_SEC_META.cik} typeColors={BMNR_SEC_TYPE_COLORS} />
         )}
         </main>
       </div>
