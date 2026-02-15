@@ -31,9 +31,9 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 
 export const CATALYSTS_METADATA: DataMetadata = {
   lastUpdated: '2026-02-15',
-  source: 'Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR, Mar 2025 8-Ks/Form 4s/S-3ASR/S-8/13D-A',
+  source: 'Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR, Mar 2025 8-Ks/Form 4s/S-3ASR/S-8/13D-A, Jan-Feb 2025 8-Ks/13D/Form 3s/13D-A',
   nextExpectedUpdate: 'After Q4 2025 earnings (~March 2026)',
-  notes: 'BB6 unfolded Feb 10, 2026. $1B new converts + $614M registered directs announced Feb 11. Mar 2025: Ligado 8-K ($150M + warrants), S-3ASR (56M shares), Vodafone 6% stable.',
+  notes: 'BB6 unfolded Feb 10, 2026. $1B new converts + $614M registered directs announced Feb 11. Jan-Feb 2025: AT&T 13D (2.7%), Ligado RSA ($550M), Johnson/Larson board, Bernal 50K RSU, prelim Q4 ($1M first revenue).',
 };
 
 // ============================================================================
@@ -277,6 +277,13 @@ export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   { event: 'S-3ASR: 56M Shares Registered for Resale (Rakuten reorg + others)', date: 'Mar 17, 2025', category: 'Financing' },
   { event: 'Vodafone 13D/A: 6% Ownership Stable (14.5M shares)', date: 'Mar 12, 2025', category: 'Corporate' },
   { event: 'S-8: 2M Shares Registered (2024 Incentive Plan Annual Increase)', date: 'Mar 5, 2025', category: 'Corporate' },
+  { event: 'Bernal (CAO) 50K RSU Grant (vest Feb 15, 2026)', date: 'Feb 27, 2025', category: 'Corporate' },
+  { event: 'AT&T 13D: 2.7% Ownership (6.26M shares from $100M convertible at $16)', date: 'Feb 10, 2025', category: 'Corporate' },
+  { event: 'Stockholders\' Agreement Amended: AT&T added; designee rights if >10%', date: 'Feb 7, 2025', category: 'Corporate' },
+  { event: 'Johnson (CFO/CLO) Appointed to Board (Class II) + Larson Director (Jan 31)', date: 'Feb 3, 2025', category: 'Corporate' },
+  { event: 'Preliminary Q4 2024: Revenue $1M (first ever), $285M cash', date: 'Jan 22, 2025', category: 'Financing' },
+  { event: 'Avellan 13D/A: 25% Ownership (78.16M shares, Amendment 12)', date: 'Jan 27, 2025', category: 'Corporate' },
+  { event: 'Ligado RSA ($150M + 9.99% warrants; $550M total; 45 MHz L-band)', date: 'Jan 6, 2025', category: 'Spectrum' },
   { event: 'FirstNet Trial FCC Approval', date: 'Apr 2025', category: 'Regulatory' },
   { event: 'First VoLTE Call', date: '2025', category: 'Technology' },
 

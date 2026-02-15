@@ -163,6 +163,7 @@ import {
   MAR_2025_INSIDER_SALES,
   MAR_2025_LIGADO_DEAL,
   MAR_2025_SHELF_REGISTRATION,
+  JAN_FEB_2025_GOVERNANCE,
   JUN_2025_CERTIFICATE_AMENDMENT,
   MAY_JUN_2025_RSU_ACTIVITY,
   JUN_2025_INSIDER_PURCHASES,
@@ -3764,6 +3765,39 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
           {MAR_2025_SHELF_REGISTRATION.notes}
+        </div>
+      </div>
+
+      {/* Jan-Feb 2025 Governance */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#jan-feb-2025-governance</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Jan–Feb 2025 Governance & Grants</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--sky)' }}>Board + AT&T + RSU</span>
+        </div>
+        {/* Board Changes */}
+        <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--sky)', background: 'color-mix(in srgb, var(--sky) 5%, transparent)' }}>Board Appointments</div>
+        {JAN_FEB_2025_GOVERNANCE.boardChanges.map((bc, i) => (
+          <div key={`bc-${i}`} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 130px 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+            <span style={{ fontSize: 13, color: 'var(--text)' }}>{bc.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({bc.role})</span></span>
+            <span style={{ fontSize: 12, color: 'var(--text2)' }}>{bc.date.slice(5)}</span>
+            <span style={{ fontSize: 12, color: 'var(--text2)' }}>{bc.event}</span>
+          </div>
+        ))}
+        {/* Stockholders' Amendment */}
+        <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)' }}>Stockholders&apos; Agreement (Feb 7)</div>
+        <div className="hover-row" style={{ padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+          <span style={{ fontSize: 12, color: 'var(--text2)' }}>{JAN_FEB_2025_GOVERNANCE.stockholdersAmendment.description}. {JAN_FEB_2025_GOVERNANCE.stockholdersAmendment.attDesigneeRights}.</span>
+        </div>
+        {/* Bernal RSU */}
+        <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--violet)', background: 'color-mix(in srgb, var(--violet) 5%, transparent)', borderTop: '1px solid var(--border)' }}>RSU Grant (Feb 27)</div>
+        <div className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+          <span style={{ fontSize: 13, color: 'var(--text)' }}>Maya Bernal <span style={{ fontSize: 11, color: 'var(--text3)' }}>(CAO)</span></span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--violet)' }}>{JAN_FEB_2025_GOVERNANCE.bernalRsuGrant.shares.toLocaleString()} RSUs</span>
+          <span style={{ fontSize: 12, color: 'var(--text2)' }}>Vest {JAN_FEB_2025_GOVERNANCE.bernalRsuGrant.vestingDate.slice(5)}</span>
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Avellan 13D/A (Jan 27): 25% ownership stable (78.16M shares, Amend. 12). Annual meeting notice Jan 31 (later moved to Jun 6).
         </div>
       </div>
 

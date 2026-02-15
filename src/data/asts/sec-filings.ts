@@ -62,7 +62,16 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Mar 10-11, 2025', type: 'Form 4', description: 'Torres (Dir) 20K sold at $30.73; Rubin (Dir) 7K sold at $32.46 — RSU tax withholding sales at post-earnings highs', period: '—', color: 'green' },
   { date: 'Mar 5, 2025', type: 'S-8', description: '2M shares registered under 2024 Incentive Plan (annual increase; $52.6M aggregate at $26.29)', period: '—', color: 'green' },
   { date: 'Mar 3, 2025', type: '10-K', description: 'Annual Report', period: 'FY 2024', color: 'blue' },
+  { date: 'Feb 28, 2025', type: 'Form 3', description: 'Larson (Dir) Initial Ownership: Zero shares. Board appointment effective Jan 31.', period: '—', color: 'green' },
   { date: 'Feb 27, 2025', type: '8-K', description: 'Q4 2024 Earnings Release', period: '—', color: 'yellow' },
+  { date: 'Feb 27, 2025', type: 'Form 4', description: 'Bernal (CAO) 50K RSU grant (vest Feb 15, 2026). ~$1.5M value at $30/share.', period: '—', color: 'green' },
+  { date: 'Feb 10, 2025', type: 'SC 13D', description: 'AT&T 2.7% Ownership (6.26M shares via AT&T Venture Investments; from $100M convertible at $16/share)', period: '—', color: 'green' },
+  { date: 'Feb 7, 2025', type: '8-K', description: 'Stockholders\' Agreement Amendment: Adds AT&T as party; board designee rights if >10% stake', period: '—', color: 'yellow' },
+  { date: 'Feb 3, 2025', type: '8-K', description: 'Johnson (CFO/CLO) Appointed to Board (Class II director, term to 2025)', period: '—', color: 'yellow' },
+  { date: 'Jan 31, 2025', type: '8-K', description: '2025 Annual Meeting Notice: May 6 (later moved to Jun 6); proposal deadline Feb 14', period: '—', color: 'yellow' },
+  { date: 'Jan 27, 2025', type: 'SC 13D/A', description: 'Avellan 25% (78.16M shares; Amendment 12). No sales. Update for outstanding changes.', period: '—', color: 'green' },
+  { date: 'Jan 22, 2025', type: '8-K', description: 'Preliminary Q4 2024: Revenue $1M (first ever), net loss $61.7M, cash $285M, adj. opex $40.8M', period: '—', color: 'yellow' },
+  { date: 'Jan 6, 2025', type: '8-K', description: 'Ligado RSA ($150M investment + 9.99% warrants; $550M spectrum deal; 45 MHz L-band US/Canada)', period: '—', color: 'yellow' },
   { date: 'Nov 6, 2024', type: '10-Q', description: 'Quarterly Report', period: 'Q3 2024', color: 'purple' },
   { date: 'Sep 12, 2024', type: '8-K', description: 'BB1-5 Commercial Launch', period: '—', color: 'yellow' },
   { date: 'Aug 7, 2024', type: '10-Q', description: 'Quarterly Report', period: 'Q2 2024', color: 'purple' },
@@ -79,7 +88,7 @@ export const ASTS_SEC_META = {
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 11, 2026', title: '$1B Converts + Registered Directs + Preliminary FY 2025 Results' },
-  totalFilingsTracked: 76
+  totalFilingsTracked: 85
 };
 
 export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -100,6 +109,8 @@ export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   'PRE 14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'DEFA14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   '10-Q/A': { bg: 'rgba(168,85,247,0.2)', text: 'var(--violet)' },
+  'Form 3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'SC 13D': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'S-3ASR': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'S-8': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form 144/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },

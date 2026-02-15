@@ -29,9 +29,9 @@ import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, Conver
 
 export const CAPITAL_METADATA: DataMetadata = {
   lastUpdated: '2026-02-15',
-  source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q, Mar 2025 Form 4s/144/S-3ASR/S-8/13D-A/8-K',
+  source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q, Mar 2025 Form 4s/144/S-3ASR/S-8/13D-A/8-K, Jan-Feb 2025 8-Ks/13D/Form 3s/Form 4/13D-A',
   nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). GREENSHOE DEADLINE: Feb 20, 2026 ($150M convert option).',
-  notes: 'Feb 15 audit: 110 filings cross-referenced (10 Jan-Feb + 13 Dec + 15 Sept-Oct + 12 Aug-Sep + 15 Jun-Aug + 15 May-Jun + 15 Apr-May + 15 Mar). Mar 2025 insider sales: ~111K shares/$3.4M (Rubin, Torres, Wisniewski, Gupta, Bernal). Ligado 8-K Mar 24: $150M initial + 9.99% warrants + $550M total. S-3ASR: 56M shares shelf. S-8: 2M incentive. Vodafone 13D/A: 6% stable.',
+  notes: 'Feb 15 audit: 121 filings cross-referenced (10 Jan-Feb 2026 + 13 Dec + 15 Sept-Oct + 12 Aug-Sep + 15 Jun-Aug + 15 May-Jun + 15 Apr-May + 15 Mar + 11 Jan-Feb 2025). AT&T 13D: 2.7% (6.26M shares from $100M convert). Johnson/Larson board appointments. Avellan 25% (Amend. 12). Bernal 50K RSU grant.',
 };
 
 // ============================================================================
@@ -170,7 +170,7 @@ export const MAJOR_SHAREHOLDERS: MajorShareholder[] = [
     shareClass: 'Class A',
     pct: (6.5 / TOTAL_BASIC_SHARES * 100).toFixed(1) + '%',
     votingPct: (6.5 / TOTAL_VOTING_SHARES * 100).toFixed(1) + '%',
-    notes: 'From 2034 convert + PIPE. First VoLTE partner.',
+    notes: 'SC 13D filed Feb 10, 2025: 6,260,440 shares (2.7%) via AT&T Venture Investments. From $100M convertible note at $16/share (Jan 2024). Stockholders\' agreement amended Feb 7 to add AT&T; designee rights if >10%. First VoLTE partner.',
   },
   {
     name: 'Vodafone Group',
@@ -780,6 +780,51 @@ export const MAR_2025_SHELF_REGISTRATION = {
   fee: 245689,
   dilutionPct: 25,
   notes: 'Facilitates secondary sales by existing holders. Overhang risk but enables liquidity. No immediate issuance.',
+};
+
+// ============================================================================
+// JANUARY-FEBRUARY 2025 GOVERNANCE & GRANTS
+// ============================================================================
+
+/**
+ * Jan-Feb 2025 board changes and governance events.
+ * Johnson appointed to board Feb 3. Larson appointed Jan 31.
+ * AT&T stockholders' agreement amendment Feb 7.
+ * Bernal 50K RSU grant Feb 27.
+ * Avellan 13D/A confirms 25% (Amendment 12, Jan 27).
+ */
+export const JAN_FEB_2025_GOVERNANCE = {
+  boardChanges: [
+    { name: 'Andrew M. Johnson', role: 'CFO & CLO', event: 'Appointed to Board (Class II)', date: '2025-02-03', term: '2025', note: 'Ex-3D Systems. Strengthens legal/finance expertise.' },
+    { name: 'Keith R. Larson', role: 'Director', event: 'Board Appointment', date: '2025-01-31', term: 'N/A', note: 'Form 3 filed Feb 28. Zero initial shares. Later purchased 675 shares Dec 2025.' },
+  ],
+  stockholdersAmendment: {
+    date: '2025-02-07',
+    effectiveDate: '2025-02-05',
+    description: 'Amends June 2024 agreement to add AT&T as party',
+    attDesigneeRights: 'Board designee rights if >10% stake',
+    note: 'Integrates AT&T into governance alongside Vodafone, Rakuten.',
+  },
+  avellanUpdate: {
+    date: '2025-01-27',
+    amendment: 12,
+    shares: 78163078,
+    pct: 25,
+    note: 'No sales. Update due to outstanding share changes. ~25% voting power.',
+  },
+  bernalRsuGrant: {
+    date: '2025-02-27',
+    shares: 50000,
+    vestingDate: '2026-02-15',
+    estimatedValue: 1500000, // at ~$30/share
+    note: 'CAO retention grant. Vests Feb 15, 2026 (cliff). Post-grant: holdings N/A in filing.',
+  },
+  annualMeetingNotice: {
+    date: '2025-01-31',
+    meetingDate: '2025-05-06', // later changed to Jun 6
+    proposalDeadline: '2025-02-14',
+    note: 'Meeting later moved to Jun 6 per DEF 14A (Apr 25).',
+  },
 };
 
 // ============================================================================
