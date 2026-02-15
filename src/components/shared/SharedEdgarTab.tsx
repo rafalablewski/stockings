@@ -112,7 +112,31 @@ function getDateNeighbors(isoDate: string): string[] {
 // ── Filing matcher ──────────────────────────────────────────────────────────
 const normalizeForm = (f: string) => f.replace(/[/\s-]/g, '');
 
-/** Look up cross-refs for a given form + date (with ±1 day tolerance) */
+/**
+ * Date tolerance by form type. Ownership filings (Form 4, Form 3, Form 144,
+ * SC 13D, SC 13G) use the transaction date in the local DB but the filing
+ * date on EDGAR. SEC requires Form 4 within 2 business days → up to 4
+ * calendar days gap. SC 13D/G can lag even more.
+ */
+const OWNERSHIP_FORMS = new Set(['FORM4', 'FORM3', 'FORM5', 'FORM144', 'FORM144A', 'SC13D', 'SC13DA', 'SC13G', 'SC13GA']);
+function getDateTolerance(form: string): number {
+  return OWNERSHIP_FORMS.has(normalizeForm(form.toUpperCase())) ? 5 : 1;
+}
+
+/** Get date neighbors within ±N days for fuzzy lookup */
+function getDateRange(isoDate: string, days: number): string[] {
+  const d = new Date(isoDate + 'T00:00:00');
+  if (isNaN(d.getTime())) return [isoDate];
+  const result: string[] = [];
+  for (let offset = -days; offset <= days; offset++) {
+    const nd = new Date(d);
+    nd.setDate(nd.getDate() + offset);
+    result.push(nd.toISOString().slice(0, 10));
+  }
+  return result;
+}
+
+/** Look up cross-refs for a given form + date (with form-specific tolerance) */
 function lookupCrossRefs(
   form: string,
   isoDate: string,
@@ -120,13 +144,12 @@ function lookupCrossRefs(
 ): { source: string; data: string }[] | undefined {
   if (!index) return undefined;
   const normalizedForm = form.toUpperCase().trim();
-  const dates = getDateNeighbors(isoDate);
+  const tolerance = getDateTolerance(normalizedForm);
+  const dates = getDateRange(isoDate, tolerance);
   for (const d of dates) {
-    // Try exact form first, then normalized
     const key1 = `${normalizedForm}|${d}`;
     if (index[key1]) return index[key1];
-    // Try common form variations
-    const key2 = `${normalizedForm.replace(/[/\s-]/g, '')}|${d}`;
+    const key2 = `${normalizeForm(normalizedForm)}|${d}`;
     if (index[key2]) return index[key2];
   }
   return undefined;
@@ -140,6 +163,7 @@ function matchFilings(
   return edgarFilings.map(ef => {
     const edgarDate = normalizeDate(ef.filingDate);
     const edgarForm = ef.form.toUpperCase().trim();
+    const tolerance = getDateTolerance(edgarForm);
 
     // Tier 1: match against sec-filings.ts
     const match = localFilings.find(lf => {
@@ -148,7 +172,7 @@ function matchFilings(
       const d1 = new Date(edgarDate);
       const d2 = new Date(localDate);
       const dayDiff = Math.abs(d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24);
-      if (dayDiff > 1) return false;
+      if (dayDiff > tolerance) return false;
       return normalizeForm(edgarForm) === normalizeForm(localForm);
     });
 
