@@ -10,8 +10,8 @@
  * - Equity offerings: 8-K filings, press releases
  * - SBC: 10-Q/10-K compensation disclosures
  *
- * LAST UPDATED: 2026-02-12 (Feb 2026 offerings + 13G + Form 4)
- * NEXT UPDATE: After Q4 2025 10-K or new proxy filing
+ * LAST UPDATED: 2026-02-15 (23 filings: Feb offerings + Dec insider + 13G/13D/A + Form 4s)
+ * NEXT UPDATE: After Q4 2025 10-K or new proxy filing. GREENSHOE DEADLINE: Feb 20.
  *
  * AI AGENT INSTRUCTIONS:
  * When updating from new 13D/A or proxy filing:
@@ -28,10 +28,10 @@ import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, Conver
 // ============================================================================
 
 export const CAPITAL_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-12',
-  source: 'Feb 2026 8-K, Pricing Term Sheets, 13G (Vanguard), Form 4 (Gupta)',
-  nextExpectedUpdate: 'Q4 2025 10-K (~March 2026)',
-  notes: 'Feb 2026: $1B new converts, two registered directs (~$614M), $296.5M notes repurchased. Vanguard 13G: 7.68%. ATM: ~$706M sold.',
+  lastUpdated: '2026-02-15',
+  source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7',
+  nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). GREENSHOE DEADLINE: Feb 20, 2026 ($150M convert option).',
+  notes: 'Feb 15 audit: 50 filings cross-referenced (10 Jan-Feb + 13 Dec + 15 Sept-Oct + 12 Aug-Sep). CEO 750K total RSUs (500K Aug + 250K Dec). Gupta chain: 392,375 (Aug 15) → 348,232 (Sep 15, corrected) → 382,375 (Dec 10, post-sale). Yao chain: 200K (Aug 15) → 160K (Sep 3 sale) → Dec sales. Johnson chain: 522,485 (Aug 15) → 512,485 (Dec 2). EllioSat 424B7: 581K resale shares (~0.2% float).',
 };
 
 // ============================================================================
@@ -93,10 +93,43 @@ export const TOTAL_VOTING_SHARES =
 /**
  * Fully diluted share count
  * Including options, RSUs, remaining converts
- * Post-Feb 2026: 4.25% ($3.5M, ~0.1M), 2.375% ($325M, ~4.5M),
- * 2.00% ($1.15B, ~11.9M), new 2.25% ($1B, ~8.6M) = ~25.1M from converts
+ * Post-Feb 2026: 4.25% ($3.5M, ~0.1M), 2.375% ($325M, ~2.7M),
+ * 2.00% ($1.15B, ~11.9M), new 2.25% ($1B, ~8.6M) = ~23.3M from converts
+ * Plus RSUs/options ~12M = ~415M total
  */
 export const FULLY_DILUTED_SHARES = 415.0;
+
+/**
+ * Net dilution from Feb 2026 registered directs
+ * Shares issued: 6,337,964 (1,862,741 + 4,475,223)
+ * Conversion shares avoided: ~3,830,682 (1,749,432 from 4.25% + 2,081,250 from 2.375%)
+ * Net incremental: ~2,507,282 shares (0.9% of Class A float)
+ * Note: 2.375% notes at $120.12 conversion currently OTM (stock $82.51);
+ * those 2.08M shares may never have materialized regardless
+ */
+export const FEB_2026_RD_NET_DILUTION = {
+  sharesIssued: 6.34,         // 6,337,964 total from both RDs
+  conversionAvoided: 3.83,    // 1.75M (4.25% notes) + 2.08M (2.375% notes)
+  netIncremental: 2.51,       // Incremental shares above avoided conversions
+  netDilutionPct: 0.9,        // % of ~280M Class A pre-transaction
+  annualInterestSaved: 7.92,  // $1.98M (4.25%) + $5.94M (2.375%) per year
+};
+
+/**
+ * Greenshoe tracking for Feb 2026 convertible
+ * $150M additional notes option for initial purchasers
+ */
+export const FEB_2026_GREENSHOE: {
+  amount: number;
+  deadline: string;
+  exercised: boolean | null;
+  additionalShares: number;
+} = {
+  amount: 150,                // $150M additional principal
+  deadline: '2026-02-20',     // Exercise deadline
+  exercised: null,            // null = pending; update when known
+  additionalShares: 1.3,      // ~1.3M additional conversion shares if exercised
+};
 
 // ============================================================================
 // MAJOR SHAREHOLDERS
@@ -178,11 +211,11 @@ export const MAJOR_SHAREHOLDERS: MajorShareholder[] = [
   {
     name: 'American Tower',
     role: 'Infrastructure Partner',
-    shares: 2.5,
+    shares: 0.2,
     shareClass: 'Class A',
-    pct: '~0.7%',
-    votingPct: '~0.3%',
-    notes: 'PIPE investor. Tower infrastructure.',
+    pct: '<0.1%',
+    votingPct: '<0.1%',
+    notes: 'Per 13D/A filed Dec 11, 2025: Sold 2,288,621 shares at $69.75 via Barclays block trade ($159.8M gross). Direct Class A: 211,379. Retains 2,170,657 LLC Units (redeemable 1:1 for Class A) + matching Class B = ~2.38M economic equiv. PIPE investor.',
   },
 ];
 
@@ -251,7 +284,7 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
     amount: 1150,
     price: 96.30,
     shares: 11.9,
-    notes: '2.0% due 2036. Best terms in years. Outstanding as debt.',
+    notes: '2.0% due 2036. Initial size $850M, upsized to $1B during marketing, +$150M greenshoe exercised = $1.15B total. Concurrent with Oct RD and ATM. Outstanding as debt.',
   },
   {
     date: '2025-09-30',
@@ -566,6 +599,74 @@ export const DILUTION_SCENARIOS: DilutionScenario[] = [
     dilutionPct: 15.4,
     type: 'stress',
   },
+];
+
+// ============================================================================
+// DECEMBER 2025 INSIDER ACTIVITY
+// ============================================================================
+
+/**
+ * C-suite RSU grants and insider transactions from Dec 2025 filings.
+ * Most sales executed under Rule 10b5-1 plans (adopted June–September 2025).
+ *
+ * Total sales: ~$172.9M (American Tower $159.8M + individuals $13.1M)
+ * Shares sold: 2,344,621 (0.83% of class)
+ * Grants: 500,000 RSUs to C-suite (vest 1/3 annually on May 30 anniversaries starting 2026)
+ * Net: Heavy selling led by 10% holder block trade; offset by grants and small director buys
+ */
+export const DEC_2025_RSU_GRANTS = [
+  { name: 'Abel Avellan', role: 'CEO & Chairman', units: 250000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postGrantHoldings: 78413078, holdingsNote: '78,163,078 Class C + 250,000 RSUs (Dec). Also holds 500K RSUs granted Aug 15, 2025 (vest from Aug 2026). Total RSUs: 750K.' },
+  { name: 'Andrew M. Johnson', role: 'CFO & CLO', units: 125000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postGrantHoldings: 512485, holdingsNote: 'Direct Class A' },
+  { name: 'Scott Wisniewski', role: 'President', units: 125000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postGrantHoldings: 713681, holdingsNote: 'Direct Class A. Reconciled: 588,681 (Sept 25 post-80K RSU vest/36K tax withhold) + 125,000 (Dec grant) = 713,681' },
+];
+
+export const DEC_2025_INSIDER_SALES = [
+  { name: 'American Tower Corp', role: '10% Holder', shares: 2288621, price: 69.75, proceeds: 159757414, date: '2025-12-09', broker: 'Barclays Capital', plan10b5_1: true, planAdopted: null, postSaleClassA: 211379, postSaleLLCUnits: 2170657 },
+  { name: 'Yao Huiwen', role: 'CTO', shares: 40000, price: 73.52, proceeds: 2940752, date: '2025-12-05', broker: 'B. Riley Securities', plan10b5_1: true, planAdopted: '2025-06-12', postSaleClassA: null, postSaleLLCUnits: null },
+  { name: 'Shanti B. Gupta', role: 'COO', shares: 10000, price: 77.34, proceeds: 773400, date: '2025-12-10', broker: 'Fidelity Brokerage', plan10b5_1: true, planAdopted: null, postSaleClassA: 382375, postSaleLLCUnits: null },
+  { name: 'Maya Bernal', role: 'CAO', shares: 6000, price: 73.76, proceeds: 442560, date: '2025-12-05', broker: 'Fidelity Brokerage', plan10b5_1: true, planAdopted: null, postSaleClassA: 122486, postSaleLLCUnits: null },
+];
+
+export const DEC_2025_INSIDER_PURCHASES = [
+  { name: 'Keith R. Larson', role: 'Director', shares: 675, price: 72.71, date: '2025-12-10', account: 'IRA', plan10b5_1: true, planAdopted: '2025-09-08', postPurchaseHoldings: 675 },
+  { name: 'Keith R. Larson', role: 'Director', shares: 715, price: 70.02, date: '2025-12-17', account: 'IRA', plan10b5_1: true, planAdopted: '2025-09-08', postPurchaseHoldings: 1390 },
+  { name: 'Keith R. Larson', role: 'Director', shares: 625, price: 80.00, date: '2025-12-24', account: 'IRA', plan10b5_1: true, planAdopted: '2025-09-08', postPurchaseHoldings: 2015 },
+];
+
+// ============================================================================
+// AUGUST-SEPTEMBER 2025 INSIDER ACTIVITY
+// ============================================================================
+
+/**
+ * Aug 15, 2025 RSU vestings, CEO grant, and Aug-Sep insider sales.
+ * All vestings on Aug 15 at $34.50 (Code F tax withholding).
+ * Gupta Sep 15 vesting at $29.83; post-transaction corrected via Form 4/A Jan 2026.
+ *
+ * Total disposed for tax: ~$3.38M (76,575 shares)
+ * Total sales: ~$2.71M (60,000 shares)
+ * CEO grant: 500K RSUs (separate from Dec 2, 2025 grant of 250K)
+ */
+export const AUG_2025_CEO_RSU_GRANT = {
+  name: 'Abel Avellan',
+  role: 'CEO & Chairman',
+  date: '2025-08-15',
+  units: 500000,
+  vestingStart: '2026-08-15',
+  vestingSchedule: '1/3 annually',
+  postGrantHoldings: 78163078,
+  holdingsNote: '78,163,078 Class A equivalents (~28% economic). Separate from Dec 2, 2025 grant of 250K RSUs. Total CEO RSUs: 750K.',
+};
+
+export const AUG_SEP_2025_RSU_VESTINGS = [
+  { name: 'Huiwen Yao', role: 'CTO', date: '2025-08-15', unitsVested: 50000, taxWithheld: 20000, netAcquired: 30000, taxPrice: 34.50, taxValue: 690000, postTransactionHoldings: 200000 },
+  { name: 'Andrew M. Johnson', role: 'CFO & CLO', date: '2025-08-15', unitsVested: 80000, taxWithheld: 35000, netAcquired: 45000, taxPrice: 34.50, taxValue: 1207500, postTransactionHoldings: 522485 },
+  { name: 'Shanti B. Gupta', role: 'COO', date: '2025-08-15', unitsVested: 50000, taxWithheld: 21000, netAcquired: 29000, taxPrice: 34.50, taxValue: 724500, postTransactionHoldings: 392375 },
+  { name: 'Shanti B. Gupta', role: 'COO', date: '2025-09-15', unitsVested: 50000, taxWithheld: 25575, netAcquired: 24425, taxPrice: 29.83, taxValue: 762890, postTransactionHoldings: 348232, note: 'Originally filed as 398,232; corrected to 348,232 via Form 4/A Jan 26, 2026' },
+];
+
+export const AUG_SEP_2025_INSIDER_SALES = [
+  { name: 'Huiwen Yao', role: 'CTO', shares: 40000, avgPrice: 41.58, proceeds: 1663200, date: '2025-09-03', broker: 'B. Riley Securities', plan10b5_1: true, planAdopted: '2025-06-12', postSaleHoldings: 160000, note: 'Option exercise Aug 26. Matches Form 144 filed Sep 3. Price range $40.00-$42.00.' },
+  { name: 'Andrew M. Johnson', role: 'CFO & CLO', shares: 20000, avgPrice: 52.48, proceeds: 1049634, date: '2025-08-26', broker: 'Fidelity Brokerage', plan10b5_1: false, planAdopted: null, postSaleHoldings: null, note: 'Form 144 proposed sale. Post-vesting (Aug 15 RSU vest). Execution Form 4 not in analyzed batch.' },
 ];
 
 // ============================================================================
