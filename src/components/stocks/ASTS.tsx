@@ -119,6 +119,7 @@ import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shar
 import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
+import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
 import type { CompsTimelineEntry, ASTSImplication } from '@/data/asts/comps-timeline';
 import { ASTS_SEC_FILINGS, ASTS_SEC_META, ASTS_SEC_TYPE_COLORS, ASTS_SEC_FILTER_TYPES } from '@/data/asts/sec-filings';
@@ -836,6 +837,7 @@ const ASTSAnalysis = () => {
     { id: 'revenue', label: 'Revenue', type: 'projection', group: 'ASTS Analysis' },
     { id: 'dilution', label: 'Dilution', type: 'projection', group: 'ASTS Analysis' },
     { id: 'sources', label: 'Sources', type: 'tracking', group: 'ASTS Analysis' },
+    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'ASTS Analysis' },
     // Unified valuation model (combines Scenarios + DCF)
     { id: 'model', label: 'Model', type: 'projection' },
     // Other projections
@@ -1051,6 +1053,9 @@ const ASTSAnalysis = () => {
           {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="ASTS" />}
           {activeTab === 'sources' && (
             <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} competitorLabel="Competitors & Partners" competitors={astsCompetitors} />
+          )}
+          {activeTab === 'edgar' && (
+            <SharedEdgarTab ticker="ASTS" companyName="AST SpaceMobile" localFilings={ASTS_SEC_FILINGS} cik={ASTS_SEC_META.cik} typeColors={ASTS_SEC_TYPE_COLORS} />
           )}
         </main>
       </div>
