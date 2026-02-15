@@ -292,6 +292,17 @@ const AnalysisPanel: React.FC<{ text: string; onClose: () => void }> = ({ text, 
   </div>
 );
 
+// ── Display name normalization ───────────────────────────────────────────────
+/** Map EDGAR's raw form names to consistent short display names */
+function displayFormName(raw: string): string {
+  const upper = raw.toUpperCase().trim();
+  // Bare numbers → "Form N"
+  if (/^\d+$/.test(upper)) return `Form ${raw}`;
+  // "SCHEDULE 13D/A" → "SC 13D/A", etc.
+  if (upper.startsWith('SCHEDULE')) return raw.replace(/^SCHEDULE\s*/i, 'SC ');
+  return raw;
+}
+
 // ── Filing row ──────────────────────────────────────────────────────────────
 const FilingRow: React.FC<{
   r: MatchResult;
@@ -301,7 +312,8 @@ const FilingRow: React.FC<{
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<string | null>(null);
 
-  const colors = typeColors[r.filing.form] || { bg: 'var(--surface2)', text: 'var(--text3)' };
+  const formDisplay = displayFormName(r.filing.form);
+  const colors = typeColors[r.filing.form] || typeColors[formDisplay] || { bg: 'var(--surface2)', text: 'var(--text3)' };
   const statusCfg = STATUS_CONFIG[r.status];
 
   const handleAnalyze = async () => {
@@ -352,9 +364,10 @@ const FilingRow: React.FC<{
         <span style={{
           fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
           padding: '2px 8px', borderRadius: 5, flexShrink: 0,
+          minWidth: 64, textAlign: 'center',
           background: colors.bg, color: colors.text, whiteSpace: 'nowrap',
         }}>
-          {r.filing.form}
+          {formDisplay}
         </span>
         {/* Description */}
         <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
