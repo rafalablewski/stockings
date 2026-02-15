@@ -241,7 +241,7 @@ const CrossRefLines: React.FC<{ refs: { source: string; data: string }[] }> = ({
   </div>
 );
 
-// ── Tiny action button ──────────────────────────────────────────────────────
+// ── Tiny action button (Ive×Tesla style) ────────────────────────────────────
 const ActionBtn: React.FC<{
   label: string;
   title: string;
@@ -251,21 +251,23 @@ const ActionBtn: React.FC<{
   loading?: boolean;
   variant?: 'default' | 'accent';
 }> = ({ label, title, onClick, href, active, loading, variant = 'default' }) => {
+  const isAccent = variant === 'accent' || active;
   const style: React.CSSProperties = {
-    padding: '3px 10px', fontSize: 10, fontWeight: 500, fontFamily: 'inherit',
-    color: active ? 'var(--accent)' : variant === 'accent' ? 'var(--accent)' : 'var(--text3)',
-    background: active ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'transparent',
-    border: '1px solid',
-    borderColor: active ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'color-mix(in srgb, var(--border) 70%, transparent)',
-    borderRadius: 6, cursor: loading ? 'wait' : 'pointer',
+    fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+    textTransform: 'uppercase', letterSpacing: '0.08em',
+    padding: '2px 6px', borderRadius: 4,
+    color: active ? 'var(--accent)' : isAccent ? 'rgba(130,200,130,0.5)' : 'var(--text3)',
+    background: 'rgba(255,255,255,0.04)',
+    border: `1px solid ${active ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : isAccent ? 'rgba(130,200,130,0.15)' : 'var(--border)'}`,
+    cursor: loading ? 'wait' : 'pointer',
     transition: 'all 0.15s', outline: 'none', textDecoration: 'none',
     display: 'inline-flex', alignItems: 'center', gap: 4,
-    opacity: loading ? 0.6 : 1,
+    opacity: loading ? 0.5 : 1,
   };
   if (href) {
     return <a href={href} target="_blank" rel="noopener noreferrer" title={title} style={style}>{label}</a>;
   }
-  return <button onClick={onClick} disabled={loading} title={title} style={style}>{loading ? 'Analyzing...' : label}</button>;
+  return <button onClick={onClick} disabled={loading} title={title} style={style}>{loading ? '...' : label}</button>;
 };
 
 // ── Analysis panel ──────────────────────────────────────────────────────────
@@ -527,26 +529,26 @@ const FilingList: React.FC<{
   );
 };
 
-// ── Filter pill ─────────────────────────────────────────────────────────────
+// ── Filter pill (Ive×Tesla style) ────────────────────────────────────────────
 const FilterPill: React.FC<{
   label: string; active: boolean; count?: number; onClick: () => void;
 }> = ({ label, active, count, onClick }) => (
   <button
     onClick={onClick}
     style={{
-      padding: '4px 12px', fontSize: 11, fontWeight: active ? 600 : 400,
+      fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+      padding: '3px 8px', borderRadius: 4,
       color: active ? 'var(--accent)' : 'var(--text3)',
-      background: active ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'transparent',
-      border: '1px solid',
-      borderColor: active ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : 'var(--border)',
-      borderRadius: 99, cursor: 'pointer', transition: 'all 0.25s',
+      background: active ? 'color-mix(in srgb, var(--accent) 8%, rgba(255,255,255,0.04))' : 'rgba(255,255,255,0.04)',
+      border: `1px solid ${active ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : 'var(--border)'}`,
+      cursor: 'pointer', transition: 'all 0.15s',
       outline: 'none', fontFamily: 'inherit',
-      display: 'inline-flex', alignItems: 'center', gap: 6,
+      display: 'inline-flex', alignItems: 'center', gap: 5,
     }}
   >
     {label}
     {count !== undefined && (
-      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, opacity: active ? 1 : 0.5 }}>{count}</span>
+      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 9, opacity: active ? 0.8 : 0.35 }}>{count}</span>
     )}
   </button>
 );
@@ -628,11 +630,11 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#edgar-status</div>
-      {/* Status bar — matches Sources tab */}
+      {/* Status bar */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '16px 24px', marginTop: 8,
-        background: 'var(--surface)', borderRadius: 16, border: '1px solid var(--border)',
+        padding: '16px 20px', marginTop: 8,
+        borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {/* Progress ring */}
@@ -681,35 +683,38 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              padding: '8px 16px', fontSize: 11, fontWeight: 500,
-              color: 'var(--text3)', background: 'transparent',
-              border: '1px solid var(--border)', borderRadius: 99,
+              fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+              padding: '5px 14px', borderRadius: 4,
+              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--border)',
               textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6,
-              transition: 'all 0.2s',
+              transition: 'all 0.15s',
             }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)'; }}
           >
-            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
-              <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg width="8" height="8" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            EDGAR
+            SEC EDGAR
           </a>
           <button
             onClick={fetchFilings}
             disabled={loading}
             aria-label={loaded ? 'Refresh EDGAR filings' : 'Fetch EDGAR filings'}
             style={{
-              padding: '8px 24px', fontSize: 11, fontWeight: 600, letterSpacing: '0.3px',
-              color: loading ? 'var(--text3)' : 'var(--bg)',
-              background: loading ? 'var(--surface2)' : 'var(--accent)',
-              border: 'none', borderRadius: 99,
+              fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+              padding: '5px 14px', borderRadius: 4,
+              color: loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
+              background: 'rgba(255,255,255,0.04)',
+              border: `1px solid ${loading ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
               cursor: loading ? 'wait' : 'pointer',
-              display: 'flex', alignItems: 'center', gap: 7,
-              transition: 'all 0.25s', outline: 'none',
+              display: 'flex', alignItems: 'center', gap: 6,
+              transition: 'all 0.15s', outline: 'none',
+              opacity: loading ? 0.5 : 1,
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }}>
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }}>
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -785,9 +790,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
 
           {/* Filing list card */}
           <div style={{
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 16, padding: '8px 12px',
+            borderRadius: 12,
+            border: '1px solid rgba(255,255,255,0.06)',
+            padding: '4px 8px',
           }}>
             <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} />
           </div>
