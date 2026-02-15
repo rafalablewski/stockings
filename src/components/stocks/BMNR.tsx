@@ -204,10 +204,8 @@ import React, { useState, useMemo, useRef, useEffect, useCallback, Component, Er
 import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import StockChart from '../shared/StockChart';
-import SharedSourcesTab from '../shared/SharedSourcesTab';
-import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
+import { SharedAITab } from '../shared/SharedAITab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
-import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -830,8 +828,6 @@ const BMNRDilutionAnalysis = () => {
     { id: 'debt', label: 'Debt', type: 'projection', group: 'BMNR Analysis' },
     { id: 'sensitivity', label: 'Sensitivity', type: 'projection', group: 'BMNR Analysis' },
     { id: 'backtest', label: 'Backtest', type: 'projection', group: 'BMNR Analysis' },
-    { id: 'sources', label: 'Sources', type: 'tracking', group: 'BMNR Analysis' },
-    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'BMNR Analysis' },
     // Unified valuation model (combines Scenarios + DCF)
     { id: 'model', label: 'Model', type: 'projection' },
     // Other projections
@@ -843,7 +839,7 @@ const BMNRDilutionAnalysis = () => {
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
-    { id: 'ai-agents', label: 'AI Agents', type: 'tracking' },
+    { id: 'ai', label: 'AI', type: 'tracking' },
   ];
 
   const bmnrCompetitors: Competitor[] = [
@@ -1102,12 +1098,17 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'financials' && <FinancialsTab />}
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
-        {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="BMNR" />}
-        {activeTab === 'sources' && (
-          <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="Crypto Treasury Peers" competitors={bmnrCompetitors} />
-        )}
-        {activeTab === 'edgar' && (
-          <SharedEdgarTab ticker="BMNR" companyName="BitMine Immersion Technologies" localFilings={BMNR_SEC_FILINGS} cik={BMNR_SEC_META.cik} typeColors={BMNR_SEC_TYPE_COLORS} />
+        {activeTab === 'ai' && (
+          <SharedAITab
+            ticker="BMNR"
+            companyName="BitMine Immersion Technologies"
+            researchSources={bmnrResearchSources}
+            competitorLabel="Crypto Treasury Peers"
+            competitors={bmnrCompetitors}
+            localFilings={BMNR_SEC_FILINGS}
+            cik={BMNR_SEC_META.cik}
+            typeColors={BMNR_SEC_TYPE_COLORS}
+          />
         )}
         </main>
       </div>

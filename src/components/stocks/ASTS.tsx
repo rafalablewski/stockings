@@ -116,10 +116,8 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback, Component, ErrorInfo, ReactNode } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
-import SharedSourcesTab from '../shared/SharedSourcesTab';
-import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
+import { SharedAITab } from '../shared/SharedAITab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
-import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
 import type { CompsTimelineEntry, ASTSImplication } from '@/data/asts/comps-timeline';
 import { ASTS_SEC_FILINGS, ASTS_SEC_META, ASTS_SEC_TYPE_COLORS, ASTS_SEC_FILTER_TYPES, ASTS_FILING_CROSS_REFS } from '@/data/asts/sec-filings';
@@ -853,8 +851,6 @@ const ASTSAnalysis = () => {
     { id: 'subscribers', label: 'Subscribers', type: 'projection', group: 'ASTS Analysis' },
     { id: 'revenue', label: 'Revenue', type: 'projection', group: 'ASTS Analysis' },
     { id: 'dilution', label: 'Dilution', type: 'projection', group: 'ASTS Analysis' },
-    { id: 'sources', label: 'Sources', type: 'tracking', group: 'ASTS Analysis' },
-    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'ASTS Analysis' },
     // Unified valuation model (combines Scenarios + DCF)
     { id: 'model', label: 'Model', type: 'projection' },
     // Other projections
@@ -866,7 +862,7 @@ const ASTSAnalysis = () => {
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
-    { id: 'ai-agents', label: 'AI Agents', type: 'tracking' },
+    { id: 'ai', label: 'AI', type: 'tracking' },
   ];
 
   return (
@@ -1067,12 +1063,18 @@ const ASTSAnalysis = () => {
           {activeTab === 'financials' && <FinancialsTab />}
           {activeTab === 'investment' && <InvestmentTab />}
           {activeTab === 'wall-street' && <WallStreetTab />}
-          {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="ASTS" />}
-          {activeTab === 'sources' && (
-            <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} competitorLabel="Competitors & Partners" competitors={astsCompetitors} />
-          )}
-          {activeTab === 'edgar' && (
-            <SharedEdgarTab ticker="ASTS" companyName="AST SpaceMobile" localFilings={ASTS_SEC_FILINGS} cik={ASTS_SEC_META.cik} typeColors={ASTS_SEC_TYPE_COLORS} crossRefIndex={ASTS_FILING_CROSS_REFS} />
+          {activeTab === 'ai' && (
+            <SharedAITab
+              ticker="ASTS"
+              companyName="AST SpaceMobile"
+              researchSources={astsResearchSources}
+              competitorLabel="Competitors & Partners"
+              competitors={astsCompetitors}
+              localFilings={ASTS_SEC_FILINGS}
+              cik={ASTS_SEC_META.cik}
+              typeColors={ASTS_SEC_TYPE_COLORS}
+              crossRefIndex={ASTS_FILING_CROSS_REFS}
+            />
           )}
         </main>
       </div>

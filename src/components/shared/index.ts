@@ -15,6 +15,9 @@ export { SharedWallStreetTab } from './SharedWallStreetTab';
 // AI Agents Tab
 export { SharedAIAgentsTab } from './SharedAIAgentsTab';
 
+// Unified AI Tab (wraps AI Agents + Sources + EDGAR)
+export { SharedAITab } from './SharedAITab';
+
 // Capital Structure Types
 export * from './capitalTypes';
 
