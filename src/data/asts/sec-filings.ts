@@ -45,7 +45,15 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Jun 3, 2025', type: 'Form 4', description: 'Wisniewski (Pres) 125K RSU grant (vest 1/3 annually May 30 from 2026); Gupta (COO) 50K RSU vesting (20K tax w/h at $22.50)', period: '—', color: 'green' },
   { date: 'May 19, 2025', type: 'Form 4', description: 'Yao (CTO) option exercise: 40K at $0.06 → LLC Units (May 17 transaction). Post: 240K Units', period: '—', color: 'green' },
   { date: 'May 16, 2025', type: 'Form 144', description: 'Yao (CTO) proposed sale: 40K shares (~$1M) via Fidelity. 10b5-1 plan Jun 12.', period: '—', color: 'green' },
-  { date: 'May 8, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q1 2025', color: 'purple' },
+  { date: 'May 13, 2025', type: '424B5', description: '$500M Equity Distribution Program (ATM via B. Riley et al.; fee $77K). Used ~$287M before Oct termination.', period: '—', color: 'orange' },
+  { date: 'May 12, 2025', type: '10-Q', description: 'Quarterly Report (Revenue $0.7M; Cash $874.5M; OpEx $63.7M; H2 Guide $50-75M)', period: 'Q1 2025', color: 'purple' },
+  { date: 'May 12, 2025', type: '8-K', description: 'Q1 2025 Earnings Release + 2025 Revenue Guidance $63-71M (adj. opex $44.9M)', period: '—', color: 'yellow' },
+  { date: 'May 7, 2025', type: 'Form 4', description: 'Cisneros (Dir) purchase 1K at $25 (trust; post: 783,327). Multiple duplicate filings + Form 4/A amendment.', period: '—', color: 'green' },
+  { date: 'Apr 28, 2025', type: 'SC 13G/A', description: 'BlackRock 5.2% Ownership (14.86M shares as of 3/31/2025). Sole voting/dispositive.', period: '—', color: 'green' },
+  { date: 'Apr 25, 2025', type: 'DEF 14A', description: 'Definitive Proxy: Annual Meeting Jun 6 — directors, 2024 incentive plan (5.4M shares), auditors. CEO $1M salary + equity.', period: '—', color: 'green' },
+  { date: 'Apr 25, 2025', type: 'ARS', description: '2024 Annual Report to Security Holders (incorporates 10-K; CEO letter on launches/partnerships)', period: 'FY 2024', color: 'blue' },
+  { date: 'Apr 14, 2025', type: 'PRE 14A', description: 'Preliminary Proxy Statement (draft; same proposals as DEF 14A)', period: '—', color: 'green' },
+  { date: 'Apr 4, 2025', type: 'Form 4', description: 'Cisneros (Dir) purchase 1K at $25 (trust; post: 782,327); Johnson (CFO) purchase 500 at $25 (IRA; Form 4/A Apr 9)', period: '—', color: 'green' },
   { date: 'Mar 3, 2025', type: '10-K', description: 'Annual Report', period: 'FY 2024', color: 'blue' },
   { date: 'Feb 27, 2025', type: '8-K', description: 'Q4 2024 Earnings Release', period: '—', color: 'yellow' },
   { date: 'Nov 6, 2024', type: '10-Q', description: 'Quarterly Report', period: 'Q3 2024', color: 'purple' },
@@ -64,7 +72,7 @@ export const ASTS_SEC_META = {
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 11, 2026', title: '$1B Converts + Registered Directs + Preliminary FY 2025 Results' },
-  totalFilingsTracked: 59
+  totalFilingsTracked: 69
 };
 
 export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -81,6 +89,9 @@ export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   'Form 144': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   '424B7': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
   'FWP': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
+  'ARS': { bg: 'rgba(59,130,246,0.2)', text: '#60a5fa' },
+  'PRE 14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'DEFA14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   '10-Q/A': { bg: 'rgba(168,85,247,0.2)', text: 'var(--violet)' },
 };
 

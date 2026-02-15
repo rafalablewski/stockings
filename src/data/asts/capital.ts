@@ -31,7 +31,7 @@ export const CAPITAL_METADATA: DataMetadata = {
   lastUpdated: '2026-02-15',
   source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q',
   nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). GREENSHOE DEADLINE: Feb 20, 2026 ($150M convert option).',
-  notes: 'Feb 15 audit: 80 filings cross-referenced (10 Jan-Feb + 13 Dec + 15 Sept-Oct + 12 Aug-Sep + 15 Jun-Aug + 15 May-Jun). Certificate amendment Jun 6: +100M Class A authorized (to 800M). Wisniewski 125K RSU grant Jun 2 (250K total w/ Dec). Gupta Jun 2 vesting 50K (20K tax). Yao May 17 option exercise 40K at $0.06. Cisneros bought twice at $25 (Jun 9 + Jun 24). Stock May-Jun: $32.50→$46.73.',
+  notes: 'Feb 15 audit: 95 filings cross-referenced (10 Jan-Feb + 13 Dec + 15 Sept-Oct + 12 Aug-Sep + 15 Jun-Aug + 15 May-Jun + 15 Apr-May). BlackRock 13G/A: 5.2% (14.86M shares). $500M ATM launched May 13 (~$287M used). Proxy: 5.4M incentive shares approved. Cisneros bought at $25 on Apr 4, May 7, Jun 9, Jun 24 (4 purchases). Stock Apr-May: $29.50→$32.50.',
 };
 
 // ============================================================================
@@ -209,6 +209,15 @@ export const MAJOR_SHAREHOLDERS: MajorShareholder[] = [
     notes: 'PIPE investor. Japan market partner.',
   },
   {
+    name: 'BlackRock, Inc.',
+    role: 'Institutional Investor',
+    shares: 14.9,
+    shareClass: 'Class A',
+    pct: (14.9 / TOTAL_BASIC_SHARES * 100).toFixed(1) + '%',
+    votingPct: (14.9 / TOTAL_VOTING_SHARES * 100).toFixed(1) + '%',
+    notes: 'Per 13G/A filed Apr 28, 2025 (as of 3/31/2025). 14,858,926 shares. Sole voting and dispositive. Up from ~4% prior. Subsidiaries: BlackRock Advisors, Fund Managers.',
+  },
+  {
     name: 'American Tower',
     role: 'Infrastructure Partner',
     shares: 0.2,
@@ -287,13 +296,13 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
     notes: '2.0% due 2036. Initial size $850M, upsized to $1B during marketing, +$150M greenshoe exercised = $1.15B total. Concurrent with Oct RD and ATM. Outstanding as debt.',
   },
   {
-    date: '2025-09-30',
-    event: 'Q3 2025 ATM Program',
+    date: '2025-05-13',
+    event: 'May 2025 Equity Distribution ($500M ATM)',
     type: 'ATM',
     amount: 287,
     price: null,
     shares: null,
-    notes: 'At-the-market sales. Facility terminated.',
+    notes: '$500M ATM via B. Riley et al. (424B5 May 13). ~$287M sold through Q3 2025. Terminated Oct 2025 when replaced by $800M program.',
   },
   {
     date: '2025-07-24',
@@ -677,6 +686,43 @@ export const AUG_SEP_2025_INSIDER_SALES = [
   { name: 'Huiwen Yao', role: 'CTO', shares: 40000, avgPrice: 41.58, proceeds: 1663200, date: '2025-09-03', broker: 'B. Riley Securities', plan10b5_1: true, planAdopted: '2025-06-12', postSaleHoldings: 160000, note: 'Option exercise Aug 26. Matches Form 144 filed Sep 3. Price range $40.00-$42.00.' },
   { name: 'Andrew M. Johnson', role: 'CFO & CLO', shares: 20000, avgPrice: 52.48, proceeds: 1049634, date: '2025-08-26', broker: 'Fidelity Brokerage', plan10b5_1: false, planAdopted: null, postSaleHoldings: null, note: 'Form 144 proposed sale. Post-vesting (Aug 15 RSU vest). Execution Form 4 not in analyzed batch.' },
 ];
+
+// ============================================================================
+// APRIL-MAY 2025 INSIDER ACTIVITY
+// ============================================================================
+
+/**
+ * Apr-May 2025 insider purchases — directors buying at $25 dip.
+ * Cisneros bought Apr 4 and May 7 (both at $25, each 1K shares via trusts).
+ * Johnson bought Apr 4 (500 shares at $25 via IRA; Form 4/A corrected Apr 9).
+ *
+ * Total purchases: $62.5K (2,500 shares)
+ * Context: Stock at $25-$29 range. Directors showing repeated confidence.
+ */
+export const APR_MAY_2025_INSIDER_PURCHASES = [
+  { name: 'Adriana Cisneros', role: 'Director', shares: 1000, price: 25.00, date: '2025-04-04', account: 'Trust (indirect)', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 782327, note: 'Duplicate Form 4 filing (clerical).' },
+  { name: 'Andrew M. Johnson', role: 'CFO & CLO', shares: 500, price: 25.00, date: '2025-04-04', account: 'IRA', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 500, note: 'Form 4/A amendment Apr 9 corrects reporting.' },
+  { name: 'Adriana Cisneros', role: 'Director', shares: 1000, price: 25.00, date: '2025-05-07', account: 'Trust (indirect)', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 783327, note: 'Multiple duplicate filings + Form 4/A amendment May 9.' },
+];
+
+/**
+ * DEF 14A Proxy Summary — Annual Meeting Jun 6, 2025
+ * 2024 Equity Incentive Plan: 5.4M shares approved (~2% dilution potential).
+ * CEO comp: $1M salary + equity. Directors elected. Auditors approved.
+ */
+export const APR_2025_PROXY = {
+  meetingDate: '2025-06-06',
+  proxyFiled: '2025-04-25',
+  preliminaryFiled: '2025-04-14',
+  proposals: [
+    { number: 1, description: 'Election of directors', approved: true },
+    { number: 2, description: '2024 Equity Incentive Plan (5.4M shares)', approved: true, dilutionPct: 2.0 },
+    { number: 3, description: 'Ratification of independent auditors', approved: true },
+  ],
+  ceoComp: { salary: 1000000, equityGrant: true },
+  avellanOwnership: 28,
+  notes: 'Annual meeting scheduled Jun 6 (subsequently held Jun 27 per later batch). 5.4M share plan = ~2% dilution potential. ARS filed same day with CEO letter.',
+};
 
 // ============================================================================
 // MAY-JUNE 2025 INSIDER ACTIVITY

@@ -159,6 +159,7 @@ import {
   AUG_2025_CEO_RSU_GRANT,
   AUG_SEP_2025_RSU_VESTINGS,
   AUG_SEP_2025_INSIDER_SALES,
+  APR_MAY_2025_INSIDER_PURCHASES,
   JUN_2025_CERTIFICATE_AMENDMENT,
   MAY_JUN_2025_RSU_ACTIVITY,
   JUN_2025_INSIDER_PURCHASES,
@@ -3661,6 +3662,22 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.account}</span>
             </div>
           ))}
+        </div>
+        {/* April-May 2025 Insider Purchases */}
+        <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)' }}>Apr–May 2025 — Insider Buys at $25 Dip</div>
+        <div>
+          {APR_MAY_2025_INSIDER_PURCHASES.map((p, i) => (
+            <div key={`apr-${i}`} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 80px 100px', padding: '12px 24px', borderBottom: i < APR_MAY_2025_INSIDER_PURCHASES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{p.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({p.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.date.slice(5)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>{p.shares.toLocaleString()}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${p.price.toFixed(2)}</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.account}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Cisneros (1K each) + Johnson (500) at $25 dip. Multiple duplicate Form 4 filings corrected via amendments.
         </div>
       </div>
 

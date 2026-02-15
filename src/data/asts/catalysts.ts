@@ -269,6 +269,10 @@ export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   { event: '2024 Equity Incentive Plan Amendment (+10M shares)', date: 'Nov 21, 2025', category: 'Corporate' },
   { event: 'Russell 1000 Inclusion', date: 'Jun 2025', category: 'Corporate' },
   { event: 'SatCo JV (Vodafone EU)', date: '2025', category: 'Commercial' },
+  { event: '$500M Equity Distribution Program (ATM via B. Riley)', date: 'May 13, 2025', category: 'Financing' },
+  { event: 'BlackRock 13G/A: 5.2% Stake (14.86M shares)', date: 'Apr 28, 2025', category: 'Corporate' },
+  { event: 'DEF 14A Proxy Filed (5.4M share incentive plan, annual meeting Jun 6)', date: 'Apr 25, 2025', category: 'Corporate' },
+  { event: 'Cisneros (Dir) + Johnson (CFO) Purchases at $25 (Apr 4)', date: 'Apr 4, 2025', category: 'Capital' },
   { event: 'FirstNet Trial FCC Approval', date: 'Apr 2025', category: 'Regulatory' },
   { event: 'First VoLTE Call', date: '2025', category: 'Technology' },
 
