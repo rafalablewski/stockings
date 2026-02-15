@@ -113,10 +113,12 @@ function getDateNeighbors(isoDate: string): string[] {
 /**
  * Normalize form type for comparison. EDGAR returns bare types ("4", "3",
  * "144") while the local DB uses prefixed names ("Form 4", "Form 3",
- * "Form 144"). This strips "FORM" prefix, slashes, spaces, and hyphens
- * so both sides reduce to the same canonical form.
+ * "Form 144"). EDGAR also uses "SCHEDULE 13D/A" while DB uses "SC 13D/A".
+ * This strips "FORM" prefix, normalizes "SCHEDULE" → "SC", and removes
+ * slashes, spaces, and hyphens so both sides reduce to the same canonical form.
  */
-const normalizeForm = (f: string) => f.replace(/[/\s-]/g, '').replace(/^FORM/i, '');
+const normalizeForm = (f: string) =>
+  f.replace(/[/\s-]/g, '').replace(/^FORM/i, '').replace(/^SCHEDULE/i, 'SC');
 
 /**
  * Date tolerance by form type. Ownership filings (Form 4, Form 3, Form 144,
@@ -142,21 +144,29 @@ function getDateRange(isoDate: string, days: number): string[] {
   return result;
 }
 
-/** Look up cross-refs for a given form + date (with form-specific tolerance) */
+/**
+ * Look up cross-refs for a given form + date (with form-specific tolerance).
+ * Iterates over index keys and normalizes both the EDGAR form and the index
+ * key's form so "4" matches "Form 4", "SCHEDULE 13D/A" matches "SC 13D/A", etc.
+ */
 function lookupCrossRefs(
   form: string,
   isoDate: string,
   index?: Record<string, { source: string; data: string }[]>,
 ): { source: string; data: string }[] | undefined {
   if (!index) return undefined;
-  const normalizedForm = form.toUpperCase().trim();
-  const tolerance = getDateTolerance(normalizedForm);
-  const dates = getDateRange(isoDate, tolerance);
-  for (const d of dates) {
-    const key1 = `${normalizedForm}|${d}`;
-    if (index[key1]) return index[key1];
-    const key2 = `${normalizeForm(normalizedForm)}|${d}`;
-    if (index[key2]) return index[key2];
+  const lookupNorm = normalizeForm(form.toUpperCase().trim());
+  const tolerance = getDateTolerance(form.toUpperCase().trim());
+  const validDates = new Set(getDateRange(isoDate, tolerance));
+
+  for (const [key, value] of Object.entries(index)) {
+    const pipeIdx = key.indexOf('|');
+    if (pipeIdx === -1) continue;
+    const keyForm = key.slice(0, pipeIdx);
+    const keyDate = key.slice(pipeIdx + 1);
+    if (validDates.has(keyDate) && normalizeForm(keyForm.toUpperCase().trim()) === lookupNorm) {
+      return value;
+    }
   }
   return undefined;
 }
