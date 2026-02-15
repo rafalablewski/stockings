@@ -11,7 +11,7 @@ export interface Prompt {
 
 export const prompts: Prompt[] = [
   // =========================================================================
-  // 1. ORIGINAL â€” General Entries Classifier
+  // General Entries Classifier
   // =========================================================================
   {
     name: "Entries, News, Press Releases, SEC Filings",
@@ -222,7 +222,7 @@ Both prompts are the same machine with different fuel. The template is modular â
   },
 
   // =========================================================================
-  // 2. Analyst Report / Price Target Extractor
+  // Analyst Report / Price Target Extractor
   // =========================================================================
   {
     name: "Analyst Report / Price Target Extractor",
@@ -273,7 +273,7 @@ Paste the analyst report(s) below:`,
   },
 
   // =========================================================================
-  // 3. Competitor Intelligence Extractor
+  // Competitor Intelligence Extractor
   // =========================================================================
   {
     name: "Competitor Intelligence Extractor",
@@ -325,7 +325,7 @@ Paste the competitor content below:`,
   },
 
   // =========================================================================
-  // 4. 13F / Institutional Holdings Tracker
+  // 13F / Institutional Holdings Tracker
   // =========================================================================
   {
     name: "13F / Institutional Holdings Tracker",
@@ -378,7 +378,7 @@ Paste the filing(s) below:`,
   },
 
   // =========================================================================
-  // 5. Patent / IP Filing Analyzer
+  // Patent / IP Filing Analyzer
   // =========================================================================
   {
     name: "Patent / IP Filing Analyzer",
@@ -428,7 +428,7 @@ Paste the patent filing(s) below:`,
   },
 
   // =========================================================================
-  // 6. Conference / Investor Day Notes Extractor
+  // Conference / Investor Day Notes Extractor
   // =========================================================================
   {
     name: "Conference / Investor Day Notes Extractor",
@@ -493,7 +493,7 @@ Paste the conference notes below:`,
   },
 
   // =========================================================================
-  // 7. RSS / News Feed Batch Processor
+  // RSS / News Feed Batch Processor
   // =========================================================================
   {
     name: "RSS / News Feed Batch Processor",
@@ -551,7 +551,7 @@ Paste the news batch below:`,
   },
 
   // =========================================================================
-  // 8. Regulatory / Government Action Tracker
+  // Regulatory / Government Action Tracker
   // =========================================================================
   {
     name: "Regulatory / Government Action Tracker",
@@ -607,7 +607,7 @@ Paste the regulatory content below:`,
   },
 
   // =========================================================================
-  // 9. Social Media / Sentiment Aggregator
+  // Social Media / Sentiment Aggregator
   // =========================================================================
   {
     name: "Social Media / Sentiment Aggregator",
