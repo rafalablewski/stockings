@@ -546,7 +546,6 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const [error, setError] = useState<string | null>(null);
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
   const [filter, setFilter] = useState('All');
-  const [showLocalDb, setShowLocalDb] = useState(false);
 
   const results = useMemo(
     () => matchFilings(edgarFilings, localFilings, crossRefIndex),
@@ -779,63 +778,6 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           }}>
             <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} />
           </div>
-
-          {/* Local DB — collapsible */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#local-database</div>
-          <button
-            onClick={() => setShowLocalDb(!showLocalDb)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 12,
-              padding: '32px 0 16px', background: 'transparent', border: 'none',
-              cursor: 'pointer', outline: 'none', width: '100%',
-            }}
-          >
-            <span style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--text3)',
-              textTransform: 'uppercase', letterSpacing: '1.2px',
-            }}>
-              Local Database
-            </span>
-            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)' }}>
-              {localFilings.length} entries {showLocalDb ? '\u25B2' : '\u25BC'}
-            </span>
-          </button>
-          {showLocalDb && (
-            <div style={{
-              background: 'var(--surface)', border: '1px solid var(--border)',
-              borderRadius: 16, padding: '12px 16px',
-            }}>
-              {localFilings.map((lf, i) => {
-                const c = typeColors[lf.type] || { bg: 'var(--surface2)', text: 'var(--text3)' };
-                return (
-                  <div key={i} style={{
-                    display: 'flex', alignItems: 'center', gap: 10, padding: '6px 4px',
-                    fontSize: 12, borderBottom: i < localFilings.length - 1 ? '1px solid color-mix(in srgb, var(--border) 30%, transparent)' : 'none',
-                  }}>
-                    <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, width: 90 }}>
-                      {lf.date}
-                    </span>
-                    <span style={{
-                      fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-                      padding: '2px 6px', borderRadius: 4, flexShrink: 0,
-                      background: c.bg, color: c.text,
-                    }}>
-                      {lf.type}
-                    </span>
-                    <span style={{ color: 'var(--text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {lf.description}
-                    </span>
-                    {lf.period !== '\u2014' && (
-                      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)', opacity: 0.6, flexShrink: 0 }}>
-                        {lf.period}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </>
       )}
     </div>
