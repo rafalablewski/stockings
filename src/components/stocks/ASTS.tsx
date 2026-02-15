@@ -145,6 +145,10 @@ import {
   EQUITY_OFFERINGS,
   DILUTION_HISTORY,
   SBC_HISTORY,
+  CONVERTIBLE_NOTES,
+  CASH_RUNWAY_SCENARIOS,
+  LIQUIDITY_POSITION,
+  DILUTION_SCENARIOS,
   DATA_FRESHNESS,
 } from '@/data/asts';
 
@@ -830,7 +834,7 @@ const ASTSAnalysis = () => {
     { id: 'constellation', label: 'Constellation', type: 'projection', group: 'ASTS Analysis' },
     { id: 'subscribers', label: 'Subscribers', type: 'projection', group: 'ASTS Analysis' },
     { id: 'revenue', label: 'Revenue', type: 'projection', group: 'ASTS Analysis' },
-    { id: 'runway', label: 'Cash Runway', type: 'projection', group: 'ASTS Analysis' },
+    { id: 'dilution', label: 'Dilution', type: 'projection', group: 'ASTS Analysis' },
     { id: 'sources', label: 'Sources', type: 'tracking', group: 'ASTS Analysis' },
     // Unified valuation model (combines Scenarios + DCF)
     { id: 'model', label: 'Model', type: 'projection' },
@@ -1017,7 +1021,7 @@ const ASTSAnalysis = () => {
           {activeTab === 'subscribers' && <SubscribersTab calc={calc} partnerReach={partnerReach} setPartnerReach={setPartnerReach} penetrationRate={penetrationRate} setPenetrationRate={setPenetrationRate} blendedARPU={blendedARPU} setBlendedARPU={setBlendedARPU} partners={partners} />}
           {activeTab === 'revenue' && <RevenueTab calc={calc} revenueShare={revenueShare} setRevenueShare={setRevenueShare} govRevenue={govRevenue} setGovRevenue={setGovRevenue} revenueSources={revenueSources} contractedRevenue={contractedRevenue} />}
           {activeTab === 'partners' && <PartnersTab partners={partners} revenueShare={revenueShare} blendedARPU={blendedARPU} penetrationRate={penetrationRate} />}
-          {activeTab === 'runway' && <RunwayTab calc={calc} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} debtRate={debtRate} setDebtRate={setDebtRate} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
+          {activeTab === 'dilution' && <ASTSDilutionTab calc={calc} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} debtRate={debtRate} setDebtRate={setDebtRate} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
           {activeTab === 'capital' && <CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} />}
           {activeTab === 'model' && <ModelTab
             partnerReach={partnerReach} setPartnerReach={setPartnerReach}
@@ -2705,272 +2709,34 @@ const CompetitorsTab = () => {
   );
 };
 
-const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterlyBurn, totalDebt, setTotalDebt, debtRate, setDebtRate, currentShares, currentStockPrice }) => {
-  const proj = useMemo(() => { let c = cashOnHand; return Array.from({ length: 13 }, (_, q) => { const r = { q: `Q${((3 + q) % 4) + 1}'${25 + Math.floor((3 + q) / 4)}`, cash: c }; c = Math.max(0, c - quarterlyBurn); return r; }); }, [cashOnHand, quarterlyBurn]);
-  const dilution = [250, 500, 750, 1000].map(r => ({ r, new: r / currentStockPrice, dil: (r / currentStockPrice) / (currentShares + r / currentStockPrice) * 100, runway: (cashOnHand + r) / quarterlyBurn }));
-  
-  // FY 2025 Preliminary + Feb 2026 Pro Forma
-  const financials = {
-    cashFY2025: 2780, // Per 8-K as of Dec 31, 2025
-    cashProForma: 3760, // ~$2,780M + $984M converts - $180.5M repurchase - $433.7M repurchase + $180M RD1 + $433M RD2
-    fyRevenue: '63-71',
-    fyAdjOpex: '257-263',
-    fySBCandDA: '98-100',
-    q4Revenue: '~50',
-    q4CapexEst: '~300',
-    satCost: '21-23',
-    employees: '~1,800',
-    // Dec 31, 2025 Debt (per 8-K):
-    debt425: 50, // $50M 4.25% (pre-Feb repurchase)
-    debt2375: 575, // $575M 2.375% (pre-Feb repurchase)
-    debt200: 1150, // $1.15B 2.00%
-    debtUBS: 420, // $420M UBS cash-collateralized loan
-    debtSecured: 69, // ~$69M senior secured
-    totalDebt8K: 2264, // Per 8-K
-    // Feb 2026 Pro Forma Debt:
-    debt425PostRepurchase: 3.5, // $50M - $46.5M repurchased
-    debt2375PostRepurchase: 325, // $575M - $250M repurchased
-    newConvert225: 1000, // $1B 2.25% due 2036
-    totalDebtProForma: 2968, // $2,264 - $46.5 - $250 + $1,000
-    grossPPE: 1600, // ~$1.6B per 8-K
-    accumDA: 174, // ~$174M per 8-K
-  };
+// DILUTION & SHARE COUNT TAB - Dedicated dilution tracking (replaces standalone Cash Runway tab)
+// Cash/liquidity content now lives in Capital tab's 'liquidity' view
+const HYPOTHETICAL_RAISE_AMOUNTS = [250, 500, 750, 1000];
+
+const ASTSDilutionTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterlyBurn, totalDebt, setTotalDebt, debtRate, setDebtRate, currentShares, currentStockPrice }) => {
+  const dilution = HYPOTHETICAL_RAISE_AMOUNTS.map(r => ({ r, new: r / currentStockPrice, dil: (r / currentStockPrice) / (currentShares + r / currentStockPrice) * 100, runway: (cashOnHand + r) / quarterlyBurn }));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-header</div>
-      {/* Hero — Ive×Tesla */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dilution-header</div>
+      {/* Hero */}
       <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Capital Position</div>
-        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Cash Runway<span style={{ color: 'var(--gold)' }}>.</span></h2>
-        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>FY 2025 cash $2.78B (8-K). Pro forma post-Feb 2026 raises: ~$3.76B. ~$2.97B pro forma debt. ~{calc.cashRunwayQuarters.toFixed(0)}Q runway at $300M/Q burn. Satellite cost $21-23M avg.</p>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Projection Tool</div>
+        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Future Dilution<span style={{ color: 'var(--violet)' }}>.</span></h2>
+        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Model the dilution impact of hypothetical equity raises at the current stock price. Adjust cash position and burn rate to see extended runway from potential raises.</p>
       </div>
 
-      {/* Treasury Dashboard — Glass grid */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-metrics</div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-        {[
-          { label: 'Cash (8-K)', value: `$${(cashOnHand / 1000).toFixed(1)}B`, sub: `~${calc.cashRunwayQuarters.toFixed(0)}Q at $${quarterlyBurn}M/Q`, color: 'var(--mint)' },
-          { label: 'Quarterly Burn', value: `$${quarterlyBurn}M`, sub: 'CapEx + OpEx', color: 'var(--coral)' },
-          { label: 'Runway', value: `${calc.cashRunwayQuarters.toFixed(1)}Q`, sub: `~${(calc.cashRunwayQuarters / 4).toFixed(1)} years`, color: 'var(--gold)' },
-          { label: 'Debt', value: `$${(totalDebt/1000).toFixed(1)}B`, sub: `${debtRate}% blended`, color: 'var(--sky)' },
-          { label: 'Employees', value: '~1,800', sub: 'Global workforce', color: 'var(--violet)' },
-        ].map(kpi => (
-          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
-            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
-            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* FY 2025 Preliminary Financial Summary — Glass panel side-by-side */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#fy2025-financials</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-        <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>FY 2025 (8-K Preliminary)</span>
-            <UpdateIndicators sources="SEC" />
-          </div>
-          {[
-            { l: 'FY Revenue', v: `$${financials.fyRevenue}M`, hl: true },
-            { l: 'Q4 Est. Revenue', v: `$${financials.q4Revenue}M` },
-            { l: 'FY Adj. OpEx', v: `$${financials.fyAdjOpex}M` },
-            { l: 'FY SBC + D&A', v: `$${financials.fySBCandDA}M` },
-          ].map(r => (
-            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--mint)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
-            </div>
-          ))}
-        </div>
-        <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
-          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Assets & CapEx</div>
-          {[
-            { l: 'Gross PP&E', v: `$${(financials.grossPPE / 1000).toFixed(1)}B`, hl: true },
-            { l: 'Accumulated D&A', v: `$${financials.accumDA}M` },
-            { l: 'Satellite Cost (avg)', v: `$${financials.satCost}M` },
-            { l: 'Employees', v: financials.employees },
-          ].map(r => (
-            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--cyan)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Convertible Debt — Glass grid (Pro Forma post-Feb 2026) */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#convertible-debt</div>
+      {/* Dilution Impact at Different Prices */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dilution-at-prices</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
         <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Debt Outstanding (Pro Forma Feb 2026)</span>
-          <UpdateIndicators sources="SEC" />
-        </div>
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', fontSize: 11, color: 'var(--text3)', lineHeight: 1.6 }}>
-          <strong style={{ color: 'var(--cyan)' }}>Feb 2026 Capital Activity:</strong> $1B new 2.25% converts issued. $46.5M of 4.25% and $250M of 2.375% notes repurchased via registered directs. $420M UBS cash-collateralized loan for Ligado.
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)' }}>
-          {[
-            { value: `$${financials.debt425PostRepurchase}M`, label: '4.25% (2032)', sub: 'Was $50M', sub2: '$46.5M repurchased', color: 'var(--gold)' },
-            { value: `$${financials.debt2375PostRepurchase}M`, label: '2.375% (2032)', sub: 'Was $575M', sub2: '$250M repurchased', color: 'var(--coral)' },
-            { value: '$1,150M', label: '2.00% (2036)', sub: 'Oct 2025 issue', sub2: '$96.30 conversion', color: 'var(--cyan)' },
-            { value: '$1,000M', label: '2.25% (2036)', sub: 'NEW Feb 2026', sub2: '$116.30 conversion', color: 'var(--mint)' },
-            { value: `$${financials.debtUBS + financials.debtSecured}M`, label: 'Secured + UBS', sub: `UBS: $${financials.debtUBS}M`, sub2: `Secured: ~$${financials.debtSecured}M`, color: 'var(--violet)' },
-          ].map(d => (
-            <div key={d.label} style={{ background: 'var(--surface)', padding: '24px 12px', textAlign: 'center' }}>
-              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: d.color }}>{d.value}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6 }}>{d.label}</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.7, marginTop: 2 }}>{d.sub}</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5 }}>{d.sub2}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
-          Pro forma total: ~$2,968M. Blended rate ~2.15%. Jul 2025 capped calls ($120.12 cap) remain outstanding. Sound Point $550M facility available for Ligado closing.
-        </div>
-      </div>
-
-      {/* Cash Projection — Glass panel chart */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#cash-projection</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Cash Projection (at current burn)</span>
-          <UpdateIndicators sources="SEC" />
-        </div>
-        <div style={{ padding: '24px 24px' }}>
-          <ResponsiveContainer width="100%" height={180}>
-            <AreaChart data={proj}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="q" stroke="var(--text3)" fontSize={10} />
-              <YAxis stroke="var(--text3)" tickFormatter={v => `$${(v/1000).toFixed(1)}B`} fontSize={10} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={v => [`$${(Number(v)/1000).toFixed(2)}B`, 'Cash']} />
-              <Area dataKey="cash" stroke="var(--mint)" fill="var(--mint)" fillOpacity={0.2} strokeWidth={2} />
-            </AreaChart>
-          </ResponsiveContainer>
-          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8 }}>
-            Based on slider cash value. Does not include future revenue ramp, Ligado payments ($100M Mar 2026 + $15M at closing), or Sound Point $550M drawdown.
-          </div>
-        </div>
-      </div>
-
-      {/* Capital Raises — Glass panel with era sections */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-raises</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Capital Raises History (2021-2026)</span>
-          <UpdateIndicators sources={['PR', 'SEC']} />
-        </div>
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', fontSize: 12, color: 'var(--text3)', lineHeight: 1.6 }}>
-          <strong style={{ color: 'var(--cyan)' }}>Financing Overview:</strong> SPAC, convertibles, equity offerings, and strategic investments. $5B+ total raised. Feb 2026: $1B new converts + ~$614M registered directs.
-        </div>
-
-        {/* 2026 */}
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--coral)', marginBottom: 12 }}>2026 Capital Activity (Feb)</div>
-          {[
-            { s: 'Feb 2026 Convertible', a: '$1,000M', t: '2.25%, 2036', n: 'Rule 144A. $116.30 conversion. UBS lead. $150M greenshoe' },
-            { s: 'Registered Direct #1', a: '$180M', t: '$96.92/sh', n: '1.86M shares. Cross-conditional with $46.5M 4.25% repurchase' },
-            { s: 'Registered Direct #2', a: '$433M', t: '$96.92/sh', n: '4.48M shares. Cross-conditional with $250M 2.375% repurchase' },
-            { s: '4.25% Notes Repurchased', a: '-$180M', t: 'Repurchase', n: '$46.5M principal retired for ~$180.5M cash' },
-            { s: '2.375% Notes Repurchased', a: '-$434M', t: 'Repurchase', n: '$250M principal retired for ~$433.7M cash' },
-          ].map((r, i) => (
-            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '12px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
-              <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.a.startsWith('-') ? 'var(--coral)' : 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
-              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
-              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.n}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* 2025 */}
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 12 }}>2025 Capital Raises</div>
-          {[
-            { s: 'Jan 2025 Convertible', a: '$460M', t: '4.25%, 2032', n: '$410M repurchased for equity; $50M remained → $46.5M repurchased Feb 2026' },
-            { s: 'Jul 2025 Convertible', a: '$575M', t: '2.375%, 2032', n: '$120.12 effective strike via capped call. $250M repurchased Feb 2026' },
-            { s: 'Oct 2025 Convertible', a: '$1,150M', t: '2%, 2036', n: '$96.30 strike; 10-year term. $150M greenshoe exercised' },
-            { s: 'Oct 2025 ATM Program', a: '$706M', t: 'ATM', n: '$800M capacity. ~10.1M shares sold thru Feb 10. ~$80M remaining' },
-            { s: 'Oct 2025 Registered Direct', a: '$161M', t: '$78.61/sh', n: '2.0M shares. Funded $50M 4.25% notes repurchase' },
-            { s: 'Q3 ATM Facility', a: '$389M', t: 'ATM', n: 'Prior facility; terminated. Replaced by Oct 2025 program' },
-            { s: 'Capped Call Unwind', a: '$74.5M', t: '—', n: 'Jan 2025 capped calls terminated Nov 4, 2025' },
-          ].map((r, i) => (
-            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '12px 0', borderBottom: i < 6 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
-              <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
-              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
-              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.n}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* 2024 */}
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--violet)', marginBottom: 12 }}>2024 Capital Raises</div>
-          {[
-            { s: '2034 Strategic Convertibles', a: '$148.5M', t: '3.875%, 2034', n: 'AT&T, Google, Vodafone, Verizon → force-converted Jan 2025' },
-            { s: 'Public Warrant Exercise', a: '$153.6M', t: '$11.50/share', n: 'Warrants redeemed Sept 2024; ~13.4M shares issued' },
-            { s: 'Verizon Strategic', a: '$100M', t: 'Equity', n: 'May 2024; converted to definitive Oct 2025' },
-            { s: 'Google Investment', a: '$100M', t: 'Equity', n: 'May 2024; strategic technology partnership' },
-          ].map((r, i) => (
-            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '12px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
-              <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
-              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
-              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.n}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* 2021-2023 */}
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--sky)', marginBottom: 12 }}>2021-2023 Foundation</div>
-          {[
-            { s: 'SPAC (April 2021)', a: '$462M', t: 'SPAC + PIPE', n: 'IPO via New Providence; $230M PIPE' },
-            { s: 'B. Riley ATM (2022)', a: '$75M', t: 'ATM facility', n: '24-month committed equity' },
-            { s: 'NanoAvionics Sale', a: '$28M', t: 'Asset sale', n: 'Sold to Kongsberg (July 2022)' },
-            { s: 'Atlas Facility', a: '$30M', t: 'Secured', n: 'Equipment-backed; partially repaid' },
-          ].map((r, i) => (
-            <div key={r.s} style={{ display: 'grid', gridTemplateColumns: '180px 80px 100px 1fr', alignItems: 'center', padding: '12px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 40%, transparent)' : 'none' }}>
-              <span style={{ fontSize: 12, color: 'var(--text)' }}>{r.s}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{r.a}</span>
-              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.t}</span>
-              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{r.n}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Debt Resolution */}
-        <div style={{ padding: '16px 24px', borderLeft: '3px solid var(--mint)' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 12 }}>Debt Resolution Summary (Post-Feb 2026)</div>
-          {[
-            '2034 Strategic ($148.5M): Force-converted to equity Jan 2025. 25.8M shares issued.',
-            '4.25% Notes ($460M): $410M repurchased 2025. $46.5M repurchased Feb 2026. ~$3.5M remains.',
-            '2.375% Notes ($575M): $250M repurchased Feb 2026. $325M outstanding. Capped call to $120.12 remains.',
-            '2.00% Notes ($1,150M): Outstanding. $96.30 conversion. Due Jan 2036.',
-            '2.25% Notes ($1,000M): NEW Feb 2026. $116.30 conversion. Due 2036. UBS lead.',
-            'UBS Loan ($420M): Cash-collateralized for Ligado first payment. Sound Point $550M available.',
-          ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '6px 0' }}>
-              <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--mint)', flexShrink: 0, marginTop: 5 }} />
-              <span style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5 }}>{item}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Dilution Analysis — Glass panel */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dilution-scenarios</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
-        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Hypothetical Dilution</span>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Hypothetical Raise Dilution</span>
           <UpdateIndicators sources="SEC" />
         </div>
         <div style={{ padding: 0 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
-            {['Raise', 'New Shares', 'Dilution', 'Runway'].map(h => (
-              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Raise' ? 'left' : 'right' }}>{h}</span>
+            {['Raise Amount', 'New Shares', 'Dilution', 'Ext. Runway'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Raise Amount' ? 'left' : 'right' }}>{h}</span>
             ))}
           </div>
           {dilution.map((d, i) => (
@@ -2985,12 +2751,12 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
           ))}
         </div>
         <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
-          Company states fully funded for 100+ satellites. Additional raises unlikely near term.
+          At current price ${currentStockPrice.toFixed(2)}/share. Company states fully funded for 100+ satellites.
         </div>
       </div>
 
-      {/* Parameters — Preset card layout */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-params</div>
+      {/* Parameters */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dilution-params</div>
       <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Parameters</span>
         <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
@@ -2999,19 +2765,12 @@ const RunwayTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterl
         <OverviewParameterCard title="Cash Position ($M)" explanation="Total cash and equivalents per 8-K. Pro forma post-Feb raises: ~$3,760M." options={[1500, 2000, 2500, 2780, 3500, 3760]} value={cashOnHand} onChange={setCashOnHand} format="$" currentValue={2780} />
         <OverviewParameterCard title="Quarterly Burn ($M)" explanation="Quarterly cash consumption (CapEx + OpEx). Driven by satellite production ramp." options={[500, 400, 350, 300, 200, 150]} value={quarterlyBurn} onChange={setQuarterlyBurn} format="$" currentValue={300} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
-        <OverviewParameterCard title="Total Debt ($M)" explanation="All debt obligations including converts + UBS loan + secured. Pro forma ~$2,968M post-Feb 2026." options={[3500, 3000, 2968, 2264, 2000, 1500]} value={totalDebt} onChange={setTotalDebt} format="$" currentValue={2264} />
-        <OverviewParameterCard title="Debt Rate (%)" explanation="Weighted average interest rate. Post-Feb 2026 blended ~2.15% across all converts." options={[5, 4, 3, 2.15, 2, 1.5]} value={debtRate} onChange={setDebtRate} format="%" currentValue={2.15} />
-      </div>
-      
+
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#cfa-notes</div>
-      <CFANotes title="CFA Level III — Cash Runway Analysis" items={[
-        { term: 'Runway Calculation', def: 'Cash ÷ Quarterly Burn = Quarters of funding. Pre-revenue companies need sufficient runway to reach profitability.' },
-        { term: 'Pro Forma vs GAAP Cash', def: '8-K cash ($2,780M) is as of Dec 31, 2025. Pro forma includes Feb 2026 net raises (~$3,760M). Use 8-K for conservative analysis.' },
-        { term: 'Convertible Debt', def: 'Four series outstanding: 4.25% (~$3.5M), 2.375% ($325M), 2.00% ($1,150M), 2.25% ($1,000M). Plus $420M UBS loan and ~$69M secured.' },
-        { term: 'Dilution Scenarios', def: 'If more capital needed, new shares reduce ownership %. ATM (~$80M remaining) and future converts are primary sources.' },
-        { term: 'Capital Intensity', def: 'Gross PP&E ~$1.6B (Dec 2025). Satellite cost $21-23M avg. 45-60 sats targeted by end 2026.' },
-        { term: 'Path to Cash Flow Positive', def: 'When revenue exceeds burn, runway becomes infinite. FY 2025 rev $63-71M. Track constellation → service launch → revenue ramp.' },
+      <CFANotes title="CFA Level III — Dilution Projections" items={[
+        { term: 'Dilution at Different Prices', def: 'At higher stock prices, fewer shares needed to raise same amount. $500M raise at $100/share = 5M shares (1.3% dilution) vs at $50 = 10M shares (2.6%).' },
+        { term: 'Runway Extension', def: 'Each raise extends runway proportionally. $500M at $300M/Q burn = +1.7Q. Consider probability-weighted scenarios for modeling.' },
+        { term: 'Price Impact', def: 'Large equity raises can depress stock price, creating a feedback loop that increases dilution. Smaller, staged raises via ATM programs minimize this effect.' },
       ]} />
     </div>
   );
@@ -3029,6 +2788,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
   const equityOfferings = EQUITY_OFFERINGS;
   const dilutionHistory = DILUTION_HISTORY;
   const sbcHistory = SBC_HISTORY;
+  const sbc2025YTD = sbcHistory.filter(h => h.quarter.includes('2025')).reduce((s, h) => s + h.sbc, 0);
+  const sbc2025Eng = sbcHistory.filter(h => h.quarter.includes('2025')).reduce((s, h) => s + h.engineering, 0);
+  const sbc2025GA = sbcHistory.filter(h => h.quarter.includes('2025')).reduce((s, h) => s + h.gAndA, 0);
+  const sbcFY2024 = sbcHistory.filter(h => h.quarter.includes('2024')).reduce((s, h) => s + h.sbc, 0);
+  const convertibleNotes = CONVERTIBLE_NOTES;
+  const dilutionScenarios = DILUTION_SCENARIOS;
+  const totalConvertDilution = convertibleNotes.reduce((sum, n) => sum + n.maxSharesOnConversion, 0);
+  const dilutionRef = HYPOTHETICAL_RAISE_AMOUNTS.map(r => ({ r, new: r / currentStockPrice, dil: (r / currentStockPrice) / (currentShares + r / currentStockPrice) * 100, runway: (LIQUIDITY_POSITION.cashAndEquiv + r) / LIQUIDITY_POSITION.quarterlyBurn }));
 
   const marketCap = currentShares * currentStockPrice;
   const totalVotingShares = TOTAL_VOTING_SHARES;
@@ -3105,19 +2872,21 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-navigation</div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Strategic + founder' },
           { id: 'offerings', value: `${equityOfferings.length}`, label: 'Capital Events', sub: 'IPO to converts' },
           { id: 'incentives', value: `${sbcHistory.length}`, label: 'SBC Quarters', sub: 'Compensation data' },
           { id: 'dilution', value: `${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(0)}%`, label: 'Total Dilution', sub: `${fullyDiluted}M FD shares` },
+          { id: 'liquidity', value: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, label: 'Liquidity', sub: `~${(LIQUIDITY_POSITION.cashAndEquiv / 300).toFixed(0)}Q runway` },
         ].map(nav => (
           <div
             key={nav.id}
             onClick={() => setCapitalView(nav.id)}
             style={{
-              background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 24,
+              background: 'var(--surface)',
+              padding: '24px 24px',
               cursor: 'pointer',
               borderLeft: capitalView === nav.id ? '4px solid var(--sky)' : '4px solid transparent',
               transition: 'border-color 0.2s',
@@ -3136,104 +2905,80 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#share-classes</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure (Feb 2026)<UpdateIndicators sources="SEC" /></span>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Class Structure</span>
         </div>
         <div style={{ padding: '24px 24px' }}>
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: '1px solid var(--border)' }}>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Class</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Shares (M)</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>% of Basic</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Voting Rights</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Description</span>
+          <div>
+            {/* Header */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: '1px solid var(--border)' }}>
+              {['Class', 'Shares (M)', '% of Basic', 'Voting', 'Description'].map((h, idx) => (
+                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: [1, 2].includes(idx) ? 'right' : 'left' }}>{h}</span>
+              ))}
+            </div>
+            {/* Rows */}
+            {shareClasses.map((sc, i) => (
+              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: i < shareClasses.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+                <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>{sc.classType}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--sky)' }}>{sc.shares}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right' }}>{(sc.shares / totalBasic * 100).toFixed(1)}%</span>
+                <span style={{ padding: '12px 16px', fontSize: 13, color: 'var(--text2)' }}>{sc.votingRights}</span>
+                <span style={{ padding: '12px 16px', fontSize: 13, color: 'var(--text2)' }}>{sc.description}</span>
+              </div>
+            ))}
+            {/* Total Basic */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', background: 'var(--accent-dim)' }}>
+              <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>Total Basic</span>
+              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', fontWeight: 600 }}>{totalBasic.toFixed(1)}</span>
+              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', fontWeight: 600 }}>100%</span>
+              <span style={{ padding: '12px 16px' }}></span>
+              <span style={{ padding: '12px 16px' }}></span>
+            </div>
+            {/* FD Row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
+              <span style={{ padding: '12px 16px', fontSize: 13 }}>Fully Diluted</span>
+              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--sky)' }}>{fullyDiluted.toFixed(1)}</span>
+              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right' }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
+              <span style={{ padding: '12px 16px', gridColumn: 'span 2', fontSize: 13, color: 'var(--text3)', fontWeight: 400 }}>+{(fullyDiluted - totalBasic).toFixed(1)}M from converts, options, RSUs</span>
+            </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <span style={{ fontSize: 13, color: 'var(--text)' }}>Class A</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{shareClasses[0].shares}</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>1 vote/share</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Public trading (NASDAQ: ASTS)</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <span style={{ fontSize: 13, color: 'var(--text)' }}>Class B</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>11.2</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(11.2 / totalBasic * 100).toFixed(1)}%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>1 vote/share</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Founder/insider shares</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <span style={{ fontSize: 13, color: 'var(--text)' }}>Class C</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>78.2</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(78.2 / totalBasic * 100).toFixed(1)}%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>10 votes/share</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Abel Avellan (CEO)</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: 'var(--accent-dim)' }}>
-            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Total Basic</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>{totalBasic.toFixed(1)}</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>100%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <span style={{ fontSize: 13, color: 'var(--text)' }}>+ Options/RSUs/Converts</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{(fullyDiluted - totalBasic).toFixed(1)}</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>+{((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)', gridColumn: 'span 2' }}>Remaining converts, options, RSUs</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', padding: '12px 16px', background: 'var(--accent-dim)' }}>
-            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Fully Diluted</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>{fullyDiluted.toFixed(1)}</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}></span>
+          <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 12 }}>
+            Multi-class structure with 10x super-voting Class C shares. NASDAQ: ASTS.
           </div>
         </div>
+      </div>
 
-        {/* Voting Power Analysis */}
-        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)' }}>Voting Power Analysis</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-            <div>
-              <div style={{ fontSize: 12, color: 'var(--text3)' }}>ECONOMIC OWNERSHIP</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
-                <span style={{ color: 'var(--sky)' }}>{(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: 'var(--text2)' }}>Class B (Insiders)</span>
-                <span style={{ color: 'var(--violet)' }}>{(11.2 / totalBasic * 100).toFixed(1)}%</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: 'var(--text2)' }}>Class C (Abel Avellan)</span>
-                <span style={{ color: 'var(--gold)' }}>{(78.2 / totalBasic * 100).toFixed(1)}%</span>
-              </div>
+      {/* Voting Power Analysis */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#voting-power</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Economic Ownership</div>
+          {[
+            { l: 'Class A (Public)', v: `${(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%`, color: 'var(--sky)' },
+            { l: 'Class B (Insiders)', v: `${(11.2 / totalBasic * 100).toFixed(1)}%`, color: 'var(--violet)' },
+            { l: 'Class C (Abel Avellan)', v: `${(78.2 / totalBasic * 100).toFixed(1)}%`, color: 'var(--gold)' },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.color, fontWeight: 600 }}>{r.v}</span>
             </div>
-            <div>
-              <div style={{ fontSize: 12, color: 'var(--text3)' }}>VOTING POWER (C = 10x)</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
-                <span style={{ color: 'var(--sky)' }}>{(shareClasses[0].shares / totalVotingShares * 100).toFixed(1)}%</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: 'var(--text2)' }}>Class B (Insiders)</span>
-                <span style={{ color: 'var(--violet)' }}>{(11.2 / totalVotingShares * 100).toFixed(1)}%</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 600 }}>
-                <span style={{ color: 'var(--text)' }}>Class C (Abel Avellan)</span>
-                <span style={{ color: 'var(--gold)' }}>{(78.2 * 10 / totalVotingShares * 100).toFixed(1)}%</span>
-              </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Voting Power (C = 10x)</div>
+          {[
+            { l: 'Class A (Public)', v: `${(shareClasses[0].shares / totalVotingShares * 100).toFixed(1)}%`, color: 'var(--sky)' },
+            { l: 'Class B (Insiders)', v: `${(11.2 / totalVotingShares * 100).toFixed(1)}%`, color: 'var(--violet)' },
+            { l: 'Class C (Abel Avellan)', v: `${(78.2 * 10 / totalVotingShares * 100).toFixed(1)}%`, color: 'var(--gold)', hl: true },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: r.hl ? 'var(--text)' : 'var(--text3)', fontWeight: r.hl ? 600 : 400 }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.color, fontWeight: 600 }}>{r.v}</span>
             </div>
-          </div>
-          <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)', fontSize: 13, color: 'var(--text3)' }}>
-            <strong style={{ color: 'var(--gold)' }}>Note:</strong> Abel Avellan maintains ~73% voting control despite ~22% economic ownership via Class C super-voting shares.
-          </div>
+          ))}
         </div>
-        </div>
+      </div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8, padding: '12px 24px', fontSize: 11, color: 'var(--text3)' }}>
+        <strong style={{ color: 'var(--gold)' }}>Note:</strong> Abel Avellan maintains ~73% voting control despite ~22% economic ownership via Class C super-voting shares.
       </div>
       </>
       )}
@@ -3258,8 +3003,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Notes</span>
           </div>
           {majorShareholders.map((sh, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr', padding: '12px 16px', borderBottom: i < majorShareholders.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr', padding: '12px 16px', borderBottom: i < majorShareholders.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
               <span style={{ fontSize: 13, color: 'var(--text)' }}>{sh.name}</span>
               <span style={{ fontSize: 13, color: 'var(--text2)' }}>{sh.role}</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</span>
@@ -3297,8 +3041,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Shares (M)</span>
           </div>
           {equityOfferings.map((offering, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
               <span style={{ fontSize: 13, color: 'var(--text2)' }}>{offering.date}</span>
               <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{offering.event}</span>
               <span style={{ fontSize: 13, color: 'var(--text2)' }}>{offering.type}</span>
@@ -3338,8 +3081,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>G&A</span>
           </div>
           {sbcHistory.map((row, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px', padding: '12px 16px', borderBottom: i < sbcHistory.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px', padding: '12px 16px', borderBottom: i < sbcHistory.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
               <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.quarter}</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${row.sbc.toFixed(1)}M</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${row.engineering.toFixed(1)}M</span>
@@ -3351,7 +3093,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         {/* SBC Chart */}
         <div style={{ height: 192 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={sbcHistory}>
+            <BarChart data={[...sbcHistory].reverse()}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
               <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `$${v}M`} />
@@ -3365,12 +3107,12 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 12 }}>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>2025 YTD SBC</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>$32.3M</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>${sbc2025YTD.toFixed(1)}M</div>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>Q1-Q3 2025</div>
           </div>
           <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 12 }}>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>FY2024 Total SBC</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>$31.9M</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>${sbcFY2024.toFixed(1)}M</div>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full year</div>
           </div>
         </div>
@@ -3383,98 +3125,334 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </>
       )}
 
-      {/* Dilution History View */}
+      {/* Dilution Analysis View */}
       {capitalView === 'dilution' && (
       <>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dilution-analysis</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Count Evolution<UpdateIndicators sources="SEC" /></span>
-        </div>
-        <div style={{ padding: '24px 24px' }}>
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '100px 100px 100px 120px 1fr', borderBottom: '1px solid var(--border)' }}>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Quarter</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Class A (M)</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Implied (M)</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Fully Diluted (M)</span>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Key Event</span>
+      {/* Dilution KPIs */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dilution-kpis</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Basic Shares', value: `${totalBasic.toFixed(0)}M`, sub: 'A + B + C', color: 'var(--sky)' },
+          { label: 'Fully Diluted', value: `${fullyDiluted}M`, sub: `+${(fullyDiluted - totalBasic).toFixed(0)}M potential`, color: 'var(--violet)' },
+          { label: 'Dilution Gap', value: `${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(1)}%`, sub: 'FD vs Basic', color: 'var(--coral)' },
+          { label: 'Convert Dilution', value: `${totalConvertDilution.toFixed(1)}M`, sub: `${convertibleNotes.length} note series`, color: 'var(--gold)' },
+          { label: 'ATM Remaining', value: `~$${LIQUIDITY_POSITION.atmRemaining}M`, sub: 'Shelf capacity', color: 'var(--mint)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
           </div>
-          {dilutionHistory.map((row, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '100px 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: i < dilutionHistory.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.quarter}</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{row.classA.toFixed(1)}</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{row.implied.toFixed(1)}</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{row.fullyDiluted.toFixed(1)}</span>
-              <span style={{ fontSize: 13, color: 'var(--text2)' }}>{row.event}</span>
+        ))}
+      </div>
+
+      {/* Convertible Notes Detail */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#convertible-notes</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Outstanding Convertible Notes</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--violet)', fontSize: 11, color: 'var(--text3)', lineHeight: 1.6 }}>
+          <strong style={{ color: 'var(--violet)' }}>Dilution Risk:</strong> Converts only dilute if stock price exceeds conversion price. Company may repurchase for cash instead. Total potential: +{totalConvertDilution.toFixed(1)}M shares.
+        </div>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px 80px', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Note', 'Outstanding', 'Conv. Price', 'Rate', 'Max Shares', 'Status'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Note' ? 'left' : 'right' }}>{h}</span>
+            ))}
+          </div>
+          {convertibleNotes.map((note, i) => (
+            <div key={note.name} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px 80px', padding: '12px 24px', borderBottom: i < convertibleNotes.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 12, color: 'var(--text)' }}>{note.name}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${note.outstandingPrincipal}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${note.conversionPrice.toFixed(2)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{note.couponRate}%</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--coral)', textAlign: 'right' }}>+{note.maxSharesOnConversion.toFixed(1)}M</span>
+              <span style={{ fontSize: 11, color: note.status === 'outstanding' ? 'var(--mint)' : 'var(--gold)', textAlign: 'right' }}>{note.status === 'partially-repurchased' ? 'partial' : note.status}</span>
+            </div>
+          ))}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px 80px', padding: '12px 24px', background: 'var(--accent-dim)' }}>
+            <span style={{ fontSize: 12, color: 'var(--text)', fontWeight: 600 }}>Total</span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>${convertibleNotes.reduce((s, n) => s + n.outstandingPrincipal, 0).toFixed(1)}M</span>
+            <span></span><span></span>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--coral)', textAlign: 'right', fontWeight: 600 }}>+{totalConvertDilution.toFixed(1)}M</span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+
+      {/* Fully Diluted Share Count Scenarios */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#fd-scenarios</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Fully Diluted Scenarios</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 120px 100px 100px', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Scenario', 'Source', 'New Shares', 'FD Total', 'Dilution'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Scenario' || h === 'Source' ? 'left' : 'right' }}>{h}</span>
+            ))}
+          </div>
+          {dilutionScenarios.map((s, i) => (
+            <div key={s.label} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 120px 100px 100px', padding: '12px 24px', borderBottom: i < dilutionScenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: s.type === 'stress' ? 'color-mix(in srgb, var(--coral) 3%, transparent)' : 'transparent', transition: 'background 0.15s' }}
+              onMouseEnter={e => { if (s.type !== 'stress') e.currentTarget.style.background = 'var(--surface2)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = s.type === 'stress' ? 'color-mix(in srgb, var(--coral) 3%, transparent)' : 'transparent'; }}>
+              <span style={{ fontSize: 12, color: 'var(--text)', fontWeight: s.type === 'current' ? 600 : 400 }}>{s.label}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{s.source}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: s.newShares > 0 ? 'var(--coral)' : 'var(--text2)', textAlign: 'right' }}>{s.newShares > 0 ? `+${s.newShares.toFixed(1)}M` : '—'}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{s.resultingFD.toFixed(1)}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: s.dilutionPct > 0 ? 'var(--coral)' : 'var(--mint)', textAlign: 'right' }}>{s.dilutionPct > 0 ? `${s.dilutionPct.toFixed(1)}%` : '—'}</span>
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Dilution Chart */}
-        <div style={{ height: 256 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={dilutionHistory}>
-              <defs>
-                <linearGradient id="classAGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--sky)" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="var(--sky)" stopOpacity={0}/>
-                </linearGradient>
-                <linearGradient id="fdGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--gold)" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="var(--gold)" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
-              <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `${v}M`} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v) => [`${Number(v).toFixed(1)}M shares`]} />
-              <Area type="monotone" dataKey="fullyDiluted" stroke="var(--gold)" fill="url(#fdGrad)" name="Fully Diluted" />
-              <Area type="monotone" dataKey="classA" stroke="var(--sky)" fill="url(#classAGrad)" name="Class A" />
-            </AreaChart>
-          </ResponsiveContainer>
+      {/* Hypothetical Raise Dilution (reference) */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#dilution-at-prices</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Hypothetical Raise Dilution</span>
+          <UpdateIndicators sources="SEC" />
         </div>
-
-        <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 4 }}></div>
-            <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
+        <div style={{ padding: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Raise Amount', 'New Shares', 'Dilution', 'Ext. Runway'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Raise Amount' ? 'left' : 'right' }}>{h}</span>
+            ))}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 12, height: 12, background: 'var(--gold)', borderRadius: 4 }}></div>
-            <span style={{ color: 'var(--text2)' }}>Fully Diluted</span>
-          </div>
+          {dilutionRef.map((d, i) => (
+            <div key={d.r} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '12px 24px', borderBottom: i < dilutionRef.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text)' }}>${d.r}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{d.new.toFixed(1)}M</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--coral)', textAlign: 'right' }}>{d.dil.toFixed(1)}%</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>{d.runway.toFixed(1)}Q</span>
+            </div>
+          ))}
         </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          At current price ${currentStockPrice.toFixed(2)}/share using ${LIQUIDITY_POSITION.cashAndEquiv}M cash, ${LIQUIDITY_POSITION.quarterlyBurn}M/Q burn.
+        </div>
+      </div>
 
-        {/* Potential Future Dilution */}
-        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text2)' }}>Potential Future Dilution</div>
+      {/* Share Count Evolution */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#share-evolution</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Share Count Evolution (2019-2026)</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div style={{ padding: '24px 24px' }}>
           <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <span style={{ fontSize: 13, color: 'var(--text2)' }}>Jan 2025 Converts (remaining $50M @ $26.58)</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>+1.9M</span>
+            <div style={{ display: 'grid', gridTemplateColumns: '100px 100px 100px 120px 1fr', borderBottom: '1px solid var(--border)' }}>
+              <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Quarter</span>
+              <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Class A (M)</span>
+              <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Implied (M)</span>
+              <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Fully Diluted (M)</span>
+              <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Key Event</span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <span style={{ fontSize: 13, color: 'var(--text2)' }}>Jul 2025 Converts ($575M @ $120.12)</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>+4.8M</span>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <span style={{ fontSize: 13, color: 'var(--text2)' }}>Oct 2025 Converts ($1,150M @ $96.30)</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>+11.9M</span>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', padding: '12px 16px', background: 'var(--accent-dim)' }}>
-              <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>Maximum Additional Dilution</span>
-              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>+18.6M (~5%)</span>
-            </div>
+            {dilutionHistory.map((row, i) => (
+              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '100px 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: i < dilutionHistory.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+                <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.quarter}</span>
+                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{row.classA.toFixed(1)}</span>
+                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{row.implied.toFixed(1)}</span>
+                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{row.fullyDiluted.toFixed(1)}</span>
+                <span style={{ fontSize: 13, color: 'var(--text2)' }}>{row.event}</span>
+              </div>
+            ))}
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text3)' }}>
-            Converts only dilute if stock price exceeds strike prices. Company may repurchase for cash.
+          <div style={{ height: 256, marginTop: 16 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={[...dilutionHistory].reverse()}>
+                <defs>
+                  <linearGradient id="classAGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--sky)" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="var(--sky)" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="fdGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--gold)" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="var(--gold)" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="quarter" stroke="var(--text3)" fontSize={10} />
+                <YAxis stroke="var(--text3)" fontSize={10} tickFormatter={v => `${v}M`} />
+                <Tooltip contentStyle={{ backgroundColor: 'var(--surface2)' }} formatter={(v) => [`${Number(v).toFixed(1)}M shares`]} />
+                <Area type="monotone" dataKey="fullyDiluted" stroke="var(--gold)" fill="url(#fdGrad)" name="Fully Diluted" />
+                <Area type="monotone" dataKey="classA" stroke="var(--sky)" fill="url(#classAGrad)" name="Class A" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 12, height: 12, background: 'var(--sky)', borderRadius: 4 }}></div>
+              <span style={{ color: 'var(--text2)' }}>Class A (Public)</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 12, height: 12, background: 'var(--gold)', borderRadius: 4 }}></div>
+              <span style={{ color: 'var(--text2)' }}>Fully Diluted</span>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Employee Equity / SBC */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#employee-equity</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Employee Equity Plans / SBC</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)' }}>
+          <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+            <div style={{ fontSize: 12, color: 'var(--text3)' }}>2025 YTD SBC (Q1-Q3)</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: 'var(--violet)', marginTop: 4 }}>${sbc2025YTD.toFixed(1)}M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Engineering ${sbc2025Eng.toFixed(1)}M + G&A ${sbc2025GA.toFixed(1)}M</div>
+          </div>
+          <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+            <div style={{ fontSize: 12, color: 'var(--text3)' }}>FY2024 Total SBC</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: 'var(--violet)', marginTop: 4 }}>${sbcFY2024.toFixed(1)}M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Full year from 10-K</div>
+          </div>
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          SBC consists of RSUs and stock options. Included in GAAP OpEx but excluded from Adjusted OpEx. Creates future dilution when vested.
+        </div>
+      </div>
+      </>
+      )}
+
+      {/* Liquidity / Cash Runway View (consolidated from former standalone tab) */}
+      {capitalView === 'liquidity' && (
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#liquidity-overview</div>
+      {/* Treasury Dashboard KPIs */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'Cash (8-K)', value: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, sub: 'Dec 31, 2025', color: 'var(--mint)' },
+          { label: 'Pro Forma Cash', value: `$${(LIQUIDITY_POSITION.cashProForma / 1000).toFixed(1)}B`, sub: 'Post-Feb 2026', color: 'var(--sky)' },
+          { label: 'Quarterly Burn', value: `$${LIQUIDITY_POSITION.quarterlyBurn}M`, sub: 'CapEx + OpEx', color: 'var(--coral)' },
+          { label: 'Runway (8-K)', value: `${(LIQUIDITY_POSITION.cashAndEquiv / LIQUIDITY_POSITION.quarterlyBurn).toFixed(1)}Q`, sub: `~${(LIQUIDITY_POSITION.cashAndEquiv / LIQUIDITY_POSITION.quarterlyBurn / 4).toFixed(1)} years`, color: 'var(--gold)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Cash Runway Scenarios */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#runway-scenarios</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Forward-Looking Runway Scenarios</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Scenario', 'Cash', 'Burn/Q', 'Rev/Q', 'Runway'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Scenario' ? 'left' : 'right' }}>{h}</span>
+            ))}
+          </div>
+          {CASH_RUNWAY_SCENARIOS.map((s, i) => (
+            <div key={s.label} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', padding: '12px 24px', borderBottom: i < CASH_RUNWAY_SCENARIOS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 12, color: 'var(--text)' }}>{s.label}</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${(s.startingCash / 1000).toFixed(1)}B</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', textAlign: 'right' }}>${s.quarterlyBurn}M</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'right' }}>${s.quarterlyRevenue}M</span>
+              <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--gold)', textAlign: 'right' }}>{s.runwayQuarters.toFixed(1)}Q</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Rev/Q includes projected service revenue as burn offset. Runway extends significantly once commercial service begins generating recurring revenue.
+        </div>
+      </div>
+
+      {/* Debt Outstanding */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#debt-summary</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Debt Outstanding (Pro Forma Feb 2026)</span>
+        </div>
+        {(() => {
+          const noteColors = ['var(--cyan)', 'var(--mint)', 'var(--coral)', 'var(--sky)'];
+          const debtItems = [
+            ...convertibleNotes
+              .filter(n => n.outstandingPrincipal >= 100)
+              .sort((a, b) => b.outstandingPrincipal - a.outstandingPrincipal)
+              .map((n, i) => ({
+                value: `$${n.outstandingPrincipal.toLocaleString()}M`,
+                label: `${n.couponRate.toFixed(2)}% (${n.maturityDate.slice(0, 4)})`,
+                sub: n.notes.split('.')[0],
+                color: noteColors[i] || 'var(--sky)',
+              })),
+            { value: `$${LIQUIDITY_POSITION.ubsLoan}M`, label: 'UBS + Secured', sub: 'Ligado related', color: 'var(--violet)' },
+          ];
+          const totalDebt = convertibleNotes.reduce((s, n) => s + n.outstandingPrincipal, 0) + LIQUIDITY_POSITION.ubsLoan;
+          return (
+            <>
+            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${debtItems.length}, 1fr)`, gap: 1, background: 'var(--border)' }}>
+              {debtItems.map(d => (
+                <div key={d.label} style={{ background: 'var(--surface)', padding: '16px 12px', textAlign: 'center' }}>
+                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: d.color }}>{d.value}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>{d.label}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.6 }}>{d.sub}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+              Total pro forma debt: ~${totalDebt.toLocaleString()}M. Sound Point ${LIQUIDITY_POSITION.soundPointFacility}M facility available for Ligado closing.
+            </div>
+            </>
+          );
+        })()}
+      </div>
+
+      {/* Position Summary */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#position-summary</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Cash Position</div>
+          {[
+            { l: 'Cash & Equivalents', v: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, hl: true },
+            { l: 'Pro Forma Cash', v: `$${(LIQUIDITY_POSITION.cashProForma / 1000).toFixed(1)}B` },
+            { l: 'Total Debt', v: `$${(LIQUIDITY_POSITION.totalDebtProForma / 1000).toFixed(1)}B` },
+            { l: 'ATM Remaining', v: `$${LIQUIDITY_POSITION.atmRemaining}M` },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--mint)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 16 }}>Debt Facilities</div>
+          {[
+            { l: 'Sound Point Facility', v: `$${LIQUIDITY_POSITION.soundPointFacility}M`, hl: true },
+            { l: 'UBS Loan', v: `$${LIQUIDITY_POSITION.ubsLoan}M` },
+            { l: 'Quarterly Burn', v: `$${LIQUIDITY_POSITION.quarterlyBurn}M` },
+            { l: 'Blended Rate', v: '~2.15%' },
+          ].map(r => (
+            <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--violet)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent Capital Activity */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-activity</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--mint) 5%, var(--surface)), color-mix(in srgb, var(--sky) 5%, var(--surface)))' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 8 }}>Feb 2026 Capital Activity</div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+            $1B 2.25% converts issued. $46.5M of 4.25% and $250M of 2.375% repurchased. ~$614M registered directs. Net new cash ~$980M.
+          </div>
         </div>
       </div>
       </>
@@ -3486,6 +3464,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         { term: 'Fully Diluted Shares', def: 'Total shares if all options, RSUs, warrants, and convertible securities are exercised. Always higher than basic shares outstanding. Use FD for conservative valuation.' },
         { term: 'ATM (At-The-Market) Programs', def: 'Shelf offerings allowing companies to sell shares directly into the open market at prevailing prices. Less dilutive than block offerings but can create selling pressure.' },
         { term: 'SBC (Stock-Based Compensation)', def: 'Non-cash expense for employee equity compensation (options, RSUs). Reduces reported earnings but doesn\'t affect cash flow. Creates future dilution when vested.' },
+        { term: 'Cash Runway', def: 'Cash ÷ Quarterly Burn = Quarters of funding. Pre-revenue companies need sufficient runway to reach profitability. ASTS fully funded for 100+ satellites.' },
+        { term: 'Convertible Debt', def: 'Hybrid instruments that can convert to equity above a strike price. May not dilute if repurchased for cash. Track conversion prices vs current stock price.' },
       ]} />
     </div>
   );

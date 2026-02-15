@@ -66,8 +66,14 @@ export {
   EQUITY_OFFERINGS,
   DILUTION_HISTORY,
   SBC_HISTORY,
+  CONVERTIBLE_NOTES,
+  CASH_RUNWAY_SCENARIOS,
+  LIQUIDITY_POSITION,
+  DILUTION_SCENARIOS,
   getTotalRaised,
   getOfferingsByType,
+  getTotalConvertDilution,
+  getOutstandingNotes,
 } from './capital';
 
 // Financials
@@ -94,4 +100,7 @@ export type {
   RevenueSource,
   DataMetadata,
   StockDefaults,
+  ConvertibleNoteDetail,
+  CashRunwayScenario,
+  DilutionScenario,
 } from '../shared/types';
