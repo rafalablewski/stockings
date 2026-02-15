@@ -301,6 +301,11 @@ export const CASH_RUNWAY_SCENARIOS: CashRunwayScenario[] = [
  * ETH-specific liquidity factors
  * These capture the unique aspects of BMNR's treasury model vs traditional companies
  */
+/** Fraction of ETH holdings currently staked (~67%) */
+export const STAKING_RATIO = 0.67;
+/** Annual percentage yield on staked ETH (~3.11%) */
+export const STAKING_APY = 0.0311;
+
 export const ETH_LIQUIDITY_FACTORS = {
   /** Unrealized gains on ETH holdings affect GAAP balance sheet but not cash flow */
   unrealizedGainRisk: 'ETH marked-to-market per ASC 350. Price declines reduce book equity but not cash.',

@@ -2708,8 +2708,10 @@ const CompetitorsTab = () => {
 
 // DILUTION & SHARE COUNT TAB - Dedicated dilution tracking (replaces standalone Cash Runway tab)
 // Cash/liquidity content now lives in Capital tab's 'liquidity' view
+const HYPOTHETICAL_RAISE_AMOUNTS = [250, 500, 750, 1000];
+
 const ASTSDilutionTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQuarterlyBurn, totalDebt, setTotalDebt, debtRate, setDebtRate, currentShares, currentStockPrice }) => {
-  const dilution = [250, 500, 750, 1000].map(r => ({ r, new: r / currentStockPrice, dil: (r / currentStockPrice) / (currentShares + r / currentStockPrice) * 100, runway: (cashOnHand + r) / quarterlyBurn }));
+  const dilution = HYPOTHETICAL_RAISE_AMOUNTS.map(r => ({ r, new: r / currentStockPrice, dil: (r / currentStockPrice) / (currentShares + r / currentStockPrice) * 100, runway: (cashOnHand + r) / quarterlyBurn }));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -2783,10 +2785,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
   const equityOfferings = EQUITY_OFFERINGS;
   const dilutionHistory = DILUTION_HISTORY;
   const sbcHistory = SBC_HISTORY;
+  const sbc2025YTD = sbcHistory.filter(h => h.quarter.includes('2025')).reduce((s, h) => s + h.sbc, 0);
+  const sbc2025Eng = sbcHistory.filter(h => h.quarter.includes('2025')).reduce((s, h) => s + h.engineering, 0);
+  const sbc2025GA = sbcHistory.filter(h => h.quarter.includes('2025')).reduce((s, h) => s + h.gAndA, 0);
+  const sbcFY2024 = sbcHistory.filter(h => h.quarter.includes('2024')).reduce((s, h) => s + h.sbc, 0);
   const convertibleNotes = CONVERTIBLE_NOTES;
   const dilutionScenarios = DILUTION_SCENARIOS;
   const totalConvertDilution = convertibleNotes.reduce((sum, n) => sum + n.maxSharesOnConversion, 0);
-  const dilutionRef = [250, 500, 750, 1000].map(r => ({ r, new: r / currentStockPrice, dil: (r / currentStockPrice) / (currentShares + r / currentStockPrice) * 100, runway: (LIQUIDITY_POSITION.cashAndEquiv + r) / LIQUIDITY_POSITION.quarterlyBurn }));
+  const dilutionRef = HYPOTHETICAL_RAISE_AMOUNTS.map(r => ({ r, new: r / currentStockPrice, dil: (r / currentStockPrice) / (currentShares + r / currentStockPrice) * 100, runway: (LIQUIDITY_POSITION.cashAndEquiv + r) / LIQUIDITY_POSITION.quarterlyBurn }));
 
   const marketCap = currentShares * currentStockPrice;
   const totalVotingShares = TOTAL_VOTING_SHARES;
@@ -2908,9 +2914,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             </div>
             {/* Rows */}
             {shareClasses.map((sc, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: i < shareClasses.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: i < shareClasses.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
                 <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>{sc.classType}</span>
                 <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--sky)' }}>{sc.shares}</span>
                 <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right' }}>{(sc.shares / totalBasic * 100).toFixed(1)}%</span>
@@ -2996,8 +3000,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Notes</span>
           </div>
           {majorShareholders.map((sh, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr', padding: '12px 16px', borderBottom: i < majorShareholders.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr', padding: '12px 16px', borderBottom: i < majorShareholders.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
               <span style={{ fontSize: 13, color: 'var(--text)' }}>{sh.name}</span>
               <span style={{ fontSize: 13, color: 'var(--text2)' }}>{sh.role}</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</span>
@@ -3035,8 +3038,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>Shares (M)</span>
           </div>
           {equityOfferings.map((offering, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
               <span style={{ fontSize: 13, color: 'var(--text2)' }}>{offering.date}</span>
               <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{offering.event}</span>
               <span style={{ fontSize: 13, color: 'var(--text2)' }}>{offering.type}</span>
@@ -3076,8 +3078,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: 'right' }}>G&A</span>
           </div>
           {sbcHistory.map((row, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px', padding: '12px 16px', borderBottom: i < sbcHistory.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px', padding: '12px 16px', borderBottom: i < sbcHistory.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
               <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.quarter}</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${row.sbc.toFixed(1)}M</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${row.engineering.toFixed(1)}M</span>
@@ -3103,12 +3104,12 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 12 }}>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>2025 YTD SBC</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>$32.3M</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>${sbc2025YTD.toFixed(1)}M</div>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>Q1-Q3 2025</div>
           </div>
           <div style={{ background: 'var(--surface2)', padding: 12, borderRadius: 12 }}>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>FY2024 Total SBC</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>$31.9M</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--violet)' }}>${sbcFY2024.toFixed(1)}M</div>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>Full year</div>
           </div>
         </div>
@@ -3159,9 +3160,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ))}
           </div>
           {convertibleNotes.map((note, i) => (
-            <div key={note.name} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px 80px', padding: '12px 24px', borderBottom: i < convertibleNotes.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <div key={note.name} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px 80px', padding: '12px 24px', borderBottom: i < convertibleNotes.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
               <span style={{ fontSize: 12, color: 'var(--text)' }}>{note.name}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${note.outstandingPrincipal}M</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${note.conversionPrice.toFixed(2)}</span>
@@ -3253,8 +3252,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)' }}>Key Event</span>
             </div>
             {dilutionHistory.map((row, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '100px 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: i < dilutionHistory.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '100px 100px 100px 120px 1fr', padding: '12px 16px', borderBottom: i < dilutionHistory.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
                 <span style={{ fontSize: 13, color: 'var(--text)' }}>{row.quarter}</span>
                 <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{row.classA.toFixed(1)}</span>
                 <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{row.implied.toFixed(1)}</span>
@@ -3307,12 +3305,12 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)' }}>
           <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>2025 YTD SBC (Q1-Q3)</div>
-            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: 'var(--violet)', marginTop: 4 }}>$32.3M</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Engineering $15.3M + G&A $17.0M</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: 'var(--violet)', marginTop: 4 }}>${sbc2025YTD.toFixed(1)}M</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Engineering ${sbc2025Eng.toFixed(1)}M + G&A ${sbc2025GA.toFixed(1)}M</div>
           </div>
           <div style={{ background: 'var(--surface)', padding: '24px 24px' }}>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>FY2024 Total SBC</div>
-            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: 'var(--violet)', marginTop: 4 }}>$31.9M</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: 'var(--violet)', marginTop: 4 }}>${sbcFY2024.toFixed(1)}M</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Full year from 10-K</div>
           </div>
         </div>
@@ -3357,8 +3355,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ))}
           </div>
           {CASH_RUNWAY_SCENARIOS.map((s, i) => (
-            <div key={s.label} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', padding: '12px 24px', borderBottom: i < CASH_RUNWAY_SCENARIOS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <div key={s.label} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', padding: '12px 24px', borderBottom: i < CASH_RUNWAY_SCENARIOS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
               <span style={{ fontSize: 12, color: 'var(--text)' }}>{s.label}</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${(s.startingCash / 1000).toFixed(1)}B</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', textAlign: 'right' }}>${s.quarterlyBurn}M</span>
@@ -3378,23 +3375,38 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
           <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Debt Outstanding (Pro Forma Feb 2026)</span>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
-          {[
-            { value: '$1,150M', label: '2.00% (2036)', sub: 'Oct 2025 issue', color: 'var(--cyan)' },
-            { value: '$1,000M', label: '2.25% (2036)', sub: 'Feb 2026 issue', color: 'var(--mint)' },
-            { value: '$325M', label: '2.375% (2032)', sub: 'Post-repurchase', color: 'var(--coral)' },
+        {(() => {
+          const noteColors = ['var(--cyan)', 'var(--mint)', 'var(--coral)', 'var(--sky)'];
+          const debtItems = [
+            ...convertibleNotes
+              .filter(n => n.outstandingPrincipal >= 100)
+              .sort((a, b) => b.outstandingPrincipal - a.outstandingPrincipal)
+              .map((n, i) => ({
+                value: `$${n.outstandingPrincipal.toLocaleString()}M`,
+                label: `${n.couponRate.toFixed(2)}% (${n.maturityDate.slice(0, 4)})`,
+                sub: n.notes.split('.')[0],
+                color: noteColors[i] || 'var(--sky)',
+              })),
             { value: `$${LIQUIDITY_POSITION.ubsLoan}M`, label: 'UBS + Secured', sub: 'Ligado related', color: 'var(--violet)' },
-          ].map(d => (
-            <div key={d.label} style={{ background: 'var(--surface)', padding: '16px 12px', textAlign: 'center' }}>
-              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: d.color }}>{d.value}</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>{d.label}</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.6 }}>{d.sub}</div>
+          ];
+          const totalDebt = convertibleNotes.reduce((s, n) => s + n.outstandingPrincipal, 0) + LIQUIDITY_POSITION.ubsLoan;
+          return (
+            <>
+            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${debtItems.length}, 1fr)`, gap: 1, background: 'var(--border)' }}>
+              {debtItems.map(d => (
+                <div key={d.label} style={{ background: 'var(--surface)', padding: '16px 12px', textAlign: 'center' }}>
+                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: d.color }}>{d.value}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>{d.label}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.6 }}>{d.sub}</div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
-          Total pro forma debt: ~$2,968M. Blended rate ~2.15%. Sound Point $550M facility available for Ligado closing.
-        </div>
+            <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+              Total pro forma debt: ~${totalDebt.toLocaleString()}M. Sound Point ${LIQUIDITY_POSITION.soundPointFacility}M facility available for Ligado closing.
+            </div>
+            </>
+          );
+        })()}
       </div>
 
       {/* Position Summary */}

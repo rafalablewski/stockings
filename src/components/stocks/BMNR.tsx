@@ -225,6 +225,8 @@ import {
   LIQUIDITY_POSITION as BMNR_LIQUIDITY,
   CASH_RUNWAY_SCENARIOS as BMNR_RUNWAY_SCENARIOS,
   ETH_LIQUIDITY_FACTORS,
+  STAKING_RATIO,
+  STAKING_APY,
 } from '@/data/bmnr';
 import { BMNR_SEC_FILINGS, BMNR_SEC_META, BMNR_SEC_TYPE_COLORS, BMNR_SEC_FILTER_TYPES } from '@/data/bmnr/sec-filings';
 import { BMNR_QUARTERLY_DATA, BMNR_MARKET_CAP_DATA } from '@/data/bmnr/quarterly-metrics';
@@ -3018,8 +3020,7 @@ const BMNRRunwayTab = ({ calc, currentETH, currentShares, ethPrice, currentStock
   // Live calculations
   const ethValueB = (currentETH * ethPrice) / 1e9;
   const totalLiquidityB = ethValueB + liq.cashAndEquiv / 1000;
-  const stakingYieldQ = (currentETH * 0.67 * ethPrice * 0.0311) / 4 / 1e6; // ~67% staked, 3.11% APY
-  const netBurnQ = liq.quarterlyOpEx - stakingYieldQ;
+  const stakingYieldQ = (currentETH * STAKING_RATIO * ethPrice * STAKING_APY) / 4 / 1e6;  const netBurnQ = liq.quarterlyOpEx - stakingYieldQ;
   const cashRunwayQ = netBurnQ < 0 ? 999 : liq.cashAndEquiv / netBurnQ;
 
   // ETH price stress scenarios
@@ -3029,7 +3030,7 @@ const BMNRRunwayTab = ({ calc, currentETH, currentShares, ethPrice, currentStock
     { label: '-50%', ethPx: ethPrice * 0.50, drop: -50 },
     { label: '-75%', ethPx: ethPrice * 0.25, drop: -75 },
   ].map(s => {
-    const yieldQ = (currentETH * 0.67 * s.ethPx * 0.0311) / 4 / 1e6;
+    const yieldQ = (currentETH * STAKING_RATIO * s.ethPx * STAKING_APY) / 4 / 1e6;
     const net = liq.quarterlyOpEx - yieldQ;
     return { ...s, yieldQ, netBurn: net, runway: net <= 0 ? 999 : liq.cashAndEquiv / net, totalLiq: (currentETH * s.ethPx) / 1e9 + liq.cashAndEquiv / 1000 };
   });
@@ -3100,8 +3101,7 @@ const BMNRRunwayTab = ({ calc, currentETH, currentShares, ethPrice, currentStock
             ))}
           </div>
           {scenarios.map((s, i) => (
-            <div key={s.label} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', padding: '12px 24px', borderBottom: i < scenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <div key={s.label} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 100px', padding: '12px 24px', borderBottom: i < scenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
               <span style={{ fontSize: 12, color: 'var(--text)' }}>{s.label}</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>${s.startingCash}M</span>
               <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', textAlign: 'right' }}>${s.quarterlyBurn}M</span>
@@ -3159,7 +3159,7 @@ const BMNRRunwayTab = ({ calc, currentETH, currentShares, ethPrice, currentStock
             { l: 'ETH Holdings', v: `${(currentETH / 1e6).toFixed(3)}M`, hl: true },
             { l: 'ETH Price', v: `$${ethPrice.toFixed(0)}` },
             { l: 'ETH Value', v: `$${ethValueB.toFixed(1)}B` },
-            { l: 'Staked', v: `~67% (${(currentETH * 0.67 / 1e6).toFixed(2)}M)` },
+            { l: 'Staked', v: `~${(STAKING_RATIO * 100).toFixed(0)}% (${(currentETH * STAKING_RATIO / 1e6).toFixed(2)}M)` },
           ].map(r => (
             <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
               <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>
@@ -3414,9 +3414,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
             </div>
             {/* Rows */}
             {shareClasses.map((sc, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 1fr 100px', borderBottom: i < shareClasses.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 1fr 100px', borderBottom: i < shareClasses.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
                 <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>{sc.class}</span>
                 <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right' }}>{(sc.authorized / 1e6).toFixed(0)}M</span>
                 <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--violet)' }}>{(sc.outstanding / 1e6).toFixed(1)}M</span>
@@ -3451,9 +3449,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
             </div>
             {/* Rows */}
             {majorShareholders.map((sh, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 1fr 1fr', borderBottom: i < majorShareholders.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 1fr 1fr', borderBottom: i < majorShareholders.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
                 <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 500 }}>{sh.name}</span>
                 <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right' }}>{sh.shares ? (sh.shares / 1e6).toFixed(2) : '—'}</span>
                 <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--violet)' }}>{sh.percent ? `${sh.percent.toFixed(2)}%` : '—'}</span>
@@ -3650,7 +3646,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
         const factors = ETH_LIQUIDITY_FACTORS;
         const ethValueB = (currentETH * ethPrice) / 1e9;
         const totalLiquidityB = ethValueB + liq.cashAndEquiv / 1000;
-        const stakingYieldQ = (currentETH * 0.67 * ethPrice * 0.0311) / 4 / 1e6;
+        const stakingYieldQ = (currentETH * STAKING_RATIO * ethPrice * STAKING_APY) / 4 / 1e6;
         const netBurnQ = liq.quarterlyOpEx - stakingYieldQ;
         const stressScenarios = [
           { label: 'Current', ethPx: ethPrice, drop: 0 },
@@ -3658,7 +3654,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
           { label: '-50%', ethPx: ethPrice * 0.50, drop: -50 },
           { label: '-75%', ethPx: ethPrice * 0.25, drop: -75 },
         ].map(s => {
-          const yieldQ = (currentETH * 0.67 * s.ethPx * 0.0311) / 4 / 1e6;
+          const yieldQ = (currentETH * STAKING_RATIO * s.ethPx * STAKING_APY) / 4 / 1e6;
           const net = liq.quarterlyOpEx - yieldQ;
           return { ...s, yieldQ, netBurn: net, runway: net <= 0 ? 999 : liq.cashAndEquiv / net, totalLiq: (currentETH * s.ethPx) / 1e9 + liq.cashAndEquiv / 1000 };
         });
@@ -3778,7 +3774,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
                 { l: 'ETH Holdings', v: `${(currentETH / 1e6).toFixed(3)}M`, hl: true },
                 { l: 'ETH Price', v: `$${ethPrice.toFixed(0)}` },
                 { l: 'ETH Value', v: `$${ethValueB.toFixed(1)}B` },
-                { l: 'Staked', v: `~67% (${(currentETH * 0.67 / 1e6).toFixed(2)}M)` },
+                { l: 'Staked', v: `~${(STAKING_RATIO * 100).toFixed(0)}% (${(currentETH * STAKING_RATIO / 1e6).toFixed(2)}M)` },
               ].map(r => (
                 <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
                   <span style={{ fontSize: 12, color: 'var(--text3)' }}>{r.l}</span>

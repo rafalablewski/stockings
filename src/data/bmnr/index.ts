@@ -33,6 +33,8 @@ export {
   LIQUIDITY_POSITION,
   CASH_RUNWAY_SCENARIOS,
   ETH_LIQUIDITY_FACTORS,
+  STAKING_RATIO,
+  STAKING_APY,
   getFDShares,
   getTotalFD,
   getDilutionPercent,
