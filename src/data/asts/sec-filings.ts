@@ -17,6 +17,7 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Dec 5, 2025', type: 'Form 4', description: 'Multiple: Bernal (CAO) sale 6K shares; Yao (CTO) Form 144 40K shares', period: '—', color: 'green' },
   { date: 'Dec 2, 2025', type: 'Form 4', description: 'RSU Grants: Avellan (CEO) 250K, Johnson (CFO) 125K, Wisniewski (Pres) 125K — vest 1/3 annually from May 2026', period: '—', color: 'green' },
   { date: 'Nov 10, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q3 2025', color: 'purple' },
+  { date: 'Nov 3, 2025', type: '8-K', description: '$420M Cash-Collateralized Term Loan (BackstopCo/UBS AG; SOFR+2%; maturity Oct 2028; 102% collateral req; for Ligado spectrum payment)', period: '—', color: 'yellow' },
   { date: 'Oct 29, 2025', type: '8-K', description: 'Block 2 Contract (~$100M initial) + ATM Legal Opinion (Freshfields)', period: '—', color: 'yellow' },
   { date: 'Oct 28, 2025', type: 'DEF 14A', description: '2024 Plan Amendment (+10M shares, term extension) — Special Meeting Nov 21', period: '—', color: 'green' },
   { date: 'Oct 23, 2025', type: '424B5', description: 'ATM Prospectus Supplement ($800M capacity via B. Riley, Barclays)', period: '—', color: 'orange' },
@@ -88,7 +89,7 @@ export const ASTS_SEC_META = {
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 11, 2026', title: '$1B Converts + Registered Directs + Preliminary FY 2025 Results' },
-  totalFilingsTracked: 85
+  totalFilingsTracked: 86
 };
 
 export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
