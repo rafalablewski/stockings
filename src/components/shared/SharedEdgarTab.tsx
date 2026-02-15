@@ -110,7 +110,13 @@ function getDateNeighbors(isoDate: string): string[] {
 }
 
 // ── Filing matcher ──────────────────────────────────────────────────────────
-const normalizeForm = (f: string) => f.replace(/[/\s-]/g, '');
+/**
+ * Normalize form type for comparison. EDGAR returns bare types ("4", "3",
+ * "144") while the local DB uses prefixed names ("Form 4", "Form 3",
+ * "Form 144"). This strips "FORM" prefix, slashes, spaces, and hyphens
+ * so both sides reduce to the same canonical form.
+ */
+const normalizeForm = (f: string) => f.replace(/[/\s-]/g, '').replace(/^FORM/i, '');
 
 /**
  * Date tolerance by form type. Ownership filings (Form 4, Form 3, Form 144,
@@ -118,7 +124,7 @@ const normalizeForm = (f: string) => f.replace(/[/\s-]/g, '');
  * date on EDGAR. SEC requires Form 4 within 2 business days → up to 4
  * calendar days gap. SC 13D/G can lag even more.
  */
-const OWNERSHIP_FORMS = new Set(['FORM4', 'FORM3', 'FORM5', 'FORM144', 'FORM144A', 'SC13D', 'SC13DA', 'SC13G', 'SC13GA']);
+const OWNERSHIP_FORMS = new Set(['4', '3', '5', '144', '144A', 'SC13D', 'SC13DA', 'SC13G', 'SC13GA']);
 function getDateTolerance(form: string): number {
   return OWNERSHIP_FORMS.has(normalizeForm(form.toUpperCase())) ? 5 : 1;
 }
