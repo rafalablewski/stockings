@@ -391,8 +391,87 @@ const FilingRow: React.FC<{
   );
 };
 
-// ── Filing list ─────────────────────────────────────────────────────────────
-const INITIAL_COUNT = 20;
+// ── Form type categories for filtering ──────────────────────────────────────
+const FORM_CATEGORIES: { label: string; match: (form: string) => boolean }[] = [
+  { label: '10-K',       match: f => /^10K/i.test(normalizeForm(f)) },
+  { label: '10-Q',       match: f => /^10Q/i.test(normalizeForm(f)) },
+  { label: '8-K',        match: f => /^8K/i.test(normalizeForm(f)) },
+  { label: 'Ownership',  match: f => { const n = normalizeForm(f.toUpperCase()); return ['4','3','5'].includes(n) || n.startsWith('SC13') || n === '144'; } },
+  { label: 'Prospectus', match: f => { const n = normalizeForm(f.toUpperCase()); return /^424/.test(n) || /^S[138]/.test(n) || n === 'FWP'; } },
+  { label: 'Proxy',      match: f => { const n = normalizeForm(f.toUpperCase()); return n.includes('14A') || n.includes('14C'); } },
+];
+
+function getFormCategory(form: string): string {
+  for (const cat of FORM_CATEGORIES) {
+    if (cat.match(form)) return cat.label;
+  }
+  return 'Other';
+}
+
+/** Extract year from ISO date string */
+function getFilingYear(isoDate: string): string {
+  return isoDate?.slice(0, 4) || 'Unknown';
+}
+
+// ── Year section (collapsible) ──────────────────────────────────────────────
+const YearSection: React.FC<{
+  year: string;
+  results: MatchResult[];
+  typeColors: Record<string, { bg: string; text: string }>;
+  ticker: string;
+  defaultOpen: boolean;
+}> = ({ year, results, typeColors, ticker, defaultOpen }) => {
+  const [open, setOpen] = useState(defaultOpen);
+  const trackedInYear = results.filter(r => r.status === 'tracked').length;
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+          padding: '12px 12px 8px', background: 'transparent', border: 'none',
+          cursor: 'pointer', outline: 'none',
+        }}
+      >
+        <span style={{
+          fontFamily: 'Space Mono, monospace', fontSize: 14, fontWeight: 700,
+          color: 'var(--text)', letterSpacing: '-0.5px',
+        }}>
+          {year}
+        </span>
+        <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--border) 50%, transparent)' }} />
+        <span style={{
+          fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <span style={{ color: 'var(--mint)' }}>{trackedInYear}</span>
+          <span style={{ opacity: 0.5 }}>/</span>
+          <span>{results.length}</span>
+          <span style={{ fontSize: 9, opacity: 0.5 }}>{open ? '\u25B2' : '\u25BC'}</span>
+        </span>
+      </button>
+      {open && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {results.map((r, i) => (
+            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Filing list (grouped by year) ───────────────────────────────────────────
+function applyFilter(results: MatchResult[], filter: string): MatchResult[] {
+  if (filter === 'All') return results;
+  if (filter === 'New Only') return results.filter(r => r.status === 'new');
+  if (filter === 'Data Only') return results.filter(r => r.status === 'data_only');
+  const category = FORM_CATEGORIES.find(c => c.label === filter);
+  if (category) return results.filter(r => category.match(r.filing.form));
+  if (filter === 'Other') return results.filter(r => getFormCategory(r.filing.form) === 'Other');
+  return results;
+}
 
 const FilingList: React.FC<{
   results: MatchResult[];
@@ -400,19 +479,7 @@ const FilingList: React.FC<{
   filter: string;
   ticker: string;
 }> = ({ results, typeColors, filter, ticker }) => {
-  const [showAll, setShowAll] = useState(false);
-
-  const filtered = filter === 'All'
-    ? results
-    : filter === 'New Only'
-      ? results.filter(r => r.status === 'new')
-      : filter === 'Data Only'
-        ? results.filter(r => r.status === 'data_only')
-        : results.filter(r => {
-            const form = r.filing.form.toUpperCase();
-            if (filter === 'S-1/S-3') return form === 'S-1' || form === 'S-3' || form === 'S-8';
-            return form === filter;
-          });
+  const filtered = applyFilter(results, filter);
 
   if (filtered.length === 0) {
     return (
@@ -422,30 +489,27 @@ const FilingList: React.FC<{
     );
   }
 
-  const displayed = showAll ? filtered : filtered.slice(0, INITIAL_COUNT);
-  const hiddenCount = filtered.length - INITIAL_COUNT;
+  // Group by year
+  const yearGroups: { year: string; items: MatchResult[] }[] = [];
+  const yearMap = new Map<string, MatchResult[]>();
+  for (const r of filtered) {
+    const year = getFilingYear(r.filing.filingDate);
+    if (!yearMap.has(year)) { yearMap.set(year, []); yearGroups.push({ year, items: yearMap.get(year)! }); }
+    yearMap.get(year)!.push(r);
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      {displayed.map((r, i) => (
-        <FilingRow key={r.filing.accessionNumber || i} r={r} typeColors={typeColors} ticker={ticker} />
+      {yearGroups.map((g, i) => (
+        <YearSection
+          key={g.year}
+          year={g.year}
+          results={g.items}
+          typeColors={typeColors}
+          ticker={ticker}
+          defaultOpen={i === 0}
+        />
       ))}
-      {hiddenCount > 0 && (
-        <div style={{ textAlign: 'center', paddingTop: 12 }}>
-          <button
-            onClick={() => setShowAll(!showAll)}
-            style={{
-              padding: '6px 16px', borderRadius: 99, border: '1px solid var(--border)',
-              background: 'transparent', color: 'var(--text3)', cursor: 'pointer',
-              fontSize: 11, fontWeight: 500, transition: 'all 0.2s', fontFamily: 'inherit',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface2)'; e.currentTarget.style.color = 'var(--text)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text3)'; }}
-          >
-            {showAll ? '\u25B2 Show Less' : `\u25BC Show ${hiddenCount} More`}
-          </button>
-        </div>
-      )}
     </div>
   );
 };
@@ -492,18 +556,16 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const dataOnlyCount = results.filter(r => r.status === 'data_only').length;
   const newCount = results.filter(r => r.status === 'new').length;
 
-  const formTypes: string[] = Array.from(new Set(edgarFilings.map(f => f.form)));
-  const commonForms = ['10-K', '10-Q', '8-K', '424B5', 'S-1/S-3'];
-  const filterOptions = [
-    'All',
-    'New Only',
-    ...(dataOnlyCount > 0 ? ['Data Only'] : []),
-    ...commonForms.filter(f =>
-      f === 'S-1/S-3'
-        ? formTypes.some((ft: string) => ['S-1', 'S-3', 'S-8'].includes(ft.toUpperCase()))
-        : formTypes.some((ft: string) => ft.toUpperCase() === f)
-    ),
-  ];
+  // Build dynamic filter options from actual form types present
+  const filterOptions = useMemo(() => {
+    const opts: string[] = ['All', 'New Only'];
+    if (dataOnlyCount > 0) opts.push('Data Only');
+    for (const cat of FORM_CATEGORIES) {
+      if (results.some(r => cat.match(r.filing.form))) opts.push(cat.label);
+    }
+    if (results.some(r => getFormCategory(r.filing.form) === 'Other')) opts.push('Other');
+    return opts;
+  }, [results, dataOnlyCount]);
 
   const fetchFilings = useCallback(async () => {
     setLoading(true);
@@ -704,12 +766,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             flexWrap: 'wrap',
           }}>
             {filterOptions.map(f => {
-              let count: number | undefined;
-              if (f === 'All') count = results.length;
-              else if (f === 'New Only') count = newCount;
-              else if (f === 'Data Only') count = dataOnlyCount;
-              else if (f === 'S-1/S-3') count = results.filter(r => ['S-1', 'S-3', 'S-8'].includes(r.filing.form.toUpperCase())).length;
-              else count = results.filter(r => r.filing.form.toUpperCase() === f).length;
+              const count = applyFilter(results, f).length;
               return <FilterPill key={f} label={f} active={filter === f} count={count} onClick={() => setFilter(f)} />;
             })}
           </div>
