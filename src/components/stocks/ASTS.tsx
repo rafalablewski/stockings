@@ -116,8 +116,10 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback, Component, ErrorInfo, ReactNode } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
-import { SharedAITab } from '../shared/SharedAITab';
+import SharedSourcesTab from '../shared/SharedSourcesTab';
+import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
+import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
 import type { CompsTimelineEntry, ASTSImplication } from '@/data/asts/comps-timeline';
 import { ASTS_SEC_FILINGS, ASTS_SEC_META, ASTS_SEC_TYPE_COLORS, ASTS_SEC_FILTER_TYPES, ASTS_FILING_CROSS_REFS } from '@/data/asts/sec-filings';
@@ -692,6 +694,7 @@ const ASTSAnalysis = () => {
 
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
+  const [aiDropdownOpen, setAiDropdownOpen] = useState(false);
 
   // Update indicator visibility toggle
   const [showIndicators, setShowIndicators] = useState(true);
@@ -862,7 +865,10 @@ const ASTSAnalysis = () => {
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
-    { id: 'ai', label: 'AI', type: 'tracking' },
+    // AI hub (grouped under "AI")
+    { id: 'ai-agents', label: 'AI Agents', type: 'tracking', group: 'AI' },
+    { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
+    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
   ];
 
   return (
@@ -991,8 +997,8 @@ const ASTSAnalysis = () => {
 
           {/* Stock-specific dropdown trigger */}
           <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'ASTS Analysis' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setAiDropdownOpen(false); }}
           >
             ASTS Analysis ↕
           </button>
@@ -1007,13 +1013,34 @@ const ASTSAnalysis = () => {
               {t.label}
             </button>
           ))}
+
+          {/* AI hub dropdown trigger */}
+          <button
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'AI' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setAiDropdownOpen(!aiDropdownOpen); setAnalysisDropdownOpen(false); }}
+          >
+            AI ↕
+          </button>
         </nav>
 
         {/* Reserved space for dropdown menus - always present to prevent layout shift */}
-        <div className={`nav-dropdown-space ${analysisDropdownOpen ? 'open' : ''}`}>
+        <div className={`nav-dropdown-space ${analysisDropdownOpen || aiDropdownOpen ? 'open' : ''}`}>
           {analysisDropdownOpen && (
             <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group).map(t => (
+              {tabs.filter(t => t.group === 'ASTS Analysis').map(t => (
+                <button
+                  key={t.id}
+                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+                  onClick={() => setActiveTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+          {aiDropdownOpen && (
+            <div className="nav-dropdown-menu">
+              {tabs.filter(t => t.group === 'AI').map(t => (
                 <button
                   key={t.id}
                   className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
@@ -1063,18 +1090,12 @@ const ASTSAnalysis = () => {
           {activeTab === 'financials' && <FinancialsTab />}
           {activeTab === 'investment' && <InvestmentTab />}
           {activeTab === 'wall-street' && <WallStreetTab />}
-          {activeTab === 'ai' && (
-            <SharedAITab
-              ticker="ASTS"
-              companyName="AST SpaceMobile"
-              researchSources={astsResearchSources}
-              competitorLabel="Competitors & Partners"
-              competitors={astsCompetitors}
-              localFilings={ASTS_SEC_FILINGS}
-              cik={ASTS_SEC_META.cik}
-              typeColors={ASTS_SEC_TYPE_COLORS}
-              crossRefIndex={ASTS_FILING_CROSS_REFS}
-            />
+          {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="ASTS" />}
+          {activeTab === 'sources' && (
+            <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} competitorLabel="Competitors & Partners" competitors={astsCompetitors} />
+          )}
+          {activeTab === 'edgar' && (
+            <SharedEdgarTab ticker="ASTS" companyName="AST SpaceMobile" localFilings={ASTS_SEC_FILINGS} cik={ASTS_SEC_META.cik} typeColors={ASTS_SEC_TYPE_COLORS} crossRefIndex={ASTS_FILING_CROSS_REFS} />
           )}
         </main>
       </div>

@@ -204,8 +204,10 @@ import React, { useState, useMemo, useRef, useEffect, useCallback, Component, Er
 import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import StockChart from '../shared/StockChart';
-import { SharedAITab } from '../shared/SharedAITab';
+import SharedSourcesTab from '../shared/SharedSourcesTab';
+import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
+import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -725,6 +727,7 @@ const BMNRDilutionAnalysis = () => {
   const [ethPrice, setEthPrice] = useState(DEFAULTS.ethPrice);  // From @/data/bmnr/company.ts
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
+  const [aiDropdownOpen, setAiDropdownOpen] = useState(false);
   const [dilutionPercent, setDilutionPercent] = useState(5);
   const [saleDiscount, setSaleDiscount] = useState(5);
   const [navMultiple, setNavMultiple] = useState(1.00); // NAV multiple (stock price = NAV × mNAV)
@@ -839,7 +842,10 @@ const BMNRDilutionAnalysis = () => {
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
-    { id: 'ai', label: 'AI', type: 'tracking' },
+    // AI hub (grouped under "AI")
+    { id: 'ai-agents', label: 'AI Agents', type: 'tracking', group: 'AI' },
+    { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
+    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
   ];
 
   const bmnrCompetitors: Competitor[] = [
@@ -1044,8 +1050,8 @@ const BMNRDilutionAnalysis = () => {
 
           {/* Stock-specific dropdown trigger */}
           <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'BMNR Analysis' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setAiDropdownOpen(false); }}
           >
             BMNR Analysis ↕
           </button>
@@ -1060,13 +1066,34 @@ const BMNRDilutionAnalysis = () => {
               {t.label}
             </button>
           ))}
+
+          {/* AI hub dropdown trigger */}
+          <button
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'AI' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setAiDropdownOpen(!aiDropdownOpen); setAnalysisDropdownOpen(false); }}
+          >
+            AI ↕
+          </button>
         </nav>
 
         {/* Reserved space for dropdown menu - always present to prevent layout shift */}
-        <div className="nav-dropdown-space">
+        <div className={`nav-dropdown-space ${analysisDropdownOpen || aiDropdownOpen ? 'open' : ''}`}>
           {analysisDropdownOpen && (
             <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group).map(t => (
+              {tabs.filter(t => t.group === 'BMNR Analysis').map(t => (
+                <button
+                  key={t.id}
+                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+                  onClick={() => setActiveTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+          {aiDropdownOpen && (
+            <div className="nav-dropdown-menu">
+              {tabs.filter(t => t.group === 'AI').map(t => (
                 <button
                   key={t.id}
                   className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
@@ -1098,17 +1125,12 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'financials' && <FinancialsTab />}
         {activeTab === 'timeline' && <TimelineTab />}
         {activeTab === 'wall-street' && <WallStreetTab />}
-        {activeTab === 'ai' && (
-          <SharedAITab
-            ticker="BMNR"
-            companyName="BitMine Immersion Technologies"
-            researchSources={bmnrResearchSources}
-            competitorLabel="Crypto Treasury Peers"
-            competitors={bmnrCompetitors}
-            localFilings={BMNR_SEC_FILINGS}
-            cik={BMNR_SEC_META.cik}
-            typeColors={BMNR_SEC_TYPE_COLORS}
-          />
+        {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="BMNR" />}
+        {activeTab === 'sources' && (
+          <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="Crypto Treasury Peers" competitors={bmnrCompetitors} />
+        )}
+        {activeTab === 'edgar' && (
+          <SharedEdgarTab ticker="BMNR" companyName="BitMine Immersion Technologies" localFilings={BMNR_SEC_FILINGS} cik={BMNR_SEC_META.cik} typeColors={BMNR_SEC_TYPE_COLORS} />
         )}
         </main>
       </div>
