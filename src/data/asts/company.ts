@@ -28,10 +28,10 @@ import type { DataMetadata, StockDefaults } from '../shared/types';
 // ============================================================================
 
 export const ASTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-12',
-  source: 'Feb 11, 2026 8-K, Pricing Term Sheets, BB6 unfolding PR',
-  nextExpectedUpdate: 'Q4 2025 10-K (~March 2026)',
-  notes: 'BB6 unfolded Feb 10, 2026. Feb 2026: $1B new converts, $614M registered directs, $296.5M notes repurchased.',
+  lastUpdated: '2026-02-15',
+  source: 'Feb 13 424B5s, Feb 11 8-K, Pricing Term Sheets, BB6 unfolding PR',
+  nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). Greenshoe deadline Feb 20.',
+  notes: 'Feb 15 audit: 10 filings cross-referenced. Price $82.51 post-financing selloff. 424B5s filed Feb 13. Greenshoe ($150M) pending by Feb 20. $51.4M annualized interest savings from $296.5M repurchases.',
 };
 
 // ============================================================================
@@ -68,8 +68,8 @@ export const COMPANY_INFO = {
  */
 export const DEFAULTS: StockDefaults = {
   // === MARKET DATA ===
-  currentStockPrice: 96.92,   // UPDATE REGULARLY - Last: Feb 11, 2026
-  priceAsOf: '2026-02-11',    // Date of stock price above
+  currentStockPrice: 82.51,   // UPDATE REGULARLY - Last: Feb 13, 2026
+  priceAsOf: '2026-02-13',    // Date of stock price above
 
   // === SHARE COUNT (post-Feb 2026 offerings) ===
   // Class A: ~290M + Class B: 11.2M + Class C: 78.2M = ~379.4M
@@ -142,8 +142,8 @@ export const MODEL_ASSUMPTIONS = {
  * For display in the UI data freshness badge
  */
 export const DATA_FRESHNESS = {
-  dataAsOf: 'Feb 12, 2026',
-  lastFiling: '8-K (Feb 11, 2026)',
+  dataAsOf: 'Feb 15, 2026',
+  lastFiling: '424B5 (Feb 13, 2026)',
   nextFiling: '10-K (~March 2026)',
-  priceNote: 'Update prices regularly',
+  priceNote: 'Post-financing: $96.92→$82.22 (-15.17% Feb 12, vol 30.2M) →$82.51 (+0.35% Feb 13)',
 };

@@ -28,10 +28,10 @@ import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata } from 
 // ============================================================================
 
 export const CAPITAL_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-12',
-  source: 'Feb 2026 8-K, Pricing Term Sheets, 13G (Vanguard), Form 4 (Gupta)',
-  nextExpectedUpdate: 'Q4 2025 10-K (~March 2026)',
-  notes: 'Feb 2026: $1B new converts, two registered directs (~$614M), $296.5M notes repurchased. Vanguard 13G: 7.68%. ATM: ~$706M sold.',
+  lastUpdated: '2026-02-15',
+  source: 'Feb 13 424B5s, Feb 12 FWPs, Feb 11 8-K, Pricing Term Sheets, 13G (Vanguard), Form 4/A (Gupta)',
+  nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). GREENSHOE DEADLINE: Feb 20, 2026 ($150M convert option).',
+  notes: 'Feb 15 audit: All 10 Jan-Feb filings cross-referenced. $1B new converts + $614M RDs + $296.5M repurchases. Net dilution from RDs: ~2.51M shares (0.9% of Class A). Interest savings: ~$7.9M/yr ($51.4M NPV). Gupta Form 4/A corrected holdings to 348,232 shares.',
 };
 
 // ============================================================================
@@ -93,10 +93,38 @@ export const TOTAL_VOTING_SHARES =
 /**
  * Fully diluted share count
  * Including options, RSUs, remaining converts
- * Post-Feb 2026: 4.25% ($3.5M, ~0.1M), 2.375% ($325M, ~4.5M),
- * 2.00% ($1.15B, ~11.9M), new 2.25% ($1B, ~8.6M) = ~25.1M from converts
+ * Post-Feb 2026: 4.25% ($3.5M, ~0.1M), 2.375% ($325M, ~2.7M),
+ * 2.00% ($1.15B, ~11.9M), new 2.25% ($1B, ~8.6M) = ~23.3M from converts
+ * Plus RSUs/options ~12M = ~415M total
  */
 export const FULLY_DILUTED_SHARES = 415.0;
+
+/**
+ * Net dilution from Feb 2026 registered directs
+ * Shares issued: 6,337,964 (1,862,741 + 4,475,223)
+ * Conversion shares avoided: ~3,830,682 (1,749,432 from 4.25% + 2,081,250 from 2.375%)
+ * Net incremental: ~2,507,282 shares (0.9% of Class A float)
+ * Note: 2.375% notes at $120.12 conversion currently OTM (stock $82.51);
+ * those 2.08M shares may never have materialized regardless
+ */
+export const FEB_2026_RD_NET_DILUTION = {
+  sharesIssued: 6.34,         // 6,337,964 total from both RDs
+  conversionAvoided: 3.83,    // 1.75M (4.25% notes) + 2.08M (2.375% notes)
+  netIncremental: 2.51,       // Incremental shares above avoided conversions
+  netDilutionPct: 0.9,        // % of ~280M Class A pre-transaction
+  annualInterestSaved: 7.92,  // $1.98M (4.25%) + $5.94M (2.375%) per year
+};
+
+/**
+ * Greenshoe tracking for Feb 2026 convertible
+ * $150M additional notes option for initial purchasers
+ */
+export const FEB_2026_GREENSHOE = {
+  amount: 150,                // $150M additional principal
+  deadline: '2026-02-20',     // Exercise deadline
+  exercised: null as boolean | null, // null = pending; update when known
+  additionalShares: 1.3,      // ~1.3M additional conversion shares if exercised
+};
 
 // ============================================================================
 // MAJOR SHAREHOLDERS
@@ -323,7 +351,7 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
     amount: 1000,
     price: 116.30,
     shares: 8.6,
-    notes: '2.25% due 2036. Conversion rate 8.5982/share per $1K. Rule 144A. UBS lead. $150M greenshoe option. Net ~$983.7M.',
+    notes: '2.25% due 2036. Conversion rate 8.5982/share per $1K (~$116.30). Rule 144A. UBS lead. $150M GREENSHOE PENDING (deadline Feb 20). Net ~$983.7M base / ~$1,131.4M if greenshoe exercised. Settlement Feb 17. Interest semi-annual Apr 15 & Oct 15, starting Oct 15, 2026.',
   },
   {
     date: '2026-02-11',
@@ -332,7 +360,7 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
     amount: 180,
     price: 96.92,
     shares: 1.9,
-    notes: '1,862,741 shares at $96.92. Funded repurchase of $46.5M principal 4.25% notes for ~$180.5M. Cross-conditional.',
+    notes: '1,862,741 shares at $96.92. Funded repurchase of $46.5M principal 4.25% notes for ~$180.5M. Cross-conditional. Settles Feb 20. Avoids ~1.75M conversion shares (4.25% at $26.58). Saves ~$1.98M/yr interest.',
   },
   {
     date: '2026-02-11',
@@ -341,7 +369,7 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
     amount: 433,
     price: 96.92,
     shares: 4.5,
-    notes: '4,475,223 shares at $96.92. Funded repurchase of $250M principal 2.375% notes for ~$433.7M. Cross-conditional.',
+    notes: '4,475,223 shares at $96.92. Funded repurchase of $250M principal 2.375% notes for ~$433.7M. Cross-conditional. Settles Feb 20. Avoids ~2.08M conversion shares (2.375% at $120.12, currently OTM). Saves ~$5.94M/yr interest.',
   },
 ];
 

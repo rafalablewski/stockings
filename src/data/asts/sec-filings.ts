@@ -6,8 +6,8 @@
 
 export const ASTS_SEC_FILINGS = [
   { date: 'Feb 11, 2026', type: '8-K', description: 'Preliminary FY 2025 Results + Convertible Notes Offering + Registered Directs', period: '—', color: 'yellow' },
-  { date: 'Feb 11, 2026', type: '424B5', description: 'Registered Direct Offering #1 (1.86M shares @ $96.92)', period: '—', color: 'orange' },
-  { date: 'Feb 11, 2026', type: '424B5', description: 'Registered Direct Offering #2 (4.48M shares @ $96.92)', period: '—', color: 'orange' },
+  { date: 'Feb 13, 2026', type: '424B5', description: 'Registered Direct Offering #1 (1.86M shares @ $96.92; settles Feb 20)', period: '—', color: 'orange' },
+  { date: 'Feb 13, 2026', type: '424B5', description: 'Registered Direct Offering #2 (4.48M shares @ $96.92; settles Feb 20)', period: '—', color: 'orange' },
   { date: 'Jan 30, 2026', type: 'SC 13G', description: 'Vanguard Group 7.68% Ownership (21.5M shares)', period: '—', color: 'green' },
   { date: 'Jan 26, 2026', type: 'Form 4', description: 'Shanti Gupta (COO) RSU Vesting Tax Withholding Amendment', period: '—', color: 'green' },
   { date: 'Jan 16, 2026', type: '8-K', description: 'Mikitani Board Resignation (Rakuten Designee)', period: '—', color: 'yellow' },
@@ -27,8 +27,11 @@ export const ASTS_SEC_FILINGS = [
 
 export const ASTS_SEC_META = {
   cik: '0001780312',
+  secFileNumber: '001-39040',
+  ein: '84-2027232',
   ticker: 'ASTS',
   exchange: 'NASDAQ',
+  emergingGrowthCompany: false,
   lastPR: { date: 'February 11, 2026', title: '$1B Converts + Registered Directs + Preliminary FY 2025 Results' }
 };
 
