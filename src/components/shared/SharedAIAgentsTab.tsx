@@ -517,7 +517,8 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
   }
 
   const dbAgents = availableWorkflows.filter((w) => !w.requiresUserData);
-  const dataAgents = availableWorkflows.filter((w) => w.requiresUserData);
+  const dataAgents = availableWorkflows.filter((w) => w.requiresUserData && w.id !== "ask-agent");
+  const askAgent = availableWorkflows.find((w) => w.id === "ask-agent");
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -551,6 +552,17 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
             {dataAgents.map((wf) => (
               <AgentRunner key={wf.id} workflow={wf} />
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Ask Agent — general-purpose query layer */}
+      {askAgent && (
+        <div>
+          <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#ask-agent</div>
+          <SectionLabel>Ask Agent — general-purpose query</SectionLabel>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <AgentRunner workflow={askAgent} />
           </div>
         </div>
       )}
