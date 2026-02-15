@@ -44,6 +44,9 @@ interface MatchResult {
   matchedLocal?: LocalFiling;
 }
 
+// ── Constants ────────────────────────────────────────────────────────────────
+const STATUS_RING_CIRCUMFERENCE = 2 * Math.PI * 12; // r=12 SVG circle
+
 // ── Session cache (15-min TTL) ──────────────────────────────────────────────
 const CACHE_TTL_MS = 15 * 60 * 1000;
 
@@ -87,6 +90,8 @@ function formatEdgarDate(isoDate: string): string {
 }
 
 // ── Filing matcher ──────────────────────────────────────────────────────────
+const normalizeForm = (f: string) => f.replace(/[/\s-]/g, '');
+
 function matchFilings(edgarFilings: EdgarFiling[], localFilings: LocalFiling[]): MatchResult[] {
   return edgarFilings.map(ef => {
     const edgarDate = normalizeDate(ef.filingDate);
@@ -98,8 +103,7 @@ function matchFilings(edgarFilings: EdgarFiling[], localFilings: LocalFiling[]):
       const d2 = new Date(localDate);
       const dayDiff = Math.abs(d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24);
       if (dayDiff > 1) return false;
-      const norm = (f: string) => f.replace(/[/\s-]/g, '');
-      return norm(edgarForm) === norm(localForm);
+      return normalizeForm(edgarForm) === normalizeForm(localForm);
     });
     return { filing: ef, inDatabase: !!match, matchedLocal: match };
   });
@@ -387,8 +391,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
     } else {
       fetchFilings();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ticker]);
+  }, [ticker, fetchFilings]);
 
   const edgarBrowseUrl = `https://www.sec.gov/edgar/browse/?CIK=${cik}&owner=exclude`;
 
@@ -417,7 +420,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <circle cx="14" cy="14" r="12" fill="none" stroke="color-mix(in srgb, var(--border) 60%, transparent)" strokeWidth="2" />
             {loaded && (
               <circle cx="14" cy="14" r="12" fill="none" stroke="var(--mint)" strokeWidth="2"
-                strokeDasharray={`${results.length > 0 ? (trackedCount / results.length) * 75.4 : 0} 75.4`}
+                strokeDasharray={`${results.length > 0 ? (trackedCount / results.length) * STATUS_RING_CIRCUMFERENCE : 0} ${STATUS_RING_CIRCUMFERENCE}`}
                 strokeLinecap="round" transform="rotate(-90 14 14)"
                 style={{ transition: 'stroke-dasharray 0.4s ease' }}
               />

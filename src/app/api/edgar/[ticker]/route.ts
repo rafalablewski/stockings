@@ -57,7 +57,19 @@ export async function GET(
       throw new Error(`SEC API returned ${res.status}`);
     }
 
-    const data = await res.json();
+    const data: {
+      filings?: {
+        recent?: {
+          accessionNumber: string[];
+          filingDate: string[];
+          form: string[];
+          primaryDocument?: string[];
+          primaryDocDescription?: string[];
+          reportDate?: string[];
+        };
+      };
+      name?: string;
+    } = await res.json();
     const recent = data?.filings?.recent;
 
     if (!recent) {
