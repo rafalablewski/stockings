@@ -29,9 +29,9 @@ import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, Conver
 
 export const CAPITAL_METADATA: DataMetadata = {
   lastUpdated: '2026-02-15',
-  source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7',
+  source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q',
   nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). GREENSHOE DEADLINE: Feb 20, 2026 ($150M convert option).',
-  notes: 'Feb 15 audit: 50 filings cross-referenced (10 Jan-Feb + 13 Dec + 15 Sept-Oct + 12 Aug-Sep). CEO 750K total RSUs (500K Aug + 250K Dec). Gupta chain: 392,375 (Aug 15) → 348,232 (Sep 15, corrected) → 382,375 (Dec 10, post-sale). Yao chain: 200K (Aug 15) → 160K (Sep 3 sale) → Dec sales. Johnson chain: 522,485 (Aug 15) → 512,485 (Dec 2). EllioSat 424B7: 581K resale shares (~0.2% float).',
+  notes: 'Feb 15 audit: 65 filings cross-referenced (10 Jan-Feb + 13 Dec + 15 Sept-Oct + 12 Aug-Sep + 15 Jun-Aug). Jun 24: Cisneros/Johnson buys at $25. Jul: $345M UBS credit + $347M RD + $575M converts. Aug 5: EllioSat 581K shares. CEO 750K total RSUs (500K Aug + 250K Dec). Stock Jun-Aug: $46.73→$53.17→$48.94.',
 };
 
 // ============================================================================
@@ -294,6 +294,15 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
     price: null,
     shares: null,
     notes: 'At-the-market sales. Facility terminated.',
+  },
+  {
+    date: '2025-07-24',
+    event: 'Jul 2025 Registered Direct (4.25% Notes Repurchase)',
+    type: 'Registered Direct',
+    amount: 347,
+    price: 60.06,
+    shares: 5.8,
+    notes: '5,775,635 shares at $60.06. Funded repurchase of $46.5M principal 4.25% notes. Settlement Jul 30.',
   },
   {
     date: '2025-07-07',
@@ -668,6 +677,43 @@ export const AUG_SEP_2025_INSIDER_SALES = [
   { name: 'Huiwen Yao', role: 'CTO', shares: 40000, avgPrice: 41.58, proceeds: 1663200, date: '2025-09-03', broker: 'B. Riley Securities', plan10b5_1: true, planAdopted: '2025-06-12', postSaleHoldings: 160000, note: 'Option exercise Aug 26. Matches Form 144 filed Sep 3. Price range $40.00-$42.00.' },
   { name: 'Andrew M. Johnson', role: 'CFO & CLO', shares: 20000, avgPrice: 52.48, proceeds: 1049634, date: '2025-08-26', broker: 'Fidelity Brokerage', plan10b5_1: false, planAdopted: null, postSaleHoldings: null, note: 'Form 144 proposed sale. Post-vesting (Aug 15 RSU vest). Execution Form 4 not in analyzed batch.' },
 ];
+
+// ============================================================================
+// JUNE 2025 INSIDER ACTIVITY
+// ============================================================================
+
+/**
+ * Jun 24, 2025 insider purchases — director and CFO buying at $25 dip.
+ * Filed Jun 26, 2025 (Form 4).
+ *
+ * Total purchases: $37.5K (1,500 shares)
+ * Context: Stock near 2025 low (~$25). Shows insider confidence.
+ */
+export const JUN_2025_INSIDER_PURCHASES = [
+  { name: 'Adriana Cisneros', role: 'Director', shares: 1000, price: 25.00, date: '2025-06-24', account: 'Trust (indirect)', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 783327 },
+  { name: 'Andrew M. Johnson', role: 'CFO & CLO', shares: 500, price: 25.00, date: '2025-06-24', account: 'IRA', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 500 },
+];
+
+// ============================================================================
+// JULY 2025 CREDIT FACILITY
+// ============================================================================
+
+/**
+ * $345M UBS Credit Agreement (Event Jul 15; Filed Jul 18, 2025)
+ * Expandable to $500M. SOFR+5%. Maturity 2028.
+ * Used for constellation capex. Adds significant non-dilutive liquidity.
+ */
+export const JUL_2025_CREDIT_FACILITY = {
+  amount: 345,
+  expandableTo: 500,
+  rate: 'SOFR + 5%',
+  maturity: '2028',
+  lender: 'UBS',
+  filedDate: '2025-07-18',
+  estimatedFees: 5,
+  purpose: 'Constellation deployment capex',
+  notes: 'Adds $345M non-dilutive liquidity. Expandable to $500M. Covenants limit operational flexibility.',
+};
 
 // ============================================================================
 // HELPER FUNCTIONS

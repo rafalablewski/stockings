@@ -159,6 +159,8 @@ import {
   AUG_2025_CEO_RSU_GRANT,
   AUG_SEP_2025_RSU_VESTINGS,
   AUG_SEP_2025_INSIDER_SALES,
+  JUN_2025_INSIDER_PURCHASES,
+  JUL_2025_CREDIT_FACILITY,
 } from '@/data/asts';
 
 // ============================================================================
@@ -3644,6 +3646,43 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
           Director Larson accumulated {DEC_2025_INSIDER_PURCHASES.reduce((s, p) => s + p.shares, 0).toLocaleString()} shares via IRA under 10b5-1 plan (adopted Sep 8, 2025). Post-purchase holdings: {DEC_2025_INSIDER_PURCHASES[DEC_2025_INSIDER_PURCHASES.length - 1].postPurchaseHoldings.toLocaleString()} shares.
+        </div>
+        {/* June 2025 Insider Purchases */}
+        <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)' }}>June 2025 — Insider Buys at $25 Dip</div>
+        <div>
+          {JUN_2025_INSIDER_PURCHASES.map((p, i) => (
+            <div key={`jun-${i}`} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 80px 100px', padding: '12px 24px', borderBottom: i < JUN_2025_INSIDER_PURCHASES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{p.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({p.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.date.slice(5)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>{p.shares.toLocaleString()}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${p.price.toFixed(2)}</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.account}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Credit Facility */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#credit-facility</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--sky) 5%, var(--surface)), color-mix(in srgb, var(--mint) 5%, var(--surface)))' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--sky)', marginBottom: 8 }}>Jul 2025 UBS Credit Facility</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginTop: 12 }}>
+            {[
+              { label: 'Amount', value: `$${JUL_2025_CREDIT_FACILITY.amount}M`, color: 'var(--sky)' },
+              { label: 'Expandable To', value: `$${JUL_2025_CREDIT_FACILITY.expandableTo}M`, color: 'var(--mint)' },
+              { label: 'Rate', value: JUL_2025_CREDIT_FACILITY.rate, color: 'var(--text)' },
+              { label: 'Maturity', value: JUL_2025_CREDIT_FACILITY.maturity, color: 'var(--text)' },
+            ].map(item => (
+              <div key={item.label}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{item.label}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 600, color: item.color, marginTop: 4 }}>{item.value}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6, marginTop: 8 }}>
+            {JUL_2025_CREDIT_FACILITY.notes}
+          </div>
         </div>
       </div>
       </>
