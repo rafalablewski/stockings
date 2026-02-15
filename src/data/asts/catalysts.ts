@@ -30,10 +30,10 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-12',
-  source: 'Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR',
+  lastUpdated: '2026-02-15',
+  source: 'Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR, Mar 2025 8-Ks/Form 4s/S-3ASR/S-8/13D-A, Jan-Feb 2025 8-Ks/13D/Form 3s/13D-A',
   nextExpectedUpdate: 'After Q4 2025 earnings (~March 2026)',
-  notes: 'BB6 unfolded Feb 10, 2026. $1B new converts + $614M registered directs announced Feb 11.',
+  notes: 'BB6 unfolded Feb 10, 2026. $1B new converts + $614M registered directs announced Feb 11. Jan-Feb 2025: AT&T 13D (2.7%), Ligado RSA ($550M), Johnson/Larson board, Bernal 50K RSU, prelim Q4 ($1M first revenue).',
 };
 
 // ============================================================================
@@ -250,6 +250,15 @@ export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   { event: 'BB6 Launched (ISRO)', date: 'Dec 24, 2025', category: 'Constellation' },
   { event: 'EllioSat Resale Prospectus (424B7): 581K shares registered (~0.2% float)', date: 'Sep 26, 2025', category: 'Corporate' },
   { event: 'Mikitani Resigned from Board (personal, no disagreement; 8-K Sep 5)', date: 'Sep 4, 2025', category: 'Corporate' },
+  { event: 'EllioSat Acquired from CCUR Holdings (S-Band spectrum/tech; 581K shares issued)', date: 'Aug 5, 2025', category: 'Spectrum' },
+  { event: '$347M Registered Direct (5.78M shares at $60.06) + $46.5M 4.25% Notes Repurchased', date: 'Jul 24, 2025', category: 'Financing' },
+  { event: '$345M UBS Credit Facility (expandable $500M; SOFR+5%; maturity 2028)', date: 'Jul 15, 2025', category: 'Financing' },
+  { event: 'Annual Meeting: Directors, Incentive Plan, Auditors Approved', date: 'Jun 27, 2025', category: 'Corporate' },
+  { event: 'Cisneros (Dir) + Johnson (CFO) Open Market Purchases at $25', date: 'Jun 24, 2025', category: 'Capital' },
+  { event: 'Cisneros (Dir) 1K Purchase at $25 (Jun 9, trust)', date: 'Jun 9, 2025', category: 'Capital' },
+  { event: 'Certificate Amendment: Authorized Class A +100M (700M→800M)', date: 'Jun 6, 2025', category: 'Corporate' },
+  { event: 'Wisniewski (Pres) 125K RSU Grant + Gupta (COO) 50K RSU Vesting', date: 'Jun 2, 2025', category: 'Corporate' },
+  { event: 'Yao (CTO) 40K Option Exercise at $0.06 (→ LLC Units)', date: 'May 17, 2025', category: 'Corporate' },
   { event: 'Q2 2025 10-Q/A Amendment (non-cash equity corrections, no restatement)', date: 'Sep 12, 2025', category: 'Financing' },
   { event: '$1B+ Contracted Revenue', date: 'Q3 2025', category: 'Commercial' },
   { event: 'Verizon Definitive Agreement', date: 'Oct 2025', category: 'Commercial' },
@@ -260,6 +269,21 @@ export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   { event: '2024 Equity Incentive Plan Amendment (+10M shares)', date: 'Nov 21, 2025', category: 'Corporate' },
   { event: 'Russell 1000 Inclusion', date: 'Jun 2025', category: 'Corporate' },
   { event: 'SatCo JV (Vodafone EU)', date: '2025', category: 'Commercial' },
+  { event: '$500M Equity Distribution Program (ATM via B. Riley)', date: 'May 13, 2025', category: 'Financing' },
+  { event: 'BlackRock 13G/A: 5.2% Stake (14.86M shares)', date: 'Apr 28, 2025', category: 'Corporate' },
+  { event: 'DEF 14A Proxy Filed (5.4M share incentive plan, annual meeting Jun 6)', date: 'Apr 25, 2025', category: 'Corporate' },
+  { event: 'Cisneros (Dir) + Johnson (CFO) Purchases at $25 (Apr 4)', date: 'Apr 4, 2025', category: 'Capital' },
+  { event: 'Ligado Material Agreement ($150M initial + 9.99% warrants; $550M total for 45 MHz L-band)', date: 'Mar 24, 2025', category: 'Spectrum' },
+  { event: 'S-3ASR: 56M Shares Registered for Resale (Rakuten reorg + others)', date: 'Mar 17, 2025', category: 'Financing' },
+  { event: 'Vodafone 13D/A: 6% Ownership Stable (14.5M shares)', date: 'Mar 12, 2025', category: 'Corporate' },
+  { event: 'S-8: 2M Shares Registered (2024 Incentive Plan Annual Increase)', date: 'Mar 5, 2025', category: 'Corporate' },
+  { event: 'Bernal (CAO) 50K RSU Grant (vest Feb 15, 2026)', date: 'Feb 27, 2025', category: 'Corporate' },
+  { event: 'AT&T 13D: 2.7% Ownership (6.26M shares from $100M convertible at $16)', date: 'Feb 10, 2025', category: 'Corporate' },
+  { event: 'Stockholders\' Agreement Amended: AT&T added; designee rights if >10%', date: 'Feb 7, 2025', category: 'Corporate' },
+  { event: 'Johnson (CFO/CLO) Appointed to Board (Class II) + Larson Director (Jan 31)', date: 'Feb 3, 2025', category: 'Corporate' },
+  { event: 'Preliminary Q4 2024: Revenue $1M (first ever), $285M cash', date: 'Jan 22, 2025', category: 'Financing' },
+  { event: 'Avellan 13D/A: 25% Ownership (78.16M shares, Amendment 12)', date: 'Jan 27, 2025', category: 'Corporate' },
+  { event: 'Ligado RSA ($150M + 9.99% warrants; $550M total; 45 MHz L-band)', date: 'Jan 6, 2025', category: 'Spectrum' },
   { event: 'FirstNet Trial FCC Approval', date: 'Apr 2025', category: 'Regulatory' },
   { event: 'First VoLTE Call', date: '2025', category: 'Technology' },
 

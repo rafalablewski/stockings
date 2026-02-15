@@ -29,9 +29,9 @@ import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, Conver
 
 export const CAPITAL_METADATA: DataMetadata = {
   lastUpdated: '2026-02-15',
-  source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7',
+  source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q, Mar 2025 Form 4s/144/S-3ASR/S-8/13D-A/8-K, Jan-Feb 2025 8-Ks/13D/Form 3s/Form 4/13D-A',
   nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). GREENSHOE DEADLINE: Feb 20, 2026 ($150M convert option).',
-  notes: 'Feb 15 audit: 50 filings cross-referenced (10 Jan-Feb + 13 Dec + 15 Sept-Oct + 12 Aug-Sep). CEO 750K total RSUs (500K Aug + 250K Dec). Gupta chain: 392,375 (Aug 15) → 348,232 (Sep 15, corrected) → 382,375 (Dec 10, post-sale). Yao chain: 200K (Aug 15) → 160K (Sep 3 sale) → Dec sales. Johnson chain: 522,485 (Aug 15) → 512,485 (Dec 2). EllioSat 424B7: 581K resale shares (~0.2% float).',
+  notes: 'Feb 15 audit: 121 filings cross-referenced (10 Jan-Feb 2026 + 13 Dec + 15 Sept-Oct + 12 Aug-Sep + 15 Jun-Aug + 15 May-Jun + 15 Apr-May + 15 Mar + 11 Jan-Feb 2025). AT&T 13D: 2.7% (6.26M shares from $100M convert). Johnson/Larson board appointments. Avellan 25% (Amend. 12). Bernal 50K RSU grant.',
 };
 
 // ============================================================================
@@ -170,7 +170,7 @@ export const MAJOR_SHAREHOLDERS: MajorShareholder[] = [
     shareClass: 'Class A',
     pct: (6.5 / TOTAL_BASIC_SHARES * 100).toFixed(1) + '%',
     votingPct: (6.5 / TOTAL_VOTING_SHARES * 100).toFixed(1) + '%',
-    notes: 'From 2034 convert + PIPE. First VoLTE partner.',
+    notes: 'SC 13D filed Feb 10, 2025: 6,260,440 shares (2.7%) via AT&T Venture Investments. From $100M convertible note at $16/share (Jan 2024). Stockholders\' agreement amended Feb 7 to add AT&T; designee rights if >10%. First VoLTE partner.',
   },
   {
     name: 'Vodafone Group',
@@ -207,6 +207,15 @@ export const MAJOR_SHAREHOLDERS: MajorShareholder[] = [
     pct: '~0.7%',
     votingPct: '~0.3%',
     notes: 'PIPE investor. Japan market partner.',
+  },
+  {
+    name: 'BlackRock, Inc.',
+    role: 'Institutional Investor',
+    shares: 14.9,
+    shareClass: 'Class A',
+    pct: (14.9 / TOTAL_BASIC_SHARES * 100).toFixed(1) + '%',
+    votingPct: (14.9 / TOTAL_VOTING_SHARES * 100).toFixed(1) + '%',
+    notes: 'Per 13G/A filed Apr 28, 2025 (as of 3/31/2025). 14,858,926 shares. Sole voting and dispositive. Up from ~4% prior. Subsidiaries: BlackRock Advisors, Fund Managers.',
   },
   {
     name: 'American Tower',
@@ -287,13 +296,22 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
     notes: '2.0% due 2036. Initial size $850M, upsized to $1B during marketing, +$150M greenshoe exercised = $1.15B total. Concurrent with Oct RD and ATM. Outstanding as debt.',
   },
   {
-    date: '2025-09-30',
-    event: 'Q3 2025 ATM Program',
+    date: '2025-05-13',
+    event: 'May 2025 Equity Distribution ($500M ATM)',
     type: 'ATM',
     amount: 287,
     price: null,
     shares: null,
-    notes: 'At-the-market sales. Facility terminated.',
+    notes: '$500M ATM via B. Riley et al. (424B5 May 13). ~$287M sold through Q3 2025. Terminated Oct 2025 when replaced by $800M program.',
+  },
+  {
+    date: '2025-07-24',
+    event: 'Jul 2025 Registered Direct (4.25% Notes Repurchase)',
+    type: 'Registered Direct',
+    amount: 347,
+    price: 60.06,
+    shares: 5.8,
+    notes: '5,775,635 shares at $60.06. Funded repurchase of $46.5M principal 4.25% notes. Settlement Jul 30.',
   },
   {
     date: '2025-07-07',
@@ -668,6 +686,214 @@ export const AUG_SEP_2025_INSIDER_SALES = [
   { name: 'Huiwen Yao', role: 'CTO', shares: 40000, avgPrice: 41.58, proceeds: 1663200, date: '2025-09-03', broker: 'B. Riley Securities', plan10b5_1: true, planAdopted: '2025-06-12', postSaleHoldings: 160000, note: 'Option exercise Aug 26. Matches Form 144 filed Sep 3. Price range $40.00-$42.00.' },
   { name: 'Andrew M. Johnson', role: 'CFO & CLO', shares: 20000, avgPrice: 52.48, proceeds: 1049634, date: '2025-08-26', broker: 'Fidelity Brokerage', plan10b5_1: false, planAdopted: null, postSaleHoldings: null, note: 'Form 144 proposed sale. Post-vesting (Aug 15 RSU vest). Execution Form 4 not in analyzed batch.' },
 ];
+
+// ============================================================================
+// APRIL-MAY 2025 INSIDER ACTIVITY
+// ============================================================================
+
+/**
+ * Apr-May 2025 insider purchases — directors buying at $25 dip.
+ * Cisneros bought Apr 4 and May 7 (both at $25, each 1K shares via trusts).
+ * Johnson bought Apr 4 (500 shares at $25 via IRA; Form 4/A corrected Apr 9).
+ *
+ * Total purchases: $62.5K (2,500 shares)
+ * Context: Stock at $25-$29 range. Directors showing repeated confidence.
+ */
+export const APR_MAY_2025_INSIDER_PURCHASES = [
+  { name: 'Adriana Cisneros', role: 'Director', shares: 1000, price: 25.00, date: '2025-04-04', account: 'Trust (indirect)', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 782327, note: 'Duplicate Form 4 filing (clerical).' },
+  { name: 'Andrew M. Johnson', role: 'CFO & CLO', shares: 500, price: 25.00, date: '2025-04-04', account: 'IRA', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 500, note: 'Form 4/A amendment Apr 9 corrects reporting.' },
+  { name: 'Adriana Cisneros', role: 'Director', shares: 1000, price: 25.00, date: '2025-05-07', account: 'Trust (indirect)', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 783327, note: 'Multiple duplicate filings + Form 4/A amendment May 9.' },
+];
+
+/**
+ * DEF 14A Proxy Summary — Annual Meeting Jun 6, 2025
+ * 2024 Equity Incentive Plan: 5.4M shares approved (~2% dilution potential).
+ * CEO comp: $1M salary + equity. Directors elected. Auditors approved.
+ */
+export const APR_2025_PROXY = {
+  meetingDate: '2025-06-06',
+  proxyFiled: '2025-04-25',
+  preliminaryFiled: '2025-04-14',
+  proposals: [
+    { number: 1, description: 'Election of directors', approved: true },
+    { number: 2, description: '2024 Equity Incentive Plan (5.4M shares)', approved: true, dilutionPct: 2.0 },
+    { number: 3, description: 'Ratification of independent auditors', approved: true },
+  ],
+  ceoComp: { salary: 1000000, equityGrant: true },
+  avellanOwnership: 28,
+  notes: 'Annual meeting scheduled Jun 6 (subsequently held Jun 27 per later batch). 5.4M share plan = ~2% dilution potential. ARS filed same day with CEO letter.',
+};
+
+// ============================================================================
+// MARCH 2025 INSIDER SALES & LIGADO DEAL
+// ============================================================================
+
+/**
+ * March 2025 insider sales — all RSU vesting-related (tax withholding + dispositions).
+ * Total: ~111K shares, ~$3.4M proceeds at avg ~$30.60/share.
+ * Context: Stock $24-$35 range. Post-earnings peak $35.49 (Mar 6) then declined to $22.74 EOM.
+ * All sellers retained significant positions. Routine compensation liquidity.
+ */
+export const MAR_2025_INSIDER_SALES = [
+  { name: 'Ronald L. Rubin', role: 'Director', shares: 7000, price: 32.46, date: '2025-03-10', type: 'sale' as const, proceeds: 227220, postHoldings: 65628, note: 'Tax withholding on 2024 RSU vesting. Sold at post-earnings highs.' },
+  { name: 'Julio A. Torres', role: 'Director', shares: 20000, price: 30.73, date: '2025-03-10', type: 'sale' as const, proceeds: 614600, postHoldings: 52628, note: 'Tax on RSU vesting. Weighted avg $30.62-$30.94. Ownership down ~28%.' },
+  { name: 'Scott Wisniewski', role: 'President', shares: 23643, price: 28.15, date: '2025-03-15', type: 'withholding' as const, proceeds: 0, postHoldings: 653146, note: 'Tax withholding on 72,500 RSU vesting (net 48,857 shares).' },
+  { name: 'Scott Wisniewski', role: 'President', shares: 35871, price: 28.35, date: '2025-03-17', type: 'sale' as const, proceeds: 1017143, postHoldings: 653146, note: 'Form 144/A amended acquisition date. Weighted $28.25-$28.50.' },
+  { name: 'Shanti B. Gupta', role: 'COO', shares: 24425, price: 28.00, date: '2025-03-17', type: 'sale' as const, proceeds: 683900, postHoldings: 368807, note: 'Executing Form 144 proposal. Selling amid price dip from $35 peak.' },
+  { name: 'Maya Bernal', role: 'CAO', shares: 3244, price: 25.71, date: '2025-03-21', type: 'withholding' as const, proceeds: 0, postHoldings: 120335, note: 'Tax withholding on 12,500 RSU vesting (net 9,256 shares). Standard.' },
+];
+
+/**
+ * Ligado Material Agreement — 8-K Filed March 24, 2025
+ * Entry into definitive agreement for L-band spectrum access.
+ * Formalizes the RSA announced Jan 6, 2025.
+ * Warrants for 9.99% AST stake (~22M shares) are significant dilution.
+ */
+export const MAR_2025_LIGADO_DEAL = {
+  date: '2025-03-24',
+  type: 'Material Agreement (8-K)',
+  initialInvestment: 150, // $M
+  totalConsideration: 550, // $M
+  annualLease: 80, // $M/year
+  spectrumMHz: 45,
+  spectrumBands: '40 MHz L-band (1525-1559 MHz) + 5 MHz (1670-1675 MHz)',
+  coverage: 'US & Canada',
+  warrants: { pctStake: 9.99, estimatedShares: 22000000, estimatedValue: 120000000 },
+  dilutionPct: 10,
+  notes: 'Tied to Ligado Chapter 11 bankruptcy plan. +10% intraday on announcement. Risk: regulatory approvals, bankruptcy court outcomes. Precedes Jun 2025 term sheet and Oct 2025 closing.',
+};
+
+/**
+ * S-3ASR Automatic Shelf Registration — Filed March 17, 2025
+ * 56M shares for resale (~25% dilution potential). No immediate issuance.
+ */
+export const MAR_2025_SHELF_REGISTRATION = {
+  date: '2025-03-17',
+  type: 'S-3ASR',
+  totalShares: 56071233,
+  components: [
+    { description: 'Rakuten reorganization shares', shares: 28500000 },
+    { description: 'Exchangeable shares + others', shares: 27571233 },
+  ],
+  pricePerShare: 28.62, // for fee calculation
+  aggregateValue: 1600000000, // ~$1.6B
+  fee: 245689,
+  dilutionPct: 25,
+  notes: 'Facilitates secondary sales by existing holders. Overhang risk but enables liquidity. No immediate issuance.',
+};
+
+// ============================================================================
+// JANUARY-FEBRUARY 2025 GOVERNANCE & GRANTS
+// ============================================================================
+
+/**
+ * Jan-Feb 2025 board changes and governance events.
+ * Johnson appointed to board Feb 3. Larson appointed Jan 31.
+ * AT&T stockholders' agreement amendment Feb 7.
+ * Bernal 50K RSU grant Feb 27.
+ * Avellan 13D/A confirms 25% (Amendment 12, Jan 27).
+ */
+export const JAN_FEB_2025_GOVERNANCE = {
+  boardChanges: [
+    { name: 'Andrew M. Johnson', role: 'CFO & CLO', event: 'Appointed to Board (Class II)', date: '2025-02-03', term: '2025', note: 'Ex-3D Systems. Strengthens legal/finance expertise.' },
+    { name: 'Keith R. Larson', role: 'Director', event: 'Board Appointment', date: '2025-01-31', term: 'N/A', note: 'Form 3 filed Feb 28. Zero initial shares. Later purchased 675 shares Dec 2025.' },
+  ],
+  stockholdersAmendment: {
+    date: '2025-02-07',
+    effectiveDate: '2025-02-05',
+    description: 'Amends June 2024 agreement to add AT&T as party',
+    attDesigneeRights: 'Board designee rights if >10% stake',
+    note: 'Integrates AT&T into governance alongside Vodafone, Rakuten.',
+  },
+  avellanUpdate: {
+    date: '2025-01-27',
+    amendment: 12,
+    shares: 78163078,
+    pct: 25,
+    note: 'No sales. Update due to outstanding share changes. ~25% voting power.',
+  },
+  bernalRsuGrant: {
+    date: '2025-02-27',
+    shares: 50000,
+    vestingDate: '2026-02-15',
+    estimatedValue: 1500000, // at ~$30/share
+    note: 'CAO retention grant. Vests Feb 15, 2026 (cliff). Post-grant: holdings N/A in filing.',
+  },
+  annualMeetingNotice: {
+    date: '2025-01-31',
+    meetingDate: '2025-05-06', // later changed to Jun 6
+    proposalDeadline: '2025-02-14',
+    note: 'Meeting later moved to Jun 6 per DEF 14A (Apr 25).',
+  },
+};
+
+// ============================================================================
+// MAY-JUNE 2025 INSIDER ACTIVITY
+// ============================================================================
+
+/**
+ * Certificate of Amendment — Jun 6, 2025 (Filed Jun 9, 2025; 8-K)
+ * Increased authorized Class A from 700M to 800M (+100M).
+ * Approved at annual meeting. For incentives, acquisitions, future raises.
+ */
+export const JUN_2025_CERTIFICATE_AMENDMENT = {
+  date: '2025-06-06',
+  filedDate: '2025-06-09',
+  classA: { previous: 700, new: 800, change: 100 },
+  classB: { previous: 100, new: 100, change: 0 },
+  classC: { previous: 800, new: 800, change: 0 },
+  purpose: 'Incentive plan capacity, potential acquisitions, future capital raises',
+  notes: 'Potential dilution ~11% at current outstanding. Approved at Jun 27 annual meeting. No immediate issuance planned.',
+};
+
+/**
+ * May-Jun 2025 RSU vestings, grants, and option exercises.
+ * Filed May 19 - Jun 9, 2025 (Form 4 / Form 144).
+ *
+ * Wisniewski: 125K RSU grant (Jun 2). Separate from Dec 2025 grant of 125K.
+ * Gupta: 50K RSU vesting (Jun 2); 20K tax withhold at $22.50 ($450K).
+ * Yao: 40K option exercise at $0.06 (May 17); proposed 40K sale via Form 144.
+ */
+export const MAY_JUN_2025_RSU_ACTIVITY = [
+  { name: 'Scott Wisniewski', role: 'President', date: '2025-06-02', type: 'RSU Grant', units: 125000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postHoldings: 588681, note: 'Separate from Dec 2, 2025 grant of 125K. Total 250K RSUs across both grants.' },
+  { name: 'Shanti B. Gupta', role: 'COO', date: '2025-06-02', type: 'RSU Vesting', units: 50000, taxWithheld: 20000, taxPrice: 22.50, taxValue: 450000, netAcquired: 30000, postHoldings: 392375, note: 'Jun 2 vesting; 20K tax withhold at $22.50. Proposed 10K sale Jun 9 (Form 144).' },
+  { name: 'Huiwen Yao', role: 'CTO', date: '2025-05-17', type: 'Option Exercise', units: 40000, exercisePrice: 0.06, exerciseValue: 2400, postHoldings: 240000, note: 'Converted to LLC Units. Prep for proposed 40K sale (Form 144 May 16). Executed Sep 3 at $41.58.' },
+];
+
+/**
+ * Jun 2025 insider purchases — director and CFO buying at $25 dip.
+ * Cisneros bought twice: Jun 9 (784,077 post) and Jun 24 (783,327 post).
+ * Johnson bought Jun 24.
+ *
+ * Total purchases: $62.5K (2,500 shares)
+ * Context: Stock near 2025 low (~$25). Shows insider confidence.
+ */
+export const JUN_2025_INSIDER_PURCHASES = [
+  { name: 'Adriana Cisneros', role: 'Director', shares: 1000, price: 25.00, date: '2025-06-09', account: 'Trust (indirect)', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 784077, note: 'Multiple duplicate Form 4 filings (clerical). Single transaction confirmed.' },
+  { name: 'Adriana Cisneros', role: 'Director', shares: 1000, price: 25.00, date: '2025-06-24', account: 'Trust (indirect)', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 783327 },
+  { name: 'Andrew M. Johnson', role: 'CFO & CLO', shares: 500, price: 25.00, date: '2025-06-24', account: 'IRA', plan10b5_1: false, planAdopted: null, postPurchaseHoldings: 500 },
+];
+
+// ============================================================================
+// JULY 2025 CREDIT FACILITY
+// ============================================================================
+
+/**
+ * $345M UBS Credit Agreement (Event Jul 15; Filed Jul 18, 2025)
+ * Expandable to $500M. SOFR+5%. Maturity 2028.
+ * Used for constellation capex. Adds significant non-dilutive liquidity.
+ */
+export const JUL_2025_CREDIT_FACILITY = {
+  amount: 345,
+  expandableTo: 500,
+  rate: 'SOFR + 5%',
+  maturity: '2028',
+  lender: 'UBS',
+  filedDate: '2025-07-18',
+  estimatedFees: 5,
+  purpose: 'Constellation deployment capex',
+  notes: 'Adds $345M non-dilutive liquidity. Expandable to $500M. Covenants limit operational flexibility.',
+};
 
 // ============================================================================
 // HELPER FUNCTIONS

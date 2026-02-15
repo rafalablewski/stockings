@@ -151,6 +151,23 @@ import {
   LIQUIDITY_POSITION,
   DILUTION_SCENARIOS,
   DATA_FRESHNESS,
+  FEB_2026_RD_NET_DILUTION,
+  FEB_2026_GREENSHOE,
+  DEC_2025_RSU_GRANTS,
+  DEC_2025_INSIDER_SALES,
+  DEC_2025_INSIDER_PURCHASES,
+  AUG_2025_CEO_RSU_GRANT,
+  AUG_SEP_2025_RSU_VESTINGS,
+  AUG_SEP_2025_INSIDER_SALES,
+  APR_MAY_2025_INSIDER_PURCHASES,
+  MAR_2025_INSIDER_SALES,
+  MAR_2025_LIGADO_DEAL,
+  MAR_2025_SHELF_REGISTRATION,
+  JAN_FEB_2025_GOVERNANCE,
+  JUN_2025_CERTIFICATE_AMENDMENT,
+  MAY_JUN_2025_RSU_ACTIVITY,
+  JUN_2025_INSIDER_PURCHASES,
+  JUL_2025_CREDIT_FACILITY,
 } from '@/data/asts';
 
 // ============================================================================
@@ -1464,6 +1481,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
 };
 
 const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
+  const [showAllMilestones, setShowAllMilestones] = useState(false);
   // Group milestones by year
   const milestonesByYear = completedMilestones.reduce((acc, m) => {
     const year = m.date.match(/20\d{2}/)?.[0] || 'Other';
@@ -1529,7 +1547,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
           <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Completed Milestones</span>
           <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--mint)' }}>{completedMilestones.length} achieved</span>
         </div>
-        {completedMilestones.slice(0, 15).map((m, i) => {
+        {(showAllMilestones ? completedMilestones : completedMilestones.slice(0, 20)).map((m, i) => {
           const catColor = m.category === 'Constellation' ? 'var(--cyan)' : m.category === 'Regulatory' ? 'var(--violet)' : m.category === 'Commercial' ? 'var(--gold)' : m.category === 'Service' ? 'var(--mint)' : m.category === 'Capital' ? 'var(--sky)' : m.category === 'Defense' || m.category === 'Government' ? 'var(--coral)' : 'var(--text3)';
           return (
             <div key={i} style={{ display: 'grid', gridTemplateColumns: '110px 1fr auto', alignItems: 'center', gap: 16, padding: '16px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)', transition: 'background 0.15s' }}
@@ -1541,8 +1559,23 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
             </div>
           );
         })}
-        {completedMilestones.length > 15 && (
-          <div style={{ padding: '16px 24px', textAlign: 'center', fontSize: 12, color: 'var(--text3)' }}>+ {completedMilestones.length - 15} earlier milestones</div>
+        {completedMilestones.length > 20 && (
+          <button
+            onClick={() => setShowAllMilestones(!showAllMilestones)}
+            style={{
+              width: '100%',
+              padding: '8px',
+              background: 'var(--surface2)',
+              border: '1px solid var(--border)',
+              borderRadius: 99,
+              color: 'var(--text2)',
+              fontSize: 12,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            {showAllMilestones ? '\u25B2 Show Less' : `\u25BC Show ${completedMilestones.length - 20} More Milestones`}
+          </button>
         )}
       </div>
 
@@ -2877,7 +2910,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-navigation</div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Strategic + founder' },
@@ -2885,6 +2918,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           { id: 'incentives', value: `${sbcHistory.length}`, label: 'SBC Quarters', sub: 'Compensation data' },
           { id: 'dilution', value: `${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(0)}%`, label: 'Total Dilution', sub: `${fullyDiluted}M FD shares` },
           { id: 'liquidity', value: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, label: 'Liquidity', sub: `~${(LIQUIDITY_POSITION.cashAndEquiv / 300).toFixed(0)}Q runway` },
+          { id: 'insiders', value: `${DEC_2025_INSIDER_SALES.length + AUG_SEP_2025_INSIDER_SALES.length}`, label: 'Insider Activity', sub: 'Form 4 filings' },
         ].map(nav => (
           <div
             key={nav.id}
@@ -3458,6 +3492,393 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
             $1B 2.25% converts issued. $46.5M of 4.25% and $250M of 2.375% repurchased. ~$614M registered directs. Net new cash ~$980M.
           </div>
+        </div>
+      </div>
+      </>
+      )}
+
+      {/* Insider Activity View */}
+      {capitalView === 'insiders' && (
+      <>
+      {/* Feb 2026 RD Net Dilution + Greenshoe Summary */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#feb-2026-dilution</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        {[
+          { label: 'RD Shares Issued', value: `${FEB_2026_RD_NET_DILUTION.sharesIssued}M`, sub: 'Feb 2026 RDs', color: 'var(--coral)' },
+          { label: 'Conversion Avoided', value: `${FEB_2026_RD_NET_DILUTION.conversionAvoided}M`, sub: 'Notes repurchased', color: 'var(--mint)' },
+          { label: 'Net Incremental', value: `${FEB_2026_RD_NET_DILUTION.netIncremental}M`, sub: `${FEB_2026_RD_NET_DILUTION.netDilutionPct}% dilution`, color: 'var(--gold)' },
+          { label: 'Interest Saved', value: `$${FEB_2026_RD_NET_DILUTION.annualInterestSaved}M/yr`, sub: 'Annual savings', color: 'var(--sky)' },
+          { label: 'Greenshoe', value: FEB_2026_GREENSHOE.exercised === null ? 'Pending' : FEB_2026_GREENSHOE.exercised ? 'Exercised' : 'Expired', sub: `$${FEB_2026_GREENSHOE.amount}M by ${FEB_2026_GREENSHOE.deadline.slice(5)}`, color: FEB_2026_GREENSHOE.exercised === null ? 'var(--gold)' : (FEB_2026_GREENSHOE.exercised ? 'var(--mint)' : 'var(--coral)') },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{kpi.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* CEO RSU Grants */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#rsu-grants</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>RSU Grants (Form 4)</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        {/* CEO Aug 2025 Grant */}
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', background: 'color-mix(in srgb, var(--gold) 3%, transparent)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{AUG_2025_CEO_RSU_GRANT.name}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)', marginLeft: 8 }}>{AUG_2025_CEO_RSU_GRANT.role}</span>
+            </div>
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)' }}>{AUG_2025_CEO_RSU_GRANT.date}</span>
+          </div>
+          <div style={{ display: 'flex', gap: 24, marginTop: 8 }}>
+            <div><span style={{ fontSize: 11, color: 'var(--text3)' }}>Units: </span><span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--gold)' }}>{(AUG_2025_CEO_RSU_GRANT.units / 1000).toFixed(0)}K</span></div>
+            <div><span style={{ fontSize: 11, color: 'var(--text3)' }}>Vesting: </span><span style={{ fontSize: 12, color: 'var(--text2)' }}>{AUG_2025_CEO_RSU_GRANT.vestingSchedule} from {AUG_2025_CEO_RSU_GRANT.vestingStart}</span></div>
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>{AUG_2025_CEO_RSU_GRANT.holdingsNote}</div>
+        </div>
+        {/* Dec 2025 C-Suite Grants */}
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 100px 120px 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Executive', 'Role', 'RSUs', 'Vesting Start', 'Notes'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'RSUs' ? 'right' : 'left' }}>{h}</span>
+            ))}
+          </div>
+          {DEC_2025_RSU_GRANTS.map((g, i) => (
+            <div key={g.name} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 120px 100px 120px 1fr', padding: '12px 24px', borderBottom: i < DEC_2025_RSU_GRANTS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{g.name}</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{g.role}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--violet)', textAlign: 'right' }}>{(g.units / 1000).toFixed(0)}K</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{g.vestingStart}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{g.holdingsNote}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Aug-Sep 2025 RSU Vestings */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#rsu-vestings</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>RSU Vestings &amp; Tax Withholding (Aug-Sep 2025)</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 90px 90px 100px', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Executive', 'Date', 'Vested', 'Tax W/H', 'Net', 'Tax Value'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: ['Vested', 'Tax W/H', 'Net', 'Tax Value'].includes(h) ? 'right' : 'left' }}>{h}</span>
+            ))}
+          </div>
+          {AUG_SEP_2025_RSU_VESTINGS.map((v, i) => (
+            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 90px 90px 100px', padding: '12px 24px', borderBottom: i < AUG_SEP_2025_RSU_VESTINGS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{v.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({v.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{v.date.slice(5)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{(v.unitsVested / 1000).toFixed(0)}K</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--coral)', textAlign: 'right' }}>{(v.taxWithheld / 1000).toFixed(0)}K</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>{(v.netAcquired / 1000).toFixed(0)}K</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${(v.taxValue / 1000).toFixed(0)}K</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Insider Sales */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#insider-sales</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Insider Sales (Form 4)</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        {(() => {
+          const totalSales = DEC_2025_INSIDER_SALES.reduce((sum, s) => sum + s.proceeds, 0);
+          const amtSale = DEC_2025_INSIDER_SALES.find(s => s.name === 'American Tower Corp')?.proceeds || 0;
+          const individualSales = totalSales - amtSale;
+          return (
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--coral)', fontSize: 11, color: 'var(--text3)', lineHeight: 1.6 }}>
+              <strong style={{ color: 'var(--coral)' }}>Dec 2025:</strong> Total sales ~${(totalSales / 1e6).toFixed(1)}M (American Tower ${(amtSale / 1e6).toFixed(1)}M block trade + individual sales ${(individualSales / 1e6).toFixed(1)}M). Most under Rule 10b5-1 plans.
+            </div>
+          );
+        })()}
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 80px 100px 80px', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Insider', 'Date', 'Shares', 'Price', 'Proceeds', '10b5-1'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: ['Shares', 'Price', 'Proceeds'].includes(h) ? 'right' : 'left' }}>{h}</span>
+            ))}
+          </div>
+          {/* Dec 2025 Sales */}
+          <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--coral)', background: 'color-mix(in srgb, var(--coral) 5%, transparent)' }}>December 2025</div>
+          {DEC_2025_INSIDER_SALES.map((s, i) => (
+            <div key={`dec-${i}`} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 80px 100px 80px', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{s.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({s.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{s.date.slice(5)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{(s.shares / 1000).toFixed(0)}K</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${s.price.toFixed(2)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--coral)', textAlign: 'right' }}>${(s.proceeds / 1e6).toFixed(1)}M</span>
+              <span style={{ fontSize: 11, color: s.plan10b5_1 ? 'var(--mint)' : 'var(--text3)' }}>{s.plan10b5_1 ? 'Yes' : 'No'}</span>
+            </div>
+          ))}
+          {/* Aug-Sep 2025 Sales */}
+          <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--coral)', background: 'color-mix(in srgb, var(--coral) 5%, transparent)' }}>August-September 2025</div>
+          {AUG_SEP_2025_INSIDER_SALES.map((s, i) => (
+            <div key={`aug-${i}`} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 80px 100px 80px', padding: '12px 24px', borderBottom: i < AUG_SEP_2025_INSIDER_SALES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{s.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({s.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{s.date.slice(5)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{(s.shares / 1000).toFixed(0)}K</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${s.avgPrice.toFixed(2)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--coral)', textAlign: 'right' }}>${(s.proceeds / 1e6).toFixed(1)}M</span>
+              <span style={{ fontSize: 11, color: s.plan10b5_1 ? 'var(--mint)' : 'var(--text3)' }}>{s.plan10b5_1 ? 'Yes' : 'No'}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Insider Purchases */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#insider-purchases</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Insider Purchases (Form 4)</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 80px 100px', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Insider', 'Date', 'Shares', 'Price', 'Account'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: ['Shares', 'Price'].includes(h) ? 'right' : 'left' }}>{h}</span>
+            ))}
+          </div>
+          {DEC_2025_INSIDER_PURCHASES.map((p, i) => (
+            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 80px 100px', padding: '12px 24px', borderBottom: i < DEC_2025_INSIDER_PURCHASES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{p.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({p.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.date.slice(5)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>{p.shares}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${p.price.toFixed(2)}</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.account}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Director Larson accumulated {DEC_2025_INSIDER_PURCHASES.reduce((s, p) => s + p.shares, 0).toLocaleString()} shares via IRA under 10b5-1 plan (adopted Sep 8, 2025). Post-purchase holdings: {DEC_2025_INSIDER_PURCHASES[DEC_2025_INSIDER_PURCHASES.length - 1].postPurchaseHoldings.toLocaleString()} shares.
+        </div>
+        {/* June 2025 Insider Purchases */}
+        <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)' }}>June 2025 — Insider Buys at $25 Dip</div>
+        <div>
+          {JUN_2025_INSIDER_PURCHASES.map((p, i) => (
+            <div key={`jun-${i}`} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 80px 100px', padding: '12px 24px', borderBottom: i < JUN_2025_INSIDER_PURCHASES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{p.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({p.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.date.slice(5)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>{p.shares.toLocaleString()}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${p.price.toFixed(2)}</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.account}</span>
+            </div>
+          ))}
+        </div>
+        {/* April-May 2025 Insider Purchases */}
+        <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)' }}>Apr–May 2025 — Insider Buys at $25 Dip</div>
+        <div>
+          {APR_MAY_2025_INSIDER_PURCHASES.map((p, i) => (
+            <div key={`apr-${i}`} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 80px 100px', padding: '12px 24px', borderBottom: i < APR_MAY_2025_INSIDER_PURCHASES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{p.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({p.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.date.slice(5)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>{p.shares.toLocaleString()}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${p.price.toFixed(2)}</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{p.account}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Cisneros (1K each) + Johnson (500) at $25 dip. Multiple duplicate Form 4 filings corrected via amendments.
+        </div>
+      </div>
+
+      {/* March 2025 Insider Sales */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mar-2025-insider-sales</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>March 2025 — RSU Vesting Sales & Withholdings</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--rose)' }}>~111K shares / $3.4M</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 80px 80px 90px 70px', padding: '8px 24px', borderBottom: '1px solid var(--border)', fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+          <span>Name</span><span>Date</span><span style={{ textAlign: 'right' }}>Shares</span><span style={{ textAlign: 'right' }}>Price</span><span style={{ textAlign: 'right' }}>Proceeds</span><span>Type</span>
+        </div>
+        <div>
+          {MAR_2025_INSIDER_SALES.map((s, i) => (
+            <div key={`mar-sale-${i}`} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 90px 80px 80px 90px 70px', padding: '12px 24px', borderBottom: i < MAR_2025_INSIDER_SALES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{s.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({s.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{s.date.slice(5)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--rose)', textAlign: 'right' }}>{s.shares.toLocaleString()}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${s.price.toFixed(2)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: s.proceeds > 0 ? 'var(--rose)' : 'var(--text3)', textAlign: 'right' }}>{s.proceeds > 0 ? `$${(s.proceeds / 1000).toFixed(0)}K` : '—'}</span>
+              <span style={{ fontSize: 10, color: s.type === 'sale' ? 'var(--rose)' : 'var(--gold)', background: s.type === 'sale' ? 'color-mix(in srgb, var(--rose) 15%, transparent)' : 'color-mix(in srgb, var(--gold) 15%, transparent)', padding: '2px 6px', borderRadius: 4, textTransform: 'uppercase', fontWeight: 600 }}>{s.type === 'withholding' ? 'W/H' : 'Sale'}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          All RSU vesting-related. Stock peaked $35.49 (Mar 6) after +18% Q4 pop, fell to $22.74 EOM. Routine compensation liquidity.
+        </div>
+      </div>
+
+      {/* Ligado Deal */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#ligado-deal</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--gold) 5%, var(--surface)), color-mix(in srgb, var(--violet) 5%, var(--surface)))' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8 }}>Mar 2025 Ligado Material Agreement</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginTop: 12 }}>
+            {[
+              { label: 'Initial Investment', value: `$${MAR_2025_LIGADO_DEAL.initialInvestment}M`, color: 'var(--gold)' },
+              { label: 'Total Consideration', value: `$${MAR_2025_LIGADO_DEAL.totalConsideration}M`, color: 'var(--sky)' },
+              { label: 'Spectrum', value: `${MAR_2025_LIGADO_DEAL.spectrumMHz} MHz`, color: 'var(--mint)' },
+              { label: 'Warrant Dilution', value: `${MAR_2025_LIGADO_DEAL.dilutionPct}%`, color: 'var(--rose)' },
+            ].map(item => (
+              <div key={item.label}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{item.label}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 600, color: item.color, marginTop: 4 }}>{item.value}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
+            <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+              <span style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Bands:</span> {MAR_2025_LIGADO_DEAL.spectrumBands}
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
+              <span style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Annual Lease:</span> ${MAR_2025_LIGADO_DEAL.annualLease}M/yr + revenue share
+            </div>
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 12, lineHeight: 1.5 }}>
+            {MAR_2025_LIGADO_DEAL.notes}
+          </div>
+        </div>
+      </div>
+
+      {/* S-3ASR Shelf Registration */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#shelf-registration</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>S-3ASR Shelf Registration (Mar 17, 2025)</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--gold)' }}>~{(MAR_2025_SHELF_REGISTRATION.dilutionPct)}% Dilution Potential</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)' }}>
+          {[
+            { label: 'Total Shares', value: `${(MAR_2025_SHELF_REGISTRATION.totalShares / 1e6).toFixed(1)}M`, color: 'var(--gold)' },
+            { label: 'Aggregate Value', value: `$${(MAR_2025_SHELF_REGISTRATION.aggregateValue / 1e9).toFixed(1)}B`, color: 'var(--sky)' },
+            { label: 'Fee Calc Price', value: `$${MAR_2025_SHELF_REGISTRATION.pricePerShare}`, color: 'var(--text2)' },
+          ].map(item => (
+            <div key={item.label} style={{ background: 'var(--surface)', padding: '16px 24px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{item.label}</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 600, color: item.color, marginTop: 4 }}>{item.value}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          {MAR_2025_SHELF_REGISTRATION.notes}
+        </div>
+      </div>
+
+      {/* Jan-Feb 2025 Governance */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#jan-feb-2025-governance</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Jan–Feb 2025 Governance & Grants</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--sky)' }}>Board + AT&T + RSU</span>
+        </div>
+        {/* Board Changes */}
+        <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--sky)', background: 'color-mix(in srgb, var(--sky) 5%, transparent)' }}>Board Appointments</div>
+        {JAN_FEB_2025_GOVERNANCE.boardChanges.map((bc, i) => (
+          <div key={`bc-${i}`} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 130px 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+            <span style={{ fontSize: 13, color: 'var(--text)' }}>{bc.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({bc.role})</span></span>
+            <span style={{ fontSize: 12, color: 'var(--text2)' }}>{bc.date.slice(5)}</span>
+            <span style={{ fontSize: 12, color: 'var(--text2)' }}>{bc.event}</span>
+          </div>
+        ))}
+        {/* Stockholders' Amendment */}
+        <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)' }}>Stockholders&apos; Agreement (Feb 7)</div>
+        <div className="hover-row" style={{ padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+          <span style={{ fontSize: 12, color: 'var(--text2)' }}>{JAN_FEB_2025_GOVERNANCE.stockholdersAmendment.description}. {JAN_FEB_2025_GOVERNANCE.stockholdersAmendment.attDesigneeRights}.</span>
+        </div>
+        {/* Bernal RSU */}
+        <div style={{ padding: '8px 24px', fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--violet)', background: 'color-mix(in srgb, var(--violet) 5%, transparent)', borderTop: '1px solid var(--border)' }}>RSU Grant (Feb 27)</div>
+        <div className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+          <span style={{ fontSize: 13, color: 'var(--text)' }}>Maya Bernal <span style={{ fontSize: 11, color: 'var(--text3)' }}>(CAO)</span></span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--violet)' }}>{JAN_FEB_2025_GOVERNANCE.bernalRsuGrant.shares.toLocaleString()} RSUs</span>
+          <span style={{ fontSize: 12, color: 'var(--text2)' }}>Vest {JAN_FEB_2025_GOVERNANCE.bernalRsuGrant.vestingDate.slice(5)}</span>
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          Avellan 13D/A (Jan 27): 25% ownership stable (78.16M shares, Amend. 12). Annual meeting notice Jan 31 (later moved to Jun 6).
+        </div>
+      </div>
+
+      {/* Credit Facility */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#credit-facility</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--sky) 5%, var(--surface)), color-mix(in srgb, var(--mint) 5%, var(--surface)))' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--sky)', marginBottom: 8 }}>Jul 2025 UBS Credit Facility</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginTop: 12 }}>
+            {[
+              { label: 'Amount', value: `$${JUL_2025_CREDIT_FACILITY.amount}M`, color: 'var(--sky)' },
+              { label: 'Expandable To', value: `$${JUL_2025_CREDIT_FACILITY.expandableTo}M`, color: 'var(--mint)' },
+              { label: 'Rate', value: JUL_2025_CREDIT_FACILITY.rate, color: 'var(--text)' },
+              { label: 'Maturity', value: JUL_2025_CREDIT_FACILITY.maturity, color: 'var(--text)' },
+            ].map(item => (
+              <div key={item.label}>
+                <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{item.label}</div>
+                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 600, color: item.color, marginTop: 4 }}>{item.value}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6, marginTop: 8 }}>
+            {JUL_2025_CREDIT_FACILITY.notes}
+          </div>
+        </div>
+      </div>
+
+      {/* Certificate Amendment */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#certificate-amendment</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Certificate Amendment (Jun 6, 2025)</span>
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--gold)' }}>+100M Authorized</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)' }}>
+          {[
+            { label: 'Class A', prev: JUN_2025_CERTIFICATE_AMENDMENT.classA.previous, now: JUN_2025_CERTIFICATE_AMENDMENT.classA.new, change: JUN_2025_CERTIFICATE_AMENDMENT.classA.change },
+            { label: 'Class B', prev: JUN_2025_CERTIFICATE_AMENDMENT.classB.previous, now: JUN_2025_CERTIFICATE_AMENDMENT.classB.new, change: JUN_2025_CERTIFICATE_AMENDMENT.classB.change },
+            { label: 'Class C', prev: JUN_2025_CERTIFICATE_AMENDMENT.classC.previous, now: JUN_2025_CERTIFICATE_AMENDMENT.classC.new, change: JUN_2025_CERTIFICATE_AMENDMENT.classC.change },
+          ].map(c => (
+            <div key={c.label} style={{ background: 'var(--surface)', padding: '16px 24px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{c.label}</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 600, color: c.change > 0 ? 'var(--gold)' : 'var(--text2)', margin: '4px 0' }}>{c.now}M</div>
+              <div style={{ fontSize: 11, color: c.change > 0 ? 'var(--gold)' : 'var(--text3)' }}>{c.change > 0 ? `+${c.change}M` : 'No change'}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text3)' }}>
+          {JUN_2025_CERTIFICATE_AMENDMENT.notes}
+        </div>
+      </div>
+
+      {/* May-Jun RSU Activity */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#may-jun-rsu-activity</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>May-Jun 2025 RSU &amp; Option Activity</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 90px 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Executive', 'Date', 'Type', 'Units', 'Notes'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: h === 'Units' ? 'right' : 'left' }}>{h}</span>
+            ))}
+          </div>
+          {MAY_JUN_2025_RSU_ACTIVITY.map((a, i) => (
+            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 90px 1fr', padding: '12px 24px', borderBottom: i < MAY_JUN_2025_RSU_ACTIVITY.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{a.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({a.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{a.date.slice(5)}</span>
+              <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 100, background: a.type === 'RSU Grant' ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : a.type === 'RSU Vesting' ? 'color-mix(in srgb, var(--mint) 15%, transparent)' : 'color-mix(in srgb, var(--sky) 15%, transparent)', color: a.type === 'RSU Grant' ? 'var(--violet)' : a.type === 'RSU Vesting' ? 'var(--mint)' : 'var(--sky)' }}>{a.type}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{(a.units / 1000).toFixed(0)}K</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.note}</span>
+            </div>
+          ))}
         </div>
       </div>
       </>
@@ -5524,8 +5945,8 @@ const TimelineTab = () => {
     return f.type === secFilter;
   });
   
-  const displayedFilings = showAllFilings ? filteredFilings : filteredFilings.slice(0, 6);
-  const hiddenCount = filteredFilings.length - 6;
+  const displayedFilings = showAllFilings ? filteredFilings : filteredFilings.slice(0, 15);
+  const hiddenCount = filteredFilings.length - 15;
   
   // ============================================================================
   // CRITICAL RULE FOR AI ASSISTANTS AND FUTURE EDITORS:
@@ -5718,7 +6139,7 @@ const TimelineTab = () => {
         </div>
 
         {/* Show More/Less Button */}
-        {filteredFilings.length > 6 && (
+        {filteredFilings.length > 15 && (
           <button
             onClick={() => setShowAllFilings(!showAllFilings)}
             style={{
