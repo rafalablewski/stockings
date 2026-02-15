@@ -114,6 +114,7 @@ import { getStockModelCSS } from './stock-model-styles';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
+import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
@@ -698,6 +699,7 @@ const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?
   { id: 'timeline', label: 'Timeline', type: 'tracking' },
   { id: 'investment', label: 'Investment', type: 'tracking' },
   { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
+  { id: 'ai-agents', label: 'AI Agents', type: 'tracking' },
 ];
 
 const crclCompetitors: Competitor[] = [
@@ -6316,6 +6318,8 @@ function CRCLModel() {
           {activeTab === 'wall-street' && (
             <WallStreetTab />
           )}
+
+          {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="CRCL" />}
 
           {activeTab === 'sources' && (
             <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} competitorLabel="Stablecoin Peers" competitors={crclCompetitors} />

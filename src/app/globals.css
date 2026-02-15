@@ -83,6 +83,10 @@ a, a:visited {
 .stock-model-app .gap-3 { gap: 0.75rem; }
 .stock-model-app .gap-4 { gap: 1rem; }
 
+/* Row hover effect — replaces inline onMouseEnter/onMouseLeave DOM manipulation */
+.hover-row { transition: background 0.15s; }
+.hover-row:hover { background: var(--surface2); }
+
 /* ═══ MOBILE RESPONSIVE OVERRIDES ═══ */
 
 @media (max-width: 768px) {

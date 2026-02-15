@@ -1,15 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import type { PromptVariant } from "@/data/prompts";
 
 interface PromptCardProps {
   name: string;
-  content: string;
+  description: string;
+  variants: PromptVariant[];
 }
 
-export function PromptCard({ name, content }: PromptCardProps) {
+export function PromptCard({ name, description, variants }: PromptCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [activeVariant, setActiveVariant] = useState(0);
+
+  const content = variants[activeVariant].content;
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -28,9 +33,36 @@ export function PromptCard({ name, content }: PromptCardProps) {
 
       <div className="relative flex items-start justify-between gap-6">
         <div className="flex-1 min-w-0">
-          <span className="text-[13px] font-mono font-medium text-white tracking-wide">
-            {name}
-          </span>
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-[13px] font-mono font-medium text-white tracking-wide">
+              {name}
+            </span>
+          </div>
+          {variants.length > 1 && (
+            <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+              {variants.map((variant, i) => (
+                <span key={variant.label} className="flex items-center">
+                  {i > 0 && (
+                    <span className="text-[10px] text-white/10 mx-2">·</span>
+                  )}
+                  <span
+                    role="button"
+                    onClick={() => setActiveVariant(i)}
+                    className={`text-[11px] uppercase tracking-wider cursor-pointer transition-colors ${
+                      i === activeVariant
+                        ? "text-white/50"
+                        : "text-white/15 hover:text-white/30"
+                    }`}
+                  >
+                    {variant.label}
+                  </span>
+                </span>
+              ))}
+            </div>
+          )}
+          <p className="mt-2 text-[12px] text-white/25 leading-relaxed">
+            {description}
+          </p>
         </div>
 
         <div className="flex items-center gap-3">

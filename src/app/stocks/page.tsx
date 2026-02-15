@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { stockList } from "@/lib/stocks";
 import { prompts } from "@/data/prompts";
+import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
 
 export const metadata = {
@@ -9,6 +10,15 @@ export const metadata = {
 };
 
 export default function StocksPage() {
+  const workflowPrompts = workflows.map((w) => ({
+    name: w.name,
+    description: w.description,
+    variants: w.variants.map((v) => ({
+      label: v.label,
+      content: v.prompt,
+    })),
+  }));
+
   return (
     <div className="min-h-screen py-20 px-6">
       <div className="max-w-3xl mx-auto">
@@ -66,7 +76,28 @@ export default function StocksPage() {
 
           <div className="grid gap-4">
             {prompts.map((prompt) => (
-              <PromptCard key={prompt.name} name={prompt.name} content={prompt.content} />
+              <PromptCard key={prompt.name} name={prompt.name} description={prompt.description} variants={prompt.variants} />
+            ))}
+          </div>
+        </div>
+
+        {/* Workflows */}
+        <div className="mt-20">
+          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-3">
+            Workflow
+          </h2>
+          <p className="text-[12px] text-white/20 mb-10">
+            AI agent prompts for structured analysis. Run these from the AI Agents tab inside each stock.
+          </p>
+
+          <div className="grid gap-4">
+            {workflowPrompts.map((workflow) => (
+              <PromptCard
+                key={workflow.name}
+                name={workflow.name}
+                description={workflow.description}
+                variants={workflow.variants}
+              />
             ))}
           </div>
         </div>
