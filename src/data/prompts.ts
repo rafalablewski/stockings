@@ -222,231 +222,7 @@ Both prompts are the same machine with different fuel. The template is modular �
   },
 
   // =========================================================================
-  // 2. 10-Q / 10-K Financial Statement Extractor
-  // =========================================================================
-  {
-    name: "10-Q / 10-K Financial Statement Extractor",
-    description: "Paste a quarterly or annual SEC filing. Extracts balance sheet, income statement, cash flow, and key metrics into structured database-ready format with quarter-over-quarter delta analysis.",
-    variants: [
-      {
-        label: "Generic",
-        content: `You are a senior equity research analyst. Extract structured financial data from the pasted SEC filing (10-Q or 10-K).
-
-EXTRACTION TARGETS:
-
-1. BALANCE SHEET SNAPSHOT
-   [Metric | Current Period | Prior Period | Δ | Δ%]
-   Required: cash & equivalents, short-term investments, total current assets, total assets, current liabilities, long-term debt, total liabilities, stockholders' equity, shares outstanding (basic + diluted)
-
-2. INCOME STATEMENT
-   [Metric | Current Period | Prior Period | Δ | Δ%]
-   Required: revenue (by segment if available), cost of revenue, gross profit, R&D, SGA, total opex, operating income/loss, interest expense, net income/loss, EPS (basic + diluted)
-
-3. CASH FLOW STATEMENT
-   [Metric | Current Period | Prior Period | Δ]
-   Required: operating cash flow, capex, free cash flow, financing activities (debt issued/repaid, equity issued), ending cash position
-
-4. KEY RATIOS
-   - Gross margin, operating margin, net margin
-   - Current ratio, quick ratio
-   - Debt/equity, net debt
-   - Cash burn rate (if pre-revenue)
-   - Revenue growth rate (YoY, QoQ)
-
-5. MANAGEMENT GUIDANCE (from MD&A)
-   - Any forward-looking statements with specific numbers
-   - Changes from prior period guidance
-   - Risk factor changes (new/removed/escalated)
-
-OUTPUT FORMAT:
-- All numbers from the filing — never estimate or round
-- Flag any restatements or methodology changes
-- Note fiscal year end and reporting period clearly
-- Output as structured blocks ready for database entry
-
-Paste the SEC filing below:`,
-      },
-    ],
-  },
-
-  // =========================================================================
-  // 3. Proxy Statement (DEF 14A) Digester
-  // =========================================================================
-  {
-    name: "Proxy Statement (DEF 14A) Digester",
-    description: "Paste a proxy statement. Extracts executive compensation, board composition, shareholder proposals, voting items, equity plan details, and insider ownership into structured blocks.",
-    variants: [
-      {
-        label: "Generic",
-        content: `You are a senior equity research analyst specializing in corporate governance. Extract structured data from the pasted proxy statement (DEF 14A).
-
-EXTRACTION FRAMEWORK:
-
-1. BOARD COMPOSITION
-   For each director:
-   ────────────────────────────────────────
-   Name:              [full name]
-   Title/Role:        [Chair, Lead Independent, Committee chairs]
-   Age:               [if disclosed]
-   Tenure:            [years on board]
-   Independent:       [Yes/No]
-   Committees:        [Audit, Comp, Nominating, etc.]
-   Share Ownership:   [shares held, options/RSUs, % of company]
-   Other Boards:      [if disclosed]
-   Up for Election:   [Yes/No, term expiration]
-   ────────────────────────────────────────
-
-2. EXECUTIVE COMPENSATION
-   For each Named Executive Officer (NEO):
-   [Name | Title | Base Salary | Bonus | Stock Awards | Option Awards | Other | Total]
-   - Compare to prior year total comp
-   - Note any clawback provisions
-   - Performance metrics tied to incentive comp
-
-3. EQUITY INCENTIVE PLANS
-   - Plan name and year adopted
-   - Shares authorized, issued, remaining
-   - Award types (RSUs, options, PSUs, ESPP)
-   - Vesting schedules
-   - Dilutive impact
-
-4. SHAREHOLDER PROPOSALS
-   For each proposal:
-   - Proposal number and description
-   - Board recommendation (For/Against)
-   - Required vote threshold
-   - Proponent (management vs. shareholder)
-
-5. INSIDER OWNERSHIP TABLE
-   [Name | Shares Owned | % of Outstanding | Options Exercisable | Total Economic]
-   - 5%+ holders
-   - Officers and directors individually
-   - Total insider ownership
-
-6. RELATED PARTY TRANSACTIONS
-   - Any disclosed transactions
-   - Dollar amounts, counterparties, terms
-
-OUTPUT: Structured blocks for Capital tab (ownership), Investment tab (governance), and Sources tab (filing reference).
-
-Paste the proxy statement below:`,
-      },
-    ],
-  },
-
-  // =========================================================================
-  // 4. 8-K Event Classifier
-  // =========================================================================
-  {
-    name: "8-K Event Classifier",
-    description: "Paste one or more 8-K filings. Classifies by item number, extracts material facts, assesses market impact, and outputs structured database entry blocks with urgency ranking.",
-    variants: [
-      {
-        label: "Generic",
-        content: `You are a senior equity research analyst. Process the pasted 8-K filing(s) and extract actionable intelligence.
-
-8-K ITEM CLASSIFICATION — identify which items are covered:
-- 1.01: Entry into Material Definitive Agreement
-- 1.02: Termination of Material Definitive Agreement
-- 2.01: Completion of Acquisition/Disposition
-- 2.02: Results of Operations and Financial Condition (earnings)
-- 2.03: Creation of Direct Financial Obligation
-- 2.04: Triggering Events (defaults, acceleration)
-- 2.05: Costs Associated with Exit/Disposal
-- 2.06: Material Impairments
-- 3.01: Notice of Delisting/Transfer
-- 3.02: Unregistered Sales of Equity Securities
-- 3.03: Material Modification to Rights of Security Holders
-- 4.01: Changes in Registrant's Certifying Accountant
-- 4.02: Non-Reliance on Previously Issued Financials
-- 5.01: Changes in Control
-- 5.02: Departure/Election of Directors/Officers; Compensation
-- 5.03: Amendments to Articles/Bylaws
-- 5.07: Submission of Matters to Vote (shareholder meeting results)
-- 7.01: Regulation FD Disclosure
-- 8.01: Other Events
-- 9.01: Financial Statements and Exhibits
-
-FOR EACH 8-K:
-────────────────────────────────────────
-Filing Date:        [date]
-Items Covered:      [list item numbers]
-Urgency:            [Critical / High / Medium / Low]
-Headline:           [your 8-12 word summary]
-Material Facts:
-  • [fact 1 — with exact numbers]
-  • [fact 2]
-  • [fact 3]
-Market Impact:      [Bullish / Bearish / Neutral] — [why, 1-2 sentences]
-Database Action:    [which tabs to update, specific fields]
-Exhibits:           [list any material exhibits — prospectus supplements, agreements, press releases]
-────────────────────────────────────────
-
-PRIORITY RANKING — if multiple 8-Ks:
-Rank by urgency and thesis impact, most critical first.
-
-Rules:
-- Quote exact figures. Never paraphrase legal language on material agreements.
-- Item 2.02 (earnings) and 3.02 (equity sales) are almost always high priority for growth stocks.
-- Flag any 4.01 or 4.02 items as CRITICAL regardless of context.
-
-Paste the 8-K filing(s) below:`,
-      },
-    ],
-  },
-
-  // =========================================================================
-  // 5. Form 4 / Insider Transaction Tracker
-  // =========================================================================
-  {
-    name: "Form 4 / Insider Transaction Tracker",
-    description: "Paste Form 4 filings or insider transaction data. Classifies each transaction, identifies patterns (accumulation/distribution), and outputs Capital tab updates with signal assessment.",
-    variants: [
-      {
-        label: "Generic",
-        content: `You are a senior equity research analyst specializing in insider activity analysis. Process the pasted Form 4 filing(s).
-
-FOR EACH TRANSACTION:
-────────────────────────────────────────
-Filing Date:        [date filed with SEC]
-Transaction Date:   [actual trade date]
-Insider:            [name]
-Title:              [officer title / director / 10% owner]
-Transaction Type:   [P=Purchase / S=Sale / A=Award / M=Exercise / G=Gift / C=Conversion]
-Shares:             [quantity] [acquired (A) or disposed (D)]
-Price Per Share:    $[X.XX]
-Total Value:        $[calculated]
-Shares After:       [total direct + indirect holdings]
-Ownership Type:     [Direct / Indirect — trust, family member, entity]
-10b5-1 Plan:        [Yes / No / Not disclosed]
-────────────────────────────────────────
-
-SIGNAL CLASSIFICATION:
-- STRONG BUY: Open market purchase, no 10b5-1
-- MODERATE BUY: Hold after vest (no immediate sale)
-- NEUTRAL: 10b5-1 planned sale, option exercise + hold
-- MODERATE SELL: Cashless exercise (exercise + same-day sale)
-- STRONG SELL: Discretionary open market sale, not 10b5-1
-
-PATTERN ANALYSIS (if multiple transactions):
-- Net shares acquired or disposed this batch
-- Dollar volume (buys vs. sells)
-- Cluster detection: multiple insiders same direction within 30 days?
-- Unusual size: significantly larger than typical transaction?
-- Timing: proximity to earnings, catalyst dates, blackout windows?
-
-SUMMARY:
-1. Insider Sentiment: [Strong Buy / Buy / Neutral / Sell / Strong Sell]
-2. Database updates: Capital tab shareholder data, ownership percentages
-3. Any ownership threshold crossings (5%, 10%)?
-
-Paste the Form 4 data below:`,
-      },
-    ],
-  },
-
-  // =========================================================================
-  // 6. Analyst Report / Price Target Extractor
+  // 2. Analyst Report / Price Target Extractor
   // =========================================================================
   {
     name: "Analyst Report / Price Target Extractor",
@@ -497,7 +273,7 @@ Paste the analyst report(s) below:`,
   },
 
   // =========================================================================
-  // 7. Competitor Intelligence Extractor
+  // 3. Competitor Intelligence Extractor
   // =========================================================================
   {
     name: "Competitor Intelligence Extractor",
@@ -549,132 +325,7 @@ Paste the competitor content below:`,
   },
 
   // =========================================================================
-  // 8. S-3 / Prospectus / Offering Analyzer
-  // =========================================================================
-  {
-    name: "S-3 / Prospectus / Offering Analyzer",
-    description: "Paste shelf registrations (S-3), prospectus supplements (424B5), or offering documents. Extracts deal terms, dilution math, use of proceeds, and Capital tab updates.",
-    variants: [
-      {
-        label: "Generic",
-        content: `You are a capital markets specialist at a buy-side hedge fund. Analyze the pasted offering document.
-
-DOCUMENT CLASSIFICATION:
-- Type: [S-3 Shelf / 424B5 Prospectus Supplement / S-1 IPO/Follow-on / ATM Program / Convertible Note / PIPE / Registered Direct]
-- Filing date:
-- Effective date:
-
-DEAL TERMS:
-────────────────────────────────────────
-Offering Size:      $[amount] ([shares]M shares if equity)
-Price Per Share:    $[X.XX] (vs. last close $[X.XX] = [X.X]% discount/premium)
-Underwriter(s):     [list]
-Commission/Fees:    [% or $amount]
-Net Proceeds:       $[amount]
-────────────────────────────────────────
-
-IF CONVERTIBLE:
-- Coupon: [X]%
-- Maturity: [date]
-- Conversion Price: $[X.XX] (premium: [X]% over reference)
-- Conversion Rate: [X] shares per $1,000
-- Max Conversion Shares: [X]M
-- Force-Convert Trigger: $[X.XX] for [X] days (if any)
-- Put/Call Provisions: [describe]
-
-IF ATM PROGRAM:
-- Total shelf capacity: $[amount]
-- Previously utilized: $[amount] ([X]M shares)
-- This supplement adds: $[amount]
-- Remaining capacity: $[amount]
-- Sales agent(s): [list]
-
-DILUTION ANALYSIS:
-- Shares before: [X]M basic / [X]M fully diluted
-- New shares: [X]M
-- Shares after: [X]M basic / [X]M fully diluted
-- Dilution: [X]% (basic) / [X]% (fully diluted)
-- Impact on per-share metrics: [calculate if data available]
-
-USE OF PROCEEDS:
-- Stated use: [exact language from filing]
-- Likely actual use: [your assessment based on company history]
-
-DATABASE UPDATES:
-1. Capital tab: [specific fields — share count, offering history, ATM capacity]
-2. Financials tab: [cash position adjustment, if applicable]
-3. Investment tab: [dilution risk assessment update]
-
-Rules:
-- Quote exact legal terms for convertible instruments.
-- Always calculate dilution as % of FULLY DILUTED shares, not basic.
-- Flag any unusual provisions (ratchet adjustments, most-favored-nation, registration rights).
-
-Paste the offering document below:`,
-      },
-    ],
-  },
-
-  // =========================================================================
-  // 9. Earnings Call Transcript Preprocessor
-  // =========================================================================
-  {
-    name: "Earnings Call Transcript Preprocessor",
-    description: "Paste a raw earnings call transcript. Cleans and structures it into prepared remarks vs. Q&A, identifies speakers, extracts key quotes, and generates a summary brief for deeper workflow analysis.",
-    variants: [
-      {
-        label: "Generic",
-        content: `You are a senior equity research analyst. Process the raw earnings call transcript into a structured, analysis-ready format.
-
-STEP 1: HEADER
-════════════════════════════════════════
-Company:            [name (ticker)]
-Event:              [Q_ FY____ Earnings Call]
-Date:               [date]
-Participants:       [list management + analysts identified]
-════════════════════════════════════════
-
-STEP 2: PREPARED REMARKS — structured extraction
-For each speaker in management:
-────────────────────────────────────────
-Speaker: [name, title]
-Key Points:
-  1. [point with exact numbers]
-  2. [point with exact numbers]
-  3. [point]
-Notable Quotes: "[exact quote]" — [why it matters]
-Tone: [Confident / Measured / Cautious / Defensive]
-────────────────────────────────────────
-
-STEP 3: Q&A — structured extraction
-For each Q&A exchange:
-────────────────────────────────────────
-Analyst: [name, firm]
-Question Topic: [1-line summary]
-Management Answer: [substance in 2-3 sentences]
-New Information: [Yes/No — if yes, what]
-Signal: [bullish / bearish / neutral / evasive]
-────────────────────────────────────────
-
-STEP 4: SUMMARY BRIEF
-1. Beat/Miss/Inline: [Revenue / EPS / Guidance — each one]
-2. Guidance Changes: [raised / maintained / lowered — specific metrics]
-3. Top 3 Bullish Takeaways:
-4. Top 3 Bearish Concerns:
-5. Surprises (not in consensus):
-6. Topics Avoided or Deflected:
-7. Key Numbers to Update in Database:
-
-STEP 5: QUOTE BANK
-Extract the 5-10 most important direct quotes with speaker attribution. These are quotes that move the thesis — guidance numbers, strategic pivots, risk acknowledgments, confident commitments.
-
-Paste the earnings call transcript below:`,
-      },
-    ],
-  },
-
-  // =========================================================================
-  // 10. 13F / Institutional Holdings Tracker
+  // 4. 13F / Institutional Holdings Tracker
   // =========================================================================
   {
     name: "13F / Institutional Holdings Tracker",
@@ -727,7 +378,7 @@ Paste the filing(s) below:`,
   },
 
   // =========================================================================
-  // 11. Patent / IP Filing Analyzer
+  // 5. Patent / IP Filing Analyzer
   // =========================================================================
   {
     name: "Patent / IP Filing Analyzer",
@@ -777,7 +428,7 @@ Paste the patent filing(s) below:`,
   },
 
   // =========================================================================
-  // 12. Conference / Investor Day Notes Extractor
+  // 6. Conference / Investor Day Notes Extractor
   // =========================================================================
   {
     name: "Conference / Investor Day Notes Extractor",
@@ -842,7 +493,7 @@ Paste the conference notes below:`,
   },
 
   // =========================================================================
-  // 13. RSS / News Feed Batch Processor
+  // 7. RSS / News Feed Batch Processor
   // =========================================================================
   {
     name: "RSS / News Feed Batch Processor",
@@ -900,7 +551,7 @@ Paste the news batch below:`,
   },
 
   // =========================================================================
-  // 14. Regulatory / Government Action Tracker
+  // 8. Regulatory / Government Action Tracker
   // =========================================================================
   {
     name: "Regulatory / Government Action Tracker",
@@ -956,7 +607,7 @@ Paste the regulatory content below:`,
   },
 
   // =========================================================================
-  // 15. Social Media / Sentiment Aggregator
+  // 9. Social Media / Sentiment Aggregator
   // =========================================================================
   {
     name: "Social Media / Sentiment Aggregator",
