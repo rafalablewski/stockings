@@ -727,6 +727,7 @@ const BMNRDilutionAnalysis = () => {
   const [ethPrice, setEthPrice] = useState(DEFAULTS.ethPrice);  // From @/data/bmnr/company.ts
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
+  const [aiDropdownOpen, setAiDropdownOpen] = useState(false);
   const [dilutionPercent, setDilutionPercent] = useState(5);
   const [saleDiscount, setSaleDiscount] = useState(5);
   const [navMultiple, setNavMultiple] = useState(1.00); // NAV multiple (stock price = NAV × mNAV)
@@ -830,8 +831,6 @@ const BMNRDilutionAnalysis = () => {
     { id: 'debt', label: 'Debt', type: 'projection', group: 'BMNR Analysis' },
     { id: 'sensitivity', label: 'Sensitivity', type: 'projection', group: 'BMNR Analysis' },
     { id: 'backtest', label: 'Backtest', type: 'projection', group: 'BMNR Analysis' },
-    { id: 'sources', label: 'Sources', type: 'tracking', group: 'BMNR Analysis' },
-    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'BMNR Analysis' },
     // Unified valuation model (combines Scenarios + DCF)
     { id: 'model', label: 'Model', type: 'projection' },
     // Other projections
@@ -843,7 +842,10 @@ const BMNRDilutionAnalysis = () => {
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
-    { id: 'ai-agents', label: 'AI Agents', type: 'tracking' },
+    // AI hub (grouped under "AI")
+    { id: 'ai-agents', label: 'AI Agents', type: 'tracking', group: 'AI' },
+    { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
+    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
   ];
 
   const bmnrCompetitors: Competitor[] = [
@@ -1048,8 +1050,8 @@ const BMNRDilutionAnalysis = () => {
 
           {/* Stock-specific dropdown trigger */}
           <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'BMNR Analysis' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setAiDropdownOpen(false); }}
           >
             BMNR Analysis ↕
           </button>
@@ -1064,13 +1066,34 @@ const BMNRDilutionAnalysis = () => {
               {t.label}
             </button>
           ))}
+
+          {/* AI hub dropdown trigger */}
+          <button
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'AI' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setAiDropdownOpen(!aiDropdownOpen); setAnalysisDropdownOpen(false); }}
+          >
+            AI ↕
+          </button>
         </nav>
 
         {/* Reserved space for dropdown menu - always present to prevent layout shift */}
-        <div className="nav-dropdown-space">
+        <div className={`nav-dropdown-space ${analysisDropdownOpen || aiDropdownOpen ? 'open' : ''}`}>
           {analysisDropdownOpen && (
             <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group).map(t => (
+              {tabs.filter(t => t.group === 'BMNR Analysis').map(t => (
+                <button
+                  key={t.id}
+                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+                  onClick={() => setActiveTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+          {aiDropdownOpen && (
+            <div className="nav-dropdown-menu">
+              {tabs.filter(t => t.group === 'AI').map(t => (
                 <button
                   key={t.id}
                   className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}

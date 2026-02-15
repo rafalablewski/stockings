@@ -17,13 +17,52 @@ interface EdgarFiling {
   fileUrl: string;
 }
 
+interface RecentFilings {
+  accessionNumber: string[];
+  filingDate: string[];
+  form: string[];
+  primaryDocument?: string[];
+  primaryDocDescription?: string[];
+  reportDate?: string[];
+}
+
+const SEC_HEADERS = {
+  'User-Agent': 'Stockings Research App research@stockings.dev',
+  Accept: 'application/json',
+};
+
+/** Parse a RecentFilings-shaped object into EdgarFiling[] */
+function parseFilings(recent: RecentFilings, cik: string): EdgarFiling[] {
+  const count = recent.accessionNumber?.length ?? 0;
+  const filings: EdgarFiling[] = [];
+  const cikBare = cik.replace(/^0+/, '');
+
+  for (let i = 0; i < count; i++) {
+    const accession = recent.accessionNumber[i] ?? '';
+    const accessionNoDashes = accession.replace(/-/g, '');
+    const primaryDoc = recent.primaryDocument?.[i] ?? '';
+
+    filings.push({
+      accessionNumber: accession,
+      filingDate: recent.filingDate[i] ?? '',
+      form: recent.form[i] ?? '',
+      primaryDocDescription: recent.primaryDocDescription?.[i] ?? '',
+      reportDate: recent.reportDate?.[i] ?? '',
+      fileUrl: primaryDoc
+        ? `https://www.sec.gov/Archives/edgar/data/${cikBare}/${accessionNoDashes}/${primaryDoc}`
+        : `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=&dateb=&owner=include&count=40`,
+    });
+  }
+  return filings;
+}
+
 /**
  * GET /api/edgar/[ticker]
  *
- * Fetches the latest SEC EDGAR filings for a given ticker using
- * the SEC submissions API (data.sec.gov).
- *
- * Returns the most recent 40 filings with type, date, description, and link.
+ * Fetches ALL SEC EDGAR filings for a given ticker using
+ * the SEC submissions API (data.sec.gov). The "recent" object
+ * holds up to ~1000 filings; older filings are in paginated
+ * JSON files listed in filings.files[].
  */
 export async function GET(
   _request: NextRequest,
@@ -41,16 +80,9 @@ export async function GET(
   }
 
   try {
-    // SEC requires a descriptive User-Agent with contact info
     const res = await fetch(
       `https://data.sec.gov/submissions/CIK${cik}.json`,
-      {
-        headers: {
-          'User-Agent': 'Stockings Research App research@stockings.dev',
-          Accept: 'application/json',
-        },
-        next: { revalidate: 900 }, // cache for 15 minutes
-      }
+      { headers: SEC_HEADERS, next: { revalidate: 900 } }
     );
 
     if (!res.ok) {
@@ -59,41 +91,39 @@ export async function GET(
 
     const data: {
       filings?: {
-        recent?: {
-          accessionNumber: string[];
-          filingDate: string[];
-          form: string[];
-          primaryDocument?: string[];
-          primaryDocDescription?: string[];
-          reportDate?: string[];
-        };
+        recent?: RecentFilings;
+        files?: { name: string }[];
       };
       name?: string;
     } = await res.json();
-    const recent = data?.filings?.recent;
 
+    const recent = data?.filings?.recent;
     if (!recent) {
       return NextResponse.json({ filings: [], companyName: data?.name ?? upperTicker });
     }
 
-    const count = Math.min(recent.accessionNumber?.length ?? 0, 40);
-    const filings: EdgarFiling[] = [];
+    // Start with the "recent" filings (up to ~1000)
+    const filings: EdgarFiling[] = parseFilings(recent, cik);
 
-    for (let i = 0; i < count; i++) {
-      const accession = recent.accessionNumber[i] ?? '';
-      const accessionNoDashes = accession.replace(/-/g, '');
-      const primaryDoc = recent.primaryDocument?.[i] ?? '';
-
-      filings.push({
-        accessionNumber: accession,
-        filingDate: recent.filingDate[i] ?? '',
-        form: recent.form[i] ?? '',
-        primaryDocDescription: recent.primaryDocDescription?.[i] ?? '',
-        reportDate: recent.reportDate?.[i] ?? '',
-        fileUrl: primaryDoc
-          ? `https://www.sec.gov/Archives/edgar/data/${cik.replace(/^0+/, '')}/${accessionNoDashes}/${primaryDoc}`
-          : `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=&dateb=&owner=include&count=40`,
-      });
+    // Fetch older filing pages if they exist
+    const olderFiles = data?.filings?.files ?? [];
+    if (olderFiles.length > 0) {
+      const olderResults = await Promise.allSettled(
+        olderFiles.map(async (file) => {
+          const olderRes = await fetch(
+            `https://data.sec.gov/submissions/${file.name}`,
+            { headers: SEC_HEADERS, next: { revalidate: 3600 } }
+          );
+          if (!olderRes.ok) return [];
+          const olderData: RecentFilings = await olderRes.json();
+          return parseFilings(olderData, cik);
+        })
+      );
+      for (const result of olderResults) {
+        if (result.status === 'fulfilled') {
+          filings.push(...result.value);
+        }
+      }
     }
 
     return NextResponse.json({
@@ -101,6 +131,7 @@ export async function GET(
       companyName: data?.name ?? upperTicker,
       cik,
       ticker: upperTicker,
+      totalCount: filings.length,
     });
   } catch (err) {
     console.error(`[EDGAR API] Error fetching filings for ${upperTicker}:`, err);

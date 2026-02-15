@@ -345,6 +345,17 @@ export interface QuarterlyFinancials {
 }
 
 /**
+ * Cross-reference: actual data captured from a filing in another data file.
+ * Displayed in comment-like style in the EDGAR tab.
+ */
+export interface FilingCrossRef {
+  /** Source file (e.g., "capital", "financials", "timeline") */
+  source: string;
+  /** The actual data content as it appears in the source file */
+  data: string;
+}
+
+/**
  * SEC filing entry
  * AI AGENT: Add new entries when filings are made
  */

@@ -204,14 +204,16 @@ const ArticleList: React.FC<{
           <button
             onClick={() => setShowAll(!showAll)}
             style={{
-              padding: '6px 16px', borderRadius: 99, border: '1px solid var(--border)',
-              background: 'transparent', color: 'var(--text3)', cursor: 'pointer',
-              fontSize: 11, fontWeight: 500, transition: 'all 0.2s', fontFamily: 'inherit',
+              fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+              padding: '3px 10px', borderRadius: 4,
+              border: '1px solid var(--border)', background: 'rgba(255,255,255,0.04)',
+              color: 'var(--text3)', cursor: 'pointer',
+              transition: 'all 0.15s', fontFamily: 'inherit',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface2)'; e.currentTarget.style.color = 'var(--text)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text3)'; }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)'; }}
           >
-            {showAll ? '▲ Show Less' : `▼ Show ${hiddenCount} More`}
+            {showAll ? 'Show Less' : `Show ${hiddenCount} More`}
           </button>
         </div>
       )}
@@ -219,7 +221,7 @@ const ArticleList: React.FC<{
   );
 };
 
-// ── Feed tab button ─────────────────────────────────────────────────────────
+// ── Feed tab button (Ive×Tesla style) ────────────────────────────────────────
 const FeedTab: React.FC<{
   active: boolean;
   label: string;
@@ -232,24 +234,20 @@ const FeedTab: React.FC<{
     aria-selected={active}
     onClick={onClick}
     style={{
-      padding: '5px 14px',
-      fontSize: 11,
-      fontWeight: active ? 600 : 400,
+      fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+      padding: '3px 8px', borderRadius: 4,
       color: active ? color : 'var(--text3)',
-      background: active ? `color-mix(in srgb, ${color} 12%, transparent)` : 'transparent',
-      border: '1px solid',
-      borderColor: active ? `color-mix(in srgb, ${color} 25%, transparent)` : 'var(--border)',
-      borderRadius: 99,
-      cursor: 'pointer',
-      transition: 'all 0.25s',
-      outline: 'none',
-      fontFamily: 'inherit',
+      background: active ? `color-mix(in srgb, ${color} 8%, rgba(255,255,255,0.04))` : 'rgba(255,255,255,0.04)',
+      border: `1px solid ${active ? `color-mix(in srgb, ${color} 25%, transparent)` : 'var(--border)'}`,
+      cursor: 'pointer', transition: 'all 0.15s',
+      outline: 'none', fontFamily: 'inherit',
+      display: 'inline-flex', alignItems: 'center', gap: 5,
     }}
   >
     {label}
     <span style={{
-      fontFamily: 'Space Mono, monospace', fontSize: 10, marginLeft: 6,
-      opacity: active ? 1 : 0.5,
+      fontFamily: 'Space Mono, monospace', fontSize: 9,
+      opacity: active ? 0.8 : 0.35,
     }}>
       {count}
     </span>
@@ -277,11 +275,10 @@ const CompanyFeedCard: React.FC<{
     <article
       aria-label={`${label} news feed`}
       style={{
-        background: 'var(--surface)',
         border: isPrimary
           ? '1px solid color-mix(in srgb, var(--accent) 25%, transparent)'
-          : '1px solid var(--border)',
-        borderRadius: 16,
+          : '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 12,
         overflow: 'hidden',
         transition: 'border-color 0.2s',
       }}
@@ -363,26 +360,23 @@ const CompanyFeedCard: React.FC<{
           disabled={isActive}
           aria-label={data.loaded ? `Refresh ${label} feeds` : `Load ${label} feeds`}
           style={{
-            padding: '6px 14px', fontSize: 11, fontWeight: 500,
-            color: isActive ? 'var(--text3)' : 'var(--text2)',
-            background: 'transparent',
-            border: '1px solid var(--border)',
-            borderRadius: 99,
+            fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+            padding: '5px 14px', borderRadius: 4,
+            color: isActive ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
+            background: 'rgba(255,255,255,0.04)',
+            border: `1px solid ${isActive ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
             cursor: isActive ? 'wait' : 'pointer',
             display: 'flex', alignItems: 'center', gap: 6,
             opacity: isActive ? 0.5 : 1,
-            transition: 'all 0.2s',
-            outline: 'none',
+            transition: 'all 0.15s', outline: 'none',
           }}
-          onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; } }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = isActive ? 'var(--text3)' : 'var(--text2)'; }}
         >
           <svg
-            width="12" height="12" viewBox="0 0 16 16" fill="none"
+            width="10" height="10" viewBox="0 0 16 16" fill="none"
             style={{ animation: isActive ? 'spin 1s linear infinite' : 'none', transition: 'transform 0.2s' }}
           >
-            <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           {data.loading ? 'Fetching' : aiChecking ? 'Analyzing' : data.loaded ? 'Refresh' : 'Load'}
         </button>
@@ -596,8 +590,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#live-feeds</div>
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '16px 24px', marginTop: 8,
-        background: 'var(--surface)', borderRadius: 16, border: '1px solid var(--border)',
+        padding: '16px 20px', marginTop: 8,
+        borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {/* Progress ring */}
@@ -624,17 +618,18 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           disabled={loadingAll}
           aria-label={loadedCount > 0 ? 'Refresh all feeds' : 'Load all feeds'}
           style={{
-            padding: '8px 24px', fontSize: 11, fontWeight: 600, letterSpacing: '0.3px',
-            color: loadingAll ? 'var(--text3)' : 'var(--bg)',
-            background: loadingAll ? 'var(--surface2)' : 'var(--accent)',
-            border: 'none', borderRadius: 99,
+            fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+            padding: '5px 14px', borderRadius: 4,
+            color: loadingAll ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
+            background: 'rgba(255,255,255,0.04)',
+            border: `1px solid ${loadingAll ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
             cursor: loadingAll ? 'wait' : 'pointer',
-            display: 'flex', alignItems: 'center', gap: 7,
-            transition: 'all 0.25s',
-            outline: 'none',
+            display: 'flex', alignItems: 'center', gap: 6,
+            transition: 'all 0.15s', outline: 'none',
+            opacity: loadingAll ? 0.5 : 1,
           }}
         >
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ animation: loadingAll ? 'spin 1s linear infinite' : 'none' }}>
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: loadingAll ? 'spin 1s linear infinite' : 'none' }}>
             <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -735,7 +730,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 12, overflow: 'hidden' }}>
         {researchSources.map(group => (
           <div key={group.category} style={{
             background: 'var(--surface)',

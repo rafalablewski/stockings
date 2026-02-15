@@ -687,7 +687,6 @@ const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?
   { id: 'overview', label: 'Overview', type: 'tracking' },
   // Stock-specific projections (grouped under "CRCL Analysis")
   { id: 'usdc', label: 'USDC', type: 'projection', group: 'CRCL Analysis' },
-  { id: 'sources', label: 'Sources', type: 'tracking', group: 'CRCL Analysis' },
   // Unified valuation model (combines Scenarios + DCF)
   { id: 'model', label: 'Model', type: 'projection' },
   // Other projections
@@ -699,7 +698,9 @@ const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?
   { id: 'timeline', label: 'Timeline', type: 'tracking' },
   { id: 'investment', label: 'Investment', type: 'tracking' },
   { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
-  { id: 'ai-agents', label: 'AI Agents', type: 'tracking' },
+  // AI hub (grouped under "AI")
+  { id: 'ai-agents', label: 'AI Agents', type: 'tracking', group: 'AI' },
+  { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
 ];
 
 const crclCompetitors: Competitor[] = [
@@ -2872,6 +2873,7 @@ const CRCLQuarterlyMetricsPanel = () => {
 function CRCLModel() {
   const [activeTab, setActiveTab] = useState('overview');
   const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
+  const [aiDropdownOpen, setAiDropdownOpen] = useState(false);
 
   // Update indicator visibility toggle
   const [showIndicators, setShowIndicators] = useState(true);
@@ -3457,8 +3459,8 @@ function CRCLModel() {
 
           {/* Stock-specific dropdown trigger */}
           <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => setAnalysisDropdownOpen(!analysisDropdownOpen)}
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'CRCL Analysis' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setAiDropdownOpen(false); }}
           >
             CRCL Analysis ↕
           </button>
@@ -3473,13 +3475,34 @@ function CRCLModel() {
               {t.label}
             </button>
           ))}
+
+          {/* AI hub dropdown trigger */}
+          <button
+            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'AI' && activeTab === t.id) ? 'active' : ''}`}
+            onClick={() => { setAiDropdownOpen(!aiDropdownOpen); setAnalysisDropdownOpen(false); }}
+          >
+            AI ↕
+          </button>
         </nav>
 
         {/* Reserved space for dropdown menu - always present to prevent layout shift */}
-        <div className="nav-dropdown-space">
+        <div className={`nav-dropdown-space ${analysisDropdownOpen || aiDropdownOpen ? 'open' : ''}`}>
           {analysisDropdownOpen && (
             <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group).map(t => (
+              {tabs.filter(t => t.group === 'CRCL Analysis').map(t => (
+                <button
+                  key={t.id}
+                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
+                  onClick={() => setActiveTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+          {aiDropdownOpen && (
+            <div className="nav-dropdown-menu">
+              {tabs.filter(t => t.group === 'AI').map(t => (
                 <button
                   key={t.id}
                   className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
@@ -6320,7 +6343,6 @@ function CRCLModel() {
           )}
 
           {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="CRCL" />}
-
           {activeTab === 'sources' && (
             <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} competitorLabel="Stablecoin Peers" competitors={crclCompetitors} />
           )}
