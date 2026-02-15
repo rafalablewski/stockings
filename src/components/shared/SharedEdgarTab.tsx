@@ -6,12 +6,14 @@
  * tracked and which are new. Per-filing actions: open in new tab
  * or analyze with AI.
  *
- * @version 2.0.0
+ * v3.0.0 — 3-tier matching (IN DB / DATA ONLY / NEW) + cross-ref display
+ *
+ * @version 3.0.0
  */
 
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
 export interface EdgarTabProps {
   ticker: string;
@@ -19,6 +21,8 @@ export interface EdgarTabProps {
   localFilings: LocalFiling[];
   cik: string;
   typeColors: Record<string, { bg: string; text: string }>;
+  /** Cross-reference index: maps "FORM|YYYY-MM-DD" to data captured in other files */
+  crossRefIndex?: Record<string, { source: string; data: string }[]>;
 }
 
 export interface LocalFiling {
@@ -38,10 +42,13 @@ interface EdgarFiling {
   fileUrl: string;
 }
 
+type FilingStatus = 'tracked' | 'data_only' | 'new';
+
 interface MatchResult {
   filing: EdgarFiling;
-  inDatabase: boolean;
+  status: FilingStatus;
   matchedLocal?: LocalFiling;
+  crossRefs?: { source: string; data: string }[];
 }
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -89,13 +96,52 @@ function formatEdgarDate(isoDate: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+/** Get ±1 day ISO dates for fuzzy cross-ref lookup */
+function getDateNeighbors(isoDate: string): string[] {
+  const d = new Date(isoDate + 'T00:00:00');
+  if (isNaN(d.getTime())) return [isoDate];
+  const prev = new Date(d); prev.setDate(prev.getDate() - 1);
+  const next = new Date(d); next.setDate(next.getDate() + 1);
+  return [
+    prev.toISOString().slice(0, 10),
+    isoDate,
+    next.toISOString().slice(0, 10),
+  ];
+}
+
 // ── Filing matcher ──────────────────────────────────────────────────────────
 const normalizeForm = (f: string) => f.replace(/[/\s-]/g, '');
 
-function matchFilings(edgarFilings: EdgarFiling[], localFilings: LocalFiling[]): MatchResult[] {
+/** Look up cross-refs for a given form + date (with ±1 day tolerance) */
+function lookupCrossRefs(
+  form: string,
+  isoDate: string,
+  index?: Record<string, { source: string; data: string }[]>,
+): { source: string; data: string }[] | undefined {
+  if (!index) return undefined;
+  const normalizedForm = form.toUpperCase().trim();
+  const dates = getDateNeighbors(isoDate);
+  for (const d of dates) {
+    // Try exact form first, then normalized
+    const key1 = `${normalizedForm}|${d}`;
+    if (index[key1]) return index[key1];
+    // Try common form variations
+    const key2 = `${normalizedForm.replace(/[/\s-]/g, '')}|${d}`;
+    if (index[key2]) return index[key2];
+  }
+  return undefined;
+}
+
+function matchFilings(
+  edgarFilings: EdgarFiling[],
+  localFilings: LocalFiling[],
+  crossRefIndex?: Record<string, { source: string; data: string }[]>,
+): MatchResult[] {
   return edgarFilings.map(ef => {
     const edgarDate = normalizeDate(ef.filingDate);
     const edgarForm = ef.form.toUpperCase().trim();
+
+    // Tier 1: match against sec-filings.ts
     const match = localFilings.find(lf => {
       const localDate = normalizeDate(lf.date);
       const localForm = lf.type.toUpperCase().trim();
@@ -105,9 +151,55 @@ function matchFilings(edgarFilings: EdgarFiling[], localFilings: LocalFiling[]):
       if (dayDiff > 1) return false;
       return normalizeForm(edgarForm) === normalizeForm(localForm);
     });
-    return { filing: ef, inDatabase: !!match, matchedLocal: match };
+
+    // Look up cross-refs regardless of match status
+    const crossRefs = lookupCrossRefs(ef.form, edgarDate, crossRefIndex);
+
+    if (match) {
+      return { filing: ef, status: 'tracked' as FilingStatus, matchedLocal: match, crossRefs };
+    }
+
+    // Tier 2: no sec-filings.ts entry, but cross-ref data exists
+    if (crossRefs && crossRefs.length > 0) {
+      return { filing: ef, status: 'data_only' as FilingStatus, crossRefs };
+    }
+
+    // Tier 3: completely new
+    return { filing: ef, status: 'new' as FilingStatus };
   });
 }
+
+// ── Status helpers ──────────────────────────────────────────────────────────
+const STATUS_CONFIG: Record<FilingStatus, { color: string; label: string; title: string }> = {
+  tracked:   { color: 'var(--mint)',  label: 'IN DB',     title: 'Tracked in database' },
+  data_only: { color: 'var(--gold)',  label: 'DATA ONLY', title: 'Data captured but filing not indexed in sec-filings.ts' },
+  new:       { color: 'var(--coral)', label: 'NEW',       title: 'Not in database' },
+};
+
+// ── Cross-ref display ───────────────────────────────────────────────────────
+const CrossRefLines: React.FC<{ refs: { source: string; data: string }[] }> = ({ refs }) => (
+  <div style={{
+    margin: '0 0 4px 19px', padding: '4px 0',
+  }}>
+    {refs.map((ref, i) => (
+      <div key={i} style={{
+        fontFamily: 'Space Mono, monospace',
+        fontSize: 10.5,
+        lineHeight: 1.7,
+        color: 'var(--text3)',
+        opacity: 0.45,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+      }}>
+        <span style={{ opacity: 0.7 }}>{'// '}</span>
+        <span style={{ color: 'var(--text3)', opacity: 0.7 }}>{ref.source}</span>
+        <span style={{ opacity: 0.5 }}>{' \u2192 '}</span>
+        {ref.data}
+      </div>
+    ))}
+  </div>
+);
 
 // ── Tiny action button ──────────────────────────────────────────────────────
 const ActionBtn: React.FC<{
@@ -170,6 +262,7 @@ const FilingRow: React.FC<{
   const [analysis, setAnalysis] = useState<string | null>(null);
 
   const colors = typeColors[r.filing.form] || { bg: 'var(--surface2)', text: 'var(--text3)' };
+  const statusCfg = STATUS_CONFIG[r.status];
 
   const handleAnalyze = async () => {
     if (analysis) { setAnalysis(null); return; } // toggle off
@@ -208,10 +301,10 @@ const FilingRow: React.FC<{
       >
         {/* Status dot */}
         <span
-          title={r.inDatabase ? 'In database' : 'Not in database'}
+          title={statusCfg.title}
           style={{
             width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-            background: r.inDatabase ? 'var(--mint)' : 'var(--coral)',
+            background: statusCfg.color,
             opacity: 0.9, transition: 'opacity 0.2s, background 0.2s',
           }}
         />
@@ -234,9 +327,9 @@ const FilingRow: React.FC<{
         {/* Status label */}
         <span style={{
           fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-          color: r.inDatabase ? 'var(--mint)' : 'var(--coral)', flexShrink: 0,
+          color: statusCfg.color, flexShrink: 0, whiteSpace: 'nowrap',
         }}>
-          {r.inDatabase ? 'IN DB' : 'NEW'}
+          {statusCfg.label}
         </span>
         {/* Action buttons */}
         <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
@@ -251,6 +344,8 @@ const FilingRow: React.FC<{
           />
         </div>
       </div>
+      {/* Cross-reference data (comment-like) */}
+      {r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
       {analysis && <AnalysisPanel text={analysis} onClose={() => setAnalysis(null)} />}
     </div>
   );
@@ -270,12 +365,14 @@ const FilingList: React.FC<{
   const filtered = filter === 'All'
     ? results
     : filter === 'New Only'
-      ? results.filter(r => !r.inDatabase)
-      : results.filter(r => {
-          const form = r.filing.form.toUpperCase();
-          if (filter === 'S-1/S-3') return form === 'S-1' || form === 'S-3' || form === 'S-8';
-          return form === filter;
-        });
+      ? results.filter(r => r.status === 'new')
+      : filter === 'Data Only'
+        ? results.filter(r => r.status === 'data_only')
+        : results.filter(r => {
+            const form = r.filing.form.toUpperCase();
+            if (filter === 'S-1/S-3') return form === 'S-1' || form === 'S-3' || form === 'S-8';
+            return form === filter;
+          });
 
   if (filtered.length === 0) {
     return (
@@ -338,7 +435,7 @@ const FilterPill: React.FC<{
 );
 
 // ── Main component ──────────────────────────────────────────────────────────
-const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFilings, cik, typeColors }) => {
+const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFilings, cik, typeColors, crossRefIndex }) => {
   const [edgarFilings, setEdgarFilings] = useState<EdgarFiling[]>([]);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -347,17 +444,26 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const [filter, setFilter] = useState('All');
   const [showLocalDb, setShowLocalDb] = useState(false);
 
-  const results = matchFilings(edgarFilings, localFilings);
-  const newCount = results.filter(r => !r.inDatabase).length;
-  const trackedCount = results.filter(r => r.inDatabase).length;
+  const results = useMemo(
+    () => matchFilings(edgarFilings, localFilings, crossRefIndex),
+    [edgarFilings, localFilings, crossRefIndex],
+  );
+  const trackedCount = results.filter(r => r.status === 'tracked').length;
+  const dataOnlyCount = results.filter(r => r.status === 'data_only').length;
+  const newCount = results.filter(r => r.status === 'new').length;
 
   const formTypes: string[] = Array.from(new Set(edgarFilings.map(f => f.form)));
   const commonForms = ['10-K', '10-Q', '8-K', '424B5', 'S-1/S-3'];
-  const filterOptions = ['All', 'New Only', ...commonForms.filter(f =>
-    f === 'S-1/S-3'
-      ? formTypes.some((ft: string) => ['S-1', 'S-3', 'S-8'].includes(ft.toUpperCase()))
-      : formTypes.some((ft: string) => ft.toUpperCase() === f)
-  )];
+  const filterOptions = [
+    'All',
+    'New Only',
+    ...(dataOnlyCount > 0 ? ['Data Only'] : []),
+    ...commonForms.filter(f =>
+      f === 'S-1/S-3'
+        ? formTypes.some((ft: string) => ['S-1', 'S-3', 'S-8'].includes(ft.toUpperCase()))
+        : formTypes.some((ft: string) => ft.toUpperCase() === f)
+    ),
+  ];
 
   const fetchFilings = useCallback(async () => {
     setLoading(true);
@@ -419,11 +525,23 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
             <circle cx="14" cy="14" r="12" fill="none" stroke="color-mix(in srgb, var(--border) 60%, transparent)" strokeWidth="2" />
             {loaded && (
-              <circle cx="14" cy="14" r="12" fill="none" stroke="var(--mint)" strokeWidth="2"
-                strokeDasharray={`${results.length > 0 ? (trackedCount / results.length) * STATUS_RING_CIRCUMFERENCE : 0} ${STATUS_RING_CIRCUMFERENCE}`}
-                strokeLinecap="round" transform="rotate(-90 14 14)"
-                style={{ transition: 'stroke-dasharray 0.4s ease' }}
-              />
+              <>
+                {/* Tracked arc (mint) */}
+                <circle cx="14" cy="14" r="12" fill="none" stroke="var(--mint)" strokeWidth="2"
+                  strokeDasharray={`${results.length > 0 ? (trackedCount / results.length) * STATUS_RING_CIRCUMFERENCE : 0} ${STATUS_RING_CIRCUMFERENCE}`}
+                  strokeLinecap="round" transform="rotate(-90 14 14)"
+                  style={{ transition: 'stroke-dasharray 0.4s ease' }}
+                />
+                {/* Data-only arc (gold), offset after tracked */}
+                {dataOnlyCount > 0 && (
+                  <circle cx="14" cy="14" r="12" fill="none" stroke="var(--gold)" strokeWidth="2"
+                    strokeDasharray={`${(dataOnlyCount / results.length) * STATUS_RING_CIRCUMFERENCE} ${STATUS_RING_CIRCUMFERENCE}`}
+                    strokeLinecap="round"
+                    transform={`rotate(${-90 + (trackedCount / results.length) * 360} 14 14)`}
+                    style={{ transition: 'stroke-dasharray 0.4s ease' }}
+                  />
+                )}
+              </>
             )}
           </svg>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -431,7 +549,15 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               {!loaded ? 'EDGAR Monitor' : `${trackedCount} of ${results.length} in database`}
             </span>
             <span style={{ fontSize: 11, color: 'var(--text3)' }}>
-              {!loaded ? `CIK ${cik}` : newCount > 0 ? `${newCount} new filing${newCount !== 1 ? 's' : ''} to review` : 'All filings tracked'}
+              {!loaded
+                ? `CIK ${cik}`
+                : newCount > 0 || dataOnlyCount > 0
+                  ? [
+                      newCount > 0 ? `${newCount} new` : '',
+                      dataOnlyCount > 0 ? `${dataOnlyCount} data only` : '',
+                    ].filter(Boolean).join(', ')
+                  : 'All filings tracked'
+              }
             </span>
           </div>
         </div>
@@ -478,7 +604,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
         </div>
       </div>
 
-      {/* Legend — matches Sources tab */}
+      {/* Legend — 3 tiers */}
       {loaded && (
         <div
           role="note"
@@ -491,6 +617,10 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--mint)', opacity: 0.9 }} />
             In Database
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--gold)', opacity: 0.9 }} />
+            Data Only
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--coral)', opacity: 0.9 }} />
@@ -537,6 +667,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               let count: number | undefined;
               if (f === 'All') count = results.length;
               else if (f === 'New Only') count = newCount;
+              else if (f === 'Data Only') count = dataOnlyCount;
               else if (f === 'S-1/S-3') count = results.filter(r => ['S-1', 'S-3', 'S-8'].includes(r.filing.form.toUpperCase())).length;
               else count = results.filter(r => r.filing.form.toUpperCase() === f).length;
               return <FilterPill key={f} label={f} active={filter === f} count={count} onClick={() => setFilter(f)} />;

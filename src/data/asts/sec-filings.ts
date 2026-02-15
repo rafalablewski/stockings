@@ -118,3 +118,70 @@ export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
 };
 
 export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5', 'Other'];
+
+/**
+ * Cross-reference index: maps filing key (FORM|YYYY-MM-DD) to actual data
+ * captured from that filing in other data files.
+ *
+ * AI AGENT INSTRUCTIONS:
+ * When ingesting a new filing, add a cross-ref entry here with the actual
+ * data lines that were written to other files (capital, financials, timeline, catalysts).
+ * Key format: "FORM_TYPE|YYYY-MM-DD" using the filing date from sec-filings.ts.
+ */
+export const ASTS_FILING_CROSS_REFS: Record<string, { source: string; data: string }[]> = {
+  // ── Feb 2026 ──────────────────────────────────────────────────────────────
+  '8-K|2026-02-11': [
+    { source: 'capital', data: "amount: 1000, price: 116.30, shares: 8.6  // 2.25% due 2036. Conversion rate 8.5982/share per $1K. UBS lead. $150M greenshoe." },
+    { source: 'capital', data: "Registered Direct #1: 1,862,741 shares @ $96.92 → ~$180.5M (repurchase $46.5M 4.25% notes)" },
+    { source: 'capital', data: "Registered Direct #2: 4,475,223 shares @ $96.92 → ~$433.7M (repurchase $250M 2.375% notes)" },
+    { source: 'financials', data: "Q4 2025: cashAndEquiv: 2780, totalDebt: 2264, revenue: 50  // Preliminary per 8-K Feb 11" },
+    { source: 'catalysts', data: "$1B 2.25% Convertible Notes + $614M Registered Directs + $296.5M Notes Repurchased" },
+    { source: 'catalysts', data: "FY 2025 Revenue $63-71M (8-K preliminary)" },
+  ],
+
+  // ── Nov 2025 ──────────────────────────────────────────────────────────────
+  '8-K|2025-11-03': [
+    { source: 'capital', data: "ubsLoan: 420  // Cash-collateralized for Ligado" },
+    { source: 'financials', data: "totalDebt: 2264  // $50M 4.25%, $575M 2.375%, $1.15B 2.00%, $420M UBS, ~$69M secured" },
+    { source: 'timeline', data: "UBS loan: $420M term loan at Backstop Co, LLC (Oct 31, 2025) for Ligado $420M first payment" },
+  ],
+
+  // ── Oct 2025 ──────────────────────────────────────────────────────────────
+  '8-K|2025-10-29': [
+    { source: 'timeline', data: "BlueBird Block 2 Contract Signed (~$100M Initial); supports 45-60 satellites by YE2026" },
+    { source: 'catalysts', data: "Block 2 Contract (~$100M initial)" },
+  ],
+  '8-K|2025-10-21': [
+    { source: 'capital', data: "2,048,849 shares at $78.61 → ~$161M. Funded repurchase of $50M principal 4.25% notes." },
+    { source: 'catalysts', data: "$800M ATM Program + $161M Registered Direct" },
+  ],
+
+  // ── Aug 2025 ──────────────────────────────────────────────────────────────
+  '8-K|2025-08-11': [
+    { source: 'financials', data: "Q2 2025: cashAndEquiv: 939.4, totalDebt: 482.5, revenue: 1.2, opEx: 74.0" },
+    { source: 'timeline', data: "Q2 2025 Earnings: $939M Cash, Block 2 Ramp — L-Band approved, 60 MHz S-Band acquired" },
+  ],
+  '8-K|2025-08-07': [
+    { source: 'catalysts', data: "EllioSat Acquired from CCUR Holdings (S-Band spectrum/tech; 581K shares issued)" },
+    { source: 'timeline', data: "60 MHz S-Band (EllioSat) acquisition closed" },
+  ],
+
+  // ── Jul 2025 ──────────────────────────────────────────────────────────────
+  '8-K|2025-07-18': [
+    { source: 'capital', data: "JUL_2025_CREDIT_FACILITY: amount: 345, expandableTo: 500, rate: 'SOFR + 5%', maturity: '2028', lender: 'UBS'" },
+    { source: 'catalysts', data: "$345M UBS Credit Facility (expandable $500M; SOFR+5%; maturity 2028)" },
+    { source: 'timeline', data: "$345M UBS Credit Facility (Expandable to $500M) — non-dilutive capex funding" },
+  ],
+
+  // ── Jan 2025 ──────────────────────────────────────────────────────────────
+  '8-K|2025-01-06': [
+    { source: 'capital', data: "MAR_2025_LIGADO_DEAL: initialInvestment: 150, totalConsideration: 550, spectrumMHz: 45, warrants: 9.99%" },
+    { source: 'catalysts', data: "Ligado RSA ($150M + 9.99% warrants; $550M total; 45 MHz L-band)" },
+  ],
+
+  // ── Sep 2024 ──────────────────────────────────────────────────────────────
+  '8-K|2024-09-12': [
+    { source: 'catalysts', data: "BB1-5 Launched (SpaceX)" },
+    { source: 'financials', data: "Block 1 (5 sats) launched Sept 12. Public warrants redeemed Sept 27 ($153.6M cash)." },
+  ],
+};

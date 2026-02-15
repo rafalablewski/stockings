@@ -122,7 +122,7 @@ import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
 import type { CompsTimelineEntry, ASTSImplication } from '@/data/asts/comps-timeline';
-import { ASTS_SEC_FILINGS, ASTS_SEC_META, ASTS_SEC_TYPE_COLORS, ASTS_SEC_FILTER_TYPES } from '@/data/asts/sec-filings';
+import { ASTS_SEC_FILINGS, ASTS_SEC_META, ASTS_SEC_TYPE_COLORS, ASTS_SEC_FILTER_TYPES, ASTS_FILING_CROSS_REFS } from '@/data/asts/sec-filings';
 import { ASTS_QUARTERLY_DATA } from '@/data/asts/quarterly-metrics';
 import { ASTS_ANALYST_COVERAGE } from '@/data/asts/analyst-coverage';
 import { ASTS_TIMELINE_EVENTS } from '@/data/asts/timeline-events';
@@ -1072,7 +1072,7 @@ const ASTSAnalysis = () => {
             <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} competitorLabel="Competitors & Partners" competitors={astsCompetitors} />
           )}
           {activeTab === 'edgar' && (
-            <SharedEdgarTab ticker="ASTS" companyName="AST SpaceMobile" localFilings={ASTS_SEC_FILINGS} cik={ASTS_SEC_META.cik} typeColors={ASTS_SEC_TYPE_COLORS} />
+            <SharedEdgarTab ticker="ASTS" companyName="AST SpaceMobile" localFilings={ASTS_SEC_FILINGS} cik={ASTS_SEC_META.cik} typeColors={ASTS_SEC_TYPE_COLORS} crossRefIndex={ASTS_FILING_CROSS_REFS} />
           )}
         </main>
       </div>
