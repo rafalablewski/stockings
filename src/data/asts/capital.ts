@@ -315,7 +315,7 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
     amount: 1150,
     price: 96.30,
     shares: 11.9,
-    notes: '2.0% due 2036. Best terms in years. Outstanding as debt.',
+    notes: '2.0% due 2036. Initial size $850M, upsized to $1B during marketing, +$150M greenshoe exercised = $1.15B total. Concurrent with Oct RD and ATM. Outstanding as debt.',
   },
   {
     date: '2025-09-30',
@@ -327,22 +327,22 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
     notes: 'At-the-market sales. Facility terminated.',
   },
   {
-    date: '2025-10-14',
+    date: '2025-10-21',
     event: 'Oct 2025 Registered Direct (4.25% Notes Repurchase)',
     type: 'Registered Direct',
     amount: 161,
     price: 78.61,
     shares: 2.0,
-    notes: '2,048,849 shares at $78.61. Funded repurchase of $50M principal 4.25% notes for ~$161.1M. Cross-conditional.',
+    notes: '2,048,849 shares at $78.61 (Oct 21 close). Settled Oct 25. Funded repurchase of $50M principal 4.25% notes for ~$161.1M. Cross-conditional. Concurrent with $1.15B convertible. Legal: McGuireWoods opinion.',
   },
   {
-    date: '2025-10-15',
+    date: '2025-10-21',
     event: 'Oct 2025 ATM Program ($800M)',
     type: 'ATM',
     amount: 706,
     price: null,
     shares: 10.1,
-    notes: '$800M capacity. ~10.1M shares sold thru Feb 10, 2026 for ~$706.3M net. ~$80M remaining.',
+    notes: '$800M capacity via B. Riley, Barclays, et al. Per 8-K Oct 21. Freshfields legal opinion. ~10.1M shares sold thru Feb 10, 2026 for ~$706.3M net. ~$80M remaining.',
   },
   {
     date: '2026-02-11',
@@ -439,7 +439,7 @@ export const SBC_HISTORY = [
 export const DEC_2025_RSU_GRANTS = [
   { name: 'Abel Avellan', role: 'CEO & Chairman', units: 250000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postGrantHoldings: 78413078, holdingsNote: '78,163,078 Class C + 250,000 RSUs' },
   { name: 'Andrew M. Johnson', role: 'CFO & CLO', units: 125000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postGrantHoldings: 512485, holdingsNote: 'Direct Class A' },
-  { name: 'Scott Wisniewski', role: 'President', units: 125000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postGrantHoldings: 713681, holdingsNote: 'Direct Class A' },
+  { name: 'Scott Wisniewski', role: 'President', units: 125000, vestingStart: '2026-05-30', vestingSchedule: '1/3 annually', postGrantHoldings: 713681, holdingsNote: 'Direct Class A. Reconciled: 588,681 (Sept 25 post-80K RSU vest/36K tax withhold) + 125,000 (Dec grant) = 713,681' },
 ];
 
 export const DEC_2025_INSIDER_SALES = [

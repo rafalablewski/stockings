@@ -17,6 +17,10 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Dec 5, 2025', type: 'Form 4', description: 'Multiple: Bernal (CAO) sale 6K shares; Yao (CTO) Form 144 40K shares', period: '—', color: 'green' },
   { date: 'Dec 2, 2025', type: 'Form 4', description: 'RSU Grants: Avellan (CEO) 250K, Johnson (CFO) 125K, Wisniewski (Pres) 125K — vest 1/3 annually from May 2026', period: '—', color: 'green' },
   { date: 'Nov 10, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q3 2025', color: 'purple' },
+  { date: 'Oct 29, 2025', type: '8-K', description: 'Block 2 Contract (~$100M initial) + ATM Legal Opinion (Freshfields)', period: '—', color: 'yellow' },
+  { date: 'Oct 28, 2025', type: 'DEF 14A', description: '2024 Plan Amendment (+10M shares, term extension) — Special Meeting Nov 21', period: '—', color: 'green' },
+  { date: 'Oct 23, 2025', type: '424B5', description: 'ATM Prospectus Supplement ($800M capacity via B. Riley, Barclays)', period: '—', color: 'orange' },
+  { date: 'Oct 21, 2025', type: '8-K', description: 'Registered Direct (2.05M shares @ $78.61, ~$161M) + ATM Agreement ($800M)', period: '—', color: 'yellow' },
   { date: 'Aug 7, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q2 2025', color: 'purple' },
   { date: 'May 8, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q1 2025', color: 'purple' },
   { date: 'Mar 3, 2025', type: '10-K', description: 'Annual Report', period: 'FY 2024', color: 'blue' },
@@ -48,6 +52,7 @@ export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   '424B5': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
   'SC 13G': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'SC 13D/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'DEF 14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form 4': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form 144': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
 };
