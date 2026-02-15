@@ -119,10 +119,15 @@ export const FEB_2026_RD_NET_DILUTION = {
  * Greenshoe tracking for Feb 2026 convertible
  * $150M additional notes option for initial purchasers
  */
-export const FEB_2026_GREENSHOE = {
+export const FEB_2026_GREENSHOE: {
+  amount: number;
+  deadline: string;
+  exercised: boolean | null;
+  additionalShares: number;
+} = {
   amount: 150,                // $150M additional principal
   deadline: '2026-02-20',     // Exercise deadline
-  exercised: null as boolean | null, // null = pending; update when known
+  exercised: null,            // null = pending; update when known
   additionalShares: 1.3,      // ~1.3M additional conversion shares if exercised
 };
 
@@ -290,7 +295,6 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
     shares: null,
     notes: 'At-the-market sales. Facility terminated.',
   },
-  {
   {
     date: '2025-07-07',
     event: 'Jul 2025 Convertible',
@@ -603,7 +607,7 @@ export const DILUTION_SCENARIOS: DilutionScenario[] = [
 
 /**
  * C-suite RSU grants and insider transactions from Dec 2025 filings.
- * All sales executed under Rule 10b5-1 plans (adopted June–September 2025).
+ * Most sales executed under Rule 10b5-1 plans (adopted June–September 2025).
  *
  * Total sales: ~$172.9M (American Tower $159.8M + individuals $13.1M)
  * Shares sold: 2,344,621 (0.83% of class)
