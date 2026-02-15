@@ -3508,7 +3508,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           { label: 'Conversion Avoided', value: `${FEB_2026_RD_NET_DILUTION.conversionAvoided}M`, sub: 'Notes repurchased', color: 'var(--mint)' },
           { label: 'Net Incremental', value: `${FEB_2026_RD_NET_DILUTION.netIncremental}M`, sub: `${FEB_2026_RD_NET_DILUTION.netDilutionPct}% dilution`, color: 'var(--gold)' },
           { label: 'Interest Saved', value: `$${FEB_2026_RD_NET_DILUTION.annualInterestSaved}M/yr`, sub: 'Annual savings', color: 'var(--sky)' },
-          { label: 'Greenshoe', value: FEB_2026_GREENSHOE.exercised === null ? 'Pending' : FEB_2026_GREENSHOE.exercised ? 'Exercised' : 'Expired', sub: `$${FEB_2026_GREENSHOE.amount}M by ${FEB_2026_GREENSHOE.deadline.slice(5)}`, color: FEB_2026_GREENSHOE.exercised === null ? 'var(--gold)' : 'var(--mint)' },
+          { label: 'Greenshoe', value: FEB_2026_GREENSHOE.exercised === null ? 'Pending' : FEB_2026_GREENSHOE.exercised ? 'Exercised' : 'Expired', sub: `$${FEB_2026_GREENSHOE.amount}M by ${FEB_2026_GREENSHOE.deadline.slice(5)}`, color: FEB_2026_GREENSHOE.exercised === null ? 'var(--gold)' : (FEB_2026_GREENSHOE.exercised ? 'var(--mint)' : 'var(--coral)') },
         ].map(kpi => (
           <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
             <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
@@ -3548,7 +3548,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ))}
           </div>
           {DEC_2025_RSU_GRANTS.map((g, i) => (
-            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 120px 100px 120px 1fr', padding: '12px 24px', borderBottom: i < DEC_2025_RSU_GRANTS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+            <div key={g.name} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 120px 100px 120px 1fr', padding: '12px 24px', borderBottom: i < DEC_2025_RSU_GRANTS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
               <span style={{ fontSize: 13, color: 'var(--text)' }}>{g.name}</span>
               <span style={{ fontSize: 12, color: 'var(--text2)' }}>{g.role}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--violet)', textAlign: 'right' }}>{(g.units / 1000).toFixed(0)}K</span>
@@ -3592,9 +3592,16 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Insider Sales (Form 4)</span>
           <UpdateIndicators sources="SEC" />
         </div>
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--coral)', fontSize: 11, color: 'var(--text3)', lineHeight: 1.6 }}>
-          <strong style={{ color: 'var(--coral)' }}>Dec 2025:</strong> Total sales ~$172.9M (American Tower $159.8M block trade + individual sales $13.1M). Most under Rule 10b5-1 plans.
-        </div>
+        {(() => {
+          const totalSales = DEC_2025_INSIDER_SALES.reduce((sum, s) => sum + s.proceeds, 0);
+          const amtSale = DEC_2025_INSIDER_SALES.find(s => s.name === 'American Tower Corp')?.proceeds || 0;
+          const individualSales = totalSales - amtSale;
+          return (
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', borderLeft: '3px solid var(--coral)', fontSize: 11, color: 'var(--text3)', lineHeight: 1.6 }}>
+              <strong style={{ color: 'var(--coral)' }}>Dec 2025:</strong> Total sales ~${(totalSales / 1e6).toFixed(1)}M (American Tower ${(amtSale / 1e6).toFixed(1)}M block trade + individual sales ${(individualSales / 1e6).toFixed(1)}M). Most under Rule 10b5-1 plans.
+            </div>
+          );
+        })()}
         <div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 80px 100px 80px', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
             {['Insider', 'Date', 'Shares', 'Price', 'Proceeds', '10b5-1'].map(h => (
