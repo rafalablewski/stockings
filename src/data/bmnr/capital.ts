@@ -318,6 +318,104 @@ export const ETH_LIQUIDITY_FACTORS = {
 };
 
 // ============================================================================
+// EARLY SHAREHOLDERS (2021 SC 13D FILINGS — PRE-IPO SHELL ERA)
+// ============================================================================
+
+/**
+ * Major shareholders from 2021 SC 13D filings when BMNR was Sandy Springs Holdings.
+ * These represent the foundational ownership before the mining pivot and ETH treasury.
+ *
+ * Total concentrated ownership: ~5M+ shares (~30%+ of 2021 outstanding)
+ * Shell era shares outstanding: ~10.7M (after Form D raises)
+ */
+export const EARLY_SHAREHOLDERS_2021 = [
+  {
+    name: 'Michael Maloney',
+    shares: 1500000,
+    percent: 12.5,
+    type: 'Individual' as const,
+    source: 'SC 13D (Sep 1, 2021)',
+    notes: 'Largest early holder, sole voting/dispositive power. Resigned from board Aug 29, 2022.',
+  },
+  {
+    name: 'Abed Equities, Inc.',
+    shares: 1000000,
+    percent: 9.3,
+    type: 'Entity' as const,
+    source: 'SC 13D (Aug 19, 2021)',
+    notes: 'Passive investment. Signed by Johannes Hendrik Heyns.',
+  },
+  {
+    name: 'Samuel P. Jorgensen',
+    shares: 1000000,
+    percent: 9.0,
+    type: 'Individual' as const,
+    source: 'SC 13D (Aug 10, 2021)',
+    notes: 'Passive investment.',
+  },
+  {
+    name: 'Jonathan R. Bates',
+    shares: null,
+    percent: null,
+    type: 'Individual/Entity' as const,
+    source: 'SC 13D (Aug 3, 2021)',
+    notes: 'Via Innovative Digital Investors LP + BFAM Partners LLC. Control person. Later became CEO (~41% by 2024).',
+  },
+  {
+    name: 'Ryan Ramnath',
+    shares: null,
+    percent: null,
+    type: 'Individual/Entity' as const,
+    source: 'SC 13D (Aug 6, 2021)',
+    notes: 'Via Bitflair Mining Corp. CEO/President of Bitflair. Mining expertise for crypto pivot.',
+  },
+];
+
+// ============================================================================
+// EARLY CAPITAL RAISES (PRE-IPO)
+// ============================================================================
+
+/**
+ * Capital raises from shell era through pre-IPO.
+ * The company went from $1.05M Form D to $18M IPO to $250M+ PIPE.
+ */
+export const EARLY_OFFERINGS = [
+  {
+    date: 'Apr 4, 2021',
+    type: 'Form D',
+    amount: 1.05,
+    status: 'completed' as const,
+    notes: '$1.05M exempt offering (Rule 506(b)). First capital raise post-shell registration.',
+  },
+  {
+    date: 'May 31, 2022',
+    type: 'S-1',
+    amount: 10.0,
+    status: 'withdrawn' as const,
+    notes: 'Proposed $10M offering for mining expansion. Withdrawn Jun 15, 2023 (RW filing).',
+  },
+];
+
+// ============================================================================
+// SHARE COUNT HISTORY
+// ============================================================================
+
+/**
+ * Share count evolution from shell to ETH treasury.
+ * Demonstrates 15,500x dilution from shell to current, driven by ETH accumulation strategy.
+ */
+export const SHARE_COUNT_HISTORY = [
+  { date: 'Oct 2020', shares: 2800000, event: 'Shell registration (Form 10-12G)' },
+  { date: 'Aug 2021', shares: 10700000, event: 'Post-Form D raises + insider stakes' },
+  { date: 'Jul 2022', shares: 40000000, event: 'Post-name change, authorized to 500M' },
+  { date: 'Jun 2025', shares: 2500000, event: 'Pre-IPO (post reverse splits)' },
+  { date: 'Jun 2025', shares: 4750000, event: 'Post-IPO ($18M @ $8/share)' },
+  { date: 'Aug 2025', shares: 234700000, event: 'FY2025 10-K (post ATM + PIPE)' },
+  { date: 'Nov 2025', shares: 409000000, event: 'Q1 FY2026 10-Q' },
+  { date: 'Jan 2026', shares: 434000000, event: 'Latest (Jan 12, 2026 PR)' },
+];
+
+// ============================================================================
 // FULLY DILUTED CALCULATION
 // ============================================================================
 

@@ -1051,4 +1051,159 @@ export const BMNR_TIMELINE_EVENTS = [
     notes: 'Tom Lee (Fundstrat co-founder) appointed Chairman. Leadership aligned with ETH treasury vision.',
     impact: 'positive'
   },
+  // ============================================================================
+  // PRE-IPO ERA (2020-2025) — Shell → Mining → ETH Treasury
+  // ============================================================================
+  // === NOVEMBER 2024 - AUDITOR CRISIS ===
+  {
+    date: '2024-11-29',
+    source: 'SEC Filing (NT 10-K)',
+    category: 'SEC Filing',
+    title: 'FY2024 10-K Delayed — Auditor Transition Post-BF Borgers Ban',
+    changes: [
+      { metric: 'Filing Status', previous: 'On time', new: 'Extension filed', change: 'NT 10-K' },
+      { metric: 'Reason', previous: '—', new: 'Auditor transition', change: 'BF Borgers banned May 2024' },
+    ],
+    notes: 'FY2024 annual report delayed due to auditor transition after BF Borgers CPA firm was banned by SEC in May 2024. Extension filed to allow new auditor to complete review.',
+    impact: 'neutral'
+  },
+  // === OCTOBER 2024 - ETH TREASURY BEGINS ===
+  {
+    date: '2024-10-15',
+    source: 'SEC Filing (8-K)',
+    category: 'Holdings',
+    title: 'First ETH Purchase Agreement Filed (Pre-IPO Treasury Start)',
+    changes: [
+      { metric: 'Asset', previous: 'BTC only', new: 'ETH acquisition', change: 'New crypto asset' },
+      { metric: 'Filing', previous: '—', new: '8-K', change: 'Material agreement' },
+    ],
+    notes: 'First ETH purchase agreement filed via 8-K, foreshadowing the massive ETH treasury pivot that would follow the June 2025 PIPE close. Pre-IPO ETH exposure begins.',
+    impact: 'positive'
+  },
+  // === AUGUST 2024 - ETH STAKING EXPLORATION ===
+  {
+    date: '2024-08-15',
+    source: 'SEC Filing (8-K)',
+    category: 'Product',
+    title: 'ETH Staking Agreement Signed (Projected 4-5% Yields)',
+    changes: [
+      { metric: 'Revenue Source', previous: 'Mining/Hosting only', new: '+ ETH Staking', change: 'New yield stream' },
+      { metric: 'Projected Yield', previous: '—', new: '4-5% APY', change: 'Staking income' },
+    ],
+    notes: 'ETH staking agreement signed, projecting 4-5% annual yields. Early precursor to the MAVAN staking strategy that would launch in Q1 2026.',
+    impact: 'positive'
+  },
+  // === MAY 2024 - AUDITOR CRISIS ===
+  {
+    date: '2024-05-01',
+    source: 'SEC Filing (8-K)',
+    category: 'Corporate',
+    title: 'Auditor BF Borgers Banned by SEC — Forced Replacement',
+    changes: [
+      { metric: 'Auditor', previous: 'BF Borgers, CPA', new: 'Resigned (SEC ban)', change: 'Mandatory' },
+      { metric: 'Filing Impact', previous: 'Current', new: 'Delayed', change: '10-K/10-Q at risk' },
+    ],
+    notes: 'BF Borgers CPA firm banned by SEC, forcing resignation. Auditor change announcement followed June 5. This created filing delays through late 2024 (NT 10-K filed Nov 29). Material internal controls weakness noted.',
+    impact: 'neutral'
+  },
+  // === 2023-2024 - SEC SCRUTINY ON CRYPTO DISCLOSURES ===
+  {
+    date: '2023-08-28',
+    source: 'SEC Filing (CORRESP)',
+    category: 'SEC Filing',
+    title: 'SEC Initiates Crypto Disclosure Review — Multiple Comment Rounds',
+    changes: [
+      { metric: 'SEC Action', previous: 'Routine', new: 'Crypto-focused review', change: 'Enhanced scrutiny' },
+      { metric: 'Topics', previous: '—', new: 'Breakeven, pools, impairment, halving', change: '7 rounds Aug 23-Nov 24' },
+      { metric: 'Breakeven', previous: 'Not disclosed', new: '~$2,500/BTC incl. financing', change: 'Required disclosure' },
+    ],
+    notes: 'SEC initiated intensive crypto disclosure review spanning 7 CORRESP rounds from Aug 2023 to Nov 2024. Required enhanced disclosures on: BTC mining breakeven (~$2,500/BTC including miner financing costs), pool mechanics (FPPS, <24hr contracts, no material rights), cryptocurrency impairment (lowest intraday price method), Bitcoin halving impact, and no direct exposure to FTX/crypto bankruptcies.',
+    impact: 'neutral'
+  },
+  // === AUGUST 2022 - BTC TREASURY + BOARD CHANGE ===
+  {
+    date: '2022-08-29',
+    source: 'SEC Filing (8-K)',
+    category: 'Corporate',
+    title: 'Michael Maloney Resigns from Board + First Bitcoin Treasury Purchases',
+    changes: [
+      { metric: 'Board', previous: 'Maloney (12.5% holder)', new: 'Resigned', change: 'No disagreements' },
+      { metric: 'Treasury', previous: 'Cash only', new: 'BTC purchases begun', change: '8-K filed' },
+    ],
+    notes: 'Maloney (largest early shareholder at 12.5%) resigned from board with no disagreements. Concurrent 8-K filings announced first Bitcoin purchase/sales agreements, marking start of crypto treasury strategy. BTC purchases continued through late 2022 (Oct and Nov 8-Ks).',
+    impact: 'neutral'
+  },
+  // === JULY 2022 - NAME CHANGE TO BITMINE ===
+  {
+    date: '2022-07-15',
+    source: 'SEC Filing (DEF 14C)',
+    category: 'Corporate',
+    title: 'Name Changed to Bitmine + Authorized Shares Increased to 500M',
+    changes: [
+      { metric: 'Company Name', previous: 'Sandy Springs Holdings', new: 'Bitmine Immersion Technologies', change: 'Rebranding' },
+      { metric: 'Authorized Shares', previous: '~10M', new: '500,000,000', change: '~50x increase' },
+      { metric: 'Approval', previous: '—', new: 'Majority consent', change: 'DEF 14C' },
+    ],
+    notes: 'Definitive information statement (DEF 14C) approved name change from Sandy Springs Holdings to Bitmine Immersion Technologies. Authorized shares increased to 500M to enable future crypto expansion. Preliminary PRE 14C filed same day. Marked official rebranding from dormant shell to crypto mining company.',
+    impact: 'positive'
+  },
+  // === MAY 2022 - FIRST REVENUES ===
+  {
+    date: '2022-05-31',
+    source: 'SEC Filing (10-Q)',
+    category: 'SEC Filing',
+    title: 'First Revenue: $428K from Crypto Hosting (Q3 FY2022)',
+    changes: [
+      { metric: 'Revenue', previous: '$0 (prior 5 quarters)', new: '$428K', change: 'First ever' },
+      { metric: 'Source', previous: 'None', new: 'Crypto hosting/mining', change: 'Operational' },
+      { metric: 'Net Loss', previous: '$503K (Q2)', new: '$2.1M', change: 'Expansion costs' },
+      { metric: 'Assets', previous: '$4.8M', new: '$4.8M', change: 'Equipment + crypto' },
+    ],
+    notes: 'Q3 FY2022 10-Q showed first revenues ($428K from hosting) after 5 consecutive quarters of $0. Net loss increased to $2.1M due to expansion costs (depreciation, G&A). S-1 for $10M offering filed same period for mining expansion, later withdrawn Jun 2023.',
+    impact: 'positive'
+  },
+  // === JULY-SEPTEMBER 2021 - FOUNDING OWNERSHIP ESTABLISHED ===
+  {
+    date: '2021-08-19',
+    source: 'SEC Filing (SC 13D)',
+    category: 'Corporate',
+    title: 'Founding Shareholders Established — 5 SC 13D Filings + 5 Form 3s',
+    changes: [
+      { metric: 'Maloney', previous: '0%', new: '12.5% (1.5M shares)', change: 'Largest holder' },
+      { metric: 'Abed Equities', previous: '0%', new: '9.3% (1M shares)', change: 'Passive' },
+      { metric: 'Jorgensen', previous: '0%', new: '~9% (1M shares)', change: 'Passive' },
+      { metric: 'Bates', previous: '0%', new: '>5% (via LP/LLC)', change: 'Control person' },
+      { metric: 'Ramnath', previous: '0%', new: '>5% (via Bitflair)', change: 'Mining expertise' },
+    ],
+    notes: 'In July-September 2021, five SC 13D beneficial ownership filings and five Form 3 initial ownership reports established the founding shareholder base. Total concentrated ownership: ~5M+ shares (~30%+ of outstanding). Insiders included Maloney (12.5%, largest), Abed Equities (9.3%), Jorgensen (9%), Bates (via LP entities, later CEO), and Ramnath (via Bitflair Mining, brought mining expertise). Board additions: Bayles, Mow (later CFO), Bates. All filings within a 2-month window signaling coordinated shell→mining pivot.',
+    impact: 'positive'
+  },
+  // === APRIL 2021 - FIRST CAPITAL RAISE ===
+  {
+    date: '2021-04-04',
+    source: 'SEC Filing (Form D)',
+    category: 'Capital',
+    title: 'First Capital Raise: $1.05M Exempt Offering (Rule 506(b))',
+    changes: [
+      { metric: 'Capital Raised', previous: '$0', new: '$1.05M', change: 'Form D offering' },
+      { metric: 'Exemption', previous: '—', new: 'Rule 506(b)', change: 'Private placement' },
+    ],
+    notes: 'First capital raise post-shell registration. $1.05M raised via Form D exempt offering under Rule 506(b). Amended (Form D/A) August 4 confirming total sold. Funded initial mining pivot operations.',
+    impact: 'positive'
+  },
+  // === OCTOBER 2020 - MARCH 2021 - SHELL REGISTRATION ===
+  {
+    date: '2020-10-27',
+    source: 'SEC Filing (Form 10-12G)',
+    category: 'SEC Filing',
+    title: 'SEC Registration: Sandy Springs Holdings (Shell Company, 2.8M Shares)',
+    changes: [
+      { metric: 'SEC Status', previous: 'Unregistered', new: 'Exchange Act reporting', change: 'Form 10-12G' },
+      { metric: 'Shares', previous: '—', new: '2,800,000', change: 'Initial outstanding' },
+      { metric: 'Assets/Revenue', previous: '—', new: '$0 / $0', change: 'Shell entity' },
+      { metric: 'Debt', previous: '—', new: '$50K promissory note', change: 'Only liability' },
+    ],
+    notes: 'Sandy Springs Holdings (later Bitmine) filed Form 10-12G for SEC registration as a shell company with no operations, assets, or revenues. 2.8M shares outstanding. $50K promissory note was sole liability. Inception date: July 16, 2020 post-merger of dormant entities. SEC review followed with 4 CORRESP rounds (Nov 2020-Mar 2021) clarifying reorganization accounting (ASC 250-10/805-50) before registration was cleared March 23, 2021.',
+    impact: 'neutral'
+  },
 ];
