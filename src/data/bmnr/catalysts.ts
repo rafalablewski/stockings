@@ -165,7 +165,23 @@ export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   { event: 'Bitwise launches model portfolio solutions for digital assets ($15B+ client AUM); Bitwise is Kraken Institutional strategy partner. Seven models across core and thematic strategies', date: 'Feb 3, 2026', category: 'Ecosystem' },
   { event: 'Wirex powers Chimera Card launch: Bitcoin-funded non-custodial debit card accepted at 80M+ merchants globally via BaaS infrastructure', date: 'Feb 3, 2026', category: 'Ecosystem' },
 
-  // === 2025 ===
+  // === 2025 (POST-IPO) ===
+  { event: 'Annual meeting: 81% YES on 50B auth shares; all proposals approved. 500K+ individual stockholders.', date: 'Jan 15, 2026', category: 'Corporate' },
+  { event: 'Beast Industries $200M equity investment closed; MrBeast 460M+ YouTube subscribers, Step fintech app 7M+ users', date: 'Dec 22, 2025', category: 'Corporate' },
+  { event: 'CFO Mow separated (Dec 18), Young Kim appointed CFO/COO (Jan 9); Mow board resignation Dec 12', date: 'Dec 2025', category: 'Corporate' },
+  { event: 'DEF 14A/DEFR14A proxy filed for 50B authorized shares; annual meeting set Jan 15 at Wynn Las Vegas', date: 'Dec 8, 2025', category: 'Corporate' },
+  { event: 'Insider sales: Bates ~$70M (2.8M shares), Mow ~$25M (1M shares), Bayles ~$17M (700K shares); total ~$112M', date: 'Oct-Dec 2025', category: 'Corporate' },
+  { event: 'Chi Tsang appointed CEO (Nov 14); Board restructured with Edgeworth, Howe, Sechan replacing Bayles, Kelly, Nelson', date: 'Nov 14, 2025', category: 'Corporate' },
+  { event: 'Founders Fund (Peter Thiel) SC 13G/A: 5.1% ownership; Xuan Yong Xiao SC 13D: 7.5% (28.97M shares)', date: 'Sep-Oct 2025', category: 'Corporate' },
+  { event: '$365M registered direct @ $70/share (14% premium) + warrants @ $87.50; Moelis as placement agent', date: 'Sep 22, 2025', category: 'Treasury' },
+  { event: 'Employment agreements: Bates $3.04M/yr, Mow $1.02M/yr, Nelson $406K/yr; Sharbutt joins board', date: 'Aug-Sep 2025', category: 'Corporate' },
+  { event: 'ARK Invest (Cathie Wood) $182M block trade; 4.77M shares; 100% proceeds to ETH', date: 'Jul 22, 2025', category: 'Treasury' },
+  { event: '$250M PIPE closes (Jul 9) led by MOZAYYX + Founders Fund, Pantera, Kraken, Galaxy, DCG; ETH pivot begins', date: 'Jul 9, 2025', category: 'Treasury' },
+  { event: 'Ethereum Tower LLC treasury advisory agreement (10-year term); $2B ATM launched via S-3ASR', date: 'Jul 8-9, 2025', category: 'Corporate' },
+  // === 2025 (PRE-IPO) ===
+  { event: 'S-1 IPO Registration Statement filed (May 27); IPO at $8/share raising ~$18M (Jun 6); NYSE American uplisting (Jun 5)', date: 'May-Jun 2025', category: 'Corporate' },
+  { event: 'FY2024 10-K filed (delayed from Nov 2024 NT 10-K); post-auditor transition', date: 'Jan 2025', category: 'Corporate' },
+  { event: 'Q2 FY2025 10-Q filed (Apr 14, 2025); pre-IPO quarterly filing', date: 'Apr 14, 2025', category: 'Corporate' },
   { event: 'Kraken Proof of Reserves: ETH verified 1:1 with Merkle proofs (covers BTC, ETH, SOL, USDC, USDT, XRP, ADA)', date: 'Oct 22, 2025', category: 'Ecosystem' },
   { event: 'Kraken launched CME ETH futures contracts alongside BTC and SOL', date: 'Oct 9, 2025', category: 'Ecosystem' },
   { event: 'Kraken acquired CFTC-regulated Designated Contract Market (Small Exchange) for $100M', date: 'Oct 16, 2025', category: 'Ecosystem' },
@@ -179,6 +195,34 @@ export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   { event: '$2B ATM program exhausted', date: 'Jul 2025', category: 'Treasury' },
   { event: 'Surpassed 4M ETH holdings', date: '2025', category: 'Treasury' },
   { event: 'Surpassed 3% of ETH supply', date: '2025', category: 'Treasury' },
+
+  // === 2024 (PRE-IPO) ===
+  { event: 'FY2024 10-K delayed (NT 10-K filed Nov 29); auditor transition after BF Borgers ban', date: 'Nov 29, 2024', category: 'Corporate' },
+  { event: 'First ETH purchase agreement filed (8-K Oct 15, 2024); pre-IPO ETH exposure begins', date: 'Oct 15, 2024', category: 'Treasury' },
+  { event: 'ETH staking agreement signed (projected 4-5% yields); precursor to MAVAN', date: 'Aug 15, 2024', category: 'Treasury' },
+  { event: 'SEC resolved 7 CORRESP rounds on crypto disclosures (breakeven, pools, impairment, halving); Aug 2023-Nov 2024', date: 'Nov 2024', category: 'Corporate' },
+  { event: 'New auditor appointed after BF Borgers ban (Jun 5 8-K); BF Borgers resigned May 1', date: 'Jun 5, 2024', category: 'Corporate' },
+
+  // === 2023 ===
+  { event: 'S-1 registration withdrawn (RW filing Jun 15); pivoted away from $10M mining offering', date: 'Jun 15, 2023', category: 'Corporate' },
+  { event: 'FY2023 annual report: first meaningful revenue $0.6M (hosting/mining); loss $3.3M; assets $4M', date: 'Aug 31, 2023', category: 'Corporate' },
+  { event: 'FY2023 10-K delayed (NT 10-K filed Nov 29, 2023); admin/compliance delay', date: 'Nov 29, 2023', category: 'Corporate' },
+
+  // === 2022 ===
+  { event: 'Name changed from Sandy Springs Holdings to Bitmine Immersion Technologies (DEF 14C Jul 15)', date: 'Jul 2022', category: 'Corporate' },
+  { event: 'Authorized shares increased to 500M via majority consent (DEF 14C)', date: 'Jul 2022', category: 'Corporate' },
+  { event: 'First Bitcoin treasury purchases (8-K filings Aug-Nov 2022)', date: 'Aug 2022', category: 'Treasury' },
+  { event: 'First revenue: $428K from crypto hosting in Q3 FY2022', date: 'May 2022', category: 'Corporate' },
+  { event: 'S-1 filed for proposed $10M mining expansion offering (later withdrawn)', date: 'May 31, 2022', category: 'Corporate' },
+
+  // === 2021 ===
+  { event: 'FY2021 annual report filed: $0 revenues, $154K loss, mining pivot described', date: 'Aug 31, 2021', category: 'Corporate' },
+  { event: 'Founding shareholders established: 5 SC 13D filings + 5 Form 3s (30%+ concentrated ownership)', date: 'Jul-Sep 2021', category: 'Corporate' },
+  { event: 'First capital raise: $1.05M via Form D exempt offering (Rule 506(b))', date: 'Apr 4, 2021', category: 'Corporate' },
+  { event: 'SEC registration review completed; Form 10-12G cleared after 4 CORRESP rounds', date: 'Mar 23, 2021', category: 'Corporate' },
+
+  // === 2020 ===
+  { event: 'SEC registration filed as Sandy Springs Holdings (Form 10-12G; shell company, 2.8M shares, $0 revenue)', date: 'Oct 27, 2020', category: 'Corporate' },
 ];
 
 // ============================================================================

@@ -318,6 +318,159 @@ export const ETH_LIQUIDITY_FACTORS = {
 };
 
 // ============================================================================
+// INSIDER SALES (FORM 4 FILINGS — POST-IPO ERA)
+// ============================================================================
+
+/**
+ * Insider sales from Form 4 filings (Oct-Dec 2025).
+ * Total insider sales ~$112M at avg ~$25/share.
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Update when new Form 4 filings appear
+ * - Track cumulative shares sold per insider
+ * - Note Rule 10b5-1 plan status
+ */
+export const INSIDER_SALES = [
+  {
+    name: 'Jonathan Bates (CEO → Former CEO)',
+    sharesSold: 2800000,
+    proceeds: 70000000,
+    avgPrice: 25.00,
+    period: 'Oct-Dec 2025',
+    method: 'Rule 10b5-1 Plan + Open Market',
+    notes: 'Reduced from ~41% to ~30%. Pledged ~800K shares to UBS. Stepped down as CEO Nov 14.',
+    filings: ['Form 4 (Oct 6)', 'Form 4 (Nov)', 'Form 4 (Dec 5)'],
+  },
+  {
+    name: 'Raymond Mow (CFO → Former CFO)',
+    sharesSold: 1000000,
+    proceeds: 25000000,
+    avgPrice: 25.00,
+    period: 'Nov-Dec 2025',
+    method: 'Open Market',
+    notes: 'Separated as CFO Dec 18, 2025. Resigned from board Dec 12.',
+    filings: ['Form 4 (Dec 3)'],
+  },
+  {
+    name: 'Seth Bayles (Secretary → Former Director)',
+    sharesSold: 700000,
+    proceeds: 17000000,
+    avgPrice: 24.29,
+    period: 'Nov-Dec 2025',
+    method: 'Open Market',
+    notes: 'Left board Nov 11 restructuring.',
+    filings: ['Form 4 (Dec 1)'],
+  },
+];
+
+/** Total insider sales summary */
+export const INSIDER_SALES_SUMMARY = {
+  totalSharesSold: 4500000,
+  totalProceeds: 112000000,
+  avgPrice: 24.89,
+  period: 'Oct-Dec 2025',
+  notes: 'Concentrated selling during Oct-Dec 2025. Most under Rule 10b5-1 plans or post-separation.',
+};
+
+// ============================================================================
+// EARLY SHAREHOLDERS (2021 SC 13D FILINGS — PRE-IPO SHELL ERA)
+// ============================================================================
+
+/**
+ * Major shareholders from 2021 SC 13D filings when BMNR was Sandy Springs Holdings.
+ * These represent the foundational ownership before the mining pivot and ETH treasury.
+ *
+ * Total concentrated ownership: ~5M+ shares (~30%+ of 2021 outstanding)
+ * Shell era shares outstanding: ~10.7M (after Form D raises)
+ */
+export const EARLY_SHAREHOLDERS_2021 = [
+  {
+    name: 'Michael Maloney',
+    shares: 1500000,
+    percent: 12.5,
+    type: 'Individual' as const,
+    source: 'SC 13D (Sep 1, 2021)',
+    notes: 'Largest early holder, sole voting/dispositive power. Resigned from board Aug 29, 2022.',
+  },
+  {
+    name: 'Abed Equities, Inc.',
+    shares: 1000000,
+    percent: 9.3,
+    type: 'Entity' as const,
+    source: 'SC 13D (Aug 19, 2021)',
+    notes: 'Passive investment. Signed by Johannes Hendrik Heyns.',
+  },
+  {
+    name: 'Samuel P. Jorgensen',
+    shares: 1000000,
+    percent: 9.0,
+    type: 'Individual' as const,
+    source: 'SC 13D (Aug 10, 2021)',
+    notes: 'Passive investment.',
+  },
+  {
+    name: 'Jonathan R. Bates',
+    shares: null,
+    percent: null,
+    type: 'Individual/Entity' as const,
+    source: 'SC 13D (Aug 3, 2021)',
+    notes: 'Via Innovative Digital Investors LP + BFAM Partners LLC. Control person. Later became CEO (~41% by 2024).',
+  },
+  {
+    name: 'Ryan Ramnath',
+    shares: null,
+    percent: null,
+    type: 'Individual/Entity' as const,
+    source: 'SC 13D (Aug 6, 2021)',
+    notes: 'Via Bitflair Mining Corp. CEO/President of Bitflair. Mining expertise for crypto pivot.',
+  },
+];
+
+// ============================================================================
+// EARLY CAPITAL RAISES (PRE-IPO)
+// ============================================================================
+
+/**
+ * Capital raises from shell era through pre-IPO.
+ * The company went from $1.05M Form D to $18M IPO to $250M+ PIPE.
+ */
+export const EARLY_OFFERINGS = [
+  {
+    date: 'Apr 4, 2021',
+    type: 'Form D',
+    amount: 1.05,
+    status: 'completed' as const,
+    notes: '$1.05M exempt offering (Rule 506(b)). First capital raise post-shell registration.',
+  },
+  {
+    date: 'May 31, 2022',
+    type: 'S-1',
+    amount: 10.0,
+    status: 'withdrawn' as const,
+    notes: 'Proposed $10M offering for mining expansion. Withdrawn Jun 15, 2023 (RW filing).',
+  },
+];
+
+// ============================================================================
+// SHARE COUNT HISTORY
+// ============================================================================
+
+/**
+ * Share count evolution from shell to ETH treasury.
+ * Demonstrates 15,500x dilution from shell to current, driven by ETH accumulation strategy.
+ */
+export const SHARE_COUNT_HISTORY = [
+  { date: 'Oct 2020', shares: 2800000, event: 'Shell registration (Form 10-12G)' },
+  { date: 'Aug 2021', shares: 10700000, event: 'Post-Form D raises + insider stakes' },
+  { date: 'Jul 2022', shares: 40000000, event: 'Post-name change, authorized to 500M' },
+  { date: 'Jun 2025', shares: 2500000, event: 'Pre-IPO (post reverse splits)' },
+  { date: 'Jun 2025', shares: 4750000, event: 'Post-IPO ($18M @ $8/share)' },
+  { date: 'Aug 2025', shares: 234700000, event: 'FY2025 10-K (post ATM + PIPE)' },
+  { date: 'Nov 2025', shares: 409000000, event: 'Q1 FY2026 10-Q' },
+  { date: 'Jan 2026', shares: 434000000, event: 'Latest (Jan 12, 2026 PR)' },
+];
+
+// ============================================================================
 // FULLY DILUTED CALCULATION
 // ============================================================================
 
