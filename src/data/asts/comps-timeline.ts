@@ -5,7 +5,10 @@
  * Extracted from ASTS.tsx so the check-analyzed API can access it.
  *
  * AI AGENT INSTRUCTIONS:
- * - Add new entries at the BEGINNING of the array (newest first)
+ * - Entries are GROUPED BY COMPETITOR SECTION (see ═══ dividers below)
+ * - Within each section, entries are sorted DATE DESCENDING (newest first)
+ * - Add new entries to the matching competitor section, preserving date order
+ * - The application sorts entries before display, so file order is for human readability
  * - NEVER delete old entries — this is an audit trail
  */
 
@@ -30,7 +33,7 @@ export interface CompsTimelineEntry {
 
 export const COMPS_TIMELINE: CompsTimelineEntry[] = [
     // ═══════════════════════════════════════════════════════════════════════════
-    // ADD NEW COMPETITOR NEWS ENTRIES HERE (newest first)
+    // ADD NEW ENTRIES TO THE MATCHING COMPETITOR SECTION BELOW (date descending within each section)
     // Format:
     // {
     //   date: 'YYYY-MM-DD',
@@ -44,6 +47,57 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
     //   sourceUrl: 'https://...'
     // },
     // ═══════════════════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // NTT DOCOMO - JAPAN D2D SATELLITE-TO-SMARTPHONE (PARTNER TBD)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-09',
+      competitor: 'other',
+      category: 'Product',
+      headline: 'NTT Docomo announces satellite-to-smartphone D2D service for early FY2026 — partner undisclosed',
+      details: [
+        'NTT Docomo to launch satellite-to-smartphone direct communication service in early FY2026 (April-June 2026)',
+        'Text messaging + data applications via satellite on standard LTE smartphones, no special equipment',
+        'Covers mountain areas, remote islands, maritime, and disaster-affected zones where terrestrial coverage unavailable',
+        'Part of NTT Group\'s "NTT C89" (NTT Constellation 89 Project) space business brand',
+        'Partner NOT named — pricing, coverage, compatible devices, and apps all "to be announced later"',
+        'NTT Docomo has existing Amazon Kuiper partnership (Nov 2023) for terminal-based rural backhaul — NOT D2D',
+        'KDDI already launched Starlink Direct data service in Japan (Aug 2025) — Docomo is second Japanese carrier to announce D2D',
+        'NTT Docomo: Japan\'s largest mobile operator with 87M+ subscribers',
+        'Available to both individual and enterprise customers',
+      ],
+      implication: 'negative',
+      astsComparison: 'Japan\'s largest MNO entering D2D — significant regardless of partner identity. If Starlink (likely given KDDI precedent), further consolidates Starlink Asian footprint. If Amazon Kuiper or another provider, signals D2D competition intensifying beyond Starlink. NTT Docomo\'s 87M+ subs and branded space initiative indicate strategic commitment. ASTS has no disclosed Japanese MNO partnership — Japan market increasingly captured by Starlink D2C ecosystem.',
+      source: 'NTT Docomo',
+      storyId: 'japan-d2d-market',
+      storyTitle: 'Japan D2D Market Competition',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STARLINK ENTERPRISE — RAIL BROADBAND (terminal-based, NOT D2C)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-12',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Italo deploys Starlink fleet-wide on Italian HSR — world\'s first major high-speed rail operator',
+      details: [
+        'Italo: Italy\'s first private HSR operator — equipping entire fleet (25 AGV 575 + 26 EVO trains)',
+        'Enterprise broadband (roof-mounted terminal), NOT Starlink Direct-to-Cell service',
+        'World\'s first major high-speed rail company to deploy Starlink fleet-wide',
+        '~1 year testing at 300 km/h: speeds up to 400+ Mbps, latency 25ms',
+        '85% passenger satisfaction: 51% rated 5/5 (max), 32.5% rated 4/5',
+        '80% rated browsing better than prior Wi-Fi experience',
+        'Rollout: mid-2026 start, completion by 2027',
+        'Broader multimedia/entertainment expansion planned aboard trains leveraging new connectivity',
+      ],
+      implication: 'neutral',
+      astsComparison: 'Enterprise terminal-based broadband on rail — different market segment from ASTS D2D cellular. Does not compete with ASTS direct-to-device proposition. Demonstrates SpaceX/Starlink commercial momentum in transportation vertical and growing enterprise revenue base.',
+      source: 'Italo',
+      storyId: 'starlink-enterprise-transportation',
+      storyTitle: 'Starlink Enterprise Transportation Deployments',
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // TERRESTAR - HYBRID SATELLITE-CELLULAR IoT (CANADA)
@@ -844,6 +898,27 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
     // AMAZON LEO (fka Project Kuiper) - LEO BROADBAND (TERMINAL-BASED)
     // ═══════════════════════════════════════════════════════════════════════════
     {
+      date: '2026-02-10',
+      competitor: 'amazon-leo',
+      category: 'Partnership',
+      headline: 'ELCOME signs Amazon Leo reseller agreement for maritime connectivity across 5,000+ vessel fleet',
+      details: [
+        'ELCOME (Dubai-based maritime technology provider) becomes Amazon Leo authorized reseller for commercial maritime',
+        'Covers merchant shipping, offshore service vessels, commercial fishing, and yachting across all major oceans',
+        'ELCOME\'s existing fleet connectivity footprint: 5,000+ vessels',
+        'Amazon Leo Pro and Leo Ultra terminals provide independent LEO connectivity path for network diversity at sea',
+        'Terminal-based broadband — NOT direct-to-device, dedicated maritime antenna equipment',
+        'Benefits: increased resilience, optimized app performance, real-time telemetry, remote operations',
+        'Amazon Leo: "powered by a constellation of thousands of satellites in low Earth orbit"',
+        'ELCOME offers global engineering, 24/7 support, and 55+ years maritime satellite communications experience',
+      ],
+      implication: 'neutral',
+      astsComparison: 'Terminal-based maritime broadband — different market from ASTS D2D to smartphones. Amazon Leo building vertical distribution (maritime via ELCOME, aviation via JetBlue, residential via Vrio). ASTS does not compete for maritime terminal broadband. Shows Amazon Leo commercial rollout accelerating across enterprise verticals with authorized reseller model.',
+      source: 'Business Wire / ELCOME',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation',
+    },
+    {
       date: '2026-02-04',
       competitor: 'amazon-leo',
       category: 'Partnership',
@@ -987,6 +1062,27 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       storyTitle: 'Amazon Leo Constellation'
     },
     {
+      date: '2024-06-13',
+      competitor: 'amazon-leo',
+      category: 'Partnership',
+      headline: 'Vrio/DIRECTV Latin America signs Project Kuiper distribution deal for 7 South American countries',
+      details: [
+        'Vrio Corp (parent of DIRECTV Latin America and Sky Brasil) to distribute Project Kuiper broadband in 7 countries',
+        'Markets: Argentina, Brazil, Chile, Uruguay, Peru, Ecuador, Colombia — ~383M total population',
+        'Targeting ~200M people World Bank estimates are still not connected to the internet',
+        'Terminal-based residential broadband — NOT direct-to-device, requires dedicated Kuiper equipment',
+        'Nationwide coverage per country via LEO satellite — impractical with fiber/fixed wireless alone',
+        'Amazon SVP Panos Panay: "Working with Vrio to bring affordable access to broadband"',
+        'Kuiper VP Rajeev Badyal: "network has capacity and flexibility to serve tens of millions"',
+        'At time of announcement: Kuiper had completed Protoflight mission, planned constellation deployment and service demos later in 2024',
+      ],
+      implication: 'neutral',
+      astsComparison: 'Terminal-based residential broadband in South America — different market from ASTS D2D to unmodified smartphones. Amazon Kuiper building distribution network through regional media/telecom partners (Vrio/DIRECTV). ASTS does not compete for fixed broadband; its proposition is cellular D2D. However, Kuiper gaining distribution footprint in LatAm could position Amazon to later compete if Kuiper develops D2D capability.',
+      source: 'Business Wire / Vrio Corp',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation',
+    },
+    {
       date: '2023-11-28',
       competitor: 'amazon-leo',
       category: 'Partnership',
@@ -1072,6 +1168,49 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       storyTitle: 'Starlink DTC Global MNO Expansion'
     },
     {
+      date: '2026-02-03',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'MasOrange to trial Starlink Direct-to-Cell in Spain — first D2C pilot approved by Spanish regulator',
+      details: [
+        'MasOrange (Spain\'s largest operator by customers) to trial Starlink D2C in Valladolid province',
+        'Spanish State Secretariat for Telecommunications approved Supplemental Coverage from Space (SCS) spectrum use',
+        'First regulatory approval for D2C satellite services in Spain',
+        'Data and messaging services (WhatsApp, Google Maps, SMS/MMS) — no timing or eligible phone details yet',
+        'MasOrange partially owned by Orange — Orange acquiring remaining 50% stake from Lorca, closing H1 2026',
+        'Orange already offers Skylo-powered satellite SMS "Message Satellite" in France on certain Google Pixel phones',
+        'Orange Group multi-brand D2D strategy: Skylo SMS (France), Starlink DTC (Spain), Eutelsat broadband (Africa/ME)',
+        'Starlink DTC described as "cell towers in space" with laser inter-satellite links for seamless handoff',
+      ],
+      implication: 'negative',
+      astsComparison: 'Starlink DTC expanding into Spain — another major European market. Orange Group\'s multi-provider satellite strategy (Skylo France, Starlink Spain) demonstrates MNOs hedging across D2D providers rather than committing exclusively to one. Spanish SCS regulatory approval sets EU precedent. ASTS competing for European MNOs via Vodafone SatCo JV — Orange choosing Starlink for Spain is a competitive loss. ASTS broadband differentiator persists but MasOrange trial includes data+messaging (WhatsApp, Maps), not just SMS.',
+      source: 'MasOrange / Via Satellite',
+      storyId: 'starlink-d2c-global-expansion',
+      storyTitle: 'Starlink DTC Global MNO Expansion',
+    },
+    {
+      date: '2025-12-16',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Airtel Africa partners with Starlink D2C across 14 African markets — first satellite-to-mobile for 173.8M customers',
+      details: [
+        'Airtel Africa: first African MNO to partner with Starlink for Direct-to-Cell across all 14 markets',
+        '173.8 million customers across sub-Saharan Africa — one of the largest D2C partnership announcements globally',
+        'Data for select applications and text messaging starting 2026, subject to country-specific regulatory approvals',
+        'Agreement includes support for Starlink\'s "first broadband Direct-to-Cell system" with next-gen satellites',
+        'Next-gen satellites: "20x improved data speed" — explicitly branded as broadband D2C capability',
+        '650 D2C satellites in LEO constellation referenced',
+        'Africa: vast coverage gaps and low terrestrial density make D2C highly compelling market',
+        'Airtel Africa MD Sunil Taldar: "new standard for service availability across all our 14 markets"',
+        'Starlink VP Stephanie Bednarek: "next-generation technology to offer high-speed broadband connectivity"',
+      ],
+      implication: 'negative',
+      astsComparison: 'HIGH MATERIALITY: 14 African markets and 173.8M subscribers represent one of the largest D2C deals to date. Africa is key ASTS growth target given low terrestrial coverage. Starlink explicitly messaging "broadband Direct-to-Cell" and "20x improved data speed" with next-gen satellites — directly challenges ASTS\'s core broadband differentiator. If next-gen Starlink D2C delivers broadband as claimed, ASTS\'s technology moat narrows significantly. ASTS has African MNO discussions but Airtel Africa\'s scale and Starlink first-mover D2C presence on the continent is a major competitive setback.',
+      source: 'Airtel Africa',
+      storyId: 'starlink-d2c-global-expansion',
+      storyTitle: 'Starlink DTC Global MNO Expansion',
+    },
+    {
       date: '2025-11-25',
       competitor: 'starlink-tmobile',
       category: 'Partnership',
@@ -1093,6 +1232,27 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       storyTitle: 'Starlink DTC Global MNO Expansion'
     },
     {
+      date: '2025-11-11',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'České dráhy extends Starlink rail pilot through winter — first Czech operator to trial satellite internet',
+      details: [
+        'České dráhy (Czech Railways): first Czech rail operator to trial Starlink onboard',
+        'Enterprise broadband (roof-mounted terminal), NOT Starlink Direct-to-Cell service',
+        'Pilot extended through winter to test antenna performance in snow, frost, ice conditions',
+        'Routes: Brno–Česká Třebová–Prague and Brno–Břeclav–Přerov–Olomouc',
+        '5 TB of passenger data consumed during pilot period',
+        'Economics: terminal provided free; data rate ~1/3 of mobile operator costs',
+        'Integrated into InterPanter train Wi-Fi/multimedia system; no interaction with safety systems',
+        'Starlink Kit meets EN 50155 and rail-specific standards',
+      ],
+      implication: 'neutral',
+      astsComparison: 'Enterprise terminal-based rail broadband pilot — does not compete with ASTS D2D cellular. Notable economics: free terminal and ~1/3 mobile operator data costs suggests competitive pricing for transportation vertical. Demonstrates Starlink expanding European enterprise footprint.',
+      source: 'České dráhy',
+      storyId: 'starlink-enterprise-transportation',
+      storyTitle: 'Starlink Enterprise Transportation Deployments',
+    },
+    {
       date: '2025-11-06',
       competitor: 'starlink-tmobile',
       category: 'Partnership',
@@ -1112,6 +1272,28 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       source: 'VEON / Beeline Kazakhstan',
       storyId: 'starlink-d2c-global-expansion',
       storyTitle: 'Starlink DTC Global MNO Expansion'
+    },
+    {
+      date: '2025-08-28',
+      competitor: 'starlink-tmobile',
+      category: 'Product',
+      headline: 'KDDI launches au Starlink Direct data service — world\'s first carrier to offer D2C data beyond SMS',
+      details: [
+        'MAJOR MILESTONE: First carrier globally to launch data-capable D2C satellite service — beyond SMS to real data applications',
+        'Supported devices: Google Pixel 10 series (10/10 Pro/10 Pro XL/10 Pro Fold), Samsung Galaxy Z Fold7/Flip7',
+        '~20 apps via satellite: Google Maps, au NaviWalk, Weathernews, NERV Disaster Prevention, YAMAP, SmartNews, X (Twitter), Google Messages',
+        'Pricing: 1,650 yen/month (~$11 USD) for non-au users; included free for au mobile plan customers',
+        '3-month free trial for non-au/UQ mobile/povo subscribers signing up after Sept 1',
+        'KDDI claims 100% Japan coverage: terrestrial ~60% area + satellite fills remaining ~40%',
+        'Service operates on standard LTE smartphones — "Connecting the Unconnected. Wherever you see the sky"',
+        'Previously limited to text messaging — data upgrade represents major D2C service evolution',
+        'Also available to povo and UQ mobile users (KDDI sub-brands) and other carriers\' customers',
+      ],
+      implication: 'negative',
+      astsComparison: 'CRITICAL COMPETITIVE DEVELOPMENT: Directly undermines ASTS core thesis that "Starlink = SMS only, ASTS = broadband." KDDI delivers real data apps (Maps, weather, news, social media, navigation) to standard phones via D2C. Key nuances: (1) ~20 curated apps suggests optimized low-bandwidth experience, NOT open broadband internet — throughput likely far below ASTS capability, (2) HD video streaming and VoLTE not demonstrated, (3) $11/month pricing sets D2C data ARPU expectations, (4) Requires 2025-era flagships (Pixel 10, Z Fold7) suggesting newer modem chips needed. ASTS must now compete on throughput quality (video, voice) rather than binary "data vs no-data" narrative. Starlink "20x improved data speed" messaging in later announcements suggests gap narrowing further.',
+      source: 'KDDI',
+      storyId: 'starlink-d2c-data-milestone',
+      storyTitle: 'Starlink DTC Data Service Milestone',
     },
     {
       date: '2024-01-08',
@@ -1750,6 +1932,27 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       sourceUrl: 'https://space42.ai/space42-and-viasat-announce-partnership/',
       storyId: 'ntn-industry-partnerships',
       storyTitle: 'NTN Industry Partnerships'
+    },
+    {
+      date: '2025-03-04',
+      competitor: 'other',
+      category: 'Partnership',
+      headline: 'Orange Africa & Middle East partners with Eutelsat for GEO satellite broadband in 4 African/ME markets',
+      details: [
+        'Orange OMEA and Eutelsat Group strategic partnership for GEO satellite broadband',
+        'Uses EUTELSAT KONNECT satellite (GEO) — up to 100 Mbps broadband speeds',
+        'Initial markets: Jordan, Côte d\'Ivoire, Senegal, Democratic Republic of Congo — expanding region-wide',
+        'B2C and B2B services targeting white zones (no coverage) and rural areas',
+        'Terminal-based broadband — NOT direct-to-device, requires dedicated satellite equipment',
+        'Orange pursuing multi-provider satellite strategy: Skylo D2D SMS (France), Starlink DTC (Spain/MasOrange), Eutelsat fixed broadband (Africa/ME)',
+        'Eutelsat Group (2024 merger of Eutelsat + OneWeb) operates GEO and LEO assets',
+        'Orange already reference customer for Eutelsat KONNECT VHTS in France',
+      ],
+      implication: 'neutral',
+      astsComparison: 'Terminal-based GEO broadband in Africa — different market from ASTS D2D to unmodified smartphones. Does not directly compete. Shows Orange diversifying across multiple satellite providers (Skylo, Starlink, Eutelsat) rather than exclusive D2D commitment. Low materiality for ASTS D2D thesis but illustrative of MNO multi-vendor satellite procurement approach.',
+      source: 'Orange / Eutelsat Group',
+      storyId: 'orange-satellite-strategy',
+      storyTitle: 'Orange Satellite Strategy',
     },
     {
       date: '2025-08-20',
