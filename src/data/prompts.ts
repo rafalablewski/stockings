@@ -14,8 +14,8 @@ export const prompts: Prompt[] = [
   // General Entries Classifier
   // =========================================================================
   {
-    name: "Entries, News, Press Releases, SEC Filings",
-    description: "Paste raw content — articles, press releases, SEC filings, analyst notes — and the prompt classifies each item into the correct database section (Core / Ecosystem / Comps), assesses materiality, and outputs structured entry blocks ready to commit. Select the ticker tab first, then copy the prompt into a new chat, and paste your content at the end.",
+    name: "Entries, News, Press Releases",
+    description: "Paste raw content — articles, press releases, analyst notes, news — and the prompt classifies each item into the correct database section (Core / Ecosystem / Comps), assesses materiality, and outputs structured entry blocks ready to commit. SEC filings are handled by dedicated AI agents (SEC Filing Delta, Insider Activity, 13F Tracker). Select the ticker tab first, then copy the prompt into a new chat, and paste your content at the end.",
     variants: [
       {
         label: "ASTS",
@@ -31,7 +31,7 @@ export const prompts: Prompt[] = [
 
 Current date: February 14, 2026. All sections use reverse-chronological order (newest entries at top).
 
-Task: Analyze each pasted item (articles, press releases, SEC excerpts, analyst notes, etc.) independently. Items may be mixed, out of order, from any source/date.
+Task: Analyze each pasted item (articles, press releases, analyst notes, news, etc.) independently. Items may be mixed, out of order, from any source/date. NOTE: SEC filings (8-K, 10-Q, Form 4, prospectus, etc.) should be processed via dedicated AI agents (SEC Filing Delta, Insider Activity Tracker, 13F Tracker) — not this prompt. If SEC content is accidentally included, flag it for redirection.
 
 Classification rules:
 - Assign to EXACTLY ONE primary section: ASTS / Partners / Comps
@@ -40,10 +40,9 @@ Classification rules:
   - Comps = competitor actions, constellation/regulatory/partnership updates by rivals (even if ASTS is referenced for context).
   - Overlap → choose dominant category.
 
-Color-dot system (PR–orange, SEC–blue, WS–purple):
+Color-dot system (PR–orange, WS–purple):
 - Apply ONLY to ASTS-classified items as an internal guide to ensure the agent checks rigorously for updates, upgrades, contradictions, or new color in existing entries.
 - PR (orange) = ASTS-issued press releases, blogs, investor decks, executive interviews.
-- SEC (blue) = SEC filings (8-K, 10-Q, S-1, Form 4, prospectus, etc.) or direct excerpts.
 - WS (purple) = third-party analyst reports, initiations, PT changes, upgrades/downgrades, call transcripts with new insights.
 - Partners and Comps items receive NO color dot — ever. Do not check dots when analyzing Partners or Comps items.
 - In output, show color only for ASTS items; use it to drive thoroughness (never skip checking for existing related entries).
@@ -53,7 +52,7 @@ Output format – strict, institutional, hedge-fund style. For EACH item:
 Date (YYYY-MM-DD):          [clearest publication/announcement date]
 Headline / Summary:         [your concise 8–12 word title]
 Section:                    ASTS / Partners / Comps
-Color (ASTS only):          PR / SEC / WS / N/A
+Color (ASTS only):          PR / WS / N/A
 Materiality & Action:       [High / Medium / Low] – [Add new / Update existing / Minor edit / Replace / Skip]
 Rationale (2–4 sentences):  [Classification logic | Novelty vs. known facts | Hedge-fund relevance: dilution, de-risking, timeline shift, competitive threat, capital impact, etc.]
 Proposed Placement/Action:
@@ -67,16 +66,21 @@ Key Extracts / Bullets:
 Source / Link (if given):   [full URL or origin]
 ────────────────────────────────────────
 
-Mandatory check (ASTS PR or SEC items only):
-- If proposing Add / Update / Replace for any ASTS PR (orange) or SEC (blue) item, explicitly assess if the primary source/link is already logged in the Sources tab.
-- If likely missing: add to action → "Flag for addition to Sources tab: '2026-02-11 – Proposed $1.0B Conv. Notes Offering – [URL] – PR announcing intent to offer convertible notes due 2036'"
+Mandatory check (ASTS PR items only):
+- If proposing Add / Update / Replace for any ASTS PR (orange) item, explicitly assess if the primary source/link is already logged in the Sources tab.
+- If likely missing: add to action → "Flag for addition to Sources tab: '2026-02-11 – ASTS Press Release Title – [URL] – PR description'"
 - If already present or uncertain: note "Source likely already in Sources tab – no further action"
+
+SEC filing redirect check:
+- If any pasted item is a raw SEC filing (8-K, 10-Q, 10-K, S-1, Form 4, prospectus, 13D/G), do NOT process it here. Instead output:
+  → "REDIRECT: This is a SEC filing. Use the appropriate AI Agent: SEC Filing Delta Analysis (10-Q/10-K), Insider Activity Tracker (Form 4), or 13F/Institutional Holdings Tracker (13D/13G)."
 
 After processing all items:
 1. Executive Summary of Proposed Changes
    - Net adds: X (Comps: Y | Partners: Z | ASTS: W)
    - Updates/edits: X (list entries + brief change description)
    - Skips: X (rationale if high volume)
+   - Redirects: X SEC filings flagged for agent processing
    - Sources tab actions: X proposed new entries (list briefly)
    - Key themes / implications / risks / catalysts (e.g., dilution offset by debt reduction, launch cadence acceleration, competitive pressure)
 2. Suggested commit message:
@@ -106,7 +110,7 @@ When ready, analyze the following pasted content:`,
 
 Current date: February 14, 2026. All sections use reverse-chronological order (newest entries at top).
 
-Task: Analyze each pasted item (articles, press releases, SEC excerpts, analyst notes, etc.) independently. Items may be mixed, out of order, from any source/date.
+Task: Analyze each pasted item (articles, press releases, analyst notes, news, etc.) independently. Items may be mixed, out of order, from any source/date. NOTE: SEC filings (8-K, 10-Q, Form 4, prospectus, etc.) should be processed via dedicated AI agents (SEC Filing Delta, Insider Activity Tracker, 13F Tracker) — not this prompt. If SEC content is accidentally included, flag it for redirection.
 
 Classification rules:
 - Assign to EXACTLY ONE primary section: BMNR / Ethereum / Comps
@@ -115,10 +119,9 @@ Classification rules:
   - Comps = competitor actions, treasury/mining updates by rivals (even if BMNR is referenced for context).
   - Overlap → choose dominant category.
 
-Color-dot system (PR–orange, SEC–blue, WS–purple):
+Color-dot system (PR–orange, WS–purple):
 - Apply ONLY to BMNR-classified items as an internal guide to ensure the agent checks rigorously for updates, upgrades, contradictions, or new color in existing entries.
 - PR (orange) = BMNR-issued press releases, blogs, investor decks, executive interviews.
-- SEC (blue) = SEC filings (8-K, 10-Q, S-1, Form 4, prospectus, etc.) or direct excerpts.
 - WS (purple) = third-party analyst reports, initiations, PT changes, upgrades/downgrades, call transcripts with new insights.
 - Ethereum and Comps items receive NO color dot — ever. Do not check dots when analyzing Ethereum or Comps items.
 - In output, show color only for BMNR items; use it to drive thoroughness (never skip checking for existing related entries).
@@ -128,7 +131,7 @@ Output format – strict, institutional, hedge-fund style. For EACH item:
 Date (YYYY-MM-DD):          [clearest publication/announcement date]
 Headline / Summary:         [your concise 8–12 word title]
 Section:                    BMNR / Ethereum / Comps
-Color (BMNR only):          PR / SEC / WS / N/A
+Color (BMNR only):          PR / WS / N/A
 Materiality & Action:       [High / Medium / Low] – [Add new / Update existing / Minor edit / Replace / Skip]
 Rationale (2–4 sentences):  [Classification logic | Novelty vs. known facts | Hedge-fund relevance: dilution from raises, treasury accretion vs. unrealized losses, staking yield ramp, ETH price leverage/volatility, competitive treasury shift (e.g., vs. ETHZilla), capital impact, etc.]
 Proposed Placement/Action:
@@ -142,16 +145,21 @@ Key Extracts / Bullets:
 Source / Link (if given):   [full URL or origin]
 ────────────────────────────────────────
 
-Mandatory check (BMNR PR or SEC items only):
-- If proposing Add / Update / Replace for any BMNR PR (orange) or SEC (blue) item, explicitly assess if the primary source/link is already logged in the Sources tab.
-- If likely missing: add to action → "Flag for addition to Sources tab: '2026-02-09 – ETH Holdings Announcement – [URL] – PR on 4.326M ETH & $10B total holdings'"
+Mandatory check (BMNR PR items only):
+- If proposing Add / Update / Replace for any BMNR PR (orange) item, explicitly assess if the primary source/link is already logged in the Sources tab.
+- If likely missing: add to action → "Flag for addition to Sources tab: '2026-02-09 – BMNR Press Release Title – [URL] – PR description'"
 - If already present or uncertain: note "Source likely already in Sources tab – no further action"
+
+SEC filing redirect check:
+- If any pasted item is a raw SEC filing (8-K, 10-Q, 10-K, S-1, Form 4, prospectus, 13D/G), do NOT process it here. Instead output:
+  → "REDIRECT: This is a SEC filing. Use the appropriate AI Agent: SEC Filing Delta Analysis (10-Q/10-K), Insider Activity Tracker (Form 4), or 13F/Institutional Holdings Tracker (13D/13G)."
 
 After processing all items:
 1. Executive Summary of Proposed Changes
    - Net adds: X (Comps: Y | Ethereum: Z | BMNR: W)
    - Updates/edits: X (list entries + brief change description)
    - Skips: X (rationale if high volume)
+   - Redirects: X SEC filings flagged for agent processing
    - Sources tab actions: X proposed new entries (list briefly)
    - Key themes / implications / risks / catalysts (e.g., treasury accretion vs. dilution/volatility, staking yield ramp-up, ETH price sensitivity, competitive pressure from ETHZilla/other treasuries, Ethereum ecosystem/stablecoin developments)
 2. Suggested commit message:

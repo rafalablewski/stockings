@@ -2,15 +2,12 @@
 
 import React, { useState, useRef, useCallback } from "react";
 import { workflows } from "@/data/workflows";
-import { getWorkflowContext } from "@/lib/workflow-context";
 
 interface AgentWorkflow {
   id: string;
   name: string;
   description: string;
   prompt: string;
-  context: string;
-  contextModules: string[];
   requiresUserData: boolean;
 }
 
@@ -46,7 +43,6 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: workflow.prompt,
-          context: workflow.context,
           data: userData || undefined,
         }),
         signal: abortRef.current.signal,
@@ -198,7 +194,7 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
       {/* Expanded body */}
       {expanded && (
         <div style={{ padding: "0 20px 20px", borderTop: "1px solid var(--border)" }}>
-          {/* Context modules + view prompt */}
+          {/* View prompt toggle */}
           <div
             style={{
               display: "flex",
@@ -208,35 +204,6 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
               marginBottom: 16,
             }}
           >
-            <span
-              style={{
-                fontSize: 9,
-                fontWeight: 500,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                color: "var(--text3)",
-              }}
-            >
-              Context:
-            </span>
-            {workflow.contextModules.map((mod, i) => (
-              <span
-                key={mod}
-                style={{
-                  fontSize: 9,
-                  fontWeight: 500,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  padding: "2px 6px",
-                  borderRadius: 4,
-                  background: "rgba(255,255,255,0.04)",
-                  color: "var(--text3)",
-                  border: "1px solid var(--border)",
-                }}
-              >
-                {mod}
-              </span>
-            ))}
             <button
               type="button"
               onClick={() => setShowPrompt(!showPrompt)}
@@ -501,8 +468,6 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
         name: w.name,
         description: w.description,
         prompt: variant.prompt,
-        context: getWorkflowContext(tickerLower, variant.contextModules),
-        contextModules: variant.contextModules as string[],
         requiresUserData: w.requiresUserData,
       };
     })
