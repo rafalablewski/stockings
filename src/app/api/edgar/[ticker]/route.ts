@@ -23,7 +23,7 @@ interface EdgarFiling {
  * Fetches the latest SEC EDGAR filings for a given ticker using
  * the SEC submissions API (data.sec.gov).
  *
- * Returns the most recent 40 filings with type, date, description, and link.
+ * Returns the most recent 300 filings with type, date, description, and link.
  */
 export async function GET(
   _request: NextRequest,
@@ -76,7 +76,7 @@ export async function GET(
       return NextResponse.json({ filings: [], companyName: data?.name ?? upperTicker });
     }
 
-    const count = Math.min(recent.accessionNumber?.length ?? 0, 40);
+    const count = Math.min(recent.accessionNumber?.length ?? 0, 300);
     const filings: EdgarFiling[] = [];
 
     for (let i = 0; i < count; i++) {
@@ -92,7 +92,7 @@ export async function GET(
         reportDate: recent.reportDate?.[i] ?? '',
         fileUrl: primaryDoc
           ? `https://www.sec.gov/Archives/edgar/data/${cik.replace(/^0+/, '')}/${accessionNoDashes}/${primaryDoc}`
-          : `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=&dateb=&owner=include&count=40`,
+          : `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=&dateb=&owner=include&count=300`,
       });
     }
 

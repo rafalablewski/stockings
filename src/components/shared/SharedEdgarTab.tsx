@@ -90,7 +90,7 @@ function formatEdgarDate(isoDate: string): string {
 }
 
 // ── Filing matcher ──────────────────────────────────────────────────────────
-const normalizeForm = (f: string) => f.replace(/[/\s-]/g, '');
+const normalizeForm = (f: string) => f.replace(/^Form\s*/i, '').replace(/[/\s-]/g, '');
 
 function matchFilings(edgarFilings: EdgarFiling[], localFilings: LocalFiling[]): MatchResult[] {
   return edgarFilings.map(ef => {

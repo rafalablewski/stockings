@@ -102,7 +102,9 @@ export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   'SC 13D/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'DEF 14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form 4': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  '4': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form 144': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  '144': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   '424B7': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
   'FWP': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
   'ARS': { bg: 'rgba(59,130,246,0.2)', text: '#60a5fa' },
@@ -110,10 +112,12 @@ export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   'DEFA14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   '10-Q/A': { bg: 'rgba(168,85,247,0.2)', text: 'var(--violet)' },
   'Form 3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  '3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'SC 13D': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'S-3ASR': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'S-8': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form 144/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  '144/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
 };
 
 export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5', 'Other'];
