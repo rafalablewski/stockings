@@ -318,6 +318,61 @@ export const ETH_LIQUIDITY_FACTORS = {
 };
 
 // ============================================================================
+// INSIDER SALES (FORM 4 FILINGS — POST-IPO ERA)
+// ============================================================================
+
+/**
+ * Insider sales from Form 4 filings (Oct-Dec 2025).
+ * Total insider sales ~$112M at avg ~$25/share.
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Update when new Form 4 filings appear
+ * - Track cumulative shares sold per insider
+ * - Note Rule 10b5-1 plan status
+ */
+export const INSIDER_SALES = [
+  {
+    name: 'Jonathan Bates (CEO → Former CEO)',
+    sharesSold: 2800000,
+    proceeds: 70000000,
+    avgPrice: 25.00,
+    period: 'Oct-Dec 2025',
+    method: 'Rule 10b5-1 Plan + Open Market',
+    notes: 'Reduced from ~41% to ~30%. Pledged ~800K shares to UBS. Stepped down as CEO Nov 14.',
+    filings: ['Form 4 (Oct 6)', 'Form 4 (Nov)', 'Form 4 (Dec 5)'],
+  },
+  {
+    name: 'Raymond Mow (CFO → Former CFO)',
+    sharesSold: 1000000,
+    proceeds: 25000000,
+    avgPrice: 25.00,
+    period: 'Nov-Dec 2025',
+    method: 'Open Market',
+    notes: 'Separated as CFO Dec 18, 2025. Resigned from board Dec 12.',
+    filings: ['Form 4 (Dec 3)'],
+  },
+  {
+    name: 'Seth Bayles (Secretary → Former Director)',
+    sharesSold: 700000,
+    proceeds: 17000000,
+    avgPrice: 24.29,
+    period: 'Nov-Dec 2025',
+    method: 'Open Market',
+    notes: 'Left board Nov 11 restructuring.',
+    filings: ['Form 4 (Dec 1)'],
+  },
+];
+
+/** Total insider sales summary */
+export const INSIDER_SALES_SUMMARY = {
+  totalSharesSold: 4500000,
+  totalProceeds: 112000000,
+  avgPrice: 24.89,
+  period: 'Oct-Dec 2025',
+  notes: 'Concentrated selling during Oct-Dec 2025. Most under Rule 10b5-1 plans or post-separation.',
+};
+
+// ============================================================================
 // EARLY SHAREHOLDERS (2021 SC 13D FILINGS — PRE-IPO SHELL ERA)
 // ============================================================================
 

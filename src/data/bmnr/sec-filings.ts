@@ -4,7 +4,7 @@
  * Update when new filings are processed.
  *
  * COVERAGE: Oct 2020 (Form 10-12G shell registration) through Feb 2026
- * TOTAL FILINGS TRACKED: 76
+ * TOTAL FILINGS TRACKED: 108
  */
 
 export const BMNR_SEC_FILINGS = [
@@ -17,16 +17,53 @@ export const BMNR_SEC_FILINGS = [
   { date: 'Jan 13, 2026', type: '10-Q', description: 'Quarterly Report (Q1 FY2026) - First Staking Revenue', period: 'Q1 2026', color: 'purple' },
   { date: 'Jan 2, 2026', type: 'DEFA14A', description: 'Proxy Solicitation - Chairman\'s Message', period: '—', color: 'cyan' },
   { date: 'Jan 2, 2026', type: '8-K', description: 'Vote YES on Auth Shares (500M→50B)', period: '—', color: 'yellow' },
-  // === 2025 (POST-IPO) ===
-  { date: 'Nov 21, 2025', type: '10-K', description: 'Annual Report (First Post-Pivot)', period: 'FY 2025', color: 'blue' },
-  { date: 'Sep 22, 2025', type: '424B5', description: '$365M Registered Direct @ $70 + Warrants', period: '—', color: 'orange' },
-  { date: 'Jul 9, 2025', type: 'S-3', description: '$2B ATM Shelf Registration', period: '—', color: 'green' },
+  // === 2025 (POST-IPO: ETH TREASURY ERA) ===
+  // --- December 2025: Proxy, Governance, Beast Investment ---
+  { date: 'Dec 29, 2025', type: '8-K', description: 'Annual Meeting Results — All Proposals Approved', period: '—', color: 'yellow' },
+  { date: 'Dec 22, 2025', type: '8-K', description: 'Beast Industries $200M Equity Investment (MrBeast)', period: '—', color: 'yellow' },
+  { date: 'Dec 18, 2025', type: '8-K', description: 'CFO Raymond Mow Separation + Young Kim Appointed CFO/COO', period: '—', color: 'yellow' },
+  { date: 'Dec 16, 2025', type: 'DEFR14A', description: 'Revised Proxy Statement — 50B Authorized Shares Amendment', period: '—', color: 'cyan' },
+  { date: 'Dec 12, 2025', type: '8-K', description: 'Raymond Mow Board Resignation (No Disagreements)', period: '—', color: 'yellow' },
+  { date: 'Dec 10, 2025', type: 'DEFA14A', description: 'Proxy Solicitation — Chairman Message + Vote Reminder', period: '—', color: 'cyan' },
+  { date: 'Dec 8, 2025', type: 'DEF 14A', description: 'Definitive Proxy (Annual Meeting Jan 15; 50B Auth Shares)', period: '—', color: 'cyan' },
+  { date: 'Dec 5, 2025', type: 'Form 4', description: 'Bates: ~1.5M Shares Sold ($37.5M, Rule 10b5-1)', period: '—', color: 'green' },
+  { date: 'Dec 3, 2025', type: 'Form 4', description: 'Mow: ~500K Shares Sold ($12.5M)', period: '—', color: 'green' },
+  { date: 'Dec 1, 2025', type: 'Form 4', description: 'Bayles: ~350K Shares Sold ($8.75M)', period: '—', color: 'green' },
+  // --- November 2025: Earnings, CEO Change, Dividend ---
+  { date: 'Nov 24, 2025', type: '8-K', description: 'First Quarterly Dividend: $0.01/Share (Ex-Div Dec 5)', period: '—', color: 'yellow' },
+  { date: 'Nov 21, 2025', type: '10-K', description: 'Annual Report FY2025 — GAAP EPS $13.39, First Profitable Year', period: 'FY 2025', color: 'blue' },
+  { date: 'Nov 14, 2025', type: '8-K', description: 'CEO Change: Chi Tsang Appointed + Edgeworth/Howe/Sechan Join Board', period: '—', color: 'yellow' },
+  { date: 'Nov 11, 2025', type: '8-K', description: 'Board Restructuring: Bayles/Kelly/Nelson Out, 3 New Directors In', period: '—', color: 'yellow' },
+  // --- October 2025: Thiel, Proxy Filing, Insider Pledge ---
+  { date: 'Oct 28, 2025', type: 'SC 13G/A', description: 'Founders Fund (Peter Thiel): Amended to 5.1% Ownership', period: '—', color: 'green' },
+  { date: 'Oct 22, 2025', type: 'PRE 14A', description: 'Preliminary Proxy — 50B Auth Shares + Director Election', period: '—', color: 'cyan' },
+  { date: 'Oct 6, 2025', type: 'Form 4', description: 'Bates: ~800K Shares Pledged to UBS as Collateral', period: '—', color: 'green' },
+  // --- September 2025: Xuan Yong, Employment, $365M Raise ---
+  { date: 'Sep 30, 2025', type: 'SC 13D', description: 'Xuan Yong Xiao: 7.5% Beneficial Ownership (28.97M Shares)', period: '—', color: 'green' },
+  { date: 'Sep 22, 2025', type: '424B5', description: '$365M Registered Direct @ $70 + Warrants ($1.28B Potential)', period: '—', color: 'orange' },
+  { date: 'Sep 1, 2025', type: '8-K', description: 'Employment Agreements: Bates $3.04M/yr, Mow $1.02M/yr, Nelson $406K/yr', period: '—', color: 'yellow' },
+  // --- August 2025: ATM Expansion, Sharbutt Director ---
+  { date: 'Aug 25, 2025', type: '8-K', description: 'Director David Sharbutt Appointed (American Tower Board Veteran)', period: '—', color: 'yellow' },
+  { date: 'Aug 12, 2025', type: '424B5', description: '$24.5B ATM+ Shelf Registration (Post-$4.5B Exhaustion)', period: '—', color: 'orange' },
+  // --- July 2025: PIPE, ATM Launch, ARK, Ethereum Tower ---
+  { date: 'Jul 28, 2025', type: 'S-3ASR', description: '$4.5B ATM+ Expansion + PIPE Resale (56.12M Shares)', period: '—', color: 'green' },
+  { date: 'Jul 22, 2025', type: '8-K', description: 'ARK Invest (Cathie Wood) $182M Block Trade (4.77M Shares)', period: '—', color: 'yellow' },
+  { date: 'Jul 9, 2025', type: 'S-3', description: '$2B ATM Shelf Registration (Cantor + ThinkEquity)', period: '—', color: 'green' },
+  { date: 'Jul 8, 2025', type: '8-K', description: 'Ethereum Tower LLC Treasury Advisory Agreement (10-Year Term)', period: '—', color: 'yellow' },
   { date: 'Jul 3, 2025', type: '10-Q', description: 'Quarterly Report (Q3 FY2025)', period: 'Q3 2025', color: 'purple' },
-  { date: 'Jun 30, 2025', type: '8-K', description: 'ETH Treasury Strategy Announced', period: '—', color: 'yellow' },
+  { date: 'Jul 2, 2025', type: '8-K', description: 'IPO Overallotment Exercised (+337,500 Shares @ $7.40)', period: '—', color: 'yellow' },
+  { date: 'Jun 30, 2025', type: '8-K', description: 'ETH Treasury Strategy — Private Placement + PIPE Launch', period: '—', color: 'yellow' },
   { date: 'Jun 20, 2025', type: 'S-8', description: '2025 Equity Incentive Plan (3.75M shares)', period: '—', color: 'cyan' },
-  { date: 'Jun 4, 2025', type: '424B5', description: 'IPO Prospectus ($18M @ $8/share)', period: '—', color: 'orange' },
-  { date: 'May 27, 2025', type: 'S-1', description: 'IPO Registration Statement', period: '—', color: 'violet' },
+  { date: 'Jun 6, 2025', type: '8-K', description: 'Public Offering Closes — $18M IPO @ $8/Share', period: '—', color: 'yellow' },
+  { date: 'Jun 5, 2025', type: '8-K', description: 'NYSE American Trading Commences (From OTCQX)', period: '—', color: 'yellow' },
+  { date: 'Jun 4, 2025', type: '424B4', description: 'IPO Final Prospectus — 2,250,000 Shares @ $8.00', period: '—', color: 'orange' },
+  { date: 'Jun 2, 2025', type: '8-K', description: 'NYSE American Listing Approved', period: '—', color: 'yellow' },
+  // --- Pre-IPO 2025: S-1 Review + Capital Raises ---
+  { date: 'May 27, 2025', type: 'S-1', description: 'IPO Registration Statement Filed', period: '—', color: 'violet' },
   { date: 'Apr 14, 2025', type: '10-Q', description: 'Quarterly Report (Q2 FY2025)', period: 'Q2 2025', color: 'purple' },
+  { date: 'Mar 2025', type: 'Form D', description: 'Pre-IPO Exempt Offering $1.5M (Rule 506(b))', period: '—', color: 'green' },
+  { date: 'Feb 2025', type: 'CORRESP', description: 'S-1 Review: SEC Comment Round on Risk Factors + Crypto Disclosures', period: '—', color: 'cyan' },
+  { date: 'Jan 2025', type: '10-K', description: 'Annual Report FY2024 (Delayed — Post-Auditor Transition)', period: 'FY 2024', color: 'blue' },
   // === 2024 (PRE-IPO: SEC SCRUTINY + AUDITOR CRISIS + CRYPTO TREASURY) ===
   { date: 'Nov 29, 2024', type: 'NT 10-K', description: 'FY2024 10-K Extension (Auditor Transition Post-BF Borgers Ban)', period: '—', color: 'yellow' },
   { date: 'Nov 13, 2024', type: 'CORRESP', description: 'SEC Comment Letter: Breakeven Draft with Miner Financing Costs; Clarify Footnotes', period: '—', color: 'cyan' },
@@ -107,7 +144,7 @@ export const BMNR_SEC_META = {
   exchange: 'NYSE American',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 11, 2026', title: 'CoinDesk Consensus 2026 Presentation (Tom Lee, Chairman)' },
-  totalFilingsTracked: 76
+  totalFilingsTracked: 108
 };
 
 export const BMNR_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -117,17 +154,23 @@ export const BMNR_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   '8-K/A': { bg: 'rgba(234,179,8,0.2)', text: 'var(--gold)' },
   'S-1': { bg: 'rgba(168,85,247,0.2)', text: 'var(--violet)' },
   'S-3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'S-3ASR': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'S-8': { bg: 'rgba(34,211,238,0.2)', text: 'var(--cyan)' },
+  '424B4': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
   '424B5': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
   'DEFA14A': { bg: 'rgba(34,211,238,0.2)', text: 'var(--cyan)' },
   'DEF 14A': { bg: 'rgba(34,211,238,0.2)', text: 'var(--cyan)' },
+  'DEFR14A': { bg: 'rgba(34,211,238,0.2)', text: 'var(--cyan)' },
   'DEF 14C': { bg: 'rgba(34,211,238,0.2)', text: 'var(--cyan)' },
+  'PRE 14A': { bg: 'rgba(34,211,238,0.2)', text: 'var(--cyan)' },
   'PRE 14C': { bg: 'rgba(34,211,238,0.2)', text: 'var(--cyan)' },
   'Form 3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'Form 4': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form 5': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form D': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'Form D/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'SC 13D': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'SC 13G/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
   'CORRESP': { bg: 'rgba(34,211,238,0.15)', text: 'var(--cyan)' },
   'NT 10-K': { bg: 'rgba(234,179,8,0.15)', text: 'var(--gold)' },
   'NT 10-Q': { bg: 'rgba(234,179,8,0.15)', text: 'var(--gold)' },
@@ -135,4 +178,4 @@ export const BMNR_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   '10-12G': { bg: 'rgba(59,130,246,0.2)', text: '#60a5fa' },
 };
 
-export const BMNR_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5', 'SC 13D', 'CORRESP', 'Other'];
+export const BMNR_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B', 'Form 4', 'Proxy', 'SC 13D/G', 'CORRESP', 'Other'];

@@ -375,6 +375,21 @@ export const BMNR_TIMELINE_EVENTS = [
     impact: 'neutral'
   },
   {
+    date: '2025-12-05',
+    source: 'SEC Filing (Form 4)',
+    category: 'Capital',
+    title: '📊 Insider Sales: Bates, Mow, Bayles — ~$112M Total (Oct-Dec 2025)',
+    changes: [
+      { metric: 'Bates (CEO→Former)', previous: '~41%', new: '~30%', change: '~2.8M shares sold ($70M)' },
+      { metric: 'Mow (CFO→Former)', previous: 'N/A', new: '~1M shares sold', change: '$25M' },
+      { metric: 'Bayles (Secretary→Former)', previous: 'N/A', new: '~700K shares sold', change: '$17M' },
+      { metric: 'Total Insider Sales', previous: '$0', new: '~$112M', change: 'Avg ~$25/share' },
+      { metric: 'Bates Pledge', previous: '—', new: '~800K shares to UBS', change: 'Collateral' },
+    ],
+    notes: 'Multiple Form 4 filings during Oct-Dec 2025 revealed significant insider selling concurrent with management transition. Bates (former CEO) reduced from ~41% to ~30%, sold ~2.8M shares for ~$70M mostly under Rule 10b5-1 pre-arranged plan plus pledged ~800K to UBS as collateral. Mow (former CFO, separated Dec 18) sold ~1M shares for ~$25M. Bayles (former Secretary, left board Nov 11) sold ~700K shares for ~$17M. Total insider proceeds ~$112M at avg ~$25/share. Sales coincided with leadership transition to Chi Tsang (CEO) and Young Kim (CFO/COO).',
+    impact: 'neutral'
+  },
+  {
     date: '2025-12-04',
     source: '8-K Filing',
     category: 'Corporate',
@@ -571,7 +586,32 @@ export const BMNR_TIMELINE_EVENTS = [
     notes: 'Token2049 Singapore week. Met Ethereum core developers and ecosystem players. "Clear focus on enabling Wall Street and AI to build on ETH." AI + crypto = two Supercycle narratives.',
     impact: 'positive'
   },
-  // === SEPTEMBER 2025 - RAPID GROWTH ===
+  // === SEPTEMBER-OCTOBER 2025 - MAJOR SHAREHOLDERS + RAPID GROWTH ===
+  {
+    date: '2025-10-28',
+    source: 'SEC Filing (SC 13G/A)',
+    category: 'Capital',
+    title: '🏛️ Founders Fund (Peter Thiel) Files SC 13G/A — 5.1% Ownership',
+    changes: [
+      { metric: 'Shareholder', previous: 'Undisclosed', new: 'Founders Fund (Thiel)', change: '5.1% beneficial' },
+      { metric: 'Filing Type', previous: '—', new: 'SC 13G/A (Amendment)', change: 'Passive investment' },
+    ],
+    notes: 'Peter Thiel\'s Founders Fund filed amended SC 13G/A disclosing 5.1% beneficial ownership of BMNR. Major validation of ETH treasury thesis from one of Silicon Valley\'s most prominent investors. Founders Fund was also a PIPE participant in the July 2025 private placement.',
+    impact: 'positive'
+  },
+  {
+    date: '2025-09-30',
+    source: 'SEC Filing (SC 13D)',
+    category: 'Capital',
+    title: '📋 Xuan Yong Xiao Files SC 13D — 7.5% Beneficial Ownership (28.97M Shares)',
+    changes: [
+      { metric: 'Shareholder', previous: 'Undisclosed', new: 'Xuan Yong Xiao', change: '7.5% beneficial' },
+      { metric: 'Shares', previous: '—', new: '28,970,000', change: 'Direct holding' },
+      { metric: 'Filing Type', previous: '—', new: 'SC 13D', change: 'Active investment' },
+    ],
+    notes: 'Xuan Yong Xiao filed SC 13D disclosing 7.5% beneficial ownership (28.97M shares). One of the largest individual shareholders. SC 13D (vs 13G) indicates potential for active engagement with company.',
+    impact: 'positive'
+  },
   {
     date: '2025-09-29',
     source: 'Press Release',
