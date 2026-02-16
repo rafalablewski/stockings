@@ -5,7 +5,10 @@
  * Extracted from ASTS.tsx so the check-analyzed API can access it.
  *
  * AI AGENT INSTRUCTIONS:
- * - Add new entries at the BEGINNING of the array (newest first)
+ * - Entries are GROUPED BY COMPETITOR SECTION (see ═══ dividers below)
+ * - Within each section, entries are sorted DATE DESCENDING (newest first)
+ * - Add new entries to the matching competitor section, preserving date order
+ * - The application sorts entries before display, so file order is for human readability
  * - NEVER delete old entries — this is an audit trail
  */
 
@@ -30,7 +33,7 @@ export interface CompsTimelineEntry {
 
 export const COMPS_TIMELINE: CompsTimelineEntry[] = [
     // ═══════════════════════════════════════════════════════════════════════════
-    // ADD NEW COMPETITOR NEWS ENTRIES HERE (newest first)
+    // ADD NEW ENTRIES TO THE MATCHING COMPETITOR SECTION BELOW (date descending within each section)
     // Format:
     // {
     //   date: 'YYYY-MM-DD',
