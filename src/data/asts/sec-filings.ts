@@ -92,33 +92,25 @@ export const ASTS_SEC_META = {
   totalFilingsTracked: 86
 };
 
+// Color palette constants (Gemini review: reduce duplication)
+const C_BLUE   = { bg: 'rgba(59,130,246,0.2)',  text: '#60a5fa' };
+const C_VIOLET = { bg: 'rgba(168,85,247,0.2)',  text: 'var(--violet)' };
+const C_GOLD   = { bg: 'rgba(234,179,8,0.2)',   text: 'var(--gold)' };
+const C_GREEN  = { bg: 'rgba(34,197,94,0.2)',   text: '#4ade80' };
+const C_ORANGE = { bg: 'rgba(249,115,22,0.2)',  text: '#fb923c' };
+
 export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  '10-K': { bg: 'rgba(59,130,246,0.2)', text: '#60a5fa' },
-  '10-Q': { bg: 'rgba(168,85,247,0.2)', text: 'var(--violet)' },
-  '8-K': { bg: 'rgba(234,179,8,0.2)', text: 'var(--gold)' },
-  'S-1': { bg: 'rgba(168,85,247,0.2)', text: 'var(--violet)' },
-  'S-3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  '424B5': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
-  'SC 13G': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'SC 13D/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'DEF 14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'Form 4': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  '4': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'Form 144': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  '144': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  '424B7': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
-  'FWP': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
-  'ARS': { bg: 'rgba(59,130,246,0.2)', text: '#60a5fa' },
-  'PRE 14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'DEFA14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  '10-Q/A': { bg: 'rgba(168,85,247,0.2)', text: 'var(--violet)' },
-  'Form 3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  '3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'SC 13D': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'S-3ASR': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'S-8': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'Form 144/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  '144/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  '10-K': C_BLUE, 'ARS': C_BLUE,
+  '10-Q': C_VIOLET, '10-Q/A': C_VIOLET, 'S-1': C_VIOLET,
+  '8-K': C_GOLD,
+  'S-3': C_GREEN, 'S-3ASR': C_GREEN, 'S-8': C_GREEN,
+  '424B5': C_ORANGE, '424B7': C_ORANGE, 'FWP': C_ORANGE,
+  'SC 13G': C_GREEN, 'SC 13D': C_GREEN, 'SC 13D/A': C_GREEN,
+  'DEF 14A': C_GREEN, 'PRE 14A': C_GREEN, 'DEFA14A': C_GREEN,
+  'Form 4': C_GREEN, '4': C_GREEN,
+  'Form 3': C_GREEN, '3': C_GREEN,
+  'Form 144': C_GREEN, '144': C_GREEN,
+  'Form 144/A': C_GREEN, '144/A': C_GREEN,
 };
 
 export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5', 'Other'];

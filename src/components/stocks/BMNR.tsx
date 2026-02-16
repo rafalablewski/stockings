@@ -230,7 +230,7 @@ import {
   STAKING_RATIO,
   STAKING_APY,
 } from '@/data/bmnr';
-import { BMNR_SEC_FILINGS, BMNR_SEC_META, BMNR_SEC_TYPE_COLORS, BMNR_SEC_FILTER_TYPES } from '@/data/bmnr/sec-filings';
+import { BMNR_SEC_FILINGS, BMNR_SEC_META, BMNR_SEC_TYPE_COLORS, BMNR_SEC_FILTER_TYPES, BMNR_FILING_CROSS_REFS } from '@/data/bmnr/sec-filings';
 import { BMNR_QUARTERLY_DATA, BMNR_MARKET_CAP_DATA } from '@/data/bmnr/quarterly-metrics';
 import { BMNR_ANALYST_COVERAGE } from '@/data/bmnr/analyst-coverage';
 import { BMNR_TIMELINE_EVENTS } from '@/data/bmnr/timeline-events';
@@ -1130,7 +1130,7 @@ const BMNRDilutionAnalysis = () => {
           <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="Crypto Treasury Peers" competitors={bmnrCompetitors} />
         )}
         {activeTab === 'edgar' && (
-          <SharedEdgarTab ticker="BMNR" companyName="BitMine Immersion Technologies" localFilings={BMNR_SEC_FILINGS} cik={BMNR_SEC_META.cik} typeColors={BMNR_SEC_TYPE_COLORS} />
+          <SharedEdgarTab ticker="BMNR" companyName="BitMine Immersion Technologies" localFilings={BMNR_SEC_FILINGS} cik={BMNR_SEC_META.cik} typeColors={BMNR_SEC_TYPE_COLORS} crossRefIndex={BMNR_FILING_CROSS_REFS} />
         )}
         </main>
       </div>
@@ -7911,7 +7911,7 @@ const TimelineTab = () => {
     if (secFilter === 'All') return true;
     if (secFilter === 'S-1/S-3') return f.type === 'S-1' || f.type === 'S-3' || f.type === 'S-3ASR' || f.type === 'S-8';
     if (secFilter === '424B') return f.type === '424B4' || f.type === '424B5';
-    if (secFilter === 'Form 4') return f.type === 'Form 3' || f.type === 'Form 4' || f.type === 'Form 5';
+    if (secFilter === 'Form 4') return f.type === '3' || f.type === '4' || f.type === '5';
     if (secFilter === 'Proxy') return f.type === 'DEF 14A' || f.type === 'DEFA14A' || f.type === 'DEFR14A' || f.type === 'PRE 14A' || f.type === 'DEF 14C' || f.type === 'PRE 14C';
     if (secFilter === 'SC 13D/G') return f.type === 'SC 13D' || f.type === 'SC 13G/A';
     return f.type === secFilter;
@@ -8097,7 +8097,7 @@ const TimelineTab = () => {
                     fontSize: 11,
                     fontWeight: 600
                   }}>
-                    {filing.type}
+                    {/^\d+$/.test(filing.type) ? `Form ${filing.type}` : filing.type}
                   </span>
                 </span>
                 <span style={{ padding: '12px 16px', fontSize: 13 }}>{filing.description}</span>
