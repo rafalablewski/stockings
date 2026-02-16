@@ -895,6 +895,27 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
     // AMAZON LEO (fka Project Kuiper) - LEO BROADBAND (TERMINAL-BASED)
     // ═══════════════════════════════════════════════════════════════════════════
     {
+      date: '2026-02-10',
+      competitor: 'amazon-leo',
+      category: 'Partnership',
+      headline: 'ELCOME signs Amazon Leo reseller agreement for maritime connectivity across 5,000+ vessel fleet',
+      details: [
+        'ELCOME (Dubai-based maritime technology provider) becomes Amazon Leo authorized reseller for commercial maritime',
+        'Covers merchant shipping, offshore service vessels, commercial fishing, and yachting across all major oceans',
+        'ELCOME\'s existing fleet connectivity footprint: 5,000+ vessels',
+        'Amazon Leo Pro and Leo Ultra terminals provide independent LEO connectivity path for network diversity at sea',
+        'Terminal-based broadband — NOT direct-to-device, dedicated maritime antenna equipment',
+        'Benefits: increased resilience, optimized app performance, real-time telemetry, remote operations',
+        'Amazon Leo: "powered by a constellation of thousands of satellites in low Earth orbit"',
+        'ELCOME offers global engineering, 24/7 support, and 55+ years maritime satellite communications experience',
+      ],
+      implication: 'neutral',
+      astsComparison: 'Terminal-based maritime broadband — different market from ASTS D2D to smartphones. Amazon Leo building vertical distribution (maritime via ELCOME, aviation via JetBlue, residential via Vrio). ASTS does not compete for maritime terminal broadband. Shows Amazon Leo commercial rollout accelerating across enterprise verticals with authorized reseller model.',
+      source: 'Business Wire / ELCOME',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation',
+    },
+    {
       date: '2026-02-04',
       competitor: 'amazon-leo',
       category: 'Partnership',
@@ -1036,6 +1057,27 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
       storyId: 'amazon-leo-constellation',
       storyTitle: 'Amazon Leo Constellation'
+    },
+    {
+      date: '2024-06-13',
+      competitor: 'amazon-leo',
+      category: 'Partnership',
+      headline: 'Vrio/DIRECTV Latin America signs Project Kuiper distribution deal for 7 South American countries',
+      details: [
+        'Vrio Corp (parent of DIRECTV Latin America and Sky Brasil) to distribute Project Kuiper broadband in 7 countries',
+        'Markets: Argentina, Brazil, Chile, Uruguay, Peru, Ecuador, Colombia — ~383M total population',
+        'Targeting ~200M people World Bank estimates are still not connected to the internet',
+        'Terminal-based residential broadband — NOT direct-to-device, requires dedicated Kuiper equipment',
+        'Nationwide coverage per country via LEO satellite — impractical with fiber/fixed wireless alone',
+        'Amazon SVP Panos Panay: "Working with Vrio to bring affordable access to broadband"',
+        'Kuiper VP Rajeev Badyal: "network has capacity and flexibility to serve tens of millions"',
+        'At time of announcement: Kuiper had completed Protoflight mission, planned constellation deployment and service demos later in 2024',
+      ],
+      implication: 'neutral',
+      astsComparison: 'Terminal-based residential broadband in South America — different market from ASTS D2D to unmodified smartphones. Amazon Kuiper building distribution network through regional media/telecom partners (Vrio/DIRECTV). ASTS does not compete for fixed broadband; its proposition is cellular D2D. However, Kuiper gaining distribution footprint in LatAm could position Amazon to later compete if Kuiper develops D2D capability.',
+      source: 'Business Wire / Vrio Corp',
+      storyId: 'amazon-leo-constellation',
+      storyTitle: 'Amazon Leo Constellation',
     },
     {
       date: '2023-11-28',
