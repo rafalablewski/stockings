@@ -6,12 +6,14 @@
  * tracked and which are new. Per-filing actions: open in new tab
  * or analyze with AI.
  *
- * @version 2.0.0
+ * v3.0.0 — 3-tier matching (IN DB / DATA ONLY / NEW) + cross-ref display
+ *
+ * @version 3.0.0
  */
 
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
 export interface EdgarTabProps {
   ticker: string;
@@ -19,6 +21,8 @@ export interface EdgarTabProps {
   localFilings: LocalFiling[];
   cik: string;
   typeColors: Record<string, { bg: string; text: string }>;
+  /** Cross-reference index: maps "FORM|YYYY-MM-DD" to data captured in other files */
+  crossRefIndex?: Record<string, { source: string; data: string }[]>;
 }
 
 export interface LocalFiling {
@@ -38,10 +42,13 @@ interface EdgarFiling {
   fileUrl: string;
 }
 
+type FilingStatus = 'tracked' | 'data_only' | 'new';
+
 interface MatchResult {
   filing: EdgarFiling;
-  inDatabase: boolean;
+  status: FilingStatus;
   matchedLocal?: LocalFiling;
+  crossRefs?: { source: string; data: string }[];
 }
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -89,27 +96,152 @@ function formatEdgarDate(isoDate: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-// ── Filing matcher ──────────────────────────────────────────────────────────
-const normalizeForm = (f: string) => f.replace(/^Form\s*/i, '').replace(/[/\s-]/g, '');
+/** Get ±1 day ISO dates for fuzzy cross-ref lookup */
+function getDateNeighbors(isoDate: string): string[] {
+  const d = new Date(isoDate + 'T00:00:00');
+  if (isNaN(d.getTime())) return [isoDate];
+  const prev = new Date(d); prev.setDate(prev.getDate() - 1);
+  const next = new Date(d); next.setDate(next.getDate() + 1);
+  return [
+    prev.toISOString().slice(0, 10),
+    isoDate,
+    next.toISOString().slice(0, 10),
+  ];
+}
 
-function matchFilings(edgarFilings: EdgarFiling[], localFilings: LocalFiling[]): MatchResult[] {
+// ── Filing matcher ──────────────────────────────────────────────────────────
+/**
+ * Normalize form type for comparison. EDGAR returns bare types ("4", "3",
+ * "144") while the local DB uses prefixed names ("Form 4", "Form 3",
+ * "Form 144"). EDGAR also uses "SCHEDULE 13D/A" while DB uses "SC 13D/A".
+ * This strips "FORM" prefix, normalizes "SCHEDULE" → "SC", and removes
+ * slashes, spaces, and hyphens so both sides reduce to the same canonical form.
+ */
+const normalizeForm = (f: string) =>
+  f.replace(/[/\s-]/g, '').replace(/^FORM/i, '').replace(/^SCHEDULE/i, 'SC');
+
+/**
+ * Date tolerance by form type. Ownership filings (Form 4, Form 3, Form 144,
+ * SC 13D, SC 13G) use the transaction date in the local DB but the filing
+ * date on EDGAR. SEC requires Form 4 within 2 business days → up to 4
+ * calendar days gap. SC 13D/G can lag even more.
+ */
+const OWNERSHIP_FORMS = new Set(['4', '3', '5', '144', '144A', 'SC13D', 'SC13DA', 'SC13G', 'SC13GA']);
+function getDateTolerance(form: string): number {
+  return OWNERSHIP_FORMS.has(normalizeForm(form.toUpperCase())) ? 5 : 1;
+}
+
+/** Get date neighbors within ±N days for fuzzy lookup */
+function getDateRange(isoDate: string, days: number): string[] {
+  const d = new Date(isoDate + 'T00:00:00');
+  if (isNaN(d.getTime())) return [isoDate];
+  const result: string[] = [];
+  for (let offset = -days; offset <= days; offset++) {
+    const nd = new Date(d);
+    nd.setDate(nd.getDate() + offset);
+    result.push(nd.toISOString().slice(0, 10));
+  }
+  return result;
+}
+
+/**
+ * Look up cross-refs for a given form + date (with form-specific tolerance).
+ * Iterates over index keys and normalizes both the EDGAR form and the index
+ * key's form so "4" matches "Form 4", "SCHEDULE 13D/A" matches "SC 13D/A", etc.
+ */
+function lookupCrossRefs(
+  form: string,
+  isoDate: string,
+  index?: Record<string, { source: string; data: string }[]>,
+): { source: string; data: string }[] | undefined {
+  if (!index) return undefined;
+  const lookupNorm = normalizeForm(form.toUpperCase().trim());
+  const tolerance = getDateTolerance(form.toUpperCase().trim());
+  const validDates = new Set(getDateRange(isoDate, tolerance));
+
+  for (const [key, value] of Object.entries(index)) {
+    const pipeIdx = key.indexOf('|');
+    if (pipeIdx === -1) continue;
+    const keyForm = key.slice(0, pipeIdx);
+    const keyDate = key.slice(pipeIdx + 1);
+    if (validDates.has(keyDate) && normalizeForm(keyForm.toUpperCase().trim()) === lookupNorm) {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+function matchFilings(
+  edgarFilings: EdgarFiling[],
+  localFilings: LocalFiling[],
+  crossRefIndex?: Record<string, { source: string; data: string }[]>,
+): MatchResult[] {
   return edgarFilings.map(ef => {
     const edgarDate = normalizeDate(ef.filingDate);
     const edgarForm = ef.form.toUpperCase().trim();
+    const tolerance = getDateTolerance(edgarForm);
+
+    // Tier 1: match against sec-filings.ts
     const match = localFilings.find(lf => {
       const localDate = normalizeDate(lf.date);
       const localForm = lf.type.toUpperCase().trim();
       const d1 = new Date(edgarDate);
       const d2 = new Date(localDate);
       const dayDiff = Math.abs(d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24);
-      if (dayDiff > 1) return false;
+      if (dayDiff > tolerance) return false;
       return normalizeForm(edgarForm) === normalizeForm(localForm);
     });
-    return { filing: ef, inDatabase: !!match, matchedLocal: match };
+
+    // Look up cross-refs regardless of match status
+    const crossRefs = lookupCrossRefs(ef.form, edgarDate, crossRefIndex);
+
+    if (match) {
+      return { filing: ef, status: 'tracked' as FilingStatus, matchedLocal: match, crossRefs };
+    }
+
+    // Tier 2: no sec-filings.ts entry, but cross-ref data exists
+    if (crossRefs && crossRefs.length > 0) {
+      return { filing: ef, status: 'data_only' as FilingStatus, crossRefs };
+    }
+
+    // Tier 3: completely new
+    return { filing: ef, status: 'new' as FilingStatus };
   });
 }
 
-// ── Tiny action button ──────────────────────────────────────────────────────
+// ── Status helpers ──────────────────────────────────────────────────────────
+const STATUS_CONFIG: Record<FilingStatus, { color: string; label: string; title: string }> = {
+  tracked:   { color: 'var(--mint)',  label: 'IN DB',     title: 'Tracked in database' },
+  data_only: { color: 'var(--gold)',  label: 'DATA ONLY', title: 'Data captured but filing not indexed in sec-filings.ts' },
+  new:       { color: 'var(--coral)', label: 'NEW',       title: 'Not in database' },
+};
+
+// ── Cross-ref display ───────────────────────────────────────────────────────
+const CrossRefLines: React.FC<{ refs: { source: string; data: string }[] }> = ({ refs }) => (
+  <div style={{
+    margin: '0 0 4px 19px', padding: '4px 0',
+  }}>
+    {refs.map((ref, i) => (
+      <div key={i} style={{
+        fontFamily: 'Space Mono, monospace',
+        fontSize: 10.5,
+        lineHeight: 1.7,
+        color: 'var(--text3)',
+        opacity: 0.45,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+      }}>
+        <span style={{ opacity: 0.7 }}>{'// '}</span>
+        <span style={{ color: 'var(--text3)', opacity: 0.7 }}>{ref.source}</span>
+        <span style={{ opacity: 0.5 }}>{' \u2192 '}</span>
+        {ref.data}
+      </div>
+    ))}
+  </div>
+);
+
+// ── Tiny action button (Ive×Tesla style) ────────────────────────────────────
 const ActionBtn: React.FC<{
   label: string;
   title: string;
@@ -119,21 +251,23 @@ const ActionBtn: React.FC<{
   loading?: boolean;
   variant?: 'default' | 'accent';
 }> = ({ label, title, onClick, href, active, loading, variant = 'default' }) => {
+  const isAccent = variant === 'accent' || active;
   const style: React.CSSProperties = {
-    padding: '3px 10px', fontSize: 10, fontWeight: 500, fontFamily: 'inherit',
-    color: active ? 'var(--accent)' : variant === 'accent' ? 'var(--accent)' : 'var(--text3)',
-    background: active ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'transparent',
-    border: '1px solid',
-    borderColor: active ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'color-mix(in srgb, var(--border) 70%, transparent)',
-    borderRadius: 6, cursor: loading ? 'wait' : 'pointer',
+    fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+    textTransform: 'uppercase', letterSpacing: '0.08em',
+    padding: '2px 6px', borderRadius: 4,
+    color: active ? 'var(--accent)' : isAccent ? 'rgba(130,200,130,0.5)' : 'var(--text3)',
+    background: 'rgba(255,255,255,0.04)',
+    border: `1px solid ${active ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : isAccent ? 'rgba(130,200,130,0.15)' : 'var(--border)'}`,
+    cursor: loading ? 'wait' : 'pointer',
     transition: 'all 0.15s', outline: 'none', textDecoration: 'none',
     display: 'inline-flex', alignItems: 'center', gap: 4,
-    opacity: loading ? 0.6 : 1,
+    opacity: loading ? 0.5 : 1,
   };
   if (href) {
     return <a href={href} target="_blank" rel="noopener noreferrer" title={title} style={style}>{label}</a>;
   }
-  return <button onClick={onClick} disabled={loading} title={title} style={style}>{loading ? 'Analyzing...' : label}</button>;
+  return <button onClick={onClick} disabled={loading} title={title} style={style}>{loading ? '...' : label}</button>;
 };
 
 // ── Analysis panel ──────────────────────────────────────────────────────────
@@ -160,6 +294,17 @@ const AnalysisPanel: React.FC<{ text: string; onClose: () => void }> = ({ text, 
   </div>
 );
 
+// ── Display name normalization ───────────────────────────────────────────────
+/** Map EDGAR's raw form names to consistent short display names */
+function displayFormName(raw: string): string {
+  const upper = raw.toUpperCase().trim();
+  // Bare numbers → "Form N"
+  if (/^\d+$/.test(upper)) return `Form ${raw}`;
+  // "SCHEDULE 13D/A" → "SC 13D/A", etc.
+  if (upper.startsWith('SCHEDULE')) return raw.replace(/^SCHEDULE\s*/i, 'SC ');
+  return raw;
+}
+
 // ── Filing row ──────────────────────────────────────────────────────────────
 const FilingRow: React.FC<{
   r: MatchResult;
@@ -169,7 +314,9 @@ const FilingRow: React.FC<{
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<string | null>(null);
 
-  const colors = typeColors[r.filing.form] || { bg: 'var(--surface2)', text: 'var(--text3)' };
+  const formDisplay = displayFormName(r.filing.form);
+  const colors = typeColors[r.filing.form] || typeColors[formDisplay] || { bg: 'var(--surface2)', text: 'var(--text3)' };
+  const statusCfg = STATUS_CONFIG[r.status];
 
   const handleAnalyze = async () => {
     if (analysis) { setAnalysis(null); return; } // toggle off
@@ -208,10 +355,10 @@ const FilingRow: React.FC<{
       >
         {/* Status dot */}
         <span
-          title={r.inDatabase ? 'In database' : 'Not in database'}
+          title={statusCfg.title}
           style={{
             width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-            background: r.inDatabase ? 'var(--mint)' : 'var(--coral)',
+            background: statusCfg.color,
             opacity: 0.9, transition: 'opacity 0.2s, background 0.2s',
           }}
         />
@@ -219,9 +366,10 @@ const FilingRow: React.FC<{
         <span style={{
           fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
           padding: '2px 8px', borderRadius: 5, flexShrink: 0,
+          minWidth: 64, textAlign: 'center',
           background: colors.bg, color: colors.text, whiteSpace: 'nowrap',
         }}>
-          {r.filing.form}
+          {formDisplay}
         </span>
         {/* Description */}
         <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -234,9 +382,9 @@ const FilingRow: React.FC<{
         {/* Status label */}
         <span style={{
           fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-          color: r.inDatabase ? 'var(--mint)' : 'var(--coral)', flexShrink: 0,
+          color: statusCfg.color, flexShrink: 0, whiteSpace: 'nowrap',
         }}>
-          {r.inDatabase ? 'IN DB' : 'NEW'}
+          {statusCfg.label}
         </span>
         {/* Action buttons */}
         <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
@@ -251,13 +399,94 @@ const FilingRow: React.FC<{
           />
         </div>
       </div>
+      {/* Cross-reference data (comment-like) */}
+      {r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
       {analysis && <AnalysisPanel text={analysis} onClose={() => setAnalysis(null)} />}
     </div>
   );
 };
 
-// ── Filing list ─────────────────────────────────────────────────────────────
-const INITIAL_COUNT = 20;
+// ── Form type categories for filtering ──────────────────────────────────────
+const FORM_CATEGORIES: { label: string; match: (form: string) => boolean }[] = [
+  { label: '10-K',       match: f => /^10K/i.test(normalizeForm(f)) },
+  { label: '10-Q',       match: f => /^10Q/i.test(normalizeForm(f)) },
+  { label: '8-K',        match: f => /^8K/i.test(normalizeForm(f)) },
+  { label: 'Ownership',  match: f => { const n = normalizeForm(f.toUpperCase()); return ['4','3','5'].includes(n) || n.startsWith('SC13') || n === '144'; } },
+  { label: 'Prospectus', match: f => { const n = normalizeForm(f.toUpperCase()); return /^424/.test(n) || /^S[138]/.test(n) || n === 'FWP'; } },
+  { label: 'Proxy',      match: f => { const n = normalizeForm(f.toUpperCase()); return n.includes('14A') || n.includes('14C'); } },
+];
+
+function getFormCategory(form: string): string {
+  for (const cat of FORM_CATEGORIES) {
+    if (cat.match(form)) return cat.label;
+  }
+  return 'Other';
+}
+
+/** Extract year from ISO date string */
+function getFilingYear(isoDate: string): string {
+  return isoDate?.slice(0, 4) || 'Unknown';
+}
+
+// ── Year section (collapsible) ──────────────────────────────────────────────
+const YearSection: React.FC<{
+  year: string;
+  results: MatchResult[];
+  typeColors: Record<string, { bg: string; text: string }>;
+  ticker: string;
+  defaultOpen: boolean;
+}> = ({ year, results, typeColors, ticker, defaultOpen }) => {
+  const [open, setOpen] = useState(defaultOpen);
+  const trackedInYear = results.filter(r => r.status === 'tracked').length;
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+          padding: '12px 12px 8px', background: 'transparent', border: 'none',
+          cursor: 'pointer', outline: 'none',
+        }}
+      >
+        <span style={{
+          fontFamily: 'Space Mono, monospace', fontSize: 14, fontWeight: 700,
+          color: 'var(--text)', letterSpacing: '-0.5px',
+        }}>
+          {year}
+        </span>
+        <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--border) 50%, transparent)' }} />
+        <span style={{
+          fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <span style={{ color: 'var(--mint)' }}>{trackedInYear}</span>
+          <span style={{ opacity: 0.5 }}>/</span>
+          <span>{results.length}</span>
+          <span style={{ fontSize: 9, opacity: 0.5 }}>{open ? '\u25B2' : '\u25BC'}</span>
+        </span>
+      </button>
+      {open && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {results.map((r, i) => (
+            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Filing list (grouped by year) ───────────────────────────────────────────
+function applyFilter(results: MatchResult[], filter: string): MatchResult[] {
+  if (filter === 'All') return results;
+  if (filter === 'New Only') return results.filter(r => r.status === 'new');
+  if (filter === 'Data Only') return results.filter(r => r.status === 'data_only');
+  const category = FORM_CATEGORIES.find(c => c.label === filter);
+  if (category) return results.filter(r => category.match(r.filing.form));
+  if (filter === 'Other') return results.filter(r => getFormCategory(r.filing.form) === 'Other');
+  return results;
+}
 
 const FilingList: React.FC<{
   results: MatchResult[];
@@ -265,17 +494,7 @@ const FilingList: React.FC<{
   filter: string;
   ticker: string;
 }> = ({ results, typeColors, filter, ticker }) => {
-  const [showAll, setShowAll] = useState(false);
-
-  const filtered = filter === 'All'
-    ? results
-    : filter === 'New Only'
-      ? results.filter(r => !r.inDatabase)
-      : results.filter(r => {
-          const form = r.filing.form.toUpperCase();
-          if (filter === 'S-1/S-3') return form === 'S-1' || form === 'S-3' || form === 'S-8';
-          return form === filter;
-        });
+  const filtered = applyFilter(results, filter);
 
   if (filtered.length === 0) {
     return (
@@ -285,79 +504,82 @@ const FilingList: React.FC<{
     );
   }
 
-  const displayed = showAll ? filtered : filtered.slice(0, INITIAL_COUNT);
-  const hiddenCount = filtered.length - INITIAL_COUNT;
+  // Group by year
+  const yearGroups: { year: string; items: MatchResult[] }[] = [];
+  const yearMap = new Map<string, MatchResult[]>();
+  for (const r of filtered) {
+    const year = getFilingYear(r.filing.filingDate);
+    if (!yearMap.has(year)) { yearMap.set(year, []); yearGroups.push({ year, items: yearMap.get(year)! }); }
+    yearMap.get(year)!.push(r);
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      {displayed.map((r, i) => (
-        <FilingRow key={r.filing.accessionNumber || i} r={r} typeColors={typeColors} ticker={ticker} />
+      {yearGroups.map((g, i) => (
+        <YearSection
+          key={g.year}
+          year={g.year}
+          results={g.items}
+          typeColors={typeColors}
+          ticker={ticker}
+          defaultOpen={i === 0}
+        />
       ))}
-      {hiddenCount > 0 && (
-        <div style={{ textAlign: 'center', paddingTop: 12 }}>
-          <button
-            onClick={() => setShowAll(!showAll)}
-            style={{
-              padding: '6px 16px', borderRadius: 99, border: '1px solid var(--border)',
-              background: 'transparent', color: 'var(--text3)', cursor: 'pointer',
-              fontSize: 11, fontWeight: 500, transition: 'all 0.2s', fontFamily: 'inherit',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface2)'; e.currentTarget.style.color = 'var(--text)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text3)'; }}
-          >
-            {showAll ? '\u25B2 Show Less' : `\u25BC Show ${hiddenCount} More`}
-          </button>
-        </div>
-      )}
     </div>
   );
 };
 
-// ── Filter pill ─────────────────────────────────────────────────────────────
+// ── Filter pill (Ive×Tesla style) ────────────────────────────────────────────
 const FilterPill: React.FC<{
   label: string; active: boolean; count?: number; onClick: () => void;
 }> = ({ label, active, count, onClick }) => (
   <button
     onClick={onClick}
     style={{
-      padding: '4px 12px', fontSize: 11, fontWeight: active ? 600 : 400,
+      fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+      padding: '3px 8px', borderRadius: 4,
       color: active ? 'var(--accent)' : 'var(--text3)',
-      background: active ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'transparent',
-      border: '1px solid',
-      borderColor: active ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : 'var(--border)',
-      borderRadius: 99, cursor: 'pointer', transition: 'all 0.25s',
+      background: active ? 'color-mix(in srgb, var(--accent) 8%, rgba(255,255,255,0.04))' : 'rgba(255,255,255,0.04)',
+      border: `1px solid ${active ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : 'var(--border)'}`,
+      cursor: 'pointer', transition: 'all 0.15s',
       outline: 'none', fontFamily: 'inherit',
-      display: 'inline-flex', alignItems: 'center', gap: 6,
+      display: 'inline-flex', alignItems: 'center', gap: 5,
     }}
   >
     {label}
     {count !== undefined && (
-      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, opacity: active ? 1 : 0.5 }}>{count}</span>
+      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 9, opacity: active ? 0.8 : 0.35 }}>{count}</span>
     )}
   </button>
 );
 
 // ── Main component ──────────────────────────────────────────────────────────
-const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFilings, cik, typeColors }) => {
+const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFilings, cik, typeColors, crossRefIndex }) => {
   const [edgarFilings, setEdgarFilings] = useState<EdgarFiling[]>([]);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
   const [filter, setFilter] = useState('All');
-  const [showLocalDb, setShowLocalDb] = useState(false);
 
-  const results = matchFilings(edgarFilings, localFilings);
-  const newCount = results.filter(r => !r.inDatabase).length;
-  const trackedCount = results.filter(r => r.inDatabase).length;
+  const results = useMemo(
+    () => matchFilings(edgarFilings, localFilings, crossRefIndex),
+    [edgarFilings, localFilings, crossRefIndex],
+  );
+  const trackedCount = results.filter(r => r.status === 'tracked').length;
+  const dataOnlyCount = results.filter(r => r.status === 'data_only').length;
+  const newCount = results.filter(r => r.status === 'new').length;
 
-  const formTypes: string[] = Array.from(new Set(edgarFilings.map(f => f.form)));
-  const commonForms = ['10-K', '10-Q', '8-K', '424B5', 'S-1/S-3'];
-  const filterOptions = ['All', 'New Only', ...commonForms.filter(f =>
-    f === 'S-1/S-3'
-      ? formTypes.some((ft: string) => ['S-1', 'S-3', 'S-8'].includes(ft.toUpperCase()))
-      : formTypes.some((ft: string) => ft.toUpperCase() === f)
-  )];
+  // Build dynamic filter options from actual form types present
+  const filterOptions = useMemo(() => {
+    const opts: string[] = ['All', 'New Only'];
+    if (dataOnlyCount > 0) opts.push('Data Only');
+    for (const cat of FORM_CATEGORIES) {
+      if (results.some(r => cat.match(r.filing.form))) opts.push(cat.label);
+    }
+    if (results.some(r => getFormCategory(r.filing.form) === 'Other')) opts.push('Other');
+    return opts;
+  }, [results, dataOnlyCount]);
 
   const fetchFilings = useCallback(async () => {
     setLoading(true);
@@ -408,22 +630,34 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#edgar-status</div>
-      {/* Status bar — matches Sources tab */}
+      {/* Status bar */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '16px 24px', marginTop: 8,
-        background: 'var(--surface)', borderRadius: 16, border: '1px solid var(--border)',
+        padding: '16px 20px', marginTop: 8,
+        borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {/* Progress ring */}
           <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
             <circle cx="14" cy="14" r="12" fill="none" stroke="color-mix(in srgb, var(--border) 60%, transparent)" strokeWidth="2" />
             {loaded && (
-              <circle cx="14" cy="14" r="12" fill="none" stroke="var(--mint)" strokeWidth="2"
-                strokeDasharray={`${results.length > 0 ? (trackedCount / results.length) * STATUS_RING_CIRCUMFERENCE : 0} ${STATUS_RING_CIRCUMFERENCE}`}
-                strokeLinecap="round" transform="rotate(-90 14 14)"
-                style={{ transition: 'stroke-dasharray 0.4s ease' }}
-              />
+              <>
+                {/* Tracked arc (mint) */}
+                <circle cx="14" cy="14" r="12" fill="none" stroke="var(--mint)" strokeWidth="2"
+                  strokeDasharray={`${results.length > 0 ? (trackedCount / results.length) * STATUS_RING_CIRCUMFERENCE : 0} ${STATUS_RING_CIRCUMFERENCE}`}
+                  strokeLinecap="round" transform="rotate(-90 14 14)"
+                  style={{ transition: 'stroke-dasharray 0.4s ease' }}
+                />
+                {/* Data-only arc (gold), offset after tracked */}
+                {dataOnlyCount > 0 && (
+                  <circle cx="14" cy="14" r="12" fill="none" stroke="var(--gold)" strokeWidth="2"
+                    strokeDasharray={`${(dataOnlyCount / results.length) * STATUS_RING_CIRCUMFERENCE} ${STATUS_RING_CIRCUMFERENCE}`}
+                    strokeLinecap="round"
+                    transform={`rotate(${-90 + (trackedCount / results.length) * 360} 14 14)`}
+                    style={{ transition: 'stroke-dasharray 0.4s ease' }}
+                  />
+                )}
+              </>
             )}
           </svg>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -431,7 +665,15 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               {!loaded ? 'EDGAR Monitor' : `${trackedCount} of ${results.length} in database`}
             </span>
             <span style={{ fontSize: 11, color: 'var(--text3)' }}>
-              {!loaded ? `CIK ${cik}` : newCount > 0 ? `${newCount} new filing${newCount !== 1 ? 's' : ''} to review` : 'All filings tracked'}
+              {!loaded
+                ? `CIK ${cik}`
+                : newCount > 0 || dataOnlyCount > 0
+                  ? [
+                      newCount > 0 ? `${newCount} new` : '',
+                      dataOnlyCount > 0 ? `${dataOnlyCount} data only` : '',
+                    ].filter(Boolean).join(', ')
+                  : 'All filings tracked'
+              }
             </span>
           </div>
         </div>
@@ -441,35 +683,38 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              padding: '8px 16px', fontSize: 11, fontWeight: 500,
-              color: 'var(--text3)', background: 'transparent',
-              border: '1px solid var(--border)', borderRadius: 99,
+              fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+              padding: '5px 14px', borderRadius: 4,
+              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--border)',
               textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6,
-              transition: 'all 0.2s',
+              transition: 'all 0.15s',
             }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)'; }}
           >
-            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
-              <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg width="8" height="8" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            EDGAR
+            SEC EDGAR
           </a>
           <button
             onClick={fetchFilings}
             disabled={loading}
             aria-label={loaded ? 'Refresh EDGAR filings' : 'Fetch EDGAR filings'}
             style={{
-              padding: '8px 24px', fontSize: 11, fontWeight: 600, letterSpacing: '0.3px',
-              color: loading ? 'var(--text3)' : 'var(--bg)',
-              background: loading ? 'var(--surface2)' : 'var(--accent)',
-              border: 'none', borderRadius: 99,
+              fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+              padding: '5px 14px', borderRadius: 4,
+              color: loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
+              background: 'rgba(255,255,255,0.04)',
+              border: `1px solid ${loading ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
               cursor: loading ? 'wait' : 'pointer',
-              display: 'flex', alignItems: 'center', gap: 7,
-              transition: 'all 0.25s', outline: 'none',
+              display: 'flex', alignItems: 'center', gap: 6,
+              transition: 'all 0.15s', outline: 'none',
+              opacity: loading ? 0.5 : 1,
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }}>
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }}>
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -478,7 +723,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
         </div>
       </div>
 
-      {/* Legend — matches Sources tab */}
+      {/* Legend — 3 tiers */}
       {loaded && (
         <div
           role="note"
@@ -491,6 +736,10 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--mint)', opacity: 0.9 }} />
             In Database
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--gold)', opacity: 0.9 }} />
+            Data Only
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--coral)', opacity: 0.9 }} />
@@ -534,80 +783,19 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             flexWrap: 'wrap',
           }}>
             {filterOptions.map(f => {
-              let count: number | undefined;
-              if (f === 'All') count = results.length;
-              else if (f === 'New Only') count = newCount;
-              else if (f === 'S-1/S-3') count = results.filter(r => ['S-1', 'S-3', 'S-8'].includes(r.filing.form.toUpperCase())).length;
-              else count = results.filter(r => r.filing.form.toUpperCase() === f).length;
+              const count = applyFilter(results, f).length;
               return <FilterPill key={f} label={f} active={filter === f} count={count} onClick={() => setFilter(f)} />;
             })}
           </div>
 
           {/* Filing list card */}
           <div style={{
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 16, padding: '8px 12px',
+            borderRadius: 12,
+            border: '1px solid rgba(255,255,255,0.06)',
+            padding: '4px 8px',
           }}>
             <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} />
           </div>
-
-          {/* Local DB — collapsible */}
-          <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#local-database</div>
-          <button
-            onClick={() => setShowLocalDb(!showLocalDb)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 12,
-              padding: '32px 0 16px', background: 'transparent', border: 'none',
-              cursor: 'pointer', outline: 'none', width: '100%',
-            }}
-          >
-            <span style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--text3)',
-              textTransform: 'uppercase', letterSpacing: '1.2px',
-            }}>
-              Local Database
-            </span>
-            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)' }}>
-              {localFilings.length} entries {showLocalDb ? '\u25B2' : '\u25BC'}
-            </span>
-          </button>
-          {showLocalDb && (
-            <div style={{
-              background: 'var(--surface)', border: '1px solid var(--border)',
-              borderRadius: 16, padding: '12px 16px',
-            }}>
-              {localFilings.map((lf, i) => {
-                const c = typeColors[lf.type] || { bg: 'var(--surface2)', text: 'var(--text3)' };
-                return (
-                  <div key={i} style={{
-                    display: 'flex', alignItems: 'center', gap: 10, padding: '6px 4px',
-                    fontSize: 12, borderBottom: i < localFilings.length - 1 ? '1px solid color-mix(in srgb, var(--border) 30%, transparent)' : 'none',
-                  }}>
-                    <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, width: 90 }}>
-                      {lf.date}
-                    </span>
-                    <span style={{
-                      fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-                      padding: '2px 6px', borderRadius: 4, flexShrink: 0,
-                      background: c.bg, color: c.text,
-                    }}>
-                      {lf.type}
-                    </span>
-                    <span style={{ color: 'var(--text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {lf.description}
-                    </span>
-                    {lf.period !== '\u2014' && (
-                      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)', opacity: 0.6, flexShrink: 0 }}>
-                        {lf.period}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </>
       )}
     </div>
