@@ -46,6 +46,31 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
     // ═══════════════════════════════════════════════════════════════════════════
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // STARLINK ENTERPRISE — RAIL BROADBAND (terminal-based, NOT D2C)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-12',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Italo deploys Starlink fleet-wide on Italian HSR — world\'s first major high-speed rail operator',
+      details: [
+        'Italo: Italy\'s first private HSR operator — equipping entire fleet (25 AGV 575 + 26 EVO trains)',
+        'Enterprise broadband (roof-mounted terminal), NOT Starlink Direct-to-Cell service',
+        'World\'s first major high-speed rail company to deploy Starlink fleet-wide',
+        '~1 year testing at 300 km/h: speeds up to 400+ Mbps, latency 25ms',
+        '85% passenger satisfaction: 51% rated 5/5 (max), 32.5% rated 4/5',
+        '80% rated browsing better than prior Wi-Fi experience',
+        'Rollout: mid-2026 start, completion by 2027',
+        'Broader multimedia/entertainment expansion planned aboard trains leveraging new connectivity',
+      ],
+      implication: 'neutral',
+      astsComparison: 'Enterprise terminal-based broadband on rail — different market segment from ASTS D2D cellular. Does not compete with ASTS direct-to-device proposition. Demonstrates SpaceX/Starlink commercial momentum in transportation vertical and growing enterprise revenue base.',
+      source: 'Italo',
+      storyId: 'starlink-enterprise-transportation',
+      storyTitle: 'Starlink Enterprise Transportation Deployments',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // TERRESTAR - HYBRID SATELLITE-CELLULAR IoT (CANADA)
     // ═══════════════════════════════════════════════════════════════════════════
     {
@@ -1091,6 +1116,27 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       source: 'BICS / Proximus Global',
       storyId: 'starlink-d2c-global-expansion',
       storyTitle: 'Starlink DTC Global MNO Expansion'
+    },
+    {
+      date: '2025-11-11',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'České dráhy extends Starlink rail pilot through winter — first Czech operator to trial satellite internet',
+      details: [
+        'České dráhy (Czech Railways): first Czech rail operator to trial Starlink onboard',
+        'Enterprise broadband (roof-mounted terminal), NOT Starlink Direct-to-Cell service',
+        'Pilot extended through winter to test antenna performance in snow, frost, ice conditions',
+        'Routes: Brno–Česká Třebová–Prague and Brno–Břeclav–Přerov–Olomouc',
+        '5 TB of passenger data consumed during pilot period',
+        'Economics: terminal provided free; data rate ~1/3 of mobile operator costs',
+        'Integrated into InterPanter train Wi-Fi/multimedia system; no interaction with safety systems',
+        'Starlink Kit meets EN 50155 and rail-specific standards',
+      ],
+      implication: 'neutral',
+      astsComparison: 'Enterprise terminal-based rail broadband pilot — does not compete with ASTS D2D cellular. Notable economics: free terminal and ~1/3 mobile operator data costs suggests competitive pricing for transportation vertical. Demonstrates Starlink expanding European enterprise footprint.',
+      source: 'České dráhy',
+      storyId: 'starlink-enterprise-transportation',
+      storyTitle: 'Starlink Enterprise Transportation Deployments',
     },
     {
       date: '2025-11-06',
