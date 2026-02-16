@@ -26,9 +26,9 @@ export const BMNR_SEC_FILINGS = [
   { date: 'Dec 12, 2025', type: '8-K', description: 'Raymond Mow Board Resignation (No Disagreements)', period: '—', color: 'yellow' },
   { date: 'Dec 10, 2025', type: 'DEFA14A', description: 'Proxy Solicitation — Chairman Message + Vote Reminder', period: '—', color: 'cyan' },
   { date: 'Dec 8, 2025', type: 'DEF 14A', description: 'Definitive Proxy (Annual Meeting Jan 15; 50B Auth Shares)', period: '—', color: 'cyan' },
-  { date: 'Dec 5, 2025', type: '4', description: 'Bates: ~1.5M Shares Sold ($37.5M, Rule 10b5-1)', period: '—', color: 'green' },
-  { date: 'Dec 3, 2025', type: '4', description: 'Mow: ~500K Shares Sold ($12.5M)', period: '—', color: 'green' },
-  { date: 'Dec 1, 2025', type: '4', description: 'Bayles: ~350K Shares Sold ($8.75M)', period: '—', color: 'green' },
+  { date: 'Dec 5, 2025', type: 'Form 4', description: 'Bates: ~1.5M Shares Sold ($37.5M, Rule 10b5-1)', period: '—', color: 'green' },
+  { date: 'Dec 3, 2025', type: 'Form 4', description: 'Mow: ~500K Shares Sold ($12.5M)', period: '—', color: 'green' },
+  { date: 'Dec 1, 2025', type: 'Form 4', description: 'Bayles: ~350K Shares Sold ($8.75M)', period: '—', color: 'green' },
   // --- November 2025: Earnings, CEO Change, Dividend ---
   { date: 'Nov 24, 2025', type: '8-K', description: 'First Quarterly Dividend: $0.01/Share (Ex-Div Dec 5)', period: '—', color: 'yellow' },
   { date: 'Nov 21, 2025', type: '10-K', description: 'Annual Report FY2025 — GAAP EPS $13.39, First Profitable Year', period: 'FY 2025', color: 'blue' },
@@ -37,7 +37,7 @@ export const BMNR_SEC_FILINGS = [
   // --- October 2025: Thiel, Proxy Filing, Insider Pledge ---
   { date: 'Oct 28, 2025', type: 'SC 13G/A', description: 'Founders Fund (Peter Thiel): Amended to 5.1% Ownership', period: '—', color: 'green' },
   { date: 'Oct 22, 2025', type: 'PRE 14A', description: 'Preliminary Proxy — 50B Auth Shares + Director Election', period: '—', color: 'cyan' },
-  { date: 'Oct 6, 2025', type: '4', description: 'Bates: ~800K Shares Pledged to UBS as Collateral', period: '—', color: 'green' },
+  { date: 'Oct 6, 2025', type: 'Form 4', description: 'Bates: ~800K Shares Pledged to UBS as Collateral', period: '—', color: 'green' },
   // --- September 2025: Xuan Yong, Employment, $365M Raise ---
   { date: 'Sep 30, 2025', type: 'SC 13D', description: 'Xuan Yong Xiao: 7.5% Beneficial Ownership (28.97M Shares)', period: '—', color: 'green' },
   { date: 'Sep 22, 2025', type: '424B5', description: '$365M Registered Direct @ $70 + Warrants ($1.28B Potential)', period: '—', color: 'orange' },
@@ -61,7 +61,7 @@ export const BMNR_SEC_FILINGS = [
   // --- Pre-IPO 2025: S-1 Review + Capital Raises ---
   { date: 'May 27, 2025', type: 'S-1', description: 'IPO Registration Statement Filed', period: '—', color: 'violet' },
   { date: 'Apr 14, 2025', type: '10-Q', description: 'Quarterly Report (Q2 FY2025)', period: 'Q2 2025', color: 'purple' },
-  { date: 'Mar 14, 2025', type: 'D', description: 'Pre-IPO Exempt Offering $1.5M (Rule 506(b))', period: '—', color: 'green' },
+  { date: 'Mar 14, 2025', type: 'Form D', description: 'Pre-IPO Exempt Offering $1.5M (Rule 506(b))', period: '—', color: 'green' },
   { date: 'Feb 7, 2025', type: 'CORRESP', description: 'S-1 Review: SEC Comment Round on Risk Factors + Crypto Disclosures', period: '—', color: 'cyan' },
   { date: 'Jan 10, 2025', type: '10-K', description: 'Annual Report FY2024 (Delayed — Post-Auditor Transition)', period: 'FY 2024', color: 'blue' },
   // === 2024 (PRE-IPO: SEC SCRUTINY + AUDITOR CRISIS + CRYPTO TREASURY) ===
@@ -113,17 +113,17 @@ export const BMNR_SEC_FILINGS = [
   { date: 'Aug 13, 2021', type: '8-K/A', description: 'Amendment to Apr 27 8-K (Early Corporate Change)', period: '—', color: 'yellow' },
   { date: 'Aug 10, 2021', type: 'SC 13D', description: 'Samuel P. Jorgensen: 1M Shares (~9%) — Passive Investment', period: '—', color: 'green' },
   { date: 'Aug 6, 2021', type: 'SC 13D', description: 'Ryan Ramnath: Via Bitflair Mining Corp (>5%) — Mining Expertise, CEO of Bitflair', period: '—', color: 'green' },
-  { date: 'Aug 6, 2021', type: '3', description: 'Ryan Ramnath Initial Ownership (Indirect via Bitflair Mining Corp)', period: '—', color: 'green' },
-  { date: 'Aug 5, 2021', type: '3', description: 'Michael Maloney Initial Ownership (No Direct Securities; Pre-13D)', period: '—', color: 'green' },
-  { date: 'Aug 4, 2021', type: 'D/A', description: 'Amended Exempt Offering: $1.05M Total Raised (Rule 506(b))', period: '—', color: 'green' },
+  { date: 'Aug 6, 2021', type: 'Form 3', description: 'Ryan Ramnath Initial Ownership (Indirect via Bitflair Mining Corp)', period: '—', color: 'green' },
+  { date: 'Aug 5, 2021', type: 'Form 3', description: 'Michael Maloney Initial Ownership (No Direct Securities; Pre-13D)', period: '—', color: 'green' },
+  { date: 'Aug 4, 2021', type: 'Form D/A', description: 'Amended Exempt Offering: $1.05M Total Raised (Rule 506(b))', period: '—', color: 'green' },
   { date: 'Aug 3, 2021', type: 'SC 13D', description: 'Jonathan R. Bates: Via Innovative Digital Investors LP + BFAM Partners (>5%)', period: '—', color: 'green' },
-  { date: 'Aug 1, 2021', type: '3', description: 'Jonathan R. Bates Initial Ownership (Indirect via LP/LLC Entities)', period: '—', color: 'green' },
-  { date: 'Jul 30, 2021', type: '3', description: 'Seth A. Bayles Initial Ownership (No Securities; Officer/Director)', period: '—', color: 'green' },
-  { date: 'Jul 28, 2021', type: '3', description: 'Raymond Mow Initial Ownership (No Securities; Board Addition)', period: '—', color: 'green' },
+  { date: 'Aug 1, 2021', type: 'Form 3', description: 'Jonathan R. Bates Initial Ownership (Indirect via LP/LLC Entities)', period: '—', color: 'green' },
+  { date: 'Jul 30, 2021', type: 'Form 3', description: 'Seth A. Bayles Initial Ownership (No Securities; Officer/Director)', period: '—', color: 'green' },
+  { date: 'Jul 28, 2021', type: 'Form 3', description: 'Raymond Mow Initial Ownership (No Securities; Board Addition)', period: '—', color: 'green' },
   { date: 'Jul 27, 2021', type: '8-K', description: 'Corporate Governance Change (Event Jun 24; Signed Erik S. Nelson, CEO)', period: '—', color: 'yellow' },
   { date: 'May 31, 2021', type: '10-Q', description: 'Quarterly Report (Revenue $0; Loss ~$100K; Shell Status)', period: 'Q3 2021', color: 'purple' },
   { date: 'May 15, 2021', type: 'NT 10-Q', description: 'Late Q3 FY2021 Filing (Administrative Delay)', period: '—', color: 'yellow' },
-  { date: 'Apr 4, 2021', type: 'D', description: 'Exempt Offering: $1.05M Target (Rule 506(b) Exemption)', period: '—', color: 'green' },
+  { date: 'Apr 4, 2021', type: 'Form D', description: 'Exempt Offering: $1.05M Target (Rule 506(b) Exemption)', period: '—', color: 'green' },
   { date: 'Mar 23, 2021', type: 'CORRESP', description: 'SEC Review Completed — Registration Cleared', period: '—', color: 'cyan' },
   { date: 'Feb 28, 2021', type: '10-Q', description: 'Quarterly Report (Revenue $0; Loss ~$50K; Shell Company)', period: 'Q2 2021', color: 'purple' },
   { date: 'Feb 8, 2021', type: 'CORRESP', description: 'Response to SEC: Inception July 16, 2020 Post-Merger; No Prior Operations', period: '—', color: 'cyan' },
@@ -147,29 +147,32 @@ export const BMNR_SEC_META = {
   totalFilingsTracked: 108
 };
 
-// Color palette constants (Gemini review: reduce duplication)
-const C_BLUE    = { bg: 'rgba(59,130,246,0.2)',  text: '#60a5fa' };
-const C_SKY     = { bg: 'rgba(100,149,237,0.2)', text: 'var(--sky)' };
-const C_GOLD    = { bg: 'rgba(234,179,8,0.2)',   text: 'var(--gold)' };
-const C_VIOLET  = { bg: 'rgba(168,85,247,0.2)',  text: 'var(--violet)' };
-const C_GREEN   = { bg: 'rgba(34,197,94,0.2)',   text: '#4ade80' };
-const C_CYAN    = { bg: 'rgba(34,211,238,0.2)',  text: 'var(--cyan)' };
-const C_ORANGE  = { bg: 'rgba(249,115,22,0.2)',  text: '#fb923c' };
-const C_CYAN_DIM  = { bg: 'rgba(34,211,238,0.15)', text: 'var(--cyan)' };
-const C_GOLD_DIM  = { bg: 'rgba(234,179,8,0.15)',  text: 'var(--gold)' };
+// Color palette constants (reduce duplication per Gemini review)
+const C_BLUE     = { bg: 'rgba(59,130,246,0.2)',  text: '#60a5fa' };
+const C_SKY      = { bg: 'rgba(100,149,237,0.2)', text: 'var(--sky)' };
+const C_GOLD     = { bg: 'rgba(234,179,8,0.2)',   text: 'var(--gold)' };
+const C_VIOLET   = { bg: 'rgba(168,85,247,0.2)',  text: 'var(--violet)' };
+const C_GREEN    = { bg: 'rgba(34,197,94,0.2)',   text: '#4ade80' };
+const C_CYAN     = { bg: 'rgba(34,211,238,0.2)',  text: 'var(--cyan)' };
+const C_ORANGE   = { bg: 'rgba(249,115,22,0.2)',  text: '#fb923c' };
+const C_CYAN_DIM = { bg: 'rgba(34,211,238,0.15)', text: 'var(--cyan)' };
+const C_GOLD_DIM = { bg: 'rgba(234,179,8,0.15)',  text: 'var(--gold)' };
 
 export const BMNR_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   '10-K': C_BLUE, '10-12G': C_BLUE,
   '10-Q': C_SKY,
   '8-K': C_GOLD, '8-K/A': C_GOLD,
   'S-1': C_VIOLET,
-  'S-3': C_GREEN, 'S-3ASR': C_GREEN,
-  'S-8': C_CYAN,
+  'S-3': C_GREEN, 'S-3ASR': C_GREEN, 'S-8': C_CYAN,
   '424B4': C_ORANGE, '424B5': C_ORANGE,
   'DEFA14A': C_CYAN, 'DEF 14A': C_CYAN, 'DEFR14A': C_CYAN,
   'DEF 14C': C_CYAN, 'PRE 14A': C_CYAN, 'PRE 14C': C_CYAN,
-  '3': C_GREEN, '4': C_GREEN, '5': C_GREEN,
-  'D': C_GREEN, 'D/A': C_GREEN,
+  // Both "Form X" (local DB) and bare "X" (SEC EDGAR) entries
+  'Form 3': C_GREEN, '3': C_GREEN,
+  'Form 4': C_GREEN, '4': C_GREEN,
+  'Form 5': C_GREEN, '5': C_GREEN,
+  'Form D': C_GREEN, 'D': C_GREEN,
+  'Form D/A': C_GREEN, 'D/A': C_GREEN,
   'SC 13D': C_GREEN, 'SC 13G': C_GREEN, 'SC 13G/A': C_GREEN, 'SC 13D/A': C_GREEN,
   'CORRESP': C_CYAN_DIM, 'RW': C_CYAN_DIM,
   'NT 10-K': C_GOLD_DIM, 'NT 10-Q': C_GOLD_DIM,
@@ -178,42 +181,38 @@ export const BMNR_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
 export const BMNR_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B', 'Form 4', 'Proxy', 'SC 13D/G', 'CORRESP', 'Other'];
 
 /**
- * Cross-reference index: maps filing key (FORM|YYYY-MM-DD) to actual data
- * captured from that filing in other data files.
+ * Cross-reference index: maps filing key (FORM_TYPE|YYYY-MM-DD) to actual data
+ * captured from that filing in other data files (capital, timeline, catalysts).
  *
  * AI AGENT INSTRUCTIONS:
  * When ingesting a new filing, add a cross-ref entry here with the actual
- * data lines that were written to other files (capital, timeline, catalysts).
+ * data lines that were written to other files.
  * Key format: "FORM_TYPE|YYYY-MM-DD" using the filing date from sec-filings.ts.
  */
 export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: string }[]> = {
 
   // ── Feb 2026 ──────────────────────────────────────────────────────────────
   '8-K|2026-02-11': [
-    { source: 'timeline', data: "Tom Lee presents at CoinDesk Consensus 2026 in Hong Kong; 8-K filed with presentation as Exhibit 99.1" },
-    { source: 'catalysts', data: "Tom Lee presented at CoinDesk Consensus 2026 in Hong Kong" },
+    { source: 'timeline', data: "Tom Lee presents at CoinDesk Consensus 2026 in Hong Kong" },
+    { source: 'catalysts', data: "Tom Lee presented at CoinDesk Consensus 2026; 8-K filed with presentation as Ex. 99.1" },
   ],
   'S-8|2026-02-09': [
-    { source: 'timeline', data: "S-8 filed for 2025 Omnibus Incentive Plan; signed by full board (Tsang, Kim, Lee, Maloney, Love, Sharbutt, Edgeworth, Howe, Sechan)" },
-    { source: 'catalysts', data: "S-8 filed for 2025 Omnibus Incentive Plan" },
-    { source: 'capital', data: "CAPITAL_METADATA updated: source 'Feb 9, 2026 S-8 (2025 Omnibus Incentive Plan)'" },
+    { source: 'timeline', data: "S-8 filed for 2025 Omnibus Incentive Plan; signed by full board" },
+    { source: 'capital', data: "2025 Omnibus Incentive Plan registered" },
   ],
   '8-K|2026-02-09': [
-    { source: 'timeline', data: "ETH Holdings 4.326M ($10.0B), ETH -62% from 2025 highs. CESR 3.11%. Staking $202M/yr annualized." },
+    { source: 'timeline', data: "ETH Holdings 4.326M ($10.0B total), ETH -62% from 2025 highs. CESR 3.11%." },
     { source: 'company', data: "ethHoldings: 4,325,738 ETH; ethPrice: $2,125; stakingAPY: 3.11%; cash: $595M" },
   ],
   '8-K|2026-01-28': [
-    { source: 'timeline', data: "Erik Nelson terminated as President without cause (effective Jan 22); $605K total severance ($20K + $585K lump sum)" },
-    { source: 'catalysts', data: "Erik Nelson terminated without cause; $605K severance; non-compete waived" },
+    { source: 'timeline', data: "Erik Nelson terminated as President without cause; $605K total severance" },
+    { source: 'catalysts', data: "Nelson terminated; $605K severance; non-compete waived" },
   ],
   '8-K|2026-01-15': [
-    { source: 'catalysts', data: "Annual meeting: 81% YES on 50B authorized shares; all proposals approved; 500K+ stockholders" },
+    { source: 'catalysts', data: "Annual meeting: 81% YES on 50B auth shares; all proposals approved; 500K+ stockholders" },
   ],
   '10-Q|2026-01-13': [
-    { source: 'catalysts', data: "Q1 FY2026 10-Q: First staking revenue recognized" },
-  ],
-  'DEFA14A|2026-01-02': [
-    { source: 'catalysts', data: "Proxy solicitation — Chairman's message urging vote YES" },
+    { source: 'catalysts', data: "Q1 FY2026: First staking revenue recognized" },
   ],
 
   // ── Dec 2025 ──────────────────────────────────────────────────────────────
@@ -223,12 +222,11 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
   '8-K|2025-12-22': [
     { source: 'capital', data: "Beast Industries $200M equity investment (MrBeast 460M+ YouTube subscribers)" },
     { source: 'catalysts', data: "Beast Industries $200M equity investment closed" },
-    { source: 'timeline', data: "Beast Industries $200M investment: MrBeast 460M+ subs, 5B monthly views. Step banking app 7M+ users." },
+    { source: 'timeline', data: "Beast Industries $200M investment; Step banking app 7M+ users" },
   ],
   '8-K|2025-12-18': [
-    { source: 'capital', data: "CFO Raymond Mow separated; Young Kim appointed CFO/COO (effective Jan 9)" },
-    { source: 'catalysts', data: "CFO Mow separated (Dec 18), Young Kim appointed CFO/COO" },
-    { source: 'timeline', data: "CFO transition: Mow out, Kim CFO/COO. Mow board resignation Dec 12." },
+    { source: 'capital', data: "CFO Raymond Mow separated; Young Kim appointed CFO/COO" },
+    { source: 'timeline', data: "CFO transition: Mow out, Kim CFO/COO" },
   ],
   'DEFR14A|2025-12-16': [
     { source: 'catalysts', data: "Revised proxy statement — 50B authorized shares amendment" },
@@ -237,16 +235,16 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
     { source: 'timeline', data: "Raymond Mow resigned from board (no disagreements)" },
   ],
   'DEF 14A|2025-12-08': [
-    { source: 'catalysts', data: "Definitive proxy: Annual meeting Jan 15 at Wynn Las Vegas; 50B authorized shares; director election" },
+    { source: 'catalysts', data: "Definitive proxy: Annual meeting Jan 15; 50B auth shares; director election" },
   ],
-  '4|2025-12-05': [
-    { source: 'capital', data: "Bates: ~1.5M shares sold ($37.5M) via Rule 10b5-1 plan. Total Oct-Dec: ~2.8M shares, ~$70M." },
+  'Form 4|2025-12-05': [
+    { source: 'capital', data: "Bates: ~1.5M shares sold ($37.5M) via Rule 10b5-1. Total Oct-Dec: ~2.8M shares, ~$70M" },
   ],
-  '4|2025-12-03': [
-    { source: 'capital', data: "Mow: ~500K shares sold ($12.5M). Total: ~1M shares, ~$25M. Separated as CFO Dec 18." },
+  'Form 4|2025-12-03': [
+    { source: 'capital', data: "Mow: ~500K shares sold ($12.5M). Total: ~1M shares, ~$25M" },
   ],
-  '4|2025-12-01': [
-    { source: 'capital', data: "Bayles: ~350K shares sold ($8.75M). Total: ~700K shares, ~$17M. Left board Nov 11." },
+  'Form 4|2025-12-01': [
+    { source: 'capital', data: "Bayles: ~350K shares sold ($8.75M). Total: ~700K shares, ~$17M" },
   ],
 
   // ── Nov 2025 ──────────────────────────────────────────────────────────────
@@ -259,7 +257,7 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
   ],
   '8-K|2025-11-14': [
     { source: 'catalysts', data: "CEO change: Chi Tsang appointed; Edgeworth, Howe, Sechan join board" },
-    { source: 'timeline', data: "Chi Tsang appointed CEO (Nov 14); Board restructured with 3 new directors" },
+    { source: 'timeline', data: "Chi Tsang appointed CEO; Board restructured with 3 new directors" },
   ],
   '8-K|2025-11-11': [
     { source: 'timeline', data: "Board restructuring: Bayles, Kelly, Nelson out; 3 new directors in" },
@@ -271,9 +269,9 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
     { source: 'timeline', data: "Founders Fund (Peter Thiel) SC 13G/A: 5.1% ownership" },
   ],
   'PRE 14A|2025-10-22': [
-    { source: 'catalysts', data: "Preliminary proxy — 50B authorized shares + director election" },
+    { source: 'catalysts', data: "Preliminary proxy — 50B auth shares + director election" },
   ],
-  '4|2025-10-06': [
+  'Form 4|2025-10-06': [
     { source: 'capital', data: "Bates: ~800K shares pledged to UBS as collateral" },
   ],
 
@@ -283,12 +281,11 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
     { source: 'timeline', data: "Xuan Yong Xiao SC 13D: 7.5%, 28.97M shares" },
   ],
   '424B5|2025-09-22': [
-    { source: 'capital', data: "$365M registered direct @ $70/share + warrants @ $87.50; Moelis as placement agent" },
-    { source: 'catalysts', data: "$365M registered direct @ $70 (14% premium) + warrants @ $87.50" },
+    { source: 'capital', data: "$365M registered direct @ $70/share + warrants @ $87.50" },
+    { source: 'catalysts', data: "$365M registered direct @ $70 (14% premium) + warrants" },
   ],
   '8-K|2025-09-01': [
     { source: 'capital', data: "Employment agreements: Bates $3.04M/yr, Mow $1.02M/yr, Nelson $406K/yr" },
-    { source: 'catalysts', data: "Employment agreements filed; Sharbutt joined board" },
   ],
 
   // ── Aug 2025 ──────────────────────────────────────────────────────────────
@@ -303,21 +300,20 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
   // ── Jul 2025 ──────────────────────────────────────────────────────────────
   'S-3ASR|2025-07-28': [
     { source: 'capital', data: "$4.5B ATM+ expansion + PIPE resale (56.12M shares)" },
-    { source: 'catalysts', data: "$4.5B ATM+ program exhausted in 5 weeks" },
+    { source: 'catalysts', data: "$4.5B ATM+ exhausted in 5 weeks" },
   ],
   '8-K|2025-07-22': [
-    { source: 'capital', data: "ARK Invest (Cathie Wood) $182M block trade; 4.77M shares; 100% proceeds to ETH" },
-    { source: 'catalysts', data: "ARK Invest $182M block trade (4.77M shares)" },
-    { source: 'timeline', data: "ARK Invest (Cathie Wood) $182M block trade; all proceeds to ETH acquisition" },
+    { source: 'capital', data: "ARK Invest (Cathie Wood) $182M block trade; 4.77M shares" },
+    { source: 'catalysts', data: "ARK Invest $182M block trade (100% proceeds to ETH)" },
+    { source: 'timeline', data: "ARK Invest $182M block trade; all proceeds to ETH" },
   ],
   'S-3|2025-07-09': [
     { source: 'capital', data: "$2B ATM shelf registration (Cantor + ThinkEquity)" },
-    { source: 'catalysts', data: "$250M PIPE closes; led by MOZAYYX + Founders Fund, Pantera, Kraken, Galaxy, DCG" },
+    { source: 'catalysts', data: "$250M PIPE closes; led by MOZAYYX, Founders Fund, Pantera, Kraken, Galaxy, DCG" },
   ],
   '8-K|2025-07-08': [
     { source: 'capital', data: "Ethereum Tower LLC treasury advisory agreement (10-year term)" },
-    { source: 'catalysts', data: "Ethereum Tower LLC advisory agreement (10-year term)" },
-    { source: 'timeline', data: "Ethereum Tower LLC treasury advisory agreement signed; $2B ATM launched via S-3ASR" },
+    { source: 'timeline', data: "Ethereum Tower LLC advisory agreement signed" },
   ],
   '10-Q|2025-07-03': [
     { source: 'company', data: "Q3 FY2025 quarterly report" },
@@ -329,21 +325,21 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
   // ── Jun 2025 ──────────────────────────────────────────────────────────────
   '8-K|2025-06-30': [
     { source: 'capital', data: "ETH Treasury Strategy announced — Private Placement + PIPE Launch" },
-    { source: 'catalysts', data: "ETH Treasury Strategy pivot begins; PIPE launches" },
+    { source: 'catalysts', data: "ETH Treasury Strategy pivot begins" },
   ],
   'S-8|2025-06-20': [
     { source: 'capital', data: "2025 Equity Incentive Plan: 3.75M shares registered" },
   ],
   '8-K|2025-06-06': [
-    { source: 'catalysts', data: "IPO closes: $18M raised at $8/share (2,250,000 shares)" },
+    { source: 'catalysts', data: "IPO closes: $18M raised at $8/share" },
     { source: 'timeline', data: "Public offering closes — $18M IPO @ $8/share" },
   ],
   '8-K|2025-06-05': [
-    { source: 'catalysts', data: "NYSE American trading commences (uplisting from OTCQX)" },
-    { source: 'timeline', data: "NYSE American listing achieved; transitioned from OTCQX" },
+    { source: 'catalysts', data: "NYSE American trading commences (from OTCQX)" },
+    { source: 'timeline', data: "NYSE American listing achieved" },
   ],
   '424B4|2025-06-04': [
-    { source: 'capital', data: "IPO final prospectus: 2,250,000 shares @ $8.00; ThinkEquity as sole bookrunner" },
+    { source: 'capital', data: "IPO final prospectus: 2,250,000 shares @ $8.00" },
   ],
   '8-K|2025-06-02': [
     { source: 'catalysts', data: "NYSE American listing approved" },
@@ -356,29 +352,27 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
   '10-Q|2025-04-14': [
     { source: 'company', data: "Q2 FY2025 quarterly report (pre-IPO)" },
   ],
-  'D|2025-03-14': [
+  'Form D|2025-03-14': [
     { source: 'capital', data: "Pre-IPO exempt offering $1.5M (Rule 506(b))" },
   ],
   '10-K|2025-01-10': [
-    { source: 'catalysts', data: "FY2024 10-K filed (delayed from Nov 2024 NT 10-K; post-auditor transition)" },
+    { source: 'catalysts', data: "FY2024 10-K filed (delayed; post-auditor transition)" },
   ],
 
   // ── 2024 ──────────────────────────────────────────────────────────────────
   'NT 10-K|2024-11-29': [
     { source: 'catalysts', data: "FY2024 10-K delayed; auditor transition after BF Borgers ban" },
-    { source: 'timeline', data: "FY2024 10-K delayed (NT 10-K filed Nov 29); auditor transition" },
   ],
   '8-K|2024-10-15': [
     { source: 'catalysts', data: "First ETH purchase agreement filed" },
-    { source: 'timeline', data: "ETH Purchase Agreement signed — pre-IPO ETH exposure begins" },
+    { source: 'timeline', data: "ETH Purchase Agreement — pre-IPO ETH exposure begins" },
   ],
   '8-K|2024-08-15': [
-    { source: 'catalysts', data: "ETH staking agreement (projected 4-5% yields); precursor to MAVAN" },
-    { source: 'timeline', data: "ETH staking agreement signed (projected 4-5% yields)" },
+    { source: 'catalysts', data: "ETH staking agreement (projected 4-5% yields)" },
+    { source: 'timeline', data: "ETH staking agreement signed" },
   ],
   '8-K|2024-06-05': [
     { source: 'catalysts', data: "New auditor appointed after BF Borgers SEC-mandated ban" },
-    { source: 'timeline', data: "Auditor change: replacement for banned BF Borgers" },
   ],
   '10-Q|2024-05-31': [
     { source: 'company', data: "Q3 FY2024: Revenue $1.0M, Loss $1.2M" },
@@ -392,11 +386,8 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
   ],
 
   // ── 2023 ──────────────────────────────────────────────────────────────────
-  'NT 10-K|2023-11-29': [
-    { source: 'catalysts', data: "FY2023 10-K delayed (admin/compliance delay)" },
-  ],
   '10-K|2023-08-31': [
-    { source: 'catalysts', data: "FY2023 annual report: first meaningful revenue $0.6M; loss $3.3M; assets $4M" },
+    { source: 'catalysts', data: "FY2023: Revenue $0.6M; Loss $3.3M; Assets $4M" },
   ],
   'RW|2023-06-15': [
     { source: 'catalysts', data: "S-1 registration withdrawn; pivoted away from $10M mining offering" },
@@ -404,74 +395,60 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
 
   // ── 2022 ──────────────────────────────────────────────────────────────────
   '10-K|2022-08-31': [
-    { source: 'catalysts', data: "FY2022 annual report: Revenue $428K hosting; Loss $2.1M; Assets $4.8M" },
-  ],
-  '8-K|2022-08-29': [
-    { source: 'timeline', data: "Director Maloney resigned (no disagreements); Bitcoin purchase announcement" },
+    { source: 'catalysts', data: "FY2022: Revenue $428K hosting; Loss $2.1M; Assets $4.8M" },
   ],
   'DEF 14C|2022-07-15': [
-    { source: 'catalysts', data: "Name changed to Bitmine + authorized shares to 500M (majority consent)" },
+    { source: 'catalysts', data: "Name changed to Bitmine + authorized shares to 500M" },
     { source: 'timeline', data: "Name changed from Sandy Springs Holdings to Bitmine Immersion Technologies" },
-  ],
-  'S-1|2022-05-31': [
-    { source: 'catalysts', data: "Proposed $10M offering for mining expansion (later withdrawn Jun 2023)" },
-  ],
-  '10-Q|2022-05-31': [
-    { source: 'company', data: "Q3 FY2022: Revenue $428K (hosting onset); Loss $2.1M" },
-  ],
-  '10-Q|2022-02-28': [
-    { source: 'company', data: "Q2 FY2022: Revenue $0; Loss $503K; Crypto $1.2M" },
   ],
 
   // ── 2021 ──────────────────────────────────────────────────────────────────
   'SC 13D|2021-09-01': [
-    { source: 'capital', data: "Michael Maloney: 1.5M shares (12.5%) — largest early holder, sole power" },
+    { source: 'capital', data: "Michael Maloney: 1.5M shares (12.5%) — largest early holder" },
   ],
   '10-K|2021-08-31': [
-    { source: 'catalysts', data: "FY2021 annual report: $0 revenues, $154K loss; mining pivot described" },
+    { source: 'catalysts', data: "FY2021: $0 revenues, $154K loss; mining pivot described" },
   ],
   'SC 13D|2021-08-19': [
-    { source: 'capital', data: "Abed Equities: 1M shares (9.3%) — passive investment (signed J.H. Heyns)" },
+    { source: 'capital', data: "Abed Equities: 1M shares (9.3%) — passive investment" },
   ],
   'SC 13D|2021-08-10': [
     { source: 'capital', data: "Samuel P. Jorgensen: 1M shares (~9%) — passive investment" },
   ],
   'SC 13D|2021-08-06': [
-    { source: 'capital', data: "Ryan Ramnath: via Bitflair Mining Corp (>5%) — mining expertise" },
-  ],
-  '3|2021-08-06': [
-    { source: 'capital', data: "Ryan Ramnath initial ownership (indirect via Bitflair Mining Corp)" },
-  ],
-  '3|2021-08-05': [
-    { source: 'capital', data: "Michael Maloney initial ownership (no direct securities; pre-13D)" },
-  ],
-  'D/A|2021-08-04': [
-    { source: 'capital', data: "Amended exempt offering: $1.05M total raised (Rule 506(b))" },
+    { source: 'capital', data: "Ryan Ramnath: via Bitflair Mining Corp (>5%)" },
   ],
   'SC 13D|2021-08-03': [
-    { source: 'capital', data: "Jonathan R. Bates: via Innovative Digital Investors LP + BFAM Partners (>5%); later CEO (~41% by 2024)" },
+    { source: 'capital', data: "Jonathan R. Bates: via Innovative Digital Investors LP + BFAM Partners (>5%)" },
   ],
-  '3|2021-08-01': [
+  'Form 3|2021-08-06': [
+    { source: 'capital', data: "Ryan Ramnath initial ownership (indirect via Bitflair Mining Corp)" },
+  ],
+  'Form 3|2021-08-05': [
+    { source: 'capital', data: "Michael Maloney initial ownership (no direct securities)" },
+  ],
+  'Form D/A|2021-08-04': [
+    { source: 'capital', data: "Amended exempt offering: $1.05M total raised (Rule 506(b))" },
+  ],
+  'Form 3|2021-08-01': [
     { source: 'capital', data: "Jonathan R. Bates initial ownership (indirect via LP/LLC entities)" },
   ],
-  '3|2021-07-30': [
-    { source: 'capital', data: "Seth A. Bayles initial ownership (no securities; officer/director)" },
+  'Form 3|2021-07-30': [
+    { source: 'capital', data: "Seth A. Bayles initial ownership (officer/director)" },
   ],
-  '3|2021-07-28': [
-    { source: 'capital', data: "Raymond Mow initial ownership (no securities; board addition)" },
+  'Form 3|2021-07-28': [
+    { source: 'capital', data: "Raymond Mow initial ownership (board addition)" },
   ],
   '8-K|2021-07-27': [
-    { source: 'timeline', data: "Corporate governance change (event Jun 24; signed Erik S. Nelson, CEO)" },
+    { source: 'timeline', data: "Corporate governance change (signed Erik S. Nelson, CEO)" },
   ],
-  'D|2021-04-04': [
+  'Form D|2021-04-04': [
     { source: 'capital', data: "First capital raise: $1.05M exempt offering (Rule 506(b))" },
   ],
   'CORRESP|2021-03-23': [
-    { source: 'catalysts', data: "SEC registration review completed; Form 10-12G cleared after 4 CORRESP rounds" },
+    { source: 'catalysts', data: "SEC registration review completed; Form 10-12G cleared" },
   ],
-
-  // ── 2020 ──────────────────────────────────────────────────────────────────
   '10-12G|2020-10-27': [
-    { source: 'catalysts', data: "SEC registration filed as Sandy Springs Holdings (shell company; 2.8M shares; $0 revenue)" },
+    { source: 'catalysts', data: "SEC registration filed (Sandy Springs Holdings; shell; 2.8M shares)" },
   ],
 };

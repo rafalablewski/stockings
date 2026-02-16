@@ -229,6 +229,9 @@ import {
   ETH_LIQUIDITY_FACTORS,
   STAKING_RATIO,
   STAKING_APY,
+  INSIDER_SALES,
+  INSIDER_SALES_SUMMARY,
+  EARLY_SHAREHOLDERS_2021,
 } from '@/data/bmnr';
 import { BMNR_SEC_FILINGS, BMNR_SEC_META, BMNR_SEC_TYPE_COLORS, BMNR_SEC_FILTER_TYPES, BMNR_FILING_CROSS_REFS } from '@/data/bmnr/sec-filings';
 import { BMNR_QUARTERLY_DATA, BMNR_MARKET_CAP_DATA } from '@/data/bmnr/quarterly-metrics';
@@ -3400,7 +3403,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
 
       {/* Navigation Cards */}
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-navigation</div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Common + converted preferred' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Bill Miller + institutions' },
@@ -3408,6 +3411,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
           { id: 'plans', value: `${warrants.length}`, label: 'Warrant Types', sub: 'Pre-funded + advisor' },
           { id: 'dilution', value: `${dilutionPct.toFixed(0)}%`, label: 'Total Dilution', sub: `${(totalFD / 1e6).toFixed(1)}M FD shares` },
           { id: 'liquidity', value: `$${BMNR_LIQUIDITY.cashAndEquiv}M`, label: 'Liquidity', sub: 'Cash + ETH treasury' },
+          { id: 'insiders', value: `${INSIDER_SALES.length}`, label: 'Insider Activity', sub: 'Form 4 filings' },
         ].map(nav => (
           <div
             key={nav.id}
@@ -3817,6 +3821,81 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
           </>
         );
       })()}
+      </>
+      )}
+
+      {/* Insiders View */}
+      {capitalView === 'insiders' && (
+      <>
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#insider-activity</div>
+
+      {/* Summary KPIs */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginBottom: 16 }}>
+        {[
+          { label: 'Total Shares Sold', value: `${(INSIDER_SALES_SUMMARY.totalSharesSold / 1e6).toFixed(1)}M`, color: 'var(--red, #f87171)' },
+          { label: 'Total Proceeds', value: `$${(INSIDER_SALES_SUMMARY.totalProceeds / 1e6).toFixed(0)}M`, color: 'var(--gold)' },
+          { label: 'Avg Price', value: `$${INSIDER_SALES_SUMMARY.avgPrice.toFixed(2)}`, color: 'var(--text)' },
+          { label: 'Period', value: INSIDER_SALES_SUMMARY.period, color: 'var(--text2)' },
+        ].map(kpi => (
+          <div key={kpi.label} style={{ background: 'var(--surface)', padding: '20px 24px', textAlign: 'center' }}>
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>{kpi.label}</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: kpi.color }}>{kpi.value}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Insider Sales Table */}
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Insider Sales (Form 4)</span>
+          <span style={{ fontSize: 11, color: 'var(--text3)' }}>{INSIDER_SALES_SUMMARY.notes}</span>
+        </div>
+        <div style={{ padding: '24px 24px' }}>
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 100px 100px 80px 1fr 1.5fr', borderBottom: '1px solid var(--border)' }}>
+              {['Insider', 'Shares Sold', 'Proceeds', 'Avg Price', 'Method', 'Notes'].map((h, idx) => (
+                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: [1, 2, 3].includes(idx) ? 'right' : 'left' }}>{h}</span>
+              ))}
+            </div>
+            {INSIDER_SALES.map((ins, i) => (
+              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1.5fr 100px 100px 80px 1fr 1.5fr', borderBottom: i < INSIDER_SALES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+                <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 500 }}>{ins.name}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--red, #f87171)' }}>{(ins.sharesSold / 1e6).toFixed(1)}M</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--gold)' }}>${(ins.proceeds / 1e6).toFixed(0)}M</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right' }}>${ins.avgPrice.toFixed(2)}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, color: 'var(--text2)' }}>{ins.method}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, color: 'var(--text3)' }}>{ins.notes}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Early Shareholders (2021 SC 13D) */}
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 16 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Early Shareholders (2021 SC 13D)</span>
+          <span style={{ fontSize: 11, color: 'var(--text3)' }}>Pre-IPO shell era — Sandy Springs Holdings</span>
+        </div>
+        <div style={{ padding: '24px 24px' }}>
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 100px 80px 100px 1.5fr', borderBottom: '1px solid var(--border)' }}>
+              {['Shareholder', 'Shares', '%', 'Source', 'Notes'].map((h, idx) => (
+                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: [1, 2].includes(idx) ? 'right' : 'left' }}>{h}</span>
+              ))}
+            </div>
+            {EARLY_SHAREHOLDERS_2021.map((sh, i) => (
+              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1.5fr 100px 80px 100px 1.5fr', borderBottom: i < EARLY_SHAREHOLDERS_2021.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+                <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 500 }}>{sh.name}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right' }}>{sh.shares ? `${(sh.shares / 1e6).toFixed(1)}M` : '—'}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--violet)' }}>{sh.percent ? `${sh.percent.toFixed(1)}%` : '—'}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, color: 'var(--gold)' }}>{sh.source}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, color: 'var(--text3)' }}>{sh.notes}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
       </>
       )}
 
