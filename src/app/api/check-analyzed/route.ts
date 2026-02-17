@@ -138,7 +138,10 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
 
 export async function POST(request: NextRequest) {
   // Use bracket notation to prevent Next.js bundler from inlining at build time
-  const ANTHROPIC_API_KEY = (process.env as Record<string, string | undefined>)['ANTHROPIC_API_KEY'] || '';
+  const env = process.env as Record<string, string | undefined>;
+  const ANTHROPIC_API_KEY = env['ANTHROPIC_API_KEY'] || '';
+  const DISABLE_AI_MATCHING = env['DISABLE_AI_MATCHING'] || '';
+  const MAX_PROMPT_TOKENS = parseInt(env['MAX_PROMPT_TOKENS'] || '40000', 10);
 
   try {
     const body = await request.json();
@@ -152,19 +155,26 @@ export async function POST(request: NextRequest) {
     const analysisData = await getAnalysisData(ticker.toUpperCase());
     console.log(`[check-analyzed] ${ticker}: ${analysisData.length} entries loaded from database`);
 
+    // Helper: run local keyword matching for all articles
+    const runLocalMatch = () => articles.map(a => ({
+      headline: a.headline,
+      date: a.date,
+      analyzed: localMatch(a.headline, analysisData),
+    }));
+
     // Fallback: local keyword matching when no API key is available
     if (!ANTHROPIC_API_KEY) {
-      const results = articles.map(a => ({
-        headline: a.headline,
-        date: a.date,
-        analyzed: localMatch(a.headline, analysisData),
-      }));
-      return NextResponse.json({ ticker, results });
+      return NextResponse.json({ ticker, results: runLocalMatch(), method: 'local' });
+    }
+
+    // Kill switch: force local matching via env var
+    if (DISABLE_AI_MATCHING === 'true') {
+      console.log(`[check-analyzed] ${ticker}: AI matching disabled via DISABLE_AI_MATCHING`);
+      return NextResponse.json({ ticker, results: runLocalMatch(), method: 'local' });
     }
 
     // Build context-rich summary: include headline + truncated detail for semantic matching
     const existingSummary = analysisData
-      .slice(0, 500)
       .map(e => {
         const detail = e.detail
           ? ` — ${e.detail.slice(0, 200)}`
@@ -203,55 +213,69 @@ Think about WHAT HAPPENED, not how it's worded. Match on substance, not phrasing
 Respond with ONLY a JSON array, one object per article, in order:
 [{"index": 1, "analyzed": true}, {"index": 2, "analyzed": false}, ...]`;
 
-    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    });
-
-    if (!claudeRes.ok) {
-      const errText = await claudeRes.text();
-      console.error('Claude API error, falling back to local matching:', errText);
-      const results = articles.map(a => ({
-        headline: a.headline,
-        date: a.date,
-        analyzed: localMatch(a.headline, analysisData),
-      }));
-      return NextResponse.json({ ticker, results });
+    // Token budget guard: estimate prompt tokens (chars / 4), skip AI if too large
+    const estimatedTokens = Math.ceil(prompt.length / 4);
+    if (estimatedTokens > MAX_PROMPT_TOKENS) {
+      console.warn(`[check-analyzed] ${ticker}: prompt ~${estimatedTokens} tokens exceeds MAX_PROMPT_TOKENS (${MAX_PROMPT_TOKENS}), using local matching`);
+      return NextResponse.json({ ticker, results: runLocalMatch(), method: 'local' });
     }
 
-    const claudeData = await claudeRes.json();
-    const responseText = claudeData.content?.[0]?.text || '[]';
+    // Attempt AI matching — falls back to local matching on any failure
+    let method: 'ai' | 'local' = 'ai';
+    let output: Array<{ headline: string; date: string; analyzed: boolean }>;
 
-    // Parse Claude's JSON response
-    let results: Array<{ index: number; analyzed: boolean }>;
     try {
-      const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-      results = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
-    } catch {
-      console.error('Failed to parse Claude response:', responseText);
-      results = articles.map((_, i) => ({ index: i + 1, analyzed: false }));
+      const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 1024,
+          messages: [{ role: 'user', content: prompt }],
+        }),
+        signal: AbortSignal.timeout(30000),
+      });
+
+      if (!claudeRes.ok) {
+        const errText = await claudeRes.text();
+        console.error('Claude API error, falling back to local matching:', errText);
+        throw new Error(`Claude API returned ${claudeRes.status}`);
+      }
+
+      const claudeData = await claudeRes.json();
+      const responseText = claudeData.content?.[0]?.text || '[]';
+
+      // Parse Claude's JSON response
+      let results: Array<{ index: number; analyzed: boolean }>;
+      try {
+        const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+        results = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
+      } catch {
+        console.error('Failed to parse Claude response:', responseText);
+        results = articles.map((_, i) => ({ index: i + 1, analyzed: false }));
+      }
+
+      // Map results back to articles
+      output = articles.map((article, i) => {
+        const result = results.find(r => r.index === i + 1);
+        return {
+          headline: article.headline,
+          date: article.date,
+          analyzed: result?.analyzed ?? false,
+        };
+      });
+    } catch (claudeError) {
+      // Network error, timeout, or API error — fall back to local matching
+      console.error('Claude API call failed, using local matching:', claudeError);
+      method = 'local';
+      output = runLocalMatch();
     }
 
-    // Map results back to articles
-    const output = articles.map((article, i) => {
-      const result = results.find(r => r.index === i + 1);
-      return {
-        headline: article.headline,
-        date: article.date,
-        analyzed: result?.analyzed ?? false,
-      };
-    });
-
-    return NextResponse.json({ ticker, results: output });
+    return NextResponse.json({ ticker, results: output, method });
   } catch (error) {
     console.error('Check-analyzed error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -452,6 +452,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [compAiChecking, setCompAiChecking] = useState<Record<string, boolean>>({});
   const [loadingAll, setLoadingAll] = useState(false);
   const [lastFetchedAt, setLastFetchedAt] = useState<number | null>(null);
+  const [methodologyOpen, setMethodologyOpen] = useState(false);
+  const [matchMethod, setMatchMethod] = useState<'ai' | 'local' | null>(null);
 
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
@@ -464,6 +466,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       if (!res.ok) throw new Error(`AI check failed: ${res.status}`);
       const data = await res.json();
       if (!data.results) throw new Error(data.error || 'No results returned');
+      if (data.method) setMatchMethod(data.method);
       return articles.map((article, i) => ({ ...article, analyzed: data.results?.[i]?.analyzed ?? null }));
     } catch (err) {
       console.error('[SharedSourcesTab] AI check error:', err);
@@ -766,6 +769,40 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </nav>
           </div>
         ))}
+      </div>
+
+      {/* ── Methodology ────────────────────────────────────────────────────── */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#sources-methodology</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div
+          onClick={() => setMethodologyOpen(prev => !prev)}
+          style={{
+            padding: '24px 24px',
+            borderBottom: methodologyOpen ? '1px solid var(--border)' : 'none',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer',
+          }}
+          role="button"
+          tabIndex={0}
+          aria-expanded={methodologyOpen}
+          aria-label="Toggle Sources Methodology"
+          onKeyDown={(e) => e.key === 'Enter' && setMethodologyOpen(prev => !prev)}
+        >
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Methodology</span>
+          <span style={{ color: 'var(--text3)', fontSize: 18 }}>{methodologyOpen ? '\u2212' : '+'}</span>
+        </div>
+        {methodologyOpen && (
+          <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)', lineHeight: 1.8 }}>
+            <p style={{ margin: '0 0 12px' }}><strong>Article Tracking:</strong> Each article is checked against the local TypeScript data warehouse to determine if the underlying event has already been analyzed. Two matching methods are available: AI semantic matching (primary) and local keyword matching (fallback).</p>
+            <p style={{ margin: '0 0 12px' }}><strong>AI Semantic Matching:</strong> When an Anthropic API key is configured, articles are sent to Claude along with all existing database entries. Claude evaluates whether the underlying event or topic — not just the wording — is already covered in the database. This catches cases where different outlets report the same story with different headlines.</p>
+            <p style={{ margin: '0 0 12px' }}><strong>Local Keyword Matching:</strong> When no API key is available, when the AI service is unreachable, or when the prompt exceeds the configured token budget, a local keyword-overlap algorithm is used. Each article headline is tokenized into significant keywords (stop words removed) and compared against every database entry. An article is considered tracked if 50%+ of its keywords overlap with any single entry, with a minimum of 3 matching keywords.</p>
+            <p style={{ margin: '0 0 12px' }}><strong>Status Indicators:</strong> <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> Tracked</span> — event is in the analysis database. <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> New</span> — event not yet in the database. <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', display: 'inline-block' }} /> Pending</span> — check in progress or failed.</p>
+            <p style={{ margin: '0 0 12px' }}><strong>Data Sources:</strong> All .ts data files for the ticker, including timeline events, press releases, SEC filings, catalysts, competitors, quarterly metrics, and analyst coverage. Files are read directly from disk to ensure the latest data is always used.</p>
+            <p style={{ margin: '0 0 12px' }}><strong>Kill Switch:</strong> Set <code style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>DISABLE_AI_MATCHING=true</code> in your environment to force local keyword matching. Set <code style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>MAX_PROMPT_TOKENS</code> (default: 40,000) to limit the maximum prompt size sent to Claude.</p>
+            {matchMethod && (
+              <p style={{ margin: '12px 0 0' }}><strong>Current Session:</strong> Using <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, padding: '2px 8px', borderRadius: 5, background: matchMethod === 'ai' ? 'var(--sky-dim)' : 'var(--gold-dim)', color: matchMethod === 'ai' ? 'var(--sky)' : 'var(--gold)' }}>{matchMethod === 'ai' ? 'AI semantic matching' : 'local keyword matching'}</span> for article tracking.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
