@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
 
     // Build context-rich summary: include headline + truncated detail for semantic matching
     const existingSummary = analysisData
-      .slice(0, 150)
+      .slice(0, 500)
       .map(e => {
         const detail = e.detail
           ? ` — ${e.detail.slice(0, 200)}`
@@ -219,8 +219,13 @@ Respond with ONLY a JSON array, one object per article, in order:
 
     if (!claudeRes.ok) {
       const errText = await claudeRes.text();
-      console.error('Claude API error:', errText);
-      return NextResponse.json({ error: 'AI analysis failed' }, { status: 502 });
+      console.error('Claude API error, falling back to local matching:', errText);
+      const results = articles.map(a => ({
+        headline: a.headline,
+        date: a.date,
+        analyzed: localMatch(a.headline, analysisData),
+      }));
+      return NextResponse.json({ ticker, results });
     }
 
     const claudeData = await claudeRes.json();
