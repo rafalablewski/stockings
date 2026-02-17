@@ -349,16 +349,39 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Missing analysis for preview' }, { status: 400 });
       }
 
+      // Discover actual files for this ticker so the AI targets real paths
+      const tickerDir = path.resolve(DATA_DIR, ticker.toLowerCase());
+      let fileManifest = '';
+      try {
+        const entries = await fs.readdir(tickerDir);
+        const tsFiles = entries.filter(f => f.endsWith('.ts')).sort();
+        const manifests: string[] = [];
+        for (const f of tsFiles) {
+          const rel = `${ticker.toLowerCase()}/${f}`;
+          const fullPath = path.resolve(tickerDir, f);
+          const content = await fs.readFile(fullPath, 'utf-8');
+          // Show first 400 chars so the AI knows structure + can pick anchors
+          const head = content.slice(0, 400).replace(/\n/g, '\\n');
+          manifests.push(`- ${rel}\n  HEAD: ${head}`);
+        }
+        fileManifest = manifests.join('\n');
+      } catch {
+        fileManifest = `(could not list files for ${ticker.toLowerCase()}/)`;
+      }
+
       const extractionPrompt = `You are a database patch generator for the ABISON investment research platform. Given an agent analysis output, extract ONLY the concrete database changes proposed.
 
 TICKER: ${ticker.toUpperCase()}
 AGENT: ${agentId}
 
+AVAILABLE FILES (use ONLY these exact paths):
+${fileManifest}
+
 Output ONLY valid JSON — an array of patch operations. No markdown, no explanation.
 
 Each patch object:
 {
-  "file": "string — relative path from src/data/, e.g. '${ticker.toLowerCase()}/sec-filings.ts'",
+  "file": "string — relative path from src/data/ — MUST be one of the files listed above",
   "action": "insert | append | update",
   "anchor": "string — unique text in the target file to locate the insertion point (must appear EXACTLY ONCE)",
   "content": "string — the TypeScript code to insert/append (must NOT contain import/require/exec/eval)",
@@ -366,6 +389,7 @@ Each patch object:
 }
 
 Rules:
+- CRITICAL: the "file" field must EXACTLY match one of the AVAILABLE FILES above. Do NOT guess or abbreviate file names.
 - action=insert: Insert BEFORE anchor (for adding new entries at top of reverse-chronological lists)
 - action=append: Insert AFTER anchor (for adding bullets/fields to existing entries)
 - action=update: Replace oldValue with content (oldValue must be UNIQUE in the file — use enough surrounding context)
