@@ -53,8 +53,11 @@ interface PatchResult {
 
 const DATA_DIR = path.resolve(process.cwd(), 'src', 'data');
 const ALLOWED_PREFIXES = ['asts/', 'bmnr/', 'crcl/'];
+const TICKER_PATTERN = /^[a-z]{2,10}$/;
 const MAX_ANALYSIS_LENGTH = 50_000;
 const MAX_PATCH_CONTENT_LENGTH = 5_000;
+const MAX_PATCH_COUNT = 20;
+const MAX_BACKUPS_PER_FILE = 3;
 const DANGEROUS_PATTERN = /\b(import\s|require\s*\(|exec\s*\(|eval\s*\(|process\.|child_process|Function\s*\()\b/;
 
 // ─── Path safety ────────────────────────────────────────────────────────────
@@ -234,6 +237,24 @@ async function validatePatch(patch: PatchOp): Promise<PatchPreviewItem> {
   return { ...base, valid: true, detail: `+${newLines - originalLines} lines`, diff, linesAdded: newLines - originalLines };
 }
 
+// ─── Backup cleanup ─────────────────────────────────────────────────────────
+
+async function cleanupBackups(filePath: string): Promise<void> {
+  try {
+    const dir = path.dirname(filePath);
+    const base = path.basename(filePath);
+    const entries = await fs.readdir(dir);
+    const backups = entries
+      .filter(e => e.startsWith(base + '.bak.'))
+      .sort()
+      .reverse(); // newest first
+    // Remove all but the last MAX_BACKUPS_PER_FILE
+    for (const old of backups.slice(MAX_BACKUPS_PER_FILE)) {
+      try { await fs.unlink(path.join(dir, old)); } catch { /* ignore */ }
+    }
+  } catch { /* ignore if dir listing fails */ }
+}
+
 // ─── Patch application (with writes) ────────────────────────────────────────
 
 async function applyPatch(patch: PatchOp): Promise<PatchResult> {
@@ -254,6 +275,10 @@ async function applyPatch(patch: PatchOp): Promise<PatchResult> {
   const anchorIdx = content.indexOf(patch.anchor);
   if (anchorIdx === -1) {
     return { ...base, success: false, detail: `Anchor not found` };
+  }
+  // Anchor must be unique — prevent ambiguous writes
+  if (content.indexOf(patch.anchor, anchorIdx + 1) !== -1) {
+    return { ...base, success: false, detail: 'Ambiguous anchor (appears multiple times)' };
   }
 
   let newContent: string;
@@ -310,8 +335,8 @@ async function applyPatch(patch: PatchOp): Promise<PatchResult> {
   await fs.writeFile(tmpPath, newContent, 'utf-8');
   await fs.rename(tmpPath, pathCheck.fullPath);
 
-  // Clean up backup on success (keep last one for safety — optional)
-  // await fs.unlink(backupPath);
+  // Clean up old backups — keep last MAX_BACKUPS_PER_FILE
+  await cleanupBackups(pathCheck.fullPath);
 
   return { ...base, success: true, detail: `+${newLines - originalLines} lines` };
 }
@@ -338,6 +363,11 @@ export async function POST(request: NextRequest) {
 
     if (!ticker) {
       return NextResponse.json({ error: 'Missing ticker' }, { status: 400 });
+    }
+
+    // Strict ticker validation — prevent path traversal and directory listing abuse
+    if (!TICKER_PATTERN.test(ticker.toLowerCase())) {
+      return NextResponse.json({ error: 'Invalid ticker format' }, { status: 400 });
     }
 
     let patches: PatchOp[];
@@ -445,6 +475,11 @@ ${analysis}`;
         return NextResponse.json({ error: 'Expected array of patches' }, { status: 422 });
       }
 
+      // Cap patch count to prevent AI generating excessive changes
+      if (patches.length > MAX_PATCH_COUNT) {
+        patches = patches.slice(0, MAX_PATCH_COUNT);
+      }
+
       if (patches.length === 0) {
         return NextResponse.json({
           dryRun: true,
@@ -484,6 +519,10 @@ ${analysis}`;
 
       if (patches.length === 0) {
         return NextResponse.json({ error: 'No patches to apply' }, { status: 400 });
+      }
+
+      if (patches.length > MAX_PATCH_COUNT) {
+        return NextResponse.json({ error: `Too many patches: ${patches.length} (max ${MAX_PATCH_COUNT})` }, { status: 400 });
       }
 
       // Re-validate and apply each patch

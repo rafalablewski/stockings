@@ -136,7 +136,12 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
   const handleExportPDF = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
-    printWindow.document.write(`<!DOCTYPE html><html><head><title>${workflow.name} — ${ticker.toUpperCase()}</title>
+    // Escape all user-influenced strings to prevent XSS
+    const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const safeName = esc(workflow.name);
+    const safeTicker = esc(ticker.toUpperCase());
+    const safeResult = esc(result);
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>${safeName} — ${safeTicker}</title>
 <style>
   body { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; line-height: 1.8; color: #1a1a1a; padding: 40px; max-width: 800px; margin: 0 auto; }
   h1 { font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 24px; }
@@ -144,9 +149,9 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
   .meta { font-size: 9px; color: #888; margin-bottom: 16px; }
   @media print { body { padding: 20px; } }
 </style></head><body>
-<h1>${workflow.name}</h1>
-<div class="meta">${ticker.toUpperCase()} — ${new Date().toISOString().split("T")[0]} — ABISON Research</div>
-<pre>${result.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
+<h1>${safeName}</h1>
+<div class="meta">${safeTicker} — ${new Date().toISOString().split("T")[0]} — ABISON Research</div>
+<pre>${safeResult}</pre>
 </body></html>`);
     printWindow.document.close();
     setTimeout(() => { printWindow.print(); }, 250);
