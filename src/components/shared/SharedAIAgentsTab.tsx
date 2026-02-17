@@ -16,8 +16,25 @@ interface SharedAIAgentsTabProps {
   ticker: string;
 }
 
+// Shared small action button style
+const actionBtnBase: React.CSSProperties = {
+  fontSize: 9,
+  fontWeight: 500,
+  textTransform: "uppercase",
+  letterSpacing: "0.08em",
+  padding: "4px 10px",
+  borderRadius: 4,
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid var(--border)",
+  cursor: "pointer",
+  transition: "all 0.15s",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 5,
+};
+
 // Individual agent runner — manages its own expand/run/result state
-function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
+function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: string }) {
   const [expanded, setExpanded] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [userData, setUserData] = useState("");
@@ -25,7 +42,12 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
   const [running, setRunning] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [applyStatus, setApplyStatus] = useState<"idle" | "applying" | "done" | "error">("idle");
+  const [applyMessage, setApplyMessage] = useState("");
+  const [commitStatus, setCommitStatus] = useState<"idle" | "committing" | "done" | "error">("idle");
+  const [commitMessage, setCommitMessage] = useState("");
   const abortRef = useRef<AbortController | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   const canRun = !workflow.requiresUserData || userData.trim().length > 0;
 
@@ -107,6 +129,71 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
     await navigator.clipboard.writeText(result);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleExportPDF = () => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>${workflow.name} — ${ticker.toUpperCase()}</title>
+<style>
+  body { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; line-height: 1.8; color: #1a1a1a; padding: 40px; max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 24px; }
+  pre { white-space: pre-wrap; word-wrap: break-word; margin: 0; }
+  .meta { font-size: 9px; color: #888; margin-bottom: 16px; }
+  @media print { body { padding: 20px; } }
+</style></head><body>
+<h1>${workflow.name}</h1>
+<div class="meta">${ticker.toUpperCase()} — ${new Date().toISOString().split("T")[0]} — ABISON Research</div>
+<pre>${result.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
+</body></html>`);
+    printWindow.document.close();
+    setTimeout(() => { printWindow.print(); }, 250);
+  };
+
+  const handleApplyToDb = async () => {
+    setApplyStatus("applying");
+    setApplyMessage("");
+    try {
+      const res = await fetch("/api/workflow/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker, agentId: workflow.id, analysis: result }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setApplyStatus("error");
+        setApplyMessage(data.error || "Apply failed");
+        return;
+      }
+      setApplyStatus("done");
+      setApplyMessage(data.summary || `Applied ${data.patchCount ?? 0} patches`);
+    } catch (err) {
+      setApplyStatus("error");
+      setApplyMessage((err as Error).message);
+    }
+  };
+
+  const handleCommit = async () => {
+    setCommitStatus("committing");
+    setCommitMessage("");
+    try {
+      const res = await fetch("/api/workflow/commit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker, agentId: workflow.id, analysis: result }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCommitStatus("error");
+        setCommitMessage(data.error || "Commit failed");
+        return;
+      }
+      setCommitStatus("done");
+      setCommitMessage(data.message || "Committed");
+    } catch (err) {
+      setCommitStatus("error");
+      setCommitMessage((err as Error).message);
+    }
   };
 
   return (
@@ -374,7 +461,7 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
 
           {/* Result */}
           {result && (
-            <div style={{ paddingTop: 16, marginTop: 16, borderTop: "1px solid var(--border)" }}>
+            <div ref={resultRef} style={{ paddingTop: 16, marginTop: 16, borderTop: "1px solid var(--border)" }}>
               <div
                 style={{
                   display: "flex",
@@ -394,25 +481,6 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                 >
                   Analysis Result
                 </span>
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  style={{
-                    fontSize: 9,
-                    fontWeight: 500,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    padding: "2px 6px",
-                    borderRadius: 4,
-                    background: "rgba(255,255,255,0.04)",
-                    color: copied ? "var(--mint)" : "var(--text3)",
-                    border: `1px solid ${copied ? "rgba(130,200,130,0.15)" : "var(--border)"}`,
-                    cursor: "pointer",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  {copied ? "Copied" : "Copy"}
-                </button>
               </div>
               <div style={{ maxHeight: 600, overflowY: "auto" }}>
                 <pre
@@ -428,6 +496,135 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                   {result}
                 </pre>
               </div>
+
+              {/* ── Action Toolbar ── */}
+              {!running && (
+                <div
+                  style={{
+                    marginTop: 16,
+                    paddingTop: 16,
+                    borderTop: "1px solid var(--border)",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 8,
+                    alignItems: "center",
+                  }}
+                >
+                  {/* 1. Export PDF */}
+                  <button
+                    type="button"
+                    onClick={handleExportPDF}
+                    style={{ ...actionBtnBase, color: "var(--text3)" }}
+                  >
+                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    Export PDF
+                  </button>
+
+                  {/* 2. Copy Markdown */}
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    style={{
+                      ...actionBtnBase,
+                      color: copied ? "var(--mint)" : "var(--text3)",
+                      borderColor: copied ? "rgba(130,200,130,0.15)" : undefined,
+                    }}
+                  >
+                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
+                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                    </svg>
+                    {copied ? "Copied" : "Copy Markdown"}
+                  </button>
+
+                  {/* 3. Apply to Database */}
+                  <button
+                    type="button"
+                    onClick={handleApplyToDb}
+                    disabled={applyStatus === "applying" || applyStatus === "done"}
+                    style={{
+                      ...actionBtnBase,
+                      color: applyStatus === "done"
+                        ? "var(--mint)"
+                        : applyStatus === "error"
+                          ? "var(--coral)"
+                          : applyStatus === "applying"
+                            ? "var(--text3)"
+                            : "rgba(130,200,130,0.5)",
+                      borderColor: applyStatus === "done"
+                        ? "rgba(130,200,130,0.15)"
+                        : applyStatus === "error"
+                          ? "color-mix(in srgb, var(--coral) 25%, transparent)"
+                          : applyStatus === "applying"
+                            ? undefined
+                            : "rgba(130,200,130,0.15)",
+                      opacity: applyStatus === "applying" ? 0.6 : 1,
+                      cursor: applyStatus === "applying" || applyStatus === "done" ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    {applyStatus === "applying"
+                      ? "Applying..."
+                      : applyStatus === "done"
+                        ? "Applied"
+                        : applyStatus === "error"
+                          ? "Retry Apply"
+                          : "Apply to Database"}
+                  </button>
+
+                  {/* 4. Create Commit */}
+                  <button
+                    type="button"
+                    onClick={handleCommit}
+                    disabled={commitStatus === "committing" || commitStatus === "done" || applyStatus !== "done"}
+                    style={{
+                      ...actionBtnBase,
+                      color: commitStatus === "done"
+                        ? "var(--mint)"
+                        : commitStatus === "error"
+                          ? "var(--coral)"
+                          : applyStatus !== "done"
+                            ? "var(--text3)"
+                            : "rgba(168,130,230,0.5)",
+                      borderColor: commitStatus === "done"
+                        ? "rgba(130,200,130,0.15)"
+                        : applyStatus !== "done"
+                          ? undefined
+                          : "rgba(168,130,230,0.15)",
+                      opacity: applyStatus !== "done" ? 0.3 : commitStatus === "committing" ? 0.6 : 1,
+                      cursor: commitStatus === "committing" || commitStatus === "done" || applyStatus !== "done" ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx={12} cy={12} r={4} />
+                      <line x1={1.05} y1={12} x2={7} y2={12} />
+                      <line x1={17.01} y1={12} x2={22.96} y2={12} />
+                    </svg>
+                    {commitStatus === "committing"
+                      ? "Committing..."
+                      : commitStatus === "done"
+                        ? "Committed"
+                        : "Create Commit"}
+                  </button>
+
+                  {/* Status messages */}
+                  {applyMessage && (
+                    <span style={{ fontSize: 10, color: applyStatus === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>
+                      {applyMessage}
+                    </span>
+                  )}
+                  {commitMessage && (
+                    <span style={{ fontSize: 10, color: commitStatus === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>
+                      {commitMessage}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -511,7 +708,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           <SectionLabel>Database analysis — run directly</SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {dbAgents.map((wf) => (
-              <AgentRunner key={wf.id} workflow={wf} />
+              <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
             ))}
           </div>
         </div>
@@ -524,7 +721,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           <SectionLabel>Data input — paste &amp; analyze</SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {dataAgents.map((wf) => (
-              <AgentRunner key={wf.id} workflow={wf} />
+              <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
             ))}
           </div>
         </div>
@@ -537,7 +734,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           <SectionLabel>Audit — database validation</SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {auditAgents.map((wf) => (
-              <AgentRunner key={wf.id} workflow={wf} />
+              <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
             ))}
           </div>
         </div>
@@ -549,7 +746,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#ask-agent</div>
           <SectionLabel>Ask Agent — general-purpose query</SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <AgentRunner workflow={askAgent} />
+            <AgentRunner workflow={askAgent} ticker={tickerLower} />
           </div>
         </div>
       )}
