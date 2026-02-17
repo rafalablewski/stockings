@@ -10,8 +10,8 @@ import { execSync } from 'child_process';
 
 const ROOT = process.cwd();
 
-function run(cmd: string): string {
-  return execSync(cmd, { cwd: ROOT, encoding: 'utf-8', timeout: 10000 }).trim();
+function run(cmd: string, timeout = 10000): string {
+  return execSync(cmd, { cwd: ROOT, encoding: 'utf-8', timeout }).trim();
 }
 
 export async function POST(request: NextRequest) {
@@ -58,11 +58,26 @@ export async function POST(request: NextRequest) {
       run(`git add "${file}"`);
     }
 
+    // TypeScript check before committing — catch broken code
+    try {
+      run('npx tsc --noEmit --pretty false', 30000);
+    } catch (tscErr) {
+      // Unstage files so the user can fix first
+      for (const file of changedFiles) {
+        try { run(`git reset HEAD "${file}"`); } catch { /* ignore */ }
+      }
+      const tscOutput = (tscErr as Error).message.slice(0, 500);
+      return NextResponse.json({
+        error: `TypeScript check failed — commit aborted. Fix the errors first.\n${tscOutput}`,
+      }, { status: 422 });
+    }
+
     // Commit
     const safeMsg = commitMsg.replace(/"/g, '\\"');
     run(`git commit -m "${safeMsg}"`);
 
     const shortHash = run('git rev-parse --short HEAD');
+    console.log(`[commit] ${shortHash} — ${commitMsg} (${changedFiles.length} files: ${changedFiles.join(', ')})`);
 
     return NextResponse.json({
       message: `${shortHash} — ${commitMsg}`,

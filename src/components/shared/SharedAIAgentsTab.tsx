@@ -42,8 +42,10 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
   const [running, setRunning] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
-  const [applyStatus, setApplyStatus] = useState<"idle" | "applying" | "done" | "error">("idle");
-  const [applyMessage, setApplyMessage] = useState("");
+  const [applyStep, setApplyStep] = useState<"idle" | "previewing" | "previewed" | "applying" | "applied" | "error">("idle");
+  const [applyError, setApplyError] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [patchPreview, setPatchPreview] = useState<any>(null);
   const [commitStatus, setCommitStatus] = useState<"idle" | "committing" | "done" | "error">("idle");
   const [commitMessage, setCommitMessage] = useState("");
   const abortRef = useRef<AbortController | null>(null);
@@ -150,27 +152,59 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
     setTimeout(() => { printWindow.print(); }, 250);
   };
 
-  const handleApplyToDb = async () => {
-    setApplyStatus("applying");
-    setApplyMessage("");
+  const handlePreview = async () => {
+    setApplyStep("previewing");
+    setApplyError("");
+    setPatchPreview(null);
     try {
       const res = await fetch("/api/workflow/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticker, agentId: workflow.id, analysis: result }),
+        body: JSON.stringify({ ticker, agentId: workflow.id, analysis: result, dryRun: true }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setApplyStatus("error");
-        setApplyMessage(data.error || "Apply failed");
+        setApplyStep("error");
+        setApplyError(data.error || "Preview failed");
         return;
       }
-      setApplyStatus("done");
-      setApplyMessage(data.summary || `Applied ${data.patchCount ?? 0} patches`);
+      setPatchPreview(data);
+      setApplyStep(data.patchCount === 0 ? "idle" : "previewed");
+      if (data.patchCount === 0) setApplyError(data.summary || "No changes to apply");
     } catch (err) {
-      setApplyStatus("error");
-      setApplyMessage((err as Error).message);
+      setApplyStep("error");
+      setApplyError((err as Error).message);
     }
+  };
+
+  const handleConfirmApply = async () => {
+    if (!patchPreview?.patches?.length) return;
+    setApplyStep("applying");
+    setApplyError("");
+    try {
+      const res = await fetch("/api/workflow/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker, agentId: workflow.id, dryRun: false, patches: patchPreview.patches }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setApplyStep("error");
+        setApplyError(data.error || "Apply failed");
+        return;
+      }
+      setApplyStep("applied");
+      setPatchPreview((prev: typeof patchPreview) => ({ ...prev, applySummary: data.summary }));
+    } catch (err) {
+      setApplyStep("error");
+      setApplyError((err as Error).message);
+    }
+  };
+
+  const handleCancelPreview = () => {
+    setApplyStep("idle");
+    setPatchPreview(null);
+    setApplyError("");
   };
 
   const handleCommit = async () => {
@@ -499,129 +533,286 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
               {/* ── Action Toolbar ── */}
               {!running && (
-                <div
-                  style={{
-                    marginTop: 16,
-                    paddingTop: 16,
-                    borderTop: "1px solid var(--border)",
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 8,
-                    alignItems: "center",
-                  }}
-                >
-                  {/* 1. Export PDF */}
-                  <button
-                    type="button"
-                    onClick={handleExportPDF}
-                    style={{ ...actionBtnBase, color: "var(--text3)" }}
-                  >
-                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-                      <polyline points="14 2 14 8 20 8" />
-                    </svg>
-                    Export PDF
-                  </button>
+                <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+                  {/* Button row */}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+                    {/* 1. Export PDF */}
+                    <button type="button" onClick={handleExportPDF} style={{ ...actionBtnBase, color: "var(--text3)" }}>
+                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                      </svg>
+                      Export PDF
+                    </button>
 
-                  {/* 2. Copy Markdown */}
-                  <button
-                    type="button"
-                    onClick={handleCopy}
-                    style={{
-                      ...actionBtnBase,
-                      color: copied ? "var(--mint)" : "var(--text3)",
-                      borderColor: copied ? "rgba(130,200,130,0.15)" : undefined,
-                    }}
-                  >
-                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
-                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                    </svg>
-                    {copied ? "Copied" : "Copy Markdown"}
-                  </button>
+                    {/* 2. Copy Markdown */}
+                    <button
+                      type="button"
+                      onClick={handleCopy}
+                      style={{
+                        ...actionBtnBase,
+                        color: copied ? "var(--mint)" : "var(--text3)",
+                        borderColor: copied ? "rgba(130,200,130,0.15)" : undefined,
+                      }}
+                    >
+                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                      </svg>
+                      {copied ? "Copied" : "Copy Markdown"}
+                    </button>
 
-                  {/* 3. Apply to Database */}
-                  <button
-                    type="button"
-                    onClick={handleApplyToDb}
-                    disabled={applyStatus === "applying" || applyStatus === "done"}
-                    style={{
-                      ...actionBtnBase,
-                      color: applyStatus === "done"
-                        ? "var(--mint)"
-                        : applyStatus === "error"
-                          ? "var(--coral)"
-                          : applyStatus === "applying"
+                    {/* 3. Preview Changes / Applied indicator */}
+                    {applyStep === "applied" ? (
+                      <span style={{ ...actionBtnBase, color: "var(--mint)", borderColor: "rgba(130,200,130,0.15)", cursor: "default" }}>
+                        <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Applied
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handlePreview}
+                        disabled={applyStep === "previewing" || applyStep === "previewed" || applyStep === "applying"}
+                        style={{
+                          ...actionBtnBase,
+                          color: applyStep === "previewing"
                             ? "var(--text3)"
-                            : "rgba(130,200,130,0.5)",
-                      borderColor: applyStatus === "done"
-                        ? "rgba(130,200,130,0.15)"
-                        : applyStatus === "error"
-                          ? "color-mix(in srgb, var(--coral) 25%, transparent)"
-                          : applyStatus === "applying"
-                            ? undefined
+                            : applyStep === "error"
+                              ? "var(--coral)"
+                              : "rgba(130,200,130,0.5)",
+                          borderColor: applyStep === "error"
+                            ? "color-mix(in srgb, var(--coral) 25%, transparent)"
                             : "rgba(130,200,130,0.15)",
-                      opacity: applyStatus === "applying" ? 0.6 : 1,
-                      cursor: applyStatus === "applying" || applyStatus === "done" ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 5v14M5 12h14" />
-                    </svg>
-                    {applyStatus === "applying"
-                      ? "Applying..."
-                      : applyStatus === "done"
-                        ? "Applied"
-                        : applyStatus === "error"
-                          ? "Retry Apply"
-                          : "Apply to Database"}
-                  </button>
+                          opacity: applyStep === "previewing" ? 0.6 : 1,
+                          cursor: applyStep === "previewing" || applyStep === "previewed" || applyStep === "applying" ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                          <circle cx={12} cy={12} r={3} />
+                        </svg>
+                        {applyStep === "previewing"
+                          ? "Extracting patches..."
+                          : applyStep === "error"
+                            ? "Retry Preview"
+                            : "Preview Changes"}
+                      </button>
+                    )}
 
-                  {/* 4. Create Commit */}
-                  <button
-                    type="button"
-                    onClick={handleCommit}
-                    disabled={commitStatus === "committing" || commitStatus === "done" || applyStatus !== "done"}
-                    style={{
-                      ...actionBtnBase,
-                      color: commitStatus === "done"
-                        ? "var(--mint)"
-                        : commitStatus === "error"
-                          ? "var(--coral)"
-                          : applyStatus !== "done"
-                            ? "var(--text3)"
-                            : "rgba(168,130,230,0.5)",
-                      borderColor: commitStatus === "done"
-                        ? "rgba(130,200,130,0.15)"
-                        : applyStatus !== "done"
-                          ? undefined
-                          : "rgba(168,130,230,0.15)",
-                      opacity: applyStatus !== "done" ? 0.3 : commitStatus === "committing" ? 0.6 : 1,
-                      cursor: commitStatus === "committing" || commitStatus === "done" || applyStatus !== "done" ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx={12} cy={12} r={4} />
-                      <line x1={1.05} y1={12} x2={7} y2={12} />
-                      <line x1={17.01} y1={12} x2={22.96} y2={12} />
-                    </svg>
-                    {commitStatus === "committing"
-                      ? "Committing..."
-                      : commitStatus === "done"
-                        ? "Committed"
-                        : "Create Commit"}
-                  </button>
+                    {/* 4. Create Commit */}
+                    <button
+                      type="button"
+                      onClick={handleCommit}
+                      disabled={commitStatus === "committing" || commitStatus === "done" || applyStep !== "applied"}
+                      style={{
+                        ...actionBtnBase,
+                        color: commitStatus === "done"
+                          ? "var(--mint)"
+                          : commitStatus === "error"
+                            ? "var(--coral)"
+                            : applyStep !== "applied"
+                              ? "var(--text3)"
+                              : "rgba(168,130,230,0.5)",
+                        borderColor: commitStatus === "done"
+                          ? "rgba(130,200,130,0.15)"
+                          : applyStep !== "applied"
+                            ? undefined
+                            : "rgba(168,130,230,0.15)",
+                        opacity: applyStep !== "applied" ? 0.3 : commitStatus === "committing" ? 0.6 : 1,
+                        cursor: commitStatus === "committing" || commitStatus === "done" || applyStep !== "applied" ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx={12} cy={12} r={4} />
+                        <line x1={1.05} y1={12} x2={7} y2={12} />
+                        <line x1={17.01} y1={12} x2={22.96} y2={12} />
+                      </svg>
+                      {commitStatus === "committing"
+                        ? "Committing..."
+                        : commitStatus === "done"
+                          ? "Committed"
+                          : "Create Commit"}
+                    </button>
 
-                  {/* Status messages */}
-                  {applyMessage && (
-                    <span style={{ fontSize: 10, color: applyStatus === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>
-                      {applyMessage}
-                    </span>
+                    {/* Status messages */}
+                    {applyError && (
+                      <span style={{ fontSize: 10, color: applyStep === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>
+                        {applyError}
+                      </span>
+                    )}
+                    {patchPreview?.applySummary && applyStep === "applied" && (
+                      <span style={{ fontSize: 10, color: "var(--text3)", marginLeft: 4 }}>
+                        {patchPreview.applySummary}
+                      </span>
+                    )}
+                    {commitMessage && (
+                      <span style={{ fontSize: 10, color: commitStatus === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>
+                        {commitMessage}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* ── Diff Preview Panel ── */}
+                  {applyStep === "previewed" && patchPreview && (
+                    <div
+                      style={{
+                        marginTop: 16,
+                        borderRadius: 8,
+                        border: "1px solid rgba(234,179,8,0.2)",
+                        background: "rgba(234,179,8,0.03)",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {/* Header */}
+                      <div
+                        style={{
+                          padding: "12px 16px",
+                          borderBottom: "1px solid rgba(234,179,8,0.1)",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(234,179,8,0.7)", letterSpacing: "1px", textTransform: "uppercase" }}>
+                            Patch Preview
+                          </span>
+                          <span style={{ fontSize: 10, color: "var(--text3)", marginLeft: 12 }}>
+                            {patchPreview.summary}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Per-file diffs */}
+                      <div style={{ maxHeight: 400, overflowY: "auto" }}>
+                        {patchPreview.previews?.map((p: { file: string; action: string; valid: boolean; detail: string; diff: string; linesAdded: number }, i: number) => (
+                          <div key={i} style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : undefined, padding: "10px 16px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                              <span
+                                style={{
+                                  fontSize: 10,
+                                  fontFamily: "var(--font-mono, monospace)",
+                                  color: p.valid ? "var(--text2)" : "var(--coral)",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {p.file}
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: 8,
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.05em",
+                                  padding: "1px 5px",
+                                  borderRadius: 3,
+                                  background: p.valid ? "rgba(130,200,130,0.1)" : "rgba(255,100,100,0.1)",
+                                  color: p.valid ? "rgba(130,200,130,0.6)" : "var(--coral)",
+                                  border: `1px solid ${p.valid ? "rgba(130,200,130,0.15)" : "rgba(255,100,100,0.15)"}`,
+                                }}
+                              >
+                                {p.action} {p.valid ? `+${p.linesAdded}` : "rejected"}
+                              </span>
+                            </div>
+                            {p.valid && p.diff ? (
+                              <pre
+                                style={{
+                                  fontSize: 10,
+                                  fontFamily: "var(--font-mono, monospace)",
+                                  lineHeight: 1.6,
+                                  whiteSpace: "pre-wrap",
+                                  margin: 0,
+                                  color: "var(--text3)",
+                                  maxHeight: 200,
+                                  overflowY: "auto",
+                                }}
+                              >
+                                {p.diff.split("\n").map((line: string, li: number) => (
+                                  <span
+                                    key={li}
+                                    style={{
+                                      display: "block",
+                                      color: line.startsWith("+") && !line.startsWith("+++")
+                                        ? "rgba(130,200,130,0.7)"
+                                        : line.startsWith("-") && !line.startsWith("---")
+                                          ? "rgba(255,100,100,0.5)"
+                                          : line.startsWith("@@")
+                                            ? "rgba(130,170,255,0.5)"
+                                            : undefined,
+                                      background: line.startsWith("+") && !line.startsWith("+++")
+                                        ? "rgba(130,200,130,0.04)"
+                                        : line.startsWith("-") && !line.startsWith("---")
+                                          ? "rgba(255,100,100,0.04)"
+                                          : undefined,
+                                    }}
+                                  >
+                                    {line}
+                                  </span>
+                                ))}
+                              </pre>
+                            ) : !p.valid ? (
+                              <span style={{ fontSize: 10, color: "var(--coral)", opacity: 0.7 }}>{p.detail}</span>
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Warning + action buttons */}
+                      <div
+                        style={{
+                          padding: "12px 16px",
+                          borderTop: "1px solid rgba(234,179,8,0.1)",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span style={{ fontSize: 9, color: "rgba(234,179,8,0.5)", fontWeight: 500, letterSpacing: "0.05em" }}>
+                          Review carefully — these changes will be written to the database
+                        </span>
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <button
+                            type="button"
+                            onClick={handleCancelPreview}
+                            style={{
+                              ...actionBtnBase,
+                              color: "var(--text3)",
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleConfirmApply}
+                            disabled={!patchPreview.validCount}
+                            style={{
+                              ...actionBtnBase,
+                              color: patchPreview.validCount ? "rgba(234,179,8,0.8)" : "var(--text3)",
+                              borderColor: patchPreview.validCount ? "rgba(234,179,8,0.3)" : undefined,
+                              fontWeight: 600,
+                              cursor: patchPreview.validCount ? "pointer" : "not-allowed",
+                              opacity: patchPreview.validCount ? 1 : 0.4,
+                            }}
+                          >
+                            <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M12 5v14M5 12h14" />
+                            </svg>
+                            Confirm &amp; Apply
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   )}
-                  {commitMessage && (
-                    <span style={{ fontSize: 10, color: commitStatus === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>
-                      {commitMessage}
-                    </span>
+
+                  {/* Applying spinner */}
+                  {applyStep === "applying" && (
+                    <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(234,179,8,0.5)", animation: "pulse 2s infinite" }} />
+                      <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text3)" }}>
+                        Writing patches to database...
+                      </span>
+                    </div>
                   )}
                 </div>
               )}

@@ -5,22 +5,43 @@ import path from 'path';
 /**
  * POST /api/workflow/apply
  *
- * Takes an agent's analysis output and uses a second AI call to generate
- * structured patches, then applies them ADDITIVELY to data files.
+ * Two modes:
+ *   dryRun: true  → Extract patches from analysis, validate, return diffs. NO writes.
+ *   dryRun: false → Apply pre-validated patches from the preview step. Writes files.
  *
- * Merge-only contract:
- * - INSERT new entries (at correct position)
- * - APPEND new fields/bullets to existing entries
- * - UPDATE specific values (old → new with validation)
+ * Merge-only contract — enforced at every level:
+ * - INSERT new entries (before anchor)
+ * - APPEND new content (after anchor)
+ * - UPDATE specific values (old → new, anchor-constrained)
  * - NEVER delete lines, entries, or files
+ *
+ * Safety guarantees:
+ * - Path traversal blocked (resolve + prefix check)
+ * - Atomic writes (tmp + rename)
+ * - Backup before write (.bak)
+ * - Anchor uniqueness enforced
+ * - Update: oldValue must be near anchor, appear exactly once
+ * - Character-count guard: update content must be >= 50% of old length
+ * - Code injection blocked (import/require/exec/eval)
+ * - Idempotency: skip if content already present
+ * - File line-count can never decrease
  */
 
 interface PatchOp {
-  file: string;           // relative path from src/data, e.g. "asts/sec-filings.ts"
+  file: string;
   action: 'insert' | 'append' | 'update';
-  anchor: string;         // unique string to locate insertion point
-  content: string;        // content to insert/append
-  oldValue?: string;      // for 'update' — the value being replaced
+  anchor: string;
+  content: string;
+  oldValue?: string;
+}
+
+interface PatchPreviewItem {
+  file: string;
+  action: string;
+  valid: boolean;
+  detail: string;
+  diff: string;       // unified diff preview
+  linesAdded: number;
 }
 
 interface PatchResult {
@@ -30,42 +51,124 @@ interface PatchResult {
   detail: string;
 }
 
-const DATA_DIR = path.join(process.cwd(), 'src', 'data');
-
-// Allowed subdirectories — prevent path traversal
+const DATA_DIR = path.resolve(process.cwd(), 'src', 'data');
 const ALLOWED_PREFIXES = ['asts/', 'bmnr/', 'crcl/'];
+const MAX_ANALYSIS_LENGTH = 50_000;
+const MAX_PATCH_CONTENT_LENGTH = 5_000;
+const DANGEROUS_PATTERN = /\b(import\s|require\s*\(|exec\s*\(|eval\s*\(|process\.|child_process|Function\s*\()\b/;
 
-function isAllowedFile(filePath: string): boolean {
+// ─── Path safety ────────────────────────────────────────────────────────────
+
+function resolveAndValidate(filePath: string): { valid: boolean; fullPath: string; detail: string } {
   const normalized = filePath.replace(/\\/g, '/');
-  return ALLOWED_PREFIXES.some(p => normalized.startsWith(p)) && normalized.endsWith('.ts');
+  if (!ALLOWED_PREFIXES.some(p => normalized.startsWith(p)) || !normalized.endsWith('.ts')) {
+    return { valid: false, fullPath: '', detail: `Blocked: ${filePath} not in allowed paths` };
+  }
+  const fullPath = path.resolve(DATA_DIR, filePath);
+  if (!fullPath.startsWith(DATA_DIR + path.sep)) {
+    return { valid: false, fullPath: '', detail: `Path traversal blocked: ${filePath}` };
+  }
+  return { valid: true, fullPath, detail: '' };
 }
 
-async function applyPatch(patch: PatchOp): Promise<PatchResult> {
+// ─── Simple diff generator ──────────────────────────────────────────────────
+
+function generateDiff(original: string, modified: string, filePath: string): string {
+  const oldLines = original.split('\n');
+  const newLines = modified.split('\n');
+  const diffLines: string[] = [`--- a/${filePath}`, `+++ b/${filePath}`];
+
+  // Find ranges that changed — simple approach: walk both arrays
+  let i = 0;
+  let j = 0;
+  while (i < oldLines.length || j < newLines.length) {
+    if (i < oldLines.length && j < newLines.length && oldLines[i] === newLines[j]) {
+      i++;
+      j++;
+      continue;
+    }
+    // Found a difference — collect context
+    const contextStart = Math.max(0, i - 2);
+    // Find how far the difference extends
+    let iEnd = i;
+    let jEnd = j;
+    // Advance until lines match again
+    while (iEnd < oldLines.length || jEnd < newLines.length) {
+      if (iEnd < oldLines.length && jEnd < newLines.length && oldLines[iEnd] === newLines[jEnd]) {
+        // Check if next few lines also match (to avoid false re-sync)
+        let matchLen = 0;
+        while (iEnd + matchLen < oldLines.length && jEnd + matchLen < newLines.length && oldLines[iEnd + matchLen] === newLines[jEnd + matchLen] && matchLen < 3) matchLen++;
+        if (matchLen >= 2) break;
+      }
+      if (iEnd < oldLines.length && !newLines.includes(oldLines[iEnd])) { iEnd++; continue; }
+      if (jEnd < newLines.length && !oldLines.includes(newLines[jEnd])) { jEnd++; continue; }
+      iEnd++;
+      jEnd++;
+    }
+    const contextEnd = Math.min(oldLines.length, iEnd + 2);
+    const newContextEnd = Math.min(newLines.length, jEnd + 2);
+
+    diffLines.push(`@@ -${contextStart + 1},${contextEnd - contextStart} +${Math.max(0, j - 2) + 1},${newContextEnd - Math.max(0, j - 2)} @@`);
+    for (let c = contextStart; c < i; c++) diffLines.push(` ${oldLines[c]}`);
+    for (let r = i; r < iEnd; r++) diffLines.push(`-${oldLines[r]}`);
+    for (let a = j; a < jEnd; a++) diffLines.push(`+${newLines[a]}`);
+    for (let c = iEnd; c < contextEnd; c++) diffLines.push(` ${oldLines[c]}`);
+
+    i = contextEnd;
+    j = newContextEnd;
+  }
+
+  return diffLines.join('\n');
+}
+
+// ─── Patch validation (no writes) ───────────────────────────────────────────
+
+async function validatePatch(patch: PatchOp): Promise<PatchPreviewItem> {
   const base = { file: patch.file, action: patch.action };
 
-  if (!isAllowedFile(patch.file)) {
-    return { ...base, success: false, detail: `Blocked: ${patch.file} is not in allowed paths` };
+  // Path check
+  const pathCheck = resolveAndValidate(patch.file);
+  if (!pathCheck.valid) {
+    return { ...base, valid: false, detail: pathCheck.detail, diff: '', linesAdded: 0 };
   }
 
-  const fullPath = path.join(DATA_DIR, patch.file);
+  // Content size limit
+  if (patch.content.length > MAX_PATCH_CONTENT_LENGTH) {
+    return { ...base, valid: false, detail: `Content too large: ${patch.content.length} chars (max ${MAX_PATCH_CONTENT_LENGTH})`, diff: '', linesAdded: 0 };
+  }
 
+  // Code injection check
+  if (DANGEROUS_PATTERN.test(patch.content)) {
+    return { ...base, valid: false, detail: 'Blocked: patch content contains dangerous code patterns', diff: '', linesAdded: 0 };
+  }
+
+  // Read file
   let content: string;
   try {
-    content = await fs.readFile(fullPath, 'utf-8');
+    content = await fs.readFile(pathCheck.fullPath, 'utf-8');
   } catch {
-    return { ...base, success: false, detail: `File not found: ${patch.file}` };
+    return { ...base, valid: false, detail: `File not found: ${patch.file}`, diff: '', linesAdded: 0 };
   }
 
+  // Anchor check — must exist and be unique
   const anchorIdx = content.indexOf(patch.anchor);
   if (anchorIdx === -1) {
-    return { ...base, success: false, detail: `Anchor not found: "${patch.anchor.slice(0, 60)}..."` };
+    return { ...base, valid: false, detail: `Anchor not found: "${patch.anchor.slice(0, 80)}..."`, diff: '', linesAdded: 0 };
+  }
+  if (content.indexOf(patch.anchor, anchorIdx + 1) !== -1) {
+    return { ...base, valid: false, detail: `Ambiguous anchor (appears multiple times): "${patch.anchor.slice(0, 60)}..."`, diff: '', linesAdded: 0 };
   }
 
+  // Idempotency check for insert/append
+  if ((patch.action === 'insert' || patch.action === 'append') && content.includes(patch.content.trim())) {
+    return { ...base, valid: false, detail: 'Already present in file (duplicate)', diff: '', linesAdded: 0 };
+  }
+
+  // Compute preview
   let newContent: string;
 
   switch (patch.action) {
     case 'insert': {
-      // Insert BEFORE the anchor line (for reverse-chronological: new entries go above existing)
       const lineStart = content.lastIndexOf('\n', anchorIdx);
       const insertAt = lineStart === -1 ? 0 : lineStart + 1;
       newContent = content.slice(0, insertAt) + patch.content + '\n' + content.slice(insertAt);
@@ -73,7 +176,6 @@ async function applyPatch(patch: PatchOp): Promise<PatchResult> {
     }
 
     case 'append': {
-      // Append AFTER the anchor (find end of the anchor line, insert after)
       const lineEnd = content.indexOf('\n', anchorIdx);
       const insertAt = lineEnd === -1 ? content.length : lineEnd + 1;
       newContent = content.slice(0, insertAt) + patch.content + '\n' + content.slice(insertAt);
@@ -81,21 +183,110 @@ async function applyPatch(patch: PatchOp): Promise<PatchResult> {
     }
 
     case 'update': {
-      // Replace oldValue with new content — ONLY if oldValue is found
       if (!patch.oldValue) {
-        return { ...base, success: false, detail: 'Update requires oldValue' };
+        return { ...base, valid: false, detail: 'Update requires oldValue', diff: '', linesAdded: 0 };
       }
-      if (!content.includes(patch.oldValue)) {
-        return { ...base, success: false, detail: `Old value not found: "${patch.oldValue.slice(0, 60)}..."` };
+
+      // oldValue must appear exactly once in file
+      const occurrences = content.split(patch.oldValue).length - 1;
+      if (occurrences === 0) {
+        return { ...base, valid: false, detail: `Old value not found: "${patch.oldValue.slice(0, 80)}..."`, diff: '', linesAdded: 0 };
       }
-      // Safety: ensure we're not deleting more than we're adding
-      // (update should replace a value, not remove lines)
+      if (occurrences > 1) {
+        return { ...base, valid: false, detail: `Old value appears ${occurrences} times — ambiguous. Use a longer/more unique oldValue.`, diff: '', linesAdded: 0 };
+      }
+
+      // oldValue must be near the anchor (within ±2000 chars)
+      const oldIdx = content.indexOf(patch.oldValue);
+      if (Math.abs(oldIdx - anchorIdx) > 2000) {
+        return { ...base, valid: false, detail: `Old value is ${Math.abs(oldIdx - anchorIdx)} chars from anchor — too far (max 2000)`, diff: '', linesAdded: 0 };
+      }
+
+      // Character-count guard: new content must be >= 50% of old
+      if (patch.content.length < patch.oldValue.length * 0.5) {
+        return { ...base, valid: false, detail: `Suspicious shrink: replacing ${patch.oldValue.length} chars with ${patch.content.length} chars (<50%)`, diff: '', linesAdded: 0 };
+      }
+
+      // Line-count guard
       const oldLines = patch.oldValue.split('\n').length;
       const newLines = patch.content.split('\n').length;
       if (newLines < oldLines) {
-        return { ...base, success: false, detail: `Merge-only violation: update would remove ${oldLines - newLines} lines` };
+        return { ...base, valid: false, detail: `Would remove ${oldLines - newLines} lines`, diff: '', linesAdded: 0 };
       }
-      newContent = content.replace(patch.oldValue, patch.content);
+
+      newContent = content.slice(0, oldIdx) + patch.content + content.slice(oldIdx + patch.oldValue.length);
+      break;
+    }
+
+    default:
+      return { ...base, valid: false, detail: `Unknown action: ${patch.action}`, diff: '', linesAdded: 0 };
+  }
+
+  // Final line-count safety
+  const originalLines = content.split('\n').length;
+  const newLines = newContent.split('\n').length;
+  if (newLines < originalLines) {
+    return { ...base, valid: false, detail: `File would shrink: ${originalLines} → ${newLines} lines`, diff: '', linesAdded: 0 };
+  }
+
+  const diff = generateDiff(content, newContent, patch.file);
+
+  return { ...base, valid: true, detail: `+${newLines - originalLines} lines`, diff, linesAdded: newLines - originalLines };
+}
+
+// ─── Patch application (with writes) ────────────────────────────────────────
+
+async function applyPatch(patch: PatchOp): Promise<PatchResult> {
+  const base = { file: patch.file, action: patch.action };
+
+  const pathCheck = resolveAndValidate(patch.file);
+  if (!pathCheck.valid) {
+    return { ...base, success: false, detail: pathCheck.detail };
+  }
+
+  let content: string;
+  try {
+    content = await fs.readFile(pathCheck.fullPath, 'utf-8');
+  } catch {
+    return { ...base, success: false, detail: `File not found: ${patch.file}` };
+  }
+
+  const anchorIdx = content.indexOf(patch.anchor);
+  if (anchorIdx === -1) {
+    return { ...base, success: false, detail: `Anchor not found` };
+  }
+
+  let newContent: string;
+
+  switch (patch.action) {
+    case 'insert': {
+      if (content.includes(patch.content.trim())) {
+        return { ...base, success: false, detail: 'Already present (duplicate)' };
+      }
+      const lineStart = content.lastIndexOf('\n', anchorIdx);
+      const insertAt = lineStart === -1 ? 0 : lineStart + 1;
+      newContent = content.slice(0, insertAt) + patch.content + '\n' + content.slice(insertAt);
+      break;
+    }
+
+    case 'append': {
+      if (content.includes(patch.content.trim())) {
+        return { ...base, success: false, detail: 'Already present (duplicate)' };
+      }
+      const lineEnd = content.indexOf('\n', anchorIdx);
+      const insertAt = lineEnd === -1 ? content.length : lineEnd + 1;
+      newContent = content.slice(0, insertAt) + patch.content + '\n' + content.slice(insertAt);
+      break;
+    }
+
+    case 'update': {
+      if (!patch.oldValue) return { ...base, success: false, detail: 'Update requires oldValue' };
+      const oldIdx = content.indexOf(patch.oldValue);
+      if (oldIdx === -1) return { ...base, success: false, detail: 'Old value not found' };
+      if (content.indexOf(patch.oldValue, oldIdx + 1) !== -1) return { ...base, success: false, detail: 'Old value ambiguous' };
+      if (Math.abs(oldIdx - anchorIdx) > 2000) return { ...base, success: false, detail: 'Old value too far from anchor' };
+      if (patch.content.length < patch.oldValue.length * 0.5) return { ...base, success: false, detail: 'Suspicious content shrink' };
+      newContent = content.slice(0, oldIdx) + patch.content + content.slice(oldIdx + patch.oldValue.length);
       break;
     }
 
@@ -103,16 +294,29 @@ async function applyPatch(patch: PatchOp): Promise<PatchResult> {
       return { ...base, success: false, detail: `Unknown action: ${patch.action}` };
   }
 
-  // Final safety: ensure no lines were removed
-  const originalLineCount = content.split('\n').length;
-  const newLineCount = newContent.split('\n').length;
-  if (newLineCount < originalLineCount) {
-    return { ...base, success: false, detail: `Merge-only violation: file would shrink from ${originalLineCount} to ${newLineCount} lines` };
+  // Final line-count safety
+  const originalLines = content.split('\n').length;
+  const newLines = newContent.split('\n').length;
+  if (newLines < originalLines) {
+    return { ...base, success: false, detail: `File would shrink: ${originalLines} → ${newLines}` };
   }
 
-  await fs.writeFile(fullPath, newContent, 'utf-8');
-  return { ...base, success: true, detail: `+${newLineCount - originalLineCount} lines` };
+  // Backup original
+  const backupPath = pathCheck.fullPath + '.bak.' + Date.now();
+  await fs.copyFile(pathCheck.fullPath, backupPath);
+
+  // Atomic write: tmp file + rename
+  const tmpPath = pathCheck.fullPath + '.tmp.' + Date.now();
+  await fs.writeFile(tmpPath, newContent, 'utf-8');
+  await fs.rename(tmpPath, pathCheck.fullPath);
+
+  // Clean up backup on success (keep last one for safety — optional)
+  // await fs.unlink(backupPath);
+
+  return { ...base, success: true, detail: `+${newLines - originalLines} lines` };
 }
+
+// ─── Route handler ──────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
   const ANTHROPIC_API_KEY = (process.env as Record<string, string | undefined>)['ANTHROPIC_API_KEY'] || '';
@@ -122,18 +326,30 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { ticker, agentId, analysis } = await request.json() as {
+    const body = await request.json() as {
       ticker: string;
       agentId: string;
-      analysis: string;
+      analysis?: string;
+      dryRun?: boolean;
+      patches?: PatchOp[];
     };
 
-    if (!ticker || !analysis) {
-      return NextResponse.json({ error: 'Missing ticker or analysis' }, { status: 400 });
+    const { ticker, agentId, dryRun = true } = body;
+
+    if (!ticker) {
+      return NextResponse.json({ error: 'Missing ticker' }, { status: 400 });
     }
 
-    // Step 1: Ask Claude to extract structured patches from the analysis
-    const extractionPrompt = `You are a database patch generator for the ABISON investment research platform. Given an agent analysis output, extract ONLY the concrete database changes proposed.
+    let patches: PatchOp[];
+
+    if (dryRun) {
+      // ── PREVIEW MODE: extract patches from analysis via AI ──
+      const analysis = (body.analysis || '').slice(0, MAX_ANALYSIS_LENGTH);
+      if (!analysis) {
+        return NextResponse.json({ error: 'Missing analysis for preview' }, { status: 400 });
+      }
+
+      const extractionPrompt = `You are a database patch generator for the ABISON investment research platform. Given an agent analysis output, extract ONLY the concrete database changes proposed.
 
 TICKER: ${ticker.toUpperCase()}
 AGENT: ${agentId}
@@ -142,99 +358,139 @@ Output ONLY valid JSON — an array of patch operations. No markdown, no explana
 
 Each patch object:
 {
-  "file": "string — relative path from src/data/, e.g. '${ticker}/sec-filings.ts'",
+  "file": "string — relative path from src/data/, e.g. '${ticker.toLowerCase()}/sec-filings.ts'",
   "action": "insert | append | update",
-  "anchor": "string — unique text in the file to locate the insertion point",
-  "content": "string — the TypeScript code to insert/append",
-  "oldValue": "string — ONLY for 'update' action, the exact text being replaced"
+  "anchor": "string — unique text in the target file to locate the insertion point (must appear EXACTLY ONCE)",
+  "content": "string — the TypeScript code to insert/append (must NOT contain import/require/exec/eval)",
+  "oldValue": "string — ONLY for 'update' action, the exact text being replaced (must appear EXACTLY ONCE in file)"
 }
 
 Rules:
 - action=insert: Insert BEFORE anchor (for adding new entries at top of reverse-chronological lists)
 - action=append: Insert AFTER anchor (for adding bullets/fields to existing entries)
-- action=update: Replace oldValue with content (for changing specific values like dates, counts)
-- NEVER produce patches that delete content
-- anchor must be a unique, exact substring from the target file
-- content must be valid TypeScript that maintains the file's existing style
-- If the analysis says "Skip" or "Already Incorporated" for an item, produce NO patch for it
-- If no patches are needed, return an empty array: []
+- action=update: Replace oldValue with content (oldValue must be UNIQUE in the file — use enough surrounding context)
+- anchor must appear EXACTLY ONCE in the target file — include enough context for uniqueness
+- NEVER produce patches that delete content or shrink data
+- content must be valid TypeScript matching the file's style
+- If the analysis says "Skip" or "Already Incorporated", produce NO patch
+- If no patches are needed, return: []
 
 ANALYSIS TO EXTRACT FROM:
 ${analysis}`;
 
-    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 8192,
-        messages: [{ role: 'user', content: extractionPrompt }],
-      }),
-    });
+      const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5-20250929',
+          max_tokens: 8192,
+          messages: [{ role: 'user', content: extractionPrompt }],
+        }),
+      });
 
-    if (!claudeRes.ok) {
-      const errText = await claudeRes.text();
-      console.error('[apply] Claude API error:', errText);
-      return NextResponse.json({ error: 'AI patch extraction failed' }, { status: 502 });
-    }
+      if (!claudeRes.ok) {
+        const errText = await claudeRes.text();
+        console.error('[apply] Claude API error:', errText);
+        return NextResponse.json({ error: 'AI patch extraction failed' }, { status: 502 });
+      }
 
-    const claudeData = await claudeRes.json() as {
-      content: Array<{ type: string; text?: string }>;
-    };
-    const responseText = claudeData.content
-      .filter((b) => b.type === 'text')
-      .map((b) => b.text)
-      .join('');
+      const claudeData = await claudeRes.json() as {
+        content: Array<{ type: string; text?: string }>;
+      };
+      const responseText = claudeData.content
+        .filter((b) => b.type === 'text')
+        .map((b) => b.text)
+        .join('');
 
-    // Parse the JSON patches
-    let patches: PatchOp[];
-    try {
-      // Handle potential markdown wrapping
-      const jsonStr = responseText.replace(/^```json?\n?/, '').replace(/\n?```$/, '').trim();
-      patches = JSON.parse(jsonStr);
-    } catch {
-      console.error('[apply] Failed to parse patches:', responseText.slice(0, 500));
+      try {
+        const jsonStr = responseText.replace(/^```json?\n?/, '').replace(/\n?```$/, '').trim();
+        patches = JSON.parse(jsonStr);
+      } catch {
+        console.error('[apply] Failed to parse patches:', responseText.slice(0, 500));
+        return NextResponse.json({
+          error: 'Failed to parse structured patches from AI',
+          rawResponse: responseText.slice(0, 200),
+        }, { status: 422 });
+      }
+
+      if (!Array.isArray(patches)) {
+        return NextResponse.json({ error: 'Expected array of patches' }, { status: 422 });
+      }
+
+      if (patches.length === 0) {
+        return NextResponse.json({
+          dryRun: true,
+          patchCount: 0,
+          previews: [],
+          patches: [],
+          summary: 'No database changes needed — all items already incorporated or skipped.',
+        });
+      }
+
+      // Validate each patch and generate diffs (NO writes)
+      const previews: PatchPreviewItem[] = [];
+      for (const patch of patches) {
+        previews.push(await validatePatch(patch));
+      }
+
+      const validCount = previews.filter(p => p.valid).length;
+      const invalidCount = previews.filter(p => !p.valid).length;
+      const totalLinesAdded = previews.reduce((sum, p) => sum + p.linesAdded, 0);
+      const filesAffected = new Set(previews.filter(p => p.valid).map(p => p.file)).size;
+
       return NextResponse.json({
-        error: 'Failed to parse structured patches from AI',
-        rawResponse: responseText.slice(0, 200),
-      }, { status: 422 });
-    }
+        dryRun: true,
+        patchCount: patches.length,
+        validCount,
+        invalidCount,
+        totalLinesAdded,
+        filesAffected,
+        previews,
+        patches: patches.filter((_, i) => previews[i].valid), // Only return valid patches for confirm step
+        summary: `${validCount} valid patches across ${filesAffected} files (+${totalLinesAdded} lines)${invalidCount > 0 ? ` — ${invalidCount} rejected` : ''}`,
+      });
 
-    if (!Array.isArray(patches)) {
-      return NextResponse.json({ error: 'Expected array of patches', rawResponse: responseText.slice(0, 200) }, { status: 422 });
-    }
+    } else {
+      // ── APPLY MODE: apply pre-validated patches ──
+      patches = body.patches || [];
 
-    if (patches.length === 0) {
+      if (patches.length === 0) {
+        return NextResponse.json({ error: 'No patches to apply' }, { status: 400 });
+      }
+
+      // Re-validate and apply each patch
+      const results: PatchResult[] = [];
+      for (const patch of patches) {
+        // Content safety checks (re-check even though preview validated)
+        if (DANGEROUS_PATTERN.test(patch.content)) {
+          results.push({ file: patch.file, action: patch.action, success: false, detail: 'Blocked: dangerous code pattern' });
+          continue;
+        }
+        if (patch.content.length > MAX_PATCH_CONTENT_LENGTH) {
+          results.push({ file: patch.file, action: patch.action, success: false, detail: 'Content too large' });
+          continue;
+        }
+        results.push(await applyPatch(patch));
+      }
+
+      const successCount = results.filter(r => r.success).length;
+      const failCount = results.filter(r => !r.success).length;
+
       return NextResponse.json({
-        patchCount: 0,
-        results: [],
-        summary: 'No database changes needed — analysis found all items already incorporated or skipped.',
+        dryRun: false,
+        patchCount: patches.length,
+        applied: successCount,
+        failed: failCount,
+        results,
+        summary: failCount === 0
+          ? `Applied ${successCount} patches to ${ticker.toUpperCase()} database`
+          : `Applied ${successCount}/${patches.length} patches (${failCount} failed)`,
       });
     }
-
-    // Step 2: Apply each patch
-    const results: PatchResult[] = [];
-    for (const patch of patches) {
-      const result = await applyPatch(patch);
-      results.push(result);
-    }
-
-    const successCount = results.filter(r => r.success).length;
-    const failCount = results.filter(r => !r.success).length;
-
-    return NextResponse.json({
-      patchCount: patches.length,
-      applied: successCount,
-      failed: failCount,
-      results,
-      summary: failCount === 0
-        ? `Applied ${successCount} patches to ${ticker.toUpperCase()} database`
-        : `Applied ${successCount}/${patches.length} patches (${failCount} failed)`,
-    });
   } catch (error) {
     console.error('[apply] Error:', error);
     return NextResponse.json(
