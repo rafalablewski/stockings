@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 interface Article {
   headline: string;
@@ -46,120 +48,81 @@ function localMatch(articleHeadline: string, analysisData: AnalysisEntry[]): boo
   return false;
 }
 
-// Dynamically collect all analysis data for a ticker — with full context
-async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
+const DATA_DIR = path.resolve(process.cwd(), 'src', 'data');
+
+/**
+ * Extract AnalysisEntry[] from a raw TypeScript file by reading from disk.
+ *
+ * This MUST read from disk (not import()) because import() returns
+ * build-time bundled data that is never refreshed — even after
+ * "Apply to Database" writes new entries to the source files.
+ *
+ * Scans each line for date/headline/title/event fields and groups
+ * nearby fields into entries. Also captures summary/detail/comparison
+ * fields for richer matching context.
+ */
+function extractEntriesFromSource(content: string): AnalysisEntry[] {
   const entries: AnalysisEntry[] = [];
+  const lines = content.split('\n');
 
-  try {
-    if (ticker === 'ASTS') {
-      const [partners, competitors, catalysts, pressReleases, compsTimeline, timelineEvents] = await Promise.all([
-        import('@/data/asts/partners'),
-        import('@/data/asts/competitors'),
-        import('@/data/asts/catalysts'),
-        import('@/data/asts/press-releases'),
-        import('@/data/asts/comps-timeline'),
-        import('@/data/asts/timeline-events'),
-      ]);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
 
-      if (partners.PARTNER_NEWS) {
-        for (const n of partners.PARTNER_NEWS) {
-          entries.push({ date: n.date, headline: n.headline, detail: n.summary });
-        }
+    // Look for date or timeline field
+    const dateMatch = line.match(/(?:date|timeline)\s*:\s*['"`]([^'"`]+)['"`]/);
+    if (!dateMatch) continue;
+
+    const date = dateMatch[1];
+
+    // Search nearby lines (up to ±6) for headline/title/event
+    let headline = '';
+    let detail = '';
+    const searchStart = Math.max(0, i - 4);
+    const searchEnd = Math.min(lines.length, i + 7);
+
+    for (let j = searchStart; j < searchEnd; j++) {
+      if (!headline) {
+        const hlMatch = lines[j].match(/(?:headline|title|event)\s*:\s*['"`]([^'"`]+)['"`]/);
+        if (hlMatch) headline = hlMatch[1];
       }
-      if (competitors.COMPETITOR_NEWS) {
-        for (const n of competitors.COMPETITOR_NEWS) {
-          entries.push({ date: n.date, headline: n.headline, detail: n.summary });
-        }
-      }
-      if (compsTimeline.COMPS_TIMELINE) {
-        for (const n of compsTimeline.COMPS_TIMELINE) {
-          const detail = [n.details?.join('; '), n.astsComparison].filter(Boolean).join(' | ');
-          entries.push({ date: n.date, headline: n.headline, detail });
-        }
-      }
-      if (timelineEvents.ASTS_TIMELINE_EVENTS) {
-        for (const e of timelineEvents.ASTS_TIMELINE_EVENTS) {
-          const detail = [e.summary, e.details?.join('; ')].filter(Boolean).join(' | ');
-          entries.push({ date: e.date, headline: e.title, detail });
-        }
-      }
-      if (catalysts.COMPLETED_MILESTONES) {
-        for (const m of catalysts.COMPLETED_MILESTONES) {
-          entries.push({ date: m.date, headline: m.event });
-        }
-      }
-      if (catalysts.UPCOMING_CATALYSTS) {
-        for (const c of catalysts.UPCOMING_CATALYSTS) {
-          entries.push({ date: c.timeline, headline: c.event });
-        }
-      }
-      if (pressReleases.PRESS_RELEASES) {
-        for (const pr of pressReleases.PRESS_RELEASES) {
-          entries.push({ date: pr.date, headline: pr.headline });
-        }
-      }
-    } else if (ticker === 'BMNR') {
-      const [catalysts, competitorNews, timelineEvents, adoption] = await Promise.all([
-        import('@/data/bmnr/catalysts'),
-        import('@/data/bmnr/competitor-news'),
-        import('@/data/bmnr/timeline-events'),
-        import('@/data/bmnr/ethereum-adoption'),
-      ]);
-      if (catalysts.COMPLETED_MILESTONES) {
-        for (const m of catalysts.COMPLETED_MILESTONES) {
-          entries.push({ date: m.date, headline: m.event });
-        }
-      }
-      if (catalysts.UPCOMING_CATALYSTS) {
-        for (const c of catalysts.UPCOMING_CATALYSTS) {
-          entries.push({ date: c.timeline, headline: c.event });
-        }
-      }
-      if (competitorNews.BMNR_COMPETITOR_NEWS) {
-        for (const n of competitorNews.BMNR_COMPETITOR_NEWS) {
-          entries.push({ date: n.date, headline: n.headline, detail: n.bmnrComparison });
-        }
-      }
-      if (timelineEvents.BMNR_TIMELINE_EVENTS) {
-        for (const e of timelineEvents.BMNR_TIMELINE_EVENTS) {
-          entries.push({ date: e.date, headline: e.title, detail: e.notes });
-        }
-      }
-      if (adoption.BMNR_ADOPTION_TIMELINE) {
-        for (const e of adoption.BMNR_ADOPTION_TIMELINE) {
-          const detail = [e.summary, e.bmnrImplication].filter(Boolean).join(' | ');
-          entries.push({ date: e.date, headline: e.title, detail });
-        }
-      }
-    } else if (ticker === 'CRCL') {
-      const [timeline, catalysts, competitorNews] = await Promise.all([
-        import('@/data/crcl/timeline'),
-        import('@/data/crcl/catalysts'),
-        import('@/data/crcl/competitor-news'),
-      ]);
-      if (timeline.TIMELINE) {
-        for (const t of timeline.TIMELINE) {
-          entries.push({ date: t.date, headline: t.event });
-        }
-      }
-      if (catalysts.COMPLETED_MILESTONES) {
-        for (const m of catalysts.COMPLETED_MILESTONES) {
-          entries.push({ date: m.date, headline: m.event });
-        }
-      }
-      if (catalysts.UPCOMING_CATALYSTS) {
-        for (const c of catalysts.UPCOMING_CATALYSTS) {
-          entries.push({ date: c.timeline, headline: c.event });
-        }
-      }
-      if (competitorNews.CRCL_COMPETITOR_NEWS) {
-        for (const n of competitorNews.CRCL_COMPETITOR_NEWS) {
-          entries.push({ date: n.date, headline: n.headline, detail: n.crclComparison });
-        }
+      if (!detail) {
+        const dtMatch = lines[j].match(/(?:summary|notes|bmnrComparison|crclComparison|astsComparison|bmnrImplication)\s*:\s*['"`]([^'"`]+)['"`]/);
+        if (dtMatch) detail = dtMatch[1];
       }
     }
+
+    if (headline) {
+      entries.push({ date, headline, ...(detail ? { detail } : {}) });
+    }
+  }
+
+  return entries;
+}
+
+/**
+ * Read ALL .ts data files for a ticker from disk and extract entries.
+ * Always reflects the current file contents — no bundler caching.
+ */
+async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
+  const entries: AnalysisEntry[] = [];
+  const tickerDir = path.resolve(DATA_DIR, ticker.toLowerCase());
+
+  try {
+    const files = await fs.readdir(tickerDir);
+    const tsFiles = files.filter(f => f.endsWith('.ts') && !f.endsWith('.d.ts'));
+
+    const reads = tsFiles.map(f =>
+      fs.readFile(path.join(tickerDir, f), 'utf-8')
+        .then(content => extractEntriesFromSource(content))
+        .catch(() => [] as AnalysisEntry[])
+    );
+
+    const results = await Promise.all(reads);
+    for (const batch of results) {
+      entries.push(...batch);
+    }
   } catch (error) {
-    console.error(`Failed to load analysis data for ${ticker}:`, error);
+    console.error(`Failed to read data directory for ${ticker}:`, error);
   }
 
   // Deduplicate by headline (normalized)
@@ -186,6 +149,7 @@ export async function POST(request: NextRequest) {
 
     // Gather all existing analysis data for this ticker
     const analysisData = await getAnalysisData(ticker.toUpperCase());
+    console.log(`[check-analyzed] ${ticker}: ${analysisData.length} entries loaded from database`);
 
     // Fallback: local keyword matching when no API key is available
     if (!ANTHROPIC_API_KEY) {

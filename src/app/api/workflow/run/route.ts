@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { prompt, context, data } = body as { prompt: string; context: string; data: string };
+    const { prompt, data } = body as { prompt: string; data: string };
 
     if (!prompt) {
       return new Response(JSON.stringify({ error: 'Missing prompt' }), {
@@ -23,14 +23,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Build the full message: prompt + context + optional user data
-    const contextSeparator = '\n\n════════════════════════════════════════════════════════════\nCURRENT DATABASE CONTEXT\nAuto-injected from ABISON database\n════════════════════════════════════════════════════════════\n\n';
+    // Build the full message: prompt + optional user data
     const dataSeparator = '\n\n════════════════════════════════════════════════════════════\nUSER-PROVIDED DATA\n════════════════════════════════════════════════════════════\n\n';
 
     let fullMessage = prompt;
-    if (context) {
-      fullMessage += contextSeparator + context;
-    }
     if (data) {
       fullMessage += dataSeparator + data;
     }

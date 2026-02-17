@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { stockList } from "@/lib/stocks";
-import { prompts } from "@/data/prompts";
 import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
 
@@ -68,26 +67,13 @@ export default function StocksPage() {
           ))}
         </div>
 
-        {/* Prompts */}
-        <div className="mt-20">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
-            Prompts
-          </h2>
-
-          <div className="grid gap-4">
-            {prompts.map((prompt) => (
-              <PromptCard key={prompt.name} name={prompt.name} description={prompt.description} variants={prompt.variants} />
-            ))}
-          </div>
-        </div>
-
-        {/* Workflows */}
+        {/* AI Agents */}
         <div className="mt-20">
           <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-3">
-            Workflow
+            AI Agents
           </h2>
           <p className="text-[12px] text-white/20 mb-10">
-            AI agent prompts for structured analysis. Run these from the AI Agents tab inside each stock.
+            Streaming AI agent prompts for structured analysis. Run these from the AI Agents tab inside each stock.
           </p>
 
           <div className="grid gap-4">

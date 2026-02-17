@@ -2,24 +2,39 @@
 
 import React, { useState, useRef, useCallback } from "react";
 import { workflows } from "@/data/workflows";
-import { getWorkflowContext } from "@/lib/workflow-context";
 
 interface AgentWorkflow {
   id: string;
   name: string;
   description: string;
   prompt: string;
-  context: string;
-  contextModules: string[];
   requiresUserData: boolean;
+  category?: 'audit';
 }
 
 interface SharedAIAgentsTabProps {
   ticker: string;
 }
 
+// Shared small action button style
+const actionBtnBase: React.CSSProperties = {
+  fontSize: 9,
+  fontWeight: 500,
+  textTransform: "uppercase",
+  letterSpacing: "0.08em",
+  padding: "4px 10px",
+  borderRadius: 4,
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid var(--border)",
+  cursor: "pointer",
+  transition: "all 0.15s",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 5,
+};
+
 // Individual agent runner — manages its own expand/run/result state
-function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
+function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: string }) {
   const [expanded, setExpanded] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [userData, setUserData] = useState("");
@@ -27,7 +42,14 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
   const [running, setRunning] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [applyStep, setApplyStep] = useState<"idle" | "previewing" | "previewed" | "applying" | "applied" | "error">("idle");
+  const [applyError, setApplyError] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [patchPreview, setPatchPreview] = useState<any>(null);
+  const [commitStatus, setCommitStatus] = useState<"idle" | "committing" | "done" | "error">("idle");
+  const [commitMessage, setCommitMessage] = useState("");
   const abortRef = useRef<AbortController | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   const canRun = !workflow.requiresUserData || userData.trim().length > 0;
 
@@ -46,7 +68,6 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: workflow.prompt,
-          context: workflow.context,
           data: userData || undefined,
         }),
         signal: abortRef.current.signal,
@@ -112,6 +133,108 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleExportPDF = () => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    // Escape all user-influenced strings to prevent XSS
+    const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const safeName = esc(workflow.name);
+    const safeTicker = esc(ticker.toUpperCase());
+    const safeResult = esc(result);
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>${safeName} — ${safeTicker}</title>
+<style>
+  body { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; line-height: 1.8; color: #1a1a1a; padding: 40px; max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 24px; }
+  pre { white-space: pre-wrap; word-wrap: break-word; margin: 0; }
+  .meta { font-size: 9px; color: #888; margin-bottom: 16px; }
+  @media print { body { padding: 20px; } }
+</style></head><body>
+<h1>${safeName}</h1>
+<div class="meta">${safeTicker} — ${new Date().toISOString().split("T")[0]} — ABISON Research</div>
+<pre>${safeResult}</pre>
+</body></html>`);
+    printWindow.document.close();
+    setTimeout(() => { printWindow.print(); }, 250);
+  };
+
+  const handlePreview = async () => {
+    setApplyStep("previewing");
+    setApplyError("");
+    setPatchPreview(null);
+    try {
+      const res = await fetch("/api/workflow/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker, agentId: workflow.id, analysis: result, dryRun: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setApplyStep("error");
+        setApplyError(data.error || "Preview failed");
+        return;
+      }
+      setPatchPreview(data);
+      setApplyStep(data.patchCount === 0 ? "idle" : "previewed");
+      if (data.patchCount === 0) setApplyError(data.summary || "No changes to apply");
+    } catch (err) {
+      setApplyStep("error");
+      setApplyError((err as Error).message);
+    }
+  };
+
+  const handleConfirmApply = async () => {
+    if (!patchPreview?.patches?.length) return;
+    setApplyStep("applying");
+    setApplyError("");
+    try {
+      const res = await fetch("/api/workflow/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker, agentId: workflow.id, dryRun: false, patches: patchPreview.patches }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setApplyStep("error");
+        setApplyError(data.error || "Apply failed");
+        return;
+      }
+      setApplyStep("applied");
+      setPatchPreview((prev: typeof patchPreview) => ({ ...prev, applySummary: data.summary }));
+    } catch (err) {
+      setApplyStep("error");
+      setApplyError((err as Error).message);
+    }
+  };
+
+  const handleCancelPreview = () => {
+    setApplyStep("idle");
+    setPatchPreview(null);
+    setApplyError("");
+  };
+
+  const handleCommit = async () => {
+    setCommitStatus("committing");
+    setCommitMessage("");
+    try {
+      const res = await fetch("/api/workflow/commit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker, agentId: workflow.id, analysis: result }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCommitStatus("error");
+        setCommitMessage(data.error || "Commit failed");
+        return;
+      }
+      setCommitStatus("done");
+      setCommitMessage(data.message || "Committed");
+    } catch (err) {
+      setCommitStatus("error");
+      setCommitMessage((err as Error).message);
+    }
+  };
+
   return (
     <div
       style={{
@@ -159,16 +282,22 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                 letterSpacing: "0.08em",
                 padding: "2px 6px",
                 borderRadius: 4,
-                background: workflow.requiresUserData
-                  ? "rgba(255,255,255,0.04)"
-                  : "rgba(255,255,255,0.04)",
-                color: workflow.requiresUserData
-                  ? "rgba(255,255,255,0.2)"
-                  : "rgba(130,200,130,0.5)",
-                border: `1px solid ${workflow.requiresUserData ? "rgba(255,255,255,0.06)" : "rgba(130,200,130,0.15)"}`,
+                background: "rgba(255,255,255,0.04)",
+                color: workflow.category === 'audit'
+                  ? "rgba(234,179,8,0.5)"
+                  : workflow.requiresUserData
+                    ? "rgba(255,255,255,0.2)"
+                    : "rgba(130,200,130,0.5)",
+                border: `1px solid ${
+                  workflow.category === 'audit'
+                    ? "rgba(234,179,8,0.15)"
+                    : workflow.requiresUserData
+                      ? "rgba(255,255,255,0.06)"
+                      : "rgba(130,200,130,0.15)"
+                }`,
               }}
             >
-              {workflow.requiresUserData ? "Paste data" : "Database"}
+              {workflow.category === 'audit' ? "Audit" : workflow.requiresUserData ? "Paste data" : "Database"}
             </span>
           </div>
           <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", lineHeight: 1.5 }}>
@@ -198,7 +327,7 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
       {/* Expanded body */}
       {expanded && (
         <div style={{ padding: "0 20px 20px", borderTop: "1px solid var(--border)" }}>
-          {/* Context modules + view prompt */}
+          {/* View prompt toggle */}
           <div
             style={{
               display: "flex",
@@ -208,35 +337,6 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
               marginBottom: 16,
             }}
           >
-            <span
-              style={{
-                fontSize: 9,
-                fontWeight: 500,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                color: "var(--text3)",
-              }}
-            >
-              Context:
-            </span>
-            {workflow.contextModules.map((mod, i) => (
-              <span
-                key={mod}
-                style={{
-                  fontSize: 9,
-                  fontWeight: 500,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  padding: "2px 6px",
-                  borderRadius: 4,
-                  background: "rgba(255,255,255,0.04)",
-                  color: "var(--text3)",
-                  border: "1px solid var(--border)",
-                }}
-              >
-                {mod}
-              </span>
-            ))}
             <button
               type="button"
               onClick={() => setShowPrompt(!showPrompt)}
@@ -400,7 +500,7 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
 
           {/* Result */}
           {result && (
-            <div style={{ paddingTop: 16, marginTop: 16, borderTop: "1px solid var(--border)" }}>
+            <div ref={resultRef} style={{ paddingTop: 16, marginTop: 16, borderTop: "1px solid var(--border)" }}>
               <div
                 style={{
                   display: "flex",
@@ -420,25 +520,6 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                 >
                   Analysis Result
                 </span>
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  style={{
-                    fontSize: 9,
-                    fontWeight: 500,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    padding: "2px 6px",
-                    borderRadius: 4,
-                    background: "rgba(255,255,255,0.04)",
-                    color: copied ? "var(--mint)" : "var(--text3)",
-                    border: `1px solid ${copied ? "rgba(130,200,130,0.15)" : "var(--border)"}`,
-                    cursor: "pointer",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  {copied ? "Copied" : "Copy"}
-                </button>
               </div>
               <div style={{ maxHeight: 600, overflowY: "auto" }}>
                 <pre
@@ -454,6 +535,292 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                   {result}
                 </pre>
               </div>
+
+              {/* ── Action Toolbar ── */}
+              {!running && (
+                <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+                  {/* Button row */}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+                    {/* 1. Export PDF */}
+                    <button type="button" onClick={handleExportPDF} style={{ ...actionBtnBase, color: "var(--text3)" }}>
+                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                      </svg>
+                      Export PDF
+                    </button>
+
+                    {/* 2. Copy Markdown */}
+                    <button
+                      type="button"
+                      onClick={handleCopy}
+                      style={{
+                        ...actionBtnBase,
+                        color: copied ? "var(--mint)" : "var(--text3)",
+                        borderColor: copied ? "rgba(130,200,130,0.15)" : undefined,
+                      }}
+                    >
+                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                      </svg>
+                      {copied ? "Copied" : "Copy Markdown"}
+                    </button>
+
+                    {/* 3. Preview Changes / Applied indicator */}
+                    {applyStep === "applied" ? (
+                      <span style={{ ...actionBtnBase, color: "var(--mint)", borderColor: "rgba(130,200,130,0.15)", cursor: "default" }}>
+                        <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Applied
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handlePreview}
+                        disabled={applyStep === "previewing" || applyStep === "previewed" || applyStep === "applying"}
+                        style={{
+                          ...actionBtnBase,
+                          color: applyStep === "previewing"
+                            ? "var(--text3)"
+                            : applyStep === "error"
+                              ? "var(--coral)"
+                              : "rgba(130,200,130,0.5)",
+                          borderColor: applyStep === "error"
+                            ? "color-mix(in srgb, var(--coral) 25%, transparent)"
+                            : "rgba(130,200,130,0.15)",
+                          opacity: applyStep === "previewing" ? 0.6 : 1,
+                          cursor: applyStep === "previewing" || applyStep === "previewed" || applyStep === "applying" ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                          <circle cx={12} cy={12} r={3} />
+                        </svg>
+                        {applyStep === "previewing"
+                          ? "Extracting patches..."
+                          : applyStep === "error"
+                            ? "Retry Preview"
+                            : "Preview Changes"}
+                      </button>
+                    )}
+
+                    {/* 4. Create Commit */}
+                    <button
+                      type="button"
+                      onClick={handleCommit}
+                      disabled={commitStatus === "committing" || commitStatus === "done" || applyStep !== "applied"}
+                      style={{
+                        ...actionBtnBase,
+                        color: commitStatus === "done"
+                          ? "var(--mint)"
+                          : commitStatus === "error"
+                            ? "var(--coral)"
+                            : applyStep !== "applied"
+                              ? "var(--text3)"
+                              : "rgba(168,130,230,0.5)",
+                        borderColor: commitStatus === "done"
+                          ? "rgba(130,200,130,0.15)"
+                          : applyStep !== "applied"
+                            ? undefined
+                            : "rgba(168,130,230,0.15)",
+                        opacity: applyStep !== "applied" ? 0.3 : commitStatus === "committing" ? 0.6 : 1,
+                        cursor: commitStatus === "committing" || commitStatus === "done" || applyStep !== "applied" ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx={12} cy={12} r={4} />
+                        <line x1={1.05} y1={12} x2={7} y2={12} />
+                        <line x1={17.01} y1={12} x2={22.96} y2={12} />
+                      </svg>
+                      {commitStatus === "committing"
+                        ? "Committing..."
+                        : commitStatus === "done"
+                          ? "Committed"
+                          : "Create Commit"}
+                    </button>
+
+                    {/* Status messages */}
+                    {applyError && (
+                      <span style={{ fontSize: 10, color: applyStep === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>
+                        {applyError}
+                      </span>
+                    )}
+                    {patchPreview?.applySummary && applyStep === "applied" && (
+                      <span style={{ fontSize: 10, color: "var(--text3)", marginLeft: 4 }}>
+                        {patchPreview.applySummary}
+                      </span>
+                    )}
+                    {commitMessage && (
+                      <span style={{ fontSize: 10, color: commitStatus === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>
+                        {commitMessage}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* ── Diff Preview Panel ── */}
+                  {applyStep === "previewed" && patchPreview && (
+                    <div
+                      style={{
+                        marginTop: 16,
+                        borderRadius: 8,
+                        border: "1px solid rgba(234,179,8,0.2)",
+                        background: "rgba(234,179,8,0.03)",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {/* Header */}
+                      <div
+                        style={{
+                          padding: "12px 16px",
+                          borderBottom: "1px solid rgba(234,179,8,0.1)",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(234,179,8,0.7)", letterSpacing: "1px", textTransform: "uppercase" }}>
+                            Patch Preview
+                          </span>
+                          <span style={{ fontSize: 10, color: "var(--text3)", marginLeft: 12 }}>
+                            {patchPreview.summary}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Per-file diffs */}
+                      <div style={{ maxHeight: 400, overflowY: "auto" }}>
+                        {patchPreview.previews?.map((p: { file: string; action: string; valid: boolean; detail: string; diff: string; linesAdded: number }, i: number) => (
+                          <div key={i} style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : undefined, padding: "10px 16px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                              <span
+                                style={{
+                                  fontSize: 10,
+                                  fontFamily: "var(--font-mono, monospace)",
+                                  color: p.valid ? "var(--text2)" : "var(--coral)",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {p.file}
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: 8,
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.05em",
+                                  padding: "1px 5px",
+                                  borderRadius: 3,
+                                  background: p.valid ? "rgba(130,200,130,0.1)" : "rgba(255,100,100,0.1)",
+                                  color: p.valid ? "rgba(130,200,130,0.6)" : "var(--coral)",
+                                  border: `1px solid ${p.valid ? "rgba(130,200,130,0.15)" : "rgba(255,100,100,0.15)"}`,
+                                }}
+                              >
+                                {p.action} {p.valid ? `+${p.linesAdded}` : "rejected"}
+                              </span>
+                            </div>
+                            {p.valid && p.diff ? (
+                              <pre
+                                style={{
+                                  fontSize: 10,
+                                  fontFamily: "var(--font-mono, monospace)",
+                                  lineHeight: 1.6,
+                                  whiteSpace: "pre-wrap",
+                                  margin: 0,
+                                  color: "var(--text3)",
+                                  maxHeight: 200,
+                                  overflowY: "auto",
+                                }}
+                              >
+                                {p.diff.split("\n").map((line: string, li: number) => (
+                                  <span
+                                    key={li}
+                                    style={{
+                                      display: "block",
+                                      color: line.startsWith("+") && !line.startsWith("+++")
+                                        ? "rgba(130,200,130,0.7)"
+                                        : line.startsWith("-") && !line.startsWith("---")
+                                          ? "rgba(255,100,100,0.5)"
+                                          : line.startsWith("@@")
+                                            ? "rgba(130,170,255,0.5)"
+                                            : undefined,
+                                      background: line.startsWith("+") && !line.startsWith("+++")
+                                        ? "rgba(130,200,130,0.04)"
+                                        : line.startsWith("-") && !line.startsWith("---")
+                                          ? "rgba(255,100,100,0.04)"
+                                          : undefined,
+                                    }}
+                                  >
+                                    {line}
+                                  </span>
+                                ))}
+                              </pre>
+                            ) : !p.valid ? (
+                              <span style={{ fontSize: 10, color: "var(--coral)", opacity: 0.7 }}>{p.detail}</span>
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Warning + action buttons */}
+                      <div
+                        style={{
+                          padding: "12px 16px",
+                          borderTop: "1px solid rgba(234,179,8,0.1)",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span style={{ fontSize: 9, color: "rgba(234,179,8,0.5)", fontWeight: 500, letterSpacing: "0.05em" }}>
+                          Review carefully — these changes will be written to the database
+                        </span>
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <button
+                            type="button"
+                            onClick={handleCancelPreview}
+                            style={{
+                              ...actionBtnBase,
+                              color: "var(--text3)",
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleConfirmApply}
+                            disabled={!patchPreview.validCount}
+                            style={{
+                              ...actionBtnBase,
+                              color: patchPreview.validCount ? "rgba(234,179,8,0.8)" : "var(--text3)",
+                              borderColor: patchPreview.validCount ? "rgba(234,179,8,0.3)" : undefined,
+                              fontWeight: 600,
+                              cursor: patchPreview.validCount ? "pointer" : "not-allowed",
+                              opacity: patchPreview.validCount ? 1 : 0.4,
+                            }}
+                          >
+                            <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M12 5v14M5 12h14" />
+                            </svg>
+                            Confirm &amp; Apply
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Applying spinner */}
+                  {applyStep === "applying" && (
+                    <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(234,179,8,0.5)", animation: "pulse 2s infinite" }} />
+                      <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text3)" }}>
+                        Writing patches to database...
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -501,10 +868,9 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
         name: w.name,
         description: w.description,
         prompt: variant.prompt,
-        context: getWorkflowContext(tickerLower, variant.contextModules),
-        contextModules: variant.contextModules as string[],
         requiresUserData: w.requiresUserData,
-      };
+        ...(w.category ? { category: w.category } : {}),
+      } as AgentWorkflow;
     })
     .filter((w): w is AgentWorkflow => w !== null);
 
@@ -516,8 +882,9 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
     );
   }
 
-  const dbAgents = availableWorkflows.filter((w) => !w.requiresUserData);
+  const dbAgents = availableWorkflows.filter((w) => !w.requiresUserData && w.category !== 'audit');
   const dataAgents = availableWorkflows.filter((w) => w.requiresUserData && w.id !== "ask-agent");
+  const auditAgents = availableWorkflows.filter((w) => w.category === 'audit');
   const askAgent = availableWorkflows.find((w) => w.id === "ask-agent");
 
   return (
@@ -537,7 +904,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           <SectionLabel>Database analysis — run directly</SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {dbAgents.map((wf) => (
-              <AgentRunner key={wf.id} workflow={wf} />
+              <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
             ))}
           </div>
         </div>
@@ -550,7 +917,20 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           <SectionLabel>Data input — paste &amp; analyze</SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {dataAgents.map((wf) => (
-              <AgentRunner key={wf.id} workflow={wf} />
+              <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Audit agents — database validation */}
+      {auditAgents.length > 0 && (
+        <div>
+          <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#audit-agents</div>
+          <SectionLabel>Audit — database validation</SectionLabel>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {auditAgents.map((wf) => (
+              <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
             ))}
           </div>
         </div>
@@ -562,7 +942,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#ask-agent</div>
           <SectionLabel>Ask Agent — general-purpose query</SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <AgentRunner workflow={askAgent} />
+            <AgentRunner workflow={askAgent} ticker={tickerLower} />
           </div>
         </div>
       )}

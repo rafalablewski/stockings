@@ -31,6 +31,13 @@ const SEC_HEADERS = {
   Accept: 'application/json',
 };
 
+/** Normalize bare EDGAR form codes to display-friendly names */
+const FORM_DISPLAY: Record<string, string> = {
+  '3': 'Form 3', '4': 'Form 4', '5': 'Form 5',
+  '144': 'Form 144', '144/A': 'Form 144/A',
+  'D': 'Form D', 'D/A': 'Form D/A',
+};
+
 /** Parse a RecentFilings-shaped object into EdgarFiling[] */
 function parseFilings(recent: RecentFilings, cik: string): EdgarFiling[] {
   const count = recent.accessionNumber?.length ?? 0;
@@ -45,7 +52,7 @@ function parseFilings(recent: RecentFilings, cik: string): EdgarFiling[] {
     filings.push({
       accessionNumber: accession,
       filingDate: recent.filingDate[i] ?? '',
-      form: recent.form[i] ?? '',
+      form: FORM_DISPLAY[recent.form[i] ?? ''] ?? recent.form[i] ?? '',
       primaryDocDescription: recent.primaryDocDescription?.[i] ?? '',
       reportDate: recent.reportDate?.[i] ?? '',
       fileUrl: primaryDoc
