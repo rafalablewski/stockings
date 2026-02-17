@@ -9,6 +9,7 @@ interface AgentWorkflow {
   description: string;
   prompt: string;
   requiresUserData: boolean;
+  category?: 'audit';
 }
 
 interface SharedAIAgentsTabProps {
@@ -155,16 +156,22 @@ function AgentRunner({ workflow }: { workflow: AgentWorkflow }) {
                 letterSpacing: "0.08em",
                 padding: "2px 6px",
                 borderRadius: 4,
-                background: workflow.requiresUserData
-                  ? "rgba(255,255,255,0.04)"
-                  : "rgba(255,255,255,0.04)",
-                color: workflow.requiresUserData
-                  ? "rgba(255,255,255,0.2)"
-                  : "rgba(130,200,130,0.5)",
-                border: `1px solid ${workflow.requiresUserData ? "rgba(255,255,255,0.06)" : "rgba(130,200,130,0.15)"}`,
+                background: "rgba(255,255,255,0.04)",
+                color: workflow.category === 'audit'
+                  ? "rgba(234,179,8,0.5)"
+                  : workflow.requiresUserData
+                    ? "rgba(255,255,255,0.2)"
+                    : "rgba(130,200,130,0.5)",
+                border: `1px solid ${
+                  workflow.category === 'audit'
+                    ? "rgba(234,179,8,0.15)"
+                    : workflow.requiresUserData
+                      ? "rgba(255,255,255,0.06)"
+                      : "rgba(130,200,130,0.15)"
+                }`,
               }}
             >
-              {workflow.requiresUserData ? "Paste data" : "Database"}
+              {workflow.category === 'audit' ? "Audit" : workflow.requiresUserData ? "Paste data" : "Database"}
             </span>
           </div>
           <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", lineHeight: 1.5 }}>
@@ -469,7 +476,8 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
         description: w.description,
         prompt: variant.prompt,
         requiresUserData: w.requiresUserData,
-      };
+        ...(w.category ? { category: w.category } : {}),
+      } as AgentWorkflow;
     })
     .filter((w): w is AgentWorkflow => w !== null);
 
@@ -481,8 +489,9 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
     );
   }
 
-  const dbAgents = availableWorkflows.filter((w) => !w.requiresUserData);
+  const dbAgents = availableWorkflows.filter((w) => !w.requiresUserData && w.category !== 'audit');
   const dataAgents = availableWorkflows.filter((w) => w.requiresUserData && w.id !== "ask-agent");
+  const auditAgents = availableWorkflows.filter((w) => w.category === 'audit');
   const askAgent = availableWorkflows.find((w) => w.id === "ask-agent");
 
   return (
@@ -515,6 +524,19 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           <SectionLabel>Data input — paste &amp; analyze</SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {dataAgents.map((wf) => (
+              <AgentRunner key={wf.id} workflow={wf} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Audit agents — database validation */}
+      {auditAgents.length > 0 && (
+        <div>
+          <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#audit-agents</div>
+          <SectionLabel>Audit — database validation</SectionLabel>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {auditAgents.map((wf) => (
               <AgentRunner key={wf.id} workflow={wf} />
             ))}
           </div>
