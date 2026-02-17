@@ -24,26 +24,29 @@ function extractKeywords(text: string): Set<string> {
   );
 }
 
-// Check if an article matches any existing entry using keyword overlap
+// Check if an article matches any existing entry using two-tier keyword overlap
 function localMatch(articleHeadline: string, analysisData: AnalysisEntry[]): boolean {
   const articleWords = extractKeywords(articleHeadline);
   if (articleWords.size === 0) return false;
 
   for (const entry of analysisData) {
-    const entryText = entry.detail
-      ? `${entry.headline} ${entry.detail}`
-      : entry.headline;
-    const entryWords = extractKeywords(entryText);
-
-    // Count how many article keywords appear in the entry
-    let matches = 0;
+    // Tier 1: headline-only match (high confidence — headlines are short and focused)
+    const headlineWords = extractKeywords(entry.headline);
+    let headlineMatches = 0;
     for (const w of articleWords) {
-      if (entryWords.has(w)) matches++;
+      if (headlineWords.has(w)) headlineMatches++;
     }
+    if (headlineMatches / articleWords.size >= 0.5 && headlineMatches >= 3) return true;
 
-    const overlap = matches / articleWords.size;
-    // If >50% of article keywords found in an entry, consider it tracked
-    if (overlap >= 0.5 && matches >= 3) return true;
+    // Tier 2: headline+detail match (stricter — detail fields can be long with passing mentions)
+    if (entry.detail) {
+      const fullWords = extractKeywords(`${entry.headline} ${entry.detail}`);
+      let fullMatches = 0;
+      for (const w of articleWords) {
+        if (fullWords.has(w)) fullMatches++;
+      }
+      if (fullMatches / articleWords.size >= 0.65 && fullMatches >= 4) return true;
+    }
   }
   return false;
 }
@@ -198,13 +201,13 @@ ${articleList}
 For each new article (1-${articles.length}), determine if the underlying event/topic is ALREADY COVERED somewhere in the existing database.
 
 Mark as "analyzed: true" when:
-- The same company announcement, product launch, partnership, regulatory event, or milestone is covered — even if worded completely differently
-- A news article reports on the same underlying event as a database entry (e.g. article says "Company X Sends First D2D Message" and database has entry mentioning "First European company to operate LEO constellation dedicated to D2D services" — same event, different wording)
-- The article covers a topic that is discussed within the summary/detail of an existing entry
+- A database entry is PRIMARILY ABOUT the same event — its headline directly describes the same announcement, product launch, partnership, regulatory event, or milestone
+- A news article and a database entry cover the same underlying event, even if worded differently (e.g. article says "Company X Sends First D2D Message" and database has entry with headline "First European company to operate LEO constellation dedicated to D2D services" — same event, different wording)
 - Different news outlets covering the same story both count as covered if any version is in the database
 
 Mark as "analyzed: false" when:
-- The specific event, development, or announcement has NO corresponding entry in the database
+- The event has NO dedicated entry in the database
+- A database entry only MENTIONS the topic in passing as context for a different analysis (e.g. an analyst report listing a partnership as a competitive risk factor does NOT mean that partnership event itself is covered — the entry must be primarily ABOUT the same event)
 - It's a genuinely new development not captured anywhere in the existing data
 - Stock price movement articles with no underlying tracked event
 

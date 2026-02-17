@@ -791,15 +791,128 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           <span style={{ color: 'var(--text3)', fontSize: 18 }}>{methodologyOpen ? '\u2212' : '+'}</span>
         </div>
         {methodologyOpen && (
-          <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)', lineHeight: 1.8 }}>
-            <p style={{ margin: '0 0 12px' }}><strong>Article Tracking:</strong> Each article is checked against the local TypeScript data warehouse to determine if the underlying event has already been analyzed. Two matching methods are available: AI semantic matching (primary) and local keyword matching (fallback).</p>
-            <p style={{ margin: '0 0 12px' }}><strong>AI Semantic Matching:</strong> When an Anthropic API key is configured, articles are sent to Claude along with all existing database entries. Claude evaluates whether the underlying event or topic — not just the wording — is already covered in the database. This catches cases where different outlets report the same story with different headlines.</p>
-            <p style={{ margin: '0 0 12px' }}><strong>Local Keyword Matching:</strong> When no API key is available, when the AI service is unreachable, or when the prompt exceeds the configured token budget, a local keyword-overlap algorithm is used. Each article headline is tokenized into significant keywords (stop words removed) and compared against every database entry. An article is considered tracked if 50%+ of its keywords overlap with any single entry, with a minimum of 3 matching keywords.</p>
-            <p style={{ margin: '0 0 12px' }}><strong>Status Indicators:</strong> <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> Tracked</span> — event is in the analysis database. <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> New</span> — event not yet in the database. <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', display: 'inline-block' }} /> Pending</span> — check in progress or failed.</p>
-            <p style={{ margin: '0 0 12px' }}><strong>Data Sources:</strong> All .ts data files for the ticker, including timeline events, press releases, SEC filings, catalysts, competitors, quarterly metrics, and analyst coverage. Files are read directly from disk to ensure the latest data is always used.</p>
-            <p style={{ margin: '0 0 12px' }}><strong>Kill Switch:</strong> Set <code style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>DISABLE_AI_MATCHING=true</code> in your environment to force local keyword matching. Set <code style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>MAX_PROMPT_TOKENS</code> (default: 40,000) to limit the maximum prompt size sent to Claude.</p>
+          <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)' }}>
+            {/* ── ROUTING FLOW ─────────────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Routing</div>
+            <div style={{ display: 'flex', gap: 24 }}>
+              {/* Left column: vertical flow */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180 }}>
+                {/* Node: Article */}
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Article arrives</div>
+                <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+                {/* Node: API Key? */}
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>API key?</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>Yes</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                {/* Node: AI Disabled? */}
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>AI disabled?</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                {/* Node: Token limit? */}
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Prompt &gt; limit?</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                {/* Node: Claude AI */}
+                <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Claude AI</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>OK</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                {/* Result */}
+                <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>AI Result</div>
+              </div>
+              {/* Right column: fallback labels */}
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 4, paddingTop: 28 }}>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> No
+                </div>
+                <div style={{ height: 22 }} />
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> Yes
+                </div>
+                <div style={{ height: 22 }} />
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> Yes
+                </div>
+                <div style={{ height: 22 }} />
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> Fail
+                </div>
+                <div style={{ marginTop: 4, padding: '6px 14px', background: 'var(--gold-dim)', border: '1px solid var(--gold)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--gold)', textAlign: 'center', fontWeight: 600 }}>Local Matching</div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── LOCAL MATCHING FLOW ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Local Matching</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              {/* Node: Extract */}
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Extract keywords (stop words removed, &gt;2 chars)</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              {/* Tier 1 row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                  <div>Tier 1: Headline only</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&ge;50% overlap, &ge;3 keywords</div>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                </div>
+              </div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              {/* Tier 2 row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                  <div>Tier 2: Headline + detail</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&ge;65% overlap, &ge;4 keywords</div>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                </div>
+              </div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              {/* Result: NEW */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
+                <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>NEW</span>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── Legend & config ──────────────────────────── */}
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 11, lineHeight: 2 }}>
+              <div>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Status</span>
+                <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> Tracked</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> New</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', display: 'inline-block' }} /> Pending</span>
+                </div>
+              </div>
+              <div>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Kill Switch</span>
+                <div style={{ marginTop: 4 }}>
+                  <code style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>DISABLE_AI_MATCHING=true</code>
+                  <span style={{ margin: '0 8px', color: 'var(--text3)' }}>|</span>
+                  <code style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>MAX_PROMPT_TOKENS=40000</code>
+                </div>
+              </div>
+            </div>
             {matchMethod && (
-              <p style={{ margin: '12px 0 0' }}><strong>Current Session:</strong> Using <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, padding: '2px 8px', borderRadius: 5, background: matchMethod === 'ai' ? 'var(--sky-dim)' : 'var(--gold-dim)', color: matchMethod === 'ai' ? 'var(--sky)' : 'var(--gold)' }}>{matchMethod === 'ai' ? 'AI semantic matching' : 'local keyword matching'}</span> for article tracking.</p>
+              <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Active</span>
+                <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, padding: '2px 8px', borderRadius: 5, background: matchMethod === 'ai' ? 'var(--sky-dim)' : 'var(--gold-dim)', color: matchMethod === 'ai' ? 'var(--sky)' : 'var(--gold)' }}>{matchMethod === 'ai' ? 'AI semantic matching' : 'local keyword matching'}</span>
+              </div>
             )}
           </div>
         )}
