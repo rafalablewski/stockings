@@ -68,8 +68,9 @@ function extractEntriesFromSource(content: string): AnalysisEntry[] {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // Look for date or timeline field (backreference \1 handles escaped quotes)
-    const dateMatch = line.match(/(?:date|timeline)\s*:\s*(['"`])(.+)\1/);
+    // Look for date or timeline field
+    // Lazy (.*?) + escaped-char handling (\\.) stops at the first unescaped closing quote
+    const dateMatch = line.match(/(?:date|timeline)\s*:\s*(['"`])((?:\\.|.)*?)\1/);
     if (!dateMatch) continue;
 
     const date = dateMatch[2];
@@ -82,11 +83,11 @@ function extractEntriesFromSource(content: string): AnalysisEntry[] {
 
     for (let j = searchStart; j < searchEnd; j++) {
       if (!headline) {
-        const hlMatch = lines[j].match(/(?:headline|title|event|description)\s*:\s*(['"`])(.+)\1/);
+        const hlMatch = lines[j].match(/(?:headline|title|event|description)\s*:\s*(['"`])((?:\\.|.)*?)\1/);
         if (hlMatch) headline = hlMatch[2].replace(/\\'/g, "'").replace(/\\"/g, '"');
       }
       if (!detail) {
-        const dtMatch = lines[j].match(/(?:summary|notes|details|significance|astsRelevance|astsImplication|bmnrImplication|bmnrComparison|crclComparison|astsComparison)\s*:\s*(['"`])(.+)\1/);
+        const dtMatch = lines[j].match(/(?:summary|notes|details|significance|astsRelevance|astsImplication|bmnrImplication|bmnrComparison|crclComparison|astsComparison)\s*:\s*(['"`])((?:\\.|.)*?)\1/);
         if (dtMatch) detail = dtMatch[2].replace(/\\'/g, "'").replace(/\\"/g, '"');
       }
     }
