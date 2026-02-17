@@ -46,13 +46,21 @@ function localMatch(articleHeadline: string, analysisData: AnalysisEntry[]): boo
   return false;
 }
 
+// Unwrap ESM/CJS interop: Turbopack wraps named exports under .default
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function unwrap(mod: any): any {
+  return mod?.default && typeof mod.default === 'object' && !Array.isArray(mod.default)
+    ? mod.default
+    : mod;
+}
+
 // Dynamically collect all analysis data for a ticker — with full context
 async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
   const entries: AnalysisEntry[] = [];
 
   try {
     if (ticker === 'ASTS') {
-      const [partners, competitors, catalysts, pressReleases, compsTimeline, timelineEvents] = await Promise.all([
+      const [partnersRaw, competitorsRaw, catalystsRaw, pressReleasesRaw, compsTimelineRaw, timelineEventsRaw] = await Promise.all([
         import('@/data/asts/partners'),
         import('@/data/asts/competitors'),
         import('@/data/asts/catalysts'),
@@ -60,6 +68,12 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
         import('@/data/asts/comps-timeline'),
         import('@/data/asts/timeline-events'),
       ]);
+      const partners = unwrap(partnersRaw);
+      const competitors = unwrap(competitorsRaw);
+      const catalysts = unwrap(catalystsRaw);
+      const pressReleases = unwrap(pressReleasesRaw);
+      const compsTimeline = unwrap(compsTimelineRaw);
+      const timelineEvents = unwrap(timelineEventsRaw);
 
       if (partners.PARTNER_NEWS) {
         for (const n of partners.PARTNER_NEWS) {
@@ -99,12 +113,17 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
         }
       }
     } else if (ticker === 'BMNR') {
-      const [catalysts, competitorNews, timelineEvents, adoption] = await Promise.all([
+      const [catalystsRaw, competitorNewsRaw, timelineEventsRaw, adoptionRaw] = await Promise.all([
         import('@/data/bmnr/catalysts'),
         import('@/data/bmnr/competitor-news'),
         import('@/data/bmnr/timeline-events'),
         import('@/data/bmnr/ethereum-adoption'),
       ]);
+      const catalysts = unwrap(catalystsRaw);
+      const competitorNews = unwrap(competitorNewsRaw);
+      const timelineEvents = unwrap(timelineEventsRaw);
+      const adoption = unwrap(adoptionRaw);
+
       if (catalysts.COMPLETED_MILESTONES) {
         for (const m of catalysts.COMPLETED_MILESTONES) {
           entries.push({ date: m.date, headline: m.event });
@@ -132,11 +151,15 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
         }
       }
     } else if (ticker === 'CRCL') {
-      const [timeline, catalysts, competitorNews] = await Promise.all([
+      const [timelineRaw, catalystsRaw, competitorNewsRaw] = await Promise.all([
         import('@/data/crcl/timeline'),
         import('@/data/crcl/catalysts'),
         import('@/data/crcl/competitor-news'),
       ]);
+      const timeline = unwrap(timelineRaw);
+      const catalysts = unwrap(catalystsRaw);
+      const competitorNews = unwrap(competitorNewsRaw);
+
       if (timeline.TIMELINE) {
         for (const t of timeline.TIMELINE) {
           entries.push({ date: t.date, headline: t.event });
@@ -186,6 +209,7 @@ export async function POST(request: NextRequest) {
 
     // Gather all existing analysis data for this ticker
     const analysisData = await getAnalysisData(ticker.toUpperCase());
+    console.log(`[check-analyzed] ${ticker}: ${analysisData.length} entries loaded from database`);
 
     // Fallback: local keyword matching when no API key is available
     if (!ANTHROPIC_API_KEY) {
