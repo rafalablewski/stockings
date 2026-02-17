@@ -106,11 +106,8 @@ export const ASTS_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   '424B5': C_ORANGE, '424B7': C_ORANGE, 'FWP': C_ORANGE,
   'SC 13G': C_GREEN, 'SC 13D': C_GREEN, 'SC 13D/A': C_GREEN,
   'DEF 14A': C_GREEN, 'PRE 14A': C_GREEN, 'DEFA14A': C_GREEN,
-  // Both "Form X" (local DB) and bare "X" (SEC EDGAR) entries
-  'Form 4': C_GREEN, '4': C_GREEN,
-  'Form 3': C_GREEN, '3': C_GREEN,
-  'Form 144': C_GREEN, '144': C_GREEN,
-  'Form 144/A': C_GREEN, '144/A': C_GREEN,
+  'Form 3': C_GREEN, 'Form 4': C_GREEN,
+  'Form 144': C_GREEN, 'Form 144/A': C_GREEN,
 };
 
 export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5', 'Other'];
