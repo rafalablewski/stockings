@@ -24,19 +24,34 @@ function extractKeywords(text: string): Set<string> {
   );
 }
 
-// Check if an article matches any existing entry using two-tier keyword overlap
-function localMatch(articleHeadline: string, analysisData: AnalysisEntry[]): boolean {
+// Days between two date strings (YYYY-MM-DD). Returns Infinity on parse failure.
+function daysBetween(a: string, b: string): number {
+  const da = new Date(a), db = new Date(b);
+  if (isNaN(da.getTime()) || isNaN(db.getTime())) return Infinity;
+  return Math.abs(da.getTime() - db.getTime()) / (1000 * 60 * 60 * 24);
+}
+
+// Check if an article matches any existing entry using two-tier keyword overlap + date proximity
+function localMatch(articleHeadline: string, articleDate: string, analysisData: AnalysisEntry[]): boolean {
   const articleWords = extractKeywords(articleHeadline);
   if (articleWords.size === 0) return false;
 
   for (const entry of analysisData) {
+    const gap = daysBetween(articleDate, entry.date);
+
     // Tier 1: headline-only match (high confidence — headlines are short and focused)
     const headlineWords = extractKeywords(entry.headline);
     let headlineMatches = 0;
     for (const w of articleWords) {
       if (headlineWords.has(w)) headlineMatches++;
     }
-    if (headlineMatches / articleWords.size >= 0.5 && headlineMatches >= 3) return true;
+    const headlinePct = headlineMatches / articleWords.size;
+    if (headlineMatches >= 3) {
+      // Close dates: normal threshold. Far dates: require much higher overlap
+      // to prevent recurring weekly reports from matching old entries.
+      if (gap <= 5 && headlinePct >= 0.5) return true;
+      if (gap > 5 && headlinePct >= 0.75) return true;
+    }
 
     // Tier 2: headline+detail match (stricter — detail fields can be long with passing mentions)
     if (entry.detail) {
@@ -45,7 +60,11 @@ function localMatch(articleHeadline: string, analysisData: AnalysisEntry[]): boo
       for (const w of articleWords) {
         if (fullWords.has(w)) fullMatches++;
       }
-      if (fullMatches / articleWords.size >= 0.65 && fullMatches >= 4) return true;
+      const fullPct = fullMatches / articleWords.size;
+      if (fullMatches >= 4) {
+        if (gap <= 5 && fullPct >= 0.65) return true;
+        if (gap > 5 && fullPct >= 0.85) return true;
+      }
     }
   }
   return false;
@@ -162,7 +181,7 @@ export async function POST(request: NextRequest) {
     const runLocalMatch = () => articles.map(a => ({
       headline: a.headline,
       date: a.date,
-      analyzed: localMatch(a.headline, analysisData),
+      analyzed: localMatch(a.headline, a.date, analysisData),
     }));
 
     // Fallback: local keyword matching when no API key is available
@@ -210,6 +229,7 @@ Mark as "analyzed: false" when:
 - A database entry only MENTIONS the topic in passing as context for a different analysis (e.g. an analyst report listing a partnership as a competitive risk factor does NOT mean that partnership event itself is covered — the entry must be primarily ABOUT the same event)
 - It's a genuinely new development not captured anywhere in the existing data
 - Stock price movement articles with no underlying tracked event
+- RECURRING PERIODIC announcements (weekly holdings updates, monthly reports, quarterly earnings) where each occurrence has DIFFERENT figures/data. Each weekly report is a DISTINCT event — e.g. "ETH Holdings Reach 4.371M" is NOT the same as "ETH Holdings Reach 4.326M" even though they follow the same format. Only match if the database entry has the SAME date (within ~3 days) AND the same specific figures
 
 Think about WHAT HAPPENED, not how it's worded. Match on substance, not phrasing.
 

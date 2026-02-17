@@ -857,7 +857,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 1: Headline only</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&ge;50% overlap, &ge;3 keywords</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&le;5 days: &ge;50%, &ge;3 kw</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>&gt;5 days: &ge;75%, &ge;3 kw</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
                   Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
@@ -870,7 +871,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 2: Headline + detail</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&ge;65% overlap, &ge;4 keywords</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&le;5 days: &ge;65%, &ge;4 kw</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>&gt;5 days: &ge;85%, &ge;4 kw</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
                   Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
@@ -884,6 +886,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
                 <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>NEW</span>
               </div>
+              {/* Date proximity note */}
+              <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring weekly reports<br />require higher overlap when dates are &gt;5 days apart</div>
             </div>
 
             {/* Divider */}
