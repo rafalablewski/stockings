@@ -10,6 +10,135 @@ import type { AnalystCoverage } from '@/components/shared/wallStreetTypes';
 
 export const BMNR_ANALYST_COVERAGE: AnalystCoverage[] = [
   // ═══════════════════════════════════════════════════════════════════════════
+  // B. RILEY SECURITIES - Fedor Shabalin (Coverage since October 2025)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    firm: 'B. Riley Securities',
+    analyst: 'Fedor Shabalin',
+    coverageSince: 'October 2025',
+    currentPT: 47,
+    currentRating: 'Buy',
+    currentRatingNormalized: 'bullish',
+    notes: 'Part of B. Riley digital asset treasury company (DATCo) coverage universe. Uses mNAV-based methodology, viewing digital asset treasury companies as closed-end fund-like vehicles offering leveraged crypto exposure.',
+    reports: [
+      // === Jan 16, 2026 - Reiterate Buy/$47 (Beast Industries $200M Investment) ===
+      {
+        date: '2026-01-16',
+        action: 'Reiterate',
+        priceTarget: 47,
+        previousTarget: 47,
+        rating: 'Buy',
+        ratingNormalized: 'bullish',
+        reportTitle: 'BMNR — Beast Industries Partnership Reinforces Strategic Capital Allocation',
+        source: 'B. Riley Securities Research',
+        isFullReport: false,
+        thesis: 'Partnership with Beast Industries (MrBeast) provides marketing access to 450M+ audience. Creates monetization pathways for MAVAN staking infrastructure through Beast\'s DeFi-integrated financial services platform. Strengthens institutional credibility as strategic capital allocator rather than passive treasury operator.',
+        reportSummary: `**REITERATE BUY / $47 PT**
+Following BMNR's $200M investment in Beast Industries (MrBeast). Tom Lee appeared on CNBC's "Squawk Box" Jan 15 to discuss the deal.
+
+**PARTNERSHIP VALUE**
+Marketing access to MrBeast's 450M+ YouTube subscriber audience. Monetization pathways for MAVAN staking infrastructure through Beast's anticipated DeFi-integrated financial services platform.
+
+**ANALYST QUOTE**
+"The partnership provides BMNR with marketing access to MrBeast's 450M+ audience while creating monetization pathways for its MAVAN staking infrastructure."
+
+**STAKING DATA AT TIME**
+1,838,003 ETH staked ($5.9B at $3,211/ETH). Annualized staking fee $374M (2.81% CESR). Greater than $1M per day.`,
+        assumptions: [
+          { label: 'Price Target', value: '$47 (maintained)' },
+          { label: 'Rating', value: 'Buy (maintained)' },
+          { label: 'Stock Price (~)', value: '$30.77' },
+          { label: 'Beast Investment', value: '$200M equity' },
+          { label: 'ETH Staked', value: '1,838,003' },
+          { label: 'Staked Value', value: '$5.9B (at $3,211/ETH)' },
+          { label: 'Annualized Staking Fee', value: '$374M (2.81% CESR)' },
+        ],
+        risks: [
+          'Distribution and compliance risks for Beast Mobile financial platform',
+          'Regulatory uncertainty for DeFi-integrated financial services',
+          'Reliance on Beast platform that has not yet started operating',
+          'Execution risk on MAVAN staking infrastructure integration',
+        ],
+      },
+      // === Nov 20, 2025 - PT Cut $90 → $47, Buy Maintained ===
+      {
+        date: '2025-11-20',
+        action: 'PT Cut',
+        priceTarget: 47,
+        previousTarget: 90,
+        rating: 'Buy',
+        ratingNormalized: 'bullish',
+        reportTitle: 'DATCo Coverage Update — mNAV and Accumulation Assumptions Reduced',
+        source: 'B. Riley Securities Research',
+        isFullReport: false,
+        thesis: 'Cut mNAV and accumulation assumptions through 2026 amid crypto slump that outpaced declines in underlying tokens. Despite cuts, company continues aggressive ETH accumulation. Still sees arbitrage in companies trading below mNAV. Expects buybacks, preferred deals, and ether restaking to support multiples. "Most constructive on BitMine and SharpLink."',
+        reportSummary: `**PT CUT TO $47 FROM $90 (-47.8%)**
+Crypto slump deepened. Cut mNAV and accumulation assumptions through 2026. Part of broader DATCo coverage adjustment — also cut FGNX to $5 from $8, NAKA halved to $1. BMNR stock fell ~11% on the day.
+
+**THESIS INTACT**
+Company continues aggressive ETH accumulation. Still sees arbitrage in companies trading below mNAV. Expects buybacks, preferred deals, and ether restaking to support multiples.
+
+**KEY QUOTE**
+"Most constructive on BitMine and SharpLink."`,
+        assumptions: [
+          { label: 'Price Target', value: '$47 (from $90)' },
+          { label: 'PT Change', value: '-47.8%' },
+          { label: 'Rating', value: 'Buy (maintained)' },
+          { label: 'Stock Price (~)', value: '$26.02' },
+        ],
+        risks: [
+          'Continued crypto slump reducing mNAV',
+          'Accumulation assumptions may need further downward revision',
+          'Persistent NAV discount across DATCo universe',
+        ],
+      },
+      // === Oct 16, 2025 - Initiation with Buy, PT $90 ===
+      {
+        date: '2025-10-16',
+        action: 'Initiation',
+        priceTarget: 90,
+        previousTarget: null,
+        rating: 'Buy',
+        ratingNormalized: 'bullish',
+        reportTitle: 'BitMine Immersion Technologies — Initiation of Coverage',
+        source: 'B. Riley Securities Research',
+        isFullReport: true,
+        thesis: 'Industrial-scale digital asset mining companies primarily hold cryptocurrencies, functioning similarly to closed-end funds. Such firms offer investors an opportunity for leveraged exposure to cryptocurrency returns. Investors optimistic about the future of the crypto market should consider these companies for potential gains.',
+        reportSummary: `**INITIATION — BUY / $90 PT**
+mNAV-based valuation. Views digital asset treasury companies (DATCos) as closed-end fund-like vehicles offering leveraged crypto exposure.
+
+**METHODOLOGY**
+Modified Net Asset Value (mNAV) approach. DATCo companies function similarly to closed-end funds, providing leveraged exposure to underlying crypto assets.
+
+**COVERAGE UNIVERSE**
+Part of broader B. Riley digital asset treasury company (DATCo) coverage universe including FGNX and NAKA.
+
+**INSTITUTIONAL CONTEXT**
+57 funds/institutions reporting positions (up 2,750% QoQ). Put/call ratio 0.55 (bullish). ARK Innovation ETF holds 4,061K shares (1.43%).`,
+        assumptions: [
+          { label: 'Price Target', value: '$90' },
+          { label: 'Rating', value: 'Buy' },
+          { label: 'Stock Price (~)', value: '$51.20' },
+          { label: 'Methodology', value: 'mNAV-based (DATCo framework)' },
+          { label: 'Implied Upside', value: '~75.8%' },
+        ],
+        catalysts: [
+          'ETH price appreciation increasing mNAV',
+          'Continued aggressive ETH accumulation',
+          'Transition from NAV discount to NAV premium',
+          'Leveraged crypto exposure appeal for bullish investors',
+        ],
+        risks: [
+          'Crypto price decline reducing mNAV',
+          'Persistent trading at NAV discount',
+          'Regulatory uncertainty on crypto assets',
+          'Concentration risk in ETH holdings',
+        ],
+        methodology: 'Modified Net Asset Value (mNAV). Digital asset treasury companies viewed as closed-end fund-like vehicles. Values based on underlying crypto holdings adjusted for leverage and accumulation trajectory.',
+      },
+    ]
+  },
+  // ═══════════════════════════════════════════════════════════════════════════
   // CANTOR FITZGERALD - N/A (Coverage since January 2026)
   // ═══════════════════════════════════════════════════════════════════════════
   {
