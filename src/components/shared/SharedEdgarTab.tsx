@@ -587,7 +587,7 @@ const FilingRow: React.FC<{
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         {/* Chevron (visible when analysis exists) */}
-        {analysis ? (
+        {analysis && (
           <svg
             width={12}
             height={12}
@@ -606,17 +606,16 @@ const FilingRow: React.FC<{
           >
             <path d="M9 5l7 7-7 7" />
           </svg>
-        ) : (
-          /* Status dot (when no analysis) */
-          <span
-            title={statusCfg.title}
-            style={{
-              width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-              background: statusCfg.color,
-              opacity: 0.9, transition: 'opacity 0.2s, background 0.2s',
-            }}
-          />
         )}
+        {/* Status dot — always visible */}
+        <span
+          title={statusCfg.title}
+          style={{
+            width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
+            background: statusCfg.color,
+            opacity: 0.9, transition: 'opacity 0.2s, background 0.2s',
+          }}
+        />
         {/* Form badge */}
         <span style={{
           fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
