@@ -89,118 +89,123 @@ function formatTimeAgo(ts: number): string {
   return `${hours}h ago`;
 }
 
-// ── Status dot ──────────────────────────────────────────────────────────────
-const StatusDot: React.FC<{ analyzed: boolean | null | undefined; showAnalysis?: boolean }> = ({ analyzed, showAnalysis }) => {
-  if (!showAnalysis) return null;
-  const color = analyzed === null || analyzed === undefined
-    ? 'var(--text3)' : analyzed ? 'var(--mint)' : 'var(--coral)';
-  const label = analyzed === null || analyzed === undefined
-    ? 'Not checked' : analyzed ? 'In analysis' : 'Not in analysis';
+// ── Source type badge colors ─────────────────────────────────────────────────
+const SOURCE_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
+  pr:   { bg: 'var(--sky-dim)',  text: 'var(--sky)' },
+  news: { bg: 'var(--mint-dim)', text: 'var(--mint)' },
+};
+
+// ── Article row (EDGAR filing-row style) ────────────────────────────────────
+const SourceArticleRow: React.FC<{
+  article: ArticleItem;
+  type: 'pr' | 'news';
+  showAnalysis?: boolean;
+}> = ({ article, type, showAnalysis }) => {
+  const statusColor = article.analyzed === null || article.analyzed === undefined
+    ? 'var(--text3)' : article.analyzed ? 'var(--mint)' : 'var(--coral)';
+  const statusLabel = article.analyzed === null || article.analyzed === undefined
+    ? '' : article.analyzed ? 'TRACKED' : 'NEW';
+  const statusTitle = article.analyzed === null || article.analyzed === undefined
+    ? 'Not checked' : article.analyzed ? 'In analysis' : 'Not in analysis';
+  const tc = SOURCE_TYPE_COLORS[type];
+
   return (
-    <span
-      role="img"
-      aria-label={label}
-      title={label}
+    <a
+      href={article.url}
+      target="_blank"
+      rel="noopener noreferrer"
       style={{
-        width: 7, height: 7, borderRadius: '50%', background: color,
-        flexShrink: 0, marginTop: 6, opacity: analyzed === null ? 0.4 : 0.9,
-        transition: 'opacity 0.2s, background 0.2s',
+        display: 'flex', alignItems: 'center', gap: 10,
+        padding: '8px 12px', borderRadius: 10,
+        transition: 'background 0.15s',
+        textDecoration: 'none', color: 'inherit',
       }}
-    />
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+    >
+      {/* Status dot */}
+      {showAnalysis && (
+        <span
+          title={statusTitle}
+          style={{
+            width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
+            background: statusColor,
+            opacity: article.analyzed === null || article.analyzed === undefined ? 0.4 : 0.9,
+            transition: 'opacity 0.2s, background 0.2s',
+          }}
+        />
+      )}
+      {/* Source type badge */}
+      <span style={{
+        fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
+        padding: '2px 8px', borderRadius: 5, flexShrink: 0,
+        minWidth: 48, textAlign: 'center',
+        background: tc.bg, color: tc.text, whiteSpace: 'nowrap',
+      }}>
+        {type === 'pr' ? 'PR' : 'NEWS'}
+      </span>
+      {/* Headline */}
+      <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {article.headline}
+      </span>
+      {/* Source name */}
+      {article.source && (
+        <span style={{ fontSize: 11, color: 'var(--text3)', flexShrink: 0, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {article.source}
+        </span>
+      )}
+      {/* Date */}
+      {article.date && (
+        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px' }}>
+          {article.date}
+        </span>
+      )}
+      {/* Status label */}
+      {showAnalysis && statusLabel && (
+        <span style={{
+          fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+          color: statusColor, flexShrink: 0, whiteSpace: 'nowrap',
+        }}>
+          {statusLabel}
+        </span>
+      )}
+    </a>
   );
 };
 
-// ── Article list ────────────────────────────────────────────────────────────
-const ARTICLE_INITIAL_COUNT = 5;
+// ── Combined article list (merges PR + News, sorted by date) ────────────────
+const ARTICLE_INITIAL_COUNT = 10;
 
-const ArticleList: React.FC<{
-  articles: ArticleItem[];
-  empty: string;
+const SourceArticleList: React.FC<{
+  pressReleases: ArticleItem[];
+  news: ArticleItem[];
   showAnalysis?: boolean;
-}> = ({ articles, empty, showAnalysis }) => {
+}> = ({ pressReleases, news, showAnalysis }) => {
   const [showAll, setShowAll] = useState(false);
 
-  if (articles.length === 0) {
+  const combined = [
+    ...pressReleases.map(a => ({ ...a, _type: 'pr' as const })),
+    ...news.map(a => ({ ...a, _type: 'news' as const })),
+  ].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  if (combined.length === 0) {
     return (
-      <div style={{ fontSize: 13, color: 'var(--text3)', padding: '16px 0 8px', lineHeight: 1.6 }}>
-        {empty}
+      <div style={{ fontSize: 13, color: 'var(--text3)', padding: '16px 12px', lineHeight: 1.6 }}>
+        No articles found. Click Load to fetch feeds.
       </div>
     );
   }
 
-  // Sort by date newest-first (ISO date strings sort lexicographically)
-  const sorted = [...articles].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  const displayed = showAll ? sorted : sorted.slice(0, ARTICLE_INITIAL_COUNT);
-  const hiddenCount = sorted.length - ARTICLE_INITIAL_COUNT;
+  const displayed = showAll ? combined : combined.slice(0, ARTICLE_INITIAL_COUNT);
+  const hiddenCount = combined.length - ARTICLE_INITIAL_COUNT;
 
   return (
-    <div>
-      <ul role="list" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {displayed.map((a, i) => (
-          <li
-            key={i}
-            role="listitem"
-            style={{
-              display: 'flex', alignItems: 'flex-start', gap: 12,
-              padding: '12px 12px', borderRadius: 10,
-              transition: 'background 0.15s',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            <StatusDot analyzed={a.analyzed} showAnalysis={showAnalysis} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, flex: 1 }}>
-              <a
-                href={a.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  fontSize: 13, color: 'var(--text)', textDecoration: 'none', lineHeight: 1.5,
-                  transition: 'color 0.15s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}
-                onFocus={e => (e.currentTarget.style.color = 'var(--accent)')}
-                onBlur={e => (e.currentTarget.style.color = 'var(--text)')}
-              >
-                {a.headline}
-              </a>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                {a.date && (
-                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', letterSpacing: '-0.2px' }}>
-                    {a.date}
-                  </span>
-                )}
-                {a.source && (
-                  <>
-                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                    <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.source}</span>
-                  </>
-                )}
-                {a.items && (
-                  <>
-                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                    <span style={{ fontSize: 11, color: 'var(--text3)' }}>{a.items}</span>
-                  </>
-                )}
-                {showAnalysis && a.analyzed !== null && a.analyzed !== undefined && (
-                  <>
-                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-                    <span style={{
-                      fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-                      color: a.analyzed ? 'var(--mint)' : 'var(--coral)',
-                    }}>
-                      {a.analyzed ? 'Tracked' : 'New'}
-                    </span>
-                  </>
-                )}
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {displayed.map((a, i) => (
+        <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} />
+      ))}
       {hiddenCount > 0 && (
-        <div style={{ textAlign: 'center', paddingTop: 12 }}>
+        <div style={{ textAlign: 'center', paddingTop: 12, paddingBottom: 8 }}>
           <button
             onClick={() => setShowAll(!showAll)}
             style={{
@@ -220,39 +225,6 @@ const ArticleList: React.FC<{
     </div>
   );
 };
-
-// ── Feed tab button (Ive×Tesla style) ────────────────────────────────────────
-const FeedTab: React.FC<{
-  active: boolean;
-  label: string;
-  count: number;
-  onClick: () => void;
-  color: string;
-}> = ({ active, label, count, onClick, color }) => (
-  <button
-    role="tab"
-    aria-selected={active}
-    onClick={onClick}
-    style={{
-      fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-      padding: '3px 8px', borderRadius: 4,
-      color: active ? color : 'var(--text3)',
-      background: active ? `color-mix(in srgb, ${color} 8%, rgba(255,255,255,0.04))` : 'rgba(255,255,255,0.04)',
-      border: `1px solid ${active ? `color-mix(in srgb, ${color} 25%, transparent)` : 'var(--border)'}`,
-      cursor: 'pointer', transition: 'all 0.15s',
-      outline: 'none', fontFamily: 'inherit',
-      display: 'inline-flex', alignItems: 'center', gap: 5,
-    }}
-  >
-    {label}
-    <span style={{
-      fontFamily: 'Space Mono, monospace', fontSize: 9,
-      opacity: active ? 0.8 : 0.35,
-    }}>
-      {count}
-    </span>
-  </button>
-);
 
 // ── Company feed card ───────────────────────────────────────────────────────
 const CompanyFeedCard: React.FC<{
@@ -420,22 +392,7 @@ const CompanyFeedCard: React.FC<{
         )}
 
         {data.loaded && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 12, overflow: 'hidden' }}>
-            <div style={{ background: 'var(--surface)', padding: '12px 16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--sky)' }}>Press Releases</span>
-                <span style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', padding: '2px 7px', borderRadius: 5, background: 'var(--sky-dim)', color: 'var(--sky)' }}>{prCount}</span>
-              </div>
-              <ArticleList articles={data.pressReleases} empty="No press releases found from wire services." showAnalysis={showAnalysis} />
-            </div>
-            <div style={{ background: 'var(--surface)', padding: '12px 16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--mint)' }}>Latest News</span>
-                <span style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', padding: '2px 7px', borderRadius: 5, background: 'var(--mint-dim)', color: 'var(--mint)' }}>{newsCount}</span>
-              </div>
-              <ArticleList articles={data.news} empty="No recent news coverage found." showAnalysis={showAnalysis} />
-            </div>
-          </div>
+          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} />
         )}
       </div>
     </article>
@@ -640,28 +597,29 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         </button>
       </div>
 
-      {/* Legend */}
+      {/* Legend — 3 tiers with descriptions */}
       {(mainCard.loaded || loadedCount > 0) && (
         <div
           role="note"
           aria-label="Analysis status legend"
           style={{
-            display: 'flex', alignItems: 'center', gap: 24, padding: '16px 4px 12px',
-            fontSize: 10, color: 'var(--text3)', letterSpacing: '0.3px',
+            display: 'flex', alignItems: 'flex-start', gap: 24, padding: '16px 4px 12px',
+            fontSize: 10, color: 'var(--text3)', letterSpacing: '0.3px', flexWrap: 'wrap',
           }}
         >
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--mint)', opacity: 0.9 }} />
-            Tracked
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--coral)', opacity: 0.9 }} />
-            New
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4 }} />
-            Pending
-          </span>
+          {([
+            { label: 'Tracked', color: 'var(--mint)', opacity: 0.9, desc: 'Article matched in database — found in research notes or tracked data files' },
+            { label: 'New', color: 'var(--coral)', opacity: 0.9, desc: 'Article not found in database — potentially new information to review' },
+            { label: 'Pending', color: 'var(--text3)', opacity: 0.4, desc: 'Status not yet checked — load feeds and run analysis to classify' },
+          ] as const).map(s => (
+            <span key={s.label} title={s.desc} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, maxWidth: 260 }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: s.color, opacity: s.opacity, marginTop: 3, flexShrink: 0 }} />
+              <span style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <span style={{ fontWeight: 500 }}>{s.label}</span>
+                <span style={{ fontSize: 9, opacity: 0.5, lineHeight: 1.4 }}>{s.desc}</span>
+              </span>
+            </span>
+          ))}
         </div>
       )}
 

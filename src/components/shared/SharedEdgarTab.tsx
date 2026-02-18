@@ -77,6 +77,22 @@ function setCachedEdgar(ticker: string, filings: EdgarFiling[]) {
   try { sessionStorage.setItem(`edgar_${ticker}`, JSON.stringify({ filings, fetchedAt: Date.now() })); } catch { /* quota */ }
 }
 
+// ── Per-filing analysis cache (survives tab switches) ─────────────────────
+function getAnalysisCache(ticker: string, accession: string): string | null {
+  try {
+    const raw = sessionStorage.getItem(`edgar_analysis_${ticker}_${accession}`);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function setAnalysisCache(ticker: string, accession: string, text: string) {
+  try { sessionStorage.setItem(`edgar_analysis_${ticker}_${accession}`, JSON.stringify(text)); } catch { /* quota */ }
+}
+
+function removeAnalysisCache(ticker: string, accession: string) {
+  try { sessionStorage.removeItem(`edgar_analysis_${ticker}_${accession}`); } catch { /* ignore */ }
+}
+
 function formatTimeAgo(ts: number): string {
   const seconds = Math.floor((Date.now() - ts) / 1000);
   if (seconds < 60) return 'just now';
@@ -386,8 +402,9 @@ const FilingRow: React.FC<{
   onRecheckDB?: () => Promise<void>;
   recheckLoading?: boolean;
 }> = ({ r, typeColors, ticker, onRecheckDB, recheckLoading }) => {
+  const accession = r.filing.accessionNumber;
   const [analyzing, setAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<string | null>(null);
+  const [analysis, setAnalysis] = useState<string | null>(() => getAnalysisCache(ticker, accession));
   const [copied, setCopied] = useState(false);
   const [applyStep, setApplyStep] = useState<"idle" | "previewing" | "previewed" | "applying" | "applied" | "error">("idle");
   const [applyError, setApplyError] = useState("");
@@ -395,7 +412,7 @@ const FilingRow: React.FC<{
   const [patchPreview, setPatchPreview] = useState<any>(null);
   const [commitStatus, setCommitStatus] = useState<"idle" | "committing" | "done" | "error">("idle");
   const [commitMessage, setCommitMessage] = useState("");
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(() => !!getAnalysisCache(ticker, accession));
 
   const formDisplay = displayFormName(r.filing.form);
   const colors = typeColors[r.filing.form] || typeColors[formDisplay] || { bg: 'var(--surface2)', text: 'var(--text3)' };
@@ -411,7 +428,7 @@ const FilingRow: React.FC<{
   };
 
   const handleAnalyze = async () => {
-    if (analysis) { setAnalysis(null); resetWorkflowState(); setExpanded(false); return; } // toggle off
+    if (analysis) { setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState(); setExpanded(false); return; } // toggle off
     setAnalyzing(true);
     setExpanded(true);
     try {
@@ -427,9 +444,13 @@ const FilingRow: React.FC<{
         }),
       });
       const data = await res.json();
-      setAnalysis(data.analysis || data.error || 'No analysis returned.');
+      const text = data.analysis || data.error || 'No analysis returned.';
+      setAnalysis(text);
+      setAnalysisCache(ticker, accession, text);
     } catch (err) {
-      setAnalysis(`Error: ${(err as Error).message}`);
+      const errText = `Error: ${(err as Error).message}`;
+      setAnalysis(errText);
+      setAnalysisCache(ticker, accession, errText);
     } finally {
       setAnalyzing(false);
     }
@@ -548,14 +569,7 @@ const FilingRow: React.FC<{
   };
 
   return (
-    <div
-      style={{
-        borderRadius: 12,
-        border: analysis ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
-        overflow: 'hidden',
-        transition: 'border-color 0.2s',
-      }}
-    >
+    <div>
       {/* Header — clickable expand/collapse when analysis exists */}
       <div
         role={analysis ? 'button' : undefined}
@@ -565,7 +579,7 @@ const FilingRow: React.FC<{
         onKeyDown={analysis ? (e) => { if (e.key === 'Enter') setExpanded(!expanded); } : undefined}
         style={{
           display: 'flex', alignItems: 'center', gap: 10,
-          padding: '8px 12px', borderRadius: analysis ? 0 : 10,
+          padding: '8px 12px', borderRadius: 10,
           transition: 'background 0.15s',
           cursor: analysis ? 'pointer' : undefined,
         }}
@@ -1435,14 +1449,8 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             })}
           </div>
 
-          {/* Filing list card */}
-          <div style={{
-            borderRadius: 12,
-            border: '1px solid rgba(255,255,255,0.06)',
-            padding: '4px 8px',
-          }}>
-            <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} onRecheckDB={handleRecheckDB} recheckLoading={recheckLoading} />
-          </div>
+          {/* Filing list */}
+          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} onRecheckDB={handleRecheckDB} recheckLoading={recheckLoading} />
         </>
       )}
     </div>
