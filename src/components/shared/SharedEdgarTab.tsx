@@ -328,62 +328,100 @@ const ActionBtn: React.FC<{
 };
 
 // ── Analysis panel ──────────────────────────────────────────────────────────
-const AnalysisPanel: React.FC<{ text: string; onClose: () => void }> = ({ text, onClose }) => (
-  <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 12,
-      }}
-    >
-      <span
+const AnalysisPanel: React.FC<{ text: string; onClose: () => void }> = ({ text, onClose }) => {
+  const [expanded, setExpanded] = useState(true);
+  return (
+    <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
+      <div
         style={{
-          fontSize: 11,
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '2.5px',
-          color: 'var(--text3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: expanded ? 12 : 0,
         }}
       >
-        Analysis Result
-      </span>
-      <button
-        onClick={onClose}
-        title="Close analysis"
-        aria-label="Close analysis"
-        style={{
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          color: 'var(--text3)',
-          fontSize: 14,
-          lineHeight: 1,
-          padding: '2px 6px',
-          borderRadius: 4,
-          transition: 'color 0.15s',
-        }}
-      >
-        ×
-      </button>
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          aria-expanded={expanded}
+          aria-label={expanded ? 'Collapse analysis result' : 'Expand analysis result'}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+          }}
+        >
+          <svg
+            width={12}
+            height={12}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{
+              transition: 'transform 0.2s',
+              transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+              flexShrink: 0,
+            }}
+          >
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '2.5px',
+              color: 'var(--text3)',
+            }}
+          >
+            Analysis Result
+          </span>
+        </button>
+        <button
+          onClick={onClose}
+          title="Close analysis"
+          aria-label="Close analysis"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--text3)',
+            fontSize: 14,
+            lineHeight: 1,
+            padding: '2px 6px',
+            borderRadius: 4,
+            transition: 'color 0.15s',
+          }}
+        >
+          ×
+        </button>
+      </div>
+      {expanded && (
+        <div style={{ maxHeight: 600, overflowY: 'auto' }}>
+          <pre
+            style={{
+              fontSize: 12,
+              fontFamily: 'var(--font-mono, monospace)',
+              color: 'var(--text2)',
+              lineHeight: 1.8,
+              whiteSpace: 'pre-wrap',
+              margin: 0,
+            }}
+          >
+            {text}
+          </pre>
+        </div>
+      )}
     </div>
-    <div style={{ maxHeight: 600, overflowY: 'auto' }}>
-      <pre
-        style={{
-          fontSize: 12,
-          fontFamily: 'var(--font-mono, monospace)',
-          color: 'var(--text2)',
-          lineHeight: 1.8,
-          whiteSpace: 'pre-wrap',
-          margin: 0,
-        }}
-      >
-        {text}
-      </pre>
-    </div>
-  </div>
-);
+  );
+};
 
 // ── Display name normalization ───────────────────────────────────────────────
 /** Map EDGAR's raw form names to consistent short display names */
@@ -651,11 +689,8 @@ const FilingRow: React.FC<{
         );
       })()}
       {analysis && <AnalysisPanel text={stripVerdict(analysis)} onClose={() => { setAnalysis(null); resetWorkflowState(); }} />}
-      {/* ── Database Action Toolbar (Critical/Important verdicts only) ── */}
-      {analysis && !analyzing && (() => {
-        const v = parseVerdict(analysis);
-        if (!v || (v.level !== 'Critical' && v.level !== 'Important')) return null;
-        return (
+      {/* ── Database Action Toolbar ── */}
+      {analysis && !analyzing && (
           <div style={{ margin: '8px 0 2px 19px' }}>
             <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
@@ -939,8 +974,7 @@ const FilingRow: React.FC<{
               )}
             </div>
           </div>
-        );
-      })()}
+      )}
     </div>
   );
 };
