@@ -255,6 +255,16 @@ export const COMPETITOR_NEWS: CompetitorNewsEntry[] = [
 
   // === OCTOBER 2025 ===
   {
+    date: '2025-10-29',
+    competitor: 'SpaceX Starlink',
+    category: 'Partnership',
+    headline: 'Liberty Latin America Partners with Starlink Direct to Cell for Emergency Connectivity in Jamaica During Hurricane Melissa',
+    summary: 'Liberty Latin America (NASDAQ: LILA/LILAK), operating as FLOW Jamaica, partnered with Starlink Direct to Cell to provide critical emergency connectivity following Hurricane Melissa. First collaboration of its kind in the Caribbean — a traditional telecom operator working with a satellite D2C provider for disaster response. Customers received access to data, SMS, and text communications via Starlink\'s satellite network when local mobile network infrastructure was unavailable. Spectrum approved by Jamaica\'s Spectrum Management Authority and Ministry of Energy, Transport, and Telecommunications. Liberty Caribbean CEO Inge Smidts: "Having the ability to communicate in the aftermath of the Hurricane is a matter of life and death." Starlink D2C: 650+ LEO satellites, 7M+ customers across 5 continents, described as "world\'s largest 4G coverage provider." Liberty Latin America operates in 20+ countries across Latin America and the Caribbean.',
+    astsImplication: 'Starlink D2C securing first Caribbean MNO emergency deployment demonstrates real-world disaster resilience use case — a key selling point for satellite D2D. Liberty Latin America (20+ countries, LILA/LILAK) is a significant regional operator. Government-approved spectrum collaboration sets precedent for Caribbean D2C regulatory framework. ASTS\'s broadband capability would offer superior disaster connectivity (voice/video/data vs SMS/text), but Starlink\'s first-mover D2C deployment in active hurricane response creates compelling operational track record. Caribbean island geography (coverage gaps, hurricane vulnerability) is ideal D2D market that Starlink is now capturing.',
+    impact: 'Bearish',
+    source: 'Liberty Latin America / Business Wire',
+  },
+  {
     date: '2025-10-14',
     competitor: 'Iridium',
     category: 'Technology',

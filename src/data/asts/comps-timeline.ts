@@ -1274,6 +1274,27 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
       storyTitle: 'Starlink DTC Global MNO Expansion'
     },
     {
+      date: '2025-10-29',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Liberty Latin America / FLOW Jamaica partners with Starlink D2C for emergency connectivity during Hurricane Melissa',
+      details: [
+        'First Starlink Direct-to-Cell partnership in the Caribbean — traditional telecom operator + satellite D2C for disaster response',
+        'Liberty Latin America (NASDAQ: LILA/LILAK) operates as FLOW Jamaica — 20+ countries across Latin America and Caribbean',
+        'Customers received data, SMS, and text via Starlink satellite when local mobile infrastructure was unavailable',
+        'Spectrum approved by Jamaica\'s Spectrum Management Authority and Ministry of Energy, Transport, and Telecommunications',
+        'Liberty Caribbean CEO: "Having the ability to communicate in the aftermath of the Hurricane is a matter of life and death"',
+        'Starlink D2C stats: 650+ LEO satellites, 7M+ customers across 5 continents, "world\'s largest 4G coverage provider"',
+        'Liberty Latin America also operates subsea and terrestrial fiber optic cable network connecting 30+ Caribbean markets',
+        'Emergency deployment demonstrates real-world disaster resilience use case for satellite D2C',
+      ],
+      implication: 'negative',
+      astsComparison: 'Starlink D2C securing first Caribbean MNO emergency deployment — powerful real-world disaster use case. Caribbean island geography (coverage gaps, hurricane vulnerability) is ideal D2D market. Liberty Latin America (20+ countries, LILA/LILAK) is significant regional operator. Government-approved spectrum sets Caribbean D2C regulatory precedent. ASTS broadband would offer superior disaster connectivity (voice/video/data vs SMS/text) but Starlink\'s first-mover operational track record in active hurricane response is compelling. Caribbean is an untapped D2D market Starlink is now capturing.',
+      source: 'Liberty Latin America / Business Wire',
+      storyId: 'starlink-d2c-global-expansion',
+      storyTitle: 'Starlink DTC Global MNO Expansion'
+    },
+    {
       date: '2025-08-28',
       competitor: 'starlink-tmobile',
       category: 'Product',
