@@ -412,7 +412,7 @@ const FilingRow: React.FC<{
   const [patchPreview, setPatchPreview] = useState<any>(null);
   const [commitStatus, setCommitStatus] = useState<"idle" | "committing" | "done" | "error">("idle");
   const [commitMessage, setCommitMessage] = useState("");
-  const [expanded, setExpanded] = useState(() => !!getAnalysisCache(ticker, accession));
+  const [expanded, setExpanded] = useState(false);
 
   const formDisplay = displayFormName(r.filing.form);
   const colors = typeColors[r.filing.form] || typeColors[formDisplay] || { bg: 'var(--surface2)', text: 'var(--text3)' };
@@ -682,7 +682,7 @@ const FilingRow: React.FC<{
 
       {/* Expanded body — analysis content */}
       {analysis && expanded && (
-        <div style={{ padding: '0 12px 12px', borderTop: '1px solid var(--border)' }}>
+        <div style={{ padding: '0 12px 12px' }}>
           {/* Cross-reference data (comment-like) */}
           {r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
           {/* Verdict badge */}
