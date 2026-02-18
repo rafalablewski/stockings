@@ -1672,6 +1672,10 @@ Valid competitor IDs and categories are listed in the header comment of src/data
   storyId: 'optional-story-group-id',               // groups related entries across time
   storyTitle: 'Optional Story Group Title',
 }
+NEW COMPETITOR: If the news involves a competitor NOT in the data file header list:
+1. Create a lowercase-slug ID (e.g., 'telesat') and use it in the entry
+2. Add the new ID to the header comment's competitor ID list in the data file
+3. Note in your output: "NEW COMPETITOR ID: '[slug]' — add a COMPETITOR_PROFILES entry for proper UI display"
 
 ════════════════════════════════════════
 PHASE 3: CROSS-REFERENCE GENERATION
@@ -1811,6 +1815,10 @@ Valid competitor IDs and categories are listed in the header comment of src/data
   storyId: 'optional-story-group-id',               // groups related entries across time
   storyTitle: 'Optional Story Group Title',
 }
+NEW COMPETITOR: If the news involves a competitor NOT in the data file header list:
+1. Create a lowercase-slug ID (e.g., 'bitdeer') and use it in the entry
+2. Add the new ID to the header comment's competitor ID list in the data file
+3. Note in your output: "NEW COMPETITOR ID: '[slug]' — add a COMPETITOR_PROFILES entry for proper UI display"
 
 ════════════════════════════════════════
 PHASE 3: CROSS-REFERENCE GENERATION
