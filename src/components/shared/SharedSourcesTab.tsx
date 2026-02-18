@@ -847,6 +847,24 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {/* Divider */}
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
 
+            {/* ── DATA EXTRACTION ─────────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Data Extraction</div>
+            <div style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', lineHeight: 2 }}>
+              <div>Reads all <code style={{ padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>.ts</code> files per ticker from disk (bypasses bundler cache).</div>
+              <div style={{ marginTop: 4 }}>
+                <span style={{ color: 'var(--text3)' }}>Date fields:</span> date, timeline
+              </div>
+              <div>
+                <span style={{ color: 'var(--text3)' }}>Headline fields:</span> headline, title, event, description
+              </div>
+              <div>
+                <span style={{ color: 'var(--text3)' }}>Detail fields:</span> summary, notes, details, significance, thesisComparison, astsRelevance, astsImplication, astsComparison, bmnrImplication, bmnrComparison, crclComparison
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
             {/* ── LOCAL MATCHING FLOW ──────────────────────── */}
             <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Local Matching</div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

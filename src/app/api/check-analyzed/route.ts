@@ -109,7 +109,7 @@ function extractEntriesFromSource(content: string): AnalysisEntry[] {
         if (hlMatch) headline = hlMatch[2].replace(/\\'/g, "'").replace(/\\"/g, '"');
       }
       if (!detail) {
-        const dtMatch = lines[j].match(/(?:summary|notes|details|significance|astsRelevance|astsImplication|bmnrImplication|bmnrComparison|crclComparison|astsComparison)\s*:\s*(['"`])((?:\\.|.)*?)\1/);
+        const dtMatch = lines[j].match(/(?:summary|notes|details|significance|astsRelevance|astsImplication|bmnrImplication|bmnrComparison|crclComparison|astsComparison|thesisComparison)\s*:\s*(['"`])((?:\\.|.)*?)\1/);
         if (dtMatch) detail = dtMatch[2].replace(/\\'/g, "'").replace(/\\"/g, '"');
       }
     }

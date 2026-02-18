@@ -5,35 +5,16 @@
  * Newest first.
  */
 
-/** Competitor identifiers for crypto treasury space */
-export type BMNRCompetitorId = 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'ethz' | 'kraken' | 'other';
+import { CompetitorNewsEntry } from '../shared/competitor-schema';
 
-/** News category types for crypto treasury competitors */
-export type BMNRCompetitorNewsCategory = 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy';
-
-/** Implication for BMNR competitive position */
-export type BMNRImplication = 'positive' | 'neutral' | 'negative';
-
-/** Individual competitor news entry */
-export interface BMNRCompetitorNewsEntry {
-  date: string;
-  competitor: BMNRCompetitorId;
-  category: BMNRCompetitorNewsCategory;
-  headline: string;
-  details: string[];
-  implication: BMNRImplication;
-  bmnrComparison?: string;  // How this compares to BMNR position
-  source?: string;
-  sourceUrl?: string;
-  storyId?: string;         // Groups related news entries
-  storyTitle?: string;      // Display title for the story group
-}
+// Competitor IDs used for BMNR: 'mstr' | 'mara' | 'riot' | 'coin' | 'clsk' | 'hut8' | 'ethz' | 'kraken' | 'other'
+// Categories: 'Acquisition' | 'Funding' | 'Yield' | 'Regulatory' | 'Technology' | 'Partnership' | 'Financial' | 'Strategy'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // COMPETITOR NEWS - Add new entries at TOP (newest first)
 // NEVER delete old entries - this is an audit trail
 // ═══════════════════════════════════════════════════════════════════════════
-export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
+export const BMNR_COMPETITOR_NEWS: CompetitorNewsEntry[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   // ADD NEW COMPETITOR NEWS ENTRIES HERE (newest first)
   // Format:
@@ -44,7 +25,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
   //   headline: 'Brief headline',
   //   details: ['Bullet point 1', 'Bullet point 2'],
   //   implication: 'positive' | 'neutral' | 'negative',  // for BMNR
-  //   bmnrComparison: 'How this compares to BMNR',
+  //   thesisComparison: 'How this compares to BMNR',
   //   source: 'Source name',
   //   sourceUrl: 'https://...'
   // },
@@ -67,7 +48,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Plans to expand tokenization to manufactured home loans and car loans via Zippy and Karus',
     ],
     implication: 'neutral',
-    bmnrComparison: 'ETHZilla (ETHZ, ~102K ETH, Nasdaq) pivoting from pure ETH treasury to RWA tokenization on Ethereum L2. Creates differentiated use case vs BMNR\'s pure ETH accumulation strategy. BMNR holds 42x more ETH and focuses on scale + staking yield, while ETHZ diversifies into tokenized asset origination. Both strategies validate Ethereum ecosystem but differ in approach: BMNR = concentrated ETH treasury, ETHZ = ETH + RWA tokenization platform.',
+    thesisComparison: 'ETHZilla (ETHZ, ~102K ETH, Nasdaq) pivoting from pure ETH treasury to RWA tokenization on Ethereum L2. Creates differentiated use case vs BMNR\'s pure ETH accumulation strategy. BMNR holds 42x more ETH and focuses on scale + staking yield, while ETHZ diversifies into tokenized asset origination. Both strategies validate Ethereum ecosystem but differ in approach: BMNR = concentrated ETH treasury, ETHZ = ETH + RWA tokenization platform.',
     source: 'PR Newswire',
     storyId: 'eth-treasury-competitors',
     storyTitle: 'ETH Treasury Competitors',
@@ -87,7 +68,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Targets institutional BTC yield market',
     ],
     implication: 'neutral',
-    bmnrComparison: 'BTC yield infrastructure expanding alongside ETH staking yield. BMNR\'s ETH staking yield (3-5%) targets same institutional demand for crypto-native returns.',
+    thesisComparison: 'BTC yield infrastructure expanding alongside ETH staking yield. BMNR\'s ETH staking yield (3-5%) targets same institutional demand for crypto-native returns.',
     source: 'PR Newswire',
     storyId: 'btc-treasury-ecosystem',
     storyTitle: 'BTC Treasury & Yield Ecosystem',
@@ -106,7 +87,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Initial $1M purchase at ~$54,000/BTC via proprietary Accumulator structure',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Another Nasdaq-listed company establishing BTC treasury. Growing trend of corporate crypto treasuries validates BMNR\'s ETH treasury model.',
+    thesisComparison: 'Another Nasdaq-listed company establishing BTC treasury. Growing trend of corporate crypto treasuries validates BMNR\'s ETH treasury model.',
     source: 'PR Newswire',
     storyId: 'btc-treasury-ecosystem',
     storyTitle: 'BTC Treasury & Yield Ecosystem',
@@ -126,7 +107,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       '$15B+ client AUM',
     ],
     implication: 'positive',
-    bmnrComparison: 'Bitwise model portfolios through Kraken Institutional expand institutional access to digital asset strategies. Growing institutional crypto allocation infrastructure supports BMNR investor base.',
+    thesisComparison: 'Bitwise model portfolios through Kraken Institutional expand institutional access to digital asset strategies. Growing institutional crypto allocation infrastructure supports BMNR investor base.',
     source: 'PR Newswire',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -145,7 +126,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Powered by Wirex BaaS infrastructure',
     ],
     implication: 'neutral',
-    bmnrComparison: 'BTC-funded payment cards expand crypto spending utility. Growing real-world crypto payment infrastructure benefits broader ecosystem adoption.',
+    thesisComparison: 'BTC-funded payment cards expand crypto spending utility. Growing real-world crypto payment infrastructure benefits broader ecosystem adoption.',
     source: 'PR Newswire',
     storyId: 'crypto-ecosystem',
     storyTitle: 'Crypto Ecosystem',
@@ -167,7 +148,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Minimal lock-up periods to support flexible liquidity management',
     ],
     implication: 'positive',
-    bmnrComparison: 'Kraken expanding institutional crypto investment products validates demand for managed crypto yield strategies. BMNR\'s ETH staking yield (3-5%) could appeal to the same institutional audience seeking crypto-native returns. Kraken is also a BMNR institutional investor.',
+    thesisComparison: 'Kraken expanding institutional crypto investment products validates demand for managed crypto yield strategies. BMNR\'s ETH staking yield (3-5%) could appeal to the same institutional audience seeking crypto-native returns. Kraken is also a BMNR institutional investor.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -189,7 +170,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Pioneered PoR in 2014 — longest-running transparency program among major exchanges',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Kraken\'s PoR covering ETH validates institutional-grade custody for ETH holdings. As BMNR grows its ETH treasury, exchange PoR transparency reinforces trust in the broader ETH custody ecosystem that BMNR depends on.',
+    thesisComparison: 'Kraken\'s PoR covering ETH validates institutional-grade custody for ETH holdings. As BMNR grows its ETH treasury, exchange PoR transparency reinforces trust in the broader ETH custody ecosystem that BMNR depends on.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -210,7 +191,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Part of Williams\' portfolio of major brand renewals (Duracell, Gulf Oil, VAST Data)',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Kraken\'s mainstream marketing increases crypto adoption broadly. As a BMNR institutional investor, Kraken\'s growing brand and user base could translate to increased awareness and demand for ETH treasury investment vehicles like BMNR.',
+    thesisComparison: 'Kraken\'s mainstream marketing increases crypto adoption broadly. As a BMNR institutional investor, Kraken\'s growing brand and user base could translate to increased awareness and demand for ETH treasury investment vehicles like BMNR.',
     source: 'Kraken Blog',
     storyId: 'kraken-expansion',
     storyTitle: 'Kraken Global Expansion',
@@ -232,7 +213,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Converts user deposits to USDC, then deploys to DeFi lending protocols — increases Ethereum DeFi TVL',
     ],
     implication: 'positive',
-    bmnrComparison: 'Kraken\'s DeFi Earn validates institutional demand for Ethereum-based yield. Deploys capital to Ethereum lending protocols, growing DeFi TVL and demand for ETH. BMNR\'s 3-5% ETH staking yield is a complementary but different yield strategy — staking secures the network vs lending generates borrower interest.',
+    thesisComparison: 'Kraken\'s DeFi Earn validates institutional demand for Ethereum-based yield. Deploys capital to Ethereum lending protocols, growing DeFi TVL and demand for ETH. BMNR\'s 3-5% ETH staking yield is a complementary but different yield strategy — staking secures the network vs lending generates borrower interest.',
     source: 'Kraken Blog',
     storyId: 'kraken-defi',
     storyTitle: 'Kraken DeFi & Yield Products',
@@ -253,7 +234,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Follows successful 2025 memecoin showdown with Williams F1 (Pengu in Singapore)',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Kraken\'s sports marketing drives retail crypto engagement and platform growth. While memecoin activity doesn\'t directly impact BMNR, growing Kraken\'s user base as a BMNR institutional investor increases potential distribution channel for ETH treasury products.',
+    thesisComparison: 'Kraken\'s sports marketing drives retail crypto engagement and platform growth. While memecoin activity doesn\'t directly impact BMNR, growing Kraken\'s user base as a BMNR institutional investor increases potential distribution channel for ETH treasury products.',
     source: 'Kraken Blog',
     storyId: 'kraken-expansion',
     storyTitle: 'Kraken Global Expansion',
@@ -277,7 +258,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'CLARITY Act could provide framework for digital commodities, accelerating US as crypto capital of the world',
     ],
     implication: 'positive',
-    bmnrComparison: 'Kraken\'s research directly relevant to BMNR thesis: (1) BTC dominance >60% without alt rotation suggests ETH catch-up potential, (2) DeFi tokenomics maturation (fee sharing) validates ETH staking yield thesis, (3) RWA tokenization 3x growth benefits Ethereum as primary settlement layer, (4) stablecoin ATH supports Ethereum DeFi ecosystem where BMNR\'s staked ETH operates.',
+    thesisComparison: 'Kraken\'s research directly relevant to BMNR thesis: (1) BTC dominance >60% without alt rotation suggests ETH catch-up potential, (2) DeFi tokenomics maturation (fee sharing) validates ETH staking yield thesis, (3) RWA tokenization 3x growth benefits Ethereum as primary settlement layer, (4) stablecoin ATH supports Ethereum DeFi ecosystem where BMNR\'s staked ETH operates.',
     source: 'Kraken Blog',
     storyId: 'kraken-research',
     storyTitle: 'Kraken Market Research',
@@ -299,7 +280,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Kraken Custody uses HSM + MPC security architecture with in-house security teams',
     ],
     implication: 'neutral',
-    bmnrComparison: 'USDe\'s model shorts ETH perpetuals, creating selling pressure that could suppress ETH prices — net negative for BMNR\'s ETH treasury value. However, Ethena also holds significant ETH collateral, and the growing USDe ecosystem increases demand for ETH derivatives liquidity. Kraken as custody partner signals institutional-grade ETH infrastructure maturation.',
+    thesisComparison: 'USDe\'s model shorts ETH perpetuals, creating selling pressure that could suppress ETH prices — net negative for BMNR\'s ETH treasury value. However, Ethena also holds significant ETH collateral, and the growing USDe ecosystem increases demand for ETH derivatives liquidity. Kraken as custody partner signals institutional-grade ETH infrastructure maturation.',
     source: 'Kraken Blog',
     storyId: 'kraken-defi',
     storyTitle: 'Kraken DeFi & Yield Products',
@@ -320,7 +301,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Positions Kraken as regulated crypto partner across the EU',
     ],
     implication: 'positive',
-    bmnrComparison: 'Kraken\'s EU regulatory compliance expands the pool of regulated investors who can access crypto treasury products. As MiCA provides clarity for digital asset investment, European institutional capital could flow into ETH treasury vehicles like BMNR. Kraken\'s EU presence as a BMNR investor creates distribution optionality.',
+    thesisComparison: 'Kraken\'s EU regulatory compliance expands the pool of regulated investors who can access crypto treasury products. As MiCA provides clarity for digital asset investment, European institutional capital could flow into ETH treasury vehicles like BMNR. Kraken\'s EU presence as a BMNR investor creates distribution optionality.',
     source: 'Kraken Blog',
     storyId: 'kraken-expansion',
     storyTitle: 'Kraken Global Expansion',
@@ -342,7 +323,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Co-CEO Arjun Sethi: "financial assets as neutral, composable building blocks on open networks"',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Tokenized equities represent an alternative onchain investment vehicle competing for the same institutional capital as crypto treasury companies. However, xStocks on Ethereum increases Ethereum ecosystem utility and transaction demand. If tokenized assets settle in ETH or require ETH gas, this is net positive for ETH value.',
+    thesisComparison: 'Tokenized equities represent an alternative onchain investment vehicle competing for the same institutional capital as crypto treasury companies. However, xStocks on Ethereum increases Ethereum ecosystem utility and transaction demand. If tokenized assets settle in ETH or require ETH gas, this is net positive for ETH value.',
     source: 'Kraken Blog',
     storyId: 'kraken-xstocks',
     storyTitle: 'Kraken Tokenized Equities (xStocks)',
@@ -363,7 +344,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Plans to expand beyond equities to broader suite of tokenized securities and real-world assets',
     ],
     implication: 'neutral',
-    bmnrComparison: 'xStocks\' $10B+ volume shows growing demand for tokenized financial assets. As RWA tokenization scales on Ethereum, it increases the blockchain\'s utility as settlement infrastructure — supportive of ETH value and the ETH treasury thesis underlying BMNR.',
+    thesisComparison: 'xStocks\' $10B+ volume shows growing demand for tokenized financial assets. As RWA tokenization scales on Ethereum, it increases the blockchain\'s utility as settlement infrastructure — supportive of ETH value and the ETH treasury thesis underlying BMNR.',
     source: 'Kraken Blog',
     storyId: 'kraken-xstocks',
     storyTitle: 'Kraken Tokenized Equities (xStocks)',
@@ -384,7 +365,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Indicates growing platform maturity and organic trading activity across crypto markets',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Deep exchange liquidity across 425+ pairs supports healthy ETH price discovery and trading. As a BMNR investor, Kraken\'s growing liquidity infrastructure creates a more efficient market for ETH, reducing slippage and improving execution for large ETH treasury transactions.',
+    thesisComparison: 'Deep exchange liquidity across 425+ pairs supports healthy ETH price discovery and trading. As a BMNR investor, Kraken\'s growing liquidity infrastructure creates a more efficient market for ETH, reducing slippage and improving execution for large ETH treasury transactions.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -406,7 +387,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'React Native New Architecture adoption for baseline performance improvement',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Kraken investing in mobile performance engineering signals platform maturation and focus on user experience. Improved app reliability and speed lowers barriers for retail and institutional users to trade crypto, supporting broader ETH market liquidity.',
+    thesisComparison: 'Kraken investing in mobile performance engineering signals platform maturation and focus on user experience. Improved app reliability and speed lowers barriers for retail and institutional users to trade crypto, supporting broader ETH market liquidity.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -427,7 +408,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Both unstaked and Kraken Rewards assets eligible as margin collateral',
     ],
     implication: 'neutral',
-    bmnrComparison: 'More stablecoin collateral options on Kraken deepens margin trading liquidity. Improved margin infrastructure supports ETH derivatives trading and hedging — beneficial for BMNR as deeper ETH markets improve price discovery.',
+    thesisComparison: 'More stablecoin collateral options on Kraken deepens margin trading liquidity. Improved margin infrastructure supports ETH derivatives trading and hedging — beneficial for BMNR as deeper ETH markets improve price discovery.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -448,7 +429,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Serves as core settlement layer for instant digital dollar payments',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Stablecoin infrastructure expansion (USDT0 on Plasma) grows the broader crypto ecosystem. More efficient stablecoin rails support trading and DeFi activity that ultimately drives ETH demand for gas and settlement.',
+    thesisComparison: 'Stablecoin infrastructure expansion (USDT0 on Plasma) grows the broader crypto ecosystem. More efficient stablecoin rails support trading and DeFi activity that ultimately drives ETH demand for gas and settlement.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -470,7 +451,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       '99.9% uptime with dedicated 24/7 support',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Ultra-low-latency connectivity attracts institutional and HFT traders to Kraken, deepening ETH market liquidity. As a BMNR institutional investor, Kraken\'s growing institutional infrastructure strengthens the ETH trading ecosystem that supports BMNR\'s treasury valuation.',
+    thesisComparison: 'Ultra-low-latency connectivity attracts institutional and HFT traders to Kraken, deepening ETH market liquidity. As a BMNR institutional investor, Kraken\'s growing institutional infrastructure strengthens the ETH trading ecosystem that supports BMNR\'s treasury valuation.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -492,7 +473,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Colombia described as one of most dynamic crypto markets in Latin America',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Kraken\'s geographic expansion into Colombia adds new users to the crypto ecosystem. Growing Kraken\'s user base as a BMNR institutional investor increases platform scale and potential demand for ETH-based products.',
+    thesisComparison: 'Kraken\'s geographic expansion into Colombia adds new users to the crypto ecosystem. Growing Kraken\'s user base as a BMNR institutional investor increases platform scale and potential demand for ETH-based products.',
     source: 'Kraken Blog',
     storyId: 'kraken-expansion',
     storyTitle: 'Kraken Global Expansion',
@@ -515,7 +496,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Two-way U.S./European institutional market gateway',
     ],
     implication: 'positive',
-    bmnrComparison: 'Deutsche Börse partnership is a landmark TradFi-crypto bridge. Eurex derivatives on Kraken could eventually include ETH products, improving institutional ETH access. Clearstream custody integration validates institutional-grade ETH custody demand. Major positive for ETH ecosystem institutional adoption.',
+    thesisComparison: 'Deutsche Börse partnership is a landmark TradFi-crypto bridge. Eurex derivatives on Kraken could eventually include ETH products, improving institutional ETH access. Clearstream custody integration validates institutional-grade ETH custody demand. Major positive for ETH ecosystem institutional adoption.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -536,7 +517,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Phase one of broader rollout to additional tokenized stocks and ETFs',
     ],
     implication: 'neutral',
-    bmnrComparison: 'MSTRx (tokenized MicroStrategy) being among top 10 xStocks shows demand for crypto treasury exposure via tokenized equities. If/when BMNR gets tokenized as an xStock, it would provide 24/7 global access to ETH treasury exposure. xStocks on Ethereum drives chain utility.',
+    thesisComparison: 'MSTRx (tokenized MicroStrategy) being among top 10 xStocks shows demand for crypto treasury exposure via tokenized equities. If/when BMNR gets tokenized as an xStock, it would provide 24/7 global access to ETH treasury exposure. xStocks on Ethereum drives chain utility.',
     source: 'Kraken Blog',
     storyId: 'kraken-xstocks',
     storyTitle: 'Kraken Tokenized Equities (xStocks)',
@@ -558,7 +539,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Over 60 tokenized equities and ETFs backed 1:1 by underlying asset',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Kraken vertically integrating tokenized equities strengthens their position as crypto infrastructure provider. xStocks on Ethereum increases Ethereum settlement demand and chain utility. Potential future tokenization of BMNR shares as an xStock could unlock 24/7 global access.',
+    thesisComparison: 'Kraken vertically integrating tokenized equities strengthens their position as crypto infrastructure provider. xStocks on Ethereum increases Ethereum settlement demand and chain utility. Potential future tokenization of BMNR shares as an xStock could unlock 24/7 global access.',
     source: 'Kraken Blog',
     storyId: 'kraken-xstocks',
     storyTitle: 'Kraken Tokenized Equities (xStocks)',
@@ -579,7 +560,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Designed to attract and retain most active trading participants and improve market liquidity',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Kraken incentivizing high-volume market makers deepens ETH trading liquidity on the platform. Better market-making reduces spreads and improves price discovery for ETH, supporting the efficiency of BMNR\'s ETH treasury valuation.',
+    thesisComparison: 'Kraken incentivizing high-volume market makers deepens ETH trading liquidity on the platform. Better market-making reduces spreads and improves price discovery for ETH, supporting the efficiency of BMNR\'s ETH treasury valuation.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -600,7 +581,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Supports hedging, short selling, and leveraged strategies using EURC collateral',
     ],
     implication: 'neutral',
-    bmnrComparison: 'More stablecoin collateral options on Kraken broadens the margin trading ecosystem. Additional collateral currencies support more complex ETH derivatives strategies, contributing to overall ETH market depth and efficiency.',
+    thesisComparison: 'More stablecoin collateral options on Kraken broadens the margin trading ecosystem. Additional collateral currencies support more complex ETH derivatives strategies, contributing to overall ETH market depth and efficiency.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -622,7 +603,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Kraken manages compliance, licensing, fraud prevention, and payment operations',
     ],
     implication: 'positive',
-    bmnrComparison: 'Kraken Ramp as B2B infrastructure lowers barriers for new platforms to offer crypto. More fiat on-ramps across 400+ assets expands the addressable market for ETH purchases. Every new Ramp integration is a potential new distribution channel for ETH exposure, supporting BMNR\'s ETH treasury value.',
+    thesisComparison: 'Kraken Ramp as B2B infrastructure lowers barriers for new platforms to offer crypto. More fiat on-ramps across 400+ assets expands the addressable market for ETH purchases. Every new Ramp integration is a potential new distribution channel for ETH exposure, supporting BMNR\'s ETH treasury value.',
     source: 'Kraken Blog',
     storyId: 'kraken-expansion',
     storyTitle: 'Kraken Global Expansion',
@@ -644,7 +625,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Serves institutional clients: fiduciaries, funds, and corporate treasuries across EEA',
     ],
     implication: 'positive',
-    bmnrComparison: 'MiCA-regulated custody in the EEA creates institutional-grade infrastructure for European institutions to hold ETH. Regulated custody is a prerequisite for institutional ETH allocation — directly supports the thesis that institutional capital will flow into ETH treasury vehicles like BMNR.',
+    thesisComparison: 'MiCA-regulated custody in the EEA creates institutional-grade infrastructure for European institutions to hold ETH. Regulated custody is a prerequisite for institutional ETH allocation — directly supports the thesis that institutional capital will flow into ETH treasury vehicles like BMNR.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -666,7 +647,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Each xStock fully backed 1:1 by underlying equity in bankruptcy-remote structure',
     ],
     implication: 'neutral',
-    bmnrComparison: 'xStocks\' $2B onchain volume demonstrates growing demand for Ethereum-based tokenized assets. Ethereum as the settlement layer for tokenized equities increases chain utility and transaction demand — supportive of ETH value and the BMNR treasury thesis.',
+    thesisComparison: 'xStocks\' $2B onchain volume demonstrates growing demand for Ethereum-based tokenized assets. Ethereum as the settlement layer for tokenized equities increases chain utility and transaction demand — supportive of ETH value and the BMNR treasury thesis.',
     source: 'Kraken Blog',
     storyId: 'kraken-xstocks',
     storyTitle: 'Kraken Tokenized Equities (xStocks)',
@@ -688,7 +669,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Targets market makers, quant funds, and HFT firms for cross-venue strategies',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Kraken\'s second ultra-low-latency partnership (BSO for Tokyo/London, alongside Avelacom) signals aggressive push for institutional trading infrastructure. Deeper institutional engagement with Kraken strengthens the ETH market ecosystem and validates crypto as institutional asset class.',
+    thesisComparison: 'Kraken\'s second ultra-low-latency partnership (BSO for Tokyo/London, alongside Avelacom) signals aggressive push for institutional trading infrastructure. Deeper institutional engagement with Kraken strengthens the ETH market ecosystem and validates crypto as institutional asset class.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -710,7 +691,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Pioneered PoR in 2014 — longest-running transparency program among major exchanges',
     ],
     implication: 'neutral',
-    bmnrComparison: 'Kraken\'s quarterly PoR covering ETH validates institutional-grade custody transparency. As BMNR grows its ETH treasury, exchange PoR transparency reinforces trust in the broader ETH custody ecosystem that BMNR depends on.',
+    thesisComparison: 'Kraken\'s quarterly PoR covering ETH validates institutional-grade custody transparency. As BMNR grows its ETH treasury, exchange PoR transparency reinforces trust in the broader ETH custody ecosystem that BMNR depends on.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional & Exchange',
@@ -732,7 +713,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Builds on Dec 2025 acquisition of 15% stake in Zippy — demonstrates repeatable RWA framework'
     ],
     implication: 'neutral',
-    bmnrComparison: 'ETHZilla moving from strategic investment to actual asset acquisition and tokenization. Multiple asset classes (manufactured homes + aircraft engines) in pipeline. BMNR focuses on pure ETH staking yield vs ETHZilla\'s RWA tokenization revenue model.',
+    thesisComparison: 'ETHZilla moving from strategic investment to actual asset acquisition and tokenization. Multiple asset classes (manufactured homes + aircraft engines) in pipeline. BMNR focuses on pure ETH staking yield vs ETHZilla\'s RWA tokenization revenue model.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-rwa',
     storyTitle: 'ETHZilla RWA Tokenization'
@@ -754,7 +735,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'ETHZilla ecosystem: Liquidity.io (tokenized private credit), Karus (AI risk forecasting for structured auto credit)'
     ],
     implication: 'neutral',
-    bmnrComparison: 'ETHZilla expanding into housing finance RWA tokenization with exclusive distribution via FINRA-regulated ATS. BMNR\'s pure ETH staking model is simpler but ETHZilla\'s diversified revenue streams could attract different investor base.',
+    thesisComparison: 'ETHZilla expanding into housing finance RWA tokenization with exclusive distribution via FINRA-regulated ATS. BMNR\'s pure ETH staking model is simpler but ETHZilla\'s diversified revenue streams could attract different investor base.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-rwa',
     storyTitle: 'ETHZilla RWA Tokenization'
@@ -777,7 +758,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Entry point into ~$1.6T US asset-backed securities market'
     ],
     implication: 'neutral',
-    bmnrComparison: 'ETHZilla entering $1.6T ABS market with AI-powered credit analytics. Diversifying beyond pure ETH treasury into RWA revenue generation. BMNR\'s pure staking model has lower execution risk vs ETHZilla\'s complex multi-subsidiary approach.',
+    thesisComparison: 'ETHZilla entering $1.6T ABS market with AI-powered credit analytics. Diversifying beyond pure ETH treasury into RWA revenue generation. BMNR\'s pure staking model has lower execution risk vs ETHZilla\'s complex multi-subsidiary approach.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-rwa',
     storyTitle: 'ETHZilla RWA Tokenization'
@@ -799,7 +780,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'CEO Rudisill: "repurchases to be immediately accretive"'
     ],
     implication: 'neutral',
-    bmnrComparison: 'ETHZilla selling ETH = net seller pressure on ETH market. However, demonstrates capital allocation discipline. If NAV discount persists for ETH treasury companies, raises questions about the model — relevant for BMNR\'s own ETH treasury thesis.',
+    thesisComparison: 'ETHZilla selling ETH = net seller pressure on ETH market. However, demonstrates capital allocation discipline. If NAV discount persists for ETH treasury companies, raises questions about the model — relevant for BMNR\'s own ETH treasury thesis.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-capital',
     storyTitle: 'ETHZilla Treasury & Capital'
@@ -821,7 +802,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Evolution from pure ETH treasury to active RWA tokenization platform with regulated distribution'
     ],
     implication: 'neutral',
-    bmnrComparison: 'ETHZilla building regulated RWA distribution channel via FINRA-regulated ATS — competitive moat in tokenization space. BMNR focuses on pure ETH staking; ETHZilla pivoting to "next-generation asset manager" model.',
+    thesisComparison: 'ETHZilla building regulated RWA distribution channel via FINRA-regulated ATS — competitive moat in tokenization space. BMNR focuses on pure ETH staking; ETHZilla pivoting to "next-generation asset manager" model.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-rwa',
     storyTitle: 'ETHZilla RWA Tokenization'
@@ -843,7 +824,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Signals targeting broader institutional investor base beyond crypto-native capital'
     ],
     implication: 'neutral',
-    bmnrComparison: 'ETHZilla optimizing share structure for institutional access. Capital structure maturation could increase institutional investor pool for ETH treasury equities broadly, including BMNR.',
+    thesisComparison: 'ETHZilla optimizing share structure for institutional access. Capital structure maturation could increase institutional investor pool for ETH treasury equities broadly, including BMNR.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-corporate',
     storyTitle: 'ETHZilla Corporate'
@@ -865,7 +846,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       '15 years at Blackstone as Senior MD and Global Co-Head of Distressed/Special Situations at GSO Capital Partners'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Traditional finance heavyweights joining ETH treasury company boards validates institutional interest in the model. Increasing board-level credibility for ETH treasury companies could improve investor appetite for sector including BMNR.',
+    thesisComparison: 'Traditional finance heavyweights joining ETH treasury company boards validates institutional interest in the model. Increasing board-level credibility for ETH treasury companies could improve investor appetite for sector including BMNR.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-corporate',
     storyTitle: 'ETHZilla Corporate'
@@ -887,7 +868,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Multi-protocol diversification across staking and restaking'
     ],
     implication: 'neutral',
-    bmnrComparison: 'ETHZilla diversifying DeFi yield across multiple restaking protocols (EtherFi, Puffer, others). Validates institutional restaking thesis. BMNR can learn from ETHZilla\'s multi-protocol approach for its own staking strategy.',
+    thesisComparison: 'ETHZilla diversifying DeFi yield across multiple restaking protocols (EtherFi, Puffer, others). Validates institutional restaking thesis. BMNR can learn from ETHZilla\'s multi-protocol approach for its own staking strategy.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-defi',
     storyTitle: 'ETHZilla DeFi & Yield'
@@ -910,7 +891,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Clear Street as exclusive financial advisor'
     ],
     implication: 'neutral',
-    bmnrComparison: 'ETHZilla raising $350M+ validates institutional appetite for ETH-backed securities. mNAV metric creates industry standard for evaluating crypto treasury companies — direct comparison framework for BMNR valuation.',
+    thesisComparison: 'ETHZilla raising $350M+ validates institutional appetite for ETH-backed securities. mNAV metric creates industry standard for evaluating crypto treasury companies — direct comparison framework for BMNR valuation.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-capital',
     storyTitle: 'ETHZilla Treasury & Capital'
@@ -934,7 +915,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Pivoting toward "DeFi technology company" narrative'
     ],
     implication: 'neutral',
-    bmnrComparison: 'First concrete evidence of ETH yield generation by Nasdaq-listed ETH treasury company. Protocol token earnings represent new revenue stream beyond base staking. Validates BMNR\'s thesis that staked ETH generates superior returns vs unstaked BTC holdings.',
+    thesisComparison: 'First concrete evidence of ETH yield generation by Nasdaq-listed ETH treasury company. Protocol token earnings represent new revenue stream beyond base staking. Validates BMNR\'s thesis that staked ETH generates superior returns vs unstaked BTC holdings.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-defi',
     storyTitle: 'ETHZilla DeFi & Yield'
@@ -956,7 +937,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Total: 102,246 ETH (~$443M), $213M cash'
     ],
     implication: 'neutral',
-    bmnrComparison: 'ETH-collateralized borrowing from Cumberland DRW demonstrates financial engineering sophistication. DRW willing to lend against ETH validates its collateral quality. Model applicable to BMNR for leveraging ETH holdings without selling.',
+    thesisComparison: 'ETH-collateralized borrowing from Cumberland DRW demonstrates financial engineering sophistication. DRW willing to lend against ETH validates its collateral quality. Model applicable to BMNR for leveraging ETH holdings without selling.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-corporate',
     storyTitle: 'ETHZilla Corporate'
@@ -979,7 +960,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'EtherFi CEO: "highlights growing institutional confidence in decentralized protocols"'
     ],
     implication: 'neutral',
-    bmnrComparison: 'First Nasdaq-listed ETH treasury company deploying $100M into DeFi restaking. Institutional capital flowing into liquid restaking validates protocol category. Directly validates BMNR\'s own ETH staking thesis.',
+    thesisComparison: 'First Nasdaq-listed ETH treasury company deploying $100M into DeFi restaking. Institutional capital flowing into liquid restaking validates protocol category. Directly validates BMNR\'s own ETH staking thesis.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-defi',
     storyTitle: 'ETHZilla DeFi & Yield'
@@ -1002,7 +983,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Dual strategy: accumulate ETH + repurchase shares when trading below NAV'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Largest buyback authorization by an ETH treasury company. Dual strategy of ETH accumulation + buybacks signals maturing capital allocation. Proprietary yield protocol could widen gap between passive and active ETH treasury management.',
+    thesisComparison: 'Largest buyback authorization by an ETH treasury company. Dual strategy of ETH accumulation + buybacks signals maturing capital allocation. Proprietary yield protocol could widen gap between passive and active ETH treasury management.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-capital',
     storyTitle: 'ETHZilla Treasury & Capital'
@@ -1025,7 +1006,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Electric Capital as external asset manager for on-chain yield generation'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Major ETH-only treasury competitor launches with $565M capital and ~95K ETH — dwarfs BMNR\'s holdings. Top-tier Ethereum ecosystem backing. Shared strategy increases market awareness of ETH treasury model. Rising tide: institutional interest in ETH treasury equities benefits all players.',
+    thesisComparison: 'Major ETH-only treasury competitor launches with $565M capital and ~95K ETH — dwarfs BMNR\'s holdings. Top-tier Ethereum ecosystem backing. Shared strategy increases market awareness of ETH treasury model. Rising tide: institutional interest in ETH treasury equities benefits all players.',
     source: 'ETHZilla Press Release',
     storyId: 'ethzilla-corporate',
     storyTitle: 'ETHZilla Corporate'
@@ -1051,7 +1032,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Software: $123M revenue (+1.9% YoY), Subscription +62.1% YoY'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Strategy raised $25.3B to accumulate BTC yielding 0%. Now pays 9.6-11.25% on $6.9B preferred equity funded by dilution. BMNR\'s ETH staking generates real 3-5% yield.',
+    thesisComparison: 'Strategy raised $25.3B to accumulate BTC yielding 0%. Now pays 9.6-11.25% on $6.9B preferred equity funded by dilution. BMNR\'s ETH staking generates real 3-5% yield.',
     source: 'Strategy Q4 2025 Earnings',
     sourceUrl: 'https://www.strategy.com/investor-relations',
     storyId: 'strategy-financials',
@@ -1075,7 +1056,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'No preferred stock sold during the period'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Strategy continues accumulating BTC at 0% yield. BMNR\'s ETH staking generates 3-5% yield, compounding value without requiring continuous capital raises.',
+    thesisComparison: 'Strategy continues accumulating BTC at 0% yield. BMNR\'s ETH staking generates 3-5% yield, compounding value without requiring continuous capital raises.',
     source: 'Strategy 8-K',
     sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
     storyId: 'strategy-btc-acquisitions',
@@ -1099,7 +1080,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Expects ROC treatment to continue for 10+ years (no E&P)'
     ],
     implication: 'neutral',
-    bmnrComparison: 'MSTR pays 9.6% dividend on preferred but BTC generates 0% yield — funded by dilution. BMNR\'s ETH staking generates real 3-5% yield to cover costs.',
+    thesisComparison: 'MSTR pays 9.6% dividend on preferred but BTC generates 0% yield — funded by dilution. BMNR\'s ETH staking generates real 3-5% yield to cover costs.',
     source: 'Strategy PR',
     sourceUrl: 'https://www.strategy.com/investor-relations',
     storyId: 'strategy-capital-markets',
@@ -1122,7 +1103,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Describes itself as "world\'s first Bitcoin Treasury Company"'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Strategy continues to position as BTC treasury leader. BMNR differentiates with ETH + staking yield model.',
+    thesisComparison: 'Strategy continues to position as BTC treasury leader. BMNR differentiates with ETH + staking yield model.',
     source: 'Strategy PR',
     sourceUrl: 'https://www.strategy.com/investor-relations',
     storyId: 'strategy-financials',
@@ -1146,7 +1127,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Total net proceeds from ATM: $2,125M'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Strategy\'s massive $2.1B weekly BTC purchase shows aggressive accumulation. No yield generation — purely price appreciation play vs BMNR\'s staking yield.',
+    thesisComparison: 'Strategy\'s massive $2.1B weekly BTC purchase shows aggressive accumulation. No yield generation — purely price appreciation play vs BMNR\'s staking yield.',
     source: 'Strategy 8-K',
     sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
     storyId: 'strategy-btc-acquisitions',
@@ -1170,7 +1151,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Total net proceeds from ATM: $1,247.6M'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Strategy continues aggressive BTC accumulation via ATM dilution. BMNR\'s ETH staking generates yield without continuous share issuance.',
+    thesisComparison: 'Strategy continues aggressive BTC accumulation via ATM dilution. BMNR\'s ETH staking generates yield without continuous share issuance.',
     source: 'Strategy 8-K',
     sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
     storyId: 'strategy-btc-acquisitions',
@@ -1194,7 +1175,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'USD Reserve increased to $2.25B as of Jan 4, 2026'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Strategy\'s $17.4B Q4 unrealized loss shows BTC volatility exposure. BMNR\'s ETH staking provides steady yield regardless of price movements.',
+    thesisComparison: 'Strategy\'s $17.4B Q4 unrealized loss shows BTC volatility exposure. BMNR\'s ETH staking provides steady yield regardless of price movements.',
     source: 'Strategy 8-K',
     sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
     storyId: 'strategy-financials',
@@ -1217,7 +1198,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Payment date: Jan 31, 2026'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Strategy raising STRC dividend to 11% increases funding costs. BMNR\'s ETH staking generates 3-5% yield to cover costs without rate pressure.',
+    thesisComparison: 'Strategy raising STRC dividend to 11% increases funding costs. BMNR\'s ETH staking generates 3-5% yield to cover costs without rate pressure.',
     source: 'Strategy 8-K',
     sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
     storyId: 'strategy-capital-markets',
@@ -1241,7 +1222,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Guidance based on assumed BTC price range of $85,000-$110,000'
     ],
     implication: 'neutral',
-    bmnrComparison: 'MSTR holds 3.1% of BTC supply vs BMNR\'s ~3.5% of ETH supply. MSTR needs USD Reserve for dividends since BTC yields 0%; BMNR\'s staking covers yield natively.',
+    thesisComparison: 'MSTR holds 3.1% of BTC supply vs BMNR\'s ~3.5% of ETH supply. MSTR needs USD Reserve for dividends since BTC yields 0%; BMNR\'s staking covers yield natively.',
     source: 'Strategy PR',
     sourceUrl: 'https://www.strategy.com/investor-relations',
     storyId: 'strategy-capital-markets',
@@ -1264,7 +1245,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Raises cumulative bitcoin capital to approximately $11B since November 2024'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Strategy tapping European markets at 10% perpetual dividend cost. BMNR\'s ETH staking generates yield without requiring such high dividend obligations.',
+    thesisComparison: 'Strategy tapping European markets at 10% perpetual dividend cost. BMNR\'s ETH staking generates yield without requiring such high dividend obligations.',
     source: 'Strategy PR',
     sourceUrl: 'https://www.strategy.com/investor-relations',
     storyId: 'strategy-capital-markets',
@@ -1287,7 +1268,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Demonstrates institutional acceptance of BTC treasury model'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Strategy\'s B- rating reflects higher risk BTC volatility exposure. BMNR\'s ETH staking yield provides more stable cash flow for debt servicing.',
+    thesisComparison: 'Strategy\'s B- rating reflects higher risk BTC volatility exposure. BMNR\'s ETH staking yield provides more stable cash flow for debt servicing.',
     source: 'Strategy PR',
     sourceUrl: 'https://www.strategy.com/investor-relations',
     storyId: 'strategy-financials',
@@ -1310,7 +1291,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'No preferred stock sold during the period'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Strategy steadily accumulating BTC with no yield. BMNR\'s staking model generates continuous 3-5% yield on ETH holdings.',
+    thesisComparison: 'Strategy steadily accumulating BTC with no yield. BMNR\'s staking model generates continuous 3-5% yield on ETH holdings.',
     source: 'Strategy 8-K',
     sourceUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=strategy',
     storyId: 'strategy-btc-treasury',
@@ -1333,7 +1314,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Q4 2025 production exceeded expectations'
     ],
     implication: 'neutral',
-    bmnrComparison: 'MARA\'s mining produces BTC but at high OpEx cost. BMNR\'s pure treasury model with staking has lower operational risk.',
+    thesisComparison: 'MARA\'s mining produces BTC but at high OpEx cost. BMNR\'s pure treasury model with staking has lower operational risk.',
     source: 'Marathon Digital PR',
     sourceUrl: 'https://ir.mara.com/',
     storyId: 'mara-treasury-2026',
@@ -1356,7 +1337,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Maintains HODL strategy on mined BTC'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Riot\'s CapEx-intensive mining model contrasts with BMNR\'s capital-efficient staking. Mining faces halving headwinds; staking does not.',
+    thesisComparison: 'Riot\'s CapEx-intensive mining model contrasts with BMNR\'s capital-efficient staking. Mining faces halving headwinds; staking does not.',
     source: 'Riot Platforms PR',
     sourceUrl: 'https://www.riotplatforms.com/news',
     storyId: 'riot-expansion-2026',
@@ -1379,7 +1360,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Strengthens institutional custody + staking bundle'
     ],
     implication: 'negative',
-    bmnrComparison: 'Coinbase expanding staking services increases competition but validates ETH staking as institutional strategy. BMNR\'s scale advantage remains.',
+    thesisComparison: 'Coinbase expanding staking services increases competition but validates ETH staking as institutional strategy. BMNR\'s scale advantage remains.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog',
     storyId: 'coin-regulatory',
@@ -1400,7 +1381,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Coinbase Prime provides integrated custody + staking with detailed rewards reporting'
     ],
     implication: 'positive',
-    bmnrComparison: 'Staking ETFs arriving via Coinbase infrastructure validates ETH staking as mainstream institutional strategy. Coinbase\'s dominance (8/9 ETH ETF custodian) makes it both competitor and ecosystem enabler. BMNR benefits from growing institutional staking demand — staking ETFs bring more capital into ETH staking, supporting network security and yield sustainability.',
+    thesisComparison: 'Staking ETFs arriving via Coinbase infrastructure validates ETH staking as mainstream institutional strategy. Coinbase\'s dominance (8/9 ETH ETF custodian) makes it both competitor and ecosystem enabler. BMNR benefits from growing institutional staking demand — staking ETFs bring more capital into ETH staking, supporting network security and yield sustainability.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/staking-etfs-have-arrived',
     storyId: 'coin-products',
@@ -1420,7 +1401,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Powered by Coinbase\'s CaaS infrastructure for institutional clients'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Coinbase CaaS bringing bitcoin to major US banks validates crypto-TradFi integration. PNC integration is BTC-only — no ETH staking. However, infrastructure pathway exists for future ETH/staking products in banks. Coinbase building distribution moat via CaaS partnerships.',
+    thesisComparison: 'Coinbase CaaS bringing bitcoin to major US banks validates crypto-TradFi integration. PNC integration is BTC-only — no ETH staking. However, infrastructure pathway exists for future ETH/staking products in banks. Coinbase building distribution moat via CaaS partnerships.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-pnc-partner',
     storyId: 'coin-institutional',
@@ -1440,7 +1421,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Part of broader push: DEX trading launched in Brazil same week (Nov 19)'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Coinbase acquiring Solana infrastructure reflects multi-chain strategy. Solana is alternative L1 to Ethereum — Coinbase betting on both ecosystems. However, Coinbase also heavily invested in Ethereum via Base L2. Multi-chain Coinbase growth ultimately brings more users to crypto overall, some of which flow to ETH staking.',
+    thesisComparison: 'Coinbase acquiring Solana infrastructure reflects multi-chain strategy. Solana is alternative L1 to Ethereum — Coinbase betting on both ecosystems. However, Coinbase also heavily invested in Ethereum via Base L2. Multi-chain Coinbase growth ultimately brings more users to crypto overall, some of which flow to ETH staking.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-to-acquire-vector',
     storyId: 'coin-acquisitions',
@@ -1462,7 +1443,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Institutional and advanced trader base with loyal following'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Deribit acquisition makes Coinbase the most comprehensive crypto derivatives platform globally. Derivatives volume drives more hedging/speculation activity which benefits overall crypto market liquidity. Not directly competitive with BMNR\'s ETH staking thesis but strengthens Coinbase as dominant crypto infrastructure company.',
+    thesisComparison: 'Deribit acquisition makes Coinbase the most comprehensive crypto derivatives platform globally. Derivatives volume drives more hedging/speculation activity which benefits overall crypto market liquidity. Not directly competitive with BMNR\'s ETH staking thesis but strengthens Coinbase as dominant crypto infrastructure company.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/deribit-joins-coinbase',
     storyId: 'coin-acquisitions',
@@ -1482,7 +1463,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Part of Coinbase\'s broader mission to integrate digital assets into global economy'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Citi ($94B+ revenue) collaborating with Coinbase on stablecoin payments validates crypto infrastructure for institutional use. Stablecoin demand drives on-chain activity on Ethereum. Not directly competitive with BMNR but Coinbase building institutional distribution moat.',
+    thesisComparison: 'Citi ($94B+ revenue) collaborating with Coinbase on stablecoin payments validates crypto infrastructure for institutional use. Stablecoin demand drives on-chain activity on Ethereum. Not directly competitive with BMNR but Coinbase building institutional distribution moat.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-citi-collaborate',
     storyId: 'coin-institutional',
@@ -1502,7 +1483,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'GENIUS-compliant opportunities with monthly audits and 1:1 reserves'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Coinbase + Apollo building institutional DeFi credit products around stablecoins. $300B stablecoin market growing to $3T creates massive on-chain activity on Ethereum. Apollo\'s $840B AUM entering crypto credit validates institutional demand. BMNR benefits from stablecoin ecosystem growth driving ETH utility.',
+    thesisComparison: 'Coinbase + Apollo building institutional DeFi credit products around stablecoins. $300B stablecoin market growing to $3T creates massive on-chain activity on Ethereum. Apollo\'s $840B AUM entering crypto credit validates institutional demand. BMNR benefits from stablecoin ecosystem growth driving ETH utility.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/cbam-apollo-stablecoin-credit',
     storyId: 'coin-institutional',
@@ -1522,7 +1503,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Builds on Coinbase\'s growing presence with local operations in the region'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Coinbase expanding distribution into India (100M+ crypto owners) and Middle East. Geographic expansion grows total addressable market for crypto ecosystem. CoinDCX\'s $165B volume demonstrates massive emerging market activity. More global crypto adoption = more ETH ecosystem participants.',
+    thesisComparison: 'Coinbase expanding distribution into India (100M+ crypto owners) and Middle East. Geographic expansion grows total addressable market for crypto ecosystem. CoinDCX\'s $165B volume demonstrates massive emerging market activity. More global crypto adoption = more ETH ecosystem participants.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-makes-investment-in-coindcx',
     storyId: 'coin-institutional',
@@ -1543,7 +1524,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'SEC-registered RIA, CFTC-registered CPO/CTA, NFA member'
     ],
     implication: 'negative',
-    bmnrComparison: 'Coinbase BTC Yield Fund is a direct competitive concept to BMNR\'s ETH yield thesis — institutional crypto yield product from major exchange. However: BTC yield via lending/basis trading is fundamentally different from ETH staking (native protocol yield). BTC yield involves counterparty/credit risk; ETH staking yield is protocol-native and trustless. BMNR should emphasize this distinction: ETH staking = yield from securing the network, not from lending.',
+    thesisComparison: 'Coinbase BTC Yield Fund is a direct competitive concept to BMNR\'s ETH yield thesis — institutional crypto yield product from major exchange. However: BTC yield via lending/basis trading is fundamentally different from ETH staking (native protocol yield). BTC yield involves counterparty/credit risk; ETH staking yield is protocol-native and trustless. BMNR should emphasize this distinction: ETH staking = yield from securing the network, not from lending.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-us-bitcoin-yield-fund',
     storyId: 'coin-products',
@@ -1563,7 +1544,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'CLO Paul Grewal: "In the city that never sleeps, your money shouldn\'t either"'
     ],
     implication: 'negative',
-    bmnrComparison: 'NY staking approval significantly expands Coinbase\'s retail ETH staking TAM — NY is one of the largest financial markets. More retail ETH staking via Coinbase increases competition for BMNR\'s institutional staking value proposition. However, growing retail staking also validates ETH staking as mainstream and supports network security. SEC consensus that staking is not a security reduces regulatory risk for all staking players including BMNR.',
+    thesisComparison: 'NY staking approval significantly expands Coinbase\'s retail ETH staking TAM — NY is one of the largest financial markets. More retail ETH staking via Coinbase increases competition for BMNR\'s institutional staking value proposition. However, growing retail staking also validates ETH staking as mainstream and supports network security. SEC consensus that staking is not a security reduces regulatory risk for all staking players including BMNR.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/staking-is-now-available-in-new-york',
     storyId: 'coin-regulatory',
@@ -1583,7 +1564,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Samsung Pay already rolled out as payment option in Coinbase app (Jul 29) for US and Canada'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Samsung distribution deal gives Coinbase massive consumer reach (75M+ Galaxy users). Boosted staking rewards in Coinbase One could drive more retail ETH staking. Coinbase building retail distribution moat through device-level partnerships. More retail crypto users = larger ecosystem, though also more Coinbase staking competition.',
+    thesisComparison: 'Samsung distribution deal gives Coinbase massive consumer reach (75M+ Galaxy users). Boosted staking rewards in Coinbase One could drive more retail ETH staking. Coinbase building retail distribution moat through device-level partnerships. More retail crypto users = larger ecosystem, though also more Coinbase staking competition.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/samsung-taps-coinbase',
     storyId: 'coin-institutional',
@@ -1603,7 +1584,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Ultimate Rewards → USDC conversion creates novel stablecoin on-ramp'
     ],
     implication: 'neutral',
-    bmnrComparison: 'JPMorgan Chase (largest US bank) partnering with Coinbase is a landmark crypto-TradFi integration. 80M+ customers with frictionless crypto access dramatically expands retail on-ramp. Ultimate Rewards → USDC creates novel stablecoin demand channel. More retail participants flowing through Coinbase strengthens their position as primary crypto gateway but also grows overall ecosystem benefiting all crypto assets including ETH.',
+    thesisComparison: 'JPMorgan Chase (largest US bank) partnering with Coinbase is a landmark crypto-TradFi integration. 80M+ customers with frictionless crypto access dramatically expands retail on-ramp. Ultimate Rewards → USDC creates novel stablecoin demand channel. More retail participants flowing through Coinbase strengthens their position as primary crypto gateway but also grows overall ecosystem benefiting all crypto assets including ETH.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-jpmorgan-chase',
     storyId: 'coin-institutional',
@@ -1625,7 +1606,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Exchange closes every Friday 5:00-6:00 PM ET with quarterly 3-hour maintenance windows'
     ],
     implication: 'neutral',
-    bmnrComparison: 'CFTC-regulated perpetual futures are a landmark US derivatives milestone. ETH-PERP creates regulated US perpetuals market for Ethereum — more hedging and speculative tools for ETH. 90% of global crypto derivatives volume is perps, so US access could dramatically increase ETH trading activity. More liquid ETH derivatives market supports BMNR thesis through improved price discovery.',
+    thesisComparison: 'CFTC-regulated perpetual futures are a landmark US derivatives milestone. ETH-PERP creates regulated US perpetuals market for Ethereum — more hedging and speculative tools for ETH. 90% of global crypto derivatives volume is perps, so US access could dramatically increase ETH trading activity. More liquid ETH derivatives market supports BMNR thesis through improved price discovery.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/perpetual-futures-have-arrived-in-the-us',
     storyId: 'coin-products',
@@ -1645,7 +1626,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Vision: make launching a token easier, faster, and more global than issuing traditional startup equity'
     ],
     implication: 'neutral',
-    bmnrComparison: 'LiquiFi acquisition adds pre-listing token infrastructure to Coinbase platform. Customer base (Uniswap, Optimism, Ethena, Zora, 0x) is heavily Ethereum-ecosystem native. Coinbase capturing project relationships before listing strengthens their position as primary exchange for ETH ecosystem tokens. More comprehensive institutional tooling benefits crypto market overall.',
+    thesisComparison: 'LiquiFi acquisition adds pre-listing token infrastructure to Coinbase platform. Customer base (Uniswap, Optimism, Ethena, Zora, 0x) is heavily Ethereum-ecosystem native. Coinbase capturing project relationships before listing strengthens their position as primary exchange for ETH ecosystem tokens. More comprehensive institutional tooling benefits crypto market overall.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-acquires-liquifi',
     storyId: 'coin-acquisitions',
@@ -1666,7 +1647,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Luxembourg has passed four blockchain-related policies through national legislature'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Single MiCA licence covering 450M EU population is massive regulatory moat for Coinbase. Unified EU access under one framework dramatically simplifies European expansion. More regulated exchange access globally = more liquidity = benefits ETH market overall. Coinbase EU strength as primary fiat-to-crypto gateway grows overall ecosystem.',
+    thesisComparison: 'Single MiCA licence covering 450M EU population is massive regulatory moat for Coinbase. Unified EU access under one framework dramatically simplifies European expansion. More regulated exchange access globally = more liquidity = benefits ETH market overall. Coinbase EU strength as primary fiat-to-crypto gateway grows overall ecosystem.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-secures-mica-licence',
     storyId: 'coin-regulatory',
@@ -1686,7 +1667,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Stephen Yip (Webull Pay CEO): "This collaboration unlocks powerful capabilities that will accelerate innovation on our platform"'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Webull Pay CaaS partnership validates Coinbase as white-label crypto infrastructure provider. CaaS B2B model expands Coinbase reach without direct user acquisition costs. More platforms offering crypto trading/staking through Coinbase rails = more exchange volume = benefits overall crypto market liquidity.',
+    thesisComparison: 'Webull Pay CaaS partnership validates Coinbase as white-label crypto infrastructure provider. CaaS B2B model expands Coinbase reach without direct user acquisition costs. More platforms offering crypto trading/staking through Coinbase rails = more exchange volume = benefits overall crypto market liquidity.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-partners-with-webull-pay',
     storyId: 'coin-institutional',
@@ -1708,7 +1689,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Deribit CEO Luuk Strijers: "Together with Coinbase, we\'re set to shape the future of the global crypto derivatives market"'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Largest crypto M&A deal ever announced. Coinbase building full-stack derivatives platform (spot + futures + perps + options) makes it dominant crypto infrastructure company. Crypto options expansion similar to equity options boom of 1990s — more sophisticated trading tools benefit overall market development including ETH derivatives liquidity.',
+    thesisComparison: 'Largest crypto M&A deal ever announced. Coinbase building full-stack derivatives platform (spot + futures + perps + options) makes it dominant crypto infrastructure company. Crypto options expansion similar to equity options boom of 1990s — more sophisticated trading tools benefit overall market development including ETH derivatives liquidity.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-to-acquire-deribit',
     storyId: 'coin-acquisitions',
@@ -1728,7 +1709,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Adds to portfolio: Team Liquid, WNBA, NBA (Warriors, Clippers), Aston Martin F1, Borussia Dortmund'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Riot Games partnership extends Coinbase brand reach into massive esports audience (LoL and VALORANT have 100M+ combined players). Web3 technology exploration signals potential onchain integration for gaming. Brand awareness drives crypto adoption broadly, benefiting overall ecosystem.',
+    thesisComparison: 'Riot Games partnership extends Coinbase brand reach into massive esports audience (LoL and VALORANT have 100M+ combined players). Web3 technology exploration signals potential onchain integration for gaming. Brand awareness drives crypto adoption broadly, benefiting overall ecosystem.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-partners-with-riot-games',
     storyId: 'coin-institutional',
@@ -1750,7 +1731,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Currently for international (non-US) investors; launches May 1, 2025'
     ],
     implication: 'negative',
-    bmnrComparison: 'Offshore BTC Yield Fund is Coinbase\'s first institutional crypto yield product — directly competitive concept to BMNR\'s ETH yield thesis. 4-8% target BTC yield via lending/basis trading competes for same "crypto yield" allocator capital. Key distinction: BTC yield involves counterparty/credit risk from lending; BMNR\'s ETH staking yield is protocol-native and trustless.',
+    thesisComparison: 'Offshore BTC Yield Fund is Coinbase\'s first institutional crypto yield product — directly competitive concept to BMNR\'s ETH yield thesis. 4-8% target BTC yield via lending/basis trading competes for same "crypto yield" allocator capital. Key distinction: BTC yield involves counterparty/credit risk from lending; BMNR\'s ETH staking yield is protocol-native and trustless.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-bitcoin-yield-fund',
     storyId: 'coin-products',
@@ -1770,7 +1751,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Making it easier for millions of PayPal customers to bring finances onchain'
     ],
     implication: 'neutral',
-    bmnrComparison: 'PayPal PYUSD partnership strengthens Coinbase as multi-stablecoin infrastructure platform. Zero-fee conversions could drive significant PYUSD adoption alongside USDC. Stablecoin volume growth ($6.2T → $22T, 250%) validates on-chain payment thesis. More stablecoin activity broadly benefits Ethereum ecosystem where most stablecoins settle.',
+    thesisComparison: 'PayPal PYUSD partnership strengthens Coinbase as multi-stablecoin infrastructure platform. Zero-fee conversions could drive significant PYUSD adoption alongside USDC. Stablecoin volume growth ($6.2T → $22T, 250%) validates on-chain payment thesis. More stablecoin activity broadly benefits Ethereum ecosystem where most stablecoins settle.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-and-paypal-to-advance-stablecoin-payments',
     storyId: 'coin-institutional',
@@ -1790,7 +1771,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Part of flywheel: developers build onchain apps → apps attract users → more users incentivize more developers'
     ],
     implication: 'neutral',
-    bmnrComparison: 'Spindl acquisition strengthens Base (Ethereum L2) ecosystem by solving builder distribution problem. More builders finding users on Base = more on-chain activity on Ethereum L2. Facebook ads veteran leading onchain ad tech could dramatically accelerate user acquisition for Base ecosystem.',
+    thesisComparison: 'Spindl acquisition strengthens Base (Ethereum L2) ecosystem by solving builder distribution problem. More builders finding users on Base = more on-chain activity on Ethereum L2. Facebook ads veteran leading onchain ad tech could dramatically accelerate user acquisition for Base ecosystem.',
     source: 'Coinbase Blog',
     sourceUrl: 'https://www.coinbase.com/blog/coinbase-acquires-spindl',
     storyId: 'coin-acquisitions',
@@ -1813,7 +1794,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Trades at lower NAV premium than MSTR'
     ],
     implication: 'neutral',
-    bmnrComparison: 'CleanSpark\'s mining growth increases BTC supply competition. No yield generation - purely price appreciation play vs BMNR\'s yield + appreciation.',
+    thesisComparison: 'CleanSpark\'s mining growth increases BTC supply competition. No yield generation - purely price appreciation play vs BMNR\'s yield + appreciation.',
     source: 'CleanSpark PR',
     sourceUrl: 'https://www.cleanspark.com/news',
     storyId: 'clsk-acquisition-2026',
@@ -1836,7 +1817,7 @@ export const BMNR_COMPETITOR_NEWS: BMNRCompetitorNewsEntry[] = [
       'Expected to drive significant ETH inflows'
     ],
     implication: 'positive',
-    bmnrComparison: 'Regulatory clarity validates BMNR\'s ETH staking strategy. As a pure-play ETH treasury, BMNR benefits directly from increased institutional adoption.',
+    thesisComparison: 'Regulatory clarity validates BMNR\'s ETH staking strategy. As a pure-play ETH treasury, BMNR benefits directly from increased institutional adoption.',
     source: 'SEC Filing',
     sourceUrl: 'https://www.sec.gov/news',
     storyId: 'sec-eth-staking-approval',

@@ -8,15 +8,48 @@
 export const BMNR_ADOPTION_TIMELINE = [
     // === FEBRUARY 2026 ===
     {
-      date: '2026-02-12',
+      date: '2026-02-17',
       category: 'Enterprise',
-      company: 'ETHZilla / Liquidity.io',
-      title: 'ETHZilla Launches First Tokenized Aviation Assets on Ethereum L2 — $12.2M Jet Engines',
-      summary: 'ETHZilla Corporation (Nasdaq: ETHZ) launched Eurus Aero Token I, a first-of-its-kind tokenized real-world asset instrument on Ethereum L2, enabling accredited investors to gain exposure to CFM56 jet engines on lease with a leading US air carrier through ERC-20 tokens. Two engines acquired for ~$12.2M, tokens offered at $100 each with ~11% target return. Monthly on-chain distributions via Ethereum L2 with automated distribution. Leases extend into 2028 with $3M put/call rights. Plans to expand to manufactured home loans and car loans.',
-      significance: 'First tokenized aviation assets on Ethereum L2 by a public company (Nasdaq-listed). Demonstrates real-world asset tokenization at institutional scale on Ethereum infrastructure. ERC-20 token structure enables automated on-chain distributions and secondary market trading.',
-      bmnrImplication: 'ETHZilla (Nasdaq: ETHZ) is BMNR\'s closest competitor as an ETH treasury company. Their RWA tokenization pivot creates a differentiated use case on Ethereum L2, validating the broader Ethereum ecosystem that BMNR depends on. More RWA activity on Ethereum = more network utility.',
+      company: 'Northstake / P2P.org',
+      title: 'Northstake Adds P2P.org ($10B+ Staked) to Institutional Staking Vault Manager on Lido V3',
+      summary: 'P2P.org, one of the largest non-custodial Ethereum validators globally with over $10 billion in staked assets and 1M+ staked ETH, joins Northstake\'s Staking Vault Manager as a node operator. The Staking Vault Manager is Northstake\'s multi-operator institutional framework built on Lido V3 stVault primitives. P2P.org brings a zero-slashing track record spanning eight years, 99% uptime, and independently audited infrastructure across 40+ blockchain networks. P2P.org will offer stVault access through both a UI and enterprise-grade staking APIs, enabling institutions to participate in Ethereum staking with production-ready tooling. Northstake is supervised by the Danish Financial Supervisory Authority.',
+      significance: 'Institutional Ethereum staking infrastructure maturing rapidly with Lido V3 modular staking primitives. Multi-operator frameworks with enterprise-grade APIs enable asset managers, custodians, and exchanges to access diversified, secure Ethereum staking. P2P.org\'s $10B+ staked and zero-slashing record demonstrates institutional reliability at scale.',
+      bmnrImplication: 'Institutional staking infrastructure maturation directly supports BMNR\'s MAVAN validator strategy. More production-ready staking tooling (Lido V3 stVaults, enterprise APIs) lowers barriers for institutional staking participation. Competitive staking landscape validates BMNR\'s staking ratio expansion thesis. P2P.org\'s scale ($10B+ staked) shows the market for institutional ETH staking is large and growing.',
       impact: 'Bullish',
       source: 'PR Newswire'
+    },
+    {
+      date: '2026-02-11',
+      category: 'Institutional',
+      company: 'Uniswap Labs / Securitize / BlackRock',
+      title: 'BlackRock BUIDL Tradable via UniswapX — First Major TradFi-DeFi Integration on Ethereum',
+      summary: 'Uniswap Labs and Securitize announced a strategic integration to make BlackRock USD Institutional Digital Liquidity Fund (BUIDL) shares available to trade via UniswapX technology. Securitize Markets facilitates trading through UniswapX\'s RFQ framework, enabling whitelisted investors to swap BUIDL↔USDC 24/7/365 with atomic on-chain settlement. Whitelisted market makers (subscribers) include Flowdesk, Tokka Labs, and Wintermute. All investors are pre-qualified through Securitize. BlackRock has also made a strategic investment within the Uniswap ecosystem. Robert Mitchnick, BlackRock Global Head of Digital Assets: "This collaboration marks a major leap forward in the interoperability of tokenized USD yield funds with stablecoins."',
+      significance: 'WATERSHED TradFi-DeFi convergence: world\'s largest asset manager\'s tokenized treasury fund now tradable on leading DEX infrastructure. First time institutional tokenized assets have DeFi liquidity rails with regulatory compliance (whitelisting, Securitize Markets as broker-dealer). BlackRock\'s strategic investment in Uniswap ecosystem signals deep institutional commitment to DeFi infrastructure.',
+      bmnrImplication: 'BUIDL on UniswapX is the strongest signal yet that Ethereum is the institutional settlement layer bridging TradFi and DeFi. BlackRock investing in Uniswap ecosystem validates on-chain trading infrastructure. More institutional assets tradable on Ethereum = more network utility = ETH ecosystem value. Reinforces BMNR\'s thesis that Ethereum is becoming the backbone of institutional digital finance.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
+    {
+      date: '2026-02-11',
+      category: 'Institutional',
+      company: 'ICE / CoinDesk',
+      title: 'ICE Launches CoinDesk Ether Futures — Regulated Crypto Derivatives on NYSE Parent Exchange',
+      summary: 'Intercontinental Exchange (NYSE: ICE), parent of the NYSE and a Fortune 500 company, launched cryptocurrency futures contracts based on seven CoinDesk Indices. Contracts include ICE CoinDesk Ether Futures (USD-denominated, cash-settled), alongside BTC, SOL, XRP, BNB, CoinDesk 20, and CoinDesk 5. Over $40 billion in AUM tied to CoinDesk Indices. The CoinDesk 20 Index captures over 90% of the digital asset market by market capitalization. ICE also plans to launch One Month CoinDesk Overnight Rate (CDOR) USDC futures based on DeFi overnight rates, structurally similar to traditional benchmarks like SOFR or €STR, subject to regulatory review.',
+      significance: 'NYSE parent company launching regulated ETH futures brings institutional-grade derivatives infrastructure to crypto. CoinDesk Overnight Rate (CDOR) USDC futures create DeFi-native rate benchmarks analogous to SOFR — potential foundational pricing mechanism for institutional DeFi. $40B+ AUM tied to CoinDesk indices demonstrates significant institutional engagement.',
+      bmnrImplication: 'Regulated ETH futures on ICE expand institutional hedging and exposure tools for ETH. More derivatives infrastructure = more institutional participation = deeper ETH markets. CDOR USDC futures based on DeFi overnight rates could create standardized yield benchmarks relevant to BMNR\'s staking yield positioning. ICE (Fortune 500, NYSE parent) launching ETH products normalizes the asset class for institutional allocators.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
+    {
+      date: '2026-02-06',
+      category: 'Institutional',
+      company: 'NEOS Investments',
+      title: 'NEOS Ethereum High Income ETF (NEHI) Reports 37% Annualized Distribution Rate — Highest in Suite',
+      summary: 'NEOS Investments announced January 2026 distribution data for its ETF suite. The Ethereum High Income ETF (NEHI, launched Dec 2, 2025) posted a 37.04% annualized distribution rate — the highest across all 16 NEOS ETFs — with a $1.5061/share monthly distribution (3.09%). 30-Day SEC yield: 2.06%. Management fee: 0.98%. Distribution composition is approximately 98% return of capital (options premium-based). Inception return: 1.17% MKT / 0.93% NAV. For comparison, NEOS Bitcoin High Income ETF (BTCI) posted a 28.27% distribution rate. NEOS NEHI outperforms the BTC equivalent on distribution rate, reflecting higher ETH implied volatility generating richer options premiums.',
+      significance: 'ETH options-based income ETF achieving the highest distribution rate in a 16-product suite demonstrates strong institutional demand for ETH yield products. ETH\'s higher implied volatility vs. BTC generates richer options premiums, creating differentiated yield products. Expanding ETH financial product landscape beyond spot ETFs and staking.',
+      bmnrImplication: 'NEHI\'s 37% distribution rate (vs BTCI\'s 28%) demonstrates ETH\'s superior options premium generation from higher volatility. More ETH yield products expand the ETH investment ecosystem. Options-based ETH income does not compete with BMNR\'s staking yield (different mechanisms) but validates institutional appetite for ETH-denominated yield. Growing product suite deepens ETH markets and investor base.',
+      impact: 'Bullish',
+      source: 'Business Wire'
     },
     {
       date: '2026-02-11',
@@ -225,6 +258,17 @@ export const BMNR_ADOPTION_TIMELINE = [
       summary: 'BitGo Holdings Inc., the digital asset infrastructure company, announces support for iPower Inc. (Nasdaq: IPW) in execution and custody of its digital asset treasury transactions. iPower completed purchases of Bitcoin (BTC) and Ethereum (ETH) through BitGo Bank & Trust, National Association. Transactions executed using BitGo Prime\'s over-the-counter (OTC) trading services for institutional liquidity and discreet execution, with BitGo\'s custody platform for long-term storage. Mike Belshe, BitGo CEO: "Corporate treasury participation in digital assets requires strong security, governance, and operational rigor. BitGo provides infrastructure that supports these requirements across custody and transaction execution." Lawrence Tan, iPower CEO: "As we evaluated our approach to digital asset treasury activity, we focused on governance, security and operational discipline. We believe BitGo\'s infrastructure provides a framework aligned with our internal controls." BitGo platform supports institutional digital asset activity with multi-signature security, policy controls, and operational workflows.',
       significance: 'Nasdaq-listed company (IPW) establishing digital asset treasury with both BTC and ETH through regulated infrastructure. BitGo Bank & Trust provides institutional-grade custody with bank charter. Demonstrates growing corporate treasury adoption of ETH alongside BTC.',
       bmnrImplication: 'Public company adding ETH to corporate treasury validates BMNR\'s thesis. BitGo institutional infrastructure supports corporate treasury adoption. More corporate ETH treasuries = broader institutional recognition of ETH as treasury asset.',
+      impact: 'Bullish',
+      source: 'Business Wire'
+    },
+    {
+      date: '2026-01-08',
+      category: 'Institutional',
+      company: 'Coincheck Group / 3iQ',
+      title: 'Coincheck Acquires 3iQ — Pioneer of World\'s First Ethereum Staking ETF and Exchange-Listed Ether Funds',
+      summary: 'Coincheck Group N.V. (Nasdaq: CNCK), holding company of one of Japan\'s leading crypto asset exchanges, signed a stock purchase agreement to acquire approximately 97% beneficial ownership of 3iQ Corp., one of the world\'s leading alternative digital asset managers based in Ontario, Canada. Deal valued at $111.8M, all-stock (27.1M Coincheck shares at $4/share). 3iQ milestones: first regulated Digital Asset Investment Fund Manager in Canada (2017), first major exchange-listed Bitcoin and Ether Funds on TSX (2020), world\'s first Ethereum staking ETF (2023), first Solana Staking ETF and spot XRP ETF (2025). 3iQ also launched QMAP, the first digital assets managed account platform. Closing expected Q2 2026, subject to regulatory approvals. Coincheck Group also operates Aplo SAS (Paris-based crypto prime brokerage) and Next Finance Tech (staking platform). Monex Group, 3iQ\'s majority shareholder, is the seller.',
+      significance: 'Global consolidation in digital asset management: Japan\'s leading crypto exchange acquiring pioneer of world\'s first Ethereum staking ETF. 3iQ\'s track record — first exchange-listed ETH funds (2020), first ETH staking ETF (2023) — represents foundational institutional ETH product innovation. Cross-border M&A (Japan-Canada) signals institutional digital asset infrastructure becoming globally integrated.',
+      bmnrImplication: 'Institutional Ethereum staking product innovation (3iQ\'s staking ETF) being acquired validates growing institutional demand for ETH yield products. 3iQ\'s first-mover staking ETF directly parallels BMNR\'s staking strategy — more regulated staking products = more institutional acceptance of ETH staking yield thesis. Coincheck/Aplo/Next Finance synergies in staking infrastructure support BMNR\'s broader market thesis.',
       impact: 'Bullish',
       source: 'Business Wire'
     },
@@ -732,11 +776,11 @@ export const BMNR_ADOPTION_TIMELINE = [
       category: 'Enterprise',
       company: 'Securitize',
       title: 'Securitize Launches Tokenized AAA CLO Fund with BNY on Ethereum',
-      summary: 'Securitize ($4B+ AUM) launches Securitize Tokenized AAA CLO Fund (STAC) on Ethereum, bringing institutional structured credit on-chain. BNY ($57.8T AUC/A, $2.1T AUM) serves as custodian with BNY Investments as sub-advisor ($1.35T+ fixed income). Grove (Sky/MakerDAO ecosystem) plans $100M anchor allocation pending governance approval. Global CLO issuance exceeds $1.3T. Fund targets AAA-rated CLO tranches with floating rate exposure. Sam Paderewski, Grove Labs: "AAA CLOs offer durable, floating rate exposure that institutions understand. Tokenizing that exposure improves distribution and settlement."',
-      significance: 'World\'s largest custodian (BNY) partnering on tokenized institutional credit on Ethereum. AAA CLO market previously under-represented in tokenization despite consistent performance. DeFi-TradFi bridge via Grove/Sky ecosystem anchor.',
-      bmnrImplication: 'AAA CLO tokenization on Ethereum expands network utility for institutional credit markets. BNY ($57.8T AUC/A) participation validates Ethereum for high-quality credit infrastructure. More tokenized structured credit = more on-chain settlement = ETH ecosystem value.',
+      summary: 'Securitize ($4B+ AUM) launches Securitize Tokenized AAA CLO Fund (STAC) on Ethereum, bringing institutional structured credit on-chain. BNY ($57.8T AUC/A, $2.1T AUM) serves as custodian with BNY Investments as sub-advisor ($1.35T+ fixed income). Grove (Sky/MakerDAO ecosystem) plans $100M anchor allocation pending governance approval. Global CLO issuance exceeds $1.3T. Fund targets AAA-rated CLO tranches with floating rate exposure. Sam Paderewski, Grove Labs: "AAA CLOs offer durable, floating rate exposure that institutions understand. Tokenizing that exposure improves distribution and settlement." [UPDATE 2026-02-05] Chronicle integrated as Proof of Asset verification layer, providing continuous, independently verifiable transparency into STAC holdings and NAV pricing. Chronicle verifies billions of dollars in underlying tokenized assets. Grove\'s $100M anchor allocation confirmed (institutional allocator focused on bringing high-quality credit markets on-chain). Shares issued as digital tokens on Ethereum. Chronicle\'s verification layer delivers holdings verification (independent, continuous verification of AAA-rated CLO assets held in custody) and NAV/pricing verification (real-time market value of underlying CLO portfolio), all surfaced on-chain.',
+      significance: 'World\'s largest custodian (BNY) partnering on tokenized institutional credit on Ethereum. AAA CLO market previously under-represented in tokenization despite consistent performance. DeFi-TradFi bridge via Grove/Sky ecosystem anchor. [UPDATE 2026-02-05] Chronicle Proof of Asset integration adds independent on-chain verification infrastructure — institutional transparency standard for tokenized credit products.',
+      bmnrImplication: 'AAA CLO tokenization on Ethereum expands network utility for institutional credit markets. BNY ($57.8T AUC/A) participation validates Ethereum for high-quality credit infrastructure. More tokenized structured credit = more on-chain settlement = ETH ecosystem value. [UPDATE 2026-02-05] Chronicle verification layer strengthens institutional confidence in tokenized Ethereum products. On-chain proof of assets creates the transparency standard institutions require, further validating Ethereum as institutional settlement infrastructure.',
       impact: 'Bullish',
-      source: 'Securitize / BNY Press Release'
+      source: 'Securitize / BNY Press Release; Business Wire (Chronicle update 2026-02-05)'
     },
     {
       date: '2025-10-28',

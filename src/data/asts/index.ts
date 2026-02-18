@@ -33,11 +33,8 @@ export {
   getDefinitivePartners,
 } from './partners';
 
-// Competitor Intelligence
-export {
-  COMPETITORS_METADATA,
-  COMPETITOR_NEWS,
-} from './competitors';
+// Competitor Intelligence (Comps Timeline)
+export { COMPS_TIMELINE } from './comps-timeline';
 
 // Press Releases
 export {
@@ -104,10 +101,10 @@ export {
 } from './financials';
 
 // Re-export types for convenience
+export type { CompetitorNewsEntry } from '../shared/competitor-schema';
 export type {
   Partner,
   PartnerNewsEntry,
-  CompetitorNewsEntry,
   PressRelease,
   ShareClass,
   MajorShareholder,

@@ -237,7 +237,8 @@ import { BMNR_SEC_FILINGS, BMNR_SEC_META, BMNR_SEC_TYPE_COLORS, BMNR_SEC_FILTER_
 import { BMNR_QUARTERLY_DATA, BMNR_MARKET_CAP_DATA } from '@/data/bmnr/quarterly-metrics';
 import { BMNR_ANALYST_COVERAGE } from '@/data/bmnr/analyst-coverage';
 import { BMNR_TIMELINE_EVENTS } from '@/data/bmnr/timeline-events';
-import { BMNR_COMPETITOR_NEWS, type BMNRCompetitorNewsEntry, type BMNRCompetitorId, type BMNRCompetitorNewsCategory, type BMNRImplication } from '@/data/bmnr/competitor-news';
+import { BMNR_COMPETITOR_NEWS } from '@/data/bmnr/competitor-news';
+import type { CompetitorNewsEntry } from '@/data/shared/competitor-schema';
 import { BMNR_ADOPTION_TIMELINE } from '@/data/bmnr/ethereum-adoption';
 
 // ============================================================================
@@ -324,11 +325,11 @@ interface ErrorBoundaryState {
 // COMPETITOR INTELLIGENCE - BMNR Crypto Treasury Competitors
 // ============================================================================
 
-// Types imported from '@/data/bmnr/competitor-news': BMNRCompetitorId, BMNRCompetitorNewsCategory, BMNRImplication, BMNRCompetitorNewsEntry
+// Types: CompetitorNewsEntry from '@/data/shared/competitor-schema'
 
 /** Competitor profile with capabilities */
 interface BMNRCompetitorProfile {
-  id: BMNRCompetitorId;
+  id: string;
   name: string;
   ticker: string;
   description: string;
@@ -3914,7 +3915,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
 const CompsTab = ({ comparables, ethPrice }) => {
   const btcPrice = 100000;
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [competitorFilter, setCompetitorFilter] = useState<BMNRCompetitorId | 'all'>('all');
+  const [competitorFilter, setCompetitorFilter] = useState<string>('all');
   const [expandedNews, setExpandedNews] = useState<Set<number>>(new Set());
   const [newsCategoryFilter, setNewsCategoryFilter] = useState<string>('All');
 
@@ -4025,7 +4026,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
   const filteredCompNews = filteredNews.filter(n => newsCategoryFilter === 'All' || n.category === newsCategoryFilter);
 
   // Get competitor display name
-  const getCompetitorName = (id: BMNRCompetitorId): string => {
+  const getCompetitorName = (id: string): string => {
     if (id === 'other') return 'Miscellaneous';
     const profile = COMPETITOR_PROFILES.find(p => p.id === id);
     return profile?.name || id;
@@ -4040,7 +4041,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
   });
 
   // Implication styling - using design tokens
-  const getImplicationStyle = (impl: BMNRImplication) => {
+  const getImplicationStyle = (impl: CompetitorNewsEntry['implication']) => {
     switch (impl) {
       case 'positive': return { bg: 'var(--mint-dim)', color: 'var(--mint)', label: '✓ Good for BMNR' };
       case 'negative': return { bg: 'var(--coral-dim)', color: 'var(--coral)', label: '⚠ Threat to BMNR' };
@@ -4049,8 +4050,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
   };
 
   // Category styling - using design tokens
-  const getCategoryStyle = (cat: BMNRCompetitorNewsCategory) => {
-    const styles: Record<BMNRCompetitorNewsCategory, { bg: string; color: string }> = {
+  const getCategoryStyle = (cat: string) => {
+    const styles: Record<string, { bg: string; color: string }> = {
       'Acquisition': { bg: 'var(--mint-dim)', color: 'var(--mint)' },
       'Funding': { bg: 'var(--sky-dim)', color: 'var(--sky)' },
       'Yield': { bg: 'var(--violet-dim)', color: 'var(--violet)' },
@@ -4519,10 +4520,10 @@ const CompsTab = ({ comparables, ethPrice }) => {
                         <div key={di} style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--accent)', flexShrink: 0 }}>•</span>{d}</div>
                       ))}
                     </div>
-                    {news.bmnrComparison && (
+                    {news.thesisComparison && (
                       <div style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 5%, var(--surface))', borderRadius: 12, borderLeft: '3px solid var(--mint)', marginTop: 12 }}>
                         <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 4 }}>BMNR Comparison</div>
-                        <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.bmnrComparison}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.thesisComparison}</div>
                       </div>
                     )}
                     <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: 'Space Mono, monospace', marginTop: 8 }}>Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>{news.source} &#8599;</a> : news.source}</div>
